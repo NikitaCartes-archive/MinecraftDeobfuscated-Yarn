@@ -15,20 +15,22 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
@@ -36,8 +38,6 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
@@ -69,14 +69,16 @@ import net.minecraft.world.loot.context.LootContextTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Block implements ItemProvider {
+public class Block implements ItemConvertible {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
-	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
-	private static final VoxelShape field_18966 = VoxelShapes.combineAndSimplify(
+	private static final Direction[] FACINGS = new Direction[]{
+		Direction.field_11039, Direction.field_11034, Direction.field_11043, Direction.field_11035, Direction.field_11033, Direction.field_11036
+	};
+	private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(
 		VoxelShapes.fullCube(), createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 	);
-	private static final VoxelShape field_19061 = createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
+	private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
 	protected final int lightLevel;
 	protected final float hardness;
 	protected final float resistance;
@@ -84,7 +86,7 @@ public class Block implements ItemProvider {
 	protected final BlockSoundGroup soundGroup;
 	protected final Material material;
 	protected final MaterialColor materialColor;
-	private final float friction;
+	private final float slipperiness;
 	protected final StateFactory<Block, BlockState> stateFactory;
 	private BlockState defaultState;
 	protected final boolean collidable;
@@ -116,11 +118,11 @@ public class Block implements ItemProvider {
 
 	public static BlockState getStateFromRawId(int i) {
 		BlockState blockState = STATE_IDS.get(i);
-		return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
+		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	public static Block getBlockFromItem(@Nullable Item item) {
-		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
+		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
 	}
 
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
@@ -143,7 +145,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return isSolidFullSquare(blockState, blockView, blockPos, Direction.UP);
+		return isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036);
 	}
 
 	@Deprecated
@@ -238,7 +240,7 @@ public class Block implements ItemProvider {
 		this.resistance = settings.resistance;
 		this.hardness = settings.hardness;
 		this.randomTicks = settings.randomTicks;
-		this.friction = settings.friction;
+		this.slipperiness = settings.slipperiness;
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
 		this.stateFactory = builder.build(BlockState::new);
@@ -291,7 +293,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return this.material.isReplaceable() && (itemPlacementContext.getItemStack().isEmpty() || itemPlacementContext.getItemStack().getItem() != this.getItem());
+		return this.material.isReplaceable() && (itemPlacementContext.getItemStack().isEmpty() || itemPlacementContext.getItemStack().getItem() != this.asItem());
 	}
 
 	@Deprecated
@@ -322,7 +324,7 @@ public class Block implements ItemProvider {
 	public static boolean shouldDrawSide(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = blockView.getBlockState(blockPos2);
-		if (blockState.skipRenderingSide(blockState2, direction)) {
+		if (blockState.isSideInvisible(blockState2, direction)) {
 			return false;
 		} else if (blockState2.isFullBoundsCubeForCulling()) {
 			Block.NeighborGroup neighborGroup = new Block.NeighborGroup(blockState, blockState2, direction);
@@ -348,22 +350,22 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
-		return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
+		return this.collidable && this.getRenderLayer() == BlockRenderLayer.field_9178;
 	}
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
+	public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
 		return false;
 	}
 
 	@Deprecated
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Deprecated
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.collidable ? blockState.getOutlineShape(blockView, blockPos) : VoxelShapes.empty();
 	}
 
@@ -380,13 +382,17 @@ public class Block implements ItemProvider {
 	public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		return !blockState.matches(BlockTags.field_15503)
-			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), field_18966, BooleanBiFunction.ONLY_SECOND);
+			&& !VoxelShapes.matchesAnywhere(
+				blockState.getCollisionShape(blockView, blockPos).getFace(Direction.field_11036), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND
+			);
 	}
 
 	public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
 		BlockState blockState = viewableWorld.getBlockState(blockPos);
 		return !blockState.matches(BlockTags.field_15503)
-			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), field_19061, BooleanBiFunction.ONLY_SECOND);
+			&& !VoxelShapes.matchesAnywhere(
+				blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND
+			);
 	}
 
 	public static boolean isSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -421,7 +427,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return false;
 	}
 
@@ -443,7 +449,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		DebugRendererInfoManager.sendBlockUpdate(world, blockPos);
+		DebugRendererInfoManager.sendNeighborUpdate(world, blockPos);
 	}
 
 	public int getTickRate(ViewableWorld viewableWorld) {
@@ -497,7 +503,7 @@ public class Block implements ItemProvider {
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.put(LootContextParameters.field_1224, blockState).build(LootContextTypes.BLOCK);
+			LootContext lootContext = builder.put(LootContextParameters.field_1224, blockState).build(LootContextTypes.field_1172);
 			ServerWorld serverWorld = lootContext.getWorld();
 			LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
 			return lootSupplier.getDrops(lootContext);
@@ -586,7 +592,7 @@ public class Block implements ItemProvider {
 	}
 
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
+		return BlockRenderLayer.field_9178;
 	}
 
 	@Deprecated
@@ -646,8 +652,8 @@ public class Block implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getTextComponent() {
-		return new TranslatableTextComponent(this.getTranslationKey());
+	public Component getTextComponent() {
+		return new TranslatableComponent(this.getTranslationKey());
 	}
 
 	public String getTranslationKey() {
@@ -693,11 +699,11 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.EMPTY.getDefaultState();
+		return Fluids.field_15906.getDefaultState();
 	}
 
-	public float getFrictionCoefficient() {
-		return this.friction;
+	public float getSlipperiness() {
+		return this.slipperiness;
 	}
 
 	@Deprecated
@@ -746,19 +752,19 @@ public class Block implements ItemProvider {
 	}
 
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.NONE;
+		return Block.OffsetType.field_10656;
 	}
 
 	@Deprecated
 	public Vec3d getOffsetPos(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Block.OffsetType offsetType = this.getOffsetType();
-		if (offsetType == Block.OffsetType.NONE) {
+		if (offsetType == Block.OffsetType.field_10656) {
 			return Vec3d.ZERO;
 		} else {
 			long l = MathHelper.hashCode(blockPos.getX(), 0, blockPos.getZ());
 			return new Vec3d(
 				((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5,
-				offsetType == Block.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
+				offsetType == Block.OffsetType.field_10655 ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
 				((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5
 			);
 		}
@@ -769,7 +775,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Override
-	public Item getItem() {
+	public Item asItem() {
 		if (this.cachedItem == null) {
 			this.cachedItem = Item.getItemFromBlock(this);
 		}
@@ -786,7 +792,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
 	}
 
 	public static boolean isNaturalStone(Block block) {
@@ -825,9 +831,9 @@ public class Block implements ItemProvider {
 	}
 
 	public static enum OffsetType {
-		NONE,
-		XZ,
-		XYZ;
+		field_10656,
+		field_10657,
+		field_10655;
 	}
 
 	public static class Settings {
@@ -839,7 +845,7 @@ public class Block implements ItemProvider {
 		private float resistance;
 		private float hardness;
 		private boolean randomTicks;
-		private float friction = 0.6F;
+		private float slipperiness = 0.6F;
 		private Identifier dropTableId;
 		private boolean dynamicBounds;
 
@@ -870,7 +876,7 @@ public class Block implements ItemProvider {
 			settings.luminance = block.lightLevel;
 			settings.materialColor = block.materialColor;
 			settings.soundGroup = block.soundGroup;
-			settings.friction = block.getFrictionCoefficient();
+			settings.slipperiness = block.getSlipperiness();
 			settings.dynamicBounds = block.dynamicBounds;
 			return settings;
 		}
@@ -880,8 +886,8 @@ public class Block implements ItemProvider {
 			return this;
 		}
 
-		public Block.Settings friction(float f) {
-			this.friction = f;
+		public Block.Settings slipperiness(float f) {
+			this.slipperiness = f;
 			return this;
 		}
 

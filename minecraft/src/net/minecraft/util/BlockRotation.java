@@ -7,45 +7,45 @@ import java.util.Random;
 import net.minecraft.util.math.Direction;
 
 public enum BlockRotation {
-	ROT_0,
-	ROT_90,
-	ROT_180,
-	ROT_270;
+	field_11467,
+	field_11463,
+	field_11464,
+	field_11465;
 
 	public BlockRotation rotate(BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_180:
+			case field_11464:
 				switch (this) {
-					case ROT_0:
-						return ROT_180;
-					case ROT_90:
-						return ROT_270;
-					case ROT_180:
-						return ROT_0;
-					case ROT_270:
-						return ROT_90;
+					case field_11467:
+						return field_11464;
+					case field_11463:
+						return field_11465;
+					case field_11464:
+						return field_11467;
+					case field_11465:
+						return field_11463;
 				}
-			case ROT_270:
+			case field_11465:
 				switch (this) {
-					case ROT_0:
-						return ROT_270;
-					case ROT_90:
-						return ROT_0;
-					case ROT_180:
-						return ROT_90;
-					case ROT_270:
-						return ROT_180;
+					case field_11467:
+						return field_11465;
+					case field_11463:
+						return field_11467;
+					case field_11464:
+						return field_11463;
+					case field_11465:
+						return field_11464;
 				}
-			case ROT_90:
+			case field_11463:
 				switch (this) {
-					case ROT_0:
-						return ROT_90;
-					case ROT_90:
-						return ROT_180;
-					case ROT_180:
-						return ROT_270;
-					case ROT_270:
-						return ROT_0;
+					case field_11467:
+						return field_11463;
+					case field_11463:
+						return field_11464;
+					case field_11464:
+						return field_11465;
+					case field_11465:
+						return field_11467;
 				}
 			default:
 				return this;
@@ -57,11 +57,11 @@ public enum BlockRotation {
 			return direction;
 		} else {
 			switch (this) {
-				case ROT_90:
+				case field_11463:
 					return direction.rotateYClockwise();
-				case ROT_180:
+				case field_11464:
 					return direction.getOpposite();
-				case ROT_270:
+				case field_11465:
 					return direction.rotateYCounterclockwise();
 				default:
 					return direction;
@@ -71,11 +71,11 @@ public enum BlockRotation {
 
 	public int rotate(int i, int j) {
 		switch (this) {
-			case ROT_90:
+			case field_11463:
 				return (i + j / 4) % j;
-			case ROT_180:
+			case field_11464:
 				return (i + j / 2) % j;
-			case ROT_270:
+			case field_11465:
 				return (i + j * 3 / 4) % j;
 			default:
 				return i;

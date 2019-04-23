@@ -17,7 +17,7 @@ public class ShearsItem extends Item {
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			itemStack.applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
+			itemStack.applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}
 
 		Block block = blockState.getBlock();

@@ -13,8 +13,8 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -22,8 +22,8 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class StructureBlockScreen extends Screen {
 	private final StructureBlockBlockEntity structureBlock;
-	private BlockMirror mirror = BlockMirror.NONE;
-	private BlockRotation rotation = BlockRotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.field_11302;
+	private BlockRotation rotation = BlockRotation.field_11467;
 	private StructureBlockMode mode = StructureBlockMode.field_12696;
 	private boolean ignoreEntities;
 	private boolean showAir;
@@ -55,7 +55,7 @@ public class StructureBlockScreen extends Screen {
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.0###");
 
 	public StructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-		super(new TranslatableTextComponent(Blocks.field_10465.getTranslationKey()));
+		super(new TranslatableComponent(Blocks.field_10465.getTranslationKey()));
 		this.structureBlock = structureBlockBlockEntity;
 		this.decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 	}
@@ -125,14 +125,14 @@ public class StructureBlockScreen extends Screen {
 		}));
 		this.buttonMirror = this.addButton(new ButtonWidget(this.width / 2 - 20, 185, 40, 20, "MIRROR", buttonWidget -> {
 			switch (this.structureBlock.getMirror()) {
-				case NONE:
-					this.structureBlock.setMirror(BlockMirror.LEFT_RIGHT);
+				case field_11302:
+					this.structureBlock.setMirror(BlockMirror.field_11300);
 					break;
-				case LEFT_RIGHT:
-					this.structureBlock.setMirror(BlockMirror.FRONT_BACK);
+				case field_11300:
+					this.structureBlock.setMirror(BlockMirror.field_11301);
 					break;
-				case FRONT_BACK:
-					this.structureBlock.setMirror(BlockMirror.NONE);
+				case field_11301:
+					this.structureBlock.setMirror(BlockMirror.field_11302);
 			}
 
 			this.updateMirrorButton();
@@ -146,19 +146,19 @@ public class StructureBlockScreen extends Screen {
 			this.updateShowBoundingBoxButton();
 		}));
 		this.buttonRotate0 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, "0", buttonWidget -> {
-			this.structureBlock.setRotation(BlockRotation.ROT_0);
+			this.structureBlock.setRotation(BlockRotation.field_11467);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate90 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 20, 185, 40, 20, "90", buttonWidget -> {
-			this.structureBlock.setRotation(BlockRotation.ROT_90);
+			this.structureBlock.setRotation(BlockRotation.field_11463);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate180 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 20, 185, 40, 20, "180", buttonWidget -> {
-			this.structureBlock.setRotation(BlockRotation.ROT_180);
+			this.structureBlock.setRotation(BlockRotation.field_11464);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate270 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 40 + 1 + 20, 185, 40, 20, "270", buttonWidget -> {
-			this.structureBlock.setRotation(BlockRotation.ROT_270);
+			this.structureBlock.setRotation(BlockRotation.field_11465);
 			this.updateRotationButton();
 		}));
 		this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name")) {
@@ -283,13 +283,13 @@ public class StructureBlockScreen extends Screen {
 	private void updateMirrorButton() {
 		BlockMirror blockMirror = this.structureBlock.getMirror();
 		switch (blockMirror) {
-			case NONE:
+			case field_11302:
 				this.buttonMirror.setMessage("|");
 				break;
-			case LEFT_RIGHT:
+			case field_11300:
 				this.buttonMirror.setMessage("< >");
 				break;
-			case FRONT_BACK:
+			case field_11301:
 				this.buttonMirror.setMessage("^ v");
 		}
 	}
@@ -300,16 +300,16 @@ public class StructureBlockScreen extends Screen {
 		this.buttonRotate180.active = true;
 		this.buttonRotate270.active = true;
 		switch (this.structureBlock.getRotation()) {
-			case ROT_0:
+			case field_11467:
 				this.buttonRotate0.active = false;
 				break;
-			case ROT_180:
+			case field_11464:
 				this.buttonRotate180.active = false;
 				break;
-			case ROT_270:
+			case field_11465:
 				this.buttonRotate270.active = false;
 				break;
-			case ROT_90:
+			case field_11463:
 				this.buttonRotate90.active = false;
 		}
 	}
@@ -374,7 +374,7 @@ public class StructureBlockScreen extends Screen {
 				this.inputMetadata.setVisible(true);
 		}
 
-		this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString()));
+		this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().toSnakeCase()));
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -495,7 +495,7 @@ public class StructureBlockScreen extends Screen {
 			this.inputMetadata.render(i, j, f);
 		}
 
-		String string = "structure_block.mode_info." + structureBlockMode.asString();
+		String string = "structure_block.mode_info." + structureBlockMode.toSnakeCase();
 		this.drawString(this.font, I18n.translate(string), this.width / 2 - 153, 174, 10526880);
 		super.render(i, j, f);
 	}

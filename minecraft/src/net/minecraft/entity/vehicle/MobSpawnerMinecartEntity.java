@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void method_8273(int i) {
+		public void sendStatus(int i) {
 			MobSpawnerMinecartEntity.this.world.sendEntityStatus(MobSpawnerMinecartEntity.this, (byte)i);
 		}
 
@@ -33,7 +33,7 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public MobSpawnerMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.SPAWNER_MINECART, world, d, e, f);
+		super(EntityType.field_6142, world, d, e, f);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean method_5833() {
+	public boolean entityDataRequiresOperator() {
 		return true;
 	}
 }

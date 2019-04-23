@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,17 +32,17 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return blockState.get(TYPE) != SlabType.field_12682;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(TYPE, WATERLOGGED);
+		builder.add(TYPE, WATERLOGGED);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		SlabType slabType = blockState.get(TYPE);
 		switch (slabType) {
 			case field_12682:
@@ -65,7 +65,7 @@ public class SlabBlock extends Block implements Waterloggable {
 			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
 			BlockState blockState2 = this.getDefaultState().with(TYPE, SlabType.field_12681).with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 			Direction direction = itemPlacementContext.getFacing();
-			return direction != Direction.DOWN && (direction == Direction.UP || !(itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5))
+			return direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5))
 				? blockState2
 				: blockState2.with(TYPE, SlabType.field_12679);
 		}
@@ -75,14 +75,14 @@ public class SlabBlock extends Block implements Waterloggable {
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		ItemStack itemStack = itemPlacementContext.getItemStack();
 		SlabType slabType = blockState.get(TYPE);
-		if (slabType == SlabType.field_12682 || itemStack.getItem() != this.getItem()) {
+		if (slabType == SlabType.field_12682 || itemStack.getItem() != this.asItem()) {
 			return false;
-		} else if (itemPlacementContext.method_7717()) {
+		} else if (itemPlacementContext.canReplaceHitBlock()) {
 			boolean bl = itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
 			Direction direction = itemPlacementContext.getFacing();
 			return slabType == SlabType.field_12681
-				? direction == Direction.UP || bl && direction.getAxis().isHorizontal()
-				: direction == Direction.DOWN || !bl && direction.getAxis().isHorizontal();
+				? direction == Direction.field_11036 || bl && direction.getAxis().isHorizontal()
+				: direction == Direction.field_11033 || !bl && direction.getAxis().isHorizontal();
 		} else {
 			return true;
 		}

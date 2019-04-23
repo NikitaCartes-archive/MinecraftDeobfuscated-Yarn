@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ItemStackParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -19,18 +19,18 @@ import net.minecraft.world.World;
 
 public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	private final Block targetBlock;
-	private final MobEntity owner;
+	private final MobEntity stepAndDestroyMob;
 	private int counter;
 
 	public StepAndDestroyBlockGoal(Block block, MobEntityWithAi mobEntityWithAi, double d, int i) {
 		super(mobEntityWithAi, d, 24, i);
 		this.targetBlock = block;
-		this.owner = mobEntityWithAi;
+		this.stepAndDestroyMob = mobEntityWithAi;
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.owner.world.getGameRules().getBoolean("mobGriefing")) {
+		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean("mobGriefing")) {
 			return false;
 		} else if (this.cooldown > 0) {
 			this.cooldown--;
@@ -39,13 +39,13 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			this.cooldown = 20;
 			return true;
 		} else {
-			this.cooldown = this.getInterval(this.owner);
+			this.cooldown = this.getInterval(this.mob);
 			return false;
 		}
 	}
 
 	private boolean hasAvailableTarget() {
-		return this.targetPos != null && this.owner.world.isBlockLoaded(this.targetPos) && this.isTargetPos(this.owner.world, this.targetPos)
+		return this.targetPos != null && this.mob.world.isBlockLoaded(this.targetPos) && this.isTargetPos(this.mob.world, this.targetPos)
 			? true
 			: this.findTargetPos();
 	}
@@ -53,7 +53,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	@Override
 	public void stop() {
 		super.stop();
-		this.owner.fallDistance = 1.0F;
+		this.stepAndDestroyMob.fallDistance = 1.0F;
 	}
 
 	@Override
@@ -71,19 +71,19 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	@Override
 	public void tick() {
 		super.tick();
-		World world = this.owner.world;
-		BlockPos blockPos = new BlockPos(this.owner);
+		World world = this.stepAndDestroyMob.world;
+		BlockPos blockPos = new BlockPos(this.stepAndDestroyMob);
 		BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
-		Random random = this.owner.getRand();
+		Random random = this.stepAndDestroyMob.getRand();
 		if (this.hasReached() && blockPos2 != null) {
 			if (this.counter > 0) {
-				Vec3d vec3d = this.owner.getVelocity();
-				this.owner.setVelocity(vec3d.x, 0.3, vec3d.z);
+				Vec3d vec3d = this.stepAndDestroyMob.getVelocity();
+				this.stepAndDestroyMob.setVelocity(vec3d.x, 0.3, vec3d.z);
 				if (!world.isClient) {
 					double d = 0.08;
 					((ServerWorld)world)
 						.spawnParticles(
-							new ItemStackParticleParameters(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
+							new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.7,
 							(double)blockPos2.getZ() + 0.5,
@@ -97,8 +97,8 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			}
 
 			if (this.counter % 2 == 0) {
-				Vec3d vec3d = this.owner.getVelocity();
-				this.owner.setVelocity(vec3d.x, -0.3, vec3d.z);
+				Vec3d vec3d = this.stepAndDestroyMob.getVelocity();
+				this.stepAndDestroyMob.setVelocity(vec3d.x, -0.3, vec3d.z);
 				if (this.counter % 6 == 0) {
 					this.tickStepping(world, this.targetPos);
 				}

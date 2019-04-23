@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
@@ -26,29 +26,29 @@ public class WallTorchBlock extends TorchBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.NORTH,
+			Direction.field_11043,
 			Block.createCuboidShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
-			Direction.SOUTH,
+			Direction.field_11035,
 			Block.createCuboidShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
-			Direction.WEST,
+			Direction.field_11039,
 			Block.createCuboidShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
-			Direction.EAST,
+			Direction.field_11034,
 			Block.createCuboidShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
 		)
 	);
 
 	protected WallTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
 	public String getTranslationKey() {
-		return this.getItem().getTranslationKey();
+		return this.asItem().getTranslationKey();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return getBoundingShape(blockState);
 	}
 
@@ -89,7 +89,7 @@ public class WallTorchBlock extends TorchBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.AIR.getDefaultState() : blockState;
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -118,6 +118,6 @@ public class WallTorchBlock extends TorchBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 }

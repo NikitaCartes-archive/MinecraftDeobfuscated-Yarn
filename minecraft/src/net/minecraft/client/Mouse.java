@@ -96,12 +96,12 @@ public class Mouse {
 					this.rightButtonClicked = bl;
 				}
 
-				KeyBinding.setKeyPressed(InputUtil.Type.field_1672.createFromCode(m), bl);
+				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(m), bl);
 				if (bl) {
 					if (this.client.player.isSpectator() && m == 2) {
 						this.client.inGameHud.getSpectatorWidget().method_1983();
 					} else {
-						KeyBinding.onKeyPressed(InputUtil.Type.field_1672.createFromCode(m));
+						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(m));
 					}
 				}
 			}
@@ -136,7 +136,7 @@ public class Mouse {
 							this.client.player.abilities.setFlySpeed(j);
 						}
 					} else {
-						this.client.player.inventory.method_7373((double)i);
+						this.client.player.inventory.scrollInHotbar((double)i);
 					}
 				}
 			}

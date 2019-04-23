@@ -11,9 +11,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
@@ -22,7 +22,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		return new MessageArgumentType();
 	}
 
-	public static TextComponent getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Component getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<MessageArgumentType.MessageFormat>getArgument(string, MessageArgumentType.MessageFormat.class)
 			.format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
 	}
@@ -45,31 +45,31 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			this.selectors = messageSelectors;
 		}
 
-		public TextComponent format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+		public Component format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && bl) {
-				TextComponent textComponent = new StringTextComponent(this.contents.substring(0, this.selectors[0].getStart()));
+				Component component = new TextComponent(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
-					TextComponent textComponent2 = messageSelector.format(serverCommandSource);
+					Component component2 = messageSelector.format(serverCommandSource);
 					if (i < messageSelector.getStart()) {
-						textComponent.append(this.contents.substring(i, messageSelector.getStart()));
+						component.append(this.contents.substring(i, messageSelector.getStart()));
 					}
 
-					if (textComponent2 != null) {
-						textComponent.append(textComponent2);
+					if (component2 != null) {
+						component.append(component2);
 					}
 
 					i = messageSelector.getEnd();
 				}
 
 				if (i < this.contents.length()) {
-					textComponent.append(this.contents.substring(i, this.contents.length()));
+					component.append(this.contents.substring(i, this.contents.length()));
 				}
 
-				return textComponent;
+				return component;
 			} else {
-				return new StringTextComponent(this.contents);
+				return new TextComponent(this.contents);
 			}
 		}
 
@@ -137,7 +137,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		}
 
 		@Nullable
-		public TextComponent format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+		public Component format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 			return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
 		}
 	}

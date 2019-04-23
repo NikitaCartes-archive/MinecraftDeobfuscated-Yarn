@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class SilkTouchEnchantment extends Enchantment {
 	protected SilkTouchEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.BREAKER, equipmentSlots);
+		super(weight, EnchantmentTarget.DIGGER, equipmentSlots);
 	}
 
 	@Override

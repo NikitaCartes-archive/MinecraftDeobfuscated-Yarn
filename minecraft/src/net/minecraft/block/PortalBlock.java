@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -37,7 +37,7 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction.Axis)blockState.get(AXIS)) {
 			case Z:
 				return Z_SHAPE;
@@ -54,8 +54,8 @@ public class PortalBlock extends Block {
 				blockPos = blockPos.down();
 			}
 
-			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.ZOMBIE_PIGMAN)) {
-				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
+			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
+				Entity entity = EntityType.field_6050.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}
@@ -63,10 +63,10 @@ public class PortalBlock extends Block {
 		}
 	}
 
-	public boolean method_10352(IWorld iWorld, BlockPos blockPos) {
-		PortalBlock.class_2424 lv = this.method_10351(iWorld, blockPos);
-		if (lv != null) {
-			lv.method_10363();
+	public boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
+		PortalBlock.AreaHelper areaHelper = this.createAreaHelper(iWorld, blockPos);
+		if (areaHelper != null) {
+			areaHelper.createPortal();
 			return true;
 		} else {
 			return false;
@@ -74,13 +74,13 @@ public class PortalBlock extends Block {
 	}
 
 	@Nullable
-	public PortalBlock.class_2424 method_10351(IWorld iWorld, BlockPos blockPos) {
-		PortalBlock.class_2424 lv = new PortalBlock.class_2424(iWorld, blockPos, Direction.Axis.X);
-		if (lv.method_10360() && lv.field_11313 == 0) {
-			return lv;
+	public PortalBlock.AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
+		PortalBlock.AreaHelper areaHelper = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
+		if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
+			return areaHelper;
 		} else {
-			PortalBlock.class_2424 lv2 = new PortalBlock.class_2424(iWorld, blockPos, Direction.Axis.Z);
-			return lv2.method_10360() && lv2.field_11313 == 0 ? lv2 : null;
+			PortalBlock.AreaHelper areaHelper2 = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.Z);
+			return areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0 ? areaHelper2 : null;
 		}
 	}
 
@@ -91,14 +91,14 @@ public class PortalBlock extends Block {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = blockState.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && blockState2.getBlock() != this && !new PortalBlock.class_2424(iWorld, blockPos, axis2).method_10362()
-			? Blocks.AIR.getDefaultState()
+		return !bl && blockState2.getBlock() != this && !new PortalBlock.AreaHelper(iWorld, blockPos, axis2).wasAlreadyValid()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 
 	@Override
@@ -153,8 +153,8 @@ public class PortalBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_270:
-			case ROT_90:
+			case field_11465:
+			case field_11463:
 				switch ((Direction.Axis)blockState.get(AXIS)) {
 					case Z:
 						return blockState.with(AXIS, Direction.Axis.X);
@@ -170,38 +170,38 @@ public class PortalBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AXIS);
+		builder.add(AXIS);
 	}
 
-	public BlockPattern.Result method_10350(IWorld iWorld, BlockPos blockPos) {
+	public BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
 		Direction.Axis axis = Direction.Axis.Z;
-		PortalBlock.class_2424 lv = new PortalBlock.class_2424(iWorld, blockPos, Direction.Axis.X);
+		PortalBlock.AreaHelper areaHelper = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
 		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(iWorld, true);
-		if (!lv.method_10360()) {
+		if (!areaHelper.isValid()) {
 			axis = Direction.Axis.X;
-			lv = new PortalBlock.class_2424(iWorld, blockPos, Direction.Axis.Z);
+			areaHelper = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.Z);
 		}
 
-		if (!lv.method_10360()) {
-			return new BlockPattern.Result(blockPos, Direction.NORTH, Direction.UP, loadingCache, 1, 1, 1);
+		if (!areaHelper.isValid()) {
+			return new BlockPattern.Result(blockPos, Direction.field_11043, Direction.field_11036, loadingCache, 1, 1, 1);
 		} else {
 			int[] is = new int[Direction.AxisDirection.values().length];
-			Direction direction = lv.field_11314.rotateYCounterclockwise();
-			BlockPos blockPos2 = lv.field_11316.up(lv.method_10355() - 1);
+			Direction direction = areaHelper.negativeDir.rotateYCounterclockwise();
+			BlockPos blockPos2 = areaHelper.lowerCorner.up(areaHelper.getHeight() - 1);
 
 			for (Direction.AxisDirection axisDirection : Direction.AxisDirection.values()) {
 				BlockPattern.Result result = new BlockPattern.Result(
-					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.offset(lv.field_11314, lv.method_10356() - 1),
+					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 					Direction.get(axisDirection, axis),
-					Direction.UP,
+					Direction.field_11036,
 					loadingCache,
-					lv.method_10356(),
-					lv.method_10355(),
+					areaHelper.getWidth(),
+					areaHelper.getHeight(),
 					1
 				);
 
-				for (int i = 0; i < lv.method_10356(); i++) {
-					for (int j = 0; j < lv.method_10355(); j++) {
+				for (int i = 0; i < areaHelper.getWidth(); i++) {
+					for (int j = 0; j < areaHelper.getHeight(); j++) {
 						CachedBlockPosition cachedBlockPosition = result.translate(i, j, 1);
 						if (!cachedBlockPosition.getBlockState().isAir()) {
 							is[axisDirection.ordinal()]++;
@@ -219,103 +219,103 @@ public class PortalBlock extends Block {
 			}
 
 			return new BlockPattern.Result(
-				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.offset(lv.field_11314, lv.method_10356() - 1),
+				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 				Direction.get(axisDirection2, axis),
-				Direction.UP,
+				Direction.field_11036,
 				loadingCache,
-				lv.method_10356(),
-				lv.method_10355(),
+				areaHelper.getWidth(),
+				areaHelper.getHeight(),
 				1
 			);
 		}
 	}
 
-	public static class class_2424 {
-		private final IWorld field_11318;
-		private final Direction.Axis field_11317;
-		private final Direction field_11314;
-		private final Direction field_11315;
-		private int field_11313;
+	public static class AreaHelper {
+		private final IWorld world;
+		private final Direction.Axis axis;
+		private final Direction negativeDir;
+		private final Direction positiveDir;
+		private int foundPortalBlocks;
 		@Nullable
-		private BlockPos field_11316;
-		private int field_11312;
-		private int field_11311;
+		private BlockPos lowerCorner;
+		private int height;
+		private int width;
 
-		public class_2424(IWorld iWorld, BlockPos blockPos, Direction.Axis axis) {
-			this.field_11318 = iWorld;
-			this.field_11317 = axis;
+		public AreaHelper(IWorld iWorld, BlockPos blockPos, Direction.Axis axis) {
+			this.world = iWorld;
+			this.axis = axis;
 			if (axis == Direction.Axis.X) {
-				this.field_11315 = Direction.EAST;
-				this.field_11314 = Direction.WEST;
+				this.positiveDir = Direction.field_11034;
+				this.negativeDir = Direction.field_11039;
 			} else {
-				this.field_11315 = Direction.NORTH;
-				this.field_11314 = Direction.SOUTH;
+				this.positiveDir = Direction.field_11043;
+				this.negativeDir = Direction.field_11035;
 			}
 
 			BlockPos blockPos2 = blockPos;
 
-			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.method_10359(iWorld.getBlockState(blockPos.down()))) {
+			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.down()))) {
 				blockPos = blockPos.down();
 			}
 
-			int i = this.method_10354(blockPos, this.field_11315) - 1;
+			int i = this.distanceToPortalEdge(blockPos, this.positiveDir) - 1;
 			if (i >= 0) {
-				this.field_11316 = blockPos.offset(this.field_11315, i);
-				this.field_11311 = this.method_10354(this.field_11316, this.field_11314);
-				if (this.field_11311 < 2 || this.field_11311 > 21) {
-					this.field_11316 = null;
-					this.field_11311 = 0;
+				this.lowerCorner = blockPos.offset(this.positiveDir, i);
+				this.width = this.distanceToPortalEdge(this.lowerCorner, this.negativeDir);
+				if (this.width < 2 || this.width > 21) {
+					this.lowerCorner = null;
+					this.width = 0;
 				}
 			}
 
-			if (this.field_11316 != null) {
-				this.field_11312 = this.method_10353();
+			if (this.lowerCorner != null) {
+				this.height = this.findHeight();
 			}
 		}
 
-		protected int method_10354(BlockPos blockPos, Direction direction) {
+		protected int distanceToPortalEdge(BlockPos blockPos, Direction direction) {
 			int i;
 			for (i = 0; i < 22; i++) {
 				BlockPos blockPos2 = blockPos.offset(direction, i);
-				if (!this.method_10359(this.field_11318.getBlockState(blockPos2)) || this.field_11318.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10540) {
+				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10540) {
 					break;
 				}
 			}
 
-			Block block = this.field_11318.getBlockState(blockPos.offset(direction, i)).getBlock();
+			Block block = this.world.getBlockState(blockPos.offset(direction, i)).getBlock();
 			return block == Blocks.field_10540 ? i : 0;
 		}
 
-		public int method_10355() {
-			return this.field_11312;
+		public int getHeight() {
+			return this.height;
 		}
 
-		public int method_10356() {
-			return this.field_11311;
+		public int getWidth() {
+			return this.width;
 		}
 
-		protected int method_10353() {
+		protected int findHeight() {
 			label56:
-			for (this.field_11312 = 0; this.field_11312 < 21; this.field_11312++) {
-				for (int i = 0; i < this.field_11311; i++) {
-					BlockPos blockPos = this.field_11316.offset(this.field_11314, i).up(this.field_11312);
-					BlockState blockState = this.field_11318.getBlockState(blockPos);
-					if (!this.method_10359(blockState)) {
+			for (this.height = 0; this.height < 21; this.height++) {
+				for (int i = 0; i < this.width; i++) {
+					BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i).up(this.height);
+					BlockState blockState = this.world.getBlockState(blockPos);
+					if (!this.validStateInsidePortal(blockState)) {
 						break label56;
 					}
 
 					Block block = blockState.getBlock();
 					if (block == Blocks.field_10316) {
-						this.field_11313++;
+						this.foundPortalBlocks++;
 					}
 
 					if (i == 0) {
-						block = this.field_11318.getBlockState(blockPos.offset(this.field_11315)).getBlock();
+						block = this.world.getBlockState(blockPos.offset(this.positiveDir)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
-					} else if (i == this.field_11311 - 1) {
-						block = this.field_11318.getBlockState(blockPos.offset(this.field_11314)).getBlock();
+					} else if (i == this.width - 1) {
+						block = this.world.getBlockState(blockPos.offset(this.negativeDir)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
@@ -323,48 +323,48 @@ public class PortalBlock extends Block {
 				}
 			}
 
-			for (int i = 0; i < this.field_11311; i++) {
-				if (this.field_11318.getBlockState(this.field_11316.offset(this.field_11314, i).up(this.field_11312)).getBlock() != Blocks.field_10540) {
-					this.field_11312 = 0;
+			for (int i = 0; i < this.width; i++) {
+				if (this.world.getBlockState(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.field_10540) {
+					this.height = 0;
 					break;
 				}
 			}
 
-			if (this.field_11312 <= 21 && this.field_11312 >= 3) {
-				return this.field_11312;
+			if (this.height <= 21 && this.height >= 3) {
+				return this.height;
 			} else {
-				this.field_11316 = null;
-				this.field_11311 = 0;
-				this.field_11312 = 0;
+				this.lowerCorner = null;
+				this.width = 0;
+				this.height = 0;
 				return 0;
 			}
 		}
 
-		protected boolean method_10359(BlockState blockState) {
+		protected boolean validStateInsidePortal(BlockState blockState) {
 			Block block = blockState.getBlock();
 			return blockState.isAir() || block == Blocks.field_10036 || block == Blocks.field_10316;
 		}
 
-		public boolean method_10360() {
-			return this.field_11316 != null && this.field_11311 >= 2 && this.field_11311 <= 21 && this.field_11312 >= 3 && this.field_11312 <= 21;
+		public boolean isValid() {
+			return this.lowerCorner != null && this.width >= 2 && this.width <= 21 && this.height >= 3 && this.height <= 21;
 		}
 
-		public void method_10363() {
-			for (int i = 0; i < this.field_11311; i++) {
-				BlockPos blockPos = this.field_11316.offset(this.field_11314, i);
+		public void createPortal() {
+			for (int i = 0; i < this.width; i++) {
+				BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i);
 
-				for (int j = 0; j < this.field_11312; j++) {
-					this.field_11318.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.AXIS, this.field_11317), 18);
+				for (int j = 0; j < this.height; j++) {
+					this.world.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.AXIS, this.axis), 18);
 				}
 			}
 		}
 
-		private boolean method_10361() {
-			return this.field_11313 >= this.field_11311 * this.field_11312;
+		private boolean portalAlreadyExisted() {
+			return this.foundPortalBlocks >= this.width * this.height;
 		}
 
-		public boolean method_10362() {
-			return this.method_10360() && this.method_10361();
+		public boolean wasAlreadyValid() {
+			return this.isValid() && this.portalAlreadyExisted();
 		}
 	}
 }

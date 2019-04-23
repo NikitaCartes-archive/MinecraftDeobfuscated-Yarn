@@ -12,8 +12,8 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -43,13 +43,13 @@ public class DispenserBlock extends BlockWithEntity {
 		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
 	);
 
-	public static void registerBehavior(ItemProvider itemProvider, DispenserBehavior dispenserBehavior) {
-		BEHAVIORS.put(itemProvider.getItem(), dispenserBehavior);
+	public static void registerBehavior(ItemConvertible itemConvertible, DispenserBehavior dispenserBehavior) {
+		BEHAVIORS.put(itemConvertible.asItem(), dispenserBehavior);
 	}
 
 	protected DispenserBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(TRIGGERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -182,6 +182,6 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, TRIGGERED);
+		builder.add(FACING, TRIGGERED);
 	}
 }

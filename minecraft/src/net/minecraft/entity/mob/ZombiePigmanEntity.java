@@ -10,7 +10,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
+import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -30,13 +30,13 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ZombiePigmanEntity extends ZombieEntity {
-	private static final UUID field_7311 = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
-	private static final EntityAttributeModifier field_7307 = new EntityAttributeModifier(
-			field_7311, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.field_6328
+	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
+	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
+			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.field_6328
 		)
 		.setSerialize(false);
 	private int anger;
-	private int field_7308;
+	private int angrySoundDelay;
 	private UUID angerTarget;
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
@@ -54,7 +54,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected void initCustomGoals() {
-		this.goalSelector.add(2, new ZombieRaiseArmsGoal(this, 1.0, false));
+		this.goalSelector.add(2, new ZombieAttackGoal(this, 1.0, false));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new ZombiePigmanEntity.AvoidZombiesGoal(this));
 		this.targetSelector.add(2, new ZombiePigmanEntity.FollowPlayerIfAngryGoal(this));
@@ -77,16 +77,16 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	protected void mobTick() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (this.isAngry()) {
-			if (!this.isChild() && !entityAttributeInstance.hasModifier(field_7307)) {
-				entityAttributeInstance.addModifier(field_7307);
+			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
+				entityAttributeInstance.addModifier(ATTACKING_SPEED_BOOST);
 			}
 
 			this.anger--;
-		} else if (entityAttributeInstance.hasModifier(field_7307)) {
-			entityAttributeInstance.removeModifier(field_7307);
+		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
 
-		if (this.field_7308 > 0 && --this.field_7308 == 0) {
+		if (this.angrySoundDelay > 0 && --this.angrySoundDelay == 0) {
 			this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
 
@@ -102,7 +102,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
+		return iWorld.getDifficulty() != Difficulty.field_5801;
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	private void copyEntityData(Entity entity) {
 		this.anger = 400 + this.random.nextInt(400);
-		this.field_7308 = this.random.nextInt(40);
+		this.angrySoundDelay = this.random.nextInt(40);
 		if (entity instanceof LivingEntity) {
 			this.setAttacker((LivingEntity)entity);
 		}
@@ -185,7 +185,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 		@Override
 		public boolean canStart() {
-			return ((ZombiePigmanEntity)this.entity).isAngry() && super.canStart();
+			return ((ZombiePigmanEntity)this.mob).isAngry() && super.canStart();
 		}
 	}
 }

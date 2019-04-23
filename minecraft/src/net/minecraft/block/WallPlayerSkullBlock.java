@@ -10,7 +10,7 @@ import net.minecraft.world.loot.context.LootContext;
 
 public class WallPlayerSkullBlock extends WallSkullBlock {
 	protected WallPlayerSkullBlock(Block.Settings settings) {
-		super(SkullBlock.Type.PLAYER, settings);
+		super(SkullBlock.Type.field_11510, settings);
 	}
 
 	@Override

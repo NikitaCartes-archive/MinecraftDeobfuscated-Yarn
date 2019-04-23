@@ -503,7 +503,7 @@ public class MathHelper {
 		return lerp(f, lerp2(d, e, g, h, i, j), lerp2(d, e, k, l, m, n));
 	}
 
-	public static double ease(double d) {
+	public static double perlinFade(double d) {
 		return d * d * d * (d * (d * 6.0 - 15.0) + 10.0);
 	}
 
@@ -516,7 +516,7 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float method_17821(float f, float g, float h) {
+	public static float lerpAngleDegrees(float f, float g, float h) {
 		return g + f * wrapDegrees(h - g);
 	}
 

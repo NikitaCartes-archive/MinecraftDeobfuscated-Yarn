@@ -18,8 +18,8 @@ public class PillarBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_270:
-			case ROT_90:
+			case field_11465:
+			case field_11463:
 				switch ((Direction.Axis)blockState.get(AXIS)) {
 					case X:
 						return blockState.with(AXIS, Direction.Axis.Z);
@@ -35,7 +35,7 @@ public class PillarBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AXIS);
+		builder.add(AXIS);
 	}
 
 	@Override

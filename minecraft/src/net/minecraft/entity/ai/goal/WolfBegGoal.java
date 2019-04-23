@@ -10,7 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class WolfBegGoal extends Goal {
-	private final WolfEntity owner;
+	private final WolfEntity wolf;
 	private PlayerEntity begFrom;
 	private final World world;
 	private final float begDistance;
@@ -18,7 +18,7 @@ public class WolfBegGoal extends Goal {
 	private final TargetPredicate validPlayerPredicate;
 
 	public WolfBegGoal(WolfEntity wolfEntity, float f) {
-		this.owner = wolfEntity;
+		this.wolf = wolfEntity;
 		this.world = wolfEntity.world;
 		this.begDistance = f;
 		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
@@ -27,7 +27,7 @@ public class WolfBegGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		this.begFrom = this.world.getClosestPlayer(this.validPlayerPredicate, this.owner);
+		this.begFrom = this.world.getClosestPlayer(this.validPlayerPredicate, this.wolf);
 		return this.begFrom == null ? false : this.isAttractive(this.begFrom);
 	}
 
@@ -36,40 +36,38 @@ public class WolfBegGoal extends Goal {
 		if (!this.begFrom.isAlive()) {
 			return false;
 		} else {
-			return this.owner.squaredDistanceTo(this.begFrom) > (double)(this.begDistance * this.begDistance)
-				? false
-				: this.timer > 0 && this.isAttractive(this.begFrom);
+			return this.wolf.squaredDistanceTo(this.begFrom) > (double)(this.begDistance * this.begDistance) ? false : this.timer > 0 && this.isAttractive(this.begFrom);
 		}
 	}
 
 	@Override
 	public void start() {
-		this.owner.setBegging(true);
-		this.timer = 40 + this.owner.getRand().nextInt(40);
+		this.wolf.setBegging(true);
+		this.timer = 40 + this.wolf.getRand().nextInt(40);
 	}
 
 	@Override
 	public void stop() {
-		this.owner.setBegging(false);
+		this.wolf.setBegging(false);
 		this.begFrom = null;
 	}
 
 	@Override
 	public void tick() {
-		this.owner
+		this.wolf
 			.getLookControl()
-			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getStandingEyeHeight(), this.begFrom.z, 10.0F, (float)this.owner.getLookPitchSpeed());
+			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getStandingEyeHeight(), this.begFrom.z, 10.0F, (float)this.wolf.getLookPitchSpeed());
 		this.timer--;
 	}
 
 	private boolean isAttractive(PlayerEntity playerEntity) {
 		for (Hand hand : Hand.values()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (this.owner.isTamed() && itemStack.getItem() == Items.field_8606) {
+			if (this.wolf.isTamed() && itemStack.getItem() == Items.field_8606) {
 				return true;
 			}
 
-			if (this.owner.isBreedingItem(itemStack)) {
+			if (this.wolf.isBreedingItem(itemStack)) {
 				return true;
 			}
 		}

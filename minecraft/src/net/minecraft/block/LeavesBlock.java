@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class LeavesBlock extends Block {
 	public static final IntegerProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
-	protected static boolean translucentLeaves;
+	protected static boolean fancy;
 
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
@@ -93,7 +93,7 @@ public class LeavesBlock extends Block {
 			if (random.nextInt(15) == 1) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState2 = world.getBlockState(blockPos2);
-				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
+				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.field_11036)) {
 					double d = (double)((float)blockPos.getX() + random.nextFloat());
 					double e = (double)blockPos.getY() - 0.05;
 					double f = (double)((float)blockPos.getZ() + random.nextFloat());
@@ -105,7 +105,7 @@ public class LeavesBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	public static void setRenderingMode(boolean bl) {
-		translucentLeaves = bl;
+		fancy = bl;
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return translucentLeaves ? BlockRenderLayer.MIPPED_CUTOUT : BlockRenderLayer.SOLID;
+		return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.field_9178;
 	}
 
 	@Override
@@ -125,12 +125,12 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
+		return entityType == EntityType.field_6081 || entityType == EntityType.field_6104;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(DISTANCE, PERSISTENT);
+		builder.add(DISTANCE, PERSISTENT);
 	}
 
 	@Override

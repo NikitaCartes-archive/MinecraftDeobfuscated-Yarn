@@ -6,7 +6,7 @@ public class ComparatorBlockEntity extends BlockEntity {
 	private int outputSignal;
 
 	public ComparatorBlockEntity() {
-		super(BlockEntityType.COMPARATOR);
+		super(BlockEntityType.field_11908);
 	}
 
 	@Override

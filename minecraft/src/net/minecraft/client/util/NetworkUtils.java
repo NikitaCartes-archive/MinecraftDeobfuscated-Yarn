@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.commons.io.FileUtils;
@@ -44,8 +44,8 @@ public class NetworkUtils {
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
 			if (progressListener != null) {
-				progressListener.method_15413(new TranslatableTextComponent("resourcepack.downloading"));
-				progressListener.method_15414(new TranslatableTextComponent("resourcepack.requesting"));
+				progressListener.method_15413(new TranslatableComponent("resourcepack.downloading"));
+				progressListener.method_15414(new TranslatableComponent("resourcepack.requesting"));
 			}
 
 			try {
@@ -67,7 +67,7 @@ public class NetworkUtils {
 				g = (float)httpURLConnection.getContentLength();
 				int j = httpURLConnection.getContentLength();
 				if (progressListener != null) {
-					progressListener.method_15414(new TranslatableTextComponent("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
+					progressListener.method_15414(new TranslatableComponent("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
 				}
 
 				if (file.exists()) {

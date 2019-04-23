@@ -53,7 +53,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
-		this(EntityType.FALLING_BLOCK, world);
+		this(EntityType.field_6089, world);
 		this.block = blockState;
 		this.field_6033 = true;
 		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
@@ -112,7 +112,7 @@ public class FallingBlockEntity extends Entity {
 				}
 			}
 
-			if (!this.isUnaffectedByGravity()) {
+			if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
@@ -133,7 +133,7 @@ public class FallingBlockEntity extends Entity {
 								this
 							)
 						);
-					if (blockHitResult.getType() != HitResult.Type.NONE && this.world.getFluidState(blockHitResult.getBlockPos()).matches(FluidTags.field_15517)) {
+					if (blockHitResult.getType() != HitResult.Type.field_1333 && this.world.getFluidState(blockHitResult.getBlockPos()).matches(FluidTags.field_15517)) {
 						blockPos = blockHitResult.getBlockPos();
 						bl2 = true;
 					}
@@ -146,7 +146,7 @@ public class FallingBlockEntity extends Entity {
 						this.remove();
 						if (!this.destroyedOnLanding) {
 							if (bl2
-								|| blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
+								|| blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.field_11033, ItemStack.EMPTY, Direction.field_11036))
 									&& this.block.canPlaceAt(this.world, blockPos)) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
@@ -285,7 +285,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public boolean method_5833() {
+	public boolean entityDataRequiresOperator() {
 		return true;
 	}
 

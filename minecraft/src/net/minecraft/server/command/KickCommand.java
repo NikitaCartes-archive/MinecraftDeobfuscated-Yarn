@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class KickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -17,7 +17,7 @@ public class KickCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
 							commandContext -> execute(
-									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableTextComponent("multiplayer.disconnect.kicked")
+									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableComponent("multiplayer.disconnect.kicked")
 								)
 						)
 						.then(
@@ -32,10 +32,10 @@ public class KickCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.disconnect(textComponent);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), textComponent), true);
+			serverPlayerEntity.networkHandler.disconnect(component);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), component), true);
 		}
 
 		return collection.size();

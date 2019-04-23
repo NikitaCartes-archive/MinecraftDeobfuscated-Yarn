@@ -21,12 +21,12 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.loot.LootTables;
@@ -131,7 +131,7 @@ public class OceanRuinGenerator {
 	) {
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
-		BlockPos blockPos2 = Structure.method_15168(new BlockPos(15, 0, 15), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(i, 0, j);
+		BlockPos blockPos2 = Structure.method_15168(new BlockPos(15, 0, 15), BlockMirror.field_11302, blockRotation, BlockPos.ORIGIN).add(i, 0, j);
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.create(i, 0, j, blockPos2.getX(), 0, blockPos2.getZ());
 		BlockPos blockPos3 = new BlockPos(Math.min(i, blockPos2.getX()), 0, Math.min(j, blockPos2.getZ()));
 		List<BlockPos> list2 = getRoomPositions(random, blockPos3.getX(), blockPos3.getZ());
@@ -144,7 +144,7 @@ public class OceanRuinGenerator {
 				int n = blockPos4.getX();
 				int o = blockPos4.getZ();
 				BlockRotation blockRotation2 = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
-				BlockPos blockPos5 = Structure.method_15168(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation2, BlockPos.ORIGIN).add(n, 0, o);
+				BlockPos blockPos5 = Structure.method_15168(new BlockPos(5, 0, 6), BlockMirror.field_11302, blockRotation2, BlockPos.ORIGIN).add(n, 0, o);
 				MutableIntBoundingBox mutableIntBoundingBox2 = MutableIntBoundingBox.create(n, 0, o, blockPos5.getX(), 0, blockPos5.getZ());
 				if (!mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
 					method_14822(structureManager, blockPos4, blockRotation2, list, random, oceanRuinFeatureConfig, false, 0.8F);
@@ -176,10 +176,10 @@ public class OceanRuinGenerator {
 		boolean bl,
 		float f
 	) {
-		if (oceanRuinFeatureConfig.biomeType == OceanRuinFeature.BiomeType.WARM) {
+		if (oceanRuinFeatureConfig.biomeType == OceanRuinFeature.BiomeType.field_14532) {
 			Identifier identifier = bl ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
 			list.add(new OceanRuinGenerator.Piece(structureManager, identifier, blockPos, blockRotation, f, oceanRuinFeatureConfig.biomeType, bl));
-		} else if (oceanRuinFeatureConfig.biomeType == OceanRuinFeature.BiomeType.COLD) {
+		} else if (oceanRuinFeatureConfig.biomeType == OceanRuinFeature.BiomeType.field_14528) {
 			Identifier[] identifiers = bl ? BIG_BRICK_RUINS : BRICK_RUINS;
 			Identifier[] identifiers2 = bl ? BIG_CRACKED_RUINS : CRACKED_RUINS;
 			Identifier[] identifiers3 = bl ? BIG_MOSSY_RUINS : MOSSY_RUINS;
@@ -230,7 +230,7 @@ public class OceanRuinGenerator {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirrored(BlockMirror.field_11302)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
@@ -258,13 +258,13 @@ public class OceanRuinGenerator {
 					((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.field_300 : LootTables.field_397, random.nextLong());
 				}
 			} else if ("drowned".equals(string)) {
-				DrownedEntity drownedEntity = EntityType.DROWNED.create(iWorld.getWorld());
+				DrownedEntity drownedEntity = EntityType.field_6123.create(iWorld.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				drownedEntity.initialize(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(drownedEntity);
 				if (blockPos.getY() > iWorld.getSeaLevel()) {
-					iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
+					iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 				} else {
 					iWorld.setBlockState(blockPos, Blocks.field_10382.getDefaultState(), 2);
 				}
@@ -280,7 +280,7 @@ public class OceanRuinGenerator {
 			int i = iWorld.getTop(Heightmap.Type.field_13195, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = Structure.method_15168(
-					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
+					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.field_11302, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, iWorld, blockPos), this.pos.getZ());

@@ -18,11 +18,11 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 
 	public VexEntityModel(float f) {
 		super(f, 0.0F, 64, 64);
-		this.legLeft.visible = false;
+		this.leftLeg.visible = false;
 		this.headwear.visible = false;
-		this.legRight = new Cuboid(this, 32, 0);
-		this.legRight.addBox(-1.0F, -1.0F, -2.0F, 6, 10, 4, 0.0F);
-		this.legRight.setRotationPoint(-1.9F, 12.0F, 0.0F);
+		this.rightLeg = new Cuboid(this, 32, 0);
+		this.rightLeg.addBox(-1.0F, -1.0F, -2.0F, 6, 10, 4, 0.0F);
+		this.rightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		this.field_3602 = new Cuboid(this, 0, 32);
 		this.field_3602.addBox(-20.0F, 0.0F, 0.0F, 20, 12, 1);
 		this.field_3601 = new Cuboid(this, 0, 32);
@@ -40,13 +40,13 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		super.method_17087(vexEntity, f, g, h, i, j, k);
 		if (vexEntity.isCharging()) {
 			if (vexEntity.getMainHand() == AbsoluteHand.field_6183) {
-				this.armRight.pitch = 3.7699115F;
+				this.rightArm.pitch = 3.7699115F;
 			} else {
-				this.armLeft.pitch = 3.7699115F;
+				this.leftArm.pitch = 3.7699115F;
 			}
 		}
 
-		this.legRight.pitch += (float) (Math.PI / 5);
+		this.rightLeg.pitch += (float) (Math.PI / 5);
 		this.field_3602.rotationPointZ = 2.0F;
 		this.field_3601.rotationPointZ = 2.0F;
 		this.field_3602.rotationPointY = 1.0F;

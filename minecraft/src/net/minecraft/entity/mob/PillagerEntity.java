@@ -22,7 +22,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.CrossbowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -61,7 +61,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class PillagerEntity extends IllagerEntity implements CrossbowUser, RangedAttacker {
+public class PillagerEntity extends IllagerEntity implements CrossbowUser, RangedAttackMob {
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BasicInventory inventory = new BasicInventory(5);
 
@@ -164,7 +164,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getLightLevel(LightType.BLOCK, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
+		return iWorld.getLightLevel(LightType.field_9282, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
@@ -191,7 +191,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 			EnchantmentHelper.set(map, itemStack);
 		}
 
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
+		this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
 	}
 
 	@Override
@@ -307,15 +307,15 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		if (bl2) {
 			ItemStack itemStack = new ItemStack(Items.field_8399);
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
+			if (i > raid.getMaxWaves(Difficulty.field_5802)) {
 				map.put(Enchantments.field_9098, 2);
-			} else if (i > raid.getMaxWaves(Difficulty.EASY)) {
+			} else if (i > raid.getMaxWaves(Difficulty.field_5805)) {
 				map.put(Enchantments.field_9098, 1);
 			}
 
 			map.put(Enchantments.field_9108, 1);
 			EnchantmentHelper.set(map, itemStack);
-			this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
+			this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
 		}
 	}
 

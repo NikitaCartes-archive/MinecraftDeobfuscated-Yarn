@@ -4,10 +4,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public class LightingProvider implements LightingView {
@@ -77,7 +77,7 @@ public class LightingProvider implements LightingView {
 	}
 
 	public ChunkLightingView get(LightType lightType) {
-		if (lightType == LightType.BLOCK) {
+		if (lightType == LightType.field_9282) {
 			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.blockLightProvider);
 		} else {
 			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.skyLightProvider);
@@ -85,20 +85,20 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_15564(LightType lightType, BlockPos blockPos) {
-		if (lightType == LightType.BLOCK) {
+	public String method_15564(LightType lightType, ChunkSectionPos chunkSectionPos) {
+		if (lightType == LightType.field_9282) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.method_15520(ChunkSectionPos.toChunkLong(blockPos.asLong()));
+				return this.blockLightProvider.method_15520(chunkSectionPos.asLong());
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.method_15520(ChunkSectionPos.toChunkLong(blockPos.asLong()));
+			return this.skyLightProvider.method_15520(chunkSectionPos.asLong());
 		}
 
 		return "n/a";
 	}
 
 	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
-		if (lightType == LightType.BLOCK) {
+		if (lightType == LightType.field_9282) {
 			if (this.blockLightProvider != null) {
 				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
 			}

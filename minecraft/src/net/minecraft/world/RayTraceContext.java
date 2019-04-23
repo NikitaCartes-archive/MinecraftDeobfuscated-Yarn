@@ -3,7 +3,7 @@ package net.minecraft.world;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -15,14 +15,14 @@ public class RayTraceContext {
 	private final Vec3d end;
 	private final RayTraceContext.ShapeType shapeType;
 	private final RayTraceContext.FluidHandling fluid;
-	private final VerticalEntityPosition entityPosition;
+	private final EntityContext entityPosition;
 
 	public RayTraceContext(Vec3d vec3d, Vec3d vec3d2, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
 		this.start = vec3d;
 		this.end = vec3d2;
 		this.shapeType = shapeType;
 		this.fluid = fluidHandling;
-		this.entityPosition = VerticalEntityPosition.fromEntity(entity);
+		this.entityPosition = EntityContext.of(entity);
 	}
 
 	public Vec3d getEnd() {
@@ -42,7 +42,7 @@ public class RayTraceContext {
 	}
 
 	public static enum FluidHandling {
-		NONE(fluidState -> false),
+		field_1348(fluidState -> false),
 		field_1345(FluidState::isStill),
 		field_1347(fluidState -> !fluidState.isEmpty());
 
@@ -58,7 +58,7 @@ public class RayTraceContext {
 	}
 
 	public interface ShapeProvider {
-		VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition);
+		VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext);
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
@@ -72,8 +72,8 @@ public class RayTraceContext {
 		}
 
 		@Override
-		public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-			return this.provider.get(blockState, blockView, blockPos, verticalEntityPosition);
+		public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+			return this.provider.get(blockState, blockView, blockPos, entityContext);
 		}
 	}
 }

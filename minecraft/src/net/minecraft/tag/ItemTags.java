@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 
 public class ItemTags {
 	private static TagContainer<Item> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
-	private static int containerChanges;
+	private static int latestVersion;
 	public static final Tag<Item> field_15544 = register("wool");
 	public static final Tag<Item> field_15537 = register("planks");
 	public static final Tag<Item> field_15531 = register("stone_bricks");
@@ -50,7 +50,7 @@ public class ItemTags {
 
 	public static void setContainer(TagContainer<Item> tagContainer) {
 		container = tagContainer;
-		containerChanges++;
+		latestVersion++;
 	}
 
 	public static TagContainer<Item> getContainer() {
@@ -58,44 +58,44 @@ public class ItemTags {
 	}
 
 	private static Tag<Item> register(String string) {
-		return new ItemTags.class_3490(new Identifier(string));
+		return new ItemTags.CachingTag(new Identifier(string));
 	}
 
-	public static class class_3490 extends Tag<Item> {
-		private int field_15562 = -1;
-		private Tag<Item> field_15561;
+	public static class CachingTag extends Tag<Item> {
+		private int version = -1;
+		private Tag<Item> delegate;
 
-		public class_3490(Identifier identifier) {
+		public CachingTag(Identifier identifier) {
 			super(identifier);
 		}
 
 		public boolean method_15109(Item item) {
-			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
-				this.field_15562 = ItemTags.containerChanges;
+			if (this.version != ItemTags.latestVersion) {
+				this.delegate = ItemTags.container.getOrCreate(this.getId());
+				this.version = ItemTags.latestVersion;
 			}
 
-			return this.field_15561.contains(item);
+			return this.delegate.contains(item);
 		}
 
 		@Override
 		public Collection<Item> values() {
-			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
-				this.field_15562 = ItemTags.containerChanges;
+			if (this.version != ItemTags.latestVersion) {
+				this.delegate = ItemTags.container.getOrCreate(this.getId());
+				this.version = ItemTags.latestVersion;
 			}
 
-			return this.field_15561.values();
+			return this.delegate.values();
 		}
 
 		@Override
 		public Collection<Tag.Entry<Item>> entries() {
-			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
-				this.field_15562 = ItemTags.containerChanges;
+			if (this.version != ItemTags.latestVersion) {
+				this.delegate = ItemTags.container.getOrCreate(this.getId());
+				this.version = ItemTags.latestVersion;
 			}
 
-			return this.field_15561.entries();
+			return this.delegate.entries();
 		}
 	}
 }

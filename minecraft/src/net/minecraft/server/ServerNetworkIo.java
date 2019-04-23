@@ -35,10 +35,10 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.IntegratedServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -95,10 +95,10 @@ public class ServerNetworkIo {
 										.addLast("timeout", new ReadTimeoutHandler(30))
 										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this))
 										.addLast("splitter", new SplitterHandler())
-										.addLast("decoder", new DecoderHandler(NetworkSide.SERVER))
+										.addLast("decoder", new DecoderHandler(NetworkSide.field_11941))
 										.addLast("prepender", new SizePrepender())
-										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENT));
-									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
+										.addLast("encoder", new PacketEncoder(NetworkSide.field_11942));
+									ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11941);
 									ServerNetworkIo.this.connections.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
 									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
@@ -120,7 +120,7 @@ public class ServerNetworkIo {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) throws Exception {
-					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
+					ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11941);
 					clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					channel.pipeline().addLast("packet_handler", clientConnection);
@@ -163,8 +163,8 @@ public class ServerNetworkIo {
 							}
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
-							TextComponent textComponent = new StringTextComponent("Internal server error");
-							clientConnection.send(new DisconnectS2CPacket(textComponent), future -> clientConnection.disconnect(textComponent));
+							Component component = new TextComponent("Internal server error");
+							clientConnection.send(new DisconnectS2CPacket(component), future -> clientConnection.disconnect(component));
 							clientConnection.disableAutoRead();
 						}
 					} else {

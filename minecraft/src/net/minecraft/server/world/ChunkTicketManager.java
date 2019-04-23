@@ -30,8 +30,8 @@ import net.minecraft.util.Actor;
 import net.minecraft.util.ChunkPosLevelPropagator;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.SectionRelativeLevelPropagator;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class ChunkTicketManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL) - 2;
+	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12803) - 2;
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkSectionPos = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectOpenHashMap<ObjectSortedSet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
@@ -82,7 +82,7 @@ public abstract class ChunkTicketManager {
 		while (objectIterator.hasNext()) {
 			Entry<ObjectSortedSet<ChunkTicket<?>>> entry = (Entry<ObjectSortedSet<ChunkTicket<?>>>)objectIterator.next();
 			if (((ObjectSortedSet)entry.getValue())
-				.removeIf(chunkTicket -> chunkTicket.getType() == ChunkTicketType.UNKNOWN && chunkTicket.getLocation() != this.location)) {
+				.removeIf(chunkTicket -> chunkTicket.getType() == ChunkTicketType.field_14032 && chunkTicket.getLocation() != this.location)) {
 				this.distanceFromTicketTracker.update(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
 			}
 
@@ -124,7 +124,7 @@ public abstract class ChunkTicketManager {
 
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
-					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
+					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.field_14033)) {
 						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
@@ -198,7 +198,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	protected void setChunkForced(ChunkPos chunkPos, boolean bl) {
-		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 32, chunkPos, this.location);
+		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.field_14031, 32, chunkPos, this.location);
 		if (bl) {
 			this.addTicket(chunkPos.toLong(), chunkTicket);
 		} else {
@@ -324,7 +324,7 @@ public abstract class ChunkTicketManager {
 		private void updateTicket(long l, int i, boolean bl, boolean bl2) {
 			if (bl != bl2) {
 				ChunkTicket<?> chunkTicket = new ChunkTicket<>(
-					ChunkTicketType.PLAYER, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(l), ChunkTicketManager.this.location
+					ChunkTicketType.field_14033, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(l), ChunkTicketManager.this.location
 				);
 				if (bl2) {
 					ChunkTicketManager.this.playerTicketThrottler

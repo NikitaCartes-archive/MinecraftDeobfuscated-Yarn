@@ -16,16 +16,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class GameProfileArgumentType implements ArgumentType<GameProfileArgumentType.GameProfileArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
-	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.player.unknown")
-	);
+	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.player.unknown"));
 
 	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<GameProfileArgumentType.GameProfileArgument>getArgument(string, GameProfileArgumentType.GameProfileArgument.class)

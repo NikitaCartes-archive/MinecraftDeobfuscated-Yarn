@@ -31,7 +31,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	public BarrelBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(OPEN, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, OPEN);
+		builder.add(FACING, OPEN);
 	}
 
 	@Override

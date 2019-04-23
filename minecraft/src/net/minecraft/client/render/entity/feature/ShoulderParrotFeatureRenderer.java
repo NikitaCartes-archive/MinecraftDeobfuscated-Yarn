@@ -28,10 +28,10 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 
 	private void renderShoulderParrot(T playerEntity, float f, float g, float h, float i, float j, float k, boolean bl) {
 		CompoundTag compoundTag = bl ? playerEntity.getShoulderEntityLeft() : playerEntity.getShoulderEntityRight();
-		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
+		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.field_6104).ifPresent(entityType -> {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(bl ? 0.4F : -0.4F, playerEntity.isInSneakingPose() ? -1.3F : -1.5F, 0.0F);
-			this.bindTexture(ParrotEntityRenderer.TEXTURES[compoundTag.getInt("Variant")]);
+			this.bindTexture(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]);
 			this.field_17154.method_17106(f, g, i, j, k, playerEntity.age);
 			GlStateManager.popMatrix();
 		});

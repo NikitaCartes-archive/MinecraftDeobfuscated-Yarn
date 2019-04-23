@@ -40,7 +40,7 @@ public class DefaultResourcePack implements ResourcePack {
 	public static Path RESOURCE_PATH;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> RESOURCE_CLASS;
-	private static final Map<ResourceType, FileSystem> field_17917 = SystemUtil.consume(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
+	private static final Map<ResourceType, FileSystem> typeToFileSystem = SystemUtil.consume(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
 		synchronized (DefaultResourcePack.class) {
 			for (ResourceType resourceType : ResourceType.values()) {
 				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getName() + "/.mcassetsroot");
@@ -104,7 +104,7 @@ public class DefaultResourcePack implements ResourcePack {
 			} catch (IOException var14) {
 			}
 
-			if (resourceType == ResourceType.ASSETS) {
+			if (resourceType == ResourceType.field_14188) {
 				Enumeration<URL> enumeration = null;
 
 				try {
@@ -141,7 +141,7 @@ public class DefaultResourcePack implements ResourcePack {
 				Path path = Paths.get(uRL2.toURI());
 				set.addAll(this.getIdentifiers(i, "minecraft", path, string, predicate));
 			} else if ("jar".equals(uRI.getScheme())) {
-				Path path2 = ((FileSystem)field_17917.get(resourceType)).getPath("/" + resourceType.getName() + "/minecraft");
+				Path path2 = ((FileSystem)typeToFileSystem.get(resourceType)).getPath("/" + resourceType.getName() + "/minecraft");
 				set.addAll(this.getIdentifiers(i, "minecraft", path2, string, predicate));
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);
@@ -216,7 +216,7 @@ public class DefaultResourcePack implements ResourcePack {
 
 			Object var4;
 			try {
-				var4 = AbstractFilenameResourcePack.parseMetadata(resourceMetadataReader, inputStream);
+				var4 = AbstractFileResourcePack.parseMetadata(resourceMetadataReader, inputStream);
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;

@@ -282,7 +282,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		Transformation transformation5 = this.getTransformation(ModelTransformation.Type.field_4316);
 		Transformation transformation6 = this.getTransformation(ModelTransformation.Type.field_4317);
 		Transformation transformation7 = this.getTransformation(ModelTransformation.Type.field_4318);
-		Transformation transformation8 = this.getTransformation(ModelTransformation.Type.FIXED);
+		Transformation transformation8 = this.getTransformation(ModelTransformation.Type.field_4319);
 		return new ModelTransformation(
 			transformation, transformation2, transformation3, transformation4, transformation5, transformation6, transformation7, transformation8
 		);

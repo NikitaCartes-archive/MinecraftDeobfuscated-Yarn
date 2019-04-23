@@ -1,6 +1,6 @@
 package net.minecraft.util;
 
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 
 public abstract class ChunkPosLevelPropagator extends LevelPropagator {
 	protected ChunkPosLevelPropagator(int i, int j, int k) {

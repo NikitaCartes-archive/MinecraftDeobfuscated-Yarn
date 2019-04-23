@@ -25,7 +25,7 @@ public class BrewingStandContainer extends Container {
 	}
 
 	public BrewingStandContainer(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ContainerType.BREWING_STAND, i);
+		super(ContainerType.field_17332, i);
 		checkContainerSize(inventory, 5);
 		checkContainerDataCount(propertyDelegate, 2);
 		this.inventory = inventory;

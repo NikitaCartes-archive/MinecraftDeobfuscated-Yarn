@@ -71,7 +71,7 @@ public class WanderingTraderManager {
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-				PointOfInterestType.field_18518.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18518.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18489
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);

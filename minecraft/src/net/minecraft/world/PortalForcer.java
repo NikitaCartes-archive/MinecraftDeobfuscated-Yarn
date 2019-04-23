@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -20,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ColumnPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -28,31 +28,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PortalForcer {
-	private static final Logger field_19277 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PortalBlock PORTAL_BLOCK = (PortalBlock)Blocks.field_10316;
 	private final ServerWorld world;
 	private final Random random;
-	private final Map<ColumnPos, PortalForcer.class_1947> field_19278 = Maps.<ColumnPos, PortalForcer.class_1947>newHashMapWithExpectedSize(4096);
-	private final Object2LongMap<ColumnPos> field_9287 = new Object2LongOpenHashMap<>();
+	private final Map<ColumnPos, PortalForcer.TicketInfo> ticketInfos = Maps.<ColumnPos, PortalForcer.TicketInfo>newHashMapWithExpectedSize(4096);
+	private final Object2LongMap<ColumnPos> activePortals = new Object2LongOpenHashMap<>();
 
 	public PortalForcer(ServerWorld serverWorld) {
 		this.world = serverWorld;
 		this.random = new Random(serverWorld.getSeed());
 	}
 
-	public boolean method_8653(Entity entity, float f) {
+	public boolean usePortal(Entity entity, float f) {
 		Vec3d vec3d = entity.method_5656();
 		Direction direction = entity.method_5843();
-		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(
+		BlockPattern.TeleportTarget teleportTarget = this.getPortal(
 			new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
 		);
-		if (pair == null) {
+		if (teleportTarget == null) {
 			return false;
 		} else {
-			Vec3d vec3d2 = pair.getFirst();
-			Vec3d vec3d3 = pair.getSecond().getFirst();
+			Vec3d vec3d2 = teleportTarget.pos;
+			Vec3d vec3d3 = teleportTarget.velocity;
 			entity.setVelocity(vec3d3);
-			entity.yaw = f + (float)pair.getSecond().getSecond().intValue();
+			entity.yaw = f + (float)teleportTarget.yaw;
 			if (entity instanceof ServerPlayerEntity) {
 				((ServerPlayerEntity)entity).networkHandler.requestTeleport(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
 				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
@@ -65,18 +65,18 @@ public class PortalForcer {
 	}
 
 	@Nullable
-	public Pair<Vec3d, Pair<Vec3d, Integer>> method_18475(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
+	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
 		int i = 128;
 		boolean bl2 = true;
 		BlockPos blockPos2 = null;
 		ColumnPos columnPos = new ColumnPos(blockPos);
-		if (!bl && this.field_9287.containsKey(columnPos)) {
+		if (!bl && this.activePortals.containsKey(columnPos)) {
 			return null;
 		} else {
-			PortalForcer.class_1947 lv = (PortalForcer.class_1947)this.field_19278.get(columnPos);
-			if (lv != null) {
-				blockPos2 = lv.field_19279;
-				lv.field_9290 = this.world.getTime();
+			PortalForcer.TicketInfo ticketInfo = (PortalForcer.TicketInfo)this.ticketInfos.get(columnPos);
+			if (ticketInfo != null) {
+				blockPos2 = ticketInfo.pos;
+				ticketInfo.lastUsedTime = this.world.getTime();
 				bl2 = false;
 			} else {
 				double f = Double.MAX_VALUE;
@@ -107,22 +107,22 @@ public class PortalForcer {
 
 			if (blockPos2 == null) {
 				long l = this.world.getTime() + 300L;
-				this.field_9287.put(columnPos, l);
+				this.activePortals.put(columnPos, l);
 				return null;
 			} else {
 				if (bl2) {
-					this.field_19278.put(columnPos, new PortalForcer.class_1947(blockPos2, this.world.getTime()));
-					field_19277.debug("Adding nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
-					this.world.method_14178().addTicket(ChunkTicketType.field_19280, columnPos.getChunkPos(), 3, columnPos);
+					this.ticketInfos.put(columnPos, new PortalForcer.TicketInfo(blockPos2, this.world.getTime()));
+					LOGGER.debug("Adding nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
+					this.world.method_14178().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPos2), 3, columnPos);
 				}
 
-				BlockPattern.Result result = PORTAL_BLOCK.method_10350(this.world, blockPos2);
+				BlockPattern.Result result = PORTAL_BLOCK.findPortal(this.world, blockPos2);
 				return result.method_18478(direction, blockPos2, e, vec3d, d);
 			}
 		}
 	}
 
-	public boolean method_8654(Entity entity) {
+	public boolean createPortal(Entity entity) {
 		int i = 16;
 		double d = -1.0;
 		int j = MathHelper.floor(entity.x);
@@ -253,7 +253,7 @@ public class PortalForcer {
 						int yx = s + (u - 1) * ag - txx * af;
 						boolean bl = vx < 0;
 						mutable.set(wx, x, yx);
-						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.AIR.getDefaultState());
+						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
 					}
 				}
 			}
@@ -280,15 +280,15 @@ public class PortalForcer {
 		return true;
 	}
 
-	public void method_20464(long l) {
+	public void tick(long l) {
 		if (l % 100L == 0L) {
-			this.tick(l);
-			this.method_20467(l);
+			this.removeOldActivePortals(l);
+			this.removeOldTickets(l);
 		}
 	}
 
-	private void tick(long l) {
-		LongIterator longIterator = this.field_9287.values().iterator();
+	private void removeOldActivePortals(long l) {
+		LongIterator longIterator = this.activePortals.values().iterator();
 
 		while (longIterator.hasNext()) {
 			long m = longIterator.nextLong();
@@ -298,29 +298,29 @@ public class PortalForcer {
 		}
 	}
 
-	private void method_20467(long l) {
+	private void removeOldTickets(long l) {
 		long m = l - 300L;
-		Iterator<Entry<ColumnPos, PortalForcer.class_1947>> iterator = this.field_19278.entrySet().iterator();
+		Iterator<Entry<ColumnPos, PortalForcer.TicketInfo>> iterator = this.ticketInfos.entrySet().iterator();
 
 		while (iterator.hasNext()) {
-			Entry<ColumnPos, PortalForcer.class_1947> entry = (Entry<ColumnPos, PortalForcer.class_1947>)iterator.next();
-			PortalForcer.class_1947 lv = (PortalForcer.class_1947)entry.getValue();
-			if (lv == null || lv.field_9290 < m) {
+			Entry<ColumnPos, PortalForcer.TicketInfo> entry = (Entry<ColumnPos, PortalForcer.TicketInfo>)iterator.next();
+			PortalForcer.TicketInfo ticketInfo = (PortalForcer.TicketInfo)entry.getValue();
+			if (ticketInfo.lastUsedTime < m) {
 				ColumnPos columnPos = (ColumnPos)entry.getKey();
-				field_19277.debug("Removing nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
-				this.world.method_14178().removeTicket(ChunkTicketType.field_19280, columnPos.getChunkPos(), 3, columnPos);
+				LOGGER.debug("Removing nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
+				this.world.method_14178().removeTicket(ChunkTicketType.field_19280, new ChunkPos(ticketInfo.pos), 3, columnPos);
 				iterator.remove();
 			}
 		}
 	}
 
-	public class class_1947 {
-		public final BlockPos field_19279;
-		public long field_9290;
+	static class TicketInfo {
+		public final BlockPos pos;
+		public long lastUsedTime;
 
-		public class_1947(BlockPos blockPos, long l) {
-			this.field_19279 = blockPos;
-			this.field_9290 = l;
+		public TicketInfo(BlockPos blockPos, long l) {
+			this.pos = blockPos;
+			this.lastUsedTime = l;
 		}
 	}
 }

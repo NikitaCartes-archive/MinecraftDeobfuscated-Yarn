@@ -75,8 +75,8 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 	}
 
 	public void method_17106(float f, float g, float h, float i, float j, int k) {
-		this.method_17110(ParrotEntityModel.class_585.field_3464);
-		this.method_17111(ParrotEntityModel.class_585.field_3464, k, f, g, 0.0F, h, i);
+		this.method_17110(ParrotEntityModel.Pose.field_3464);
+		this.method_17111(ParrotEntityModel.Pose.field_3464, k, f, g, 0.0F, h, i);
 		this.method_17105(j);
 	}
 
@@ -90,7 +90,7 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3457.render(f);
 	}
 
-	private void method_17111(ParrotEntityModel.class_585 arg, int i, float f, float g, float h, float j, float k) {
+	private void method_17111(ParrotEntityModel.Pose pose, int i, float f, float g, float h, float j, float k) {
 		this.field_3452.pitch = k * (float) (Math.PI / 180.0);
 		this.field_3452.yaw = j * (float) (Math.PI / 180.0);
 		this.field_3452.roll = 0.0F;
@@ -99,7 +99,7 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3460.rotationPointX = 0.0F;
 		this.field_3455.rotationPointX = -1.5F;
 		this.field_3459.rotationPointX = 1.5F;
-		switch (arg) {
+		switch (pose) {
 			case field_3466:
 				break;
 			case field_3463:
@@ -141,7 +141,7 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		}
 	}
 
-	private void method_17110(ParrotEntityModel.class_585 arg) {
+	private void method_17110(ParrotEntityModel.Pose pose) {
 		this.field_3456.pitch = -0.2214F;
 		this.field_3458.pitch = 0.4937F;
 		this.field_3459.pitch = -0.6981F;
@@ -154,7 +154,7 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3457.rotationPointY = 22.0F;
 		this.field_3450.roll = 0.0F;
 		this.field_3457.roll = 0.0F;
-		switch (arg) {
+		switch (pose) {
 			case field_3466:
 				float f = 1.9F;
 				this.field_3452.rotationPointY = 17.59F;
@@ -183,18 +183,18 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		}
 	}
 
-	private static ParrotEntityModel.class_585 method_17107(ParrotEntity parrotEntity) {
+	private static ParrotEntityModel.Pose method_17107(ParrotEntity parrotEntity) {
 		if (parrotEntity.getSongPlaying()) {
-			return ParrotEntityModel.class_585.field_3463;
+			return ParrotEntityModel.Pose.field_3463;
 		} else if (parrotEntity.isSitting()) {
-			return ParrotEntityModel.class_585.field_3466;
+			return ParrotEntityModel.Pose.field_3466;
 		} else {
-			return parrotEntity.isInAir() ? ParrotEntityModel.class_585.field_3462 : ParrotEntityModel.class_585.field_3465;
+			return parrotEntity.isInAir() ? ParrotEntityModel.Pose.field_3462 : ParrotEntityModel.Pose.field_3465;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_585 {
+	public static enum Pose {
 		field_3462,
 		field_3465,
 		field_3466,

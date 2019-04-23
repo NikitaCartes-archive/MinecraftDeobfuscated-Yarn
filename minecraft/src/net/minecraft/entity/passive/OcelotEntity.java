@@ -29,7 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -46,7 +46,7 @@ import net.minecraft.world.World;
 public class OcelotEntity extends AnimalEntity {
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private OcelotEntity.OcelotFleeGoal<PlayerEntity> fleeGoal;
+	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
 	private OcelotEntity.OcelotTemptGoal temptGoal;
 
 	public OcelotEntity(EntityType<? extends OcelotEntity> entityType, World world) {
@@ -200,9 +200,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private void showEmoteParticle(boolean bl) {
-		ParticleParameters particleParameters = ParticleTypes.field_11201;
+		ParticleEffect particleEffect = ParticleTypes.field_11201;
 		if (!bl) {
-			particleParameters = ParticleTypes.field_11251;
+			particleEffect = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -211,7 +211,7 @@ public class OcelotEntity extends AnimalEntity {
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleParameters,
+					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -224,7 +224,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	protected void updateFleeing() {
 		if (this.fleeGoal == null) {
-			this.fleeGoal = new OcelotEntity.OcelotFleeGoal<>(this, PlayerEntity.class, 16.0F, 0.8, 1.33);
+			this.fleeGoal = new OcelotEntity.FleeGoal<>(this, PlayerEntity.class, 16.0F, 0.8, 1.33);
 		}
 
 		this.goalSelector.remove(this.fleeGoal);
@@ -234,7 +234,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public OcelotEntity method_16104(PassiveEntity passiveEntity) {
-		return EntityType.OCELOT.create(this.world);
+		return EntityType.field_6081.create(this.world);
 	}
 
 	@Override
@@ -267,7 +267,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	protected void spawnKittens() {
 		for (int i = 0; i < 2; i++) {
-			OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
+			OcelotEntity ocelotEntity = EntityType.field_6081.create(this.world);
 			ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			ocelotEntity.setBreedingAge(-24000);
 			this.world.spawnEntity(ocelotEntity);
@@ -287,10 +287,10 @@ public class OcelotEntity extends AnimalEntity {
 		return entityData;
 	}
 
-	static class OcelotFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
+	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final OcelotEntity ocelot;
 
-		public OcelotFleeGoal(OcelotEntity ocelotEntity, Class<T> class_, float f, double d, double e) {
+		public FleeGoal(OcelotEntity ocelotEntity, Class<T> class_, float f, double d, double e) {
 			super(ocelotEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 			this.ocelot = ocelotEntity;
 		}

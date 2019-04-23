@@ -14,22 +14,22 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class EnchantCommand {
 	private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.enchant.failed.entity", object)
+		object -> new TranslatableComponent("commands.enchant.failed.entity", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_ITEMLESS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.enchant.failed.itemless", object)
+		object -> new TranslatableComponent("commands.enchant.failed.itemless", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_INCOMPATIBLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.enchant.failed.incompatible", object)
+		object -> new TranslatableComponent("commands.enchant.failed.incompatible", object)
 	);
 	private static final Dynamic2CommandExceptionType FAILED_LEVEL_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableTextComponent("commands.enchant.failed.level", object, object2)
+		(object, object2) -> new TranslatableComponent("commands.enchant.failed.level", object, object2)
 	);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.enchant.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.enchant.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -93,13 +93,11 @@ public class EnchantCommand {
 			} else {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.enchant.success.single", enchantment.getTextComponent(i), ((Entity)collection.iterator().next()).getDisplayName()),
+						new TranslatableComponent("commands.enchant.success.single", enchantment.getTextComponent(i), ((Entity)collection.iterator().next()).getDisplayName()),
 						true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.enchant.success.multiple", enchantment.getTextComponent(i), collection.size()), true
-					);
+					serverCommandSource.sendFeedback(new TranslatableComponent("commands.enchant.success.multiple", enchantment.getTextComponent(i), collection.size()), true);
 				}
 
 				return j;

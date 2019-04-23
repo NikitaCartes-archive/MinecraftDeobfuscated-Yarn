@@ -59,10 +59,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(1, new PhantomEntity.class_1596());
-		this.goalSelector.add(2, new PhantomEntity.class_1602());
-		this.goalSelector.add(3, new PhantomEntity.class_1598());
-		this.targetSelector.add(1, new PhantomEntity.class_1595());
+		this.goalSelector.add(1, new PhantomEntity.StartAttackGoal());
+		this.goalSelector.add(2, new PhantomEntity.SwoopMovementGoal());
+		this.goalSelector.add(3, new PhantomEntity.CircleMovementGoal());
+		this.targetSelector.add(1, new PhantomEntity.FindTargetGoal());
 	}
 
 	@Override
@@ -132,18 +132,18 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			this.world.addParticle(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
 		}
 
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.isAlive() && this.isInDaylight()) {
 			this.setOnFireFor(8);
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	@Override
@@ -228,6 +228,125 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		return entitySize.scaled(f);
 	}
 
+	class CircleMovementGoal extends PhantomEntity.MovementGoal {
+		private float field_7328;
+		private float field_7327;
+		private float field_7326;
+		private float field_7324;
+
+		private CircleMovementGoal() {
+		}
+
+		@Override
+		public boolean canStart() {
+			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318;
+		}
+
+		@Override
+		public void start() {
+			this.field_7327 = 5.0F + PhantomEntity.this.random.nextFloat() * 10.0F;
+			this.field_7326 = -4.0F + PhantomEntity.this.random.nextFloat() * 9.0F;
+			this.field_7324 = PhantomEntity.this.random.nextBoolean() ? 1.0F : -1.0F;
+			this.method_7103();
+		}
+
+		@Override
+		public void tick() {
+			if (PhantomEntity.this.random.nextInt(350) == 0) {
+				this.field_7326 = -4.0F + PhantomEntity.this.random.nextFloat() * 9.0F;
+			}
+
+			if (PhantomEntity.this.random.nextInt(250) == 0) {
+				this.field_7327++;
+				if (this.field_7327 > 15.0F) {
+					this.field_7327 = 5.0F;
+					this.field_7324 = -this.field_7324;
+				}
+			}
+
+			if (PhantomEntity.this.random.nextInt(450) == 0) {
+				this.field_7328 = PhantomEntity.this.random.nextFloat() * 2.0F * (float) Math.PI;
+				this.method_7103();
+			}
+
+			if (this.method_7104()) {
+				this.method_7103();
+			}
+
+			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
+				this.field_7326 = Math.max(1.0F, this.field_7326);
+				this.method_7103();
+			}
+
+			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
+				this.field_7326 = Math.min(-1.0F, this.field_7326);
+				this.method_7103();
+			}
+		}
+
+		private void method_7103() {
+			if (BlockPos.ORIGIN.equals(PhantomEntity.this.field_7312)) {
+				PhantomEntity.this.field_7312 = new BlockPos(PhantomEntity.this);
+			}
+
+			this.field_7328 = this.field_7328 + this.field_7324 * 15.0F * (float) (Math.PI / 180.0);
+			PhantomEntity.this.field_7314 = new Vec3d(PhantomEntity.this.field_7312)
+				.add(
+					(double)(this.field_7327 * MathHelper.cos(this.field_7328)),
+					(double)(-4.0F + this.field_7326),
+					(double)(this.field_7327 * MathHelper.sin(this.field_7328))
+				);
+		}
+	}
+
+	class FindTargetGoal extends Goal {
+		private final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
+		private int delay = 20;
+
+		private FindTargetGoal() {
+		}
+
+		@Override
+		public boolean canStart() {
+			if (this.delay > 0) {
+				this.delay--;
+				return false;
+			} else {
+				this.delay = 60;
+				List<PlayerEntity> list = PhantomEntity.this.world
+					.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+				if (!list.isEmpty()) {
+					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
+
+					for (PlayerEntity playerEntity : list) {
+						if (PhantomEntity.this.isTarget(playerEntity, TargetPredicate.DEFAULT)) {
+							PhantomEntity.this.setTarget(playerEntity);
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			LivingEntity livingEntity = PhantomEntity.this.getTarget();
+			return livingEntity != null ? PhantomEntity.this.isTarget(livingEntity, TargetPredicate.DEFAULT) : false;
+		}
+	}
+
+	abstract class MovementGoal extends Goal {
+		public MovementGoal() {
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
+		}
+
+		protected boolean method_7104() {
+			return PhantomEntity.this.field_7314.squaredDistanceTo(PhantomEntity.this.x, PhantomEntity.this.y, PhantomEntity.this.z) < 4.0;
+		}
+	}
+
 	class PhantomBodyControl extends BodyControl {
 		public PhantomBodyControl(MobEntity mobEntity) {
 			super(mobEntity);
@@ -301,48 +420,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		field_7317;
 	}
 
-	class class_1595 extends Goal {
-		private final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
-		private int field_7320 = 20;
-
-		private class_1595() {
-		}
-
-		@Override
-		public boolean canStart() {
-			if (this.field_7320 > 0) {
-				this.field_7320--;
-				return false;
-			} else {
-				this.field_7320 = 60;
-				List<PlayerEntity> list = PhantomEntity.this.world
-					.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
-				if (!list.isEmpty()) {
-					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
-
-					for (PlayerEntity playerEntity : list) {
-						if (PhantomEntity.this.isTarget(playerEntity, TargetPredicate.DEFAULT)) {
-							PhantomEntity.this.setTarget(playerEntity);
-							return true;
-						}
-					}
-				}
-
-				return false;
-			}
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.isTarget(livingEntity, TargetPredicate.DEFAULT) : false;
-		}
-	}
-
-	class class_1596 extends Goal {
+	class StartAttackGoal extends Goal {
 		private int field_7322;
 
-		private class_1596() {
+		private StartAttackGoal() {
 		}
 
 		@Override
@@ -388,89 +469,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		}
 	}
 
-	class class_1598 extends PhantomEntity.class_1601 {
-		private float field_7328;
-		private float field_7327;
-		private float field_7326;
-		private float field_7324;
-
-		private class_1598() {
-		}
-
-		@Override
-		public boolean canStart() {
-			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318;
-		}
-
-		@Override
-		public void start() {
-			this.field_7327 = 5.0F + PhantomEntity.this.random.nextFloat() * 10.0F;
-			this.field_7326 = -4.0F + PhantomEntity.this.random.nextFloat() * 9.0F;
-			this.field_7324 = PhantomEntity.this.random.nextBoolean() ? 1.0F : -1.0F;
-			this.method_7103();
-		}
-
-		@Override
-		public void tick() {
-			if (PhantomEntity.this.random.nextInt(350) == 0) {
-				this.field_7326 = -4.0F + PhantomEntity.this.random.nextFloat() * 9.0F;
-			}
-
-			if (PhantomEntity.this.random.nextInt(250) == 0) {
-				this.field_7327++;
-				if (this.field_7327 > 15.0F) {
-					this.field_7327 = 5.0F;
-					this.field_7324 = -this.field_7324;
-				}
-			}
-
-			if (PhantomEntity.this.random.nextInt(450) == 0) {
-				this.field_7328 = PhantomEntity.this.random.nextFloat() * 2.0F * (float) Math.PI;
-				this.method_7103();
-			}
-
-			if (this.method_7104()) {
-				this.method_7103();
-			}
-
-			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
-				this.field_7326 = Math.max(1.0F, this.field_7326);
-				this.method_7103();
-			}
-
-			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
-				this.field_7326 = Math.min(-1.0F, this.field_7326);
-				this.method_7103();
-			}
-		}
-
-		private void method_7103() {
-			if (BlockPos.ORIGIN.equals(PhantomEntity.this.field_7312)) {
-				PhantomEntity.this.field_7312 = new BlockPos(PhantomEntity.this);
-			}
-
-			this.field_7328 = this.field_7328 + this.field_7324 * 15.0F * (float) (Math.PI / 180.0);
-			PhantomEntity.this.field_7314 = new Vec3d(PhantomEntity.this.field_7312)
-				.add(
-					(double)(this.field_7327 * MathHelper.cos(this.field_7328)),
-					(double)(-4.0F + this.field_7326),
-					(double)(this.field_7327 * MathHelper.sin(this.field_7328))
-				);
-		}
-	}
-
-	abstract class class_1601 extends Goal {
-		public class_1601() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
-		}
-
-		protected boolean method_7104() {
-			return PhantomEntity.this.field_7314.squaredDistanceTo(PhantomEntity.this.x, PhantomEntity.this.y, PhantomEntity.this.z) < 4.0;
-		}
-	}
-
-	class class_1602 extends PhantomEntity.class_1601 {
-		private class_1602() {
+	class SwoopMovementGoal extends PhantomEntity.MovementGoal {
+		private SwoopMovementGoal() {
 		}
 
 		@Override

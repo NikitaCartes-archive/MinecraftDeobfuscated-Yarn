@@ -10,8 +10,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
-	private static final Identifier field_4745 = new Identifier("textures/entity/llama/spit.png");
-	private final LlamaSpitEntityModel<LlamaSpitEntity> field_4744 = new LlamaSpitEntityModel<>();
+	private static final Identifier SKIN = new Identifier("textures/entity/llama/spit.png");
+	private final LlamaSpitEntityModel<LlamaSpitEntity> model = new LlamaSpitEntityModel<>();
 
 	public LlamaSpitEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -23,13 +23,13 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), 0.0F, 0.0F, 1.0F);
 		this.bindEntityTexture(llamaSpitEntity);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(llamaSpitEntity));
 		}
 
-		this.field_4744.render(llamaSpitEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		if (this.renderOutlines) {
+		this.model.render(llamaSpitEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -39,6 +39,6 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 	}
 
 	protected Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
-		return field_4745;
+		return SKIN;
 	}
 }

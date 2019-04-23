@@ -11,7 +11,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public MinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.MINECART, world, d, e, f);
+		super(EntityType.field_6096, world, d, e, f);
 	}
 
 	@Override

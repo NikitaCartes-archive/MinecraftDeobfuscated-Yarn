@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
@@ -35,13 +36,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +63,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	private final Map<Identifier, Tag<Item>> field_16201 = Maps.<Identifier, Tag<Item>>newTreeMap();
 
 	public CreativePlayerInventoryScreen(PlayerEntity playerEntity) {
-		super(new CreativePlayerInventoryScreen.CreativeContainer(playerEntity), playerEntity.inventory, new StringTextComponent(""));
+		super(new CreativePlayerInventoryScreen.CreativeContainer(playerEntity), playerEntity.inventory, new TextComponent(""));
 		playerEntity.container = this.container;
 		this.passEvents = true;
 		this.containerHeight = 136;
@@ -438,7 +438,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 							itemStack.getOrCreateSubCompoundTag("CustomCreativeLock");
 							String string = this.minecraft.options.keysHotbar[j].getLocalizedName();
 							String string2 = this.minecraft.options.keySaveToolbarActivator.getLocalizedName();
-							itemStack.setDisplayName(new TranslatableTextComponent("inventory.hotbarInfo", string2, string));
+							itemStack.setDisplayName(new TranslatableComponent("inventory.hotbarInfo", string2, string));
 							this.container.itemList.add(itemStack);
 						} else {
 							this.container.itemList.add(ItemStack.EMPTY);
@@ -587,13 +587,13 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	@Override
 	protected void renderTooltip(ItemStack itemStack, int i, int j) {
 		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
-			List<TextComponent> list = itemStack.getTooltipText(
-				this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
+			List<Component> list = itemStack.getTooltipText(
+				this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 			);
 			List<String> list2 = Lists.<String>newArrayListWithCapacity(list.size());
 
-			for (TextComponent textComponent : list) {
-				list2.add(textComponent.getFormattedText());
+			for (Component component : list) {
+				list2.add(component.getFormattedText());
 			}
 
 			Item item = itemStack.getItem();
@@ -614,18 +614,18 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			this.field_16201.forEach((identifier, tag) -> {
 				if (tag.contains(item)) {
-					list2.add(1, "" + TextFormat.field_1067 + TextFormat.field_1064 + "#" + identifier);
+					list2.add(1, "" + ChatFormat.field_1067 + ChatFormat.field_1064 + "#" + identifier);
 				}
 			});
 			if (itemGroup != null) {
-				list2.add(1, "" + TextFormat.field_1067 + TextFormat.field_1078 + I18n.translate(itemGroup.getTranslationKey()));
+				list2.add(1, "" + ChatFormat.field_1067 + ChatFormat.field_1078 + I18n.translate(itemGroup.getTranslationKey()));
 			}
 
 			for (int k = 0; k < list2.size(); k++) {
 				if (k == 0) {
 					list2.set(k, itemStack.getRarity().formatting + (String)list2.get(k));
 				} else {
-					list2.set(k, TextFormat.field_1080 + (String)list2.get(k));
+					list2.set(k, ChatFormat.field_1080 + (String)list2.get(k));
 				}
 			}
 
@@ -774,7 +774,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			String string = minecraftClient.options.keysHotbar[i].getLocalizedName();
 			String string2 = minecraftClient.options.keyLoadToolbarActivator.getLocalizedName();
-			minecraftClient.inGameHud.setOverlayMessage(new TranslatableTextComponent("inventory.hotbarSaved", string2, string), false);
+			minecraftClient.inGameHud.setOverlayMessage(new TranslatableComponent("inventory.hotbarSaved", string2, string), false);
 			hotbarStorage.save();
 		}
 	}

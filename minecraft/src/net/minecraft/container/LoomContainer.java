@@ -51,7 +51,7 @@ public class LoomContainer extends Container {
 	}
 
 	public LoomContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.LOOM, i);
+		super(ContainerType.field_17339, i);
 		this.context = blockContext;
 		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override

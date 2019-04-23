@@ -4,24 +4,24 @@ import java.util.EnumSet;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & CrossbowUser> extends Goal {
-	private final T entity;
+public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & CrossbowUser> extends Goal {
+	private final T actor;
 	private CrossbowAttackGoal.Stage stage = CrossbowAttackGoal.Stage.field_16534;
-	private final double field_6590;
-	private final float field_6591;
+	private final double speed;
+	private final float squaredRange;
 	private int field_6592;
 	private int field_16529;
 
 	public CrossbowAttackGoal(T hostileEntity, double d, float f) {
-		this.entity = hostileEntity;
-		this.field_6590 = d;
-		this.field_6591 = f * f;
+		this.actor = hostileEntity;
+		this.speed = d;
+		this.squaredRange = f * f;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
@@ -31,36 +31,36 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 	}
 
 	private boolean isEntityHoldingCrossbow() {
-		return this.entity.isHolding(Items.field_8399);
+		return this.actor.isHolding(Items.field_8399);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.method_19996() && (this.canStart() || !this.entity.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
+		return this.method_19996() && (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
 	}
 
 	private boolean method_19996() {
-		return this.entity.getTarget() != null && this.entity.getTarget().isAlive();
+		return this.actor.getTarget() != null && this.actor.getTarget().isAlive();
 	}
 
 	@Override
 	public void stop() {
 		super.stop();
-		this.entity.setAttacking(false);
-		this.entity.setTarget(null);
+		this.actor.setAttacking(false);
+		this.actor.setTarget(null);
 		this.field_6592 = 0;
-		if (this.entity.isUsingItem()) {
-			this.entity.clearActiveItem();
-			this.entity.setCharging(false);
-			CrossbowItem.setCharged(this.entity.getActiveItem(), false);
+		if (this.actor.isUsingItem()) {
+			this.actor.clearActiveItem();
+			this.actor.setCharging(false);
+			CrossbowItem.setCharged(this.actor.getActiveItem(), false);
 		}
 	}
 
 	@Override
 	public void tick() {
-		LivingEntity livingEntity = this.entity.getTarget();
+		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {
-			boolean bl = this.entity.getVisibilityCache().canSee(livingEntity);
+			boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
 			boolean bl2 = this.field_6592 > 0;
 			if (bl != bl2) {
 				this.field_6592 = 0;
@@ -72,33 +72,33 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 				this.field_6592--;
 			}
 
-			double d = this.entity.squaredDistanceTo(livingEntity);
-			boolean bl3 = (d > (double)this.field_6591 || this.field_6592 < 5) && this.field_16529 == 0;
+			double d = this.actor.squaredDistanceTo(livingEntity);
+			boolean bl3 = (d > (double)this.squaredRange || this.field_6592 < 5) && this.field_16529 == 0;
 			if (bl3) {
-				this.entity.getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.field_6590 : this.field_6590 * 0.5);
+				this.actor.getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
 			} else {
-				this.entity.getNavigation().stop();
+				this.actor.getNavigation().stop();
 			}
 
-			this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+			this.actor.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			if (this.stage == CrossbowAttackGoal.Stage.field_16534) {
 				if (!bl3) {
-					this.entity.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.entity, Items.field_8399));
+					this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8399));
 					this.stage = CrossbowAttackGoal.Stage.field_16530;
-					this.entity.setCharging(true);
+					this.actor.setCharging(true);
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16530) {
-				if (!this.entity.isUsingItem()) {
+				if (!this.actor.isUsingItem()) {
 					this.stage = CrossbowAttackGoal.Stage.field_16534;
 				}
 
-				int i = this.entity.getItemUseTime();
-				ItemStack itemStack = this.entity.getActiveItem();
+				int i = this.actor.getItemUseTime();
+				ItemStack itemStack = this.actor.getActiveItem();
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
-					this.entity.stopUsingItem();
+					this.actor.stopUsingItem();
 					this.stage = CrossbowAttackGoal.Stage.field_16532;
-					this.field_16529 = 20 + this.entity.getRand().nextInt(20);
-					this.entity.setCharging(false);
+					this.field_16529 = 20 + this.actor.getRand().nextInt(20);
+					this.actor.setCharging(false);
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16532) {
 				this.field_16529--;
@@ -106,8 +106,8 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 					this.stage = CrossbowAttackGoal.Stage.field_16533;
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16533 && bl) {
-				this.entity.attack(livingEntity, 1.0F);
-				ItemStack itemStack2 = this.entity.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.entity, Items.field_8399));
+				this.actor.attack(livingEntity, 1.0F);
+				ItemStack itemStack2 = this.actor.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8399));
 				CrossbowItem.setCharged(itemStack2, false);
 				this.stage = CrossbowAttackGoal.Stage.field_16534;
 			}

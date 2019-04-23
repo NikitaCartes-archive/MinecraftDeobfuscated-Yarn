@@ -8,22 +8,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class HorseBondWithPlayerGoal extends Goal {
-	private final HorseBaseEntity owner;
+	private final HorseBaseEntity horse;
 	private final double speed;
 	private double targetX;
 	private double targetY;
 	private double targetZ;
 
 	public HorseBondWithPlayerGoal(HorseBaseEntity horseBaseEntity, double d) {
-		this.owner = horseBaseEntity;
+		this.horse = horseBaseEntity;
 		this.speed = d;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.owner.isTame() && this.owner.hasPassengers()) {
-			Vec3d vec3d = PathfindingUtil.findTarget(this.owner, 5, 4);
+		if (!this.horse.isTame() && this.horse.hasPassengers()) {
+			Vec3d vec3d = PathfindingUtil.findTarget(this.horse, 5, 4);
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -39,36 +39,36 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.horse.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.isTame() && !this.owner.getNavigation().isIdle() && this.owner.hasPassengers();
+		return !this.horse.isTame() && !this.horse.getNavigation().isIdle() && this.horse.hasPassengers();
 	}
 
 	@Override
 	public void tick() {
-		if (!this.owner.isTame() && this.owner.getRand().nextInt(50) == 0) {
-			Entity entity = (Entity)this.owner.getPassengerList().get(0);
+		if (!this.horse.isTame() && this.horse.getRand().nextInt(50) == 0) {
+			Entity entity = (Entity)this.horse.getPassengerList().get(0);
 			if (entity == null) {
 				return;
 			}
 
 			if (entity instanceof PlayerEntity) {
-				int i = this.owner.getTemper();
-				int j = this.owner.getMaxTemper();
-				if (j > 0 && this.owner.getRand().nextInt(j) < i) {
-					this.owner.bondWithPlayer((PlayerEntity)entity);
+				int i = this.horse.getTemper();
+				int j = this.horse.getMaxTemper();
+				if (j > 0 && this.horse.getRand().nextInt(j) < i) {
+					this.horse.bondWithPlayer((PlayerEntity)entity);
 					return;
 				}
 
-				this.owner.addTemper(5);
+				this.horse.addTemper(5);
 			}
 
-			this.owner.removeAllPassengers();
-			this.owner.playAngrySound();
-			this.owner.world.sendEntityStatus(this.owner, (byte)6);
+			this.horse.removeAllPassengers();
+			this.horse.playAngrySound();
+			this.horse.world.sendEntityStatus(this.horse, (byte)6);
 		}
 	}
 }

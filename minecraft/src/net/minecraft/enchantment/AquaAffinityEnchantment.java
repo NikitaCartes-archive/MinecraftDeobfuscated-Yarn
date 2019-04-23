@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class AquaAffinityEnchantment extends Enchantment {
 	public AquaAffinityEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.HELM, equipmentSlots);
+		super(weight, EnchantmentTarget.ARMOR_HEAD, equipmentSlots);
 	}
 
 	@Override

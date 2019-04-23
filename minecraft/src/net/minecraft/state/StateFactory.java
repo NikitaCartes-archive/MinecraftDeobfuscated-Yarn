@@ -88,7 +88,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 			this.baseObject = object;
 		}
 
-		public StateFactory.Builder<O, S> with(Property<?>... propertys) {
+		public StateFactory.Builder<O, S> add(Property<?>... propertys) {
 			for (Property<?> property : propertys) {
 				this.validate(property);
 				this.propertyMap.put(property.getName(), property);

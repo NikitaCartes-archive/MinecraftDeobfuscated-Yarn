@@ -19,10 +19,10 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
@@ -40,7 +40,7 @@ public class NewLevelPresetsScreen extends Screen {
 	private TextFieldWidget customPresetField;
 
 	public NewLevelPresetsScreen(CustomizeFlatLevelScreen customizeFlatLevelScreen) {
-		super(new TranslatableTextComponent("createWorld.customize.presets.title"));
+		super(new TranslatableComponent("createWorld.customize.presets.title"));
 		this.parent = customizeFlatLevelScreen;
 	}
 
@@ -105,7 +105,9 @@ public class NewLevelPresetsScreen extends Screen {
 		this.field_2525.active = bl || this.customPresetField.getText().length() > 1;
 	}
 
-	private static void addPreset(String string, ItemProvider itemProvider, Biome biome, List<String> list, FlatChunkGeneratorLayer... flatChunkGeneratorLayers) {
+	private static void addPreset(
+		String string, ItemConvertible itemConvertible, Biome biome, List<String> list, FlatChunkGeneratorLayer... flatChunkGeneratorLayers
+	) {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
 
 		for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
@@ -119,7 +121,7 @@ public class NewLevelPresetsScreen extends Screen {
 			flatChunkGeneratorConfig.getStructures().put(string2, Maps.newHashMap());
 		}
 
-		presets.add(new NewLevelPresetsScreen.SuperflatPreset(itemProvider.getItem(), string, flatChunkGeneratorConfig.toString()));
+		presets.add(new NewLevelPresetsScreen.SuperflatPreset(itemConvertible.asItem(), string, flatChunkGeneratorConfig.toString()));
 	}
 
 	static {
@@ -207,7 +209,7 @@ public class NewLevelPresetsScreen extends Screen {
 			Blocks.field_10499,
 			Biomes.field_9473,
 			Arrays.asList("decoration"),
-			new FlatChunkGeneratorLayer(1, Blocks.AIR)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10124)
 		);
 	}
 
@@ -241,7 +243,7 @@ public class NewLevelPresetsScreen extends Screen {
 			if (superflatPresetItem != null) {
 				NarratorManager.INSTANCE
 					.method_19788(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 								"narrator.select", ((NewLevelPresetsScreen.SuperflatPreset)NewLevelPresetsScreen.presets.get(this.children().indexOf(superflatPresetItem))).field_2528
 							)
 							.getString()

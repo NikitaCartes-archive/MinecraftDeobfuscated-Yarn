@@ -33,7 +33,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	public CommandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(CONDITIONAL, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, CONDITIONAL);
+		builder.add(FACING, CONDITIONAL);
 	}
 
 	@Override

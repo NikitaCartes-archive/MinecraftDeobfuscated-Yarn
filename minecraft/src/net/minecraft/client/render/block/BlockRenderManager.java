@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.model.BakedModel;
@@ -27,9 +28,9 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final FluidRenderer fluidRenderer;
 	private final Random random = new Random();
 
-	public BlockRenderManager(BlockModels blockModels, BlockColorMap blockColorMap) {
+	public BlockRenderManager(BlockModels blockModels, BlockColors blockColors) {
 		this.models = blockModels;
-		this.renderer = new BlockModelRenderer(blockColorMap);
+		this.renderer = new BlockModelRenderer(blockColors);
 		this.fluidRenderer = new FluidRenderer();
 	}
 

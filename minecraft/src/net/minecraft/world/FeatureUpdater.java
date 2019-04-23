@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;

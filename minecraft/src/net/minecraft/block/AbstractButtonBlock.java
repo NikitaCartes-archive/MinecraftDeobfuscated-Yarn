@@ -5,7 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.sound.SoundCategory;
@@ -25,28 +25,28 @@ import net.minecraft.world.World;
 
 public abstract class AbstractButtonBlock extends WallMountedBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	protected static final VoxelShape SHAPE_CEILING_X = Block.createCuboidShape(6.0, 14.0, 5.0, 10.0, 16.0, 11.0);
-	protected static final VoxelShape SHAPE_CEILING_Z = Block.createCuboidShape(5.0, 14.0, 6.0, 11.0, 16.0, 10.0);
-	protected static final VoxelShape SHAPE_FLOOR_X = Block.createCuboidShape(6.0, 0.0, 5.0, 10.0, 2.0, 11.0);
-	protected static final VoxelShape SHAPE_FLOOR_Z = Block.createCuboidShape(5.0, 0.0, 6.0, 11.0, 2.0, 10.0);
-	protected static final VoxelShape SHAPE_NORTH = Block.createCuboidShape(5.0, 6.0, 14.0, 11.0, 10.0, 16.0);
-	protected static final VoxelShape SHAPE_SOUTH = Block.createCuboidShape(5.0, 6.0, 0.0, 11.0, 10.0, 2.0);
-	protected static final VoxelShape SHAPE_WEST = Block.createCuboidShape(14.0, 6.0, 5.0, 16.0, 10.0, 11.0);
-	protected static final VoxelShape SHAPE_EAST = Block.createCuboidShape(0.0, 6.0, 5.0, 2.0, 10.0, 11.0);
-	protected static final VoxelShape SHAPE_CEILING_X_POWERED = Block.createCuboidShape(6.0, 15.0, 5.0, 10.0, 16.0, 11.0);
-	protected static final VoxelShape SHAPE_CEILING_Z_POWERED = Block.createCuboidShape(5.0, 15.0, 6.0, 11.0, 16.0, 10.0);
-	protected static final VoxelShape SHAPE_FLOOR_X_POWERED = Block.createCuboidShape(6.0, 0.0, 5.0, 10.0, 1.0, 11.0);
-	protected static final VoxelShape SHAPE_FLOOR_Z_POWERED = Block.createCuboidShape(5.0, 0.0, 6.0, 11.0, 1.0, 10.0);
-	protected static final VoxelShape SHAPE_NORTH_POWERED = Block.createCuboidShape(5.0, 6.0, 15.0, 11.0, 10.0, 16.0);
-	protected static final VoxelShape SHAPE_SOUTH_POWERED = Block.createCuboidShape(5.0, 6.0, 0.0, 11.0, 10.0, 1.0);
-	protected static final VoxelShape SHAPE_WEST_POWERED = Block.createCuboidShape(15.0, 6.0, 5.0, 16.0, 10.0, 11.0);
-	protected static final VoxelShape SHAPE_EAST_POWERED = Block.createCuboidShape(0.0, 6.0, 5.0, 1.0, 10.0, 11.0);
+	protected static final VoxelShape CEILING_X_SHAPE = Block.createCuboidShape(6.0, 14.0, 5.0, 10.0, 16.0, 11.0);
+	protected static final VoxelShape CEILING_Z_SHAPE = Block.createCuboidShape(5.0, 14.0, 6.0, 11.0, 16.0, 10.0);
+	protected static final VoxelShape FLOOR_X_SHAPE = Block.createCuboidShape(6.0, 0.0, 5.0, 10.0, 2.0, 11.0);
+	protected static final VoxelShape FLOOR_Z_SHAPE = Block.createCuboidShape(5.0, 0.0, 6.0, 11.0, 2.0, 10.0);
+	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 6.0, 14.0, 11.0, 10.0, 16.0);
+	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 6.0, 0.0, 11.0, 10.0, 2.0);
+	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(14.0, 6.0, 5.0, 16.0, 10.0, 11.0);
+	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 6.0, 5.0, 2.0, 10.0, 11.0);
+	protected static final VoxelShape CEILING_X_PRESSED_SHAPE = Block.createCuboidShape(6.0, 15.0, 5.0, 10.0, 16.0, 11.0);
+	protected static final VoxelShape CEILING_Z_PRESSED_SHAPE = Block.createCuboidShape(5.0, 15.0, 6.0, 11.0, 16.0, 10.0);
+	protected static final VoxelShape FLOOR_X_PRESSED_SHAPE = Block.createCuboidShape(6.0, 0.0, 5.0, 10.0, 1.0, 11.0);
+	protected static final VoxelShape FLOOR_Z_PRESSED_SHAPE = Block.createCuboidShape(5.0, 0.0, 6.0, 11.0, 1.0, 10.0);
+	protected static final VoxelShape NORTH_PRESSED_SHAPE = Block.createCuboidShape(5.0, 6.0, 15.0, 11.0, 10.0, 16.0);
+	protected static final VoxelShape SOUTH_PRESSED_SHAPE = Block.createCuboidShape(5.0, 6.0, 0.0, 11.0, 10.0, 1.0);
+	protected static final VoxelShape WEST_PRESSED_SHAPE = Block.createCuboidShape(15.0, 6.0, 5.0, 16.0, 10.0, 11.0);
+	protected static final VoxelShape EAST_PRESSED_SHAPE = Block.createCuboidShape(0.0, 6.0, 5.0, 1.0, 10.0, 11.0);
 	private final boolean wooden;
 
 	protected AbstractButtonBlock(boolean bl, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
 		);
 		this.wooden = bl;
 	}
@@ -57,34 +57,34 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Direction direction = blockState.get(FACING);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
 				if (direction.getAxis() == Direction.Axis.X) {
-					return bl ? SHAPE_FLOOR_X_POWERED : SHAPE_FLOOR_X;
+					return bl ? FLOOR_X_PRESSED_SHAPE : FLOOR_X_SHAPE;
 				}
 
-				return bl ? SHAPE_FLOOR_Z_POWERED : SHAPE_FLOOR_Z;
+				return bl ? FLOOR_Z_PRESSED_SHAPE : FLOOR_Z_SHAPE;
 			case field_12471:
 				switch (direction) {
-					case EAST:
-						return bl ? SHAPE_EAST_POWERED : SHAPE_EAST;
-					case WEST:
-						return bl ? SHAPE_WEST_POWERED : SHAPE_WEST;
-					case SOUTH:
-						return bl ? SHAPE_SOUTH_POWERED : SHAPE_SOUTH;
-					case NORTH:
+					case field_11034:
+						return bl ? EAST_PRESSED_SHAPE : EAST_SHAPE;
+					case field_11039:
+						return bl ? WEST_PRESSED_SHAPE : WEST_SHAPE;
+					case field_11035:
+						return bl ? SOUTH_PRESSED_SHAPE : SOUTH_SHAPE;
+					case field_11043:
 					default:
-						return bl ? SHAPE_NORTH_POWERED : SHAPE_NORTH;
+						return bl ? NORTH_PRESSED_SHAPE : NORTH_SHAPE;
 				}
 			case field_12473:
 			default:
 				if (direction.getAxis() == Direction.Axis.X) {
-					return bl ? SHAPE_CEILING_X_POWERED : SHAPE_CEILING_X;
+					return bl ? CEILING_X_PRESSED_SHAPE : CEILING_X_SHAPE;
 				} else {
-					return bl ? SHAPE_CEILING_Z_POWERED : SHAPE_CEILING_Z;
+					return bl ? CEILING_Z_PRESSED_SHAPE : CEILING_Z_SHAPE;
 				}
 		}
 	}
@@ -176,6 +176,6 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, POWERED, FACE);
+		builder.add(FACING, POWERED, FACE);
 	}
 }

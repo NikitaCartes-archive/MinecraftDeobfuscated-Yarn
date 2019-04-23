@@ -75,8 +75,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		boolean bl = (!this.config.hasNoTerrain() || biome == Biomes.field_9473) && map.containsKey("decoration");
 		if (bl) {
 			List<GenerationStep.Feature> list = Lists.<GenerationStep.Feature>newArrayList();
-			list.add(GenerationStep.Feature.UNDERGROUND_STRUCTURES);
-			list.add(GenerationStep.Feature.SURFACE_STRUCTURES);
+			list.add(GenerationStep.Feature.field_13172);
+			list.add(GenerationStep.Feature.field_13173);
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				if (!list.contains(feature)) {
@@ -94,8 +94,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			if (blockState != null && !Heightmap.Type.field_13197.getBlockPredicate().test(blockState)) {
 				this.config.method_20314(i);
 				flatChunkGeneratorBiome.addFeature(
-					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
-					Biome.configureFeature(Feature.field_19201, new FillLayerFeatureConfig(i, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT)
+					GenerationStep.Feature.field_13179,
+					Biome.configureFeature(Feature.field_19201, new FillLayerFeatureConfig(i, blockState), Decorator.field_14250, DecoratorConfig.DEFAULT)
 				);
 			}
 		}

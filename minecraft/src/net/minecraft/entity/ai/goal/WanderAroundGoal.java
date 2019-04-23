@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundGoal extends Goal {
-	protected final MobEntityWithAi owner;
+	protected final MobEntityWithAi mob;
 	protected double targetX;
 	protected double targetY;
 	protected double targetZ;
@@ -20,7 +20,7 @@ public class WanderAroundGoal extends Goal {
 	}
 
 	public WanderAroundGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.chance = i;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
@@ -28,15 +28,15 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.owner.hasPassengers()) {
+		if (this.mob.hasPassengers()) {
 			return false;
 		} else {
 			if (!this.ignoringChance) {
-				if (this.owner.getDespawnCounter() >= 100) {
+				if (this.mob.getDespawnCounter() >= 100) {
 					return false;
 				}
 
-				if (this.owner.getRand().nextInt(this.chance) != 0) {
+				if (this.mob.getRand().nextInt(this.chance) != 0) {
 					return false;
 				}
 			}
@@ -56,17 +56,17 @@ public class WanderAroundGoal extends Goal {
 
 	@Nullable
 	protected Vec3d getWanderTarget() {
-		return PathfindingUtil.findTarget(this.owner, 10, 7);
+		return PathfindingUtil.findTarget(this.mob, 10, 7);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle();
+		return !this.mob.getNavigation().isIdle();
 	}
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	public void ignoreChanceOnce() {

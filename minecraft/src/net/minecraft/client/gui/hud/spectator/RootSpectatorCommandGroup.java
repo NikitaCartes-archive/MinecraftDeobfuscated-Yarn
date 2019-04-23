@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class RootSpectatorCommandGroup implements SpectatorMenuCommandGroup {
@@ -22,7 +22,7 @@ public class RootSpectatorCommandGroup implements SpectatorMenuCommandGroup {
 	}
 
 	@Override
-	public TextComponent getPrompt() {
-		return new TranslatableTextComponent("spectatorMenu.root.prompt");
+	public Component getPrompt() {
+		return new TranslatableComponent("spectatorMenu.root.prompt");
 	}
 }

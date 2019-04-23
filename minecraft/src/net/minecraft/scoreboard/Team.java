@@ -6,30 +6,30 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.event.HoverEvent;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
 
 public class Team extends AbstractTeam {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
-	private TextComponent displayName;
-	private TextComponent prefix = new StringTextComponent("");
-	private TextComponent suffix = new StringTextComponent("");
+	private Component displayName;
+	private Component prefix = new TextComponent("");
+	private Component suffix = new TextComponent("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private TextFormat color = TextFormat.RESET;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private ChatFormat color = ChatFormat.field_1070;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
 
 	public Team(Scoreboard scoreboard, String string) {
 		this.scoreboard = scoreboard;
 		this.name = string;
-		this.displayName = new StringTextComponent(string);
+		this.displayName = new TextComponent(string);
 	}
 
 	@Override
@@ -37,48 +37,48 @@ public class Team extends AbstractTeam {
 		return this.name;
 	}
 
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.displayName;
 	}
 
-	public TextComponent getFormattedName() {
-		TextComponent textComponent = TextFormatter.bracketed(
+	public Component getFormattedName() {
+		Component component = Components.bracketed(
 			this.displayName
 				.copy()
-				.modifyStyle(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.name))))
+				.modifyStyle(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent(this.name))))
 		);
-		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.RESET) {
-			textComponent.applyFormat(textFormat);
+		ChatFormat chatFormat = this.getColor();
+		if (chatFormat != ChatFormat.field_1070) {
+			component.applyFormat(chatFormat);
 		}
 
-		return textComponent;
+		return component;
 	}
 
-	public void setDisplayName(TextComponent textComponent) {
-		if (textComponent == null) {
+	public void setDisplayName(Component component) {
+		if (component == null) {
 			throw new IllegalArgumentException("Name cannot be null");
 		} else {
-			this.displayName = textComponent;
+			this.displayName = component;
 			this.scoreboard.updateScoreboardTeam(this);
 		}
 	}
 
-	public void setPrefix(@Nullable TextComponent textComponent) {
-		this.prefix = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
+	public void setPrefix(@Nullable Component component) {
+		this.prefix = (Component)(component == null ? new TextComponent("") : component.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public TextComponent getPrefix() {
+	public Component getPrefix() {
 		return this.prefix;
 	}
 
-	public void setSuffix(@Nullable TextComponent textComponent) {
-		this.suffix = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
+	public void setSuffix(@Nullable Component component) {
+		this.suffix = (Component)(component == null ? new TextComponent("") : component.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public TextComponent getSuffix() {
+	public Component getSuffix() {
 		return this.suffix;
 	}
 
@@ -88,18 +88,18 @@ public class Team extends AbstractTeam {
 	}
 
 	@Override
-	public TextComponent modifyText(TextComponent textComponent) {
-		TextComponent textComponent2 = new StringTextComponent("").append(this.prefix).append(textComponent).append(this.suffix);
-		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.RESET) {
-			textComponent2.applyFormat(textFormat);
+	public Component modifyText(Component component) {
+		Component component2 = new TextComponent("").append(this.prefix).append(component).append(this.suffix);
+		ChatFormat chatFormat = this.getColor();
+		if (chatFormat != ChatFormat.field_1070) {
+			component2.applyFormat(chatFormat);
 		}
 
-		return textComponent2;
+		return component2;
 	}
 
-	public static TextComponent modifyText(@Nullable AbstractTeam abstractTeam, TextComponent textComponent) {
-		return abstractTeam == null ? textComponent.copy() : abstractTeam.modifyText(textComponent);
+	public static Component modifyText(@Nullable AbstractTeam abstractTeam, Component component) {
+		return abstractTeam == null ? component.copy() : abstractTeam.modifyText(component);
 	}
 
 	@Override
@@ -171,13 +171,13 @@ public class Team extends AbstractTeam {
 		this.setShowFriendlyInvisibles((i & 2) > 0);
 	}
 
-	public void setColor(TextFormat textFormat) {
-		this.color = textFormat;
+	public void setColor(ChatFormat chatFormat) {
+		this.color = chatFormat;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
 	@Override
-	public TextFormat getColor() {
+	public ChatFormat getColor() {
 		return this.color;
 	}
 }

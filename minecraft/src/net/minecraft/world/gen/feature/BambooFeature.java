@@ -58,13 +58,13 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 
 				for (int k = 0; k < j && iWorld.isAir(mutable); k++) {
 					iWorld.setBlockState(mutable, BAMBOO, 2);
-					mutable.setOffset(Direction.UP, 1);
+					mutable.setOffset(Direction.field_11036, 1);
 				}
 
 				if (mutable.getY() - blockPos.getY() >= 3) {
 					iWorld.setBlockState(mutable, BAMBOO_TOP_1, 2);
-					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
-					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.field_11033, 1), BAMBOO_TOP_2, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.field_11033, 1), BAMBOO_TOP_3, 2);
 				}
 			}
 

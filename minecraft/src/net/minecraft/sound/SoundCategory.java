@@ -13,7 +13,7 @@ public enum SoundCategory {
 	field_15245("block"),
 	field_15251("hostile"),
 	field_15254("neutral"),
-	field_15248("player"),
+	PLAYERS("player"),
 	field_15256("ambient"),
 	field_15246("voice");
 

@@ -60,6 +60,6 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(POWER);
+		builder.add(POWER);
 	}
 }

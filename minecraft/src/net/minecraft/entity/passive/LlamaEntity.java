@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -49,7 +49,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker {
+public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
 	private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -116,7 +116,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new LlamaEntity.class_1504(this));
-		this.targetSelector.add(2, new LlamaEntity.class_1502(this));
+		this.targetSelector.add(2, new LlamaEntity.ChaseWolvesGoal(this));
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 			i = 10;
 			j = 3;
 			f = 2.0F;
-		} else if (item == Blocks.field_10359.getItem()) {
+		} else if (item == Blocks.field_10359.asItem()) {
 			i = 90;
 			j = 6;
 			f = 10.0F;
@@ -192,7 +192,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 			bl = true;
 		}
 
-		if (this.isChild() && i > 0) {
+		if (this.isBaby() && i > 0) {
 			this.world
 				.addParticle(
 					ParticleTypes.field_11211,
@@ -369,10 +369,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	protected LlamaEntity createChild() {
-		return EntityType.LLAMA.create(this.world);
+		return EntityType.field_6074.create(this.world);
 	}
 
-	private void method_6792(LivingEntity livingEntity) {
+	private void spitAt(LivingEntity livingEntity) {
 		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - llamaSpitEntity.y;
@@ -455,7 +455,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	@Override
 	protected void walkToParent() {
-		if (!this.isFollowing() && this.isChild()) {
+		if (!this.isFollowing() && this.isBaby()) {
 			super.walkToParent();
 		}
 	}
@@ -467,11 +467,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		this.method_6792(livingEntity);
+		this.spitAt(livingEntity);
 	}
 
-	static class class_1502 extends FollowTargetGoal<WolfEntity> {
-		public class_1502(LlamaEntity llamaEntity) {
+	static class ChaseWolvesGoal extends FollowTargetGoal<WolfEntity> {
+		public ChaseWolvesGoal(LlamaEntity llamaEntity) {
 			super(llamaEntity, WolfEntity.class, 16, false, true, livingEntity -> !((WolfEntity)livingEntity).isTamed());
 		}
 
@@ -496,8 +496,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 		@Override
 		public boolean shouldContinue() {
-			if (this.entity instanceof LlamaEntity) {
-				LlamaEntity llamaEntity = (LlamaEntity)this.entity;
+			if (this.mob instanceof LlamaEntity) {
+				LlamaEntity llamaEntity = (LlamaEntity)this.mob;
 				if (llamaEntity.field_6999) {
 					llamaEntity.method_6808(false);
 					return false;

@@ -34,7 +34,7 @@ public class ChunkRenderDispatcher {
 				for (int l = 0; l < this.sizeZ; l++) {
 					int m = this.getChunkIndex(j, k, l);
 					this.renderers[m] = chunkRendererFactory.create(this.world, this.renderer);
-					this.renderers[m].method_3653(j * 16, k * 16, l * 16);
+					this.renderers[m].setOrigin(j * 16, k * 16, l * 16);
 				}
 			}
 		}
@@ -71,7 +71,7 @@ public class ChunkRenderDispatcher {
 				for (int p = 0; p < this.sizeY; p++) {
 					int q = p * 16;
 					ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
-					chunkRenderer.method_3653(m, q, o);
+					chunkRenderer.setOrigin(m, q, o);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public class ChunkRenderDispatcher {
 		int m = Math.floorMod(j, this.sizeY);
 		int n = Math.floorMod(k, this.sizeZ);
 		ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
-		chunkRenderer.scheduleRender(bl);
+		chunkRenderer.scheduleRebuild(bl);
 	}
 
 	@Nullable

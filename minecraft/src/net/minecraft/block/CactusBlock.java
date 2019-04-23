@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -55,12 +55,12 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return OUTLINE_SHAPE;
 	}
 
@@ -82,7 +82,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		for (Direction direction : Direction.Type.HORIZONTAL) {
+		for (Direction direction : Direction.Type.field_11062) {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
 			Material material = blockState2.getMaterial();
 			if (material.isSolid() || viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15518)) {
@@ -102,12 +102,12 @@ public class CactusBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	@Override

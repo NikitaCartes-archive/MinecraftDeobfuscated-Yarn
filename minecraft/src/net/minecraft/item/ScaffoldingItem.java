@@ -1,15 +1,15 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -33,7 +33,7 @@ public class ScaffoldingItem extends BlockItem {
 			if (itemPlacementContext.isPlayerSneaking()) {
 				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getFacing().getOpposite() : itemPlacementContext.getFacing();
 			} else {
-				direction = itemPlacementContext.getFacing() == Direction.UP ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.UP;
+				direction = itemPlacementContext.getFacing() == Direction.field_11036 ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.field_11036;
 			}
 
 			int i = 0;
@@ -45,7 +45,7 @@ public class ScaffoldingItem extends BlockItem {
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(
-							new TranslatableTextComponent("build.tooHigh", j).applyFormat(TextFormat.field_1061), ChatMessageType.field_11733
+							new TranslatableComponent("build.tooHigh", j).applyFormat(ChatFormat.field_1061), ChatMessageType.field_11733
 						);
 						((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(chatMessageS2CPacket);
 					}

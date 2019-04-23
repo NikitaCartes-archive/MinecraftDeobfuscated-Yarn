@@ -79,8 +79,8 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		if (this.isPatrolLeader()) {
-			this.setEquippedStack(EquipmentSlot.HEAD, Raid.OMINOUS_BANNER);
-			this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
+			this.setEquippedStack(EquipmentSlot.field_6169, Raid.OMINOUS_BANNER);
+			this.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
 		}
 
 		if (spawnType == SpawnType.field_16527) {
@@ -131,12 +131,12 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	public static class PatrolGoal<T extends PatrolEntity> extends Goal {
-		private final T owner;
+		private final T actor;
 		private final double leaderSpeed;
 		private final double fellowSpeed;
 
 		public PatrolGoal(T patrolEntity, double d, double e) {
-			this.owner = patrolEntity;
+			this.actor = patrolEntity;
 			this.leaderSpeed = d;
 			this.fellowSpeed = e;
 			this.setControls(EnumSet.of(Goal.Control.field_18405));
@@ -144,7 +144,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.owner.isRaidCenterSet() && this.owner.getTarget() == null && !this.owner.hasPassengers() && this.owner.hasPatrolTarget();
+			return this.actor.isRaidCenterSet() && this.actor.getTarget() == null && !this.actor.hasPassengers() && this.actor.hasPatrolTarget();
 		}
 
 		@Override
@@ -157,25 +157,25 @@ public abstract class PatrolEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			boolean bl = this.owner.isPatrolLeader();
-			EntityNavigation entityNavigation = this.owner.getNavigation();
+			boolean bl = this.actor.isPatrolLeader();
+			EntityNavigation entityNavigation = this.actor.getNavigation();
 			if (entityNavigation.isIdle()) {
-				if (bl && this.owner.getPatrolTarget().isWithinDistance(this.owner.getPos(), 10.0)) {
-					this.owner.setRandomPatrolTarget();
+				if (bl && this.actor.getPatrolTarget().isWithinDistance(this.actor.getPos(), 10.0)) {
+					this.actor.setRandomPatrolTarget();
 				} else {
-					Vec3d vec3d = new Vec3d(this.owner.getPatrolTarget());
-					Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
+					Vec3d vec3d = new Vec3d(this.actor.getPatrolTarget());
+					Vec3d vec3d2 = new Vec3d(this.actor.x, this.actor.y, this.actor.z);
 					Vec3d vec3d3 = vec3d2.subtract(vec3d);
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 					BlockPos blockPos = new BlockPos((int)vec3d4.x, (int)vec3d4.y, (int)vec3d4.z);
-					blockPos = this.owner.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+					blockPos = this.actor.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
 						this.wander();
 					} else if (bl) {
-						for (PatrolEntity patrolEntity : this.owner
+						for (PatrolEntity patrolEntity : this.actor
 							.world
-							.getEntities(PatrolEntity.class, this.owner.getBoundingBox().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid())) {
+							.getEntities(PatrolEntity.class, this.actor.getBoundingBox().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid())) {
 							patrolEntity.setPatrolTarget(blockPos);
 						}
 					}
@@ -184,11 +184,11 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		private void wander() {
-			Random random = this.owner.getRand();
-			BlockPos blockPos = this.owner
+			Random random = this.actor.getRand();
+			BlockPos blockPos = this.actor
 				.world
-				.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.owner).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-			this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
+				.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}
 }

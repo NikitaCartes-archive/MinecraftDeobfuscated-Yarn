@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ProgressListener;
 
 @Environment(EnvType.CLIENT)
@@ -26,19 +26,19 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void method_15412(TextComponent textComponent) {
-		this.method_15413(textComponent);
+	public void method_15412(Component component) {
+		this.method_15413(component);
 	}
 
 	@Override
-	public void method_15413(TextComponent textComponent) {
-		this.title = textComponent.getFormattedText();
-		this.method_15414(new TranslatableTextComponent("progress.working"));
+	public void method_15413(Component component) {
+		this.title = component.getFormattedText();
+		this.method_15414(new TranslatableComponent("progress.working"));
 	}
 
 	@Override
-	public void method_15414(TextComponent textComponent) {
-		this.task = textComponent.getFormattedText();
+	public void method_15414(Component component) {
+		this.task = component.getFormattedText();
 		this.progressStagePercentage(0);
 	}
 

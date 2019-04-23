@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -12,26 +12,26 @@ public class EmitterParticle extends NoRenderParticle {
 	private final Entity entity;
 	private int emitterAge;
 	private final int maxEmitterAge;
-	private final ParticleParameters parameters;
+	private final ParticleEffect parameters;
 
-	public EmitterParticle(World world, Entity entity, ParticleParameters particleParameters) {
-		this(world, entity, particleParameters, 3);
+	public EmitterParticle(World world, Entity entity, ParticleEffect particleEffect) {
+		this(world, entity, particleEffect, 3);
 	}
 
-	public EmitterParticle(World world, Entity entity, ParticleParameters particleParameters, int i) {
-		this(world, entity, particleParameters, i, entity.getVelocity());
+	public EmitterParticle(World world, Entity entity, ParticleEffect particleEffect, int i) {
+		this(world, entity, particleEffect, i, entity.getVelocity());
 	}
 
-	private EmitterParticle(World world, Entity entity, ParticleParameters particleParameters, int i, Vec3d vec3d) {
+	private EmitterParticle(World world, Entity entity, ParticleEffect particleEffect, int i, Vec3d vec3d) {
 		super(world, entity.x, entity.getBoundingBox().minY + (double)(entity.getHeight() / 2.0F), entity.z, vec3d.x, vec3d.y, vec3d.z);
 		this.entity = entity;
 		this.maxEmitterAge = i;
-		this.parameters = particleParameters;
-		this.update();
+		this.parameters = particleEffect;
+		this.tick();
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		for (int i = 0; i < 16; i++) {
 			double d = (double)(this.random.nextFloat() * 2.0F - 1.0F);
 			double e = (double)(this.random.nextFloat() * 2.0F - 1.0F);

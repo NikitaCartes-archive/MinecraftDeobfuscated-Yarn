@@ -12,15 +12,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.ChatFormat;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -29,17 +29,17 @@ import net.minecraft.util.registry.Registry;
 
 public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("permissions.requires.player")
+		new TranslatableComponent("permissions.requires.player")
 	);
 	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("permissions.requires.entity")
+		new TranslatableComponent("permissions.requires.entity")
 	);
 	private final CommandOutput output;
 	private final Vec3d position;
 	private final ServerWorld world;
 	private final int level;
 	private final String simpleName;
-	private final TextComponent name;
+	private final Component name;
 	private final MinecraftServer minecraftServer;
 	private final boolean silent;
 	@Nullable
@@ -55,11 +55,11 @@ public class ServerCommandSource implements CommandSource {
 		ServerWorld serverWorld,
 		int i,
 		String string,
-		TextComponent textComponent,
+		Component component,
 		MinecraftServer minecraftServer,
 		@Nullable Entity entity
 	) {
-		this(commandOutput, vec3d, vec2f, serverWorld, i, string, textComponent, minecraftServer, entity, false, (commandContext, bl, ix) -> {
+		this(commandOutput, vec3d, vec2f, serverWorld, i, string, component, minecraftServer, entity, false, (commandContext, bl, ix) -> {
 		}, EntityAnchorArgumentType.EntityAnchor.field_9853);
 	}
 
@@ -70,7 +70,7 @@ public class ServerCommandSource implements CommandSource {
 		ServerWorld serverWorld,
 		int i,
 		String string,
-		TextComponent textComponent,
+		Component component,
 		MinecraftServer minecraftServer,
 		@Nullable Entity entity,
 		boolean bl,
@@ -84,7 +84,7 @@ public class ServerCommandSource implements CommandSource {
 		this.entity = entity;
 		this.level = i;
 		this.simpleName = string;
-		this.name = textComponent;
+		this.name = component;
 		this.minecraftServer = minecraftServer;
 		this.resultConsumer = resultConsumer;
 		this.entityAnchor = entityAnchor;
@@ -284,7 +284,7 @@ public class ServerCommandSource implements CommandSource {
 		return this.withRotation(new Vec2f(h, i));
 	}
 
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.name;
 	}
 
@@ -338,35 +338,35 @@ public class ServerCommandSource implements CommandSource {
 		return this.entityAnchor;
 	}
 
-	public void sendFeedback(TextComponent textComponent, boolean bl) {
+	public void sendFeedback(Component component, boolean bl) {
 		if (this.output.sendCommandFeedback() && !this.silent) {
-			this.output.sendMessage(textComponent);
+			this.output.sendMessage(component);
 		}
 
 		if (bl && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-			this.sendToOps(textComponent);
+			this.sendToOps(component);
 		}
 	}
 
-	private void sendToOps(TextComponent textComponent) {
-		TextComponent textComponent2 = new TranslatableTextComponent("chat.type.admin", this.getDisplayName(), textComponent)
-			.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056});
+	private void sendToOps(Component component) {
+		Component component2 = new TranslatableComponent("chat.type.admin", this.getDisplayName(), component)
+			.applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056});
 		if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
 			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.sendMessage(textComponent2);
+					serverPlayerEntity.sendMessage(component2);
 				}
 			}
 		}
 
 		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean("logAdminCommands")) {
-			this.minecraftServer.sendMessage(textComponent2);
+			this.minecraftServer.sendMessage(component2);
 		}
 	}
 
-	public void sendError(TextComponent textComponent) {
+	public void sendError(Component component) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendMessage(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
+			this.output.sendMessage(new TextComponent("").append(component).applyFormat(ChatFormat.field_1061));
 		}
 	}
 

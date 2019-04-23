@@ -6,16 +6,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class DeOpCommand {
-	private static final SimpleCommandExceptionType ALREADY_DEOPPED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.deop.failed")
-	);
+	private static final SimpleCommandExceptionType ALREADY_DEOPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.deop.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -41,7 +39,7 @@ public class DeOpCommand {
 			if (playerManager.isOperator(gameProfile)) {
 				playerManager.removeFromOperators(gameProfile);
 				i++;
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
 			}
 		}
 

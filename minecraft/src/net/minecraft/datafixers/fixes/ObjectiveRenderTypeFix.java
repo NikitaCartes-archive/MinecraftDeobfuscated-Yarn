@@ -18,7 +18,7 @@ public class ObjectiveRenderTypeFix extends DataFix {
 	}
 
 	private static ScoreboardCriterion.RenderType method_5112(String string) {
-		return string.equals("health") ? ScoreboardCriterion.RenderType.HEARTS : ScoreboardCriterion.RenderType.INTEGER;
+		return string.equals("health") ? ScoreboardCriterion.RenderType.field_1471 : ScoreboardCriterion.RenderType.field_1472;
 	}
 
 	@Override

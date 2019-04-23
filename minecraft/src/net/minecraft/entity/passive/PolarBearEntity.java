@@ -52,7 +52,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.POLAR_BEAR.create(this.world);
+		return EntityType.field_6042.create(this.world);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isChild() ? SoundEvents.field_14605 : SoundEvents.field_15078;
+		return this.isBaby() ? SoundEvents.field_14605 : SoundEvents.field_15078;
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class PolarBearEntity extends AnimalEntity {
 			double e = this.getSquaredMaxAttackDistance(livingEntity);
 			if (d <= e && this.ticksUntilAttack <= 0) {
 				this.ticksUntilAttack = 20;
-				this.entity.tryAttack(livingEntity);
+				this.mob.tryAttack(livingEntity);
 				PolarBearEntity.this.setWarning(false);
 			} else if (d <= e * 2.0) {
 				if (this.ticksUntilAttack <= 0) {
@@ -250,13 +250,13 @@ public class PolarBearEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (PolarBearEntity.this.isChild()) {
+			if (PolarBearEntity.this.isBaby()) {
 				return false;
 			} else {
 				if (super.canStart()) {
 					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
 						.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
-						if (polarBearEntity.isChild()) {
+						if (polarBearEntity.isBaby()) {
 							return true;
 						}
 					}
@@ -284,7 +284,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return !PolarBearEntity.this.isChild() && !PolarBearEntity.this.isOnFire() ? false : super.canStart();
+			return !PolarBearEntity.this.isBaby() && !PolarBearEntity.this.isOnFire() ? false : super.canStart();
 		}
 	}
 
@@ -296,7 +296,7 @@ public class PolarBearEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			super.start();
-			if (PolarBearEntity.this.isChild()) {
+			if (PolarBearEntity.this.isBaby()) {
 				this.callSameTypeForRevenge();
 				this.stop();
 			}
@@ -304,7 +304,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 		@Override
 		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-			if (mobEntity instanceof PolarBearEntity && !mobEntity.isChild()) {
+			if (mobEntity instanceof PolarBearEntity && !mobEntity.isBaby()) {
 				super.setMobEntityTarget(mobEntity, livingEntity);
 			}
 		}

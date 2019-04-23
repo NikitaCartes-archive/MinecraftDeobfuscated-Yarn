@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.EntityTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -36,7 +36,7 @@ public abstract class EntityTypePredicate {
 			String string = JsonHelper.asString(jsonElement, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
-				Tag<EntityType<?>> tag = EntityTags.getContainer().getOrCreate(identifier);
+				Tag<EntityType<?>> tag = EntityTypeTags.getContainer().getOrCreate(identifier);
 				return new EntityTypePredicate.Tagged(tag);
 			} else {
 				Identifier identifier = new Identifier(string);

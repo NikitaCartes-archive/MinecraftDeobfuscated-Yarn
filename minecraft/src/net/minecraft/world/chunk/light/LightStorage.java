@@ -226,23 +226,23 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 										long q;
 										long r;
 										switch (direction) {
-											case DOWN:
+											case field_11033:
 												q = BlockPos.asLong(i + p, j, k + o);
 												r = BlockPos.asLong(i + p, j - 1, k + o);
 												break;
-											case UP:
+											case field_11036:
 												q = BlockPos.asLong(i + p, j + 16 - 1, k + o);
 												r = BlockPos.asLong(i + p, j + 16, k + o);
 												break;
-											case NORTH:
+											case field_11043:
 												q = BlockPos.asLong(i + o, j + p, k);
 												r = BlockPos.asLong(i + o, j + p, k - 1);
 												break;
-											case SOUTH:
+											case field_11035:
 												q = BlockPos.asLong(i + o, j + p, k + 16 - 1);
 												r = BlockPos.asLong(i + o, j + p, k + 16);
 												break;
-											case WEST:
+											case field_11039:
 												q = BlockPos.asLong(i, j + o, k + p);
 												r = BlockPos.asLong(i - 1, j + o, k + p);
 												break;

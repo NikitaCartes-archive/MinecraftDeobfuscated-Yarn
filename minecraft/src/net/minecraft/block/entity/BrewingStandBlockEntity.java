@@ -15,9 +15,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Tickable;
@@ -64,12 +64,12 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	};
 
 	public BrewingStandBlockEntity() {
-		super(BlockEntityType.BREWING_STAND);
+		super(BlockEntityType.field_11894);
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.brewing");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.brewing");
 	}
 
 	@Override
@@ -251,10 +251,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public int[] getInvAvailableSlots(Direction direction) {
-		if (direction == Direction.UP) {
+		if (direction == Direction.field_11036) {
 			return TOP_SLOTS;
 		} else {
-			return direction == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
+			return direction == Direction.field_11033 ? BOTTOM_SLOTS : SIDE_SLOTS;
 		}
 	}
 

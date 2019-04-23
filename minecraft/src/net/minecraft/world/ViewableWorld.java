@@ -8,11 +8,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.BitSetVoxelSet;
@@ -22,7 +23,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
 
@@ -84,7 +84,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.FULL, true);
+		return this.getChunk(i, j, ChunkStatus.field_12803, true);
 	}
 
 	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
@@ -92,11 +92,11 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default ChunkStatus getLeastChunkStatusForCollisionCalculation() {
-		return ChunkStatus.EMPTY;
+		return ChunkStatus.field_12798;
 	}
 
-	default boolean canPlace(BlockState blockState, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, verticalEntityPosition);
+	default boolean canPlace(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
+		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, entityContext);
 		return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
@@ -127,12 +127,12 @@ public interface ViewableWorld extends ExtendedBlockView {
 	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
 		VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox);
 		Stream<VoxelShape> stream;
-		VerticalEntityPosition verticalEntityPosition;
+		EntityContext entityContext;
 		if (entity == null) {
-			verticalEntityPosition = VerticalEntityPosition.minValue();
+			entityContext = EntityContext.absent();
 			stream = Stream.empty();
 		} else {
-			verticalEntityPosition = VerticalEntityPosition.fromEntity(entity);
+			entityContext = EntityContext.of(entity);
 			VoxelShape voxelShape2 = this.getWorldBorder().asVoxelShape();
 			boolean bl = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
 			boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
@@ -176,7 +176,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 				}
 
 				if ((!blx || !bl2x) && (!bl2x || !bl3) && (!bl3 || !blx) && chunk != null) {
-					VoxelShape voxelShapex = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
+					VoxelShape voxelShapex = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, entityContext);
 					VoxelShape voxelShape2x = VoxelShapes.empty().offset((double)(-o), (double)(-p), (double)(-q));
 					if (VoxelShapes.matchesAnywhere(voxelShape2x, voxelShapex, BooleanBiFunction.AND)) {
 						return VoxelShapes.empty();

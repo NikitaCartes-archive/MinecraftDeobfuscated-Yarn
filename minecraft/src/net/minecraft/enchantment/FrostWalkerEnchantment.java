@@ -4,16 +4,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
 	public FrostWalkerEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.FEET, equipmentSlots);
+		super(weight, EnchantmentTarget.ARMOR_FEET, equipmentSlots);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 						if (blockState3.getMaterial() == Material.WATER
 							&& (Integer)blockState3.get(FluidBlock.LEVEL) == 0
 							&& blockState.canPlaceAt(world, blockPos2)
-							&& world.canPlace(blockState, blockPos2, VerticalEntityPosition.minValue())) {
+							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
 							world.getBlockTickScheduler().schedule(blockPos2.toImmutable(), Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
 						}

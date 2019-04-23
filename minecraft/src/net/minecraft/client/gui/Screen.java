@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
@@ -30,10 +31,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.event.ClickEvent;
-import net.minecraft.text.event.HoverEvent;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -46,7 +46,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
-	protected final TextComponent title;
+	protected final Component title;
 	protected final List<Element> children = Lists.<Element>newArrayList();
 	@Nullable
 	public MinecraftClient minecraft;
@@ -58,11 +58,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public TextRenderer font;
 	private URI clickedLink;
 
-	protected Screen(TextComponent textComponent) {
-		this.title = textComponent;
+	protected Screen(Component component) {
+		this.title = component;
 	}
 
-	public TextComponent getTitle() {
+	public Component getTitle() {
 		return this.title;
 	}
 
@@ -113,13 +113,13 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public List<String> getTooltipFromItem(ItemStack itemStack) {
-		List<TextComponent> list = itemStack.getTooltipText(
-			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
+		List<Component> list = itemStack.getTooltipText(
+			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
-		for (TextComponent textComponent : list) {
-			list2.add(textComponent.getFormattedText());
+		for (Component component : list) {
+			list2.add(component.getFormattedText());
 		}
 
 		return list2;
@@ -193,10 +193,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	protected void renderComponentHoverEffect(TextComponent textComponent, int i, int j) {
-		if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
-			HoverEvent hoverEvent = textComponent.getStyle().getHoverEvent();
-			if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
+	protected void renderComponentHoverEffect(Component component, int i, int j) {
+		if (component != null && component.getStyle().getHoverEvent() != null) {
+			HoverEvent hoverEvent = component.getStyle().getHoverEvent();
+			if (hoverEvent.getAction() == HoverEvent.Action.field_11757) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
 				try {
@@ -208,18 +208,18 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 
 				if (itemStack.isEmpty()) {
-					this.renderTooltip(TextFormat.field_1061 + "Invalid Item!", i, j);
+					this.renderTooltip(ChatFormat.field_1061 + "Invalid Item!", i, j);
 				} else {
 					this.renderTooltip(itemStack, i, j);
 				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
+			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11761) {
 				if (this.minecraft.options.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
-						TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("name"));
-						if (textComponent2 != null) {
-							list.add(textComponent2.getFormattedText());
+						Component component2 = Component.Serializer.fromJsonString(compoundTag.getString("name"));
+						if (component2 != null) {
+							list.add(component2.getFormattedText());
 						}
 
 						if (compoundTag.containsKey("type", 8)) {
@@ -230,10 +230,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 						list.add(compoundTag.getString("id"));
 						this.renderTooltip(list, i, j);
 					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.renderTooltip(TextFormat.field_1061 + "Invalid Entity!", i, j);
+						this.renderTooltip(ChatFormat.field_1061 + "Invalid Entity!", i, j);
 					}
 				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
+			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11762) {
 				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
 			}
 
@@ -244,17 +244,17 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected void insertText(String string, boolean bl) {
 	}
 
-	public boolean handleComponentClicked(TextComponent textComponent) {
-		if (textComponent == null) {
+	public boolean handleComponentClicked(Component component) {
+		if (component == null) {
 			return false;
 		} else {
-			ClickEvent clickEvent = textComponent.getStyle().getClickEvent();
+			ClickEvent clickEvent = component.getStyle().getClickEvent();
 			if (hasShiftDown()) {
-				if (textComponent.getStyle().getInsertion() != null) {
-					this.insertText(textComponent.getStyle().getInsertion(), false);
+				if (component.getStyle().getInsertion() != null) {
+					this.insertText(component.getStyle().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
-				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
+				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {
 					if (!this.minecraft.options.chatLinks) {
 						return false;
 					}
@@ -279,12 +279,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					} catch (URISyntaxException var5) {
 						LOGGER.error("Can't open url for {}", clickEvent, var5);
 					}
-				} else if (clickEvent.getAction() == ClickEvent.Action.OPEN_FILE) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.field_11746) {
 					URI uRIx = new File(clickEvent.getValue()).toURI();
 					this.openLink(uRIx);
-				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.field_11745) {
 					this.insertText(clickEvent.getValue(), true);
-				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
 					this.sendMessage(clickEvent.getValue(), false);
 				} else {
 					LOGGER.error("Don't know how to handle {}", clickEvent);

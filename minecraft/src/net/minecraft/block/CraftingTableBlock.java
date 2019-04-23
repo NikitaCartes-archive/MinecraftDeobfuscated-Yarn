@@ -5,16 +5,16 @@ import net.minecraft.container.BlockContext;
 import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableBlock extends Block {
-	private static final TextComponent CONTAINER_NAME = new TranslatableTextComponent("container.crafting");
+	private static final Component CONTAINER_NAME = new TranslatableComponent("container.crafting");
 
 	protected CraftingTableBlock(Block.Settings settings) {
 		super(settings);

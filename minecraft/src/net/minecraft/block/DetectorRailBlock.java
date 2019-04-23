@@ -48,7 +48,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient) {
 			if (!(Boolean)blockState.get(POWERED)) {
-				this.method_10002(world, blockPos, blockState);
+				this.updatePoweredStatus(world, blockPos, blockState);
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient && (Boolean)blockState.get(POWERED)) {
-			this.method_10002(world, blockPos, blockState);
+			this.updatePoweredStatus(world, blockPos, blockState);
 		}
 	}
 
@@ -70,21 +70,21 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		if (!(Boolean)blockState.get(POWERED)) {
 			return 0;
 		} else {
-			return direction == Direction.UP ? 15 : 0;
+			return direction == Direction.field_11036 ? 15 : 0;
 		}
 	}
 
-	private void method_10002(World world, BlockPos blockPos, BlockState blockState) {
+	private void updatePoweredStatus(World world, BlockPos blockPos, BlockState blockState) {
 		boolean bl = (Boolean)blockState.get(POWERED);
 		boolean bl2 = false;
-		List<AbstractMinecartEntity> list = this.method_10001(world, blockPos, AbstractMinecartEntity.class, null);
+		List<AbstractMinecartEntity> list = this.getCarts(world, blockPos, AbstractMinecartEntity.class, null);
 		if (!list.isEmpty()) {
 			bl2 = true;
 		}
 
 		if (bl2 && !bl) {
 			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 3);
-			this.method_10003(world, blockPos, blockState, true);
+			this.updateNearbyRails(world, blockPos, blockState, true);
 			world.updateNeighborsAlways(blockPos, this);
 			world.updateNeighborsAlways(blockPos.down(), this);
 			world.scheduleBlockRender(blockPos);
@@ -92,7 +92,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 		if (!bl2 && bl) {
 			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 3);
-			this.method_10003(world, blockPos, blockState, false);
+			this.updateNearbyRails(world, blockPos, blockState, false);
 			world.updateNeighborsAlways(blockPos, this);
 			world.updateNeighborsAlways(blockPos.down(), this);
 			world.scheduleBlockRender(blockPos);
@@ -105,7 +105,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		world.updateHorizontalAdjacent(blockPos, this);
 	}
 
-	protected void method_10003(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+	protected void updateNearbyRails(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
 		RailPlacementHelper railPlacementHelper = new RailPlacementHelper(world, blockPos, blockState);
 
 		for (BlockPos blockPos2 : railPlacementHelper.getNeighbors()) {
@@ -118,7 +118,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			super.onBlockAdded(blockState, world, blockPos, blockState2, bl);
-			this.method_10002(world, blockPos, blockState);
+			this.updatePoweredStatus(world, blockPos, blockState);
 		}
 	}
 
@@ -135,12 +135,12 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	@Override
 	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
 		if ((Boolean)blockState.get(POWERED)) {
-			List<CommandBlockMinecartEntity> list = this.method_10001(world, blockPos, CommandBlockMinecartEntity.class, null);
+			List<CommandBlockMinecartEntity> list = this.getCarts(world, blockPos, CommandBlockMinecartEntity.class, null);
 			if (!list.isEmpty()) {
 				return ((CommandBlockMinecartEntity)list.get(0)).getCommandExecutor().getSuccessCount();
 			}
 
-			List<AbstractMinecartEntity> list2 = this.method_10001(world, blockPos, AbstractMinecartEntity.class, EntityPredicates.VALID_INVENTORIES);
+			List<AbstractMinecartEntity> list2 = this.getCarts(world, blockPos, AbstractMinecartEntity.class, EntityPredicates.VALID_INVENTORIES);
 			if (!list2.isEmpty()) {
 				return Container.calculateComparatorOutput((Inventory)list2.get(0));
 			}
@@ -149,11 +149,11 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		return 0;
 	}
 
-	protected <T extends AbstractMinecartEntity> List<T> method_10001(World world, BlockPos blockPos, Class<T> class_, @Nullable Predicate<Entity> predicate) {
-		return world.getEntities(class_, this.method_10004(blockPos), predicate);
+	protected <T extends AbstractMinecartEntity> List<T> getCarts(World world, BlockPos blockPos, Class<T> class_, @Nullable Predicate<Entity> predicate) {
+		return world.getEntities(class_, this.getCartDetectionBox(blockPos), predicate);
 	}
 
-	private BoundingBox method_10004(BlockPos blockPos) {
+	private BoundingBox getCartDetectionBox(BlockPos blockPos) {
 		float f = 0.2F;
 		return new BoundingBox(
 			(double)((float)blockPos.getX() + 0.2F),
@@ -168,7 +168,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_180:
+			case field_11464:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12666);
@@ -187,7 +187,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 					case field_12663:
 						return blockState.with(SHAPE, RailShape.field_12671);
 				}
-			case ROT_270:
+			case field_11465:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12670);
@@ -210,7 +210,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 					case field_12674:
 						return blockState.with(SHAPE, RailShape.field_12665);
 				}
-			case ROT_90:
+			case field_11463:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12668);
@@ -242,7 +242,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		RailShape railShape = blockState.get(SHAPE);
 		switch (blockMirror) {
-			case LEFT_RIGHT:
+			case field_11300:
 				switch (railShape) {
 					case field_12670:
 						return blockState.with(SHAPE, RailShape.field_12668);
@@ -259,7 +259,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 					default:
 						return super.mirror(blockState, blockMirror);
 				}
-			case FRONT_BACK:
+			case field_11301:
 				switch (railShape) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12666);
@@ -285,6 +285,6 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(SHAPE, POWERED);
+		builder.add(SHAPE, POWERED);
 	}
 }

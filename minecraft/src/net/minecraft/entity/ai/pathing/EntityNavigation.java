@@ -263,7 +263,7 @@ public abstract class EntityNavigation {
 	protected abstract boolean isAtValidPosition();
 
 	protected boolean isInLiquid() {
-		return this.entity.isInsideWaterOrBubbleColumn() || this.entity.isTouchingLava();
+		return this.entity.isInsideWaterOrBubbleColumn() || this.entity.isInLava();
 	}
 
 	protected void method_6359() {

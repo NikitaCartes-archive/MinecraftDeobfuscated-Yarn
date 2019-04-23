@@ -4,7 +4,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.datafixers.util.Pair;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
@@ -165,19 +164,19 @@ public class BlockPattern {
 			return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
 		}
 
-		public Pair<Vec3d, Pair<Vec3d, Integer>> method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
+		public BlockPattern.TeleportTarget method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
 			Direction direction2 = this.getForwards();
 			Direction direction3 = direction2.rotateYClockwise();
 			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();
 			double g;
 			double h;
-			if (direction3 == Direction.NORTH) {
+			if (direction3 == Direction.field_11043) {
 				g = (double)blockPos.getX() + 0.5;
 				h = (double)(this.getFrontTopLeft().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.SOUTH) {
+			} else if (direction3 == Direction.field_11035) {
 				g = (double)blockPos.getX() + 0.5;
 				h = (double)this.getFrontTopLeft().getZ() + (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.WEST) {
+			} else if (direction3 == Direction.field_11039) {
 				g = (double)(this.getFrontTopLeft().getX() + 1) - (1.0 - e) * (double)this.getWidth();
 				h = (double)blockPos.getZ() + 0.5;
 			} else {
@@ -202,7 +201,19 @@ public class BlockPattern {
 			}
 
 			int k = (direction2.getHorizontal() - direction.getOpposite().getHorizontal()) * 90;
-			return Pair.of(new Vec3d(g, f, h), Pair.of(new Vec3d(i, vec3d.y, j), k));
+			return new BlockPattern.TeleportTarget(new Vec3d(g, f, h), new Vec3d(i, vec3d.y, j), k);
+		}
+	}
+
+	public static class TeleportTarget {
+		public final Vec3d pos;
+		public final Vec3d velocity;
+		public final int yaw;
+
+		public TeleportTarget(Vec3d vec3d, Vec3d vec3d2, int i) {
+			this.pos = vec3d;
+			this.velocity = vec3d2;
+			this.yaw = i;
 		}
 	}
 }

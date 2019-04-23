@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum WireConnection implements StringRepresentable {
+public enum WireConnection implements SnakeCaseIdentifiable {
 	field_12686("up"),
 	field_12689("side"),
 	field_12687("none");
@@ -14,11 +14,11 @@ public enum WireConnection implements StringRepresentable {
 	}
 
 	public String toString() {
-		return this.asString();
+		return this.toSnakeCase();
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

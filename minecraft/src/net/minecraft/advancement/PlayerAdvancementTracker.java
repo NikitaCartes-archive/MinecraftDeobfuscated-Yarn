@@ -38,9 +38,9 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -263,7 +263,7 @@ public class PlayerAdvancementTracker {
 					this.server
 						.getPlayerManager()
 						.sendToAll(
-							new TranslatableTextComponent(
+							new TranslatableComponent(
 								"chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.getTextComponent()
 							)
 						);

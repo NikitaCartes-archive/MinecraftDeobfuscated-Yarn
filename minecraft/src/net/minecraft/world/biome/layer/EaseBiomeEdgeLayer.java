@@ -5,7 +5,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
-	INSTANCE;
+	field_16091;
 
 	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.field_9424);
 	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9472);
@@ -106,7 +106,9 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 			if (biome != null && biome2 != null) {
 				Biome.TemperatureGroup temperatureGroup = biome.getTemperatureGroup();
 				Biome.TemperatureGroup temperatureGroup2 = biome2.getTemperatureGroup();
-				return temperatureGroup == temperatureGroup2 || temperatureGroup == Biome.TemperatureGroup.MEDIUM || temperatureGroup2 == Biome.TemperatureGroup.MEDIUM;
+				return temperatureGroup == temperatureGroup2
+					|| temperatureGroup == Biome.TemperatureGroup.field_9375
+					|| temperatureGroup2 == Biome.TemperatureGroup.field_9375;
 			} else {
 				return false;
 			}

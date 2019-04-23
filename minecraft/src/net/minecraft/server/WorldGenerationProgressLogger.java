@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import javax.annotation.Nullable;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,14 +29,14 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 
 	@Override
 	public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
-		if (chunkStatus == ChunkStatus.FULL) {
+		if (chunkStatus == ChunkStatus.field_12803) {
 			this.generatedCount++;
 		}
 
 		int i = this.getProgressPercentage();
 		if (SystemUtil.getMeasuringTimeMs() > this.nextMessageTime) {
 			this.nextMessageTime += 500L;
-			LOGGER.info(new TranslatableTextComponent("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
+			LOGGER.info(new TranslatableComponent("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
 		}
 	}
 

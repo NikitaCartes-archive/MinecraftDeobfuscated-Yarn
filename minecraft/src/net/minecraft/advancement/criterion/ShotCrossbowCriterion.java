@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -76,8 +76,8 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 			this.item = itemPredicate;
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(ItemProvider itemProvider) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemProvider).build());
+		public static ShotCrossbowCriterion.Conditions create(ItemConvertible itemConvertible) {
+			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {

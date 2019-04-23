@@ -4,22 +4,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.toast.TutorialToast;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class MovementTutorialStepHandler implements TutorialStepHandler {
-	private static final TextComponent MOVE_TITLE = new TranslatableTextComponent(
+	private static final Component MOVE_TITLE = new TranslatableComponent(
 		"tutorial.move.title",
 		TutorialManager.getKeybindName("forward"),
 		TutorialManager.getKeybindName("left"),
 		TutorialManager.getKeybindName("back"),
 		TutorialManager.getKeybindName("right")
 	);
-	private static final TextComponent MOVE_DESCRIPTION = new TranslatableTextComponent("tutorial.move.description", TutorialManager.getKeybindName("jump"));
-	private static final TextComponent LOOK_TITLE = new TranslatableTextComponent("tutorial.look.title");
-	private static final TextComponent LOOK_DESCRIPTION = new TranslatableTextComponent("tutorial.look.description");
+	private static final Component MOVE_DESCRIPTION = new TranslatableComponent("tutorial.move.description", TutorialManager.getKeybindName("jump"));
+	private static final Component LOOK_TITLE = new TranslatableComponent("tutorial.look.title");
+	private static final Component LOOK_DESCRIPTION = new TranslatableComponent("tutorial.look.description");
 	private final TutorialManager manager;
 	private TutorialToast moveToast;
 	private TutorialToast lookAroundToast;
@@ -68,9 +68,9 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.moveAroundCompletionTicks != -1 && this.lookAroundCompletionTicks != -1) {
 			if (this.manager.getGameMode() == GameMode.field_9215) {
-				this.manager.setStep(TutorialStep.FIND_TREE);
+				this.manager.setStep(TutorialStep.field_5648);
 			} else {
-				this.manager.setStep(TutorialStep.NONE);
+				this.manager.setStep(TutorialStep.field_5653);
 			}
 		}
 

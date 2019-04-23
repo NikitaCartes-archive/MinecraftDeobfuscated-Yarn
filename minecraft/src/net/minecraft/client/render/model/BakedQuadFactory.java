@@ -109,15 +109,15 @@ public class BakedQuadFactory {
 
 	private float method_3456(Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				return 0.5F;
-			case UP:
+			case field_11036:
 				return 1.0F;
-			case NORTH:
-			case SOUTH:
+			case field_11043:
+			case field_11035:
 				return 0.8F;
-			case WEST:
-			case EAST:
+			case field_11039:
+			case field_11034:
 				return 0.6F;
 			default:
 				return 1.0F;
@@ -204,7 +204,7 @@ public class BakedQuadFactory {
 	}
 
 	public int method_3455(Vector3f vector3f, Direction direction, int i, ModelRotation modelRotation) {
-		if (modelRotation == ModelRotation.X0_Y0) {
+		if (modelRotation == ModelRotation.field_5350) {
 			return i;
 		} else {
 			this.method_3464(vector3f, new Vector3f(0.5F, 0.5F, 0.5F), modelRotation.getQuaternion(), new Vector3f(1.0F, 1.0F, 1.0F));
@@ -243,7 +243,7 @@ public class BakedQuadFactory {
 			}
 		}
 
-		return direction == null ? Direction.UP : direction;
+		return direction == null ? Direction.field_11036 : direction;
 	}
 
 	private void method_3462(int[] is, Direction direction) {
@@ -321,102 +321,102 @@ public class BakedQuadFactory {
 	}
 
 	static {
-		method_3466(ModelRotation.X0_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X90_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X90_Y90, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y180, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X90_Y270, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X180_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X180_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X270_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y90, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X270_Y180, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y270, Direction.UP, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.UP, field_4261);
-		method_3466(ModelRotation.X0_Y90, Direction.DOWN, field_4261);
-		method_3466(ModelRotation.X90_Y0, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y90, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y180, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.NORTH, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.SOUTH, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X180_Y90, Direction.UP, field_4261);
-		method_3466(ModelRotation.X180_Y270, Direction.DOWN, field_4261);
-		method_3466(ModelRotation.X270_Y0, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.NORTH, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.SOUTH, field_4261);
-		method_3466(ModelRotation.X270_Y180, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y270, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X0_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X0_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X90_Y0, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y90, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X90_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y270, Direction.UP, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X270_Y0, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X270_Y90, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X270_Y270, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X0_Y90, Direction.UP, field_4263);
-		method_3466(ModelRotation.X0_Y270, Direction.DOWN, field_4263);
-		method_3466(ModelRotation.X90_Y0, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.NORTH, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.SOUTH, field_4263);
-		method_3466(ModelRotation.X90_Y180, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y270, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X270_Y0, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X180_Y90, Direction.DOWN, field_4263);
-		method_3466(ModelRotation.X180_Y270, Direction.UP, field_4263);
-		method_3466(ModelRotation.X270_Y90, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X270_Y180, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.NORTH, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.SOUTH, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.WEST, field_4263);
+		method_3466(ModelRotation.field_5350, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5351, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5351, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5360, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5367, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5367, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5354, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5358, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5358, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5353, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5353, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5349, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5361, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5361, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5352, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11036, field_4261);
+		method_3466(ModelRotation.field_5366, Direction.field_11033, field_4261);
+		method_3466(ModelRotation.field_5351, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5360, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5367, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11043, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11035, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5348, Direction.field_11036, field_4261);
+		method_3466(ModelRotation.field_5359, Direction.field_11033, field_4261);
+		method_3466(ModelRotation.field_5353, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11043, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11035, field_4261);
+		method_3466(ModelRotation.field_5361, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5352, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5355, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5355, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5351, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5351, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5360, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5367, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5367, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5354, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5353, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5353, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5349, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5361, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5361, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5352, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5366, Direction.field_11036, field_4263);
+		method_3466(ModelRotation.field_5347, Direction.field_11033, field_4263);
+		method_3466(ModelRotation.field_5351, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11043, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11035, field_4263);
+		method_3466(ModelRotation.field_5367, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5354, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5353, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5348, Direction.field_11033, field_4263);
+		method_3466(ModelRotation.field_5359, Direction.field_11036, field_4263);
+		method_3466(ModelRotation.field_5349, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5361, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11043, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11035, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11039, field_4263);
 	}
 
 	@Environment(EnvType.CLIENT)

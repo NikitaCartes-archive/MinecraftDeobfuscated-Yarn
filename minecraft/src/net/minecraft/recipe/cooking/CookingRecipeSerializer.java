@@ -2,7 +2,7 @@ package net.minecraft.recipe.cooking;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -29,7 +29,7 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 		String string2 = JsonHelper.getString(jsonObject, "result");
 		Identifier identifier2 = new Identifier(string2);
 		ItemStack itemStack = new ItemStack(
-			(ItemProvider)Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
+			(ItemConvertible)Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
 		);
 		float f = JsonHelper.getFloat(jsonObject, "experience", 0.0F);
 		int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);

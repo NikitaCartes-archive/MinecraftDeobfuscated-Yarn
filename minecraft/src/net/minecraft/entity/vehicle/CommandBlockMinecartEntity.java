@@ -10,10 +10,10 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
@@ -21,9 +21,7 @@ import net.minecraft.world.World;
 
 public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	private static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
-	private static final TrackedData<TextComponent> LAST_OUTPUT = DataTracker.registerData(
-		CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT
-	);
+	private static final TrackedData<Component> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
 	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.CommandExecutor();
 	private int lastExecuted;
 
@@ -32,14 +30,14 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public CommandBlockMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.COMMAND_BLOCK_MINECART, world, d, e, f);
+		super(EntityType.field_6136, world, d, e, f);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(COMMAND, "");
-		this.getDataTracker().startTracking(LAST_OUTPUT, new StringTextComponent(""));
+		this.getDataTracker().startTracking(LAST_OUTPUT, new TextComponent(""));
 	}
 
 	@Override
@@ -98,7 +96,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean method_5833() {
+	public boolean entityDataRequiresOperator() {
 		return true;
 	}
 

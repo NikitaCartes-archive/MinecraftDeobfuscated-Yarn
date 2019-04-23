@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 	private static final Identifier SKIN = new Identifier("textures/entity/lead_knot.png");
-	private final LeashEntityModel<LeadKnotEntity> field_4735 = new LeashEntityModel<>();
+	private final LeashEntityModel<LeadKnotEntity> model = new LeashEntityModel<>();
 
 	public LeashKnotEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -25,13 +25,13 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.bindEntityTexture(leadKnotEntity);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
 		}
 
-		this.field_4735.render(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		if (this.renderOutlines) {
+		this.model.render(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

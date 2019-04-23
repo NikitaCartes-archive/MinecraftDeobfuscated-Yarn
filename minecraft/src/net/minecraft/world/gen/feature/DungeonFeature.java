@@ -22,7 +22,9 @@ import org.apache.logging.log4j.Logger;
 
 public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SPIDER};
+	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{
+		EntityType.field_6137, EntityType.field_6051, EntityType.field_6051, EntityType.field_6079
+	};
 	private static final BlockState AIR = Blocks.field_10543.getDefaultState();
 
 	public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -95,7 +97,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					if (iWorld.isAir(blockPos3)) {
 						int x = 0;
 
-						for (Direction direction : Direction.Type.HORIZONTAL) {
+						for (Direction direction : Direction.Type.field_11062) {
 							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
 								x++;
 							}
@@ -103,7 +105,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 						if (x == 1) {
 							iWorld.setBlockState(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.field_10034.getDefaultState()), 2);
-							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.CHEST_SIMPLE_DUNGEON);
+							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.field_356);
 							break;
 						}
 					}

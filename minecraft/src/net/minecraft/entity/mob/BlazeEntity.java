@@ -95,7 +95,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (!this.onGround && this.getVelocity().y < 0.0) {
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
@@ -129,7 +129,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	@Override
@@ -185,18 +185,18 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	static class ShootFireballGoal extends Goal {
-		private final BlazeEntity field_7219;
+		private final BlazeEntity blaze;
 		private int field_7218;
 		private int field_7217;
 
 		public ShootFireballGoal(BlazeEntity blazeEntity) {
-			this.field_7219 = blazeEntity;
+			this.blaze = blazeEntity;
 			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
-			LivingEntity livingEntity = this.field_7219.getTarget();
+			LivingEntity livingEntity = this.blaze.getTarget();
 			return livingEntity != null && livingEntity.isAlive();
 		}
 
@@ -207,69 +207,63 @@ public class BlazeEntity extends HostileEntity {
 
 		@Override
 		public void stop() {
-			this.field_7219.setFireActive(false);
+			this.blaze.setFireActive(false);
 		}
 
 		@Override
 		public void tick() {
 			this.field_7217--;
-			LivingEntity livingEntity = this.field_7219.getTarget();
-			double d = this.field_7219.squaredDistanceTo(livingEntity);
+			LivingEntity livingEntity = this.blaze.getTarget();
+			double d = this.blaze.squaredDistanceTo(livingEntity);
 			if (d < 4.0) {
 				if (this.field_7217 <= 0) {
 					this.field_7217 = 20;
-					this.field_7219.tryAttack(livingEntity);
+					this.blaze.tryAttack(livingEntity);
 				}
 
-				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+				this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 			} else if (d < this.method_6995() * this.method_6995()) {
-				double e = livingEntity.x - this.field_7219.x;
-				double f = livingEntity.getBoundingBox().minY
-					+ (double)(livingEntity.getHeight() / 2.0F)
-					- (this.field_7219.y + (double)(this.field_7219.getHeight() / 2.0F));
-				double g = livingEntity.z - this.field_7219.z;
+				double e = livingEntity.x - this.blaze.x;
+				double f = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0F));
+				double g = livingEntity.z - this.blaze.z;
 				if (this.field_7217 <= 0) {
 					this.field_7218++;
 					if (this.field_7218 == 1) {
 						this.field_7217 = 60;
-						this.field_7219.setFireActive(true);
+						this.blaze.setFireActive(true);
 					} else if (this.field_7218 <= 4) {
 						this.field_7217 = 6;
 					} else {
 						this.field_7217 = 100;
 						this.field_7218 = 0;
-						this.field_7219.setFireActive(false);
+						this.blaze.setFireActive(false);
 					}
 
 					if (this.field_7218 > 1) {
 						float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
-						this.field_7219.world.playLevelEvent(null, 1018, new BlockPos((int)this.field_7219.x, (int)this.field_7219.y, (int)this.field_7219.z), 0);
+						this.blaze.world.playLevelEvent(null, 1018, new BlockPos((int)this.blaze.x, (int)this.blaze.y, (int)this.blaze.z), 0);
 
 						for (int i = 0; i < 1; i++) {
 							SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-								this.field_7219.world,
-								this.field_7219,
-								e + this.field_7219.getRand().nextGaussian() * (double)h,
-								f,
-								g + this.field_7219.getRand().nextGaussian() * (double)h
+								this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h
 							);
-							smallFireballEntity.y = this.field_7219.y + (double)(this.field_7219.getHeight() / 2.0F) + 0.5;
-							this.field_7219.world.spawnEntity(smallFireballEntity);
+							smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0F) + 0.5;
+							this.blaze.world.spawnEntity(smallFireballEntity);
 						}
 					}
 				}
 
-				this.field_7219.getLookControl().lookAt(livingEntity, 10.0F, 10.0F);
+				this.blaze.getLookControl().lookAt(livingEntity, 10.0F, 10.0F);
 			} else {
-				this.field_7219.getNavigation().stop();
-				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+				this.blaze.getNavigation().stop();
+				this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 			}
 
 			super.tick();
 		}
 
 		private double method_6995() {
-			EntityAttributeInstance entityAttributeInstance = this.field_7219.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
+			EntityAttributeInstance entityAttributeInstance = this.blaze.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
 			return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
 		}
 	}

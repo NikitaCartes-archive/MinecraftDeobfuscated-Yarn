@@ -14,7 +14,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -29,12 +29,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		.collect(Collectors.toList());
 	private final NewLevelScreen parent;
 	private final CompoundTag generatorOptionsTag;
-	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomSelectionList;
-	private int biomsListLength;
+	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
+	private int biomeListLength;
 	private ButtonWidget confirmButton;
 
 	public CustomizeBuffetLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
-		super(new TranslatableTextComponent("createWorld.customize.buffet.title"));
+		super(new TranslatableComponent("createWorld.customize.buffet.title"));
 		this.parent = newLevelScreen;
 		this.generatorOptionsTag = compoundTag;
 	}
@@ -50,23 +50,23 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				20,
 				I18n.translate("createWorld.customize.buffet.generatortype")
 					+ " "
-					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomsListLength))),
+					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength))),
 				buttonWidget -> {
-					this.biomsListLength++;
-					if (this.biomsListLength >= CHUNK_GENERATOR_TYPES.size()) {
-						this.biomsListLength = 0;
+					this.biomeListLength++;
+					if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
+						this.biomeListLength = 0;
 					}
 
 					buttonWidget.setMessage(
 						I18n.translate("createWorld.customize.buffet.generatortype")
 							+ " "
-							+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomsListLength)))
+							+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength)))
 					);
 				}
 			)
 		);
-		this.biomSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
-		this.children.add(this.biomSelectionList);
+		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
+		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.parent.generatorOptionsTag = this.getGeneratorTag();
 			this.minecraft.openScreen(this.parent);
@@ -84,7 +84,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 			for (int i = 0; i < CHUNK_GENERATOR_TYPES.size(); i++) {
 				if (((Identifier)CHUNK_GENERATOR_TYPES.get(i)).equals(identifier)) {
-					this.biomsListLength = i;
+					this.biomeListLength = i;
 					break;
 				}
 			}
@@ -95,9 +95,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 			for (int ix = 0; ix < listTag.size(); ix++) {
 				Identifier identifier2 = new Identifier(listTag.getString(ix));
-				this.biomSelectionList
+				this.biomeSelectionList
 					.method_20089(
-						(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomSelectionList
+						(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
 							.children()
 							.stream()
 							.filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.biome, identifier2))
@@ -117,12 +117,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		compoundTag2.putString("type", Registry.BIOME_SOURCE_TYPE.getId(BiomeSourceType.FIXED).toString());
 		CompoundTag compoundTag3 = new CompoundTag();
 		ListTag listTag = new ListTag();
-		listTag.add(new StringTag(this.biomSelectionList.getSelected().biome.toString()));
+		listTag.add(new StringTag(this.biomeSelectionList.getSelected().biome.toString()));
 		compoundTag3.put("biomes", listTag);
 		compoundTag2.put("options", compoundTag3);
 		CompoundTag compoundTag4 = new CompoundTag();
 		CompoundTag compoundTag5 = new CompoundTag();
-		compoundTag4.putString("type", ((Identifier)CHUNK_GENERATOR_TYPES.get(this.biomsListLength)).toString());
+		compoundTag4.putString("type", ((Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength)).toString());
 		compoundTag5.putString("default_block", "minecraft:stone");
 		compoundTag5.putString("default_fluid", "minecraft:water");
 		compoundTag4.put("options", compoundTag5);
@@ -132,13 +132,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	public void refreshConfirmButton() {
-		this.confirmButton.active = this.biomSelectionList.getSelected() != null;
+		this.confirmButton.active = this.biomeSelectionList.getSelected() != null;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderDirtBackground(0);
-		this.biomSelectionList.render(i, j, f);
+		this.biomeSelectionList.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
@@ -172,7 +172,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				NarratorManager.INSTANCE
-					.method_19788(new TranslatableTextComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
+					.method_19788(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
 			}
 		}
 

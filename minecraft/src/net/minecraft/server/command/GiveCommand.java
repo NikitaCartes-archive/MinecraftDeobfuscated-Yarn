@@ -9,10 +9,10 @@ import net.minecraft.command.arguments.ItemStackArgument;
 import net.minecraft.command.arguments.ItemStackArgumentType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class GiveCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -70,7 +70,7 @@ public class GiveCommand {
 							serverPlayerEntity.y,
 							serverPlayerEntity.z,
 							SoundEvents.field_15197,
-							SoundCategory.field_15248,
+							SoundCategory.PLAYERS,
 							0.2F,
 							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
@@ -87,7 +87,7 @@ public class GiveCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
+				new TranslatableComponent(
 					"commands.give.success.single",
 					i,
 					itemStackArgument.createStack(i, false).toTextComponent(),
@@ -97,7 +97,7 @@ public class GiveCommand {
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.size()), true
+				new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.size()), true
 			);
 		}
 

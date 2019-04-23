@@ -56,16 +56,16 @@ public class FishHookEntity extends Entity {
 	private float field_7169;
 	public Entity hookedEntity;
 	private FishHookEntity.State state = FishHookEntity.State.field_7180;
-	private final int field_7171;
-	private final int field_7168;
+	private final int lureLevel;
+	private final int luckOfTheSeaLevel;
 
 	private FishHookEntity(World world, PlayerEntity playerEntity, int i, int j) {
-		super(EntityType.FISHING_BOBBER, world);
+		super(EntityType.field_6103, world);
 		this.ignoreCameraFrustum = true;
 		this.owner = playerEntity;
 		this.owner.fishHook = this;
-		this.field_7171 = Math.max(0, i);
-		this.field_7168 = Math.max(0, j);
+		this.lureLevel = Math.max(0, i);
+		this.luckOfTheSeaLevel = Math.max(0, j);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -264,17 +264,17 @@ public class FishHookEntity extends Entity {
 			RayTraceContext.ShapeType.field_17558,
 			true
 		);
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+		if (hitResult.getType() != HitResult.Type.field_1333) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				this.hookedEntity = ((EntityHitResult)hitResult).getEntity();
-				this.method_6951();
+				this.updateHookedEntityId();
 			} else {
 				this.field_7176 = true;
 			}
 		}
 	}
 
-	private void method_6951() {
+	private void updateHookedEntityId() {
 		this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getEntityId() + 1);
 	}
 
@@ -361,7 +361,7 @@ public class FishHookEntity extends Entity {
 			}
 		} else {
 			this.field_7174 = MathHelper.nextInt(this.random, 100, 600);
-			this.field_7174 = this.field_7174 - this.field_7168 * 20 * 5;
+			this.field_7174 = this.field_7174 - this.luckOfTheSeaLevel * 20 * 5;
 		}
 	}
 
@@ -386,9 +386,9 @@ public class FishHookEntity extends Entity {
 					.put(LootContextParameters.field_1232, new BlockPos(this))
 					.put(LootContextParameters.field_1229, itemStack)
 					.setRandom(this.random)
-					.setLuck((float)this.field_7171 + this.owner.getLuck());
-				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.GAMEPLAY_FISHING);
-				List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.FISHING));
+					.setLuck((float)this.lureLevel + this.owner.getLuck());
+				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.field_353);
+				List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.field_1176));
 				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
 
 				for (ItemStack itemStack2 : list) {

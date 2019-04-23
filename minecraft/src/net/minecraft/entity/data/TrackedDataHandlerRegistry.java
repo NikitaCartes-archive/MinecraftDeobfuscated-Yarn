@@ -9,9 +9,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.network.chat.Component;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Int2ObjectBiMap;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -74,35 +74,35 @@ public class TrackedDataHandlerRegistry {
 			return string;
 		}
 	};
-	public static final TrackedDataHandler<TextComponent> TEXT_COMPONENT = new TrackedDataHandler<TextComponent>() {
-		public void method_12727(PacketByteBuf packetByteBuf, TextComponent textComponent) {
-			packetByteBuf.writeTextComponent(textComponent);
+	public static final TrackedDataHandler<Component> TEXT_COMPONENT = new TrackedDataHandler<Component>() {
+		public void method_12727(PacketByteBuf packetByteBuf, Component component) {
+			packetByteBuf.writeTextComponent(component);
 		}
 
-		public TextComponent method_12725(PacketByteBuf packetByteBuf) {
+		public Component method_12725(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readTextComponent();
 		}
 
-		public TextComponent method_12726(TextComponent textComponent) {
-			return textComponent.copy();
+		public Component method_12726(Component component) {
+			return component.copy();
 		}
 	};
-	public static final TrackedDataHandler<Optional<TextComponent>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<TextComponent>>() {
-		public void method_12728(PacketByteBuf packetByteBuf, Optional<TextComponent> optional) {
+	public static final TrackedDataHandler<Optional<Component>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Component>>() {
+		public void method_12728(PacketByteBuf packetByteBuf, Optional<Component> optional) {
 			if (optional.isPresent()) {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeTextComponent((TextComponent)optional.get());
+				packetByteBuf.writeTextComponent((Component)optional.get());
 			} else {
 				packetByteBuf.writeBoolean(false);
 			}
 		}
 
-		public Optional<TextComponent> method_12729(PacketByteBuf packetByteBuf) {
+		public Optional<Component> method_12729(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readTextComponent()) : Optional.empty();
 		}
 
-		public Optional<TextComponent> method_12730(Optional<TextComponent> optional) {
-			return optional.isPresent() ? Optional.of(((TextComponent)optional.get()).copy()) : Optional.empty();
+		public Optional<Component> method_12730(Optional<Component> optional) {
+			return optional.isPresent() ? Optional.of(((Component)optional.get()).copy()) : Optional.empty();
 		}
 	};
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
@@ -149,22 +149,22 @@ public class TrackedDataHandlerRegistry {
 			return boolean_;
 		}
 	};
-	public static final TrackedDataHandler<ParticleParameters> PARTICLE = new TrackedDataHandler<ParticleParameters>() {
-		public void method_12746(PacketByteBuf packetByteBuf, ParticleParameters particleParameters) {
-			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
-			particleParameters.write(packetByteBuf);
+	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler<ParticleEffect>() {
+		public void method_12746(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
+			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)particleEffect.getType()));
+			particleEffect.write(packetByteBuf);
 		}
 
-		public ParticleParameters method_12743(PacketByteBuf packetByteBuf) {
+		public ParticleEffect method_12743(PacketByteBuf packetByteBuf) {
 			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
-		private <T extends ParticleParameters> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
+		private <T extends ParticleEffect> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
 			return particleType.getParametersFactory().read(particleType, packetByteBuf);
 		}
 
-		public ParticleParameters method_12745(ParticleParameters particleParameters) {
-			return particleParameters;
+		public ParticleEffect method_12745(ParticleEffect particleEffect) {
+			return particleEffect;
 		}
 	};
 	public static final TrackedDataHandler<EulerRotation> ROTATION = new TrackedDataHandler<EulerRotation>() {

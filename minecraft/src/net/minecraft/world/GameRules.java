@@ -22,35 +22,35 @@ import net.minecraft.util.SystemUtil;
 
 public class GameRules {
 	private static final TreeMap<String, GameRules.Key> KEYS = SystemUtil.consume(new TreeMap(), treeMap -> {
-		treeMap.put("doFireTick", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("mobGriefing", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("keepInventory", new GameRules.Key("false", GameRules.Type.BOOLEAN));
-		treeMap.put("doMobSpawning", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("doMobLoot", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("doTileDrops", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("doEntityDrops", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("commandBlockOutput", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("naturalRegeneration", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("doDaylightCycle", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("logAdminCommands", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("showDeathMessages", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("randomTickSpeed", new GameRules.Key("3", GameRules.Type.INTEGER));
-		treeMap.put("sendCommandFeedback", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("reducedDebugInfo", new GameRules.Key("false", GameRules.Type.BOOLEAN, (minecraftServer, value) -> {
+		treeMap.put("doFireTick", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("mobGriefing", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("keepInventory", new GameRules.Key("false", GameRules.Type.field_9209));
+		treeMap.put("doMobSpawning", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("doMobLoot", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("doTileDrops", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("doEntityDrops", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("commandBlockOutput", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("naturalRegeneration", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("doDaylightCycle", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("logAdminCommands", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("showDeathMessages", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("randomTickSpeed", new GameRules.Key("3", GameRules.Type.field_9210));
+		treeMap.put("sendCommandFeedback", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("reducedDebugInfo", new GameRules.Key("false", GameRules.Type.field_9209, (minecraftServer, value) -> {
 			byte b = (byte)(value.getBoolean() ? 22 : 23);
 
 			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
 			}
 		}));
-		treeMap.put("spectatorsGenerateChunks", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("spawnRadius", new GameRules.Key("10", GameRules.Type.INTEGER));
-		treeMap.put("disableElytraMovementCheck", new GameRules.Key("false", GameRules.Type.BOOLEAN));
-		treeMap.put("maxEntityCramming", new GameRules.Key("24", GameRules.Type.INTEGER));
-		treeMap.put("doWeatherCycle", new GameRules.Key("true", GameRules.Type.BOOLEAN));
-		treeMap.put("doLimitedCrafting", new GameRules.Key("false", GameRules.Type.BOOLEAN));
-		treeMap.put("maxCommandChainLength", new GameRules.Key("65536", GameRules.Type.INTEGER));
-		treeMap.put("announceAdvancements", new GameRules.Key("true", GameRules.Type.BOOLEAN));
+		treeMap.put("spectatorsGenerateChunks", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("spawnRadius", new GameRules.Key("10", GameRules.Type.field_9210));
+		treeMap.put("disableElytraMovementCheck", new GameRules.Key("false", GameRules.Type.field_9209));
+		treeMap.put("maxEntityCramming", new GameRules.Key("24", GameRules.Type.field_9210));
+		treeMap.put("doWeatherCycle", new GameRules.Key("true", GameRules.Type.field_9209));
+		treeMap.put("doLimitedCrafting", new GameRules.Key("false", GameRules.Type.field_9209));
+		treeMap.put("maxCommandChainLength", new GameRules.Key("65536", GameRules.Type.field_9210));
+		treeMap.put("announceAdvancements", new GameRules.Key("true", GameRules.Type.field_9209));
 	});
 	private final TreeMap<String, GameRules.Value> rules = new TreeMap();
 
@@ -128,9 +128,9 @@ public class GameRules {
 	}
 
 	public static enum Type {
-		STRING(StringArgumentType::greedyString, (commandContext, string) -> commandContext.getArgument(string, String.class)),
-		BOOLEAN(BoolArgumentType::bool, (commandContext, string) -> commandContext.<Boolean>getArgument(string, Boolean.class).toString()),
-		INTEGER(IntegerArgumentType::integer, (commandContext, string) -> commandContext.<Integer>getArgument(string, Integer.class).toString());
+		field_9211(StringArgumentType::greedyString, (commandContext, string) -> commandContext.getArgument(string, String.class)),
+		field_9209(BoolArgumentType::bool, (commandContext, string) -> commandContext.<Boolean>getArgument(string, Boolean.class).toString()),
+		field_9210(IntegerArgumentType::integer, (commandContext, string) -> commandContext.<Integer>getArgument(string, Integer.class).toString());
 
 		private final Supplier<ArgumentType<?>> argumentType;
 		private final BiFunction<CommandContext<ServerCommandSource>, String, String> argumentProvider;

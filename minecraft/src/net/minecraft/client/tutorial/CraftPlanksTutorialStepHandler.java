@@ -6,17 +6,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
-	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.craft_planks.title");
-	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.craft_planks.description");
+	private static final Component TITLE = new TranslatableComponent("tutorial.craft_planks.title");
+	private static final Component DESCRIPTION = new TranslatableComponent("tutorial.craft_planks.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -29,18 +29,18 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	public void tick() {
 		this.ticks++;
 		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.NONE);
+			this.manager.setStep(TutorialStep.field_5653);
 		} else {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
 					if (clientPlayerEntity.inventory.contains(ItemTags.field_15537)) {
-						this.manager.setStep(TutorialStep.NONE);
+						this.manager.setStep(TutorialStep.field_5653);
 						return;
 					}
 
 					if (hasCrafted(clientPlayerEntity, ItemTags.field_15537)) {
-						this.manager.setStep(TutorialStep.NONE);
+						this.manager.setStep(TutorialStep.field_5653);
 						return;
 					}
 				}
@@ -65,7 +65,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	public void onSlotUpdate(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		if (ItemTags.field_15537.contains(item)) {
-			this.manager.setStep(TutorialStep.NONE);
+			this.manager.setStep(TutorialStep.field_5653);
 		}
 	}
 

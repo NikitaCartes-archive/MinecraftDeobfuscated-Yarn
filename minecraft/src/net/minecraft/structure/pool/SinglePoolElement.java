@@ -31,7 +31,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Deprecated
 	public SinglePoolElement(String string, List<StructureProcessor> list) {
-		this(string, list, StructurePool.Projection.RIGID);
+		this(string, list, StructurePool.Projection.field_16687);
 	}
 
 	public SinglePoolElement(String string, List<StructureProcessor> list, StructurePool.Projection projection) {
@@ -121,7 +121,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.SINGLE_POOL_ELEMENT;
+		return StructurePoolElementType.field_16973;
 	}
 
 	@Override

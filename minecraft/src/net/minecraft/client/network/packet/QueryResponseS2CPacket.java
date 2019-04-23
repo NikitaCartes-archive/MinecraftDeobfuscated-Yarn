@@ -6,10 +6,10 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.server.ServerMetadata;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.PacketByteBuf;
@@ -19,7 +19,7 @@ public class QueryResponseS2CPacket implements Packet<ClientQueryPacketListener>
 		.registerTypeAdapter(ServerMetadata.Version.class, new ServerMetadata.Version.Serializer())
 		.registerTypeAdapter(ServerMetadata.Players.class, new ServerMetadata.Players.Deserializer())
 		.registerTypeAdapter(ServerMetadata.class, new ServerMetadata.Deserializer())
-		.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer())
+		.registerTypeHierarchyAdapter(Component.class, new Component.Serializer())
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
 		.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
 		.create();

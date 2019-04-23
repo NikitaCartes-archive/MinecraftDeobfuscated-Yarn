@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -49,7 +49,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.field_6210 > 0) {
 			double d = this.x + (this.field_6224 - this.x) / (double)this.field_6210;
 			double e = this.y + (this.field_6245 - this.y) / (double)this.field_6210;
@@ -83,7 +83,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
 		this.world.getProfiler().push("push");
-		this.doPushLogic();
+		this.tickPushing();
 		this.world.getProfiler().pop();
 	}
 
@@ -92,7 +92,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(TextComponent textComponent) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(textComponent);
+	public void sendMessage(Component component) {
+		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(component);
 	}
 }

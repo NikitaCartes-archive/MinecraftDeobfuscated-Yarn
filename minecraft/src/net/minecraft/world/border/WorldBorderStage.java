@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public enum WorldBorderStage {
-	GROWING(4259712),
-	SHRINKING(16724016),
-	STATIC(2138367);
+	field_12754(4259712),
+	field_12756(16724016),
+	field_12753(2138367);
 
 	private final int color;
 

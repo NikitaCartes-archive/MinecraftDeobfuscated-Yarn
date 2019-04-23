@@ -4,15 +4,15 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
@@ -25,7 +25,7 @@ public class BannerItem extends WallStandingBlockItem {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void buildBannerTooltip(ItemStack itemStack, List<TextComponent> list) {
+	public static void buildBannerTooltip(ItemStack itemStack, List<Component> list) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns")) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
@@ -35,7 +35,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
 				if (bannerPattern != null) {
-					list.add(new TranslatableTextComponent("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).applyFormat(TextFormat.field_1080));
+					list.add(new TranslatableComponent("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).applyFormat(ChatFormat.field_1080));
 				}
 			}
 		}
@@ -47,7 +47,7 @@ public class BannerItem extends WallStandingBlockItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		buildBannerTooltip(itemStack, list);
 	}
 }

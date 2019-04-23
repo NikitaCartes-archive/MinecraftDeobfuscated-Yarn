@@ -7,17 +7,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
-	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.punch_tree.title");
-	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
+	private static final Component TITLE = new TranslatableComponent("tutorial.punch_tree.title");
+	private static final Component DESCRIPTION = new TranslatableComponent("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
 	private final TutorialManager manager;
 	private TutorialToast field_5637;
 	private int ticks;
@@ -31,18 +31,18 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	public void tick() {
 		this.ticks++;
 		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.NONE);
+			this.manager.setStep(TutorialStep.field_5653);
 		} else {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
 					if (clientPlayerEntity.inventory.contains(ItemTags.field_15539)) {
-						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
+						this.manager.setStep(TutorialStep.field_5655);
 						return;
 					}
 
 					if (FindTreeTutorialStepHandler.method_4896(clientPlayerEntity)) {
-						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
+						this.manager.setStep(TutorialStep.field_5655);
 						return;
 					}
 				}
@@ -72,7 +72,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (f >= 1.0F) {
-				this.manager.setStep(TutorialStep.OPEN_INVENTORY);
+				this.manager.setStep(TutorialStep.field_5652);
 			}
 		} else if (this.field_5637 != null) {
 			this.field_5637.setProgress(0.0F);
@@ -84,7 +84,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void onSlotUpdate(ItemStack itemStack) {
 		if (ItemTags.field_15539.contains(itemStack.getItem())) {
-			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
+			this.manager.setStep(TutorialStep.field_5655);
 		}
 	}
 }

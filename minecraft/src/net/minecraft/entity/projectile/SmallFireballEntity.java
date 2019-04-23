@@ -18,17 +18,17 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	public SmallFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.SMALL_FIREBALL, livingEntity, d, e, f, world);
+		super(EntityType.field_6049, livingEntity, d, e, f, world);
 	}
 
 	public SmallFireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.SMALL_FIREBALL, d, e, f, g, h, i, world);
+		super(EntityType.field_6049, d, e, f, g, h, i, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (!entity.isFireImmune()) {
 					entity.setOnFireFor(5);

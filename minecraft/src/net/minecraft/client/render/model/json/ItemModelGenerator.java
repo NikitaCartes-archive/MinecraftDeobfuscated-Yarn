@@ -42,8 +42,8 @@ public class ItemModelGenerator {
 
 	private List<ModelElement> method_3480(int i, String string, Sprite sprite) {
 		Map<Direction, ModelElementFace> map = Maps.<Direction, ModelElementFace>newHashMap();
-		map.put(Direction.SOUTH, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
-		map.put(Direction.NORTH, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+		map.put(Direction.field_11035, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+		map.put(Direction.field_11043, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, null, true));
 		list.addAll(this.method_3481(sprite, string, i));
@@ -190,7 +190,7 @@ public class ItemModelGenerator {
 	}
 
 	private boolean method_3477(Sprite sprite, int i, int j, int k, int l, int m) {
-		return j >= 0 && k >= 0 && j < l && k < m ? sprite.method_4583(i, j, k) : true;
+		return j >= 0 && k >= 0 && j < l && k < m ? sprite.isPixelTransparent(i, j, k) : true;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -234,10 +234,10 @@ public class ItemModelGenerator {
 
 	@Environment(EnvType.CLIENT)
 	static enum class_803 {
-		field_4281(Direction.UP, 0, -1),
-		field_4277(Direction.DOWN, 0, 1),
-		field_4278(Direction.EAST, -1, 0),
-		field_4283(Direction.WEST, 1, 0);
+		field_4281(Direction.field_11036, 0, -1),
+		field_4277(Direction.field_11033, 0, 1),
+		field_4278(Direction.field_11034, -1, 0),
+		field_4283(Direction.field_11039, 1, 0);
 
 		private final Direction field_4276;
 		private final int field_4280;

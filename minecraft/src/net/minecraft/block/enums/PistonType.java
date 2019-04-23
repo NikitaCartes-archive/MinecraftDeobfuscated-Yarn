@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum PistonType implements StringRepresentable {
+public enum PistonType implements SnakeCaseIdentifiable {
 	field_12637("normal"),
 	field_12634("sticky");
 
@@ -17,7 +17,7 @@ public enum PistonType implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

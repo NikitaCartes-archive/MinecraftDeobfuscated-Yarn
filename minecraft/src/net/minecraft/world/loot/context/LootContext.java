@@ -186,10 +186,10 @@ public class LootContext {
 	}
 
 	public static enum EntityTarget {
-		THIS("this", LootContextParameters.field_1226),
-		KILLER("killer", LootContextParameters.field_1230),
-		DIRECT_KILLER("direct_killer", LootContextParameters.field_1227),
-		KILLER_PLAYER("killer_player", LootContextParameters.field_1233);
+		field_935("this", LootContextParameters.field_1226),
+		field_936("killer", LootContextParameters.field_1230),
+		field_939("direct_killer", LootContextParameters.field_1227),
+		field_937("killer_player", LootContextParameters.field_1233);
 
 		private final String type;
 		private final LootContextParameter<? extends Entity> identifier;

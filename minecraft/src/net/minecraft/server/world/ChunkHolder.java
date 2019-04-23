@@ -20,11 +20,11 @@ import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
@@ -158,7 +158,7 @@ public class ChunkHolder {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			if (lightType == LightType.SKY) {
+			if (lightType == LightType.field_9284) {
 				this.skyLightUpdateBits |= 1 << i - -1;
 			} else {
 				this.blockLightUpdateBits |= 1 << i - -1;
@@ -291,13 +291,13 @@ public class ChunkHolder {
 	protected void tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		ChunkStatus chunkStatus = getTargetGenerationStatus(this.lastTickLevel);
 		ChunkStatus chunkStatus2 = getTargetGenerationStatus(this.level);
-		this.field_19238 = this.field_19238 | chunkStatus2.isAtLeast(ChunkStatus.FULL);
+		this.field_19238 = this.field_19238 | chunkStatus2.isAtLeast(ChunkStatus.field_12803);
 		boolean bl = this.lastTickLevel <= ThreadedAnvilChunkStorage.MAX_LEVEL;
 		boolean bl2 = this.level <= ThreadedAnvilChunkStorage.MAX_LEVEL;
 		ChunkHolder.LevelType levelType = getLevelType(this.lastTickLevel);
 		ChunkHolder.LevelType levelType2 = getLevelType(this.level);
-		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
-		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
+		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.field_13875);
+		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.field_13875);
 		if (bl2) {
 			for (int i = bl ? chunkStatus.getIndex() + 1 : 0; i <= chunkStatus2.getIndex(); i++) {
 				this.createFuture((ChunkStatus)CHUNK_STATUSES.get(i), threadedAnvilChunkStorage);
@@ -333,8 +333,8 @@ public class ChunkHolder {
 			completableFuture2.thenAccept(either -> either.ifLeft(threadedAnvilChunkStorage::method_20459));
 		}
 
-		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
-		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
+		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.field_13877);
+		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.field_13877);
 		if (!bl5 && bl6) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
 				throw new IllegalStateException();
@@ -354,7 +354,7 @@ public class ChunkHolder {
 	}
 
 	public static ChunkStatus getTargetGenerationStatus(int i) {
-		return i <= 33 ? ChunkStatus.FULL : ChunkStatus.getTargetGenerationStatus(i - 33 - 1);
+		return i <= 33 ? ChunkStatus.field_12803 : ChunkStatus.getTargetGenerationStatus(i - 33 - 1);
 	}
 
 	public static ChunkHolder.LevelType getLevelType(int i) {
@@ -366,7 +366,7 @@ public class ChunkHolder {
 	}
 
 	public void method_20385() {
-		this.field_19238 = getTargetGenerationStatus(this.level).isAtLeast(ChunkStatus.FULL);
+		this.field_19238 = getTargetGenerationStatus(this.level).isAtLeast(ChunkStatus.field_12803);
 	}
 
 	public void method_20456(ReadOnlyChunk readOnlyChunk) {
@@ -385,9 +385,9 @@ public class ChunkHolder {
 	}
 
 	public static enum LevelType {
-		BORDER,
-		TICKING,
-		ENTITY_TICKING;
+		field_13876,
+		field_13875,
+		field_13877;
 
 		public boolean isAfter(ChunkHolder.LevelType levelType) {
 			return this.ordinal() >= levelType.ordinal();

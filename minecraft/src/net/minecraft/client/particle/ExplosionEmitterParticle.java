@@ -16,7 +16,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		for (int i = 0; i < 6; i++) {
 			double d = this.x + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
 			double e = this.y + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;

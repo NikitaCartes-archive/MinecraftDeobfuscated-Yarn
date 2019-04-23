@@ -27,9 +27,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -45,10 +45,10 @@ public class LootCommand {
 		return CommandSource.suggestIdentifiers(lootManager.getSupplierNames(), suggestionsBuilder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.drop.no_held_items", object)
+		object -> new TranslatableComponent("commands.drop.no_held_items", object)
 	);
 	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.drop.no_loot_table", object)
+		object -> new TranslatableComponent("commands.drop.no_loot_table", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -90,7 +90,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.field_6173),
 																	target
 																)
 														)
@@ -102,7 +102,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_OFF),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.field_6171),
 																	target
 																)
 														)
@@ -147,7 +147,7 @@ public class LootCommand {
 													commandContext -> executeMine(
 															commandContext,
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.field_6173),
 															target
 														)
 												)
@@ -158,7 +158,7 @@ public class LootCommand {
 													commandContext -> executeMine(
 															commandContext,
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_OFF),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.field_6171),
 															target
 														)
 												)
@@ -404,9 +404,9 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.drop.success.single", itemStack.getAmount(), itemStack.toTextComponent()), false);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single", itemStack.getAmount(), itemStack.toTextComponent()), false);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.drop.success.multiple", list.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple", list.size()), false);
 		}
 	}
 
@@ -414,10 +414,10 @@ public class LootCommand {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.drop.success.single_with_table", itemStack.getAmount(), itemStack.toTextComponent(), identifier), false
+				new TranslatableComponent("commands.drop.success.single_with_table", itemStack.getAmount(), itemStack.toTextComponent(), identifier), false
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.drop.success.multiple_with_table", list.size(), identifier), false);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple_with_table", list.size(), identifier), false);
 		}
 	}
 
@@ -463,7 +463,7 @@ public class LootCommand {
 			builder.put(LootContextParameters.field_1226, entity);
 			builder.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
 			LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
-			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.ENTITY));
+			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.field_1173));
 			return target.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
 	}
@@ -473,7 +473,7 @@ public class LootCommand {
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
 			.putNullable(LootContextParameters.field_1226, serverCommandSource.getEntity())
 			.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
-		return getFeedbackMessageSingle(commandContext, identifier, builder.build(LootContextTypes.CHEST), target);
+		return getFeedbackMessageSingle(commandContext, identifier, builder.build(LootContextTypes.field_1179), target);
 	}
 
 	private static int executeFish(
@@ -483,7 +483,7 @@ public class LootCommand {
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
 			.put(LootContextParameters.field_1232, blockPos)
 			.put(LootContextParameters.field_1229, itemStack)
-			.build(LootContextTypes.FISHING);
+			.build(LootContextTypes.field_1176);
 		return getFeedbackMessageSingle(commandContext, identifier, lootContext, target);
 	}
 

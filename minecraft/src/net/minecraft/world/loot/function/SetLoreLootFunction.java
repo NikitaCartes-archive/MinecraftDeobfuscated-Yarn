@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -24,11 +24,11 @@ import net.minecraft.world.loot.context.LootContextParameter;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
 	private final boolean replace;
-	private final List<TextComponent> lore;
+	private final List<Component> lore;
 	@Nullable
 	private final LootContext.EntityTarget entity;
 
-	public SetLoreLootFunction(LootCondition[] lootConditions, boolean bl, List<TextComponent> list, @Nullable LootContext.EntityTarget entityTarget) {
+	public SetLoreLootFunction(LootCondition[] lootConditions, boolean bl, List<Component> list, @Nullable LootContext.EntityTarget entityTarget) {
 		super(lootConditions);
 		this.replace = bl;
 		this.lore = ImmutableList.copyOf(list);
@@ -48,8 +48,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 				listTag.clear();
 			}
 
-			UnaryOperator<TextComponent> unaryOperator = SetNameLootFunction.applySourceEntity(lootContext, this.entity);
-			this.lore.stream().map(unaryOperator).map(TextComponent.Serializer::toJsonString).map(StringTag::new).forEach(listTag::add);
+			UnaryOperator<Component> unaryOperator = SetNameLootFunction.applySourceEntity(lootContext, this.entity);
+			this.lore.stream().map(unaryOperator).map(Component.Serializer::toJsonString).map(StringTag::new).forEach(listTag::add);
 		}
 
 		return itemStack;
@@ -102,8 +102,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			jsonObject.addProperty("replace", setLoreLootFunction.replace);
 			JsonArray jsonArray = new JsonArray();
 
-			for (TextComponent textComponent : setLoreLootFunction.lore) {
-				jsonArray.add(TextComponent.Serializer.toJson(textComponent));
+			for (Component component : setLoreLootFunction.lore) {
+				jsonArray.add(Component.Serializer.toJson(component));
 			}
 
 			jsonObject.add("lore", jsonArray);
@@ -114,8 +114,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 		public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
-			List<TextComponent> list = (List<TextComponent>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
-				.map(TextComponent.Serializer::fromJson)
+			List<Component> list = (List<Component>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
+				.map(Component.Serializer::fromJson)
 				.collect(ImmutableList.toImmutableList());
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
 			return new SetLoreLootFunction(lootConditions, bl, list, entityTarget);

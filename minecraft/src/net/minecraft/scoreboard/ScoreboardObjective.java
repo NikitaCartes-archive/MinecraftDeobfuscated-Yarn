@@ -2,25 +2,25 @@ package net.minecraft.scoreboard;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.event.HoverEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
 
 public class ScoreboardObjective {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final ScoreboardCriterion criterion;
-	private TextComponent displayName;
+	private Component displayName;
 	private ScoreboardCriterion.RenderType renderType;
 
 	public ScoreboardObjective(
-		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.RenderType renderType
+		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Component component, ScoreboardCriterion.RenderType renderType
 	) {
 		this.scoreboard = scoreboard;
 		this.name = string;
 		this.criterion = scoreboardCriterion;
-		this.displayName = textComponent;
+		this.displayName = component;
 		this.renderType = renderType;
 	}
 
@@ -37,18 +37,18 @@ public class ScoreboardObjective {
 		return this.criterion;
 	}
 
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.displayName;
 	}
 
-	public TextComponent getTextComponent() {
-		return TextFormatter.bracketed(
-			this.displayName.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
+	public Component getTextComponent() {
+		return Components.bracketed(
+			this.displayName.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent(this.getName()))))
 		);
 	}
 
-	public void setDisplayName(TextComponent textComponent) {
-		this.displayName = textComponent;
+	public void setDisplayName(Component component) {
+		this.displayName = component;
 		this.scoreboard.updateExistingObjective(this);
 	}
 

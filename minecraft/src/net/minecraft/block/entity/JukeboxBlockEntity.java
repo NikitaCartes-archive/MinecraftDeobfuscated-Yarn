@@ -8,7 +8,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	private ItemStack record = ItemStack.EMPTY;
 
 	public JukeboxBlockEntity() {
-		super(BlockEntityType.JUKEBOX);
+		super(BlockEntityType.field_11907);
 	}
 
 	@Override

@@ -25,16 +25,16 @@ import net.minecraft.item.DyeableItem;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -682,8 +682,8 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public BuyForOneEmeraldFactory(ItemProvider itemProvider, int i, int j, int k) {
-			this.buy = itemProvider.getItem();
+		public BuyForOneEmeraldFactory(ItemConvertible itemConvertible, int i, int j, int k) {
+			this.buy = itemConvertible.asItem();
 			this.price = i;
 			this.maxUses = j;
 			this.experience = k;
@@ -737,12 +737,12 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public ProcessItemFactory(ItemProvider itemProvider, int i, Item item, int j, int k, int l) {
-			this(itemProvider, i, 1, item, j, k, l);
+		public ProcessItemFactory(ItemConvertible itemConvertible, int i, Item item, int j, int k, int l) {
+			this(itemConvertible, i, 1, item, j, k, l);
 		}
 
-		public ProcessItemFactory(ItemProvider itemProvider, int i, int j, Item item, int k, int l, int m) {
-			this.secondBuy = new ItemStack(itemProvider);
+		public ProcessItemFactory(ItemConvertible itemConvertible, int i, int j, Item item, int k, int l, int m) {
+			this.secondBuy = new ItemStack(itemConvertible);
 			this.secondCount = i;
 			this.price = j;
 			this.sell = new ItemStack(item);
@@ -903,7 +903,7 @@ public class TradeOffers {
 				ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 				FilledMapItem.fillExplorationMap(world, itemStack);
 				MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-				itemStack.setDisplayName(new TranslatableTextComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+				itemStack.setDisplayName(new TranslatableComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
 				return new TradeOffer(new ItemStack(Items.field_8687, this.price), new ItemStack(Items.field_8251), itemStack, this.maxUses, this.experience, 0.2F);
 			} else {
 				return null;
@@ -987,7 +987,7 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			if (entity instanceof VillagerDataContainer) {
-				ItemStack itemStack = new ItemStack((ItemProvider)this.map.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.count);
+				ItemStack itemStack = new ItemStack((ItemConvertible)this.map.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.count);
 				return new TradeOffer(itemStack, new ItemStack(Items.field_8687), this.maxUses, this.experience, 0.05F);
 			} else {
 				return null;

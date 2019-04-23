@@ -33,11 +33,11 @@ public class ArrowEntity extends ProjectileEntity {
 	}
 
 	public ArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.ARROW, d, e, f, world);
+		super(EntityType.field_6122, d, e, f, world);
 	}
 
 	public ArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.ARROW, livingEntity, world);
+		super(EntityType.field_6122, livingEntity, world);
 	}
 
 	public void initFromStack(ItemStack itemStack) {
@@ -50,7 +50,7 @@ public class ArrowEntity extends ProjectileEntity {
 				}
 			}
 
-			int i = method_7464(itemStack);
+			int i = getCustomPotionColor(itemStack);
 			if (i == -1) {
 				this.initColor();
 			} else {
@@ -63,7 +63,7 @@ public class ArrowEntity extends ProjectileEntity {
 		}
 	}
 
-	public static int method_7464(ItemStack itemStack) {
+	public static int getCustomPotionColor(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getTag();
 		return compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
 	}

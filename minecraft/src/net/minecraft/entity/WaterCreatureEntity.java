@@ -25,7 +25,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+	protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
 		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 

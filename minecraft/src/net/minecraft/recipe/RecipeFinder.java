@@ -25,10 +25,14 @@ public class RecipeFinder {
 	}
 
 	public void addItem(ItemStack itemStack) {
+		this.method_20478(itemStack, 64);
+	}
+
+	public void method_20478(ItemStack itemStack, int i) {
 		if (!itemStack.isEmpty()) {
-			int i = getItemId(itemStack);
-			int j = itemStack.getAmount();
-			this.addItem(i, j);
+			int j = getItemId(itemStack);
+			int k = Math.min(i, itemStack.getAmount());
+			this.addItem(j, k);
 		}
 	}
 

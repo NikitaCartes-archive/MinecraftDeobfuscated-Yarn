@@ -4,15 +4,15 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private String name;
-	private TextComponent displayName;
+	private Component displayName;
 	private ScoreboardCriterion.RenderType type;
 	private int mode;
 
@@ -56,7 +56,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.displayName;
 	}
 

@@ -5,10 +5,10 @@ import java.net.SocketAddress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedPlayerManager extends PlayerManager {
@@ -29,9 +29,9 @@ public class IntegratedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	public TextComponent checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		return (TextComponent)(gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null
-			? new TranslatableTextComponent("multiplayer.disconnect.name_taken")
+	public Component checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
+		return (Component)(gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null
+			? new TranslatableComponent("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(socketAddress, gameProfile));
 	}
 

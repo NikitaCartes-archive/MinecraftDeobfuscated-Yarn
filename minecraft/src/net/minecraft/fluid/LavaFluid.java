@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -37,7 +37,7 @@ public abstract class LavaFluid extends BaseFluid {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
+		return BlockRenderLayer.field_9178;
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public abstract class LavaFluid extends BaseFluid {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ParticleParameters getParticle() {
+	public ParticleEffect getParticle() {
 		return ParticleTypes.field_11223;
 	}
 
@@ -195,7 +195,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	protected void flow(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
-		if (direction == Direction.DOWN) {
+		if (direction == Direction.field_11033) {
 			FluidState fluidState2 = iWorld.getFluidState(blockPos);
 			if (this.matches(FluidTags.field_15518) && fluidState2.matches(FluidTags.field_15517)) {
 				if (blockState.getBlock() instanceof FluidBlock) {
@@ -224,7 +224,7 @@ public abstract class LavaFluid extends BaseFluid {
 		@Override
 		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
-			builder.with(LEVEL);
+			builder.add(LEVEL);
 		}
 
 		@Override

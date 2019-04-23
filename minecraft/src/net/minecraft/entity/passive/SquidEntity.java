@@ -50,7 +50,7 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(0, new SquidEntity.SwimInOneDirectionGoal(this));
+		this.goalSelector.add(0, new SquidEntity.SwimGoal(this));
 		this.goalSelector.add(1, new SquidEntity.EscapeAttackerGoal());
 	}
 
@@ -91,8 +91,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		this.field_6905 = this.field_6907;
 		this.field_6906 = this.field_6903;
 		this.field_6902 = this.field_6908;
@@ -147,7 +147,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				double d = this.getVelocity().y;
 				if (this.hasStatusEffect(StatusEffects.field_5902)) {
 					d = 0.05 * (double)(this.getStatusEffect(StatusEffects.field_5902).getAmplifier() + 1);
-				} else if (!this.isUnaffectedByGravity()) {
+				} else if (!this.hasNoGravity()) {
 					d -= 0.08;
 				}
 
@@ -269,11 +269,11 @@ public class SquidEntity extends WaterCreatureEntity {
 		}
 	}
 
-	class SwimInOneDirectionGoal extends Goal {
-		private final SquidEntity owner;
+	class SwimGoal extends Goal {
+		private final SquidEntity squid;
 
-		public SwimInOneDirectionGoal(SquidEntity squidEntity2) {
-			this.owner = squidEntity2;
+		public SwimGoal(SquidEntity squidEntity2) {
+			this.squid = squidEntity2;
 		}
 
 		@Override
@@ -283,15 +283,15 @@ public class SquidEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			int i = this.owner.getDespawnCounter();
+			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
-				this.owner.setConstantVelocity(0.0F, 0.0F, 0.0F);
-			} else if (this.owner.getRand().nextInt(50) == 0 || !this.owner.insideWater || !this.owner.hasConstantVelocity()) {
-				float f = this.owner.getRand().nextFloat() * (float) (Math.PI * 2);
+				this.squid.setConstantVelocity(0.0F, 0.0F, 0.0F);
+			} else if (this.squid.getRand().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
+				float f = this.squid.getRand().nextFloat() * (float) (Math.PI * 2);
 				float g = MathHelper.cos(f) * 0.2F;
-				float h = -0.1F + this.owner.getRand().nextFloat() * 0.2F;
+				float h = -0.1F + this.squid.getRand().nextFloat() * 0.2F;
 				float j = MathHelper.sin(f) * 0.2F;
-				this.owner.setConstantVelocity(g, h, j);
+				this.squid.setConstantVelocity(g, h, j);
 			}
 		}
 	}

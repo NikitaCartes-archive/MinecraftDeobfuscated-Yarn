@@ -11,11 +11,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
-	private final ItemRenderer field_4703;
+	private final ItemRenderer itemRenderer;
 
 	public FireworkEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
 		super(entityRenderDispatcher);
-		this.field_4703 = itemRenderer;
+		this.itemRenderer = itemRenderer;
 	}
 
 	public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h) {
@@ -31,13 +31,13 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		}
 
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
-		this.field_4703.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.field_4318);
-		if (this.renderOutlines) {
+		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.field_4318);
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

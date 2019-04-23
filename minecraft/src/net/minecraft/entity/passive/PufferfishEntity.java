@@ -119,8 +119,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.isAlive() && this.getPuffState() > 0) {
 			for (MobEntity mobEntity : this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834)) {
 				if (mobEntity.isAlive()) {
@@ -184,32 +184,32 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	static class class_1455 extends Goal {
-		private final PufferfishEntity field_6836;
+		private final PufferfishEntity pufferfish;
 
 		public class_1455(PufferfishEntity pufferfishEntity) {
-			this.field_6836 = pufferfishEntity;
+			this.pufferfish = pufferfishEntity;
 		}
 
 		@Override
 		public boolean canStart() {
-			List<LivingEntity> list = this.field_6836.world.getEntities(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 
 		@Override
 		public void start() {
-			this.field_6836.field_6833 = 1;
-			this.field_6836.field_6832 = 0;
+			this.pufferfish.field_6833 = 1;
+			this.pufferfish.field_6832 = 0;
 		}
 
 		@Override
 		public void stop() {
-			this.field_6836.field_6833 = 0;
+			this.pufferfish.field_6833 = 0;
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			List<LivingEntity> list = this.field_6836.world.getEntities(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 	}

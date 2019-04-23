@@ -63,9 +63,9 @@ public class GameOptions {
 	public double mouseSensitivity = 0.5;
 	public int viewDistance = -1;
 	public int maxFps = 120;
-	public CloudRenderMode cloudRenderMode = CloudRenderMode.field_18164;
+	public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
 	public boolean fancyGraphics = true;
-	public AoOption ao = AoOption.field_18146;
+	public AoOption ao = AoOption.MAX;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -88,8 +88,8 @@ public class GameOptions {
 	public int mipmapLevels = 4;
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
-	public AttackIndicator attackIndicator = AttackIndicator.field_18152;
-	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
+	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
+	public TutorialStep tutorialStep = TutorialStep.field_5650;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public int glDebugVerbosity = 1;
@@ -121,9 +121,9 @@ public class GameOptions {
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
 	public final KeyBinding keySwapHands = new KeyBinding("key.swapHands", 70, "key.categories.inventory");
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
-	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.field_1672, 1, "key.categories.gameplay");
-	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.field_1672, 0, "key.categories.gameplay");
-	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.field_1672, 2, "key.categories.gameplay");
+	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, 1, "key.categories.gameplay");
+	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, 0, "key.categories.gameplay");
+	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.MOUSE, 2, "key.categories.gameplay");
 	public final KeyBinding keyChat = new KeyBinding("key.chat", 84, "key.categories.multiplayer");
 	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", 258, "key.categories.multiplayer");
 	public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
@@ -177,7 +177,7 @@ public class GameOptions {
 	);
 	protected MinecraftClient client;
 	private final File optionsFile;
-	public Difficulty difficulty = Difficulty.NORMAL;
+	public Difficulty difficulty = Difficulty.field_5802;
 	public boolean hudHidden;
 	public int perspective;
 	public boolean debugEnabled;
@@ -188,17 +188,17 @@ public class GameOptions {
 	public double fov = 70.0;
 	public double gamma;
 	public int guiScale;
-	public ParticlesOption particles = ParticlesOption.field_18197;
-	public NarratorOption narrator = NarratorOption.field_18176;
+	public ParticlesOption particles = ParticlesOption.ALL;
+	public NarratorOption narrator = NarratorOption.OFF;
 	public String language = "en_us";
 
 	public GameOptions(MinecraftClient minecraftClient, File file) {
 		this.client = minecraftClient;
 		this.optionsFile = new File(file, "options.txt");
 		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-			GameOption.RENDER_DISTANCE.setMax(32.0F);
+			Option.RENDER_DISTANCE.setMax(32.0F);
 		} else {
-			GameOption.RENDER_DISTANCE.setMax(16.0F);
+			Option.RENDER_DISTANCE.setMax(16.0F);
 		}
 
 		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
@@ -248,71 +248,71 @@ public class GameOptions {
 
 				try {
 					if ("autoJump".equals(string)) {
-						GameOption.AUTO_JUMP.set(this, string2);
+						Option.AUTO_JUMP.set(this, string2);
 					}
 
 					if ("autoSuggestions".equals(string)) {
-						GameOption.AUTO_SUGGESTIONS.set(this, string2);
+						Option.AUTO_SUGGESTIONS.set(this, string2);
 					}
 
 					if ("chatColors".equals(string)) {
-						GameOption.CHAT_COLOR.set(this, string2);
+						Option.CHAT_COLOR.set(this, string2);
 					}
 
 					if ("chatLinks".equals(string)) {
-						GameOption.CHAT_LINKS.set(this, string2);
+						Option.CHAT_LINKS.set(this, string2);
 					}
 
 					if ("chatLinksPrompt".equals(string)) {
-						GameOption.CHAT_LINKS_PROMPT.set(this, string2);
+						Option.CHAT_LINKS_PROMPT.set(this, string2);
 					}
 
 					if ("enableVsync".equals(string)) {
-						GameOption.VSYNC.set(this, string2);
+						Option.VSYNC.set(this, string2);
 					}
 
 					if ("entityShadows".equals(string)) {
-						GameOption.ENTITY_SHADOWS.set(this, string2);
+						Option.ENTITY_SHADOWS.set(this, string2);
 					}
 
 					if ("forceUnicodeFont".equals(string)) {
-						GameOption.FORCE_UNICODE_FONT.set(this, string2);
+						Option.FORCE_UNICODE_FONT.set(this, string2);
 					}
 
 					if ("discrete_mouse_scroll".equals(string)) {
-						GameOption.DISCRETE_MOUSE_SCROLL.set(this, string2);
+						Option.DISCRETE_MOUSE_SCROLL.set(this, string2);
 					}
 
 					if ("invertYMouse".equals(string)) {
-						GameOption.INVERT_MOUSE.set(this, string2);
+						Option.INVERT_MOUSE.set(this, string2);
 					}
 
 					if ("realmsNotifications".equals(string)) {
-						GameOption.REALMS_NOTIFICATIONS.set(this, string2);
+						Option.REALMS_NOTIFICATIONS.set(this, string2);
 					}
 
 					if ("reducedDebugInfo".equals(string)) {
-						GameOption.REDUCED_DEBUG_INFO.set(this, string2);
+						Option.REDUCED_DEBUG_INFO.set(this, string2);
 					}
 
 					if ("showSubtitles".equals(string)) {
-						GameOption.SUBTITLES.set(this, string2);
+						Option.SUBTITLES.set(this, string2);
 					}
 
 					if ("snooperEnabled".equals(string)) {
-						GameOption.SNOOPER.set(this, string2);
+						Option.SNOOPER.set(this, string2);
 					}
 
 					if ("touchscreen".equals(string)) {
-						GameOption.TOUCHSCREEN.set(this, string2);
+						Option.TOUCHSCREEN.set(this, string2);
 					}
 
 					if ("fullscreen".equals(string)) {
-						GameOption.FULLSCREEN.set(this, string2);
+						Option.FULLSCREEN.set(this, string2);
 					}
 
 					if ("bobView".equals(string)) {
-						GameOption.VIEW_BOBBING.set(this, string2);
+						Option.VIEW_BOBBING.set(this, string2);
 					}
 
 					if ("mouseSensitivity".equals(string)) {
@@ -360,9 +360,9 @@ public class GameOptions {
 
 					if ("ao".equals(string)) {
 						if ("true".equals(string2)) {
-							this.ao = AoOption.field_18146;
+							this.ao = AoOption.MAX;
 						} else if ("false".equals(string2)) {
-							this.ao = AoOption.field_18144;
+							this.ao = AoOption.OFF;
 						} else {
 							this.ao = AoOption.getOption(Integer.parseInt(string2));
 						}
@@ -370,11 +370,11 @@ public class GameOptions {
 
 					if ("renderClouds".equals(string)) {
 						if ("true".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18164;
+							this.cloudRenderMode = CloudRenderMode.FANCY;
 						} else if ("false".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18162;
+							this.cloudRenderMode = CloudRenderMode.OFF;
 						} else if ("fast".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18163;
+							this.cloudRenderMode = CloudRenderMode.FAST;
 						}
 					}
 
@@ -546,23 +546,23 @@ public class GameOptions {
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
-				printWriter.println("autoJump:" + GameOption.AUTO_JUMP.get(this));
-				printWriter.println("autoSuggestions:" + GameOption.AUTO_SUGGESTIONS.get(this));
-				printWriter.println("chatColors:" + GameOption.CHAT_COLOR.get(this));
-				printWriter.println("chatLinks:" + GameOption.CHAT_LINKS.get(this));
-				printWriter.println("chatLinksPrompt:" + GameOption.CHAT_LINKS_PROMPT.get(this));
-				printWriter.println("enableVsync:" + GameOption.VSYNC.get(this));
-				printWriter.println("entityShadows:" + GameOption.ENTITY_SHADOWS.get(this));
-				printWriter.println("forceUnicodeFont:" + GameOption.FORCE_UNICODE_FONT.get(this));
-				printWriter.println("discrete_mouse_scroll:" + GameOption.DISCRETE_MOUSE_SCROLL.get(this));
-				printWriter.println("invertYMouse:" + GameOption.INVERT_MOUSE.get(this));
-				printWriter.println("realmsNotifications:" + GameOption.REALMS_NOTIFICATIONS.get(this));
-				printWriter.println("reducedDebugInfo:" + GameOption.REDUCED_DEBUG_INFO.get(this));
-				printWriter.println("snooperEnabled:" + GameOption.SNOOPER.get(this));
-				printWriter.println("showSubtitles:" + GameOption.SUBTITLES.get(this));
-				printWriter.println("touchscreen:" + GameOption.TOUCHSCREEN.get(this));
-				printWriter.println("fullscreen:" + GameOption.FULLSCREEN.get(this));
-				printWriter.println("bobView:" + GameOption.VIEW_BOBBING.get(this));
+				printWriter.println("autoJump:" + Option.AUTO_JUMP.get(this));
+				printWriter.println("autoSuggestions:" + Option.AUTO_SUGGESTIONS.get(this));
+				printWriter.println("chatColors:" + Option.CHAT_COLOR.get(this));
+				printWriter.println("chatLinks:" + Option.CHAT_LINKS.get(this));
+				printWriter.println("chatLinksPrompt:" + Option.CHAT_LINKS_PROMPT.get(this));
+				printWriter.println("enableVsync:" + Option.VSYNC.get(this));
+				printWriter.println("entityShadows:" + Option.ENTITY_SHADOWS.get(this));
+				printWriter.println("forceUnicodeFont:" + Option.FORCE_UNICODE_FONT.get(this));
+				printWriter.println("discrete_mouse_scroll:" + Option.DISCRETE_MOUSE_SCROLL.get(this));
+				printWriter.println("invertYMouse:" + Option.INVERT_MOUSE.get(this));
+				printWriter.println("realmsNotifications:" + Option.REALMS_NOTIFICATIONS.get(this));
+				printWriter.println("reducedDebugInfo:" + Option.REDUCED_DEBUG_INFO.get(this));
+				printWriter.println("snooperEnabled:" + Option.SNOOPER.get(this));
+				printWriter.println("showSubtitles:" + Option.SUBTITLES.get(this));
+				printWriter.println("touchscreen:" + Option.TOUCHSCREEN.get(this));
+				printWriter.println("fullscreen:" + Option.FULLSCREEN.get(this));
+				printWriter.println("bobView:" + Option.VIEW_BOBBING.get(this));
 				printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
 				printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
 				printWriter.println("gamma:" + this.gamma);
@@ -575,13 +575,13 @@ public class GameOptions {
 				printWriter.println("ao:" + this.ao.getValue());
 				printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
 				switch (this.cloudRenderMode) {
-					case field_18164:
+					case FANCY:
 						printWriter.println("renderClouds:true");
 						break;
-					case field_18163:
+					case FAST:
 						printWriter.println("renderClouds:fast");
 						break;
-					case field_18162:
+					case OFF:
 						printWriter.println("renderClouds:false");
 				}
 
@@ -699,7 +699,7 @@ public class GameOptions {
 	}
 
 	public CloudRenderMode getCloudRenderMode() {
-		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.field_18162;
+		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.OFF;
 	}
 
 	public boolean shouldUseNativeTransport() {

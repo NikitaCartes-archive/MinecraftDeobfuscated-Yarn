@@ -14,8 +14,8 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public static final Identifier field_4781 = new Identifier("textures/entity/shulker/shulker.png");
-	public static final Identifier[] SKIN = new Identifier[]{
+	public static final Identifier SKIN = new Identifier("textures/entity/shulker/shulker.png");
+	public static final Identifier[] SKIN_COLOR = new Identifier[]{
 		new Identifier("textures/entity/shulker/shulker_white.png"),
 		new Identifier("textures/entity/shulker/shulker_orange.png"),
 		new Identifier("textures/entity/shulker/shulker_magenta.png"),
@@ -74,35 +74,35 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	protected Identifier method_4111(ShulkerEntity shulkerEntity) {
-		return shulkerEntity.getColor() == null ? field_4781 : SKIN[shulkerEntity.getColor().getId()];
+		return shulkerEntity.getColor() == null ? SKIN : SKIN_COLOR[shulkerEntity.getColor().getId()];
 	}
 
 	protected void method_4114(ShulkerEntity shulkerEntity, float f, float g, float h) {
 		super.setupTransforms(shulkerEntity, f, g, h);
 		switch (shulkerEntity.getAttachedFace()) {
-			case DOWN:
+			case field_11033:
 			default:
 				break;
-			case EAST:
+			case field_11034:
 				GlStateManager.translatef(0.5F, 0.5F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case WEST:
+			case field_11039:
 				GlStateManager.translatef(-0.5F, 0.5F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case NORTH:
+			case field_11043:
 				GlStateManager.translatef(0.0F, 0.5F, -0.5F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				break;
-			case SOUTH:
+			case field_11035:
 				GlStateManager.translatef(0.0F, 0.5F, 0.5F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case UP:
+			case field_11036:
 				GlStateManager.translatef(0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
 		}

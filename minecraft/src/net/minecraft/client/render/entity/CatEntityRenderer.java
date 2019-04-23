@@ -35,7 +35,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 		float i = catEntity.getSleepAnimation(h);
 		if (i > 0.0F) {
 			GlStateManager.translatef(0.4F * i, 0.15F * i, 0.1F * i);
-			GlStateManager.rotatef(MathHelper.method_17821(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
 			BlockPos blockPos = new BlockPos(catEntity);
 
 			for (PlayerEntity playerEntity : catEntity.world.getEntities(PlayerEntity.class, new BoundingBox(blockPos).expand(2.0, 2.0, 2.0))) {

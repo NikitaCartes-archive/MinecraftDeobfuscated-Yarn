@@ -3,8 +3,8 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class ShortTag extends AbstractNumberTag {
 	private short value;
@@ -50,9 +50,9 @@ public class ShortTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
-		TextComponent textComponent = new StringTextComponent("s").applyFormat(RED);
-		return new StringTextComponent(String.valueOf(this.value)).append(textComponent).applyFormat(GOLD);
+	public Component toTextComponent(String string, int i) {
+		Component component = new TextComponent("s").applyFormat(RED);
+		return new TextComponent(String.valueOf(this.value)).append(component).applyFormat(GOLD);
 	}
 
 	@Override

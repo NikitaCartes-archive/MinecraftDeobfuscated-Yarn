@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -23,7 +23,7 @@ public class SkullBlock extends AbstractSkullBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -49,18 +49,18 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(ROTATION);
+		builder.add(ROTATION);
 	}
 
 	public interface SkullType {
 	}
 
 	public static enum Type implements SkullBlock.SkullType {
-		SKELETON,
-		WITHER_SKELETON,
-		PLAYER,
-		ZOMBIE,
-		CREEPER,
-		DRAGON;
+		field_11512,
+		field_11513,
+		field_11510,
+		field_11508,
+		field_11507,
+		field_11511;
 	}
 }

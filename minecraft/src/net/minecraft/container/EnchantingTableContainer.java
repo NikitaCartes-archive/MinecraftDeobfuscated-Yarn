@@ -44,7 +44,7 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	public EnchantingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.ENCHANTMENT, i);
+		super(ContainerType.field_17334, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
@@ -169,14 +169,14 @@ public class EnchantingTableContainer extends Container {
 			return false;
 		} else if (this.enchantmentPower[i] <= 0
 			|| itemStack.isEmpty()
-			|| (playerEntity.experience < j || playerEntity.experience < this.enchantmentPower[i]) && !playerEntity.abilities.creativeMode) {
+			|| (playerEntity.experienceLevel < j || playerEntity.experienceLevel < this.enchantmentPower[i]) && !playerEntity.abilities.creativeMode) {
 			return false;
 		} else {
 			this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
 				if (!list.isEmpty()) {
-					playerEntity.method_7286(itemStack, j);
+					playerEntity.applyEnchantmentCosts(itemStack, j);
 					boolean bl = itemStack.getItem() == Items.field_8529;
 					if (bl) {
 						itemStack3 = new ItemStack(Items.field_8598);

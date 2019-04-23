@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.menu.options.ControlsOptionsScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextFormat;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
@@ -137,9 +137,9 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 			}
 
 			if (bl2) {
-				this.editButton.setMessage(TextFormat.field_1068 + "> " + TextFormat.field_1054 + this.editButton.getMessage() + TextFormat.field_1068 + " <");
+				this.editButton.setMessage(ChatFormat.field_1068 + "> " + ChatFormat.field_1054 + this.editButton.getMessage() + ChatFormat.field_1068 + " <");
 			} else if (bl3) {
-				this.editButton.setMessage(TextFormat.field_1061 + this.editButton.getMessage());
+				this.editButton.setMessage(ChatFormat.field_1061 + this.editButton.getMessage());
 			}
 
 			this.editButton.render(n, o, f);

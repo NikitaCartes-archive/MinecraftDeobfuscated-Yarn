@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
@@ -21,12 +21,12 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty IN_WALL = Properties.IN_WALL;
-	protected static final VoxelShape field_11022 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
-	protected static final VoxelShape field_11017 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
-	protected static final VoxelShape field_11025 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 13.0, 10.0);
-	protected static final VoxelShape field_11016 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
-	protected static final VoxelShape field_11028 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
-	protected static final VoxelShape field_11019 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
+	protected static final VoxelShape Z_AXIS_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
+	protected static final VoxelShape X_AXIS_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	protected static final VoxelShape IN_WALL_Z_AXIS_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 13.0, 10.0);
+	protected static final VoxelShape IN_WALL_X_AXIS_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
+	protected static final VoxelShape Z_AXIS_COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
+	protected static final VoxelShape X_AXIS_COLLISION_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
 	protected static final VoxelShape field_11018 = VoxelShapes.union(
 		Block.createCuboidShape(0.0, 5.0, 7.0, 2.0, 16.0, 9.0), Block.createCuboidShape(14.0, 5.0, 7.0, 16.0, 16.0, 9.0)
 	);
@@ -48,11 +48,11 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		if ((Boolean)blockState.get(IN_WALL)) {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11016 : field_11025;
+			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
 		} else {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11017 : field_11022;
+			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 		}
 	}
 
@@ -70,11 +70,11 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		if ((Boolean)blockState.get(OPEN)) {
 			return VoxelShapes.empty();
 		} else {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.Z ? field_11028 : field_11019;
+			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.Z ? Z_AXIS_COLLISION_SHAPE : X_AXIS_COLLISION_SHAPE;
 		}
 	}
 
@@ -151,7 +151,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, OPEN, POWERED, IN_WALL);
+		builder.add(FACING, OPEN, POWERED, IN_WALL);
 	}
 
 	public static boolean canWallConnect(BlockState blockState, Direction direction) {

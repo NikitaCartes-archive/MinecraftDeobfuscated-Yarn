@@ -11,19 +11,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0 0 0", "~ ~ ~", "^ ^ ^", "^1 ^ ^-5", "~0.5 ~1 ~-5");
-	public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("argument.pos.unloaded"));
-	public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.pos.outofworld")
-	);
+	public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos.unloaded"));
+	public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos.outofworld"));
 
 	public static BlockPosArgumentType create() {
 		return new BlockPosArgumentType();

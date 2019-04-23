@@ -568,7 +568,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		this.suggestion = string;
 	}
 
-	public int method_1889(int i) {
+	public int getCharacterX(int i) {
 		return i > this.text.length() ? this.x : this.x + this.textRenderer.getStringWidth(this.text.substring(0, i));
 	}
 

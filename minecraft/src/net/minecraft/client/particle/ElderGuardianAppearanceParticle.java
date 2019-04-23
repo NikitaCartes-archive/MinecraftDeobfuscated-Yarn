@@ -26,15 +26,15 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.guardian == null) {
-			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(this.world);
+			ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.create(this.world);
 			elderGuardianEntity.straightenTail();
 			this.guardian = elderGuardianEntity;
 		}

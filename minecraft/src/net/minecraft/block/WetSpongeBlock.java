@@ -17,14 +17,14 @@ public class WetSpongeBlock extends Block {
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		Direction direction = Direction.random(random);
-		if (direction != Direction.UP) {
+		if (direction != Direction.field_11036) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			if (!blockState.isFullBoundsCubeForCulling() || !Block.isSolidFullSquare(blockState2, world, blockPos2, direction.getOpposite())) {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();
-				if (direction == Direction.DOWN) {
+				if (direction == Direction.field_11033) {
 					e -= 0.05;
 					d += random.nextDouble();
 					f += random.nextDouble();
@@ -32,14 +32,14 @@ public class WetSpongeBlock extends Block {
 					e += random.nextDouble() * 0.8;
 					if (direction.getAxis() == Direction.Axis.X) {
 						f += random.nextDouble();
-						if (direction == Direction.EAST) {
+						if (direction == Direction.field_11034) {
 							d++;
 						} else {
 							d += 0.05;
 						}
 					} else {
 						d += random.nextDouble();
-						if (direction == Direction.SOUTH) {
+						if (direction == Direction.field_11035) {
 							f++;
 						} else {
 							f += 0.05;

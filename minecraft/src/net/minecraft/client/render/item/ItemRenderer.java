@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
@@ -47,9 +48,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public float zOffset;
 	private final ItemModels models;
 	private final TextureManager textureManager;
-	private final ItemColorMap colorMap;
+	private final ItemColors colorMap;
 
-	public ItemRenderer(TextureManager textureManager, BakedModelManager bakedModelManager, ItemColorMap itemColorMap) {
+	public ItemRenderer(TextureManager textureManager, BakedModelManager bakedModelManager, ItemColors itemColors) {
 		this.textureManager = textureManager;
 		this.models = new ItemModels(bakedModelManager);
 
@@ -59,7 +60,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			}
 		}
 
-		this.colorMap = itemColorMap;
+		this.colorMap = itemColors;
 	}
 
 	public ItemModels getModels() {
@@ -158,7 +159,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			BakedQuad bakedQuad = (BakedQuad)list.get(j);
 			int l = i;
 			if (bl && bakedQuad.hasColor()) {
-				l = this.colorMap.getRenderColor(itemStack, bakedQuad.getColorIndex());
+				l = this.colorMap.getColorMultiplier(itemStack, bakedQuad.getColorIndex());
 				l |= -16777216;
 			}
 

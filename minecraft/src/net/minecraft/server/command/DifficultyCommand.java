@@ -4,14 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DifficultyCommand {
 	private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.difficulty.failure", object)
+		object -> new TranslatableComponent("commands.difficulty.failure", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -25,7 +25,7 @@ public class DifficultyCommand {
 
 		commandDispatcher.register(literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
 			Difficulty difficultyx = commandContext.getSource().getWorld().getDifficulty();
-			commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.difficulty.query", difficultyx.toTextComponent()), false);
+			commandContext.getSource().sendFeedback(new TranslatableComponent("commands.difficulty.query", difficultyx.toTextComponent()), false);
 			return difficultyx.getId();
 		}));
 	}
@@ -36,7 +36,7 @@ public class DifficultyCommand {
 			throw FAILURE_EXCEPTION.create(difficulty.getTranslationKey());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.difficulty.success", difficulty.toTextComponent()), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.difficulty.success", difficulty.toTextComponent()), true);
 			return 0;
 		}
 	}

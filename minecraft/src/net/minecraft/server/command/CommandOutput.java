@@ -1,11 +1,11 @@
 package net.minecraft.server.command;
 
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface CommandOutput {
 	CommandOutput DUMMY = new CommandOutput() {
 		@Override
-		public void sendMessage(TextComponent textComponent) {
+		public void sendMessage(Component component) {
 		}
 
 		@Override
@@ -24,7 +24,7 @@ public interface CommandOutput {
 		}
 	};
 
-	void sendMessage(TextComponent textComponent);
+	void sendMessage(Component component);
 
 	boolean sendCommandFeedback();
 

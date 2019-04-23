@@ -68,7 +68,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
 		}
 	}
 

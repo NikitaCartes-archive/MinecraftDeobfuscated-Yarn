@@ -28,6 +28,7 @@ import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestStorage;
@@ -36,7 +37,6 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -87,7 +87,7 @@ public class ChunkSerializer {
 			block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos, compoundTag2.getList("ToBeTicked", 9)
 		);
 		ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<>(
-			fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
+			fluid -> fluid == null || fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
 		);
 		boolean bl = compoundTag2.getBoolean("isLightOn");
 		ListTag listTag = compoundTag2.getList("Sections", 10);
@@ -113,11 +113,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag3.containsKey("BlockLight", 7)) {
-					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
+					lightingProvider.queueData(LightType.field_9282, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
-					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
+					lightingProvider.queueData(LightType.field_9284, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -125,7 +125,7 @@ public class ChunkSerializer {
 		long n = compoundTag2.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(compoundTag);
 		Chunk chunk;
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkStatus.ChunkType.field_12807) {
 			chunk = new WorldChunk(
 				world.getWorld(),
 				chunkPos,
@@ -143,11 +143,11 @@ public class ChunkSerializer {
 			protoChunk.setBiomeArray(biomes);
 			protoChunk.setInhabitedTime(n);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
-			if (protoChunk.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
+			if (protoChunk.getStatus().isAtLeast(ChunkStatus.field_12795)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
 
-			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
+			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.field_12805)) {
 				for (BlockPos blockPos : BlockPos.iterate(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
@@ -187,7 +187,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkStatus.ChunkType.field_12807) {
 			return new ReadOnlyChunk((WorldChunk)chunk);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -251,8 +251,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9282).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.field_9284).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));
@@ -293,7 +293,7 @@ public class ChunkSerializer {
 			if (blockEntity != null) {
 				CompoundTag compoundTag4 = new CompoundTag();
 				blockEntity.toTag(compoundTag4);
-				if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+				if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 					compoundTag4.putBoolean("keepPacked", false);
 				}
 
@@ -301,7 +301,7 @@ public class ChunkSerializer {
 			} else {
 				CompoundTag compoundTag4 = chunk.getBlockEntityTagAt(blockPos);
 				if (compoundTag4 != null) {
-					if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+					if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 						compoundTag4.putBoolean("keepPacked", true);
 					}
 
@@ -312,7 +312,7 @@ public class ChunkSerializer {
 
 		compoundTag2.put("TileEntities", listTag2);
 		ListTag listTag3 = new ListTag();
-		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 			WorldChunk worldChunk = (WorldChunk)chunk;
 			worldChunk.method_12232(false);
 
@@ -397,7 +397,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		return ChunkStatus.ChunkType.PROTOCHUNK;
+		return ChunkStatus.ChunkType.field_12808;
 	}
 
 	private static void writeEntities(CompoundTag compoundTag, WorldChunk worldChunk) {

@@ -10,29 +10,29 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
+public class ParticleArgumentType implements ArgumentType<ParticleEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
 	public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("particle.notFound", object)
+		object -> new TranslatableComponent("particle.notFound", object)
 	);
 
 	public static ParticleArgumentType create() {
 		return new ParticleArgumentType();
 	}
 
-	public static ParticleParameters getParticle(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, ParticleParameters.class);
+	public static ParticleEffect getParticle(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, ParticleEffect.class);
 	}
 
-	public ParticleParameters method_9416(StringReader stringReader) throws CommandSyntaxException {
+	public ParticleEffect method_9416(StringReader stringReader) throws CommandSyntaxException {
 		return readParameters(stringReader);
 	}
 
@@ -41,15 +41,15 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 		return EXAMPLES;
 	}
 
-	public static ParticleParameters readParameters(StringReader stringReader) throws CommandSyntaxException {
+	public static ParticleEffect readParameters(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
 		ParticleType<?> particleType = (ParticleType<?>)Registry.PARTICLE_TYPE
 			.getOrEmpty(identifier)
 			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
-		return readParameters(stringReader, (ParticleType<ParticleParameters>)particleType);
+		return readParameters(stringReader, (ParticleType<ParticleEffect>)particleType);
 	}
 
-	private static <T extends ParticleParameters> T readParameters(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {
+	private static <T extends ParticleEffect> T readParameters(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {
 		return particleType.getParametersFactory().read(particleType, stringReader);
 	}
 

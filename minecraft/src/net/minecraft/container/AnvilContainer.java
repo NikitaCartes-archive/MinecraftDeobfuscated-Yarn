@@ -16,8 +16,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +45,7 @@ public class AnvilContainer extends Container {
 	}
 
 	public AnvilContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.ANVIL, i);
+		super(ContainerType.field_17329, i);
 		this.context = blockContext;
 		this.player = playerInventory.player;
 		this.addProperty(this.levelCost);
@@ -60,7 +60,7 @@ public class AnvilContainer extends Container {
 
 				@Override
 				public boolean canTakeItems(PlayerEntity playerEntity) {
-					return (playerEntity.abilities.creativeMode || playerEntity.experience >= AnvilContainer.this.levelCost.get())
+					return (playerEntity.abilities.creativeMode || playerEntity.experienceLevel >= AnvilContainer.this.levelCost.get())
 						&& AnvilContainer.this.levelCost.get() > 0
 						&& this.hasStack();
 				}
@@ -68,7 +68,7 @@ public class AnvilContainer extends Container {
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					if (!playerEntity.abilities.creativeMode) {
-						playerEntity.method_7316(-AnvilContainer.this.levelCost.get());
+						playerEntity.addExperienceLevels(-AnvilContainer.this.levelCost.get());
 					}
 
 					AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
@@ -213,16 +213,16 @@ public class AnvilContainer extends Container {
 								map.put(enchantment, r);
 								int s = 0;
 								switch (enchantment.getWeight()) {
-									case COMMON:
+									case field_9087:
 										s = 1;
 										break;
-									case UNCOMMON:
+									case field_9090:
 										s = 2;
 										break;
-									case RARE:
+									case field_9088:
 										s = 4;
 										break;
-									case LEGENDARY:
+									case field_9091:
 										s = 8;
 								}
 
@@ -255,7 +255,7 @@ public class AnvilContainer extends Container {
 			} else if (!this.newItemName.equals(itemStack.getDisplayName().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.setDisplayName(new StringTextComponent(this.newItemName));
+				itemStack2.setDisplayName(new TextComponent(this.newItemName));
 			}
 
 			this.levelCost.set(j + i);
@@ -355,7 +355,7 @@ public class AnvilContainer extends Container {
 			if (StringUtils.isBlank(string)) {
 				itemStack.removeDisplayName();
 			} else {
-				itemStack.setDisplayName(new StringTextComponent(this.newItemName));
+				itemStack.setDisplayName(new TextComponent(this.newItemName));
 			}
 		}
 

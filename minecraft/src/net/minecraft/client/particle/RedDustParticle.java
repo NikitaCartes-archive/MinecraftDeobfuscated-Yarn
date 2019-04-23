@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.DustParticleParameters;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -11,7 +11,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17801;
 
 	private RedDustParticle(
-		World world, double d, double e, double f, double g, double h, double i, DustParticleParameters dustParticleParameters, SpriteProvider spriteProvider
+		World world, double d, double e, double f, double g, double h, double i, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider
 	) {
 		super(world, d, e, f, g, h, i);
 		this.field_17801 = spriteProvider;
@@ -19,17 +19,17 @@ public class RedDustParticle extends SpriteBillboardParticle {
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
 		float j = (float)Math.random() * 0.4F + 0.6F;
-		this.colorRed = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getRed() * j;
-		this.colorGreen = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getGreen() * j;
-		this.colorBlue = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getBlue() * j;
-		this.scale = this.scale * 0.75F * dustParticleParameters.getAlpha();
+		this.colorRed = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleEffect.getRed() * j;
+		this.colorGreen = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleEffect.getGreen() * j;
+		this.colorBlue = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleEffect.getBlue() * j;
+		this.scale = this.scale * 0.75F * dustParticleEffect.getAlpha();
 		int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-		this.maxAge = (int)Math.max((float)k * dustParticleParameters.getAlpha(), 1.0F);
+		this.maxAge = (int)Math.max((float)k * dustParticleEffect.getAlpha(), 1.0F);
 		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -39,7 +39,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
@@ -64,15 +64,15 @@ public class RedDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<DustParticleParameters> {
+	public static class Factory implements ParticleFactory<DustParticleEffect> {
 		private final SpriteProvider field_17802;
 
 		public Factory(SpriteProvider spriteProvider) {
 			this.field_17802 = spriteProvider;
 		}
 
-		public Particle method_3022(DustParticleParameters dustParticleParameters, World world, double d, double e, double f, double g, double h, double i) {
-			return new RedDustParticle(world, d, e, f, g, h, i, dustParticleParameters, this.field_17802);
+		public Particle method_3022(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+			return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.field_17802);
 		}
 	}
 }

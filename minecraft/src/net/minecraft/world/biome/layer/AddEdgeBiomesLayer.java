@@ -5,7 +5,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
-	INSTANCE;
+	field_16184;
 
 	private static final int BEACH_ID = Registry.BIOME.getRawId(Biomes.field_9434);
 	private static final int SNOWY_BEACH_ID = Registry.BIOME.getRawId(Biomes.field_9478);
@@ -37,7 +37,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 			if (BiomeLayers.isShallowOcean(i) || BiomeLayers.isShallowOcean(j) || BiomeLayers.isShallowOcean(k) || BiomeLayers.isShallowOcean(l)) {
 				return MUSHROOM_FIELD_SHORE_ID;
 			}
-		} else if (biome != null && biome.getCategory() == Biome.Category.JUNGLE) {
+		} else if (biome != null && biome.getCategory() == Biome.Category.field_9358) {
 			if (!isWooded(i) || !isWooded(j) || !isWooded(k) || !isWooded(l)) {
 				return JUNGLE_EDGE_ID;
 			}
@@ -72,7 +72,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	}
 
 	private static boolean isWooded(int i) {
-		return Registry.BIOME.get(i) != null && Registry.BIOME.get(i).getCategory() == Biome.Category.JUNGLE
+		return Registry.BIOME.get(i) != null && Registry.BIOME.get(i).getCategory() == Biome.Category.field_9358
 			? true
 			: i == JUNGLE_EDGE_ID || i == JUNGLE_ID || i == JUNGLE_HILLS_ID || i == FOREST_ID || i == TAIGA_ID || BiomeLayers.isOcean(i);
 	}

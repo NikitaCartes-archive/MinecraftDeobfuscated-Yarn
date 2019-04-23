@@ -53,7 +53,7 @@ public class PhantomSpawner {
 											int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = EntityType.PHANTOM.create(serverWorld);
+												PhantomEntity phantomEntity = EntityType.field_6078.create(serverWorld);
 												phantomEntity.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 												entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnType.field_16459, entityData, null);
 												serverWorld.spawnEntity(phantomEntity);

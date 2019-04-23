@@ -21,7 +21,7 @@ public class BushFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> BushFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
 		return new BushFeatureConfig(blockState);
 	}
 }

@@ -11,7 +11,7 @@ import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -25,10 +25,10 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		T abstractFurnaceContainer,
 		AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen,
 		PlayerInventory playerInventory,
-		TextComponent textComponent,
+		Component component,
 		Identifier identifier
 	) {
-		super(abstractFurnaceContainer, playerInventory, textComponent);
+		super(abstractFurnaceContainer, playerInventory, component);
 		this.recipeBook = abstractFurnaceRecipeBookScreen;
 		this.field_18975 = identifier;
 	}

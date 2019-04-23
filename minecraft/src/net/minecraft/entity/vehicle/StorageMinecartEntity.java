@@ -180,7 +180,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
 		}
 	}
 
@@ -202,9 +202,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			return null;
 		} else {
 			this.method_7563(playerInventory.player);
-			return this.method_17357(i, playerInventory);
+			return this.getContainer(i, playerInventory);
 		}
 	}
 
-	protected abstract Container method_17357(int i, PlayerInventory playerInventory);
+	protected abstract Container getContainer(int i, PlayerInventory playerInventory);
 }

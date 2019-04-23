@@ -13,30 +13,30 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import java.lang.reflect.Type;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
-	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(TextComponent.class, new JsonDeserializer<TextComponent>() {
-		public TextComponent method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer<Component>() {
+		public Component method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
-				return new StringTextComponent(jsonElement.getAsString());
+				return new TextComponent(jsonElement.getAsString());
 			} else if (jsonElement.isJsonArray()) {
 				JsonArray jsonArray = jsonElement.getAsJsonArray();
-				TextComponent textComponent = null;
+				Component component = null;
 
 				for (JsonElement jsonElement2 : jsonArray) {
-					TextComponent textComponent2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
-					if (textComponent == null) {
-						textComponent = textComponent2;
+					Component component2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+					if (component == null) {
+						component = component2;
 					} else {
-						textComponent.append(textComponent2);
+						component.append(component2);
 					}
 				}
 
-				return textComponent;
+				return component;
 			} else {
 				throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
 			}
@@ -49,42 +49,42 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 
 	private Dynamic<?> method_15582(Dynamic<?> dynamic, String string) {
 		String string2 = dynamic.get(string).asString("");
-		TextComponent textComponent = null;
+		Component component = null;
 		if (!"null".equals(string2) && !StringUtils.isEmpty(string2)) {
 			if (string2.charAt(0) == '"' && string2.charAt(string2.length() - 1) == '"' || string2.charAt(0) == '{' && string2.charAt(string2.length() - 1) == '}') {
 				try {
-					textComponent = JsonHelper.deserialize(GSON, string2, TextComponent.class, true);
-					if (textComponent == null) {
-						textComponent = new StringTextComponent("");
+					component = JsonHelper.deserialize(GSON, string2, Component.class, true);
+					if (component == null) {
+						component = new TextComponent("");
 					}
 				} catch (JsonParseException var8) {
 				}
 
-				if (textComponent == null) {
+				if (component == null) {
 					try {
-						textComponent = TextComponent.Serializer.fromJsonString(string2);
+						component = Component.Serializer.fromJsonString(string2);
 					} catch (JsonParseException var7) {
 					}
 				}
 
-				if (textComponent == null) {
+				if (component == null) {
 					try {
-						textComponent = TextComponent.Serializer.fromLenientJsonString(string2);
+						component = Component.Serializer.fromLenientJsonString(string2);
 					} catch (JsonParseException var6) {
 					}
 				}
 
-				if (textComponent == null) {
-					textComponent = new StringTextComponent(string2);
+				if (component == null) {
+					component = new TextComponent(string2);
 				}
 			} else {
-				textComponent = new StringTextComponent(string2);
+				component = new TextComponent(string2);
 			}
 		} else {
-			textComponent = new StringTextComponent("");
+			component = new TextComponent("");
 		}
 
-		return dynamic.set(string, dynamic.createString(TextComponent.Serializer.toJsonString(textComponent)));
+		return dynamic.set(string, dynamic.createString(Component.Serializer.toJsonString(component)));
 	}
 
 	@Override

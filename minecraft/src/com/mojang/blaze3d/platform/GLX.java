@@ -375,7 +375,7 @@ public class GLX {
 		capsString = capsString + "Using framebuffer objects because ";
 		if (gLCapabilities.OpenGL30) {
 			capsString = capsString + "OpenGL 3.0 is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.BASE;
+			fboMode = GLX.FBOMode.field_4981;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -387,7 +387,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_ARB_framebuffer_object) {
 			capsString = capsString + "ARB_framebuffer_object is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.ARB;
+			fboMode = GLX.FBOMode.field_4983;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -399,7 +399,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_EXT_framebuffer_object) {
 			capsString = capsString + "EXT_framebuffer_object is supported.\n";
-			fboMode = GLX.FBOMode.EXT;
+			fboMode = GLX.FBOMode.field_4984;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -706,63 +706,63 @@ public class GLX {
 
 	public static void glBindFramebuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glBindFramebuffer(i, j);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glBindFramebuffer(i, j);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glBindFramebufferEXT(i, j);
 		}
 	}
 
 	public static void glBindRenderbuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glBindRenderbuffer(i, j);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glBindRenderbuffer(i, j);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glBindRenderbufferEXT(i, j);
 		}
 	}
 
 	public static void glDeleteRenderbuffers(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glDeleteRenderbuffers(i);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glDeleteRenderbuffers(i);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glDeleteRenderbuffersEXT(i);
 		}
 	}
 
 	public static void glDeleteFramebuffers(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glDeleteFramebuffers(i);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glDeleteFramebuffers(i);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glDeleteFramebuffersEXT(i);
 		}
 	}
 
 	public static int glGenFramebuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenFramebuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenFramebuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenFramebuffersEXT();
 			default:
 				return -1;
@@ -771,11 +771,11 @@ public class GLX {
 
 	public static int glGenRenderbuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenRenderbuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenRenderbuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenRenderbuffersEXT();
 			default:
 				return -1;
@@ -784,37 +784,37 @@ public class GLX {
 
 	public static void glRenderbufferStorage(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glRenderbufferStorage(i, j, k, l);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glRenderbufferStorage(i, j, k, l);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glRenderbufferStorageEXT(i, j, k, l);
 		}
 	}
 
 	public static void glFramebufferRenderbuffer(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glFramebufferRenderbufferEXT(i, j, k, l);
 		}
 	}
 
 	public static int glCheckFramebufferStatus(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glCheckFramebufferStatus(i);
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glCheckFramebufferStatus(i);
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glCheckFramebufferStatusEXT(i);
 			default:
 				return -1;
@@ -823,24 +823,24 @@ public class GLX {
 
 	public static void glFramebufferTexture2D(int i, int j, int k, int l, int m) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glFramebufferTexture2DEXT(i, j, k, l, m);
 		}
 	}
 
 	public static int getBoundFramebuffer() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GlStateManager.getInteger(36006);
-			case ARB:
+			case field_4983:
 				return GlStateManager.getInteger(36006);
-			case EXT:
+			case field_4984:
 				return GlStateManager.getInteger(36006);
 			default:
 				return 0;
@@ -956,8 +956,8 @@ public class GLX {
 
 	@Environment(EnvType.CLIENT)
 	static enum FBOMode {
-		BASE,
-		ARB,
-		EXT;
+		field_4981,
+		field_4983,
+		field_4984;
 	}
 }

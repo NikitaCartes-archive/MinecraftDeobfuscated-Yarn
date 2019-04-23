@@ -17,9 +17,9 @@ import net.minecraft.command.arguments.RotationArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -160,13 +160,11 @@ public class TeleportCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).getDisplayName(), entity.getDisplayName()),
+				new TranslatableComponent("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).getDisplayName(), entity.getDisplayName()),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true
-			);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true);
 		}
 
 		return collection.size();
@@ -184,27 +182,27 @@ public class TeleportCommand {
 		Vec2f vec2f = posArgument2 == null ? null : posArgument2.toAbsoluteRotation(serverCommandSource);
 		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
 		if (posArgument.isXRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12400);
 		}
 
 		if (posArgument.isYRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Y);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12398);
 		}
 
 		if (posArgument.isZRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Z);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12403);
 		}
 
 		if (posArgument2 == null) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
-			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
 		} else {
 			if (posArgument2.isXRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+				set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
 			}
 
 			if (posArgument2.isYRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+				set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
 			}
 		}
 
@@ -218,14 +216,12 @@ public class TeleportCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
-					"commands.teleport.success.location.single", ((Entity)collection.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z
-				),
+				new TranslatableComponent("commands.teleport.success.location.single", ((Entity)collection.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z),
 				true
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true
+				new TranslatableComponent("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true
 			);
 		}
 

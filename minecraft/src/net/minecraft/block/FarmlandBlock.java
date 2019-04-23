@@ -2,8 +2,8 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
@@ -31,7 +31,7 @@ public class FarmlandBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction == Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -52,12 +52,12 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -113,7 +113,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(MOISTURE);
+		builder.add(MOISTURE);
 	}
 
 	@Override

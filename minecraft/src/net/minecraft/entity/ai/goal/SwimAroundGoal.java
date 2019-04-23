@@ -15,15 +15,15 @@ public class SwimAroundGoal extends WanderAroundGoal {
 	@Nullable
 	@Override
 	protected Vec3d getWanderTarget() {
-		Vec3d vec3d = PathfindingUtil.findTarget(this.owner, 10, 7);
+		Vec3d vec3d = PathfindingUtil.findTarget(this.mob, 10, 7);
 		int i = 0;
 
 		while (
 			vec3d != null
-				&& !this.owner.world.getBlockState(new BlockPos(vec3d)).canPlaceAtSide(this.owner.world, new BlockPos(vec3d), BlockPlacementEnvironment.field_48)
+				&& !this.mob.world.getBlockState(new BlockPos(vec3d)).canPlaceAtSide(this.mob.world, new BlockPos(vec3d), BlockPlacementEnvironment.field_48)
 				&& i++ < 10
 		) {
-			vec3d = PathfindingUtil.findTarget(this.owner, 10, 7);
+			vec3d = PathfindingUtil.findTarget(this.mob, 10, 7);
 		}
 
 		return vec3d;

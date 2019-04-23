@@ -15,11 +15,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashException;
@@ -150,7 +150,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7373(double d) {
+	public void scrollInHotbar(double d) {
 		if (d > 0.0) {
 			d = 1.0;
 		}
@@ -215,10 +215,10 @@ public class PlayerInventory implements Inventory, Nameable {
 			i = this.getEmptySlot();
 		}
 
-		return i == -1 ? itemStack.getAmount() : this.method_7385(i, itemStack);
+		return i == -1 ? itemStack.getAmount() : this.addStack(i, itemStack);
 	}
 
-	private int method_7385(int i, ItemStack itemStack) {
+	private int addStack(int i, ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		int j = itemStack.getAmount();
 		ItemStack itemStack2 = this.getInvStack(i);
@@ -308,7 +308,7 @@ public class PlayerInventory implements Inventory, Nameable {
 						if (i == -1) {
 							itemStack.setAmount(this.addStack(itemStack));
 						} else {
-							itemStack.setAmount(this.method_7385(i, itemStack));
+							itemStack.setAmount(this.addStack(i, itemStack));
 						}
 					} while (!itemStack.isEmpty() && itemStack.getAmount() < j);
 
@@ -519,8 +519,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public TextComponent getName() {
-		return new TranslatableTextComponent("container.inventory");
+	public Component getName() {
+		return new TranslatableComponent("container.inventory");
 	}
 
 	public boolean isUsingEffectiveTool(BlockState blockState) {
@@ -543,7 +543,9 @@ public class PlayerInventory implements Inventory, Nameable {
 				ItemStack itemStack = this.armor.get(i);
 				if (itemStack.getItem() instanceof ArmorItem) {
 					int j = i;
-					itemStack.applyDamage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.method_20234(EquipmentSlot.Type.ARMOR, j)));
+					itemStack.applyDamage(
+						(int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.field_6178, j))
+					);
 				}
 			}
 		}

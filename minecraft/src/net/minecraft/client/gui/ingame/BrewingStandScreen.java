@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.container.BrewingStandContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -15,8 +15,8 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
 	private static final int[] field_2824 = new int[]{29, 24, 20, 16, 11, 6, 0};
 
-	public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(brewingStandContainer, playerInventory, textComponent);
+	public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, Component component) {
+		super(brewingStandContainer, playerInventory, component);
 	}
 
 	@Override

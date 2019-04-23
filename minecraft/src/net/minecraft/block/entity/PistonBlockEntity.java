@@ -40,7 +40,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private long savedWorldTime;
 
 	public PistonBlockEntity() {
-		super(BlockEntityType.PISTON);
+		super(BlockEntityType.field_11897);
 	}
 
 	public PistonBlockEntity(BlockState blockState, Direction direction, boolean bl, boolean bl2) {
@@ -96,7 +96,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private BlockState method_11496() {
-		return !this.isExtending() && this.isSource()
+		return !this.isExtending() && this.isSource() && this.pushedBlock.getBlock() instanceof PistonBlock
 			? Blocks.field_10379
 				.getDefaultState()
 				.with(PistonHeadBlock.TYPE, this.pushedBlock.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
@@ -217,18 +217,18 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		double f = Math.min(e, 0.0);
 		double g = Math.max(e, 0.0);
 		switch (direction) {
-			case WEST:
+			case field_11039:
 				return new BoundingBox(boundingBox.minX + f, boundingBox.minY, boundingBox.minZ, boundingBox.minX + g, boundingBox.maxY, boundingBox.maxZ);
-			case EAST:
+			case field_11034:
 				return new BoundingBox(boundingBox.maxX + f, boundingBox.minY, boundingBox.minZ, boundingBox.maxX + g, boundingBox.maxY, boundingBox.maxZ);
-			case DOWN:
+			case field_11033:
 				return new BoundingBox(boundingBox.minX, boundingBox.minY + f, boundingBox.minZ, boundingBox.maxX, boundingBox.minY + g, boundingBox.maxZ);
-			case UP:
+			case field_11036:
 			default:
 				return new BoundingBox(boundingBox.minX, boundingBox.maxY + f, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY + g, boundingBox.maxZ);
-			case NORTH:
+			case field_11043:
 				return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ + f, boundingBox.maxX, boundingBox.maxY, boundingBox.minZ + g);
-			case SOUTH:
+			case field_11035:
 				return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.maxZ + f, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ + g);
 		}
 	}
@@ -267,7 +267,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return this.pushedBlock;
 	}
 
-	public void method_11513() {
+	public void finish() {
 		if (this.progress < 1.0F && this.world != null) {
 			this.nextProgress = 1.0F;
 			this.progress = this.nextProgress;
@@ -276,7 +276,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			if (this.world.getBlockState(this.pos).getBlock() == Blocks.field_10008) {
 				BlockState blockState;
 				if (this.source) {
-					blockState = Blocks.AIR.getDefaultState();
+					blockState = Blocks.field_10124.getDefaultState();
 				} else {
 					blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				}
@@ -340,7 +340,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return compoundTag;
 	}
 
-	public VoxelShape method_11512(BlockView blockView, BlockPos blockPos) {
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
 		VoxelShape voxelShape;
 		if (!this.extending && this.source) {
 			voxelShape = this.pushedBlock.with(PistonBlock.EXTENDED, Boolean.valueOf(true)).getCollisionShape(blockView, blockPos);

@@ -11,7 +11,7 @@ import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -21,8 +21,8 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	private final RecipeBookGui recipeBookGui = new RecipeBookGui();
 	private boolean isNarrow;
 
-	public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(craftingTableContainer, playerInventory, textComponent);
+	public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Component component) {
+		super(craftingTableContainer, playerInventory, component);
 	}
 
 	@Override

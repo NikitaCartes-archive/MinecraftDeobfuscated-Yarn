@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public enum AoOption {
-	field_18144(0, "options.ao.off"),
-	field_18145(1, "options.ao.min"),
-	field_18146(2, "options.ao.max");
+	OFF(0, "options.ao.off"),
+	MIN(1, "options.ao.min"),
+	MAX(2, "options.ao.max");
 
 	private static final AoOption[] OPTIONS = (AoOption[])Arrays.stream(values()).sorted(Comparator.comparingInt(AoOption::getValue)).toArray(AoOption[]::new);
 	private final int value;

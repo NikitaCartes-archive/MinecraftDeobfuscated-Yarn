@@ -4,7 +4,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
 
 public enum AddBambooJungleLayer implements SouthEastSamplingLayer {
-	INSTANCE;
+	field_16120;
 
 	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9417);
 	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9440);

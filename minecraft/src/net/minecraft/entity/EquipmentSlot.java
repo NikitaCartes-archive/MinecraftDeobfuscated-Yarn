@@ -1,12 +1,12 @@
 package net.minecraft.entity;
 
 public enum EquipmentSlot {
-	HAND_MAIN(EquipmentSlot.Type.HAND, 0, 0, "mainhand"),
-	HAND_OFF(EquipmentSlot.Type.HAND, 1, 5, "offhand"),
-	FEET(EquipmentSlot.Type.ARMOR, 0, 1, "feet"),
-	LEGS(EquipmentSlot.Type.ARMOR, 1, 2, "legs"),
-	CHEST(EquipmentSlot.Type.ARMOR, 2, 3, "chest"),
-	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head");
+	field_6173(EquipmentSlot.Type.field_6177, 0, 0, "mainhand"),
+	field_6171(EquipmentSlot.Type.field_6177, 1, 5, "offhand"),
+	field_6166(EquipmentSlot.Type.field_6178, 0, 1, "feet"),
+	field_6172(EquipmentSlot.Type.field_6178, 1, 2, "legs"),
+	field_6174(EquipmentSlot.Type.field_6178, 2, 3, "chest"),
+	field_6169(EquipmentSlot.Type.field_6178, 3, 4, "head");
 
 	private final EquipmentSlot.Type type;
 	private final int entityId;
@@ -46,7 +46,7 @@ public enum EquipmentSlot {
 		throw new IllegalArgumentException("Invalid slot '" + string + "'");
 	}
 
-	public static EquipmentSlot method_20234(EquipmentSlot.Type type, int i) {
+	public static EquipmentSlot fromTypeIndex(EquipmentSlot.Type type, int i) {
 		for (EquipmentSlot equipmentSlot : values()) {
 			if (equipmentSlot.getType() == type && equipmentSlot.getEntitySlotId() == i) {
 				return equipmentSlot;
@@ -57,7 +57,7 @@ public enum EquipmentSlot {
 	}
 
 	public static enum Type {
-		HAND,
-		ARMOR;
+		field_6177,
+		field_6178;
 	}
 }

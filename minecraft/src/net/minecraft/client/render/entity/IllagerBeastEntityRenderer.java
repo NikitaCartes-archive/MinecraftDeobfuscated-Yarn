@@ -8,13 +8,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class IllagerBeastEntityRenderer extends MobEntityRenderer<RavagerEntity, IllagerBeastEntityModel> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/ravager.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/illager/ravager.png");
 
 	public IllagerBeastEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new IllagerBeastEntityModel(), 1.1F);
 	}
 
 	protected Identifier method_3984(RavagerEntity ravagerEntity) {
-		return TEXTURE;
+		return SKIN;
 	}
 }

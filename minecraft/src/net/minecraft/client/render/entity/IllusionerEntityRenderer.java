@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEntity> {
-	private static final Identifier field_4718 = new Identifier("textures/entity/illager/illusioner.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/illager/illusioner.png");
 
 	public IllusionerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
@@ -27,7 +27,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 	}
 
 	protected Identifier method_3990(IllusionerEntity illusionerEntity) {
-		return field_4718;
+		return SKIN;
 	}
 
 	public void method_3991(IllusionerEntity illusionerEntity, double d, double e, double f, float g, float h) {

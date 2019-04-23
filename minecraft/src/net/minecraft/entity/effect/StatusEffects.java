@@ -96,7 +96,7 @@ public class StatusEffects {
 			if (livingEntity instanceof ServerPlayerEntity && !livingEntity.isSpectator()) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-				if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
+				if (serverWorld.getDifficulty() == Difficulty.field_5801) {
 					return;
 				}
 

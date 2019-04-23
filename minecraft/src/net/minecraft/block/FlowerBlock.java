@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -23,14 +23,14 @@ public class FlowerBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+		return Block.OffsetType.field_10657;
 	}
 
 	public StatusEffect getEffectInStew() {

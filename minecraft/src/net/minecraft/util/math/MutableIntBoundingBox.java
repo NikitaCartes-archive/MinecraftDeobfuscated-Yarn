@@ -33,13 +33,13 @@ public class MutableIntBoundingBox {
 
 	public static MutableIntBoundingBox createRotated(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
 		switch (direction) {
-			case NORTH:
+			case field_11043:
 				return new MutableIntBoundingBox(i + l, j + m, k - q + 1 + n, i + o - 1 + l, j + p - 1 + m, k + n);
-			case SOUTH:
+			case field_11035:
 				return new MutableIntBoundingBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);
-			case WEST:
+			case field_11039:
 				return new MutableIntBoundingBox(i - q + 1 + n, j + m, k + l, i + n, j + p - 1 + m, k + o - 1 + l);
-			case EAST:
+			case field_11034:
 				return new MutableIntBoundingBox(i + n, j + m, k + l, i + q - 1 + n, j + p - 1 + m, k + o - 1 + l);
 			default:
 				return new MutableIntBoundingBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);

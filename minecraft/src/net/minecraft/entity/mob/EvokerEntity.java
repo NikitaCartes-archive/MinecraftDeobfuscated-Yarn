@@ -194,7 +194,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			do {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
-				if (Block.isSolidFullSquare(blockState, EvokerEntity.this.world, blockPos2, Direction.UP)) {
+				if (Block.isSolidFullSquare(blockState, EvokerEntity.this.world, blockPos2, Direction.field_11036)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
@@ -221,8 +221,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		}
 
 		@Override
-		protected SpellcastingIllagerEntity.class_1618 method_7147() {
-			return SpellcastingIllagerEntity.class_1618.field_7380;
+		protected SpellcastingIllagerEntity.Spell getSpell() {
+			return SpellcastingIllagerEntity.Spell.field_7380;
 		}
 	}
 
@@ -279,7 +279,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
+				VexEntity vexEntity = EntityType.field_6059.create(EvokerEntity.this.world);
 				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
@@ -295,8 +295,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		}
 
 		@Override
-		protected SpellcastingIllagerEntity.class_1618 method_7147() {
-			return SpellcastingIllagerEntity.class_1618.field_7379;
+		protected SpellcastingIllagerEntity.Spell getSpell() {
+			return SpellcastingIllagerEntity.Spell.field_7379;
 		}
 	}
 
@@ -368,8 +368,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		}
 
 		@Override
-		protected SpellcastingIllagerEntity.class_1618 method_7147() {
-			return SpellcastingIllagerEntity.class_1618.field_7381;
+		protected SpellcastingIllagerEntity.Spell getSpell() {
+			return SpellcastingIllagerEntity.Spell.field_7381;
 		}
 	}
 }

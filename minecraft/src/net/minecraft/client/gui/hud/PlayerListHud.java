@@ -9,19 +9,19 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -31,8 +31,8 @@ public class PlayerListHud extends DrawableHelper {
 	private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new PlayerListHud.EntryOrderComparator());
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
-	private TextComponent footer;
-	private TextComponent header;
+	private Component footer;
+	private Component header;
 	private long showTime;
 	private boolean visible;
 
@@ -41,10 +41,10 @@ public class PlayerListHud extends DrawableHelper {
 		this.inGameHud = inGameHud;
 	}
 
-	public TextComponent method_1918(PlayerListEntry playerListEntry) {
+	public Component method_1918(PlayerListEntry playerListEntry) {
 		return playerListEntry.getDisplayName() != null
 			? playerListEntry.getDisplayName()
-			: Team.modifyText(playerListEntry.getScoreboardTeam(), new StringTextComponent(playerListEntry.getProfile().getName()));
+			: Team.modifyText(playerListEntry.getScoreboardTeam(), new TextComponent(playerListEntry.getProfile().getName()));
 	}
 
 	public void tick(boolean bl) {
@@ -64,7 +64,7 @@ public class PlayerListHud extends DrawableHelper {
 		for (PlayerListEntry playerListEntry : list) {
 			int l = this.client.textRenderer.getStringWidth(this.method_1918(playerListEntry).getFormattedText());
 			j = Math.max(j, l);
-			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
+			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.field_1471) {
 				l = this.client.textRenderer.getStringWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
 				k = Math.max(k, l);
 			}
@@ -82,7 +82,7 @@ public class PlayerListHud extends DrawableHelper {
 		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
 		int o;
 		if (scoreboardObjective != null) {
-			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.field_1471) {
 				o = 90;
 			} else {
 				o = k;
@@ -146,13 +146,13 @@ public class PlayerListHud extends DrawableHelper {
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null
-						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
+						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
 					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
 					int z = 8 + (bl2 ? 8 : 0);
 					int aa = 8 * (bl2 ? -1 : 1);
 					DrawableHelper.blit(x, y, 8, 8, 8.0F, (float)z, 8, aa, 64, 64);
-					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HEAD)) {
+					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.field_7563)) {
 						int ab = 8 + (bl2 ? 8 : 0);
 						int ac = 8 * (bl2 ? -1 : 1);
 						DrawableHelper.blit(x, y, 8, 8, 40.0F, (float)ab, 8, ac, 64, 64);
@@ -163,7 +163,7 @@ public class PlayerListHud extends DrawableHelper {
 
 				String string3 = this.method_1918(playerListEntry2).getFormattedText();
 				if (playerListEntry2.getGameMode() == GameMode.field_9219) {
-					this.client.textRenderer.drawWithShadow(TextFormat.field_1056 + string3, (float)x, (float)y, -1862270977);
+					this.client.textRenderer.drawWithShadow(ChatFormat.field_1056 + string3, (float)x, (float)y, -1862270977);
 				} else {
 					this.client.textRenderer.drawWithShadow(string3, (float)x, (float)y, -1);
 				}
@@ -218,7 +218,7 @@ public class PlayerListHud extends DrawableHelper {
 
 	private void method_1922(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
 		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
-		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.field_1471) {
 			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			long m = SystemUtil.getMeasuringTimeMs();
 			if (this.showTime == playerListEntry.method_2976()) {
@@ -282,17 +282,17 @@ public class PlayerListHud extends DrawableHelper {
 				}
 			}
 		} else {
-			String string3 = TextFormat.field_1054 + "" + l;
+			String string3 = ChatFormat.field_1054 + "" + l;
 			this.client.textRenderer.drawWithShadow(string3, (float)(k - this.client.textRenderer.getStringWidth(string3)), (float)i, 16777215);
 		}
 	}
 
-	public void setFooter(@Nullable TextComponent textComponent) {
-		this.footer = textComponent;
+	public void setFooter(@Nullable Component component) {
+		this.footer = component;
 	}
 
-	public void setHeader(@Nullable TextComponent textComponent) {
-		this.header = textComponent;
+	public void setHeader(@Nullable Component component) {
+		this.header = component;
 	}
 
 	public void clear() {

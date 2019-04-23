@@ -29,7 +29,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
+				if (direction != Direction.field_11033 && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
 					bl = true;
 					break;
 				}

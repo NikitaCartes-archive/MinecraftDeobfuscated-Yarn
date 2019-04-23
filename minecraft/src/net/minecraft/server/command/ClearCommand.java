@@ -10,15 +10,15 @@ import java.util.function.Predicate;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ItemPredicateArgumentType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class ClearCommand {
 	private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("clear.failed.single", object)
+		object -> new TranslatableComponent("clear.failed.single", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("clear.failed.multiple", object)
+		object -> new TranslatableComponent("clear.failed.multiple", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -74,17 +74,17 @@ public class ClearCommand {
 			if (i == 0) {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+						new TranslatableComponent("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.clear.test.multiple", j, collection.size()), true);
+					serverCommandSource.sendFeedback(new TranslatableComponent("commands.clear.test.multiple", j, collection.size()), true);
 				}
 			} else if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					new TranslatableComponent("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.clear.success.multiple", j, collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.clear.success.multiple", j, collection.size()), true);
 			}
 
 			return j;

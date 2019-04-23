@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -28,19 +28,19 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	protected LadderBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
-			case EAST:
+			case field_11034:
 			default:
 				return EAST_SHAPE;
 		}
@@ -62,7 +62,7 @@ public class LadderBlock extends Block implements Waterloggable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
@@ -75,7 +75,7 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		if (!itemPlacementContext.method_7717()) {
+		if (!itemPlacementContext.canReplaceHitBlock()) {
 			BlockState blockState = itemPlacementContext.getWorld()
 				.getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing().getOpposite()));
 			if (blockState.getBlock() == this && blockState.get(FACING) == itemPlacementContext.getFacing()) {
@@ -102,7 +102,7 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, WATERLOGGED);
+		builder.add(FACING, WATERLOGGED);
 	}
 
 	@Override

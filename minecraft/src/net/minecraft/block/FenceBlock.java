@@ -77,10 +77,22 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return super.getPlacementState(itemPlacementContext)
-			.with(NORTH, Boolean.valueOf(this.canConnect(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH), Direction.SOUTH)))
-			.with(EAST, Boolean.valueOf(this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.WEST), Direction.WEST)))
-			.with(SOUTH, Boolean.valueOf(this.canConnect(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.NORTH), Direction.NORTH)))
-			.with(WEST, Boolean.valueOf(this.canConnect(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.EAST), Direction.EAST)))
+			.with(
+				NORTH,
+				Boolean.valueOf(this.canConnect(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11035), Direction.field_11035))
+			)
+			.with(
+				EAST,
+				Boolean.valueOf(this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.field_11039), Direction.field_11039))
+			)
+			.with(
+				SOUTH,
+				Boolean.valueOf(this.canConnect(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.field_11043), Direction.field_11043))
+			)
+			.with(
+				WEST,
+				Boolean.valueOf(this.canConnect(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.field_11034), Direction.field_11034))
+			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -92,7 +104,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
+		return direction.getAxis().getType() == Direction.Type.field_11062
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
 				Boolean.valueOf(this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()))
@@ -102,6 +114,6 @@ public class FenceBlock extends HorizontalConnectedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
+		builder.add(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
 	}
 }

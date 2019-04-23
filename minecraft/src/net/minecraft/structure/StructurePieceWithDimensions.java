@@ -19,7 +19,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.width = l;
 		this.height = m;
 		this.depth = n;
-		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
+		this.setOrientation(Direction.Type.field_11062.random(random));
 		if (this.getFacing().getAxis() == Direction.Axis.Z) {
 			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
 		} else {

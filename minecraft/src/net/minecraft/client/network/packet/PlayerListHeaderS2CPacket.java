@@ -4,13 +4,13 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListener> {
-	private TextComponent header;
-	private TextComponent footer;
+	private Component header;
+	private Component footer;
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
@@ -29,12 +29,12 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getHeader() {
+	public Component getHeader() {
 		return this.header;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getFooter() {
+	public Component getFooter() {
 		return this.footer;
 	}
 }

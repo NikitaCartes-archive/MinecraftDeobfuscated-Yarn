@@ -15,9 +15,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
@@ -32,7 +32,7 @@ public class EditLevelScreen extends Screen {
 	private final String levelName;
 
 	public EditLevelScreen(BooleanConsumer booleanConsumer, String string) {
-		super(new TranslatableTextComponent("selectWorld.edit.title"));
+		super(new TranslatableComponent("selectWorld.edit.title"));
 		this.callback = booleanConsumer;
 		this.levelName = string;
 	}
@@ -86,7 +86,7 @@ public class EditLevelScreen extends Screen {
 						}
 
 						this.minecraft.openScreen(new UpdateWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
-					}, new TranslatableTextComponent("optimizeWorld.confirm.title"), new TranslatableTextComponent("optimizeWorld.confirm.description"), true))
+					}, new TranslatableComponent("optimizeWorld.confirm.title"), new TranslatableComponent("optimizeWorld.confirm.description"), true))
 			)
 		);
 		this.saveButton = this.addButton(
@@ -135,17 +135,17 @@ public class EditLevelScreen extends Screen {
 			iOException = var8;
 		}
 
-		TextComponent textComponent;
-		TextComponent textComponent2;
+		Component component;
+		Component component2;
 		if (iOException != null) {
-			textComponent = new TranslatableTextComponent("selectWorld.edit.backupFailed");
-			textComponent2 = new StringTextComponent(iOException.getMessage());
+			component = new TranslatableComponent("selectWorld.edit.backupFailed");
+			component2 = new TextComponent(iOException.getMessage());
 		} else {
-			textComponent = new TranslatableTextComponent("selectWorld.edit.backupCreated", string);
-			textComponent2 = new TranslatableTextComponent("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
+			component = new TranslatableComponent("selectWorld.edit.backupCreated", string);
+			component2 = new TranslatableComponent("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
 		}
 
-		toastManager.add(new SystemToast(SystemToast.Type.field_2220, textComponent, textComponent2));
+		toastManager.add(new SystemToast(SystemToast.Type.field_2220, component, component2));
 	}
 
 	@Override

@@ -90,7 +90,7 @@ public class MooshroomEntity extends CowEntity {
 			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();
-				CowEntity cowEntity = EntityType.COW.create(this.world);
+				CowEntity cowEntity = EntityType.field_6085.create(this.world);
 				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.field_6283 = this.field_6283;
@@ -102,9 +102,7 @@ public class MooshroomEntity extends CowEntity {
 
 				for (int i = 0; i < 5; i++) {
 					this.world
-						.spawnEntity(
-							new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroomState.getBlock()))
-						);
+						.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
 				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
@@ -193,7 +191,7 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
+		MooshroomEntity mooshroomEntity = EntityType.field_6143.create(this.world);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;
 	}
@@ -216,16 +214,16 @@ public class MooshroomEntity extends CowEntity {
 		field_18110("brown", Blocks.field_10251.getDefaultState());
 
 		private final String name;
-		private final BlockState mushroomState;
+		private final BlockState mushroom;
 
 		private Type(String string2, BlockState blockState) {
 			this.name = string2;
-			this.mushroomState = blockState;
+			this.mushroom = blockState;
 		}
 
 		@Environment(EnvType.CLIENT)
 		public BlockState getMushroomState() {
-			return this.mushroomState;
+			return this.mushroom;
 		}
 
 		private static MooshroomEntity.Type fromName(String string) {

@@ -33,7 +33,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_19971(ServerWorld serverWorld, MobEntity mobEntity) {
-		return mobEntity.isChild() && this.shouldStartJumping(serverWorld, mobEntity);
+		return mobEntity.isBaby() && this.shouldStartJumping(serverWorld, mobEntity);
 	}
 
 	protected void method_19972(ServerWorld serverWorld, MobEntity mobEntity, long l) {
@@ -56,7 +56,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_19978(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		return mobEntity.isChild()
+		return mobEntity.isBaby()
 			&& this.bed != null
 			&& this.isBedAt(serverWorld, this.bed)
 			&& !this.isBedGoneTooLong(serverWorld, mobEntity)

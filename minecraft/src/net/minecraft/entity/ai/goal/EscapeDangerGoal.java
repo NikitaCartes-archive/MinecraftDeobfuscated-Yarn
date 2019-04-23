@@ -11,25 +11,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
 public class EscapeDangerGoal extends Goal {
-	protected final MobEntityWithAi owner;
+	protected final MobEntityWithAi mob;
 	protected final double speed;
 	protected double targetX;
 	protected double targetY;
 	protected double targetZ;
 
 	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.owner.getAttacker() == null && !this.owner.isOnFire()) {
+		if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
 			return false;
 		} else {
-			if (this.owner.isOnFire()) {
-				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
+			if (this.mob.isOnFire()) {
+				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -43,7 +43,7 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	protected boolean findTarget() {
-		Vec3d vec3d = PathfindingUtil.findTarget(this.owner, 5, 4);
+		Vec3d vec3d = PathfindingUtil.findTarget(this.mob, 5, 4);
 		if (vec3d == null) {
 			return false;
 		} else {
@@ -56,12 +56,12 @@ public class EscapeDangerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle();
+		return !this.mob.getNavigation().isIdle();
 	}
 
 	@Nullable

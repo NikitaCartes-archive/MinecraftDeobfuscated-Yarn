@@ -9,11 +9,11 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -121,7 +121,7 @@ public class TheEndBiomeSource extends BiomeSource {
 			for (int p = -12; p <= 12; p++) {
 				long q = (long)(k + o);
 				long r = (long)(l + p);
-				if (q * q + r * r > 4096L && this.noise.method_15433((double)q, (double)r) < -0.9F) {
+				if (q * q + r * r > 4096L && this.noise.sample((double)q, (double)r) < -0.9F) {
 					float g = (MathHelper.abs((float)q) * 3439.0F + MathHelper.abs((float)r) * 147.0F) % 13.0F + 9.0F;
 					float h = (float)(m - o * 2);
 					float s = (float)(n - p * 2);

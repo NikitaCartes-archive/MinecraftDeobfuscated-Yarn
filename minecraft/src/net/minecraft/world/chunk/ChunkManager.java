@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -13,17 +14,17 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
-		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803, bl);
 	}
 
 	@Nullable
 	@Override
 	public BlockView getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.EMPTY, false);
+		return this.getChunk(i, j, ChunkStatus.field_12798, false);
 	}
 
 	public boolean isChunkLoaded(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.FULL, false) != null;
+		return this.getChunk(i, j, ChunkStatus.field_12803, false) != null;
 	}
 
 	@Nullable

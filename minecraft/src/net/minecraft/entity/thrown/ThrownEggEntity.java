@@ -8,7 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ItemStackParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -20,11 +20,11 @@ public class ThrownEggEntity extends ThrownItemEntity {
 	}
 
 	public ThrownEggEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.EGG, livingEntity, world);
+		super(EntityType.field_6144, livingEntity, world);
 	}
 
 	public ThrownEggEntity(World world, double d, double e, double f) {
-		super(EntityType.EGG, d, e, f, world);
+		super(EntityType.field_6144, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -36,7 +36,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 			for (int i = 0; i < 8; i++) {
 				this.world
 					.addParticle(
-						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getStack()),
+						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getStack()),
 						this.x,
 						this.y,
 						this.z,
@@ -50,7 +50,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
+		if (hitResult.getType() == HitResult.Type.field_1331) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}
 
@@ -62,7 +62,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
+					ChickenEntity chickenEntity = EntityType.field_6132.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
 					chickenEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 					this.world.spawnEntity(chickenEntity);

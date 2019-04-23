@@ -29,9 +29,9 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack = craftingInventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Blocks.field_10251.getItem() && !bl3) {
+				if (itemStack.getItem() == Blocks.field_10251.asItem() && !bl3) {
 					bl3 = true;
-				} else if (itemStack.getItem() == Blocks.field_10559.getItem() && !bl2) {
+				} else if (itemStack.getItem() == Blocks.field_10559.asItem() && !bl2) {
 					bl2 = true;
 				} else if (itemStack.getItem().matches(ItemTags.field_15543) && !bl) {
 					bl = true;

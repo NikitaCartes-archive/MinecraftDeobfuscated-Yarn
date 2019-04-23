@@ -40,10 +40,10 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH))))
-			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.NORTH))))
-			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.EAST))))
-			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.WEST))))
+			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11035))))
+			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.field_11043))))
+			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.field_11034))))
+			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.field_11039))))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -65,7 +65,7 @@ public class PaneBlock extends HorizontalConnectedBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
+	public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
 		if (blockState2.getBlock() == this) {
 			if (!direction.getAxis().isHorizontal()) {
 				return true;
@@ -77,7 +77,7 @@ public class PaneBlock extends HorizontalConnectedBlock {
 			}
 		}
 
-		return super.skipRenderingSide(blockState, blockState2, direction);
+		return super.isSideInvisible(blockState, blockState2, direction);
 	}
 
 	public final boolean connectsTo(BlockState blockState, boolean bl) {
@@ -87,11 +87,11 @@ public class PaneBlock extends HorizontalConnectedBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.MIPPED_CUTOUT;
+		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
+		builder.add(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
 	}
 }

@@ -10,8 +10,8 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class ItemLoreToComponentFix extends DataFix {
 	public ItemLoreToComponentFix(Schema schema, boolean bl) {
@@ -45,6 +45,6 @@ public class ItemLoreToComponentFix extends DataFix {
 	}
 
 	private static String method_5012(String string) {
-		return TextComponent.Serializer.toJsonString(new StringTextComponent(string));
+		return Component.Serializer.toJsonString(new TextComponent(string));
 	}
 }

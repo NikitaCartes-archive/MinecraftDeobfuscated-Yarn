@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -36,12 +36,12 @@ import net.minecraft.entity.projectile.ExplodingWitherSkullEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -49,23 +49,24 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class WitherEntity extends HostileEntity implements RangedAttacker {
+public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_2 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final List<TrackedData<Integer>> field_7087 = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
+	private static final List<TrackedData<Integer>> TRACKED_ENTITY_IDS = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
 	private static final TrackedData<Integer> INVUL_TIMER = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TargetPredicate HEAD_TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0);
-	private final float[] field_7084 = new float[2];
-	private final float[] field_7083 = new float[2];
-	private final float[] field_7095 = new float[2];
-	private final float[] field_7094 = new float[2];
+	private final float[] sideHeadPitches = new float[2];
+	private final float[] sideHeadYaws = new float[2];
+	private final float[] prevSideHeadPitches = new float[2];
+	private final float[] prevSideHeadYaws = new float[2];
 	private final int[] field_7091 = new int[2];
 	private final int[] field_7092 = new int[2];
 	private int field_7082;
-	private final ServerBossBar field_7093 = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
+	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
 		.setDarkenSky(true);
-	private static final Predicate<LivingEntity> field_7086 = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD && livingEntity.method_6102();
+	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
+			&& livingEntity.method_6102();
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
 		super(entityType, world);
@@ -82,7 +83,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this));
-		this.targetSelector.add(2, new FollowTargetGoal(this, MobEntity.class, 0, false, false, field_7086));
+		this.targetSelector.add(2, new FollowTargetGoal(this, MobEntity.class, 0, false, false, CAN_ATTACK_PREDICATE));
 	}
 
 	@Override
@@ -105,14 +106,14 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		super.readCustomDataFromTag(compoundTag);
 		this.setInvulTimer(compoundTag.getInt("Invul"));
 		if (this.hasCustomName()) {
-			this.field_7093.setName(this.getDisplayName());
+			this.bossBar.setName(this.getDisplayName());
 		}
 	}
 
 	@Override
-	public void setCustomName(@Nullable TextComponent textComponent) {
-		super.setCustomName(textComponent);
-		this.field_7093.setName(this.getDisplayName());
+	public void setCustomName(@Nullable Component component) {
+		super.setCustomName(component);
+		this.bossBar.setName(this.getDisplayName());
 	}
 
 	@Override
@@ -131,7 +132,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
 		if (!this.world.isClient && this.getTrackedEntityId(0) > 0) {
 			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
@@ -156,11 +157,11 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 			this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F;
 		}
 
-		super.updateState();
+		super.tickMovement();
 
 		for (int i = 0; i < 2; i++) {
-			this.field_7094[i] = this.field_7083[i];
-			this.field_7095[i] = this.field_7084[i];
+			this.prevSideHeadYaws[i] = this.sideHeadYaws[i];
+			this.prevSideHeadPitches[i] = this.sideHeadPitches[i];
 		}
 
 		for (int i = 0; i < 2; i++) {
@@ -171,28 +172,28 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 			}
 
 			if (entity2 != null) {
-				double e = this.method_6874(i + 1);
-				double f = this.method_6880(i + 1);
-				double g = this.method_6881(i + 1);
+				double e = this.getHeadX(i + 1);
+				double f = this.getHeadY(i + 1);
+				double g = this.getHeadZ(i + 1);
 				double h = entity2.x - e;
 				double k = entity2.y + (double)entity2.getStandingEyeHeight() - f;
 				double l = entity2.z - g;
 				double m = (double)MathHelper.sqrt(h * h + l * l);
 				float n = (float)(MathHelper.atan2(l, h) * 180.0F / (float)Math.PI) - 90.0F;
 				float o = (float)(-(MathHelper.atan2(k, m) * 180.0F / (float)Math.PI));
-				this.field_7084[i] = this.method_6886(this.field_7084[i], o, 40.0F);
-				this.field_7083[i] = this.method_6886(this.field_7083[i], n, 10.0F);
+				this.sideHeadPitches[i] = this.getNextAngle(this.sideHeadPitches[i], o, 40.0F);
+				this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], n, 10.0F);
 			} else {
-				this.field_7083[i] = this.method_6886(this.field_7083[i], this.field_6283, 10.0F);
+				this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], this.field_6283, 10.0F);
 			}
 		}
 
 		boolean bl = this.isAtHalfHealth();
 
 		for (int jx = 0; jx < 3; jx++) {
-			double p = this.method_6874(jx);
-			double q = this.method_6880(jx);
-			double r = this.method_6881(jx);
+			double p = this.getHeadX(jx);
+			double q = this.getHeadY(jx);
+			double r = this.getHeadZ(jx);
 			this.world
 				.addParticle(
 					ParticleTypes.field_11251,
@@ -255,7 +256,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 			for (int ix = 1; ix < 3; ix++) {
 				if (this.age >= this.field_7091[ix - 1]) {
 					this.field_7091[ix - 1] = this.age + 10 + this.random.nextInt(10);
-					if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && this.field_7092[ix - 1]++ > 15) {
+					if ((this.world.getDifficulty() == Difficulty.field_5802 || this.world.getDifficulty() == Difficulty.field_5807) && this.field_7092[ix - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
 						double d = MathHelper.nextDouble(this.random, this.x - 10.0, this.x + 10.0);
@@ -338,7 +339,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 				this.heal(1.0F);
 			}
 
-			this.field_7093.setPercent(this.getHealth() / this.getHealthMaximum());
+			this.bossBar.setPercent(this.getHealth() / this.getHealthMaximum());
 		}
 	}
 
@@ -358,16 +359,16 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	@Override
 	public void onStartedTrackingBy(ServerPlayerEntity serverPlayerEntity) {
 		super.onStartedTrackingBy(serverPlayerEntity);
-		this.field_7093.addPlayer(serverPlayerEntity);
+		this.bossBar.addPlayer(serverPlayerEntity);
 	}
 
 	@Override
 	public void onStoppedTrackingBy(ServerPlayerEntity serverPlayerEntity) {
 		super.onStoppedTrackingBy(serverPlayerEntity);
-		this.field_7093.removePlayer(serverPlayerEntity);
+		this.bossBar.removePlayer(serverPlayerEntity);
 	}
 
-	private double method_6874(int i) {
+	private double getHeadX(int i) {
 		if (i <= 0) {
 			return this.x;
 		} else {
@@ -377,11 +378,11 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		}
 	}
 
-	private double method_6880(int i) {
+	private double getHeadY(int i) {
 		return i <= 0 ? this.y + 3.0 : this.y + 2.2;
 	}
 
-	private double method_6881(int i) {
+	private double getHeadZ(int i) {
 		if (i <= 0) {
 			return this.z;
 		} else {
@@ -391,7 +392,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		}
 	}
 
-	private float method_6886(float f, float g, float h) {
+	private float getNextAngle(float f, float g, float h) {
 		float i = MathHelper.wrapDegrees(g - f);
 		if (i > h) {
 			i = h;
@@ -412,9 +413,9 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 
 	private void method_6877(int i, double d, double e, double f, boolean bl) {
 		this.world.playLevelEvent(null, 1024, new BlockPos(this), 0);
-		double g = this.method_6874(i);
-		double h = this.method_6880(i);
-		double j = this.method_6881(i);
+		double g = this.getHeadX(i);
+		double h = this.getHeadY(i);
+		double j = this.getHeadZ(i);
 		double k = d - g;
 		double l = e - h;
 		double m = f - j;
@@ -506,13 +507,13 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_6879(int i) {
-		return this.field_7083[i];
+	public float getHeadYaw(int i) {
+		return this.sideHeadYaws[i];
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_6887(int i) {
-		return this.field_7084[i];
+	public float getHeadPitch(int i) {
+		return this.sideHeadPitches[i];
 	}
 
 	public int getInvulTimer() {
@@ -524,11 +525,11 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	public int getTrackedEntityId(int i) {
-		return this.dataTracker.<Integer>get((TrackedData<Integer>)field_7087.get(i));
+		return this.dataTracker.<Integer>get((TrackedData<Integer>)TRACKED_ENTITY_IDS.get(i));
 	}
 
 	public void setTrackedEntityId(int i, int j) {
-		this.dataTracker.set((TrackedData<Integer>)field_7087.get(i), j);
+		this.dataTracker.set((TrackedData<Integer>)TRACKED_ENTITY_IDS.get(i), j);
 	}
 
 	public boolean isAtHalfHealth() {

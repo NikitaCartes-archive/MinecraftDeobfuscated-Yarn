@@ -9,42 +9,42 @@ import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class NarratorManager implements ClientChatListener {
-	public static final TextComponent field_18967 = new StringTextComponent("");
+	public static final Component field_18967 = new TextComponent("");
 	private static final Logger field_18210 = LogManager.getLogger();
 	public static final NarratorManager INSTANCE = new NarratorManager();
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
+	public void onChatMessage(ChatMessageType chatMessageType, Component component) {
 		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
-		if (narratorOption != NarratorOption.field_18176 && this.narrator.active()) {
-			if (narratorOption == NarratorOption.field_18177
-				|| narratorOption == NarratorOption.field_18178 && chatMessageType == ChatMessageType.field_11737
-				|| narratorOption == NarratorOption.field_18179 && chatMessageType == ChatMessageType.field_11735) {
-				TextComponent textComponent2;
-				if (textComponent instanceof TranslatableTextComponent && "chat.type.text".equals(((TranslatableTextComponent)textComponent).getKey())) {
-					textComponent2 = new TranslatableTextComponent("chat.type.text.narrate", ((TranslatableTextComponent)textComponent).getParams());
+		if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
+			if (narratorOption == NarratorOption.ALL
+				|| narratorOption == NarratorOption.CHAT && chatMessageType == ChatMessageType.field_11737
+				|| narratorOption == NarratorOption.SYSTEM && chatMessageType == ChatMessageType.field_11735) {
+				Component component2;
+				if (component instanceof TranslatableComponent && "chat.type.text".equals(((TranslatableComponent)component).getKey())) {
+					component2 = new TranslatableComponent("chat.type.text.narrate", ((TranslatableComponent)component).getParams());
 				} else {
-					textComponent2 = textComponent;
+					component2 = component;
 				}
 
-				this.narrate(chatMessageType.interruptsNarration(), textComponent2.getString());
+				this.narrate(chatMessageType.interruptsNarration(), component2.getString());
 			}
 		}
 	}
 
 	public void method_19788(String string) {
 		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
-		if (this.narrator.active() && narratorOption != NarratorOption.field_18176 && narratorOption != NarratorOption.field_18178 && !string.isEmpty()) {
+		if (this.narrator.active() && narratorOption != NarratorOption.OFF && narratorOption != NarratorOption.CHAT && !string.isEmpty()) {
 			this.narrator.clear();
 			this.narrate(true, string);
 		}
@@ -61,27 +61,22 @@ public class NarratorManager implements ClientChatListener {
 	public void addToast(NarratorOption narratorOption) {
 		this.narrator.clear();
 		this.narrator
-			.say(
-				new TranslatableTextComponent("options.narrator").getString() + " : " + new TranslatableTextComponent(narratorOption.getTranslationKey()).getString(), true
-			);
+			.say(new TranslatableComponent("options.narrator").getString() + " : " + new TranslatableComponent(narratorOption.getTranslationKey()).getString(), true);
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
-			if (narratorOption == NarratorOption.field_18176) {
-				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
+			if (narratorOption == NarratorOption.OFF) {
+				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableComponent("narrator.toast.disabled"), null);
 			} else {
 				SystemToast.show(
 					toastManager,
 					SystemToast.Type.field_2219,
-					new TranslatableTextComponent("narrator.toast.enabled"),
-					new TranslatableTextComponent(narratorOption.getTranslationKey())
+					new TranslatableComponent("narrator.toast.enabled"),
+					new TranslatableComponent(narratorOption.getTranslationKey())
 				);
 			}
 		} else {
 			SystemToast.show(
-				toastManager,
-				SystemToast.Type.field_2219,
-				new TranslatableTextComponent("narrator.toast.disabled"),
-				new TranslatableTextComponent("options.narrator.notavailable")
+				toastManager, SystemToast.Type.field_2219, new TranslatableComponent("narrator.toast.disabled"), new TranslatableComponent("options.narrator.notavailable")
 			);
 		}
 	}

@@ -8,7 +8,7 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.World;
 
 public interface Trader {
@@ -34,9 +34,9 @@ public interface Trader {
 
 	boolean isLevelledTrader();
 
-	default void sendOffers(PlayerEntity playerEntity, TextComponent textComponent, int i) {
+	default void sendOffers(PlayerEntity playerEntity, Component component, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
-			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), textComponent)
+			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), component)
 		);
 		if (optionalInt.isPresent()) {
 			TraderOfferList traderOfferList = this.getOffers();

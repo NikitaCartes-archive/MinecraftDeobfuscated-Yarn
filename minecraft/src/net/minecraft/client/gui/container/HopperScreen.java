@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HopperScreen extends ContainerScreen<HopperContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/hopper.png");
 
-	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(hopperContainer, playerInventory, textComponent);
+	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, Component component) {
+		super(hopperContainer, playerInventory, component);
 		this.passEvents = false;
 		this.containerHeight = 133;
 	}

@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -22,12 +22,12 @@ public class ConnectedPlantBlock extends Block {
 	public static final BooleanProperty UP = Properties.UP_BOOL;
 	public static final BooleanProperty DOWN = Properties.DOWN_BOOL;
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.NORTH, NORTH);
-		enumMap.put(Direction.EAST, EAST);
-		enumMap.put(Direction.SOUTH, SOUTH);
-		enumMap.put(Direction.WEST, WEST);
-		enumMap.put(Direction.UP, UP);
-		enumMap.put(Direction.DOWN, DOWN);
+		enumMap.put(Direction.field_11043, NORTH);
+		enumMap.put(Direction.field_11034, EAST);
+		enumMap.put(Direction.field_11035, SOUTH);
+		enumMap.put(Direction.field_11039, WEST);
+		enumMap.put(Direction.field_11036, UP);
+		enumMap.put(Direction.field_11033, DOWN);
 	});
 	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 
@@ -79,7 +79,7 @@ public class ConnectedPlantBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(blockState)];
 	}
 

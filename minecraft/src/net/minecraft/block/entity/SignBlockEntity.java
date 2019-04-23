@@ -8,23 +8,21 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.event.ClickEvent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class SignBlockEntity extends BlockEntity {
-	public final TextComponent[] text = new TextComponent[]{
-		new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent("")
-	};
+	public final Component[] text = new Component[]{new TextComponent(""), new TextComponent(""), new TextComponent(""), new TextComponent("")};
 	@Environment(EnvType.CLIENT)
 	private boolean caretVisible;
 	private int currentRow = -1;
@@ -33,10 +31,10 @@ public class SignBlockEntity extends BlockEntity {
 	private boolean editable = true;
 	private PlayerEntity editor;
 	private final String[] textBeingEdited = new String[4];
-	private DyeColor textColor = DyeColor.BLACK;
+	private DyeColor textColor = DyeColor.field_7963;
 
 	public SignBlockEntity() {
-		super(BlockEntityType.SIGN);
+		super(BlockEntityType.field_11911);
 	}
 
 	@Override
@@ -44,7 +42,7 @@ public class SignBlockEntity extends BlockEntity {
 		super.toTag(compoundTag);
 
 		for (int i = 0; i < 4; i++) {
-			String string = TextComponent.Serializer.toJsonString(this.text[i]);
+			String string = Component.Serializer.toJsonString(this.text[i]);
 			compoundTag.putString("Text" + (i + 1), string);
 		}
 
@@ -56,19 +54,19 @@ public class SignBlockEntity extends BlockEntity {
 	public void fromTag(CompoundTag compoundTag) {
 		this.editable = false;
 		super.fromTag(compoundTag);
-		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
+		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.field_7963);
 
 		for (int i = 0; i < 4; i++) {
 			String string = compoundTag.getString("Text" + (i + 1));
-			TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);
+			Component component = Component.Serializer.fromJsonString(string);
 			if (this.world instanceof ServerWorld) {
 				try {
-					this.text[i] = TextFormatter.resolveAndStyle(this.getCommandSource(null), textComponent, null);
+					this.text[i] = Components.resolveAndStyle(this.getCommandSource(null), component, null);
 				} catch (CommandSyntaxException var6) {
-					this.text[i] = textComponent;
+					this.text[i] = component;
 				}
 			} else {
-				this.text[i] = textComponent;
+				this.text[i] = component;
 			}
 
 			this.textBeingEdited[i] = null;
@@ -76,18 +74,18 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getTextOnRow(int i) {
+	public Component getTextOnRow(int i) {
 		return this.text[i];
 	}
 
-	public void setTextOnRow(int i, TextComponent textComponent) {
-		this.text[i] = textComponent;
+	public void setTextOnRow(int i, Component component) {
+		this.text[i] = component;
 		this.textBeingEdited[i] = null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String getTextBeingEditedOnRow(int i, Function<TextComponent, String> function) {
+	public String getTextBeingEditedOnRow(int i, Function<Component, String> function) {
 		if (this.textBeingEdited[i] == null && this.text[i] != null) {
 			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
 		}
@@ -132,11 +130,11 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	public boolean onActivate(PlayerEntity playerEntity) {
-		for (TextComponent textComponent : this.text) {
-			Style style = textComponent == null ? null : textComponent.getStyle();
+		for (Component component : this.text) {
+			Style style = component == null ? null : component.getStyle();
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
-				if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+				if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
 					playerEntity.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)playerEntity), clickEvent.getValue());
 				}
 			}
@@ -147,7 +145,7 @@ public class SignBlockEntity extends BlockEntity {
 
 	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
 		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
-		TextComponent textComponent = (TextComponent)(serverPlayerEntity == null ? new StringTextComponent("Sign") : serverPlayerEntity.getDisplayName());
+		Component component = (Component)(serverPlayerEntity == null ? new TextComponent("Sign") : serverPlayerEntity.getDisplayName());
 		return new ServerCommandSource(
 			CommandOutput.DUMMY,
 			new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5),
@@ -155,7 +153,7 @@ public class SignBlockEntity extends BlockEntity {
 			(ServerWorld)this.world,
 			2,
 			string,
-			textComponent,
+			component,
 			this.world.getServer(),
 			serverPlayerEntity
 		);

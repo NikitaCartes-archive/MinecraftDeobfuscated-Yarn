@@ -8,10 +8,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -35,7 +35,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 		} else {
 			blockPos = blockPos.down(4);
 			ChunkPos chunkPos = new ChunkPos(blockPos);
-			if (!iWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(Feature.VILLAGE.getName()).isEmpty()) {
+			if (!iWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_16422).getStructureReferences(Feature.VILLAGE.getName()).isEmpty()) {
 				return false;
 			} else {
 				boolean[] bls = new boolean[2048];
@@ -105,7 +105,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 						for (int txx = 4; txx < 8; txx++) {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
+								if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.field_9284, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = iWorld.getBiome(blockPos2);
 									if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.field_10402) {
 										iWorld.setBlockState(blockPos2, Blocks.field_10402.getDefaultState(), 2);

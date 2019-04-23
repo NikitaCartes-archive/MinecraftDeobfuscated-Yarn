@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.CloseWorldScreen;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
@@ -12,21 +13,20 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
-	private final TextComponent message;
+	private final Component message;
 	private final boolean field_18974;
 
-	public DeathScreen(@Nullable TextComponent textComponent, boolean bl) {
-		super(new TranslatableTextComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
-		this.message = textComponent;
+	public DeathScreen(@Nullable Component component, boolean bl) {
+		super(new TranslatableComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
+		this.message = component;
 		this.field_18974 = bl;
 	}
 
@@ -60,8 +60,8 @@ public class DeathScreen extends Screen {
 					} else {
 						YesNoScreen yesNoScreen = new YesNoScreen(
 							this::method_20373,
-							new TranslatableTextComponent("deathScreen.quit.confirm"),
-							new StringTextComponent(""),
+							new TranslatableComponent("deathScreen.quit.confirm"),
+							new TextComponent(""),
 							I18n.translate("deathScreen.titleScreen"),
 							I18n.translate("deathScreen.respawn")
 						);
@@ -91,7 +91,7 @@ public class DeathScreen extends Screen {
 				this.minecraft.world.disconnect();
 			}
 
-			this.minecraft.disconnect(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
+			this.minecraft.disconnect(new CloseWorldScreen(new TranslatableComponent("menu.savingLevel")));
 			this.minecraft.openScreen(new MainMenuScreen());
 		} else {
 			this.minecraft.player.requestRespawn();
@@ -111,12 +111,12 @@ public class DeathScreen extends Screen {
 		}
 
 		this.drawCenteredString(
-			this.font, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
+			this.font, I18n.translate("deathScreen.score") + ": " + ChatFormat.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.message != null && j > 85 && j < 85 + 9) {
-			TextComponent textComponent = this.method_2164(i);
-			if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
-				this.renderComponentHoverEffect(textComponent, i, j);
+			Component component = this.method_2164(i);
+			if (component != null && component.getStyle().getHoverEvent() != null) {
+				this.renderComponentHoverEffect(component, i, j);
 			}
 		}
 
@@ -124,7 +124,7 @@ public class DeathScreen extends Screen {
 	}
 
 	@Nullable
-	public TextComponent method_2164(int i) {
+	public Component method_2164(int i) {
 		if (this.message == null) {
 			return null;
 		} else {
@@ -133,10 +133,10 @@ public class DeathScreen extends Screen {
 			int l = this.width / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
-				for (TextComponent textComponent : this.message) {
-					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(textComponent.getText(), false));
+				for (Component component : this.message) {
+					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(component.getText(), false));
 					if (m > i) {
-						return textComponent;
+						return component;
 					}
 				}
 
@@ -150,11 +150,9 @@ public class DeathScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (this.message != null && e > 85.0 && e < (double)(85 + 9)) {
-			TextComponent textComponent = this.method_2164((int)d);
-			if (textComponent != null
-				&& textComponent.getStyle().getClickEvent() != null
-				&& textComponent.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
-				this.handleComponentClicked(textComponent);
+			Component component = this.method_2164((int)d);
+			if (component != null && component.getStyle().getClickEvent() != null && component.getStyle().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
+				this.handleComponentClicked(component);
 				return false;
 			}
 		}

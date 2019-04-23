@@ -3,14 +3,14 @@ package net.minecraft.client.tutorial;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.KeybindTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.KeybindComponent;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
@@ -105,7 +105,7 @@ public class TutorialManager {
 		return this.client.interactionManager == null ? GameMode.INVALID : this.client.interactionManager.getCurrentGameMode();
 	}
 
-	public static TextComponent getKeybindName(String string) {
-		return new KeybindTextComponent("key." + string).applyFormat(TextFormat.field_1067);
+	public static Component getKeybindName(String string) {
+		return new KeybindComponent("key." + string).applyFormat(ChatFormat.field_1067);
 	}
 }

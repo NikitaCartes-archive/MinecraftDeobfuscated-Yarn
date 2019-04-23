@@ -15,10 +15,10 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +31,7 @@ public class ServerConnectingScreen extends Screen {
 	private ClientConnection connection;
 	private boolean field_2409;
 	private final Screen parent;
-	private TextComponent status = new TranslatableTextComponent("connect.connecting");
+	private Component status = new TranslatableComponent("connect.connecting");
 	private long field_19097 = -1L;
 
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
@@ -71,7 +71,7 @@ public class ServerConnectingScreen extends Screen {
 								ServerConnectingScreen.this.connection,
 								ServerConnectingScreen.this.minecraft,
 								ServerConnectingScreen.this.parent,
-								textComponent -> ServerConnectingScreen.this.setStatus(textComponent)
+								component -> ServerConnectingScreen.this.setStatus(component)
 							)
 						);
 					ServerConnectingScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
@@ -86,9 +86,7 @@ public class ServerConnectingScreen extends Screen {
 						.execute(
 							() -> ServerConnectingScreen.this.minecraft
 									.openScreen(
-										new DisconnectedScreen(
-											ServerConnectingScreen.this.parent, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", "Unknown host")
-										)
+										new DisconnectedScreen(ServerConnectingScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host"))
 									)
 						);
 				} catch (Exception var5) {
@@ -102,7 +100,7 @@ public class ServerConnectingScreen extends Screen {
 						.execute(
 							() -> ServerConnectingScreen.this.minecraft
 									.openScreen(
-										new DisconnectedScreen(ServerConnectingScreen.this.parent, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", string))
+										new DisconnectedScreen(ServerConnectingScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", string))
 									)
 						);
 				}
@@ -112,8 +110,8 @@ public class ServerConnectingScreen extends Screen {
 		thread.start();
 	}
 
-	private void setStatus(TextComponent textComponent) {
-		this.status = textComponent;
+	private void setStatus(Component component) {
+		this.status = component;
 	}
 
 	@Override
@@ -137,7 +135,7 @@ public class ServerConnectingScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
 			this.field_2409 = true;
 			if (this.connection != null) {
-				this.connection.disconnect(new TranslatableTextComponent("connect.aborted"));
+				this.connection.disconnect(new TranslatableComponent("connect.aborted"));
 			}
 
 			this.minecraft.openScreen(this.parent);
@@ -150,7 +148,7 @@ public class ServerConnectingScreen extends Screen {
 		long l = SystemUtil.getMeasuringTimeMs();
 		if (l - this.field_19097 > 2000L) {
 			this.field_19097 = l;
-			NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.joining").getString());
+			NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.joining").getString());
 		}
 
 		this.drawCenteredString(this.font, this.status.getFormattedText(), this.width / 2, this.height / 2 - 50, 16777215);

@@ -4,9 +4,9 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.DustParticleParameters;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -35,12 +35,12 @@ public class LeverBlock extends WallMountedBlock {
 	protected LeverBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
 				switch (((Direction)blockState.get(FACING)).getAxis()) {
@@ -52,13 +52,13 @@ public class LeverBlock extends WallMountedBlock {
 				}
 			case field_12471:
 				switch ((Direction)blockState.get(FACING)) {
-					case EAST:
+					case field_11034:
 						return EAST_WALL_SHAPE;
-					case WEST:
+					case field_11039:
 						return WEST_WALL_SHAPE;
-					case SOUTH:
+					case field_11035:
 						return SOUTH_WALL_SHAPE;
-					case NORTH:
+					case field_11043:
 					default:
 						return NORTH_WALL_SHAPE;
 				}
@@ -99,7 +99,7 @@ public class LeverBlock extends WallMountedBlock {
 		double d = (double)blockPos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();
 		double e = (double)blockPos.getY() + 0.5 + 0.1 * (double)direction.getOffsetY() + 0.2 * (double)direction2.getOffsetY();
 		double g = (double)blockPos.getZ() + 0.5 + 0.1 * (double)direction.getOffsetZ() + 0.2 * (double)direction2.getOffsetZ();
-		iWorld.addParticle(new DustParticleParameters(1.0F, 0.0F, 0.0F, f), d, e, g, 0.0, 0.0, 0.0);
+		iWorld.addParticle(new DustParticleEffect(1.0F, 0.0F, 0.0F, f), d, e, g, 0.0, 0.0, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -143,6 +143,6 @@ public class LeverBlock extends WallMountedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACE, FACING, POWERED);
+		builder.add(FACE, FACING, POWERED);
 	}
 }

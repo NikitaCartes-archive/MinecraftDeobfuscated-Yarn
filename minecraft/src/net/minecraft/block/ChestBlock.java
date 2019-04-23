@@ -10,8 +10,8 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,6 +21,8 @@ import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -28,8 +30,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -79,8 +79,8 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 				}
 
 				@Override
-				public TextComponent getDisplayName() {
-					return new TranslatableTextComponent("container.chestDouble");
+				public Component getDisplayName() {
+					return new TranslatableComponent("container.chestDouble");
 				}
 			};
 		}
@@ -93,7 +93,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	protected ChestBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.field_12569).with(WATERLOGGED, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(CHEST_TYPE, ChestType.field_12569).with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
@@ -132,19 +132,19 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		if (blockState.get(CHEST_TYPE) == ChestType.field_12569) {
 			return SINGLE_SHAPE;
 		} else {
 			switch (getFacing(blockState)) {
-				case NORTH:
+				case field_11043:
 				default:
 					return DOUBLE_NORTH_SHAPE;
-				case SOUTH:
+				case field_11035:
 					return DOUBLE_SOUTH_SHAPE;
-				case WEST:
+				case field_11039:
 					return DOUBLE_WEST_SHAPE;
-				case EAST:
+				case field_11034:
 					return DOUBLE_EAST_SHAPE;
 			}
 		}
@@ -340,7 +340,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, CHEST_TYPE, WATERLOGGED);
+		builder.add(FACING, CHEST_TYPE, WATERLOGGED);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 
 public class LookAtEntityGoal extends Goal {
-	protected final MobEntity owner;
+	protected final MobEntity mob;
 	protected Entity target;
 	protected final float range;
 	private int lookTime;
@@ -22,7 +22,7 @@ public class LookAtEntityGoal extends Goal {
 	}
 
 	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g) {
-		this.owner = mobEntity;
+		this.mob = mobEntity;
 		this.targetType = class_;
 		this.range = f;
 		this.chance = g;
@@ -41,28 +41,26 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.owner.getRand().nextFloat() >= this.chance) {
+		if (this.mob.getRand().nextFloat() >= this.chance) {
 			return false;
 		} else {
-			if (this.owner.getTarget() != null) {
-				this.target = this.owner.getTarget();
+			if (this.mob.getTarget() != null) {
+				this.target = this.mob.getTarget();
 			}
 
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.owner
-					.world
-					.getClosestPlayer(this.targetPredicate, this.owner, this.owner.x, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z);
+				this.target = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
 			} else {
-				this.target = this.owner
+				this.target = this.mob
 					.world
 					.getClosestEntity(
 						this.targetType,
 						this.targetPredicate,
-						this.owner,
-						this.owner.x,
-						this.owner.y + (double)this.owner.getStandingEyeHeight(),
-						this.owner.z,
-						this.owner.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+						this.mob,
+						this.mob.x,
+						this.mob.y + (double)this.mob.getStandingEyeHeight(),
+						this.mob.z,
+						this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
 					);
 			}
 
@@ -75,13 +73,13 @@ public class LookAtEntityGoal extends Goal {
 		if (!this.target.isAlive()) {
 			return false;
 		} else {
-			return this.owner.squaredDistanceTo(this.target) > (double)(this.range * this.range) ? false : this.lookTime > 0;
+			return this.mob.squaredDistanceTo(this.target) > (double)(this.range * this.range) ? false : this.lookTime > 0;
 		}
 	}
 
 	@Override
 	public void start() {
-		this.lookTime = 40 + this.owner.getRand().nextInt(40);
+		this.lookTime = 40 + this.mob.getRand().nextInt(40);
 	}
 
 	@Override
@@ -91,7 +89,7 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.owner.getLookControl().method_20248(this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z);
+		this.mob.getLookControl().method_20248(this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z);
 		this.lookTime--;
 	}
 }

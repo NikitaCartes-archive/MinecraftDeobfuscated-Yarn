@@ -78,7 +78,7 @@ public class RailPlacementHelper {
 	private void method_10467() {
 		for (int i = 0; i < this.neighbors.size(); i++) {
 			RailPlacementHelper railPlacementHelper = this.method_10458((BlockPos)this.neighbors.get(i));
-			if (railPlacementHelper != null && railPlacementHelper.method_10464(this)) {
+			if (railPlacementHelper != null && railPlacementHelper.isNeighbor(this)) {
 				this.neighbors.set(i, railPlacementHelper.pos);
 			} else {
 				this.neighbors.remove(i--);
@@ -86,7 +86,7 @@ public class RailPlacementHelper {
 		}
 	}
 
-	private boolean method_10456(BlockPos blockPos) {
+	private boolean isVerticallyNearRail(BlockPos blockPos) {
 		return AbstractRailBlock.isRail(this.world, blockPos)
 			|| AbstractRailBlock.isRail(this.world, blockPos.up())
 			|| AbstractRailBlock.isRail(this.world, blockPos.down());
@@ -110,11 +110,11 @@ public class RailPlacementHelper {
 		}
 	}
 
-	private boolean method_10464(RailPlacementHelper railPlacementHelper) {
-		return this.method_10463(railPlacementHelper.pos);
+	private boolean isNeighbor(RailPlacementHelper railPlacementHelper) {
+		return this.isNeighbor(railPlacementHelper.pos);
 	}
 
-	private boolean method_10463(BlockPos blockPos) {
+	private boolean isNeighbor(BlockPos blockPos) {
 		for (int i = 0; i < this.neighbors.size(); i++) {
 			BlockPos blockPos2 = (BlockPos)this.neighbors.get(i);
 			if (blockPos2.getX() == blockPos.getX() && blockPos2.getZ() == blockPos.getZ()) {
@@ -128,8 +128,8 @@ public class RailPlacementHelper {
 	protected int method_10460() {
 		int i = 0;
 
-		for (Direction direction : Direction.Type.HORIZONTAL) {
-			if (this.method_10456(this.pos.offset(direction))) {
+		for (Direction direction : Direction.Type.field_11062) {
+			if (this.isVerticallyNearRail(this.pos.offset(direction))) {
 				i++;
 			}
 		}
@@ -138,7 +138,7 @@ public class RailPlacementHelper {
 	}
 
 	private boolean method_10455(RailPlacementHelper railPlacementHelper) {
-		return this.method_10464(railPlacementHelper) || this.neighbors.size() != 2;
+		return this.isNeighbor(railPlacementHelper) || this.neighbors.size() != 2;
 	}
 
 	private void method_10461(RailPlacementHelper railPlacementHelper) {
@@ -147,10 +147,10 @@ public class RailPlacementHelper {
 		BlockPos blockPos2 = this.pos.south();
 		BlockPos blockPos3 = this.pos.west();
 		BlockPos blockPos4 = this.pos.east();
-		boolean bl = this.method_10463(blockPos);
-		boolean bl2 = this.method_10463(blockPos2);
-		boolean bl3 = this.method_10463(blockPos3);
-		boolean bl4 = this.method_10463(blockPos4);
+		boolean bl = this.isNeighbor(blockPos);
+		boolean bl2 = this.isNeighbor(blockPos2);
+		boolean bl3 = this.isNeighbor(blockPos3);
+		boolean bl4 = this.isNeighbor(blockPos4);
 		RailShape railShape = null;
 		if (bl || bl2) {
 			railShape = RailShape.field_12665;

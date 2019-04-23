@@ -12,10 +12,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
+import net.minecraft.world.chunk.ColumnChunkNibbleArray;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
-	private static final Direction[] DIRECTIONS_SKYLIGHT = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+	private static final Direction[] DIRECTIONS_SKYLIGHT = new Direction[]{
+		Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034
+	};
 	private final LongSet field_15820 = new LongOpenHashSet();
 	private final LongSet field_15815 = new LongOpenHashSet();
 	private final LongSet field_15816 = new LongOpenHashSet();
@@ -23,7 +26,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private volatile boolean hasSkyLightUpdates;
 
 	protected SkyLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.SKY, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
+		super(LightType.field_9284, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(data, m);
 			if (chunkNibbleArray == null) {
 				for (l = BlockPos.removeChunkSectionLocalY(l); chunkNibbleArray == null; chunkNibbleArray = this.getDataForChunk(data, m)) {
-					m = ChunkSectionPos.offsetPacked(m, Direction.UP);
+					m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
 					if (++i >= j) {
 						return 15;
 					}
@@ -97,7 +100,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		int i = ChunkSectionPos.unpackLongY(l);
 		if (this.dataStorage.heightMap.get(m) == i + 1) {
 			long n;
-			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offsetPacked(n, Direction.DOWN)) {
+			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offsetPacked(n, Direction.field_11033)) {
 				i--;
 			}
 
@@ -148,11 +151,26 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
 		if (chunkNibbleArray != null) {
 			return chunkNibbleArray;
+		} else if (!this.method_15566(l)) {
+			return new ChunkNibbleArray();
 		} else {
-			if (this.method_15566(l)) {
+			long m = ChunkSectionPos.offsetPacked(l, Direction.field_11036);
+			int i = this.dataStorage.heightMap.get(ChunkSectionPos.toLightStorageIndex(l));
+
+			while (i != this.dataStorage.defaultHeight && ChunkSectionPos.unpackLongY(m) < i && !this.hasChunk(m)) {
+				m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
 			}
 
-			return new ChunkNibbleArray();
+			ChunkNibbleArray chunkNibbleArray2 = this.dataStorage.getDataForChunk(m);
+			if (chunkNibbleArray2 != null) {
+				return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
+			} else if (this.field_15815.contains(ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l)))) {
+				return new ChunkNibbleArray();
+			} else {
+				ChunkNibbleArray chunkNibbleArray3 = new ChunkNibbleArray();
+				Arrays.fill(chunkNibbleArray3.asByteArray(), (byte)-1);
+				return chunkNibbleArray3;
+			}
 		}
 	}
 
@@ -186,15 +204,15 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 											long q;
 											long r;
 											switch (direction) {
-												case NORTH:
+												case field_11043:
 													q = BlockPos.asLong(j + o, k + p, m);
 													r = BlockPos.asLong(j + o, k + p, m - 1);
 													break;
-												case SOUTH:
+												case field_11035:
 													q = BlockPos.asLong(j + o, k + p, m + 16 - 1);
 													r = BlockPos.asLong(j + o, k + p, m + 16);
 													break;
-												case WEST:
+												case field_11039:
 													q = BlockPos.asLong(j, k + o, m + p);
 													r = BlockPos.asLong(j - 1, k + o, m + p);
 													break;

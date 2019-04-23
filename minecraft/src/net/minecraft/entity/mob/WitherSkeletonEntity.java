@@ -65,7 +65,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8528));
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8528));
 	}
 
 	@Override

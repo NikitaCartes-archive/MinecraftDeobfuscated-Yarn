@@ -18,7 +18,7 @@ public class AnimalMateGoal extends Goal {
 		.includeInvulnerable()
 		.includeTeammates()
 		.includeHidden();
-	protected final AnimalEntity owner;
+	protected final AnimalEntity animal;
 	private final Class<? extends AnimalEntity> entityClass;
 	protected final World world;
 	protected AnimalEntity mate;
@@ -30,7 +30,7 @@ public class AnimalMateGoal extends Goal {
 	}
 
 	public AnimalMateGoal(AnimalEntity animalEntity, double d, Class<? extends AnimalEntity> class_) {
-		this.owner = animalEntity;
+		this.animal = animalEntity;
 		this.world = animalEntity.world;
 		this.entityClass = class_;
 		this.chance = d;
@@ -39,7 +39,7 @@ public class AnimalMateGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.owner.isInLove()) {
+		if (!this.animal.isInLove()) {
 			return false;
 		} else {
 			this.mate = this.findMate();
@@ -60,24 +60,24 @@ public class AnimalMateGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.owner.getLookControl().lookAt(this.mate, 10.0F, (float)this.owner.getLookPitchSpeed());
-		this.owner.getNavigation().startMovingTo(this.mate, this.chance);
+		this.animal.getLookControl().lookAt(this.mate, 10.0F, (float)this.animal.getLookPitchSpeed());
+		this.animal.getNavigation().startMovingTo(this.mate, this.chance);
 		this.timer++;
-		if (this.timer >= 60 && this.owner.squaredDistanceTo(this.mate) < 9.0) {
+		if (this.timer >= 60 && this.animal.squaredDistanceTo(this.mate) < 9.0) {
 			this.breed();
 		}
 	}
 
 	@Nullable
 	private AnimalEntity findMate() {
-		List<AnimalEntity> list = this.world.getTargets(this.entityClass, VALID_MATE_PREDICATE, this.owner, this.owner.getBoundingBox().expand(8.0));
+		List<AnimalEntity> list = this.world.getTargets(this.entityClass, VALID_MATE_PREDICATE, this.animal, this.animal.getBoundingBox().expand(8.0));
 		double d = Double.MAX_VALUE;
 		AnimalEntity animalEntity = null;
 
 		for (AnimalEntity animalEntity2 : list) {
-			if (this.owner.canBreedWith(animalEntity2) && this.owner.squaredDistanceTo(animalEntity2) < d) {
+			if (this.animal.canBreedWith(animalEntity2) && this.animal.squaredDistanceTo(animalEntity2) < d) {
 				animalEntity = animalEntity2;
-				d = this.owner.squaredDistanceTo(animalEntity2);
+				d = this.animal.squaredDistanceTo(animalEntity2);
 			}
 		}
 
@@ -85,28 +85,28 @@ public class AnimalMateGoal extends Goal {
 	}
 
 	protected void breed() {
-		PassiveEntity passiveEntity = this.owner.createChild(this.mate);
+		PassiveEntity passiveEntity = this.animal.createChild(this.mate);
 		if (passiveEntity != null) {
-			ServerPlayerEntity serverPlayerEntity = this.owner.getLovingPlayer();
+			ServerPlayerEntity serverPlayerEntity = this.animal.getLovingPlayer();
 			if (serverPlayerEntity == null && this.mate.getLovingPlayer() != null) {
 				serverPlayerEntity = this.mate.getLovingPlayer();
 			}
 
 			if (serverPlayerEntity != null) {
 				serverPlayerEntity.incrementStat(Stats.field_15410);
-				Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.owner, this.mate, passiveEntity);
+				Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, passiveEntity);
 			}
 
-			this.owner.setBreedingAge(6000);
+			this.animal.setBreedingAge(6000);
 			this.mate.setBreedingAge(6000);
-			this.owner.resetLoveTicks();
+			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			passiveEntity.setBreedingAge(-24000);
-			passiveEntity.setPositionAndAngles(this.owner.x, this.owner.y, this.owner.z, 0.0F, 0.0F);
+			passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
 			this.world.spawnEntity(passiveEntity);
-			this.world.sendEntityStatus(this.owner, (byte)18);
+			this.world.sendEntityStatus(this.animal, (byte)18);
 			if (this.world.getGameRules().getBoolean("doMobLoot")) {
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.owner.x, this.owner.y, this.owner.z, this.owner.getRand().nextInt(7) + 1));
+				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
 			}
 		}
 	}

@@ -23,7 +23,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 		this.scale *= 0.75F;
 		this.maxAge = Math.max((int)(6.0 / (Math.random() * 0.8 + 0.6)), 1);
 		this.collidesWithWorld = false;
-		this.update();
+		this.tick();
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
@@ -54,7 +54,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 

@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -57,7 +57,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP).isEmpty();
+		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.field_11036).isEmpty();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
@@ -83,13 +83,13 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getItemStack().getItem() == this.getItem() && blockState.get(PICKLES) < 4
+		return itemPlacementContext.getItemStack().getItem() == this.asItem() && blockState.get(PICKLES) < 4
 			? true
 			: super.canReplace(blockState, itemPlacementContext);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch (blockState.get(PICKLES)) {
 			case 1:
 			default:
@@ -110,7 +110,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(PICKLES, WATERLOGGED);
+		builder.add(PICKLES, WATERLOGGED);
 	}
 
 	@Override

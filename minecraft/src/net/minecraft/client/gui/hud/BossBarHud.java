@@ -61,9 +61,9 @@ public class BossBarHud extends DrawableHelper {
 	}
 
 	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
-		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.ADD) {
+		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.field_12078) {
 			this.bossBars.put(bossBarS2CPacket.getUuid(), new ClientBossBar(bossBarS2CPacket));
-		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.REMOVE) {
+		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.field_12082) {
 			this.bossBars.remove(bossBarS2CPacket.getUuid());
 		} else {
 			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).handlePacket(bossBarS2CPacket);

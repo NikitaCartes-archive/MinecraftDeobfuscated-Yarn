@@ -50,7 +50,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public static void updatePressedStates() {
 		for (KeyBinding keyBinding : keysById.values()) {
-			if (keyBinding.keyCode.getCategory() == InputUtil.Type.field_1668 && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
+			if (keyBinding.keyCode.getCategory() == InputUtil.Type.KEYSYM && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
 				keyBinding.pressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), keyBinding.keyCode.getKeyCode());
 			}
 		}
@@ -71,7 +71,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	}
 
 	public KeyBinding(String string, int i, String string2) {
-		this(string, InputUtil.Type.field_1668, i, string2);
+		this(string, InputUtil.Type.KEYSYM, i, string2);
 	}
 
 	public KeyBinding(String string, InputUtil.Type type, int i, String string2) {
@@ -140,11 +140,11 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	public boolean matchesKey(int i, int j) {
 		return i == InputUtil.UNKNOWN_KEYCODE.getKeyCode()
 			? this.keyCode.getCategory() == InputUtil.Type.field_1671 && this.keyCode.getKeyCode() == j
-			: this.keyCode.getCategory() == InputUtil.Type.field_1668 && this.keyCode.getKeyCode() == i;
+			: this.keyCode.getCategory() == InputUtil.Type.KEYSYM && this.keyCode.getKeyCode() == i;
 	}
 
 	public boolean matchesMouse(int i) {
-		return this.keyCode.getCategory() == InputUtil.Type.field_1672 && this.keyCode.getKeyCode() == i;
+		return this.keyCode.getCategory() == InputUtil.Type.MOUSE && this.keyCode.getKeyCode() == i;
 	}
 
 	public String getLocalizedName() {
@@ -152,15 +152,15 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		int i = this.keyCode.getKeyCode();
 		String string2 = null;
 		switch (this.keyCode.getCategory()) {
-			case field_1668:
+			case KEYSYM:
 				string2 = InputUtil.getKeycodeName(i);
 				break;
 			case field_1671:
 				string2 = InputUtil.getScancodeName(i);
 				break;
-			case field_1672:
+			case MOUSE:
 				String string3 = I18n.translate(string);
-				string2 = Objects.equals(string3, string) ? I18n.translate(InputUtil.Type.field_1672.getName(), i + 1) : string3;
+				string2 = Objects.equals(string3, string) ? I18n.translate(InputUtil.Type.MOUSE.getName(), i + 1) : string3;
 		}
 
 		return string2 == null ? I18n.translate(string) : string2;

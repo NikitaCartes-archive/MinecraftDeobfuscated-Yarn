@@ -33,28 +33,28 @@ public enum EnchantmentTarget {
 			return item instanceof ArmorItem;
 		}
 	},
-	FEET {
+	ARMOR_FEET {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6166;
 		}
 	},
-	LEGS {
+	ARMOR_LEGS {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6172;
 		}
 	},
-	CHEST {
+	ARMOR_CHEST {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6174;
 		}
 	},
-	HELM {
+	ARMOR_HEAD {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6169;
 		}
 	},
 	WEAPON {
@@ -63,13 +63,13 @@ public enum EnchantmentTarget {
 			return item instanceof SwordItem;
 		}
 	},
-	BREAKER {
+	DIGGER {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof MiningToolItem;
 		}
 	},
-	FISHING {
+	FISHING_ROD {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof FishingRodItem;
@@ -81,7 +81,7 @@ public enum EnchantmentTarget {
 			return item instanceof TridentItem;
 		}
 	},
-	TOOL {
+	BREAKABLE {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item.canDamage();

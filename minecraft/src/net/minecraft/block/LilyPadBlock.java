@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -26,7 +26,7 @@ public class LilyPadBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 

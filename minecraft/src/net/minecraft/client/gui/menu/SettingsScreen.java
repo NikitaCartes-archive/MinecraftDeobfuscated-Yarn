@@ -13,17 +13,17 @@ import net.minecraft.client.gui.menu.options.VideoOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
 import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class SettingsScreen extends Screen {
-	private static final GameOption[] OPTIONS = new GameOption[]{GameOption.FOV};
+	private static final Option[] OPTIONS = new Option[]{Option.FOV};
 	private final Screen parent;
 	private final GameOptions settings;
 	private ButtonWidget difficultyButton;
@@ -31,7 +31,7 @@ public class SettingsScreen extends Screen {
 	private Difficulty difficulty;
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableTextComponent("options.title"));
+		super(new TranslatableComponent("options.title"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
@@ -40,10 +40,10 @@ public class SettingsScreen extends Screen {
 	protected void init() {
 		int i = 0;
 
-		for (GameOption gameOption : OPTIONS) {
+		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 - 12 + 24 * (i >> 1);
-			this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
+			this.addButton(option.createButton(this.minecraft.options, j, k, 150));
 			i++;
 		}
 
@@ -67,11 +67,11 @@ public class SettingsScreen extends Screen {
 						buttonWidget -> this.minecraft
 								.openScreen(
 									new YesNoScreen(
-										this::tmp,
-										new TranslatableTextComponent("difficulty.lock.title"),
-										new TranslatableTextComponent(
+										this::lockDifficulty,
+										new TranslatableComponent("difficulty.lock.title"),
+										new TranslatableComponent(
 											"difficulty.lock.question",
-											new TranslatableTextComponent("options.difficulty." + this.minecraft.world.getLevelProperties().getDifficulty().getTranslationKey())
+											new TranslatableComponent("options.difficulty." + this.minecraft.world.getLevelProperties().getDifficulty().getTranslationKey())
 										)
 									)
 								)
@@ -90,12 +90,12 @@ public class SettingsScreen extends Screen {
 					this.height / 6 - 12 + 24 * (i >> 1),
 					150,
 					20,
-					GameOption.REALMS_NOTIFICATIONS,
-					GameOption.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
+					Option.REALMS_NOTIFICATIONS,
+					Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
 					buttonWidget -> {
-						GameOption.REALMS_NOTIFICATIONS.set(this.settings);
+						Option.REALMS_NOTIFICATIONS.set(this.settings);
 						this.settings.write();
-						buttonWidget.setMessage(GameOption.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
+						buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
 					}
 				)
 			);
@@ -187,10 +187,10 @@ public class SettingsScreen extends Screen {
 	}
 
 	public String getDifficultyButtonText(Difficulty difficulty) {
-		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
+		return new TranslatableComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
 	}
 
-	private void tmp(boolean bl) {
+	private void lockDifficulty(boolean bl) {
 		this.minecraft.openScreen(this);
 		if (bl && this.minecraft.world != null) {
 			this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));

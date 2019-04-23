@@ -2,8 +2,8 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.BooleanProperty;
@@ -25,7 +25,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -198,7 +198,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override

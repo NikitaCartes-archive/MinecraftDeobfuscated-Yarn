@@ -21,17 +21,17 @@ public class FireballEntity extends AbstractFireballEntity {
 
 	@Environment(EnvType.CLIENT)
 	public FireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.FIREBALL, d, e, f, g, h, i, world);
+		super(EntityType.field_6066, d, e, f, g, h, i, world);
 	}
 
 	public FireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.FIREBALL, livingEntity, d, e, f, world);
+		super(EntityType.field_6066, livingEntity, d, e, f, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
 				this.dealDamage(this.owner, entity);

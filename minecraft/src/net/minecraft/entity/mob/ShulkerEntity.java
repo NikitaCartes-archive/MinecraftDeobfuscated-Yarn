@@ -135,7 +135,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(ATTACHED_FACE, Direction.DOWN);
+		this.dataTracker.startTracking(ATTACHED_FACE, Direction.field_11033);
 		this.dataTracker.startTracking(ATTACHED_BLOCK, Optional.empty());
 		this.dataTracker.startTracking(PEEK_AMOUNT, (byte)0);
 		this.dataTracker.startTracking(COLOR, (byte)16);
@@ -355,8 +355,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		this.setVelocity(Vec3d.ZERO);
 		this.field_6220 = 180.0F;
 		this.field_6283 = 180.0F;
@@ -421,7 +421,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Nullable
 	@Override
-	public BoundingBox method_5827() {
+	public BoundingBox getCollisionBox() {
 		return this.isAlive() ? this.getBoundingBox() : null;
 	}
 
@@ -549,16 +549,16 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
+			return ShulkerEntity.this.world.getDifficulty() == Difficulty.field_5801 ? false : super.canStart();
 		}
 
 		@Override
 		protected BoundingBox getSearchBox(double d) {
-			Direction direction = ((ShulkerEntity)this.entity).getAttachedFace();
+			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
 			if (direction.getAxis() == Direction.Axis.X) {
-				return this.entity.getBoundingBox().expand(4.0, d, d);
+				return this.mob.getBoundingBox().expand(4.0, d, d);
 			} else {
-				return direction.getAxis() == Direction.Axis.Z ? this.entity.getBoundingBox().expand(d, d, 4.0) : this.entity.getBoundingBox().expand(d, 4.0, d);
+				return direction.getAxis() == Direction.Axis.Z ? this.mob.getBoundingBox().expand(d, d, 4.0) : this.mob.getBoundingBox().expand(d, 4.0, d);
 			}
 		}
 	}
@@ -570,16 +570,16 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return this.entity.getScoreboardTeam() == null ? false : super.canStart();
+			return this.mob.getScoreboardTeam() == null ? false : super.canStart();
 		}
 
 		@Override
 		protected BoundingBox getSearchBox(double d) {
-			Direction direction = ((ShulkerEntity)this.entity).getAttachedFace();
+			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
 			if (direction.getAxis() == Direction.Axis.X) {
-				return this.entity.getBoundingBox().expand(4.0, d, d);
+				return this.mob.getBoundingBox().expand(4.0, d, d);
 			} else {
-				return direction.getAxis() == Direction.Axis.Z ? this.entity.getBoundingBox().expand(d, d, 4.0) : this.entity.getBoundingBox().expand(d, 4.0, d);
+				return direction.getAxis() == Direction.Axis.Z ? this.mob.getBoundingBox().expand(d, d, 4.0) : this.mob.getBoundingBox().expand(d, 4.0, d);
 			}
 		}
 	}
@@ -594,7 +594,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
+			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801 : false;
 		}
 
 		@Override
@@ -610,7 +610,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801) {
 				this.counter--;
 				LivingEntity livingEntity = ShulkerEntity.this.getTarget();
 				ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0F, 180.0F);

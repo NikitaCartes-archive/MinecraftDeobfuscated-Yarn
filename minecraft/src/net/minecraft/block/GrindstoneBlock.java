@@ -5,10 +5,10 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.container.NameableContainerProvider;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.state.StateFactory;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -86,11 +86,11 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
 	public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
 	public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-	private static final TranslatableTextComponent CONTAINER_NAME = new TranslatableTextComponent("container.grindstone_title");
+	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.grindstone_title");
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.field_12471));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(FACE, WallMountLocation.field_12471));
 	}
 
 	@Override
@@ -102,25 +102,25 @@ public class GrindstoneBlock extends WallMountedBlock {
 		Direction direction = blockState.get(FACING);
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
-				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
+				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
 					return EAST_WEST_SHAPE;
 				}
 
 				return NORTH_SOUTH_SHAPE;
 			case field_12471:
-				if (direction == Direction.NORTH) {
+				if (direction == Direction.field_11043) {
 					return NORTH_WALL_SHAPE;
-				} else if (direction == Direction.SOUTH) {
+				} else if (direction == Direction.field_11035) {
 					return SOUTH_WALL_SHAPE;
 				} else {
-					if (direction == Direction.EAST) {
+					if (direction == Direction.field_11034) {
 						return EAST_WALL_SHAPE;
 					}
 
 					return WEST_WALL_SHAPE;
 				}
 			case field_12473:
-				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
+				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
 					return EAST_WEST_HANGING_SHAPE;
 				}
 
@@ -131,12 +131,12 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.getShape(blockState);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.getShape(blockState);
 	}
 
@@ -170,7 +170,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, FACE);
+		builder.add(FACING, FACE);
 	}
 
 	@Override

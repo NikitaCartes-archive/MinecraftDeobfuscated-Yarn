@@ -5,23 +5,23 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityScreen extends Screen {
-	private static final GameOption[] OPTIONS = new GameOption[]{
-		GameOption.NARRATOR, GameOption.SUBTITLES, GameOption.TEXT_BACKGROUND_OPACITY, GameOption.TEXT_BACKGROUND, GameOption.CHAT_OPACITY, GameOption.AUTO_JUMP
+	private static final Option[] OPTIONS = new Option[]{
+		Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.AUTO_JUMP
 	};
 	private final Screen parent;
 	private final GameOptions gameOptions;
 	private AbstractButtonWidget narratorButton;
 
 	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableTextComponent("options.accessibility.title"));
+		super(new TranslatableComponent("options.accessibility.title"));
 		this.parent = screen;
 		this.gameOptions = gameOptions;
 	}
@@ -30,11 +30,11 @@ public class AccessibilityScreen extends Screen {
 	protected void init() {
 		int i = 0;
 
-		for (GameOption gameOption : OPTIONS) {
+		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
-			if (gameOption == GameOption.NARRATOR) {
+			AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.minecraft.options, j, k, 150));
+			if (option == Option.NARRATOR) {
 				this.narratorButton = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
 			}
@@ -60,6 +60,6 @@ public class AccessibilityScreen extends Screen {
 	}
 
 	public void method_19366() {
-		this.narratorButton.setMessage(GameOption.NARRATOR.get(this.gameOptions));
+		this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
 	}
 }

@@ -29,7 +29,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	@Override
 	public void method_6855() {
 		if (this.field_7049++ >= 40) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_FLAMING);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7072);
 		}
 	}
 
@@ -40,6 +40,6 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 
 	@Override
 	public PhaseType<SittingAttackingPhase> getType() {
-		return PhaseType.SITTING_ATTACKING;
+		return PhaseType.field_7073;
 	}
 }

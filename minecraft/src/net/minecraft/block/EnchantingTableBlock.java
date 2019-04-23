@@ -10,12 +10,12 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,12 +32,12 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -101,9 +101,9 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
-			TextComponent textComponent = ((Nameable)blockEntity).getDisplayName();
+			Component component = ((Nameable)blockEntity).getDisplayName();
 			return new ClientDummyContainerProvider(
-				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), textComponent
+				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), component
 			);
 		} else {
 			return null;

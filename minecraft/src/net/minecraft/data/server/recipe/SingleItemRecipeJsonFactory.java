@@ -9,7 +9,7 @@ import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
@@ -23,19 +23,19 @@ public class SingleItemRecipeJsonFactory {
 	private String group;
 	private final RecipeSerializer<?> serializer;
 
-	public SingleItemRecipeJsonFactory(RecipeSerializer<?> recipeSerializer, Ingredient ingredient, ItemProvider itemProvider, int i) {
+	public SingleItemRecipeJsonFactory(RecipeSerializer<?> recipeSerializer, Ingredient ingredient, ItemConvertible itemConvertible, int i) {
 		this.serializer = recipeSerializer;
-		this.output = itemProvider.getItem();
+		this.output = itemConvertible.asItem();
 		this.input = ingredient;
 		this.count = i;
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemProvider itemProvider) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, ingredient, itemProvider, 1);
+	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemConvertible itemConvertible) {
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, ingredient, itemConvertible, 1);
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemProvider itemProvider, int i) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, ingredient, itemProvider, i);
+	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemConvertible itemConvertible, int i) {
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, ingredient, itemConvertible, i);
 	}
 
 	public SingleItemRecipeJsonFactory create(String string, CriterionConditions criterionConditions) {

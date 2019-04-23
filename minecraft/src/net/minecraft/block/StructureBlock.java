@@ -59,7 +59,7 @@ public class StructureBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(MODE);
+		builder.add(MODE);
 	}
 
 	@Override

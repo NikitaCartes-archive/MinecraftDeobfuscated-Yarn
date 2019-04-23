@@ -35,7 +35,7 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 
@@ -65,7 +65,7 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.field_3826++;
 		if (this.field_3826 == this.field_3825) {
 			this.markDead();

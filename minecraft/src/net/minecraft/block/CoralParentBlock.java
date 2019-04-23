@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -53,13 +53,13 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -70,20 +70,20 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+		return direction == Direction.field_11033 && !this.canPlaceAt(blockState, iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP);
+		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.field_11036);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(WATERLOGGED);
+		builder.add(WATERLOGGED);
 	}
 
 	@Override

@@ -3,14 +3,14 @@ package net.minecraft.world;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.annotation.Nullable;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public enum Difficulty {
-	PEACEFUL(0, "peaceful"),
-	EASY(1, "easy"),
-	NORMAL(2, "normal"),
-	HARD(3, "hard");
+	field_5801(0, "peaceful"),
+	field_5805(1, "easy"),
+	field_5802(2, "normal"),
+	field_5807(3, "hard");
 
 	private static final Difficulty[] DIFFICULTIES = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))
@@ -27,8 +27,8 @@ public enum Difficulty {
 		return this.id;
 	}
 
-	public TextComponent toTextComponent() {
-		return new TranslatableTextComponent("options.difficulty." + this.translationKey);
+	public Component toTextComponent() {
+		return new TranslatableComponent("options.difficulty." + this.translationKey);
 	}
 
 	public static Difficulty getDifficulty(int i) {

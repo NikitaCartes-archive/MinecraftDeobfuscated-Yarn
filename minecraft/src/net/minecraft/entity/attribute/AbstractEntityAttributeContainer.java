@@ -49,7 +49,7 @@ public abstract class AbstractEntityAttributeContainer {
 	public void add(EntityAttributeInstance entityAttributeInstance) {
 	}
 
-	public void method_6209(Multimap<String, EntityAttributeModifier> multimap) {
+	public void removeAll(Multimap<String, EntityAttributeModifier> multimap) {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {
@@ -58,7 +58,7 @@ public abstract class AbstractEntityAttributeContainer {
 		}
 	}
 
-	public void method_6210(Multimap<String, EntityAttributeModifier> multimap) {
+	public void replaceAll(Multimap<String, EntityAttributeModifier> multimap) {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {

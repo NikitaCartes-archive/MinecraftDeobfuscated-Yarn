@@ -9,8 +9,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class EntityCustomNameToComponentFix extends DataFix {
 	public EntityCustomNameToComponentFix(Schema schema, boolean bl) {
@@ -32,6 +32,6 @@ public class EntityCustomNameToComponentFix extends DataFix {
 		String string = dynamic.get("CustomName").asString("");
 		return string.isEmpty()
 			? dynamic.remove("CustomName")
-			: dynamic.set("CustomName", dynamic.createString(TextComponent.Serializer.toJsonString(new StringTextComponent(string))));
+			: dynamic.set("CustomName", dynamic.createString(Component.Serializer.toJsonString(new TextComponent(string))));
 	}
 }

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -19,10 +19,10 @@ public class TutorialToast implements Toast {
 	private float progress;
 	private final boolean hasProgressBar;
 
-	public TutorialToast(TutorialToast.Type type, TextComponent textComponent, @Nullable TextComponent textComponent2, boolean bl) {
+	public TutorialToast(TutorialToast.Type type, Component component, @Nullable Component component2, boolean bl) {
 		this.type = type;
-		this.title = textComponent.getFormattedText();
-		this.description = textComponent2 == null ? null : textComponent2.getFormattedText();
+		this.title = component.getFormattedText();
+		this.description = component2 == null ? null : component2.getFormattedText();
 		this.hasProgressBar = bl;
 	}
 

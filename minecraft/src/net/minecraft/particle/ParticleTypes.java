@@ -6,7 +6,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_11225 = register("ambient_entity_effect", false);
 	public static final DefaultParticleType field_11231 = register("angry_villager", false);
 	public static final DefaultParticleType field_11235 = register("barrier", false);
-	public static final ParticleType<BlockStateParticleParameters> field_11217 = register("block", BlockStateParticleParameters.PARAMETERS_FACTORY);
+	public static final ParticleType<BlockStateParticleEffect> field_11217 = register("block", BlockStateParticleEffect.PARAMETERS_FACTORY);
 	public static final DefaultParticleType field_11247 = register("bubble", false);
 	public static final DefaultParticleType field_11204 = register("cloud", false);
 	public static final DefaultParticleType field_11205 = register("crit", false);
@@ -17,7 +17,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_18305 = register("landing_lava", false);
 	public static final DefaultParticleType field_11232 = register("dripping_water", false);
 	public static final DefaultParticleType field_18306 = register("falling_water", false);
-	public static final ParticleType<DustParticleParameters> field_11212 = register("dust", DustParticleParameters.PARAMETERS_FACTORY);
+	public static final ParticleType<DustParticleEffect> field_11212 = register("dust", DustParticleEffect.PARAMETERS_FACTORY);
 	public static final DefaultParticleType field_11245 = register("effect", false);
 	public static final DefaultParticleType field_11250 = register("elder_guardian", true);
 	public static final DefaultParticleType field_11208 = register("enchanted_hit", false);
@@ -26,7 +26,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_11226 = register("entity_effect", false);
 	public static final DefaultParticleType field_11221 = register("explosion_emitter", true);
 	public static final DefaultParticleType field_11236 = register("explosion", true);
-	public static final ParticleType<BlockStateParticleParameters> field_11206 = register("falling_dust", BlockStateParticleParameters.PARAMETERS_FACTORY);
+	public static final ParticleType<BlockStateParticleEffect> field_11206 = register("falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY);
 	public static final DefaultParticleType field_11248 = register("firework", false);
 	public static final DefaultParticleType field_11244 = register("fishing", false);
 	public static final DefaultParticleType field_11240 = register("flame", false);
@@ -35,7 +35,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_17741 = register("composter", false);
 	public static final DefaultParticleType field_11201 = register("heart", false);
 	public static final DefaultParticleType field_11213 = register("instant_effect", false);
-	public static final ParticleType<ItemStackParticleParameters> field_11218 = register("item", ItemStackParticleParameters.PARAMETERS_FACTORY);
+	public static final ParticleType<ItemStackParticleEffect> field_11218 = register("item", ItemStackParticleEffect.PARAMETERS_FACTORY);
 	public static final DefaultParticleType field_11246 = register("item_slime", false);
 	public static final DefaultParticleType field_11230 = register("item_snowball", false);
 	public static final DefaultParticleType field_11237 = register("large_smoke", false);
@@ -66,7 +66,7 @@ public class ParticleTypes {
 		return Registry.register(Registry.PARTICLE_TYPE, string, new DefaultParticleType(bl));
 	}
 
-	private static <T extends ParticleParameters> ParticleType<T> register(String string, ParticleParameters.Factory<T> factory) {
+	private static <T extends ParticleEffect> ParticleType<T> register(String string, ParticleEffect.Factory<T> factory) {
 		return Registry.register(Registry.PARTICLE_TYPE, string, new ParticleType<>(false, factory));
 	}
 }

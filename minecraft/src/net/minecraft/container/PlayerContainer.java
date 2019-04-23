@@ -20,7 +20,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 		"item/empty_armor_slot_boots", "item/empty_armor_slot_leggings", "item/empty_armor_slot_chestplate", "item/empty_armor_slot_helmet"
 	};
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
-		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
+		EquipmentSlot.field_6169, EquipmentSlot.field_6174, EquipmentSlot.field_6172, EquipmentSlot.field_6166
 	};
 	private final CraftingInventory invCrafting = new CraftingInventory(this, 2, 2);
 	private final CraftingResultInventory invCraftingResult = new CraftingResultInventory();
@@ -144,12 +144,12 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slotList.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+			} else if (equipmentSlot.getType() == EquipmentSlot.Type.field_6178 && !((Slot)this.slotList.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
 				int j = 8 - equipmentSlot.getEntitySlotId();
 				if (!this.insertItem(itemStack2, j, j + 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot == EquipmentSlot.HAND_OFF && !((Slot)this.slotList.get(45)).hasStack()) {
+			} else if (equipmentSlot == EquipmentSlot.field_6171 && !((Slot)this.slotList.get(45)).hasStack()) {
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}

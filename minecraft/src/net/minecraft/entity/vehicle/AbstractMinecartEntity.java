@@ -109,7 +109,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.dataTracker.startTracking(field_7663, 0);
 		this.dataTracker.startTracking(field_7668, 1);
 		this.dataTracker.startTracking(field_7667, 0.0F);
-		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
+		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.field_10124.getDefaultState()));
 		this.dataTracker.startTracking(CUSTOM_BLOCK_OFFSET, 6);
 		this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
 	}
@@ -199,7 +199,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.destroy();
 		}
 
-		this.method_18379();
+		this.tickPortal();
 		if (this.world.isClient) {
 			if (this.field_7669 > 0) {
 				double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
@@ -219,7 +219,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.prevX = this.x;
 			this.prevY = this.y;
 			this.prevZ = this.z;
-			if (!this.isUnaffectedByGravity()) {
+			if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
@@ -700,7 +700,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.AIR.getDefaultState();
+		return Blocks.field_10124.getDefaultState();
 	}
 
 	public int getBlockOffset() {

@@ -3,7 +3,7 @@ package net.minecraft.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
@@ -24,74 +24,76 @@ import net.minecraft.world.World;
 public class PistonHeadBlock extends FacingBlock {
 	public static final EnumProperty<PistonType> TYPE = Properties.PISTON_TYPE;
 	public static final BooleanProperty SHORT = Properties.SHORT;
-	protected static final VoxelShape field_12222 = Block.createCuboidShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12214 = Block.createCuboidShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
-	protected static final VoxelShape field_12228 = Block.createCuboidShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12213 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
-	protected static final VoxelShape field_12230 = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12220 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
-	protected static final VoxelShape field_12215 = Block.createCuboidShape(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12226 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
-	protected static final VoxelShape field_12221 = Block.createCuboidShape(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12229 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
-	protected static final VoxelShape field_12218 = Block.createCuboidShape(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12223 = Block.createCuboidShape(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
-	protected static final VoxelShape field_12231 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12217 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
-	protected static final VoxelShape field_12216 = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12225 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
-	protected static final VoxelShape field_12219 = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12212 = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
+	protected static final VoxelShape EAST_HEAD_SHAPE = Block.createCuboidShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape WEST_HEAD_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
+	protected static final VoxelShape SOUTH_HEAD_SHAPE = Block.createCuboidShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape NORTH_HEAD_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
+	protected static final VoxelShape UP_HEAD_SHAPE = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape DOWN_HEAD_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
+	protected static final VoxelShape UP_ARM_SHAPE = Block.createCuboidShape(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape DOWN_ARM_SHAPE = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
+	protected static final VoxelShape SOUTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape NORTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
+	protected static final VoxelShape EAST_ARM_SHAPE = Block.createCuboidShape(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape WEST_ARM_SHAPE = Block.createCuboidShape(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
+	protected static final VoxelShape SHORT_UP_ARM_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape SHORT_DOWN_ARM_SHAPE = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
+	protected static final VoxelShape SHORT_SOUTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape SHORT_NORTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
+	protected static final VoxelShape SHORT_EAST_ARM_SHAPE = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape SHORT_WEST_ARM_SHAPE = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 
 	public PistonHeadBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.field_12637).with(SHORT, Boolean.valueOf(false)));
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(TYPE, PistonType.field_12637).with(SHORT, Boolean.valueOf(false))
+		);
 	}
 
-	private VoxelShape method_11520(BlockState blockState) {
+	private VoxelShape getHeadShape(BlockState blockState) {
 		switch ((Direction)blockState.get(FACING)) {
-			case DOWN:
+			case field_11033:
 			default:
-				return field_12220;
-			case UP:
-				return field_12230;
-			case NORTH:
-				return field_12213;
-			case SOUTH:
-				return field_12228;
-			case WEST:
-				return field_12214;
-			case EAST:
-				return field_12222;
+				return DOWN_HEAD_SHAPE;
+			case field_11036:
+				return UP_HEAD_SHAPE;
+			case field_11043:
+				return NORTH_HEAD_SHAPE;
+			case field_11035:
+				return SOUTH_HEAD_SHAPE;
+			case field_11039:
+				return WEST_HEAD_SHAPE;
+			case field_11034:
+				return EAST_HEAD_SHAPE;
 		}
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return VoxelShapes.union(this.method_11520(blockState), this.method_11519(blockState));
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return VoxelShapes.union(this.getHeadShape(blockState), this.getArmShape(blockState));
 	}
 
-	private VoxelShape method_11519(BlockState blockState) {
+	private VoxelShape getArmShape(BlockState blockState) {
 		boolean bl = (Boolean)blockState.get(SHORT);
 		switch ((Direction)blockState.get(FACING)) {
-			case DOWN:
+			case field_11033:
 			default:
-				return bl ? field_12217 : field_12226;
-			case UP:
-				return bl ? field_12231 : field_12215;
-			case NORTH:
-				return bl ? field_12225 : field_12229;
-			case SOUTH:
-				return bl ? field_12216 : field_12221;
-			case WEST:
-				return bl ? field_12212 : field_12223;
-			case EAST:
-				return bl ? field_12219 : field_12218;
+				return bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE;
+			case field_11036:
+				return bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE;
+			case field_11043:
+				return bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE;
+			case field_11035:
+				return bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE;
+			case field_11039:
+				return bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE;
+			case field_11034:
+				return bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE;
 		}
 	}
 
@@ -127,7 +129,7 @@ public class PistonHeadBlock extends FacingBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -163,7 +165,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, TYPE, SHORT);
+		builder.add(FACING, TYPE, SHORT);
 	}
 
 	@Override

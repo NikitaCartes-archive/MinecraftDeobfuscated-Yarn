@@ -12,17 +12,17 @@ import net.minecraft.util.math.Vec3d;
 
 public class ChaseBoatGoal extends Goal {
 	private int field_6428;
-	private final MobEntityWithAi owner;
+	private final MobEntityWithAi mob;
 	private LivingEntity passenger;
 	private ChaseBoatState state;
 
 	public ChaseBoatGoal(MobEntityWithAi mobEntityWithAi) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 	}
 
 	@Override
 	public boolean canStart() {
-		List<BoatEntity> list = this.owner.world.getEntities(BoatEntity.class, this.owner.getBoundingBox().expand(5.0));
+		List<BoatEntity> list = this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
@@ -53,7 +53,7 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public void start() {
-		for (BoatEntity boatEntity : this.owner.world.getEntities(BoatEntity.class, this.owner.getBoundingBox().expand(5.0))) {
+		for (BoatEntity boatEntity : this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
 			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof LivingEntity) {
 				this.passenger = (LivingEntity)boatEntity.getPrimaryPassenger();
 				break;
@@ -73,23 +73,23 @@ public class ChaseBoatGoal extends Goal {
 	public void tick() {
 		boolean bl = MathHelper.abs(this.passenger.sidewaysSpeed) > 0.0F || MathHelper.abs(this.passenger.forwardSpeed) > 0.0F;
 		float f = this.state == ChaseBoatState.field_6400 ? (bl ? 0.17999999F : 0.0F) : 0.135F;
-		this.owner.updateVelocity(f, new Vec3d((double)this.owner.sidewaysSpeed, (double)this.owner.upwardSpeed, (double)this.owner.forwardSpeed));
-		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
+		this.mob.updateVelocity(f, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
+		this.mob.move(MovementType.field_6308, this.mob.getVelocity());
 		if (--this.field_6428 <= 0) {
 			this.field_6428 = 10;
 			if (this.state == ChaseBoatState.field_6401) {
 				BlockPos blockPos = new BlockPos(this.passenger).offset(this.passenger.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);
-				this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
-				if (this.owner.distanceTo(this.passenger) < 4.0F) {
+				this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+				if (this.mob.distanceTo(this.passenger) < 4.0F) {
 					this.field_6428 = 0;
 					this.state = ChaseBoatState.field_6400;
 				}
 			} else if (this.state == ChaseBoatState.field_6400) {
 				Direction direction = this.passenger.getMovementDirection();
 				BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
-				this.owner.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
-				if (this.owner.distanceTo(this.passenger) > 12.0F) {
+				this.mob.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
+				if (this.mob.distanceTo(this.passenger) > 12.0F) {
 					this.field_6428 = 0;
 					this.state = ChaseBoatState.field_6401;
 				}

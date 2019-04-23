@@ -20,9 +20,9 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 	public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
-			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
+			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)
 			&& abstractClientPlayerEntity.getCapeTexture() != null) {
-			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
+			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.field_6174);
 			if (itemStack.getItem() != Items.field_8833) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				this.bindTexture(abstractClientPlayerEntity.getCapeTexture());

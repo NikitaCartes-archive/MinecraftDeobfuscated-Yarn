@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity> {
-	private static final Identifier field_4757 = new Identifier("textures/entity/illager/pillager.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/illager/pillager.png");
 
 	public PillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
@@ -17,6 +17,6 @@ public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity
 	}
 
 	protected Identifier method_4092(PillagerEntity pillagerEntity) {
-		return field_4757;
+		return SKIN;
 	}
 }

@@ -37,23 +37,23 @@ public class ChunkBatcher {
 		.setDaemon(true)
 		.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER))
 		.build();
-	private final int field_4442;
+	private final int bufferCount;
 	private final List<Thread> workerThreads = Lists.<Thread>newArrayList();
 	private final List<ChunkRenderWorker> workers = Lists.<ChunkRenderWorker>newArrayList();
 	private final PriorityBlockingQueue<ChunkRenderTask> pendingChunks = Queues.newPriorityBlockingQueue();
 	private final BlockingQueue<BlockLayeredBufferBuilder> availableBuffers;
-	private final BufferRenderer bufferRenderer = new BufferRenderer();
-	private final GlBufferRenderer field_4441 = new GlBufferRenderer();
+	private final BufferRenderer displayListBufferRenderer = new BufferRenderer();
+	private final GlBufferRenderer vboBufferRenderer = new GlBufferRenderer();
 	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
-	private final ChunkRenderWorker activeWorker;
-	private Vec3d field_18766 = Vec3d.ZERO;
+	private final ChunkRenderWorker clientThreadWorker;
+	private Vec3d cameraPosition = Vec3d.ZERO;
 
 	public ChunkBatcher() {
 		int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 10485760);
 		int j = Math.max(1, MathHelper.clamp(Runtime.getRuntime().availableProcessors(), 1, i / 5));
-		this.field_4442 = MathHelper.clamp(j * 10, 1, i);
+		int k = MathHelper.clamp(j * 10, 1, i);
 		if (j > 1) {
-			for (int k = 0; k < j; k++) {
+			for (int l = 0; l < j; l++) {
 				ChunkRenderWorker chunkRenderWorker = new ChunkRenderWorker(this);
 				Thread thread = THREAD_FACTORY.newThread(chunkRenderWorker);
 				thread.start();
@@ -62,13 +62,20 @@ public class ChunkBatcher {
 			}
 		}
 
-		this.availableBuffers = Queues.<BlockLayeredBufferBuilder>newArrayBlockingQueue(this.field_4442);
+		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayListWithExpectedSize(k);
 
-		for (int k = 0; k < this.field_4442; k++) {
-			this.availableBuffers.add(new BlockLayeredBufferBuilder());
+		try {
+			list.add(new BlockLayeredBufferBuilder());
+		} catch (OutOfMemoryError var7) {
+			LOGGER.error("Allocated only {}/{} buffers", list.size(), k);
+			list.remove(list.size() - 1);
+			System.gc();
 		}
 
-		this.activeWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
+		this.bufferCount = list.size();
+		this.availableBuffers = Queues.<BlockLayeredBufferBuilder>newArrayBlockingQueue(this.bufferCount);
+		this.availableBuffers.addAll(list);
+		this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 	}
 
 	public String getDebugString() {
@@ -77,15 +84,15 @@ public class ChunkBatcher {
 			: String.format("pC: %03d, pU: %1d, aB: %1d", this.pendingChunks.size(), this.pendingUploads.size(), this.availableBuffers.size());
 	}
 
-	public void method_19419(Vec3d vec3d) {
-		this.field_18766 = vec3d;
+	public void setCameraPosition(Vec3d vec3d) {
+		this.cameraPosition = vec3d;
 	}
 
-	public Vec3d method_19420() {
-		return this.field_18766;
+	public Vec3d getCameraPosition() {
+		return this.cameraPosition;
 	}
 
-	public boolean method_3631(long l) {
+	public boolean runTasksSync(long l) {
 		boolean bl = false;
 
 		boolean bl2;
@@ -95,7 +102,7 @@ public class ChunkBatcher {
 				ChunkRenderTask chunkRenderTask = (ChunkRenderTask)this.pendingChunks.poll();
 				if (chunkRenderTask != null) {
 					try {
-						this.activeWorker.runTask(chunkRenderTask);
+						this.clientThreadWorker.runTask(chunkRenderTask);
 						bl2 = true;
 					} catch (InterruptedException var8) {
 						LOGGER.warn("Skipped task due to interrupt");
@@ -115,13 +122,13 @@ public class ChunkBatcher {
 		return bl;
 	}
 
-	public boolean method_3624(ChunkRenderer chunkRenderer) {
-		chunkRenderer.getChunkRenderLock().lock();
+	public boolean rebuild(ChunkRenderer chunkRenderer) {
+		chunkRenderer.getLock().lock();
 
 		boolean var4;
 		try {
-			ChunkRenderTask chunkRenderTask = chunkRenderer.method_3674();
-			chunkRenderTask.add(() -> this.pendingChunks.remove(chunkRenderTask));
+			ChunkRenderTask chunkRenderTask = chunkRenderer.startRebuild();
+			chunkRenderTask.addCompletionAction(() -> this.pendingChunks.remove(chunkRenderTask));
 			boolean bl = this.pendingChunks.offer(chunkRenderTask);
 			if (!bl) {
 				chunkRenderTask.cancel();
@@ -129,38 +136,38 @@ public class ChunkBatcher {
 
 			var4 = bl;
 		} finally {
-			chunkRenderer.getChunkRenderLock().unlock();
+			chunkRenderer.getLock().unlock();
 		}
 
 		return var4;
 	}
 
-	public boolean method_3627(ChunkRenderer chunkRenderer) {
-		chunkRenderer.getChunkRenderLock().lock();
+	public boolean rebuildSync(ChunkRenderer chunkRenderer) {
+		chunkRenderer.getLock().lock();
 
 		boolean var3;
 		try {
-			ChunkRenderTask chunkRenderTask = chunkRenderer.method_3674();
+			ChunkRenderTask chunkRenderTask = chunkRenderer.startRebuild();
 
 			try {
-				this.activeWorker.runTask(chunkRenderTask);
+				this.clientThreadWorker.runTask(chunkRenderTask);
 			} catch (InterruptedException var7) {
 			}
 
 			var3 = true;
 		} finally {
-			chunkRenderer.getChunkRenderLock().unlock();
+			chunkRenderer.getLock().unlock();
 		}
 
 		return var3;
 	}
 
-	public void method_3632() {
-		this.method_3633();
+	public void reset() {
+		this.clear();
 		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayList();
 
-		while (list.size() != this.field_4442) {
-			this.method_3631(Long.MAX_VALUE);
+		while (list.size() != this.bufferCount) {
+			this.runTasksSync(Long.MAX_VALUE);
 
 			try {
 				list.add(this.getNextAvailableBuffer());
@@ -183,40 +190,40 @@ public class ChunkBatcher {
 		return (ChunkRenderTask)this.pendingChunks.take();
 	}
 
-	public boolean method_3620(ChunkRenderer chunkRenderer) {
-		chunkRenderer.getChunkRenderLock().lock();
+	public boolean resortTransparency(ChunkRenderer chunkRenderer) {
+		chunkRenderer.getLock().lock();
 
 		boolean var3;
 		try {
-			ChunkRenderTask chunkRenderTask = chunkRenderer.getResortTransparencyTask();
+			ChunkRenderTask chunkRenderTask = chunkRenderer.startResortTransparency();
 			if (chunkRenderTask == null) {
 				return true;
 			}
 
-			chunkRenderTask.add(() -> this.pendingChunks.remove(chunkRenderTask));
+			chunkRenderTask.addCompletionAction(() -> this.pendingChunks.remove(chunkRenderTask));
 			var3 = this.pendingChunks.offer(chunkRenderTask);
 		} finally {
-			chunkRenderer.getChunkRenderLock().unlock();
+			chunkRenderer.getLock().unlock();
 		}
 
 		return var3;
 	}
 
-	public ListenableFuture<Object> method_3635(
+	public ListenableFuture<Object> upload(
 		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
 		if (MinecraftClient.getInstance().isOnThread()) {
 			if (GLX.useVbo()) {
-				this.method_3621(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
+				this.uploadVbo(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
 			} else {
-				this.method_3623(bufferBuilder, ((DisplayListChunkRenderer)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData));
+				this.uploadDisplayList(bufferBuilder, ((DisplayListChunkRenderer)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData));
 			}
 
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			return Futures.immediateFuture(null);
 		} else {
 			ListenableFutureTask<Object> listenableFutureTask = ListenableFutureTask.create(
-				() -> this.method_3635(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
+				() -> this.upload(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
 			);
 			synchronized (this.pendingUploads) {
 				this.pendingUploads.add(new ChunkBatcher.ChunkUploadTask(listenableFutureTask, d));
@@ -225,18 +232,18 @@ public class ChunkBatcher {
 		}
 	}
 
-	private void method_3623(BufferBuilder bufferBuilder, int i) {
+	private void uploadDisplayList(BufferBuilder bufferBuilder, int i) {
 		GlStateManager.newList(i, 4864);
-		this.bufferRenderer.draw(bufferBuilder);
+		this.displayListBufferRenderer.draw(bufferBuilder);
 		GlStateManager.endList();
 	}
 
-	private void method_3621(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
-		this.field_4441.setGlBuffer(glBuffer);
-		this.field_4441.draw(bufferBuilder);
+	private void uploadVbo(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
+		this.vboBufferRenderer.setGlBuffer(glBuffer);
+		this.vboBufferRenderer.draw(bufferBuilder);
 	}
 
-	public void method_3633() {
+	public void clear() {
 		while (!this.pendingChunks.isEmpty()) {
 			ChunkRenderTask chunkRenderTask = (ChunkRenderTask)this.pendingChunks.poll();
 			if (chunkRenderTask != null) {
@@ -249,8 +256,8 @@ public class ChunkBatcher {
 		return this.pendingChunks.isEmpty() && this.pendingUploads.isEmpty();
 	}
 
-	public void method_3619() {
-		this.method_3633();
+	public void stop() {
+		this.clear();
 
 		for (ChunkRenderWorker chunkRenderWorker : this.workers) {
 			chunkRenderWorker.stop();

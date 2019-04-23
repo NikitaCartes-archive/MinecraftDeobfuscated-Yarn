@@ -17,12 +17,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -30,7 +31,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -84,7 +84,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.EMPTY);
+		return this.getChunk(i, j, ChunkStatus.field_12798);
 	}
 
 	@Nullable
@@ -177,7 +177,7 @@ public class ChunkRegion implements IWorld {
 				Block.dropStacks(blockState, this.world, blockPos, blockEntity);
 			}
 
-			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+			return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 		}
 	}
 
@@ -226,7 +226,7 @@ public class ChunkRegion implements IWorld {
 
 		Block block = blockState.getBlock();
 		if (block.hasBlockEntity()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
@@ -261,7 +261,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
-		return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+		return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 	}
 
 	@Override
@@ -347,7 +347,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
+	public void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
 	}
 
 	@Override

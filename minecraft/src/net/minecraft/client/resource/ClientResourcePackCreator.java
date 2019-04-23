@@ -21,13 +21,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.WorkingScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.ResourcePackCreator;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -58,7 +58,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 
 	@Override
 	public <T extends ResourcePackContainer> void registerContainer(Map<String, T> map, ResourcePackContainer.Factory<T> factory) {
-		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.pack, factory, ResourcePackContainer.SortingDirection.field_14281);
+		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.pack, factory, ResourcePackContainer.InsertionPosition.field_14281);
 		if (resourcePackContainer != null) {
 			map.put("vanilla", resourcePackContainer);
 		}
@@ -74,7 +74,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 					public String getName() {
 						return "Programmer Art";
 					}
-				}, factory, ResourcePackContainer.SortingDirection.field_14280);
+				}, factory, ResourcePackContainer.InsertionPosition.field_14280);
 			if (resourcePackContainer2 != null) {
 				map.put("programer_art", resourcePackContainer2);
 			}
@@ -286,10 +286,10 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				"server",
 				true,
 				() -> new ZipResourcePack(file),
-				new TranslatableTextComponent("resourcePack.server.name"),
+				new TranslatableComponent("resourcePack.server.name"),
 				packResourceMetadata.getDescription(),
 				ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
-				ResourcePackContainer.SortingDirection.field_14280,
+				ResourcePackContainer.InsertionPosition.field_14280,
 				true,
 				nativeImage
 			);

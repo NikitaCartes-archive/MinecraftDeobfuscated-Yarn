@@ -7,15 +7,15 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -54,21 +54,21 @@ public class FireworkItem extends Item {
 
 			return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 		} else {
-			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.field_5811, playerEntity.getStackInHand(hand));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("Fireworks");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {
 				list.add(
-					new TranslatableTextComponent("item.minecraft.firework_rocket.flight")
+					new TranslatableComponent("item.minecraft.firework_rocket.flight")
 						.append(" ")
 						.append(String.valueOf(compoundTag.getByte("Flight")))
-						.applyFormat(TextFormat.field_1080)
+						.applyFormat(ChatFormat.field_1080)
 				);
 			}
 
@@ -76,11 +76,11 @@ public class FireworkItem extends Item {
 			if (!listTag.isEmpty()) {
 				for (int i = 0; i < listTag.size(); i++) {
 					CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-					List<TextComponent> list2 = Lists.<TextComponent>newArrayList();
+					List<Component> list2 = Lists.<Component>newArrayList();
 					FireworkChargeItem.buildTooltip(compoundTag2, list2);
 					if (!list2.isEmpty()) {
 						for (int j = 1; j < list2.size(); j++) {
-							list2.set(j, new StringTextComponent("  ").append((TextComponent)list2.get(j)).applyFormat(TextFormat.field_1080));
+							list2.set(j, new TextComponent("  ").append((Component)list2.get(j)).applyFormat(ChatFormat.field_1080));
 						}
 
 						list.addAll(list2);

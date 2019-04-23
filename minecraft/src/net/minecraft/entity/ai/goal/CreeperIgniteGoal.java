@@ -5,24 +5,24 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 
 public class CreeperIgniteGoal extends Goal {
-	private final CreeperEntity owner;
+	private final CreeperEntity creeper;
 	private LivingEntity target;
 
 	public CreeperIgniteGoal(CreeperEntity creeperEntity) {
-		this.owner = creeperEntity;
+		this.creeper = creeperEntity;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		LivingEntity livingEntity = this.owner.getTarget();
-		return this.owner.getFuseSpeed() > 0 || livingEntity != null && this.owner.squaredDistanceTo(livingEntity) < 9.0;
+		LivingEntity livingEntity = this.creeper.getTarget();
+		return this.creeper.getFuseSpeed() > 0 || livingEntity != null && this.creeper.squaredDistanceTo(livingEntity) < 9.0;
 	}
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().stop();
-		this.target = this.owner.getTarget();
+		this.creeper.getNavigation().stop();
+		this.target = this.creeper.getTarget();
 	}
 
 	@Override
@@ -33,13 +33,13 @@ public class CreeperIgniteGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.target == null) {
-			this.owner.setFuseSpeed(-1);
-		} else if (this.owner.squaredDistanceTo(this.target) > 49.0) {
-			this.owner.setFuseSpeed(-1);
-		} else if (!this.owner.getVisibilityCache().canSee(this.target)) {
-			this.owner.setFuseSpeed(-1);
+			this.creeper.setFuseSpeed(-1);
+		} else if (this.creeper.squaredDistanceTo(this.target) > 49.0) {
+			this.creeper.setFuseSpeed(-1);
+		} else if (!this.creeper.getVisibilityCache().canSee(this.target)) {
+			this.creeper.setFuseSpeed(-1);
 		} else {
-			this.owner.setFuseSpeed(1);
+			this.creeper.setFuseSpeed(1);
 		}
 	}
 }

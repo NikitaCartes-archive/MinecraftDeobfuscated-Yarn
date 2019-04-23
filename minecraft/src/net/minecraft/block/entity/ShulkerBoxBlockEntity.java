@@ -19,10 +19,10 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Tickable;
@@ -36,14 +36,14 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
 	private int viewerCount;
-	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12065;
 	private float animationProgress;
 	private float prevAnimationProgress;
 	private DyeColor cachedColor;
 	private boolean cachedColorUpdateNeeded;
 
 	public ShulkerBoxBlockEntity(@Nullable DyeColor dyeColor) {
-		super(BlockEntityType.SHUlKER_BOX);
+		super(BlockEntityType.field_11896);
 		this.cachedColor = dyeColor;
 	}
 
@@ -63,14 +63,14 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	protected void updateAnimation() {
 		this.prevAnimationProgress = this.animationProgress;
 		switch (this.animationStage) {
-			case CLOSED:
+			case field_12065:
 				this.animationProgress = 0.0F;
 				break;
 			case field_12066:
 				this.animationProgress += 0.1F;
 				if (this.animationProgress >= 1.0F) {
 					this.pushEntities();
-					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12063;
 					this.animationProgress = 1.0F;
 					this.updateNeighborStates();
 				}
@@ -78,12 +78,12 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			case field_12064:
 				this.animationProgress -= 0.1F;
 				if (this.animationProgress <= 0.0F) {
-					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12065;
 					this.animationProgress = 0.0F;
 					this.updateNeighborStates();
 				}
 				break;
-			case OPENED:
+			case field_12063:
 				this.animationProgress = 1.0F;
 		}
 	}
@@ -218,8 +218,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.shulkerBox");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.shulkerBox");
 	}
 
 	@Override
@@ -305,9 +305,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public static enum AnimationStage {
-		CLOSED,
+		field_12065,
 		field_12066,
-		OPENED,
+		field_12063,
 		field_12064;
 	}
 }

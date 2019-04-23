@@ -9,15 +9,15 @@ import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCPETION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.particle.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCPETION = new SimpleCommandExceptionType(new TranslatableComponent("commands.particle.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -139,7 +139,7 @@ public class ParticleCommand {
 
 	private static int execute(
 		ServerCommandSource serverCommandSource,
-		ParticleParameters particleParameters,
+		ParticleEffect particleEffect,
 		Vec3d vec3d,
 		Vec3d vec3d2,
 		float f,
@@ -151,7 +151,7 @@ public class ParticleCommand {
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			if (serverCommandSource.getWorld()
-				.spawnParticles(serverPlayerEntity, particleParameters, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
+				.spawnParticles(serverPlayerEntity, particleEffect, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
 				j++;
 			}
 		}
@@ -160,8 +160,8 @@ public class ParticleCommand {
 			throw FAILED_EXCPETION.create();
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
-					"commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleParameters>)particleParameters.getType()).toString()
+				new TranslatableComponent(
+					"commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()).toString()
 				),
 				true
 			);

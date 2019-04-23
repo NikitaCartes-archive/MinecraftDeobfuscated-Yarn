@@ -11,10 +11,10 @@ import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 
 public class SwampHutGenerator extends StructurePieceWithDimensions {
 	private boolean hasWitch;
@@ -55,18 +55,18 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 0, 7, 5, 3, 7, Blocks.field_10431.getDefaultState(), Blocks.field_10431.getDefaultState(), false);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 2, 3, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 3, 3, 7, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 1, 3, 4, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 5, 3, 4, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 1, 3, 4, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 5, 3, 4, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10138.getDefaultState(), 1, 3, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_9980.getDefaultState(), 3, 2, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10593.getDefaultState(), 4, 2, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 1, 2, 1, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 5, 2, 1, mutableIntBoundingBox);
-			BlockState blockState = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
-			BlockState blockState2 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
-			BlockState blockState3 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
-			BlockState blockState4 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
+			BlockState blockState = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.field_11043);
+			BlockState blockState2 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.field_11034);
+			BlockState blockState3 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.field_11039);
+			BlockState blockState4 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.field_11035);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 4, 1, 6, 4, 1, blockState, blockState, false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 4, 2, 0, 4, 7, blockState2, blockState2, false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 4, 2, 6, 4, 7, blockState3, blockState3, false);
@@ -88,7 +88,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 				int k = this.applyZTransform(2, 5);
 				if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 					this.hasWitch = true;
-					WitchEntity witchEntity = EntityType.WITCH.create(iWorld.getWorld());
+					WitchEntity witchEntity = EntityType.field_6145.create(iWorld.getWorld());
 					witchEntity.setPersistent();
 					witchEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 					witchEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);
@@ -108,7 +108,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 			int k = this.applyZTransform(2, 5);
 			if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 				this.hasCat = true;
-				CatEntity catEntity = EntityType.CAT.create(iWorld.getWorld());
+				CatEntity catEntity = EntityType.field_16281.create(iWorld.getWorld());
 				catEntity.setPersistent();
 				catEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 				catEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);

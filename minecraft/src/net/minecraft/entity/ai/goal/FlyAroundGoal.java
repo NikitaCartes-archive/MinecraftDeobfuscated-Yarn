@@ -20,11 +20,11 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 	@Override
 	protected Vec3d getWanderTarget() {
 		Vec3d vec3d = null;
-		if (this.owner.isInsideWater()) {
-			vec3d = PathfindingUtil.findTargetStraight(this.owner, 15, 15);
+		if (this.mob.isInsideWater()) {
+			vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 15);
 		}
 
-		if (this.owner.getRand().nextFloat() >= this.farWanderProbability) {
+		if (this.mob.getRand().nextFloat() >= this.probability) {
 			vec3d = this.method_6314();
 		}
 
@@ -33,22 +33,22 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 
 	@Nullable
 	private Vec3d method_6314() {
-		BlockPos blockPos = new BlockPos(this.owner);
+		BlockPos blockPos = new BlockPos(this.mob);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(
-			MathHelper.floor(this.owner.x - 3.0),
-			MathHelper.floor(this.owner.y - 6.0),
-			MathHelper.floor(this.owner.z - 3.0),
-			MathHelper.floor(this.owner.x + 3.0),
-			MathHelper.floor(this.owner.y + 6.0),
-			MathHelper.floor(this.owner.z + 3.0)
+			MathHelper.floor(this.mob.x - 3.0),
+			MathHelper.floor(this.mob.y - 6.0),
+			MathHelper.floor(this.mob.z - 3.0),
+			MathHelper.floor(this.mob.x + 3.0),
+			MathHelper.floor(this.mob.y + 6.0),
+			MathHelper.floor(this.mob.z + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
-				Block block = this.owner.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
+				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.field_11033)).getBlock();
 				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.field_15475);
-				if (bl && this.owner.world.isAir(blockPos2) && this.owner.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
+				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.field_11036))) {
 					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}

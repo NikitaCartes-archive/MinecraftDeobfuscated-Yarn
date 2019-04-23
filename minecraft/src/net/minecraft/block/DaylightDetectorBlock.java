@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DaylightDetectorBlockEntity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
@@ -29,12 +29,12 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
@@ -45,8 +45,8 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	public static void updateState(BlockState blockState, World world, BlockPos blockPos) {
 		if (world.dimension.hasSkyLight()) {
-			int i = world.getLightLevel(LightType.SKY, blockPos) - world.getAmbientDarkness();
-			float f = world.method_8442(1.0F);
+			int i = world.getLightLevel(LightType.field_9284, blockPos) - world.getAmbientDarkness();
+			float f = world.getSkyAngleRadians(1.0F);
 			boolean bl = (Boolean)blockState.get(INVERTED);
 			if (bl) {
 				i = 15 - i;
@@ -96,6 +96,6 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(POWER, INVERTED);
+		builder.add(POWER, INVERTED);
 	}
 }

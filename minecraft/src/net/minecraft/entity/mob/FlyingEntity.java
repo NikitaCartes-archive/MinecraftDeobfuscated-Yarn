@@ -27,20 +27,20 @@ public abstract class FlyingEntity extends MobEntity {
 			this.updateVelocity(0.02F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.8F));
-		} else if (this.isTouchingLava()) {
+		} else if (this.isInLava()) {
 			this.updateVelocity(0.02F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
 			float f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
 			}
 
 			float g = 0.16277137F / (f * f * f);
 			f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
 			}
 
 			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, vec3d);

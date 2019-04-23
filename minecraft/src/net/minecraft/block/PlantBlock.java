@@ -25,7 +25,7 @@ public class PlantBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -37,7 +37,7 @@ public class PlantBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override

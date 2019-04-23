@@ -4,8 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class StringTag implements Tag {
 	private String value;
@@ -59,11 +59,11 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public Component toTextComponent(String string, int i) {
 		String string2 = escape(this.value);
 		String string3 = string2.substring(0, 1);
-		TextComponent textComponent = new StringTextComponent(string2.substring(1, string2.length() - 1)).applyFormat(GREEN);
-		return new StringTextComponent(string3).append(textComponent).append(string3);
+		Component component = new TextComponent(string2.substring(1, string2.length() - 1)).applyFormat(GREEN);
+		return new TextComponent(string3).append(component).append(string3);
 	}
 
 	public static String escape(String string) {

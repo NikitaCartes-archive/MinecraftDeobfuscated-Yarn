@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -25,7 +25,7 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -77,7 +77,7 @@ public class SugarCaneBlock extends Block {
 				|| block == Blocks.field_10534) {
 				BlockPos blockPos2 = blockPos.down();
 
-				for (Direction direction : Direction.Type.HORIZONTAL) {
+				for (Direction direction : Direction.Type.field_11062) {
 					BlockState blockState2 = viewableWorld.getBlockState(blockPos2.offset(direction));
 					FluidState fluidState = viewableWorld.getFluidState(blockPos2.offset(direction));
 					if (fluidState.matches(FluidTags.field_15517) || blockState2.getBlock() == Blocks.field_10110) {
@@ -92,11 +92,11 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 }

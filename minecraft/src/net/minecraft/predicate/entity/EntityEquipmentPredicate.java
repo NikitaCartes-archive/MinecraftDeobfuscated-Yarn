@@ -54,18 +54,18 @@ public class EntityEquipmentPredicate {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			if (!this.head.test(livingEntity.getEquippedStack(EquipmentSlot.HEAD))) {
+			if (!this.head.test(livingEntity.getEquippedStack(EquipmentSlot.field_6169))) {
 				return false;
-			} else if (!this.chest.test(livingEntity.getEquippedStack(EquipmentSlot.CHEST))) {
+			} else if (!this.chest.test(livingEntity.getEquippedStack(EquipmentSlot.field_6174))) {
 				return false;
-			} else if (!this.legs.test(livingEntity.getEquippedStack(EquipmentSlot.LEGS))) {
+			} else if (!this.legs.test(livingEntity.getEquippedStack(EquipmentSlot.field_6172))) {
 				return false;
-			} else if (!this.feet.test(livingEntity.getEquippedStack(EquipmentSlot.FEET))) {
+			} else if (!this.feet.test(livingEntity.getEquippedStack(EquipmentSlot.field_6166))) {
 				return false;
 			} else {
-				return !this.mainhand.test(livingEntity.getEquippedStack(EquipmentSlot.HAND_MAIN))
+				return !this.mainhand.test(livingEntity.getEquippedStack(EquipmentSlot.field_6173))
 					? false
-					: this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.HAND_OFF));
+					: this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.field_6171));
 			}
 		}
 	}

@@ -8,13 +8,13 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
 	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
-	private final TextComponent subtitle;
+	private final Component subtitle;
 	private final boolean showEraseCacheCheckbox;
 	private final List<String> wrappedText = Lists.<String>newArrayList();
 	private final String eraseCacheText;
@@ -23,11 +23,11 @@ public class BackupPromptScreen extends Screen {
 	private final String cancelText;
 	private CheckboxWidget eraseCacheCheckbox;
 
-	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, TextComponent textComponent, TextComponent textComponent2, boolean bl) {
-		super(textComponent);
+	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, Component component, Component component2, boolean bl) {
+		super(component);
 		this.parent = screen;
 		this.callback = callback;
-		this.subtitle = textComponent2;
+		this.subtitle = component2;
 		this.showEraseCacheCheckbox = bl;
 		this.eraseCacheText = I18n.translate("selectWorld.backupEraseCache");
 		this.confirmText = I18n.translate("selectWorld.backupJoinConfirmButton");

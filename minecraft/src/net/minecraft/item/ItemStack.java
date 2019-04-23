@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -41,18 +42,17 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -87,12 +87,12 @@ public final class ItemStack {
 		return decimalFormat;
 	}
 
-	public ItemStack(ItemProvider itemProvider) {
-		this(itemProvider, 1);
+	public ItemStack(ItemConvertible itemConvertible) {
+		this(itemConvertible, 1);
 	}
 
-	public ItemStack(ItemProvider itemProvider, int i) {
-		this.item = itemProvider == null ? null : itemProvider.getItem();
+	public ItemStack(ItemConvertible itemConvertible, int i) {
+		this.item = itemConvertible == null ? null : itemConvertible.asItem();
 		this.amount = i;
 		this.updateEmptyFlag();
 	}
@@ -153,7 +153,7 @@ public final class ItemStack {
 		if (playerEntity != null
 			&& !playerEntity.abilities.allowModifyWorld
 			&& !this.getCustomCanPlace(itemUsageContext.getWorld().getTagManager(), cachedBlockPosition)) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			Item item = this.getItem();
 			ActionResult actionResult = item.useOnBlock(itemUsageContext);
@@ -440,13 +440,13 @@ public final class ItemStack {
 		this.tag = compoundTag;
 	}
 
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		CompoundTag compoundTag = this.getSubCompoundTag("display");
 		if (compoundTag != null && compoundTag.containsKey("Name", 8)) {
 			try {
-				TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("Name"));
-				if (textComponent != null) {
-					return textComponent;
+				Component component = Component.Serializer.fromJsonString(compoundTag.getString("Name"));
+				if (component != null) {
+					return component;
 				}
 
 				compoundTag.remove("Name");
@@ -458,10 +458,10 @@ public final class ItemStack {
 		return this.getItem().getTranslatedNameTrimmed(this);
 	}
 
-	public ItemStack setDisplayName(@Nullable TextComponent textComponent) {
+	public ItemStack setDisplayName(@Nullable Component component) {
 		CompoundTag compoundTag = this.getOrCreateSubCompoundTag("display");
-		if (textComponent != null) {
-			compoundTag.putString("Name", TextComponent.Serializer.toJsonString(textComponent));
+		if (component != null) {
+			compoundTag.putString("Name", Component.Serializer.toJsonString(component));
 		} else {
 			compoundTag.remove("Name");
 		}
@@ -489,16 +489,16 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<TextComponent> getTooltipText(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
-		List<TextComponent> list = Lists.<TextComponent>newArrayList();
-		TextComponent textComponent = new StringTextComponent("").append(this.getDisplayName()).applyFormat(this.getRarity().formatting);
+	public List<Component> getTooltipText(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
+		List<Component> list = Lists.<Component>newArrayList();
+		Component component = new TextComponent("").append(this.getDisplayName()).applyFormat(this.getRarity().formatting);
 		if (this.hasDisplayName()) {
-			textComponent.applyFormat(TextFormat.field_1056);
+			component.applyFormat(ChatFormat.field_1056);
 		}
 
-		list.add(textComponent);
+		list.add(component);
 		if (!tooltipContext.isAdvanced() && !this.hasDisplayName() && this.getItem() == Items.field_8204) {
-			list.add(new StringTextComponent("#" + FilledMapItem.getMapId(this)).applyFormat(TextFormat.field_1080));
+			list.add(new TextComponent("#" + FilledMapItem.getMapId(this)).applyFormat(ChatFormat.field_1080));
 		}
 
 		int i = 0;
@@ -519,9 +519,9 @@ public final class ItemStack {
 				CompoundTag compoundTag = this.tag.getCompound("display");
 				if (compoundTag.containsKey("color", 3)) {
 					if (tooltipContext.isAdvanced()) {
-						list.add(new TranslatableTextComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(TextFormat.field_1080));
+						list.add(new TranslatableComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(ChatFormat.field_1080));
 					} else {
-						list.add(new TranslatableTextComponent("item.dyed").applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056}));
+						list.add(new TranslatableComponent("item.dyed").applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056}));
 					}
 				}
 
@@ -532,9 +532,9 @@ public final class ItemStack {
 						String string = listTag.getString(j);
 
 						try {
-							TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(string);
-							if (textComponent2 != null) {
-								list.add(TextFormatter.style(textComponent2, new Style().setColor(TextFormat.field_1064).setItalic(true)));
+							Component component2 = Component.Serializer.fromJsonString(string);
+							if (component2 != null) {
+								list.add(Components.style(component2, new Style().setColor(ChatFormat.field_1064).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -547,8 +547,8 @@ public final class ItemStack {
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			Multimap<String, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 			if (!multimap.isEmpty() && (i & 2) == 0) {
-				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.modifiers." + equipmentSlot.getName()).applyFormat(TextFormat.field_1080));
+				list.add(new TextComponent(""));
+				list.add(new TranslatableComponent("item.modifiers." + equipmentSlot.getName()).applyFormat(ChatFormat.field_1080));
 
 				for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -575,34 +575,34 @@ public final class ItemStack {
 
 					if (bl) {
 						list.add(
-							new StringTextComponent(" ")
+							new TextComponent(" ")
 								.append(
-									new TranslatableTextComponent(
+									new TranslatableComponent(
 										"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
+										new TranslatableComponent("attribute.name." + (String)entry.getKey())
 									)
 								)
-								.applyFormat(TextFormat.field_1077)
+								.applyFormat(ChatFormat.field_1077)
 						);
 					} else if (d > 0.0) {
 						list.add(
-							new TranslatableTextComponent(
+							new TranslatableComponent(
 									"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
+									new TranslatableComponent("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(TextFormat.field_1078)
+								.applyFormat(ChatFormat.field_1078)
 						);
 					} else if (d < 0.0) {
 						e *= -1.0;
 						list.add(
-							new TranslatableTextComponent(
+							new TranslatableComponent(
 									"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
+									new TranslatableComponent("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(TextFormat.field_1061)
+								.applyFormat(ChatFormat.field_1061)
 						);
 					}
 				}
@@ -610,14 +610,14 @@ public final class ItemStack {
 		}
 
 		if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
-			list.add(new TranslatableTextComponent("item.unbreakable").applyFormat(TextFormat.field_1078));
+			list.add(new TranslatableComponent("item.unbreakable").applyFormat(ChatFormat.field_1078));
 		}
 
 		if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0) {
 			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.canBreak").applyFormat(TextFormat.field_1080));
+				list.add(new TextComponent(""));
+				list.add(new TranslatableComponent("item.canBreak").applyFormat(ChatFormat.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(method_7937(listTag2.getString(k)));
@@ -628,8 +628,8 @@ public final class ItemStack {
 		if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9) && (i & 16) == 0) {
 			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.canPlace").applyFormat(TextFormat.field_1080));
+				list.add(new TextComponent(""));
+				list.add(new TranslatableComponent("item.canPlace").applyFormat(ChatFormat.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(method_7937(listTag2.getString(k)));
@@ -639,12 +639,12 @@ public final class ItemStack {
 
 		if (tooltipContext.isAdvanced()) {
 			if (this.isDamaged()) {
-				list.add(new TranslatableTextComponent("item.durability", this.getDurability() - this.getDamage(), this.getDurability()));
+				list.add(new TranslatableComponent("item.durability", this.getDurability() - this.getDamage(), this.getDurability()));
 			}
 
-			list.add(new StringTextComponent(Registry.ITEM.getId(this.getItem()).toString()).applyFormat(TextFormat.field_1063));
+			list.add(new TextComponent(Registry.ITEM.getId(this.getItem()).toString()).applyFormat(ChatFormat.field_1063));
 			if (this.hasTag()) {
-				list.add(new TranslatableTextComponent("item.nbt_tags", this.getTag().getKeys().size()).applyFormat(TextFormat.field_1063));
+				list.add(new TranslatableComponent("item.nbt_tags", this.getTag().getKeys().size()).applyFormat(ChatFormat.field_1063));
 			}
 		}
 
@@ -652,7 +652,7 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendEnchantmentComponents(List<TextComponent> list, ListTag listTag) {
+	public static void appendEnchantmentComponents(List<Component> list, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT
@@ -662,7 +662,7 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Collection<TextComponent> method_7937(String string) {
+	private static Collection<Component> method_7937(String string) {
 		try {
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), true).parse(true);
 			BlockState blockState = blockArgumentParser.getBlockState();
@@ -671,16 +671,16 @@ public final class ItemStack {
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {
 				if (bl) {
-					return Lists.<TextComponent>newArrayList(blockState.getBlock().getTextComponent().applyFormat(TextFormat.field_1063));
+					return Lists.<Component>newArrayList(blockState.getBlock().getTextComponent().applyFormat(ChatFormat.field_1063));
 				}
 
 				Tag<Block> tag = BlockTags.getContainer().get(identifier);
 				if (tag != null) {
 					Collection<Block> collection = tag.values();
 					if (!collection.isEmpty()) {
-						return (Collection<TextComponent>)collection.stream()
+						return (Collection<Component>)collection.stream()
 							.map(Block::getTextComponent)
-							.map(textComponent -> textComponent.applyFormat(TextFormat.field_1063))
+							.map(component -> component.applyFormat(ChatFormat.field_1063))
 							.collect(Collectors.toList());
 					}
 				}
@@ -688,7 +688,7 @@ public final class ItemStack {
 		} catch (CommandSyntaxException var8) {
 		}
 
-		return Lists.<TextComponent>newArrayList(new StringTextComponent("missingno").applyFormat(TextFormat.field_1063));
+		return Lists.<Component>newArrayList(new TextComponent("missingno").applyFormat(ChatFormat.field_1063));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -785,20 +785,20 @@ public final class ItemStack {
 		listTag.add(compoundTag);
 	}
 
-	public TextComponent toTextComponent() {
-		TextComponent textComponent = new StringTextComponent("").append(this.getDisplayName());
+	public Component toTextComponent() {
+		Component component = new TextComponent("").append(this.getDisplayName());
 		if (this.hasDisplayName()) {
-			textComponent.applyFormat(TextFormat.field_1056);
+			component.applyFormat(ChatFormat.field_1056);
 		}
 
-		TextComponent textComponent2 = TextFormatter.bracketed(textComponent);
+		Component component2 = Components.bracketed(component);
 		if (!this.empty) {
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			textComponent2.applyFormat(this.getRarity().formatting)
-				.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new StringTextComponent(compoundTag.toString()))));
+			component2.applyFormat(this.getRarity().formatting)
+				.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11757, new TextComponent(compoundTag.toString()))));
 		}
 
-		return textComponent2;
+		return component2;
 	}
 
 	private static boolean areBlocksEqual(CachedBlockPosition cachedBlockPosition, @Nullable CachedBlockPosition cachedBlockPosition2) {
@@ -813,7 +813,7 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean getCustomCanHarvest(TagManager tagManager, CachedBlockPosition cachedBlockPosition) {
+	public boolean getCustomCanHarvest(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
 		if (areBlocksEqual(cachedBlockPosition, this.lastCheckedCanHarvestBlock)) {
 			return this.lastCheckedCanHarvestResult;
 		} else {
@@ -825,7 +825,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(tagManager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
 						if (predicate.test(cachedBlockPosition)) {
 							this.lastCheckedCanHarvestResult = true;
 							return true;
@@ -840,7 +840,7 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean getCustomCanPlace(TagManager tagManager, CachedBlockPosition cachedBlockPosition) {
+	public boolean getCustomCanPlace(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
 		if (areBlocksEqual(cachedBlockPosition, this.lastCheckedCanPlaceBlock)) {
 			return this.lastCheckedCanPlaceResult;
 		} else {
@@ -852,7 +852,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(tagManager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
 						if (predicate.test(cachedBlockPosition)) {
 							this.lastCheckedCanPlaceResult = true;
 							return true;

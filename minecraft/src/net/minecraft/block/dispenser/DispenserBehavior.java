@@ -62,7 +62,7 @@ public interface DispenserBehavior {
 			@Override
 			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
-				arrowEntity.pickupType = ProjectileEntity.PickupType.PICKUP;
+				arrowEntity.pickupType = ProjectileEntity.PickupPermission.field_7593;
 				return arrowEntity;
 			}
 		});
@@ -71,7 +71,7 @@ public interface DispenserBehavior {
 			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
 				arrowEntity.initFromStack(itemStack);
-				arrowEntity.pickupType = ProjectileEntity.PickupType.PICKUP;
+				arrowEntity.pickupType = ProjectileEntity.PickupPermission.field_7593;
 				return arrowEntity;
 			}
 		});
@@ -79,7 +79,7 @@ public interface DispenserBehavior {
 			@Override
 			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 				ProjectileEntity projectileEntity = new SpectralArrowEntity(world, position.getX(), position.getY(), position.getZ());
-				projectileEntity.pickupType = ProjectileEntity.PickupType.PICKUP;
+				projectileEntity.pickupType = ProjectileEntity.PickupPermission.field_7593;
 				return projectileEntity;
 			}
 		});
@@ -187,7 +187,7 @@ public interface DispenserBehavior {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).entityTypeFromTag(itemStack.getTag());
 				entityType.spawnFromItemStack(
-					blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.UP, false
+					blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.field_11036, false
 				);
 				itemStack.subtractAmount(1);
 				return itemStack;
@@ -228,7 +228,7 @@ public interface DispenserBehavior {
 				double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
 				double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
 				double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-				world.spawnEntity(SystemUtil.consume(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.method_16936(itemStack)));
+				world.spawnEntity(SystemUtil.consume(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(itemStack)));
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}
@@ -238,12 +238,12 @@ public interface DispenserBehavior {
 				blockPointer.getWorld().playLevelEvent(1018, blockPointer.getBlockPos(), 0);
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8533, new BoatDispenserBehavior(BoatEntity.Type.OAK));
-		DispenserBlock.registerBehavior(Items.field_8486, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE));
-		DispenserBlock.registerBehavior(Items.field_8442, new BoatDispenserBehavior(BoatEntity.Type.BIRCH));
-		DispenserBlock.registerBehavior(Items.field_8730, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE));
-		DispenserBlock.registerBehavior(Items.field_8138, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK));
-		DispenserBlock.registerBehavior(Items.field_8094, new BoatDispenserBehavior(BoatEntity.Type.ACACIA));
+		DispenserBlock.registerBehavior(Items.field_8533, new BoatDispenserBehavior(BoatEntity.Type.field_7727));
+		DispenserBlock.registerBehavior(Items.field_8486, new BoatDispenserBehavior(BoatEntity.Type.field_7728));
+		DispenserBlock.registerBehavior(Items.field_8442, new BoatDispenserBehavior(BoatEntity.Type.field_7729));
+		DispenserBlock.registerBehavior(Items.field_8730, new BoatDispenserBehavior(BoatEntity.Type.field_7730));
+		DispenserBlock.registerBehavior(Items.field_8138, new BoatDispenserBehavior(BoatEntity.Type.field_7723));
+		DispenserBlock.registerBehavior(Items.field_8094, new BoatDispenserBehavior(BoatEntity.Type.field_7725));
 		DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior field_13367 = new ItemDispenserBehavior();
 
@@ -399,7 +399,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.field_10147;
 				this.success = true;
-				if (world.isAir(blockPos) && carvedPumpkinBlock.method_9733(world, blockPos)) {
+				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
 						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
 					}
@@ -415,13 +415,13 @@ public interface DispenserBehavior {
 				return itemStack;
 			}
 		});
-		DispenserBlock.registerBehavior(Blocks.field_10603.getItem(), new BlockPlacementDispenserBehavior());
+		DispenserBlock.registerBehavior(Blocks.field_10603.asItem(), new BlockPlacementDispenserBehavior());
 
 		for (DyeColor dyeColor : DyeColor.values()) {
-			DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).getItem(), new BlockPlacementDispenserBehavior());
+			DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).asItem(), new BlockPlacementDispenserBehavior());
 		}
 
-		DispenserBlock.registerBehavior(Items.field_8868.getItem(), new FallibleItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.field_8868.asItem(), new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
@@ -430,7 +430,7 @@ public interface DispenserBehavior {
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
 					for (SheepEntity sheepEntity : world.getEntities(SheepEntity.class, new BoundingBox(blockPos))) {
-						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
+						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isBaby()) {
 							sheepEntity.dropItems();
 							if (itemStack.applyDamage(1, world.random, null)) {
 								itemStack.setAmount(0);

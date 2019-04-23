@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 
@@ -30,7 +30,7 @@ public class AdvancementToast implements Toast {
 		toastManager.blit(0, 0, 0, 0, 160, 32);
 		if (advancementDisplay != null) {
 			List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().getFormattedText(), 125);
-			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
+			int i = advancementDisplay.getFrame() == AdvancementFrame.field_1250 ? 16746751 : 16776960;
 			if (list.size() == 1) {
 				toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
 				toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().getFormattedText(), 30.0F, 18.0F, -1);
@@ -53,7 +53,7 @@ public class AdvancementToast implements Toast {
 
 			if (!this.field_2206 && l > 0L) {
 				this.field_2206 = true;
-				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
+				if (advancementDisplay.getFrame() == AdvancementFrame.field_1250) {
 					toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
 				}
 			}

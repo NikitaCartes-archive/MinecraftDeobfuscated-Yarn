@@ -15,12 +15,12 @@ import net.minecraft.world.World;
 
 public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	private final PressurePlateBlock.Type type;
+	private final PressurePlateBlock.ActivationRule type;
 
-	protected PressurePlateBlock(PressurePlateBlock.Type type, Block.Settings settings) {
+	protected PressurePlateBlock(PressurePlateBlock.ActivationRule activationRule, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(POWERED, Boolean.valueOf(false)));
-		this.type = type;
+		this.type = activationRule;
 	}
 
 	@Override
@@ -56,10 +56,10 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		BoundingBox boundingBox = BOX.offset(blockPos);
 		List<? extends Entity> list;
 		switch (this.type) {
-			case WOOD:
+			case field_11361:
 				list = world.getEntities(null, boundingBox);
 				break;
-			case STONE:
+			case field_11362:
 				list = world.getEntities(LivingEntity.class, boundingBox);
 				break;
 			default:
@@ -79,11 +79,11 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(POWERED);
+		builder.add(POWERED);
 	}
 
-	public static enum Type {
-		WOOD,
-		STONE;
+	public static enum ActivationRule {
+		field_11361,
+		field_11362;
 	}
 }

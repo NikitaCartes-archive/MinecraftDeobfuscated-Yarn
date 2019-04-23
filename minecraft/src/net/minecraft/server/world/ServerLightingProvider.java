@@ -11,11 +11,11 @@ import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -64,7 +64,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			blockPos.getX() >> 4,
 			blockPos.getZ() >> 4,
 			ServerLightingProvider.class_3901.field_17262,
-			SystemUtil.debugRunnable(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
+			SystemUtil.debugRunnable(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos2)
 		);
 	}
 
@@ -123,7 +123,6 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
-			super.suppressLight(chunkPos, true);
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < 16; i++) {
@@ -133,6 +132,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 				}
 			}
 
+			super.suppressLight(chunkPos, true);
 			if (!bl) {
 				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.getLuminance(blockPos)));
 			}

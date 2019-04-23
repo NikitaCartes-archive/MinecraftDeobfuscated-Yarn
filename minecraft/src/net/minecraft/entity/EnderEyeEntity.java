@@ -25,42 +25,42 @@ import net.minecraft.world.World;
 		itf = FlyingItemEntity.class
 	)})
 public class EnderEyeEntity extends Entity implements FlyingItemEntity {
-	private static final TrackedData<ItemStack> field_17080 = DataTracker.registerData(EnderEyeEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-	private double field_7619;
-	private double field_7618;
-	private double field_7617;
+	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EnderEyeEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private double velocityX;
+	private double velocityY;
+	private double velocityZ;
 	private int useCount;
-	private boolean field_7621;
+	private boolean dropsItem;
 
 	public EnderEyeEntity(EntityType<? extends EnderEyeEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public EnderEyeEntity(World world, double d, double e, double f) {
-		this(EntityType.EYE_OF_ENDER, world);
+		this(EntityType.field_6061, world);
 		this.useCount = 0;
 		this.setPosition(d, e, f);
 	}
 
-	public void method_16933(ItemStack itemStack) {
+	public void setItem(ItemStack itemStack) {
 		if (itemStack.getItem() != Items.field_8449 || itemStack.hasTag()) {
-			this.getDataTracker().set(field_17080, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
-	private ItemStack method_16935() {
-		return this.getDataTracker().get(field_17080);
+	private ItemStack getTrackedItem() {
+		return this.getDataTracker().get(ITEM);
 	}
 
 	@Override
 	public ItemStack getStack() {
-		ItemStack itemStack = this.method_16935();
+		ItemStack itemStack = this.getTrackedItem();
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(field_17080, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -75,7 +75,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		return d < e * e;
 	}
 
-	public void method_7478(BlockPos blockPos) {
+	public void moveTowards(BlockPos blockPos) {
 		double d = (double)blockPos.getX();
 		int i = blockPos.getY();
 		double e = (double)blockPos.getZ();
@@ -83,17 +83,17 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		double g = e - this.z;
 		float h = MathHelper.sqrt(f * f + g * g);
 		if (h > 12.0F) {
-			this.field_7619 = this.x + f / (double)h * 12.0;
-			this.field_7617 = this.z + g / (double)h * 12.0;
-			this.field_7618 = this.y + 8.0;
+			this.velocityX = this.x + f / (double)h * 12.0;
+			this.velocityZ = this.z + g / (double)h * 12.0;
+			this.velocityY = this.y + 8.0;
 		} else {
-			this.field_7619 = d;
-			this.field_7618 = (double)i;
-			this.field_7617 = e;
+			this.velocityX = d;
+			this.velocityY = (double)i;
+			this.velocityZ = e;
 		}
 
 		this.useCount = 0;
-		this.field_7621 = this.random.nextInt(5) > 0;
+		this.dropsItem = this.random.nextInt(5) > 0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -142,8 +142,8 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		if (!this.world.isClient) {
-			double d = this.field_7619 - this.x;
-			double e = this.field_7617 - this.z;
+			double d = this.velocityX - this.x;
+			double e = this.velocityZ - this.z;
 			float g = (float)Math.sqrt(d * d + e * e);
 			float h = (float)MathHelper.atan2(e, d);
 			double i = MathHelper.lerp(0.0025, (double)f, (double)g);
@@ -153,7 +153,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				j *= 0.8;
 			}
 
-			int k = this.y < this.field_7618 ? 1 : -1;
+			int k = this.y < this.velocityY ? 1 : -1;
 			vec3d = new Vec3d(Math.cos((double)h) * i, j + ((double)k - j) * 0.015F, Math.sin((double)h) * i);
 			this.setVelocity(vec3d);
 		}
@@ -182,7 +182,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 			if (this.useCount > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
 				this.remove();
-				if (this.field_7621) {
+				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
 				} else {
 					this.world.playLevelEvent(2003, new BlockPos(this), 0);
@@ -193,7 +193,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		ItemStack itemStack = this.method_16935();
+		ItemStack itemStack = this.getTrackedItem();
 		if (!itemStack.isEmpty()) {
 			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
@@ -202,7 +202,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
-		this.method_16933(itemStack);
+		this.setItem(itemStack);
 	}
 
 	@Override

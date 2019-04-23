@@ -4,9 +4,9 @@ import java.io.IOException;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -14,37 +14,37 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	public int entityId;
 	public int attackerEntityId;
 	public int timeSinceLastAttack;
-	public TextComponent deathMessage;
+	public Component deathMessage;
 
 	public CombatEventS2CPacket() {
 	}
 
 	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type) {
-		this(damageTracker, type, new StringTextComponent(""));
+		this(damageTracker, type, new TextComponent(""));
 	}
 
-	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, TextComponent textComponent) {
+	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, Component component) {
 		this.type = type;
 		LivingEntity livingEntity = damageTracker.getBiggestAttacker();
 		switch (type) {
-			case END:
+			case field_12353:
 				this.timeSinceLastAttack = damageTracker.getTimeSinceLastAttack();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				break;
-			case DEATH:
+			case field_12350:
 				this.entityId = damageTracker.getEntity().getEntityId();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
-				this.deathMessage = textComponent;
+				this.deathMessage = component;
 		}
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.type = packetByteBuf.readEnumConstant(CombatEventS2CPacket.Type.class);
-		if (this.type == CombatEventS2CPacket.Type.END) {
+		if (this.type == CombatEventS2CPacket.Type.field_12353) {
 			this.timeSinceLastAttack = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
-		} else if (this.type == CombatEventS2CPacket.Type.DEATH) {
+		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			this.entityId = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
 			this.deathMessage = packetByteBuf.readTextComponent();
@@ -54,10 +54,10 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.type);
-		if (this.type == CombatEventS2CPacket.Type.END) {
+		if (this.type == CombatEventS2CPacket.Type.field_12353) {
 			packetByteBuf.writeVarInt(this.timeSinceLastAttack);
 			packetByteBuf.writeInt(this.attackerEntityId);
-		} else if (this.type == CombatEventS2CPacket.Type.DEATH) {
+		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			packetByteBuf.writeVarInt(this.entityId);
 			packetByteBuf.writeInt(this.attackerEntityId);
 			packetByteBuf.writeTextComponent(this.deathMessage);
@@ -70,12 +70,12 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public boolean isErrorFatal() {
-		return this.type == CombatEventS2CPacket.Type.DEATH;
+		return this.type == CombatEventS2CPacket.Type.field_12350;
 	}
 
 	public static enum Type {
-		BEGIN,
-		END,
-		DEATH;
+		field_12352,
+		field_12353,
+		field_12350;
 	}
 }

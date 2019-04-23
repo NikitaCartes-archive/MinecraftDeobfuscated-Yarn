@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -65,7 +65,7 @@ public class LecternBlock extends BlockWithEntity {
 	protected LecternBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
 		);
 	}
 
@@ -80,7 +80,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
@@ -90,20 +90,20 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
 			default:
 				return BASE_SHAPE;
@@ -122,7 +122,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, POWERED, HAS_BOOK);
+		builder.add(FACING, POWERED, HAS_BOOK);
 	}
 
 	@Nullable
@@ -224,7 +224,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.UP && blockState.get(POWERED) ? 15 : 0;
+		return direction == Direction.field_11036 && blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override

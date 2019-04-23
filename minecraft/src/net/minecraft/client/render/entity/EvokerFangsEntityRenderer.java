@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
-	private static final Identifier field_4699 = new Identifier("textures/entity/illager/evoker_fangs.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/illager/evoker_fangs.png");
 	private final EvokerFangsEntityModel<EvokerFangsEntity> model = new EvokerFangsEntityModel<>();
 
 	public EvokerFangsEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -41,6 +41,6 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 	}
 
 	protected Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {
-		return field_4699;
+		return SKIN;
 	}
 }

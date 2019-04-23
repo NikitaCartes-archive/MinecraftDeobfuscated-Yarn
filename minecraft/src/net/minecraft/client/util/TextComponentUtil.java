@@ -4,41 +4,41 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 @Environment(EnvType.CLIENT)
 public class TextComponentUtil {
 	public static String method_1849(String string, boolean bl) {
-		return !bl && !MinecraftClient.getInstance().options.chatColors ? TextFormat.stripFormatting(string) : string;
+		return !bl && !MinecraftClient.getInstance().options.chatColors ? ChatFormat.stripFormatting(string) : string;
 	}
 
-	public static List<TextComponent> wrapLines(TextComponent textComponent, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
+	public static List<Component> wrapLines(Component component, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
 		int j = 0;
-		TextComponent textComponent2 = new StringTextComponent("");
-		List<TextComponent> list = Lists.<TextComponent>newArrayList();
-		List<TextComponent> list2 = Lists.<TextComponent>newArrayList(textComponent);
+		Component component2 = new TextComponent("");
+		List<Component> list = Lists.<Component>newArrayList();
+		List<Component> list2 = Lists.<Component>newArrayList(component);
 
 		for (int k = 0; k < list2.size(); k++) {
-			TextComponent textComponent3 = (TextComponent)list2.get(k);
-			String string = textComponent3.getText();
+			Component component3 = (Component)list2.get(k);
+			String string = component3.getText();
 			boolean bl3 = false;
 			if (string.contains("\n")) {
 				int l = string.indexOf(10);
 				String string2 = string.substring(l + 1);
 				string = string.substring(0, l + 1);
-				TextComponent textComponent4 = new StringTextComponent(string2).setStyle(textComponent3.getStyle().clone());
-				list2.add(k + 1, textComponent4);
+				Component component4 = new TextComponent(string2).setStyle(component3.getStyle().clone());
+				list2.add(k + 1, component4);
 				bl3 = true;
 			}
 
-			String string3 = method_1849(textComponent3.getStyle().getFormatString() + string, bl2);
+			String string3 = method_1849(component3.getStyle().getFormatString() + string, bl2);
 			String string2 = string3.endsWith("\n") ? string3.substring(0, string3.length() - 1) : string3;
 			int m = textRenderer.getStringWidth(string2);
-			TextComponent textComponent5 = new StringTextComponent(string2).setStyle(textComponent3.getStyle().clone());
+			Component component5 = new TextComponent(string2).setStyle(component3.getStyle().clone());
 			if (j + m > i) {
 				String string4 = textRenderer.trimToWidth(string3, i - j, false);
 				String string5 = string4.length() < string3.length() ? string3.substring(string4.length()) : null;
@@ -56,31 +56,31 @@ public class TextComponentUtil {
 						string5 = string3;
 					}
 
-					TextComponent textComponent6 = new StringTextComponent(string5).setStyle(textComponent3.getStyle().clone());
-					list2.add(k + 1, textComponent6);
+					Component component6 = new TextComponent(string5).setStyle(component3.getStyle().clone());
+					list2.add(k + 1, component6);
 				}
 
 				m = textRenderer.getStringWidth(string4);
-				textComponent5 = new StringTextComponent(string4);
-				textComponent5.setStyle(textComponent3.getStyle().clone());
+				component5 = new TextComponent(string4);
+				component5.setStyle(component3.getStyle().clone());
 				bl3 = true;
 			}
 
 			if (j + m <= i) {
 				j += m;
-				textComponent2.append(textComponent5);
+				component2.append(component5);
 			} else {
 				bl3 = true;
 			}
 
 			if (bl3) {
-				list.add(textComponent2);
+				list.add(component2);
 				j = 0;
-				textComponent2 = new StringTextComponent("");
+				component2 = new TextComponent("");
 			}
 		}
 
-		list.add(textComponent2);
+		list.add(component2);
 		return list;
 	}
 }

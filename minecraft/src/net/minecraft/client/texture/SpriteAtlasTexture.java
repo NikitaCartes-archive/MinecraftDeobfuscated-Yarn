@@ -41,13 +41,13 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
-	private final String pathPrefix;
+	private final String atlasPath;
 	private final int maxTextureSize;
 	private int mipLevel;
 	private final Sprite missingSprite = MissingSprite.getMissingSprite();
 
 	public SpriteAtlasTexture(String string) {
-		this.pathPrefix = string;
+		this.atlasPath = string;
 		this.maxTextureSize = MinecraftClient.getMaxTextureSize();
 	}
 
@@ -57,12 +57,12 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 	public void upload(SpriteAtlasTexture.Data data) {
 		this.spritesToLoad.clear();
-		this.spritesToLoad.addAll(data.field_17900);
-		LOGGER.info("Created: {}x{} {}-atlas", data.field_17901, data.field_17902, this.pathPrefix);
-		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.field_17901, data.field_17902);
+		this.spritesToLoad.addAll(data.spriteIds);
+		LOGGER.info("Created: {}x{} {}-atlas", data.width, data.height, this.atlasPath);
+		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
 		this.clear();
 
-		for (Sprite sprite : data.field_17903) {
+		for (Sprite sprite : data.sprites) {
 			this.sprites.put(sprite.getId(), sprite);
 
 			try {
@@ -70,7 +70,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			} catch (Throwable var7) {
 				CrashReport crashReport = CrashReport.create(var7, "Stitching texture atlas");
 				CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
-				crashReportSection.add("Atlas path", this.pathPrefix);
+				crashReportSection.add("Atlas path", this.atlasPath);
 				crashReportSection.add("Sprite", sprite);
 				throw new CrashException(crashReport);
 			}
@@ -113,7 +113,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		int m = Math.min(j, k);
 		int n = MathHelper.log2(m);
 		if (n < this.mipLevel) {
-			LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.pathPrefix, this.mipLevel, n, m);
+			LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.atlasPath, this.mipLevel, n, m);
 			this.mipLevel = n;
 		}
 
@@ -244,24 +244,24 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	}
 
 	private Identifier getTexturePath(Identifier identifier) {
-		return new Identifier(identifier.getNamespace(), String.format("%s/%s%s", this.pathPrefix, identifier.getPath(), ".png"));
+		return new Identifier(identifier.getNamespace(), String.format("%s/%s%s", this.atlasPath, identifier.getPath(), ".png"));
 	}
 
 	public Sprite getSprite(String string) {
 		return this.getSprite(new Identifier(string));
 	}
 
-	public void updateAnimatedSprites() {
+	public void tickAnimatedSprites() {
 		this.bindTexture();
 
 		for (Sprite sprite : this.animatedSprites) {
-			sprite.tick();
+			sprite.tickAnimation();
 		}
 	}
 
 	@Override
 	public void tick() {
-		this.updateAnimatedSprites();
+		this.tickAnimatedSprites();
 	}
 
 	public void setMipLevel(int i) {
@@ -284,16 +284,16 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 	@Environment(EnvType.CLIENT)
 	public static class Data {
-		final Set<Identifier> field_17900;
-		final int field_17901;
-		final int field_17902;
-		final List<Sprite> field_17903;
+		final Set<Identifier> spriteIds;
+		final int width;
+		final int height;
+		final List<Sprite> sprites;
 
 		public Data(Set<Identifier> set, int i, int j, List<Sprite> list) {
-			this.field_17900 = set;
-			this.field_17901 = i;
-			this.field_17902 = j;
-			this.field_17903 = list;
+			this.spriteIds = set;
+			this.width = i;
+			this.height = j;
+			this.sprites = list;
 		}
 	}
 }

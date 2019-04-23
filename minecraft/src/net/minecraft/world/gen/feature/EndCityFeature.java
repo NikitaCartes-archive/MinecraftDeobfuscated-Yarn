@@ -8,10 +8,10 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -74,12 +74,12 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
 		int k = 5;
 		int l = 5;
-		if (blockRotation == BlockRotation.ROT_90) {
+		if (blockRotation == BlockRotation.field_11463) {
 			k = -5;
-		} else if (blockRotation == BlockRotation.ROT_180) {
+		} else if (blockRotation == BlockRotation.field_11464) {
 			k = -5;
 			l = -5;
-		} else if (blockRotation == BlockRotation.ROT_270) {
+		} else if (blockRotation == BlockRotation.field_11465) {
 			l = -5;
 		}
 

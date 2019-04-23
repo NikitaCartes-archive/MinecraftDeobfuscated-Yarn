@@ -15,11 +15,11 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
@@ -36,7 +36,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 			return Advancement.Task.fromJson(jsonObject, jsonDeserializationContext);
 		})
 		.registerTypeAdapter(AdvancementRewards.class, new AdvancementRewards.Deserializer())
-		.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer())
+		.registerTypeHierarchyAdapter(Component.class, new Component.Serializer())
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
 		.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
 		.create();

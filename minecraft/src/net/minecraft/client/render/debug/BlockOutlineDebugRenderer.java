@@ -43,7 +43,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
 			BlockState blockState = blockView.getBlockState(blockPos2);
-			if (blockState.getBlock() != Blocks.AIR) {
+			if (blockState.getBlock() != Blocks.field_10124) {
 				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
 
 				for (BoundingBox boundingBox : voxelShape.getBoundingBoxes()) {
@@ -58,7 +58,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 					float o = 0.0F;
 					float p = 0.0F;
 					float q = 0.5F;
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.WEST)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11039)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -69,7 +69,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11035)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -80,7 +80,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.EAST)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11034)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -91,7 +91,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.NORTH)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11043)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -102,7 +102,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.DOWN)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11033)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -113,7 +113,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) {
+					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11036)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);

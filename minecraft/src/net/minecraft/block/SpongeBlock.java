@@ -52,15 +52,14 @@ public class SpongeBlock extends Block {
 				FluidState fluidState = world.getFluidState(blockPos3);
 				Material material = blockState.getMaterial();
 				if (fluidState.matches(FluidTags.field_15517)) {
-					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos3, blockState) != Fluids.EMPTY
-						)
-					 {
+					if (blockState.getBlock() instanceof FluidDrainable
+						&& ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos3, blockState) != Fluids.field_15906) {
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));
 						}
 					} else if (blockState.getBlock() instanceof FluidBlock) {
-						world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos3, Blocks.field_10124.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));
@@ -68,7 +67,7 @@ public class SpongeBlock extends Block {
 					} else if (material == Material.UNDERWATER_PLANT || material == Material.SEAGRASS) {
 						BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
 						dropStacks(blockState, world, blockPos3, blockEntity);
-						world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos3, Blocks.field_10124.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));

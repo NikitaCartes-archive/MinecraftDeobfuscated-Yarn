@@ -52,6 +52,9 @@ import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DefaultResourcePackCreator;
 import net.minecraft.resource.FileResourcePackCreator;
@@ -76,20 +79,19 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagManager;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -105,7 +107,6 @@ import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
@@ -167,7 +168,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private volatile boolean loading;
 	private long field_4557;
 	@Nullable
-	private TextComponent loadingStage;
+	private Component loadingStage;
 	private boolean profilerStartQueued;
 	private boolean forceGameMode;
 	@Nullable
@@ -184,13 +185,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private boolean field_19249;
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
-	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA, this.serverThread);
-	private final ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
+	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.field_14190, this.serverThread);
+	private final ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
 	@Nullable
 	private FileResourcePackCreator dataPackCreator;
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
-	private final TagManager tagManager = new TagManager();
+	private final RegistryTagManager tagManager = new RegistryTagManager();
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	private final BossBarManager bossBarManager = new BossBarManager(this);
 	private final LootManager lootManager = new LootManager();
@@ -249,17 +250,17 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	protected void upgradeWorld(String string) {
 		if (this.getLevelStorage().requiresConversion(string)) {
 			LOGGER.info("Converting map!");
-			this.setLoadingStage(new TranslatableTextComponent("menu.convertingLevel"));
+			this.setLoadingStage(new TranslatableComponent("menu.convertingLevel"));
 			this.getLevelStorage().convertLevel(string, new ProgressListener() {
 				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
 				@Override
-				public void method_15412(TextComponent textComponent) {
+				public void method_15412(Component component) {
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15413(TextComponent textComponent) {
+				public void method_15413(Component component) {
 				}
 
 				@Override
@@ -276,7 +277,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 				}
 
 				@Override
-				public void method_15414(TextComponent textComponent) {
+				public void method_15414(Component component) {
 				}
 			});
 		}
@@ -286,12 +287,12 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
 			if (levelProperties != null) {
 				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.eraseCache);
-				TextComponent textComponent = null;
+				Component component = null;
 
 				while (!worldUpdater.isDone()) {
-					TextComponent textComponent2 = worldUpdater.getStatus();
-					if (textComponent != textComponent2) {
-						textComponent = textComponent2;
+					Component component2 = worldUpdater.getStatus();
+					if (component != component2) {
+						component = component2;
 						LOGGER.info(worldUpdater.getStatus().getString());
 					}
 
@@ -314,13 +315,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 	}
 
-	protected synchronized void setLoadingStage(TextComponent textComponent) {
-		this.loadingStage = textComponent;
+	protected synchronized void setLoadingStage(Component component) {
+		this.loadingStage = component;
 	}
 
 	protected void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.upgradeWorld(string);
-		this.setLoadingStage(new TranslatableTextComponent("menu.loadingLevel"));
+		this.setLoadingStage(new TranslatableComponent("menu.loadingLevel"));
 		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
 		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
@@ -410,20 +411,20 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		levelProperties.setTimeOfDay(6000L);
 		levelProperties.setGameMode(GameMode.field_9219);
 		levelProperties.setHardcore(false);
-		levelProperties.setDifficulty(Difficulty.PEACEFUL);
+		levelProperties.setDifficulty(Difficulty.field_5801);
 		levelProperties.setDifficultyLocked(true);
 		levelProperties.getGameRules().put("doDaylightCycle", "false", this);
 	}
 
 	protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
-		this.resourcePackContainerManager.addCreator(new DefaultResourcePackCreator());
+		this.dataPackContainerManager.addCreator(new DefaultResourcePackCreator());
 		this.dataPackCreator = new FileResourcePackCreator(new File(file, "datapacks"));
-		this.resourcePackContainerManager.addCreator(this.dataPackCreator);
-		this.resourcePackContainerManager.callCreators();
+		this.dataPackContainerManager.addCreator(this.dataPackCreator);
+		this.dataPackContainerManager.callCreators();
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList();
 
 		for (String string : levelProperties.getEnabledDataPacks()) {
-			ResourcePackContainer resourcePackContainer = this.resourcePackContainerManager.getContainer(string);
+			ResourcePackContainer resourcePackContainer = this.dataPackContainerManager.getContainer(string);
 			if (resourcePackContainer != null) {
 				list.add(resourcePackContainer);
 			} else {
@@ -431,12 +432,12 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			}
 		}
 
-		this.resourcePackContainerManager.setEnabled(list);
+		this.dataPackContainerManager.setEnabled(list);
 		this.reloadDataPacks(levelProperties);
 	}
 
 	protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-		this.setLoadingStage(new TranslatableTextComponent("menu.generatingTerrain"));
+		this.setLoadingStage(new TranslatableComponent("menu.generatingTerrain"));
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
@@ -444,7 +445,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		ServerChunkManager serverChunkManager = serverWorld.method_14178();
 		serverChunkManager.method_17293().setTaskBatchSize(500);
 		this.timeReference = SystemUtil.getMeasuringTimeMs();
-		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, net.minecraft.util.Void.INSTANCE);
+		serverChunkManager.addTicket(ChunkTicketType.field_14030, new ChunkPos(blockPos), 11, Unit.field_17274);
 
 		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
 			this.timeReference += 100L;
@@ -591,7 +592,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		try {
 			if (this.setupServer()) {
 				this.timeReference = SystemUtil.getMeasuringTimeMs();
-				this.metadata.setDescription(new StringTextComponent(this.motd));
+				this.metadata.setDescription(new TextComponent(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
 
@@ -1017,7 +1018,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		crashReport.getSystemDetailsSection().add("Data Packs", (ICrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
-			for (ResourcePackContainer resourcePackContainer : this.resourcePackContainerManager.getEnabledContainers()) {
+			for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(", ");
 				}
@@ -1042,8 +1043,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Override
-	public void sendMessage(TextComponent textComponent) {
-		LOGGER.info(textComponent.getString());
+	public void sendMessage(Component component) {
+		LOGGER.info(component.getString());
 	}
 
 	public KeyPair getKeyPair() {
@@ -1093,11 +1094,11 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			LevelProperties levelProperties = serverWorld.getLevelProperties();
 			if (bl || !levelProperties.isDifficultyLocked()) {
 				if (levelProperties.isHardcore()) {
-					levelProperties.setDifficulty(Difficulty.HARD);
+					levelProperties.setDifficulty(Difficulty.field_5807);
 					serverWorld.setMobSpawnOptions(true, true);
 				} else if (this.isSinglePlayer()) {
 					levelProperties.setDifficulty(difficulty);
-					serverWorld.setMobSpawnOptions(serverWorld.getDifficulty() != Difficulty.PEACEFUL, true);
+					serverWorld.setMobSpawnOptions(serverWorld.getDifficulty() != Difficulty.field_5801, true);
 				} else {
 					levelProperties.setDifficulty(difficulty);
 					serverWorld.setMobSpawnOptions(this.isMonsterSpawningEnabled(), this.spawnAnimals);
@@ -1395,35 +1396,35 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this.execute(this::reload);
 		} else {
 			this.getPlayerManager().saveAllPlayerData();
-			this.resourcePackContainerManager.callCreators();
+			this.dataPackContainerManager.callCreators();
 			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).getLevelProperties());
 			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}
 
 	private void reloadDataPacks(LevelProperties levelProperties) {
-		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.resourcePackContainerManager.getEnabledContainers());
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.dataPackContainerManager.getEnabledContainers());
 
-		for (ResourcePackContainer resourcePackContainer : this.resourcePackContainerManager.getAlphabeticallyOrderedContainers()) {
+		for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getAlphabeticallyOrderedContainers()) {
 			if (!levelProperties.getDisabledDataPacks().contains(resourcePackContainer.getName()) && !list.contains(resourcePackContainer)) {
 				LOGGER.info("Found new data pack {}, loading it automatically", resourcePackContainer.getName());
-				resourcePackContainer.getSortingDirection().locate(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false);
+				resourcePackContainer.getInitialPosition().insert(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false);
 			}
 		}
 
-		this.resourcePackContainerManager.setEnabled(list);
+		this.dataPackContainerManager.setEnabled(list);
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
-		this.resourcePackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
-		CompletableFuture<net.minecraft.util.Void> completableFuture = this.dataManager
-			.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(net.minecraft.util.Void.INSTANCE));
+		this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
+		CompletableFuture<Unit> completableFuture = this.dataManager
+			.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(Unit.field_17274));
 		this.waitFor(completableFuture::isDone);
 		levelProperties.getEnabledDataPacks().clear();
 		levelProperties.getDisabledDataPacks().clear();
-		this.resourcePackContainerManager
+		this.dataPackContainerManager
 			.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
-		this.resourcePackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
-			if (!this.resourcePackContainerManager.getEnabledContainers().contains(resourcePackContainerx)) {
+		this.dataPackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
+			if (!this.dataPackContainerManager.getEnabledContainers().contains(resourcePackContainerx)) {
 				levelProperties.getDisabledDataPacks().add(resourcePackContainerx.getName());
 			}
 		});
@@ -1436,7 +1437,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			if (whitelist.isEnabled()) {
 				for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
 					if (!whitelist.isAllowed(serverPlayerEntity.getGameProfile())) {
-						serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.not_whitelisted"));
+						serverPlayerEntity.networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.not_whitelisted"));
 					}
 				}
 			}
@@ -1447,8 +1448,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.dataManager;
 	}
 
-	public ResourcePackContainerManager<ResourcePackContainer> getResourcePackContainerManager() {
-		return this.resourcePackContainerManager;
+	public ResourcePackContainerManager<ResourcePackContainer> getDataPackContainerManager() {
+		return this.dataPackContainerManager;
 	}
 
 	public CommandManager getCommandManager() {
@@ -1463,7 +1464,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this.getWorld(DimensionType.field_13072),
 			4,
 			"Server",
-			new StringTextComponent("Server"),
+			new TextComponent("Server"),
 			this,
 			null
 		);
@@ -1483,7 +1484,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.recipeManager;
 	}
 
-	public TagManager getTagManager() {
+	public RegistryTagManager getTagManager() {
 		return this.tagManager;
 	}
 

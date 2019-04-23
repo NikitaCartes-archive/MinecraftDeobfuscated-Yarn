@@ -9,8 +9,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
@@ -56,42 +56,42 @@ public class DamageTracker {
 		}
 	}
 
-	public TextComponent getDeathMessage() {
+	public Component getDeathMessage() {
 		if (this.recentDamage.isEmpty()) {
-			return new TranslatableTextComponent("death.attack.generic", this.entity.getDisplayName());
+			return new TranslatableComponent("death.attack.generic", this.entity.getDisplayName());
 		} else {
 			DamageRecord damageRecord = this.getBiggestFall();
 			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-			TextComponent textComponent = damageRecord2.getAttackerName();
+			Component component = damageRecord2.getAttackerName();
 			Entity entity = damageRecord2.getDamageSource().getAttacker();
-			TextComponent textComponent3;
+			Component component3;
 			if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
-				TextComponent textComponent2 = damageRecord.getAttackerName();
+				Component component2 = damageRecord.getAttackerName();
 				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
-					textComponent3 = new TranslatableTextComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
-				} else if (textComponent2 != null && (textComponent == null || !textComponent2.equals(textComponent))) {
+					component3 = new TranslatableComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
+				} else if (component2 != null && (component == null || !component2.equals(component))) {
 					Entity entity2 = damageRecord.getDamageSource().getAttacker();
 					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasDisplayName()) {
-						textComponent3 = new TranslatableTextComponent("death.fell.assist.item", this.entity.getDisplayName(), textComponent2, itemStack.toTextComponent());
+						component3 = new TranslatableComponent("death.fell.assist.item", this.entity.getDisplayName(), component2, itemStack.toTextComponent());
 					} else {
-						textComponent3 = new TranslatableTextComponent("death.fell.assist", this.entity.getDisplayName(), textComponent2);
+						component3 = new TranslatableComponent("death.fell.assist", this.entity.getDisplayName(), component2);
 					}
-				} else if (textComponent != null) {
+				} else if (component != null) {
 					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack2.isEmpty() && itemStack2.hasDisplayName()) {
-						textComponent3 = new TranslatableTextComponent("death.fell.finish.item", this.entity.getDisplayName(), textComponent, itemStack2.toTextComponent());
+						component3 = new TranslatableComponent("death.fell.finish.item", this.entity.getDisplayName(), component, itemStack2.toTextComponent());
 					} else {
-						textComponent3 = new TranslatableTextComponent("death.fell.finish", this.entity.getDisplayName(), textComponent);
+						component3 = new TranslatableComponent("death.fell.finish", this.entity.getDisplayName(), component);
 					}
 				} else {
-					textComponent3 = new TranslatableTextComponent("death.fell.killer", this.entity.getDisplayName());
+					component3 = new TranslatableComponent("death.fell.killer", this.entity.getDisplayName());
 				}
 			} else {
-				textComponent3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
+				component3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
 			}
 
-			return textComponent3;
+			return component3;
 		}
 	}
 

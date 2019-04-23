@@ -46,7 +46,7 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		super.animateModel(pandaEntity, f, g, h);
 		this.scaredAnimationProgress = pandaEntity.getScaredAnimationProgress(h);
 		this.lieOnBackAnimationProgress = pandaEntity.getLieOnBackAnimationProgress(h);
-		this.playAnimationProgress = pandaEntity.isChild() ? 0.0F : pandaEntity.getRollOverAnimationProgress(h);
+		this.playAnimationProgress = pandaEntity.isBaby() ? 0.0F : pandaEntity.getRollOverAnimationProgress(h);
 	}
 
 	public void method_17103(T pandaEntity, float f, float g, float h, float i, float j, float k) {

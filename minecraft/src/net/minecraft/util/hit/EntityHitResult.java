@@ -21,6 +21,6 @@ public class EntityHitResult extends HitResult {
 
 	@Override
 	public HitResult.Type getType() {
-		return HitResult.Type.ENTITY;
+		return HitResult.Type.field_1331;
 	}
 }

@@ -7,9 +7,9 @@ import net.minecraft.block.Material;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum Instrument implements StringRepresentable {
+public enum Instrument implements SnakeCaseIdentifiable {
 	field_12648("harp", SoundEvents.field_15114),
 	field_12653("basedrum", SoundEvents.field_15047),
 	field_12643("snare", SoundEvents.field_14708),
@@ -36,7 +36,7 @@ public enum Instrument implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 

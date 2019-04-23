@@ -9,9 +9,9 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -36,7 +36,7 @@ public class SuggestionProviders {
 				Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable),
 				suggestionsBuilder,
 				EntityType::getId,
-				entityType -> new TranslatableTextComponent(SystemUtil.createTranslationKey("entity", EntityType.getId(entityType)))
+				entityType -> new TranslatableComponent(SystemUtil.createTranslationKey("entity", EntityType.getId(entityType)))
 			)
 	);
 

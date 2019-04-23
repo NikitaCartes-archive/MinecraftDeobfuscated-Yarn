@@ -47,9 +47,9 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 		this.field_7053++;
 		if (this.field_7053 >= 200) {
 			if (this.field_7052 >= 4) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
+				this.dragon.getPhaseManager().setPhase(PhaseType.field_7077);
 			} else {
-				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
+				this.dragon.getPhaseManager().setPhase(PhaseType.field_7081);
 			}
 		} else if (this.field_7053 == 10) {
 			Vec3d vec3d = new Vec3d(this.dragon.partHead.x - this.dragon.x, 0.0, this.dragon.partHead.z - this.dragon.z).normalize();
@@ -90,7 +90,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 
 	@Override
 	public PhaseType<SittingFlamingPhase> getType() {
-		return PhaseType.SITTING_FLAMING;
+		return PhaseType.field_7072;
 	}
 
 	public void method_6857() {

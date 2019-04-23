@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
@@ -59,16 +60,17 @@ public class FluidRenderer {
 	public boolean tesselate(ExtendedBlockView extendedBlockView, BlockPos blockPos, BufferBuilder bufferBuilder, FluidState fluidState) {
 		boolean bl = fluidState.matches(FluidTags.field_15518);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
-		int i = bl ? 16777215 : BiomeColors.waterColorAt(extendedBlockView, blockPos);
+		int i = bl ? 16777215 : BiomeColors.getWaterColor(extendedBlockView, blockPos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
-		boolean bl2 = !isSameFluid(extendedBlockView, blockPos, Direction.UP, fluidState);
-		boolean bl3 = !isSameFluid(extendedBlockView, blockPos, Direction.DOWN, fluidState) && !method_3344(extendedBlockView, blockPos, Direction.DOWN, 0.8888889F);
-		boolean bl4 = !isSameFluid(extendedBlockView, blockPos, Direction.NORTH, fluidState);
-		boolean bl5 = !isSameFluid(extendedBlockView, blockPos, Direction.SOUTH, fluidState);
-		boolean bl6 = !isSameFluid(extendedBlockView, blockPos, Direction.WEST, fluidState);
-		boolean bl7 = !isSameFluid(extendedBlockView, blockPos, Direction.EAST, fluidState);
+		boolean bl2 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11036, fluidState);
+		boolean bl3 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11033, fluidState)
+			&& !method_3344(extendedBlockView, blockPos, Direction.field_11033, 0.8888889F);
+		boolean bl4 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11043, fluidState);
+		boolean bl5 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11035, fluidState);
+		boolean bl6 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11039, fluidState);
+		boolean bl7 = !isSameFluid(extendedBlockView, blockPos, Direction.field_11034, fluidState);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
@@ -85,7 +87,7 @@ public class FluidRenderer {
 			double e = (double)blockPos.getY();
 			double r = (double)blockPos.getZ();
 			float s = 0.001F;
-			if (bl2 && !method_3344(extendedBlockView, blockPos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
+			if (bl2 && !method_3344(extendedBlockView, blockPos, Direction.field_11036, Math.min(Math.min(n, o), Math.min(p, q)))) {
 				bl8 = true;
 				n -= 0.001F;
 				o -= 0.001F;
@@ -191,7 +193,7 @@ public class FluidRenderer {
 					as = d + 1.0;
 					at = r + 0.001F;
 					au = r + 0.001F;
-					direction = Direction.NORTH;
+					direction = Direction.field_11043;
 					bl9 = bl4;
 				} else if (aq == 1) {
 					vx = p;
@@ -200,7 +202,7 @@ public class FluidRenderer {
 					as = d;
 					at = r + 1.0 - 0.001F;
 					au = r + 1.0 - 0.001F;
-					direction = Direction.SOUTH;
+					direction = Direction.field_11035;
 					bl9 = bl5;
 				} else if (aq == 2) {
 					vx = o;
@@ -209,7 +211,7 @@ public class FluidRenderer {
 					as = d + 0.001F;
 					at = r + 1.0;
 					au = r;
-					direction = Direction.WEST;
+					direction = Direction.field_11039;
 					bl9 = bl6;
 				} else {
 					vx = q;
@@ -218,7 +220,7 @@ public class FluidRenderer {
 					as = d + 1.0 - 0.001F;
 					at = r;
 					au = r + 1.0;
-					direction = Direction.EAST;
+					direction = Direction.field_11034;
 					bl9 = bl7;
 				}
 

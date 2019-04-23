@@ -3,18 +3,18 @@ package net.minecraft.block.entity;
 import net.minecraft.container.Container;
 import net.minecraft.container.FurnaceContainer;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	public FurnaceBlockEntity() {
-		super(BlockEntityType.FURNACE, RecipeType.SMELTING);
+		super(BlockEntityType.field_11903, RecipeType.SMELTING);
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.furnace");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.furnace");
 	}
 
 	@Override

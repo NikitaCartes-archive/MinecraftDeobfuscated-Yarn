@@ -5,13 +5,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TitleS2CPacket.Action action;
-	private TextComponent text;
+	private Component text;
 	private int fadeInTicks;
 	private int stayTicks;
 	private int fadeOutTicks;
@@ -19,17 +19,17 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public TitleS2CPacket() {
 	}
 
-	public TitleS2CPacket(TitleS2CPacket.Action action, TextComponent textComponent) {
-		this(action, textComponent, -1, -1, -1);
+	public TitleS2CPacket(TitleS2CPacket.Action action, Component component) {
+		this(action, component, -1, -1, -1);
 	}
 
 	public TitleS2CPacket(int i, int j, int k) {
-		this(TitleS2CPacket.Action.DISPLAY, null, i, j, k);
+		this(TitleS2CPacket.Action.field_12629, null, i, j, k);
 	}
 
-	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable TextComponent textComponent, int i, int j, int k) {
+	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable Component component, int i, int j, int k) {
 		this.action = action;
-		this.text = textComponent;
+		this.text = component;
 		this.fadeInTicks = i;
 		this.stayTicks = j;
 		this.fadeOutTicks = k;
@@ -42,7 +42,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.text = packetByteBuf.readTextComponent();
 		}
 
-		if (this.action == TitleS2CPacket.Action.DISPLAY) {
+		if (this.action == TitleS2CPacket.Action.field_12629) {
 			this.fadeInTicks = packetByteBuf.readInt();
 			this.stayTicks = packetByteBuf.readInt();
 			this.fadeOutTicks = packetByteBuf.readInt();
@@ -56,7 +56,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 			packetByteBuf.writeTextComponent(this.text);
 		}
 
-		if (this.action == TitleS2CPacket.Action.DISPLAY) {
+		if (this.action == TitleS2CPacket.Action.field_12629) {
 			packetByteBuf.writeInt(this.fadeInTicks);
 			packetByteBuf.writeInt(this.stayTicks);
 			packetByteBuf.writeInt(this.fadeOutTicks);
@@ -73,7 +73,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getText() {
+	public Component getText() {
 		return this.text;
 	}
 
@@ -96,8 +96,8 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		field_12630,
 		field_12632,
 		field_12627,
-		DISPLAY,
-		HIDE,
-		RESET;
+		field_12629,
+		field_12633,
+		field_12628;
 	}
 }

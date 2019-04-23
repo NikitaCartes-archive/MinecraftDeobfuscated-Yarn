@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.World;
 
 public class AirBlockItem extends Item {
@@ -24,7 +24,7 @@ public class AirBlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, world, list, tooltipContext);
 		this.block.buildTooltip(itemStack, world, list, tooltipContext);
 	}

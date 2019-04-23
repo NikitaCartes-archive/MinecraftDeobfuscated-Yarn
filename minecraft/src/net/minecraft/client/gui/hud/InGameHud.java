@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -44,15 +45,14 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
@@ -145,7 +145,7 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-		if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
+		if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.field_10147.asItem()) {
 			this.renderPumpkinOverlay();
 		}
 
@@ -370,11 +370,11 @@ public class InGameHud extends DrawableHelper {
 					);
 					int i = 15;
 					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == AttackIndicator.field_18152) {
-						float f = this.client.player.method_7261(0.0F);
+					if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
+						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0F) {
-							bl = this.client.player.method_7279() > 5.0F;
+							bl = this.client.player.getAttackCooldownProgressPerTick() > 5.0F;
 							bl &= this.client.targetedEntity.isAlive();
 						}
 
@@ -396,9 +396,9 @@ public class InGameHud extends DrawableHelper {
 	private boolean shouldRenderSpectatorCrosshair(HitResult hitResult) {
 		if (hitResult == null) {
 			return false;
-		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
+		} else if (hitResult.getType() == HitResult.Type.field_1331) {
 			return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
-		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
+		} else if (hitResult.getType() == HitResult.Type.field_1332) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			World world = this.client.world;
 			return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
@@ -509,8 +509,8 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			if (this.client.options.attackIndicator == AttackIndicator.field_18153) {
-				float g = this.client.player.method_7261(0.0F);
+			if (this.client.options.attackIndicator == AttackIndicator.HOTBAR) {
+				float g = this.client.player.getAttackCooldownProgress(0.0F);
 				if (g < 1.0F) {
 					int n = this.scaledHeight - 20;
 					int o = i + 91 + 6;
@@ -553,7 +553,7 @@ public class InGameHud extends DrawableHelper {
 		int j = this.client.player.getNextLevelExperience();
 		if (j > 0) {
 			int k = 182;
-			int l = (int)(this.client.player.experienceLevelProgress * 183.0F);
+			int l = (int)(this.client.player.experienceProgress * 183.0F);
 			int m = this.scaledHeight - 32 + 3;
 			this.blit(i, m, 0, 64, 182, 5);
 			if (l > 0) {
@@ -562,9 +562,9 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		this.client.getProfiler().pop();
-		if (this.client.player.experience > 0) {
+		if (this.client.player.experienceLevel > 0) {
 			this.client.getProfiler().push("expLevel");
-			String string = "" + this.client.player.experience;
+			String string = "" + this.client.player.experienceLevel;
 			int l = (this.scaledWidth - this.getFontRenderer().getStringWidth(string)) / 2;
 			int m = this.scaledHeight - 31 - 4;
 			this.getFontRenderer().draw(string, (float)(l + 1), (float)m, 0);
@@ -579,12 +579,12 @@ public class InGameHud extends DrawableHelper {
 	public void renderHeldItemTooltip() {
 		this.client.getProfiler().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
-			TextComponent textComponent = new StringTextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
+			Component component = new TextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
 			if (this.currentStack.hasDisplayName()) {
-				textComponent.applyFormat(TextFormat.field_1056);
+				component.applyFormat(ChatFormat.field_1056);
 			}
 
-			String string = textComponent.getFormattedText();
+			String string = component.getFormattedText();
 			int i = (this.scaledWidth - this.getFontRenderer().getStringWidth(string)) / 2;
 			int j = this.scaledHeight - 59;
 			if (!this.client.interactionManager.hasStatusBars()) {
@@ -644,9 +644,9 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			String string2 = Team.modifyText(team, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
+			String string2 = Team.modifyText(team, new TextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
 				+ ": "
-				+ TextFormat.field_1061
+				+ ChatFormat.field_1061
 				+ scoreboardPlayerScore.getScore();
 			j = Math.max(j, this.getFontRenderer().getStringWidth(string2));
 		}
@@ -662,8 +662,8 @@ public class InGameHud extends DrawableHelper {
 		for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
 			o++;
 			Team team2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
-			String string3 = Team.modifyText(team2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
-			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
+			String string3 = Team.modifyText(team2, new TextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
+			String string4 = ChatFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
 			int s = l - o * 9;
 			int t = this.scaledWidth - 3 + 2;
 			fill(n - 2, s, t, s + 9, p);
@@ -1126,13 +1126,13 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void setOverlayMessage(TextComponent textComponent, boolean bl) {
-		this.setOverlayMessage(textComponent.getString(), bl);
+	public void setOverlayMessage(Component component, boolean bl) {
+		this.setOverlayMessage(component.getString(), bl);
 	}
 
-	public void addChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
+	public void addChatMessage(ChatMessageType chatMessageType, Component component) {
 		for (ClientChatListener clientChatListener : (List)this.listeners.get(chatMessageType)) {
-			clientChatListener.onChatMessage(chatMessageType, textComponent);
+			clientChatListener.onChatMessage(chatMessageType, component);
 		}
 	}
 

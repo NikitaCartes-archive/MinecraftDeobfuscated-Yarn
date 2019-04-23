@@ -8,12 +8,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
@@ -36,7 +36,7 @@ public class DebugStickItem extends Item {
 	@Override
 	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
-			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.MAIN));
+			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.field_5808));
 		}
 
 		return false;
@@ -61,7 +61,7 @@ public class DebugStickItem extends Item {
 			Collection<Property<?>> collection = stateFactory.getProperties();
 			String string = Registry.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
-				sendMessage(playerEntity, new TranslatableTextComponent(this.getTranslationKey() + ".empty", string));
+				sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".empty", string));
 			} else {
 				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("DebugProperty");
 				String string2 = compoundTag.getString(string);
@@ -73,14 +73,12 @@ public class DebugStickItem extends Item {
 
 					BlockState blockState2 = cycle(blockState, property, playerEntity.isSneaking());
 					iWorld.setBlockState(blockPos, blockState2, 18);
-					sendMessage(
-						playerEntity, new TranslatableTextComponent(this.getTranslationKey() + ".update", property.getName(), getPropertyString(blockState2, property))
-					);
+					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".update", property.getName(), getPropertyString(blockState2, property)));
 				} else {
 					property = cycle(collection, property, playerEntity.isSneaking());
 					String string3 = property.getName();
 					compoundTag.putString(string, string3);
-					sendMessage(playerEntity, new TranslatableTextComponent(this.getTranslationKey() + ".select", string3, getPropertyString(blockState, property)));
+					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".select", string3, getPropertyString(blockState, property)));
 				}
 			}
 		}
@@ -94,8 +92,8 @@ public class DebugStickItem extends Item {
 		return bl ? SystemUtil.previous(iterable, object) : SystemUtil.next(iterable, object);
 	}
 
-	private static void sendMessage(PlayerEntity playerEntity, TextComponent textComponent) {
-		((ServerPlayerEntity)playerEntity).sendChatMessage(textComponent, ChatMessageType.field_11733);
+	private static void sendMessage(PlayerEntity playerEntity, Component component) {
+		((ServerPlayerEntity)playerEntity).sendChatMessage(component, ChatMessageType.field_11733);
 	}
 
 	private static <T extends Comparable<T>> String getPropertyString(BlockState blockState, Property<T> property) {

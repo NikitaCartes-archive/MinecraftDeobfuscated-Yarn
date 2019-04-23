@@ -32,11 +32,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double n;
 					double o;
 					switch (structureBlockBlockEntity.getMirror()) {
-						case LEFT_RIGHT:
+						case field_11300:
 							n = (double)blockPos2.getX() + 0.02;
 							o = -((double)blockPos2.getZ() + 0.02);
 							break;
-						case FRONT_BACK:
+						case field_11301:
 							n = -((double)blockPos2.getX() + 0.02);
 							o = (double)blockPos2.getZ() + 0.02;
 							break;
@@ -50,19 +50,19 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double r;
 					double s;
 					switch (structureBlockBlockEntity.getRotation()) {
-						case ROT_90:
+						case field_11463:
 							p = d + (o < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (n < 0.0 ? k + 1.0 + 0.01 : k - 0.01);
 							r = p - o;
 							s = q + n;
 							break;
-						case ROT_180:
+						case field_11464:
 							p = d + (n < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (o < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p - n;
 							s = q - o;
 							break;
-						case ROT_270:
+						case field_11465:
 							p = d + (o < 0.0 ? j + 1.0 + 0.01 : j - 0.01);
 							q = f + (n < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p + o;

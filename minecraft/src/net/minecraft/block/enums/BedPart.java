@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum BedPart implements StringRepresentable {
+public enum BedPart implements SnakeCaseIdentifiable {
 	field_12560("head"),
 	field_12557("foot");
 
@@ -17,7 +17,7 @@ public enum BedPart implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

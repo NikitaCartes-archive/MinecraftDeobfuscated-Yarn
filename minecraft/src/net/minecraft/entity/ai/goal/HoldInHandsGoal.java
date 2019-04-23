@@ -9,13 +9,13 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 
 public class HoldInHandsGoal<T extends MobEntity> extends Goal {
-	private final T field_17755;
+	private final T actor;
 	private final ItemStack item;
 	private final Predicate<? super T> condition;
 	private final SoundEvent sound;
 
 	public HoldInHandsGoal(T mobEntity, ItemStack itemStack, @Nullable SoundEvent soundEvent, Predicate<? super T> predicate) {
-		this.field_17755 = mobEntity;
+		this.actor = mobEntity;
 		this.item = itemStack;
 		this.sound = soundEvent;
 		this.condition = predicate;
@@ -23,25 +23,25 @@ public class HoldInHandsGoal<T extends MobEntity> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.condition.test(this.field_17755);
+		return this.condition.test(this.actor);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_17755.isUsingItem();
+		return this.actor.isUsingItem();
 	}
 
 	@Override
 	public void start() {
-		this.field_17755.setEquippedStack(EquipmentSlot.HAND_MAIN, this.item.copy());
-		this.field_17755.setCurrentHand(Hand.MAIN);
+		this.actor.setEquippedStack(EquipmentSlot.field_6173, this.item.copy());
+		this.actor.setCurrentHand(Hand.field_5808);
 	}
 
 	@Override
 	public void stop() {
-		this.field_17755.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+		this.actor.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 		if (this.sound != null) {
-			this.field_17755.playSound(this.sound, 1.0F, this.field_17755.getRand().nextFloat() * 0.2F + 0.9F);
+			this.actor.playSound(this.sound, 1.0F, this.actor.getRand().nextFloat() * 0.2F + 0.9F);
 		}
 	}
 }

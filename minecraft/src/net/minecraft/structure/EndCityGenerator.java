@@ -70,10 +70,10 @@ public class EndCityGenerator {
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> SMALL_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.ROT_0, new BlockPos(1, -1, 0)),
-		new Pair<>(BlockRotation.ROT_90, new BlockPos(6, -1, 1)),
-		new Pair<>(BlockRotation.ROT_270, new BlockPos(0, -1, 5)),
-		new Pair<>(BlockRotation.ROT_180, new BlockPos(5, -1, 6))
+		new Pair<>(BlockRotation.field_11467, new BlockPos(1, -1, 0)),
+		new Pair<>(BlockRotation.field_11463, new BlockPos(6, -1, 1)),
+		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 5)),
+		new Pair<>(BlockRotation.field_11464, new BlockPos(5, -1, 6))
 	);
 	private static final EndCityGenerator.Part SMALL_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -170,17 +170,17 @@ public class EndCityGenerator {
 			}
 
 			piece2 = EndCityGenerator.addPiece(
-				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", blockRotation.rotate(BlockRotation.ROT_180), true)
+				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", blockRotation.rotate(BlockRotation.field_11464), true)
 			);
 			piece2.field_15316 = -1;
 			return true;
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> FAT_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.ROT_0, new BlockPos(4, -1, 0)),
-		new Pair<>(BlockRotation.ROT_90, new BlockPos(12, -1, 4)),
-		new Pair<>(BlockRotation.ROT_270, new BlockPos(0, -1, 8)),
-		new Pair<>(BlockRotation.ROT_180, new BlockPos(8, -1, 12))
+		new Pair<>(BlockRotation.field_11467, new BlockPos(4, -1, 0)),
+		new Pair<>(BlockRotation.field_11463, new BlockPos(12, -1, 4)),
+		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 8)),
+		new Pair<>(BlockRotation.field_11464, new BlockPos(8, -1, 12))
 	);
 	private static final EndCityGenerator.Part FAT_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -330,15 +330,15 @@ public class EndCityGenerator {
 			if (string.startsWith("Chest")) {
 				BlockPos blockPos2 = blockPos.down();
 				if (mutableIntBoundingBox.contains(blockPos2)) {
-					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.CHEST_END_CITY_TREASURE);
+					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.field_274);
 				}
 			} else if (string.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(iWorld.getWorld());
+				ShulkerEntity shulkerEntity = EntityType.field_6109.create(iWorld.getWorld());
 				shulkerEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(blockPos);
 				iWorld.spawnEntity(shulkerEntity);
 			} else if (string.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.rotation.rotate(Direction.SOUTH));
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.rotation.rotate(Direction.field_11035));
 				itemFrameEntity.setHeldItemStack(new ItemStack(Items.field_8833), false);
 				iWorld.spawnEntity(itemFrameEntity);
 			}

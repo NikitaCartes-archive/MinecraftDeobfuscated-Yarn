@@ -26,9 +26,9 @@ public class Sprite {
 	protected final int height;
 	protected NativeImage[] images;
 	@Nullable
-	protected int[] frameOffsets;
+	protected int[] frameXs;
 	@Nullable
-	protected int[] field_5264;
+	protected int[] frameYs;
 	protected NativeImage[] interpolatedImages;
 	private AnimationResourceMetadata animationMetadata;
 	protected int x;
@@ -37,8 +37,8 @@ public class Sprite {
 	private float uMax;
 	private float vMin;
 	private float vMax;
-	protected int framePos;
-	protected int ticks;
+	protected int frameIndex;
+	protected int frameTicks;
 	private static final int[] blendedPixelCache = new int[4];
 	private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
@@ -199,9 +199,9 @@ public class Sprite {
 	private void upload(int i) {
 		int j = 0;
 		int k = 0;
-		if (this.frameOffsets != null) {
-			j = this.frameOffsets[i] * this.width;
-			k = this.field_5264[i] * this.height;
+		if (this.frameXs != null) {
+			j = this.frameXs[i] * this.width;
+			k = this.frameYs[i] * this.height;
 		}
 
 		this.upload(j, k, this.images);
@@ -270,14 +270,14 @@ public class Sprite {
 		return this.id;
 	}
 
-	public void tick() {
-		this.ticks++;
-		if (this.ticks >= this.animationMetadata.getFrameTime(this.framePos)) {
-			int i = this.animationMetadata.getFrameIndex(this.framePos);
+	public void tickAnimation() {
+		this.frameTicks++;
+		if (this.frameTicks >= this.animationMetadata.getFrameTime(this.frameIndex)) {
+			int i = this.animationMetadata.getFrameIndex(this.frameIndex);
 			int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
-			this.framePos = (this.framePos + 1) % j;
-			this.ticks = 0;
-			int k = this.animationMetadata.getFrameIndex(this.framePos);
+			this.frameIndex = (this.frameIndex + 1) % j;
+			this.frameTicks = 0;
+			int k = this.animationMetadata.getFrameIndex(this.frameIndex);
 			if (i != k && k >= 0 && k < this.getFrameCount()) {
 				this.upload(k);
 			}
@@ -287,10 +287,10 @@ public class Sprite {
 	}
 
 	private void interpolateFrames() {
-		double d = 1.0 - (double)this.ticks / (double)this.animationMetadata.getFrameTime(this.framePos);
-		int i = this.animationMetadata.getFrameIndex(this.framePos);
+		double d = 1.0 - (double)this.frameTicks / (double)this.animationMetadata.getFrameTime(this.frameIndex);
+		int i = this.animationMetadata.getFrameIndex(this.frameIndex);
 		int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
-		int k = this.animationMetadata.getFrameIndex((this.framePos + 1) % j);
+		int k = this.animationMetadata.getFrameIndex((this.frameIndex + 1) % j);
 		if (i != k && k >= 0 && k < this.getFrameCount()) {
 			if (this.interpolatedImages == null || this.interpolatedImages.length != this.images.length) {
 				if (this.interpolatedImages != null) {
@@ -332,7 +332,7 @@ public class Sprite {
 	}
 
 	public int getFrameCount() {
-		return this.frameOffsets == null ? 0 : this.frameOffsets.length;
+		return this.frameXs == null ? 0 : this.frameXs.length;
 	}
 
 	public void load(Resource resource, int i) throws IOException {
@@ -355,10 +355,10 @@ public class Sprite {
 
 		if (this.animationMetadata != null && this.animationMetadata.getFrameCount() > 0) {
 			int l = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
-			this.frameOffsets = new int[l];
-			this.field_5264 = new int[l];
-			Arrays.fill(this.frameOffsets, -1);
-			Arrays.fill(this.field_5264, -1);
+			this.frameXs = new int[l];
+			this.frameYs = new int[l];
+			Arrays.fill(this.frameXs, -1);
+			Arrays.fill(this.frameYs, -1);
 
 			for (int m : this.animationMetadata.getFrameIndexSet()) {
 				if (m >= j * k) {
@@ -367,20 +367,20 @@ public class Sprite {
 
 				int n = m / j;
 				int o = m % j;
-				this.frameOffsets[m] = o;
-				this.field_5264[m] = n;
+				this.frameXs[m] = o;
+				this.frameYs[m] = n;
 			}
 		} else {
 			List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
 			int p = j * k;
-			this.frameOffsets = new int[p];
-			this.field_5264 = new int[p];
+			this.frameXs = new int[p];
+			this.frameYs = new int[p];
 
 			for (int m = 0; m < k; m++) {
 				for (int n = 0; n < j; n++) {
 					int o = m * j + n;
-					this.frameOffsets[o] = n;
-					this.field_5264[o] = m;
+					this.frameXs[o] = n;
+					this.frameYs[o] = m;
 					list.add(new AnimationFrameResourceMetadata(o, -1));
 				}
 			}
@@ -445,7 +445,7 @@ public class Sprite {
 	}
 
 	public String toString() {
-		int i = this.frameOffsets == null ? 0 : this.frameOffsets.length;
+		int i = this.frameXs == null ? 0 : this.frameXs.length;
 		return "TextureAtlasSprite{name='"
 			+ this.id
 			+ '\''
@@ -471,11 +471,11 @@ public class Sprite {
 	}
 
 	private int getFramePixel(int i, int j, int k, int l) {
-		return this.images[j].getPixelRGBA(k + (this.frameOffsets[i] * this.width >> j), l + (this.field_5264[i] * this.height >> j));
+		return this.images[j].getPixelRGBA(k + (this.frameXs[i] * this.width >> j), l + (this.frameYs[i] * this.height >> j));
 	}
 
-	public boolean method_4583(int i, int j, int k) {
-		return (this.images[0].getPixelRGBA(j + this.frameOffsets[i] * this.width, k + this.field_5264[i] * this.height) >> 24 & 0xFF) == 0;
+	public boolean isPixelTransparent(int i, int j, int k) {
+		return (this.images[0].getPixelRGBA(j + this.frameXs[i] * this.width, k + this.frameYs[i] * this.height) >> 24 & 0xFF) == 0;
 	}
 
 	public void upload() {

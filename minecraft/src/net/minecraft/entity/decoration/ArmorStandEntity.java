@@ -27,7 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.BlockStateParticleParameters;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -83,7 +83,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	public ArmorStandEntity(World world, double d, double e, double f) {
-		this(EntityType.ARMOR_STAND, world);
+		this(EntityType.field_6131, world);
 		this.setPosition(d, e, f);
 	}
 
@@ -97,7 +97,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private boolean canClip() {
-		return !this.isMarker() && !this.isUnaffectedByGravity();
+		return !this.isMarker() && !this.hasNoGravity();
 	}
 
 	@Override
@@ -130,9 +130,9 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				return this.heldItems.get(equipmentSlot.getEntitySlotId());
-			case ARMOR:
+			case field_6178:
 				return this.armorItems.get(equipmentSlot.getEntitySlotId());
 			default:
 				return ItemStack.EMPTY;
@@ -142,11 +142,11 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				this.onEquipStack(itemStack);
 				this.heldItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 				break;
-			case ARMOR:
+			case field_6178:
 				this.onEquipStack(itemStack);
 				this.armorItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
@@ -156,24 +156,24 @@ public class ArmorStandEntity extends LivingEntity {
 	public boolean equip(int i, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot;
 		if (i == 98) {
-			equipmentSlot = EquipmentSlot.HAND_MAIN;
+			equipmentSlot = EquipmentSlot.field_6173;
 		} else if (i == 99) {
-			equipmentSlot = EquipmentSlot.HAND_OFF;
-		} else if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.HEAD;
-		} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.CHEST;
-		} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.LEGS;
+			equipmentSlot = EquipmentSlot.field_6171;
+		} else if (i == 100 + EquipmentSlot.field_6169.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6169;
+		} else if (i == 100 + EquipmentSlot.field_6174.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6174;
+		} else if (i == 100 + EquipmentSlot.field_6172.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6172;
 		} else {
-			if (i != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
+			if (i != 100 + EquipmentSlot.field_6166.getEntitySlotId()) {
 				return false;
 			}
 
-			equipmentSlot = EquipmentSlot.FEET;
+			equipmentSlot = EquipmentSlot.field_6166;
 		}
 
-		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
+		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.field_6169) {
 			return false;
 		} else {
 			this.setEquippedStack(equipmentSlot, itemStack);
@@ -310,7 +310,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void doPushLogic() {
+	protected void tickPushing() {
 		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
 
 		for (int i = 0; i < list.size(); i++) {
@@ -325,7 +325,7 @@ public class ArmorStandEntity extends LivingEntity {
 	public ActionResult interactAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.isMarker() || itemStack.getItem() == Items.field_8448) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
@@ -339,7 +339,7 @@ public class ArmorStandEntity extends LivingEntity {
 					return ActionResult.field_5814;
 				}
 
-				if (equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms()) {
+				if (equipmentSlot.getType() == EquipmentSlot.Type.field_6177 && !this.shouldShowArms()) {
 					return ActionResult.field_5814;
 				}
 
@@ -353,27 +353,28 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	protected EquipmentSlot method_6916(Vec3d vec3d) {
-		EquipmentSlot equipmentSlot = EquipmentSlot.HAND_MAIN;
+		EquipmentSlot equipmentSlot = EquipmentSlot.field_6173;
 		boolean bl = this.isSmall();
 		double d = bl ? vec3d.y * 2.0 : vec3d.y;
-		EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
+		EquipmentSlot equipmentSlot2 = EquipmentSlot.field_6166;
 		if (d >= 0.1 && d < 0.1 + (bl ? 0.8 : 0.45) && this.isEquippedStackValid(equipmentSlot2)) {
-			equipmentSlot = EquipmentSlot.FEET;
-		} else if (d >= 0.9 + (bl ? 0.3 : 0.0) && d < 0.9 + (bl ? 1.0 : 0.7) && this.isEquippedStackValid(EquipmentSlot.CHEST)) {
-			equipmentSlot = EquipmentSlot.CHEST;
-		} else if (d >= 0.4 && d < 0.4 + (bl ? 1.0 : 0.8) && this.isEquippedStackValid(EquipmentSlot.LEGS)) {
-			equipmentSlot = EquipmentSlot.LEGS;
-		} else if (d >= 1.6 && this.isEquippedStackValid(EquipmentSlot.HEAD)) {
-			equipmentSlot = EquipmentSlot.HEAD;
-		} else if (!this.isEquippedStackValid(EquipmentSlot.HAND_MAIN) && this.isEquippedStackValid(EquipmentSlot.HAND_OFF)) {
-			equipmentSlot = EquipmentSlot.HAND_OFF;
+			equipmentSlot = EquipmentSlot.field_6166;
+		} else if (d >= 0.9 + (bl ? 0.3 : 0.0) && d < 0.9 + (bl ? 1.0 : 0.7) && this.isEquippedStackValid(EquipmentSlot.field_6174)) {
+			equipmentSlot = EquipmentSlot.field_6174;
+		} else if (d >= 0.4 && d < 0.4 + (bl ? 1.0 : 0.8) && this.isEquippedStackValid(EquipmentSlot.field_6172)) {
+			equipmentSlot = EquipmentSlot.field_6172;
+		} else if (d >= 1.6 && this.isEquippedStackValid(EquipmentSlot.field_6169)) {
+			equipmentSlot = EquipmentSlot.field_6169;
+		} else if (!this.isEquippedStackValid(EquipmentSlot.field_6173) && this.isEquippedStackValid(EquipmentSlot.field_6171)) {
+			equipmentSlot = EquipmentSlot.field_6171;
 		}
 
 		return equipmentSlot;
 	}
 
 	public boolean method_6915(EquipmentSlot equipmentSlot) {
-		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
+		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0
+			|| equipmentSlot.getType() == EquipmentSlot.Type.field_6177 && !this.shouldShowArms();
 	}
 
 	private void method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
@@ -479,7 +480,7 @@ public class ArmorStandEntity extends LivingEntity {
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world)
 				.spawnParticles(
-					new BlockStateParticleParameters(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
+					new BlockStateParticleEffect(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
 					this.x,
 					this.y + (double)this.getHeight() / 1.5,
 					this.z,
@@ -542,7 +543,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entitySize.height * (this.isChild() ? 0.5F : 0.9F);
+		return entitySize.height * (this.isBaby() ? 0.5F : 0.9F);
 	}
 
 	@Override
@@ -615,7 +616,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean isChild() {
+	public boolean isBaby() {
 		return this.isSmall();
 	}
 
@@ -787,7 +788,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public EntitySize getSize(EntityPose entityPose) {
-		float f = this.isMarker() ? 0.0F : (this.isChild() ? 0.5F : 1.0F);
+		float f = this.isMarker() ? 0.0F : (this.isBaby() ? 0.5F : 1.0F);
 		return this.getType().getDefaultSize().scaled(f);
 	}
 }

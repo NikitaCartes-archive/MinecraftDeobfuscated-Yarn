@@ -13,16 +13,16 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class TimeArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0d", "0s", "0t", "0");
 	private static final SimpleCommandExceptionType INVALID_UNIT_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.time.invalid_unit")
+		new TranslatableComponent("argument.time.invalid_unit")
 	);
 	private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.time.invalid_tick_count", object)
+		object -> new TranslatableComponent("argument.time.invalid_tick_count", object)
 	);
 	private static final Object2IntMap<String> units = new Object2IntOpenHashMap<>();
 

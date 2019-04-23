@@ -11,16 +11,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
 	public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("enchantment.unknown", object)
+		object -> new TranslatableComponent("enchantment.unknown", object)
 	);
 
 	public static ItemEnchantmentArgumentType create() {

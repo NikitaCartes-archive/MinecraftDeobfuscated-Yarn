@@ -8,24 +8,24 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class NoticeScreen extends Screen {
 	private final Runnable actionHandler;
-	protected final TextComponent notice;
+	protected final Component notice;
 	private final List<String> noticeLines = Lists.<String>newArrayList();
 	protected final String buttonString;
 	private int field_2347;
 
-	public NoticeScreen(Runnable runnable, TextComponent textComponent, TextComponent textComponent2) {
-		this(runnable, textComponent, textComponent2, "gui.back");
+	public NoticeScreen(Runnable runnable, Component component, Component component2) {
+		this(runnable, component, component2, "gui.back");
 	}
 
-	public NoticeScreen(Runnable runnable, TextComponent textComponent, TextComponent textComponent2, String string) {
-		super(textComponent);
+	public NoticeScreen(Runnable runnable, Component component, Component component2, String string) {
+		super(component);
 		this.actionHandler = runnable;
-		this.notice = textComponent2;
+		this.notice = component2;
 		this.buttonString = I18n.translate(string);
 	}
 

@@ -18,7 +18,7 @@ import net.minecraft.world.loot.function.SetNbtLootFunction;
 public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
 	public void method_20187(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.ENTITY_CAT_MORNING_GIFT,
+			LootTables.field_16216,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
@@ -186,7 +186,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.field_19071,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_19060)))
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
 		);
 		biConsumer.accept(
 			LootTables.field_19072,
@@ -194,22 +194,22 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_19044))
-						.withEntry(ItemEntry.builder(Items.field_19045))
-						.withEntry(ItemEntry.builder(Items.field_19046))
-						.withEntry(ItemEntry.builder(Items.field_19047))
-						.withEntry(ItemEntry.builder(Items.field_19048))
-						.withEntry(ItemEntry.builder(Items.field_19049))
-						.withEntry(ItemEntry.builder(Items.field_19050))
-						.withEntry(ItemEntry.builder(Items.field_19051))
-						.withEntry(ItemEntry.builder(Items.field_19052))
-						.withEntry(ItemEntry.builder(Items.field_19053))
-						.withEntry(ItemEntry.builder(Items.field_19054))
-						.withEntry(ItemEntry.builder(Items.field_19055))
-						.withEntry(ItemEntry.builder(Items.field_19056))
-						.withEntry(ItemEntry.builder(Items.field_19057))
-						.withEntry(ItemEntry.builder(Items.field_19058))
-						.withEntry(ItemEntry.builder(Items.field_19059))
+						.withEntry(ItemEntry.builder(Items.WHITE_WOOL))
+						.withEntry(ItemEntry.builder(Items.ORANGE_WOOL))
+						.withEntry(ItemEntry.builder(Items.MAGENTA_WOOL))
+						.withEntry(ItemEntry.builder(Items.LIGHT_BLUE_WOOL))
+						.withEntry(ItemEntry.builder(Items.YELLOW_WOOL))
+						.withEntry(ItemEntry.builder(Items.LIME_WOOL))
+						.withEntry(ItemEntry.builder(Items.PINK_WOOL))
+						.withEntry(ItemEntry.builder(Items.GRAY_WOOL))
+						.withEntry(ItemEntry.builder(Items.LIGHT_GRAY_WOOL))
+						.withEntry(ItemEntry.builder(Items.CYAN_WOOL))
+						.withEntry(ItemEntry.builder(Items.PURPLE_WOOL))
+						.withEntry(ItemEntry.builder(Items.BLUE_WOOL))
+						.withEntry(ItemEntry.builder(Items.BROWN_WOOL))
+						.withEntry(ItemEntry.builder(Items.GREEN_WOOL))
+						.withEntry(ItemEntry.builder(Items.RED_WOOL))
+						.withEntry(ItemEntry.builder(Items.BLACK_WOOL))
 				)
 		);
 		biConsumer.accept(

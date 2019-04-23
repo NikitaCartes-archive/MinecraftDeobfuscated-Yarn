@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -12,13 +13,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Hand;
@@ -52,12 +52,12 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
+	public Component getTranslatedNameTrimmed(ItemStack itemStack) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("title");
 			if (!ChatUtil.isEmpty(string)) {
-				return new StringTextComponent(string);
+				return new TextComponent(string);
 			}
 		}
 
@@ -66,15 +66,15 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
-				list.add(new TranslatableTextComponent("book.byAuthor", string).applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableComponent("book.byAuthor", string).applyFormat(ChatFormat.field_1080));
 			}
 
-			list.add(new TranslatableTextComponent("book.generation." + compoundTag.getInt("generation")).applyFormat(TextFormat.field_1080));
+			list.add(new TranslatableComponent("book.generation." + compoundTag.getInt("generation")).applyFormat(ChatFormat.field_1080));
 		}
 	}
 
@@ -84,9 +84,9 @@ public class WrittenBookItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
 		} else {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		}
 	}
 
@@ -110,15 +110,15 @@ public class WrittenBookItem extends Item {
 				for (int i = 0; i < listTag.size(); i++) {
 					String string = listTag.getString(i);
 
-					TextComponent textComponent;
+					Component component;
 					try {
-						textComponent = TextComponent.Serializer.fromLenientJsonString(string);
-						textComponent = TextFormatter.resolveAndStyle(serverCommandSource, textComponent, playerEntity);
+						component = Component.Serializer.fromLenientJsonString(string);
+						component = Components.resolveAndStyle(serverCommandSource, component, playerEntity);
 					} catch (Exception var9) {
-						textComponent = new StringTextComponent(string);
+						component = new TextComponent(string);
 					}
 
-					listTag.method_10606(i, new StringTag(TextComponent.Serializer.toJsonString(textComponent)));
+					listTag.method_10606(i, new StringTag(Component.Serializer.toJsonString(component)));
 				}
 
 				compoundTag.put("pages", listTag);

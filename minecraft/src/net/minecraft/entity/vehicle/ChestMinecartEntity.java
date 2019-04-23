@@ -17,7 +17,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	public ChestMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.CHEST_MINECART, d, e, f, world);
+		super(EntityType.field_6126, d, e, f, world);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.NORTH);
+		return Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11043);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	@Override
-	public Container method_17357(int i, PlayerInventory playerInventory) {
+	public Container getContainer(int i, PlayerInventory playerInventory) {
 		return GenericContainer.createGeneric9x3(i, playerInventory, this);
 	}
 }

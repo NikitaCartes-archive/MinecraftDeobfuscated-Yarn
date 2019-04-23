@@ -43,8 +43,8 @@ public class LandingPhase extends AbstractPhase {
 		}
 
 		if (this.field_7046.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z) < 1.0) {
-			this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).method_6857();
-			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
+			this.dragon.getPhaseManager().create(PhaseType.field_7072).method_6857();
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7081);
 		}
 	}
 
@@ -73,6 +73,6 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<LandingPhase> getType() {
-		return PhaseType.LANDING;
+		return PhaseType.field_7067;
 	}
 }

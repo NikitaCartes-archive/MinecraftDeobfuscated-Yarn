@@ -14,7 +14,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -28,7 +28,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	private boolean isMouseDown;
 
 	public PlayerInventoryScreen(PlayerEntity playerEntity) {
-		super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableTextComponent("container.crafting"));
+		super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableComponent("container.crafting"));
 		this.passEvents = true;
 	}
 
@@ -121,9 +121,9 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 		GlStateManager.translatef(0.0F, 0.0F, 0.0F);
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
 		entityRenderDispatcher.method_3945(180.0F);
-		entityRenderDispatcher.method_3948(false);
+		entityRenderDispatcher.setRenderShadows(false);
 		entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0F, 1.0F, false);
-		entityRenderDispatcher.method_3948(true);
+		entityRenderDispatcher.setRenderShadows(true);
 		livingEntity.field_6283 = h;
 		livingEntity.yaw = l;
 		livingEntity.pitch = m;

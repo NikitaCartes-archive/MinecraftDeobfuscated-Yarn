@@ -11,7 +11,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +87,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 			this.ticks++;
 			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
-			if (hitResult.getType() != HitResult.Type.NONE) {
+			if (hitResult.getType() != HitResult.Type.field_1333) {
 				this.onCollision(hitResult);
 			}
 
@@ -118,7 +118,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return true;
 	}
 
-	protected ParticleParameters getParticleType() {
+	protected ParticleEffect getParticleType() {
 		return ParticleTypes.field_11251;
 	}
 

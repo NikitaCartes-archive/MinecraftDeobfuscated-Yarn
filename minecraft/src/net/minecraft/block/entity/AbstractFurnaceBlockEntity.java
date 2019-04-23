@@ -14,7 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -159,8 +159,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> map, ItemProvider itemProvider, int i) {
-		map.put(itemProvider.getItem(), i);
+	private static void addFuel(Map<Item, Integer> map, ItemConvertible itemConvertible, int i) {
+		map.put(itemConvertible.asItem(), i);
 	}
 
 	private boolean isBurning() {
@@ -295,7 +295,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				this.setLastRecipe(recipe);
 			}
 
-			if (itemStack.getItem() == Blocks.field_10562.getItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.field_8550) {
+			if (itemStack.getItem() == Blocks.field_10562.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.field_8550) {
 				this.inventory.set(1, new ItemStack(Items.field_8705));
 			}
 
@@ -322,10 +322,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public int[] getInvAvailableSlots(Direction direction) {
-		if (direction == Direction.DOWN) {
+		if (direction == Direction.field_11033) {
 			return BOTTOM_SLOTS;
 		} else {
-			return direction == Direction.UP ? TOP_SLOTS : SIDE_SLOTS;
+			return direction == Direction.field_11036 ? TOP_SLOTS : SIDE_SLOTS;
 		}
 	}
 
@@ -336,7 +336,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-		if (direction == Direction.DOWN && i == 1) {
+		if (direction == Direction.field_11033 && i == 1) {
 			Item item = itemStack.getItem();
 			if (item != Items.field_8705 && item != Items.field_8550) {
 				return false;

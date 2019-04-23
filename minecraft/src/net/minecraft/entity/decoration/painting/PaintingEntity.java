@@ -29,7 +29,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	public PaintingEntity(World world, BlockPos blockPos, Direction direction) {
-		super(EntityType.PAINTING, world, blockPos);
+		super(EntityType.field_6120, world, blockPos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 

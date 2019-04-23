@@ -88,7 +88,7 @@ public class TntBlock extends Block {
 			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		} else {
 			primeTnt(world, blockPos, playerEntity);
-			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
+			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 			if (item == Items.field_8884) {
 				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			} else {
@@ -118,6 +118,6 @@ public class TntBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(UNSTABLE);
+		builder.add(UNSTABLE);
 	}
 }

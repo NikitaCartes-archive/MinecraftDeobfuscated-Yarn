@@ -1,16 +1,16 @@
 package net.minecraft.util;
 
-import net.minecraft.text.TextFormat;
+import net.minecraft.ChatFormat;
 
 public enum Rarity {
-	field_8906(TextFormat.field_1068),
-	field_8907(TextFormat.field_1054),
-	field_8903(TextFormat.field_1075),
-	field_8904(TextFormat.field_1076);
+	field_8906(ChatFormat.field_1068),
+	field_8907(ChatFormat.field_1054),
+	field_8903(ChatFormat.field_1075),
+	field_8904(ChatFormat.field_1076);
 
-	public final TextFormat formatting;
+	public final ChatFormat formatting;
 
-	private Rarity(TextFormat textFormat) {
-		this.formatting = textFormat;
+	private Rarity(ChatFormat chatFormat) {
+		this.formatting = chatFormat;
 	}
 }

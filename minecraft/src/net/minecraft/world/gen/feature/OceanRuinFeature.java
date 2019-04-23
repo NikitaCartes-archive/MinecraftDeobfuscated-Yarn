@@ -50,8 +50,8 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 	}
 
 	public static enum BiomeType {
-		WARM("warm"),
-		COLD("cold");
+		field_14532("warm"),
+		field_14528("cold");
 
 		private static final Map<String, OceanRuinFeature.BiomeType> nameMap = (Map<String, OceanRuinFeature.BiomeType>)Arrays.stream(values())
 			.collect(Collectors.toMap(OceanRuinFeature.BiomeType::getName, biomeType -> biomeType));

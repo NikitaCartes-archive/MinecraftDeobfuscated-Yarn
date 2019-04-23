@@ -11,19 +11,19 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.arguments.ObjectiveArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class TriggerCommand {
 	private static final SimpleCommandExceptionType FAILED_UMPRIMED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.trigger.failed.unprimed")
+		new TranslatableComponent("commands.trigger.failed.unprimed")
 	);
 	private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.trigger.failed.invalid")
+		new TranslatableComponent("commands.trigger.failed.invalid")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -75,7 +75,7 @@ public class TriggerCommand {
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER && scoreboard.playerHasObjective(string, scoreboardObjective)) {
+				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462 && scoreboard.playerHasObjective(string, scoreboardObjective)) {
 					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 					if (!scoreboardPlayerScore.isLocked()) {
 						list.add(scoreboardObjective.getName());
@@ -89,30 +89,24 @@ public class TriggerCommand {
 
 	private static int executeAdd(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.incrementScore(i);
-		serverCommandSource.sendFeedback(
-			new TranslatableTextComponent("commands.trigger.add.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true
-		);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.add.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true);
 		return scoreboardPlayerScore.getScore();
 	}
 
 	private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.setScore(i);
-		serverCommandSource.sendFeedback(
-			new TranslatableTextComponent("commands.trigger.set.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true
-		);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.set.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true);
 		return i;
 	}
 
 	private static int executeSimple(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore) {
 		scoreboardPlayerScore.incrementScore(1);
-		serverCommandSource.sendFeedback(
-			new TranslatableTextComponent("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().getTextComponent()), true
-		);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().getTextComponent()), true);
 		return scoreboardPlayerScore.getScore();
 	}
 
 	private static ScoreboardPlayerScore getScore(ServerPlayerEntity serverPlayerEntity, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.TRIGGER) {
+		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.field_1462) {
 			throw FAILED_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = serverPlayerEntity.getScoreboard();

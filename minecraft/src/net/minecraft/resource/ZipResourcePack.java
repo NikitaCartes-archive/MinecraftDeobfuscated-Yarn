@@ -18,7 +18,7 @@ import java.util.zip.ZipFile;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 
-public class ZipResourcePack extends AbstractFilenameResourcePack {
+public class ZipResourcePack extends AbstractFileResourcePack {
 	public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
 	private ZipFile file;
 
@@ -35,7 +35,7 @@ public class ZipResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	protected InputStream openFilename(String string) throws IOException {
+	protected InputStream openFile(String string) throws IOException {
 		ZipFile zipFile = this.getZipFile();
 		ZipEntry zipEntry = zipFile.getEntry(string);
 		if (zipEntry == null) {
@@ -46,7 +46,7 @@ public class ZipResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	public boolean containsFilename(String string) {
+	public boolean containsFile(String string) {
 		try {
 			return this.getZipFile().getEntry(string) != null;
 		} catch (IOException var3) {

@@ -16,7 +16,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.ServerConfigHandler;
@@ -85,9 +85,9 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	protected void showEmoteParticle(boolean bl) {
-		ParticleParameters particleParameters = ParticleTypes.field_11201;
+		ParticleEffect particleEffect = ParticleTypes.field_11201;
 		if (!bl) {
-			particleParameters = ParticleTypes.field_11251;
+			particleEffect = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -96,7 +96,7 @@ public abstract class TameableEntity extends AnimalEntity {
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleParameters,
+					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

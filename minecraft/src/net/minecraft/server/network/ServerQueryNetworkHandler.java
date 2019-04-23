@@ -3,15 +3,15 @@ package net.minecraft.server.network;
 import net.minecraft.client.network.packet.QueryPongS2CPacket;
 import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.packet.QueryPingC2SPacket;
 import net.minecraft.server.network.packet.QueryRequestC2SPacket;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
-	private static final TextComponent REQUEST_HANDLED = new TranslatableTextComponent("multiplayer.status.request_handled");
+	private static final Component REQUEST_HANDLED = new TranslatableComponent("multiplayer.status.request_handled");
 	private final MinecraftServer server;
 	private final ClientConnection client;
 	private boolean responseSent;
@@ -22,7 +22,7 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(TextComponent textComponent) {
+	public void onDisconnected(Component component) {
 	}
 
 	@Override

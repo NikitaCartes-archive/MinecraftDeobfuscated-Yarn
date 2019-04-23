@@ -13,8 +13,8 @@ public class SpitParticle extends ExplosionSmokeParticle {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.velocityY = this.velocityY - (0.004 + 0.04 * (double)this.gravityStrength);
 	}
 

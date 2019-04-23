@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,25 +24,25 @@ public class AttachedStemBlock extends PlantBlock {
 	private final GourdBlock gourdBlock;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.SOUTH,
+			Direction.field_11035,
 			Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 16.0),
-			Direction.WEST,
+			Direction.field_11039,
 			Block.createCuboidShape(0.0, 0.0, 6.0, 10.0, 10.0, 10.0),
-			Direction.NORTH,
+			Direction.field_11043,
 			Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 10.0, 10.0),
-			Direction.EAST,
+			Direction.field_11034,
 			Block.createCuboidShape(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)
 		)
 	);
 
 	protected AttachedStemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 		this.gourdBlock = gourdBlock;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
 	}
 
@@ -87,6 +87,6 @@ public class AttachedStemBlock extends PlantBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 }

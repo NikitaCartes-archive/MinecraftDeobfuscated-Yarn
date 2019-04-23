@@ -26,7 +26,7 @@ public class MerchantContainer extends Container {
 	}
 
 	public MerchantContainer(int i, PlayerInventory playerInventory, Trader trader) {
-		super(ContainerType.MERCHANT, i);
+		super(ContainerType.field_17340, i);
 		this.trader = trader;
 		this.traderInventory = new TraderInventory(trader);
 		this.addSlot(new Slot(this.traderInventory, 0, 136, 37));

@@ -12,15 +12,15 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.playsound.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.playsound.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.create())
@@ -153,11 +153,11 @@ public class PlaySoundCommand {
 		} else {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					new TranslatableComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					new TranslatableComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			}
 

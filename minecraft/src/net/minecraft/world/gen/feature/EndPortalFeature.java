@@ -33,13 +33,13 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.getDefaultState());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
 				} else if (!bl) {
 					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 				} else if (this.open) {
 					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());
 				} else {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.AIR.getDefaultState());
+					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10124.getDefaultState());
 				}
 			}
 		}
@@ -50,7 +50,7 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 
 		BlockPos blockPos3 = blockPos.up(2);
 
-		for (Direction direction : Direction.Type.HORIZONTAL) {
+		for (Direction direction : Direction.Type.field_11062) {
 			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction));
 		}
 

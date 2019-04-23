@@ -5,20 +5,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.GameOption;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class MouseOptionsScreen extends Screen {
 	private final Screen parent;
 	private ButtonListWidget buttonList;
-	private static final GameOption[] OPTIONS = new GameOption[]{
-		GameOption.SENSITIVITY, GameOption.INVERT_MOUSE, GameOption.MOUSE_WHEEL_SENSITIVITY, GameOption.DISCRETE_MOUSE_SCROLL, GameOption.TOUCHSCREEN
+	private static final Option[] OPTIONS = new Option[]{
+		Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN
 	};
 
 	public MouseOptionsScreen(Screen screen) {
-		super(new TranslatableTextComponent("options.mouse_settings.title"));
+		super(new TranslatableComponent("options.mouse_settings.title"));
 		this.parent = screen;
 	}
 

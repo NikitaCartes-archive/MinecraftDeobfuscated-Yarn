@@ -16,19 +16,19 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.WorldSaveHandler;
@@ -79,7 +79,7 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.minecraft.openScreen(new SevereErrorScreen(new TranslatableTextComponent("selectWorld.unable_to_load"), var7.getMessage()));
+				this.minecraft.openScreen(new SevereErrorScreen(new TranslatableComponent("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -116,9 +116,9 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 			LevelSummary levelSummary = levelItem.level;
 			NarratorManager.INSTANCE
 				.method_19788(
-					new TranslatableTextComponent(
+					new TranslatableComponent(
 							"narrator.select",
-							new TranslatableTextComponent(
+							new TranslatableComponent(
 								"narrator.select.world",
 								levelSummary.getDisplayName(),
 								new Date(levelSummary.getLastPlayed()),
@@ -184,7 +184,7 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 			} else {
 				string3 = I18n.translate("gameMode." + this.level.getGameMode().getName());
 				if (this.level.isHardcore()) {
-					string3 = TextFormat.field_1079 + I18n.translate("gameMode.hardcore") + TextFormat.RESET;
+					string3 = ChatFormat.field_1079 + I18n.translate("gameMode.hardcore") + ChatFormat.field_1070;
 				}
 
 				if (this.level.hasCheats()) {
@@ -194,9 +194,9 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 				String string4 = this.level.getVersionTextComponent().getFormattedText();
 				if (this.level.isDifferentVersion()) {
 					if (this.level.isFutureLevel()) {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.field_1061 + string4 + TextFormat.RESET;
+						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + ChatFormat.field_1061 + string4 + ChatFormat.field_1070;
 					} else {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.field_1056 + string4 + TextFormat.RESET;
+						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + ChatFormat.field_1056 + string4 + ChatFormat.field_1070;
 					}
 				} else {
 					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + string4;
@@ -222,19 +222,19 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 					if (this.level.isLegacyCustomizedWorld()) {
 						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
 						if (p < 32) {
-							TextComponent textComponent = new TranslatableTextComponent("selectWorld.tooltip.unsupported", this.level.getVersionTextComponent())
-								.applyFormat(TextFormat.field_1061);
-							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(textComponent.getFormattedText(), 175));
+							Component component = new TranslatableComponent("selectWorld.tooltip.unsupported", this.level.getVersionTextComponent())
+								.applyFormat(ChatFormat.field_1061);
+							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(component.getFormattedText(), 175));
 						}
 					} else if (this.level.isFutureLevel()) {
 						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
 						if (p < 32) {
 							this.screen
 								.setTooltip(
-									TextFormat.field_1061
+									ChatFormat.field_1061
 										+ I18n.translate("selectWorld.tooltip.fromNewerVersion1")
 										+ "\n"
-										+ TextFormat.field_1061
+										+ ChatFormat.field_1061
 										+ I18n.translate("selectWorld.tooltip.fromNewerVersion2")
 								);
 						}
@@ -243,10 +243,10 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 						if (p < 32) {
 							this.screen
 								.setTooltip(
-									TextFormat.field_1065
+									ChatFormat.field_1065
 										+ I18n.translate("selectWorld.tooltip.snapshot1")
 										+ "\n"
-										+ TextFormat.field_1065
+										+ ChatFormat.field_1065
 										+ I18n.translate("selectWorld.tooltip.snapshot2")
 								);
 						}
@@ -275,13 +275,13 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 
 		public void play() {
 			if (this.level.isOutdatedLevel() || this.level.isLegacyCustomizedWorld()) {
-				TextComponent textComponent = new TranslatableTextComponent("selectWorld.backupQuestion");
-				TextComponent textComponent2 = new TranslatableTextComponent(
+				Component component = new TranslatableComponent("selectWorld.backupQuestion");
+				Component component2 = new TranslatableComponent(
 					"selectWorld.backupWarning", this.level.getVersionTextComponent().getFormattedText(), SharedConstants.getGameVersion().getName()
 				);
 				if (this.level.isLegacyCustomizedWorld()) {
-					textComponent = new TranslatableTextComponent("selectWorld.backupQuestion.customized");
-					textComponent2 = new TranslatableTextComponent("selectWorld.backupWarning.customized");
+					component = new TranslatableComponent("selectWorld.backupQuestion.customized");
+					component2 = new TranslatableComponent("selectWorld.backupWarning.customized");
 				}
 
 				this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
@@ -291,7 +291,7 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 					}
 
 					this.start();
-				}, textComponent, textComponent2, false));
+				}, component, component2, false));
 			} else if (this.level.isFutureLevel()) {
 				this.client
 					.openScreen(
@@ -306,8 +306,8 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 											.openScreen(
 												new NoticeScreen(
 													() -> this.client.openScreen(this.screen),
-													new TranslatableTextComponent("selectWorld.futureworld.error.title"),
-													new TranslatableTextComponent("selectWorld.futureworld.error.text")
+													new TranslatableComponent("selectWorld.futureworld.error.title"),
+													new TranslatableComponent("selectWorld.futureworld.error.text")
 												)
 											);
 									}
@@ -315,8 +315,8 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 									this.client.openScreen(this.screen);
 								}
 							},
-							new TranslatableTextComponent("selectWorld.versionQuestion"),
-							new TranslatableTextComponent("selectWorld.versionWarning", this.level.getVersionTextComponent().getFormattedText()),
+							new TranslatableComponent("selectWorld.versionQuestion"),
+							new TranslatableComponent("selectWorld.versionWarning", this.level.getVersionTextComponent().getFormattedText()),
 							I18n.translate("selectWorld.versionJoinButton"),
 							I18n.translate("gui.cancel")
 						)
@@ -340,8 +340,8 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 
 							this.client.openScreen(this.screen);
 						},
-						new TranslatableTextComponent("selectWorld.deleteQuestion"),
-						new TranslatableTextComponent("selectWorld.deleteWarning", this.level.getDisplayName()),
+						new TranslatableComponent("selectWorld.deleteQuestion"),
+						new TranslatableComponent("selectWorld.deleteWarning", this.level.getDisplayName()),
 						I18n.translate("selectWorld.deleteButton"),
 						I18n.translate("gui.cancel")
 					)
@@ -371,8 +371,8 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 							.openScreen(
 								new YesNoScreen(
 									bl -> this.client.openScreen((Screen)(bl ? newLevelScreen : this.screen)),
-									new TranslatableTextComponent("selectWorld.recreate.customized.title"),
-									new TranslatableTextComponent("selectWorld.recreate.customized.text"),
+									new TranslatableComponent("selectWorld.recreate.customized.title"),
+									new TranslatableComponent("selectWorld.recreate.customized.text"),
 									I18n.translate("gui.proceed"),
 									I18n.translate("gui.cancel")
 								)
@@ -387,8 +387,8 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 					.openScreen(
 						new NoticeScreen(
 							() -> this.client.openScreen(this.screen),
-							new TranslatableTextComponent("selectWorld.recreate.error.title"),
-							new TranslatableTextComponent("selectWorld.recreate.error.text")
+							new TranslatableComponent("selectWorld.recreate.error.title"),
+							new TranslatableComponent("selectWorld.recreate.error.text")
 						)
 					);
 			}

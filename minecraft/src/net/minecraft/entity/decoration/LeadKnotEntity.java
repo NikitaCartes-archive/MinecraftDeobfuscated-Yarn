@@ -28,7 +28,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	public LeadKnotEntity(World world, BlockPos blockPos) {
-		super(EntityType.LEASH_KNOT, world, blockPos);
+		super(EntityType.field_6138, world, blockPos);
 		this.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 		float f = 0.125F;
 		float g = 0.1875F;

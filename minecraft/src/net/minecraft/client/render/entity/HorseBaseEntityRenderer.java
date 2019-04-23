@@ -8,15 +8,15 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 
 @Environment(EnvType.CLIENT)
 public abstract class HorseBaseEntityRenderer<T extends HorseBaseEntity, M extends HorseEntityModel<T>> extends MobEntityRenderer<T, M> {
-	private final float field_4641;
+	private final float scale;
 
 	public HorseBaseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M horseEntityModel, float f) {
 		super(entityRenderDispatcher, horseEntityModel, 0.75F);
-		this.field_4641 = f;
+		this.scale = f;
 	}
 
 	protected void method_3874(T horseBaseEntity, float f) {
-		GlStateManager.scalef(this.field_4641, this.field_4641, this.field_4641);
+		GlStateManager.scalef(this.scale, this.scale, this.scale);
 		super.scale(horseBaseEntity, f);
 	}
 }

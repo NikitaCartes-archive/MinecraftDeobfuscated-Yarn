@@ -5,16 +5,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Void;
+import net.minecraft.util.Unit;
 
 public interface ReloadableResourceManager extends ResourceManager {
-	CompletableFuture<Void> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture);
+	CompletableFuture<Unit> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Unit> completableFuture);
 
 	@Environment(EnvType.CLIENT)
-	ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture);
+	ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture);
 
 	@Environment(EnvType.CLIENT)
-	ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list);
+	ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture, List<ResourcePack> list);
 
 	void registerListener(ResourceReloadListener resourceReloadListener);
 }

@@ -31,10 +31,10 @@ public class SnowyVillageData {
 		ImmutableList<StructureProcessor> immutableList = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_16541), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_16541), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_9975, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10071, 0.4F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10436, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
@@ -70,7 +70,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/town_centers/snowy_meeting_point_2"), 1),
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/town_centers/snowy_meeting_point_3"), 3)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList2 = ImmutableList.of(
@@ -106,7 +106,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/streets/crossroad_06", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/snowy/streets/turn_01", immutableList2), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -132,7 +132,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/streets/crossroad_06", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/streets/turn_01", immutableList2), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList3 = ImmutableList.of(
@@ -181,7 +181,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/houses/snowy_animal_pen_2"), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -222,7 +222,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/houses/snowy_animal_pen_2", immutableList), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -236,7 +236,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_03", immutableList2), 1),
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_04", immutableList2), 1)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -245,7 +245,7 @@ public class SnowyVillageData {
 					new Identifier("village/snowy/trees"),
 					new Identifier("empty"),
 					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13577, FeatureConfig.DEFAULT)), 1)),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -262,7 +262,7 @@ public class SnowyVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17006, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 9)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -279,7 +279,7 @@ public class SnowyVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17006, FeatureConfig.DEFAULT)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 7)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -292,7 +292,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/villagers/baby"), 1),
 						new Pair<>(new SinglePoolElement("village/snowy/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -304,7 +304,7 @@ public class SnowyVillageData {
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/snowy/zombie/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 	}

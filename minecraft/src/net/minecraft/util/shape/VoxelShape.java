@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.OffsetDoubleList;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.AxisCycle;
+import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -115,8 +115,8 @@ public abstract class VoxelShape {
 
 	@Environment(EnvType.CLIENT)
 	public double method_1093(Direction.Axis axis, double d, double e) {
-		Direction.Axis axis2 = AxisCycle.NEXT.cycle(axis);
-		Direction.Axis axis3 = AxisCycle.PREVIOUS.cycle(axis);
+		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
+		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
 		int i = this.getCoordIndex(axis2, d);
 		int j = this.getCoordIndex(axis3, e);
 		int k = this.voxels.method_1043(axis, i, j);
@@ -125,8 +125,8 @@ public abstract class VoxelShape {
 
 	@Environment(EnvType.CLIENT)
 	public double method_1102(Direction.Axis axis, double d, double e) {
-		Direction.Axis axis2 = AxisCycle.NEXT.cycle(axis);
-		Direction.Axis axis3 = AxisCycle.PREVIOUS.cycle(axis);
+		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
+		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
 		int i = this.getCoordIndex(axis2, d);
 		int j = this.getCoordIndex(axis3, e);
 		int k = this.voxels.method_1058(axis, i, j);
@@ -182,19 +182,19 @@ public abstract class VoxelShape {
 	}
 
 	public double method_1108(Direction.Axis axis, BoundingBox boundingBox, double d) {
-		return this.method_1103(AxisCycle.between(axis, Direction.Axis.X), boundingBox, d);
+		return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), boundingBox, d);
 	}
 
-	protected double method_1103(AxisCycle axisCycle, BoundingBox boundingBox, double d) {
+	protected double method_1103(AxisCycleDirection axisCycleDirection, BoundingBox boundingBox, double d) {
 		if (this.isEmpty()) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
 			return 0.0;
 		} else {
-			AxisCycle axisCycle2 = axisCycle.opposite();
-			Direction.Axis axis = axisCycle2.cycle(Direction.Axis.X);
-			Direction.Axis axis2 = axisCycle2.cycle(Direction.Axis.Y);
-			Direction.Axis axis3 = axisCycle2.cycle(Direction.Axis.Z);
+			AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
+			Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.X);
+			Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
+			Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
 			double e = boundingBox.getMax(axis);
 			double f = boundingBox.getMin(axis);
 			int i = this.getCoordIndex(axis, f + 1.0E-7);
@@ -208,7 +208,7 @@ public abstract class VoxelShape {
 				for (int p = j + 1; p < o; p++) {
 					for (int q = k; q < l; q++) {
 						for (int r = m; r < n; r++) {
-							if (this.voxels.inBoundsAndContains(axisCycle2, p, q, r)) {
+							if (this.voxels.inBoundsAndContains(axisCycleDirection2, p, q, r)) {
 								double g = this.getCoord(axis, p) - e;
 								if (g >= -1.0E-7) {
 									d = Math.min(d, g);
@@ -223,7 +223,7 @@ public abstract class VoxelShape {
 				for (int p = i - 1; p >= 0; p--) {
 					for (int q = k; q < l; q++) {
 						for (int rx = m; rx < n; rx++) {
-							if (this.voxels.inBoundsAndContains(axisCycle2, p, q, rx)) {
+							if (this.voxels.inBoundsAndContains(axisCycleDirection2, p, q, rx)) {
 								double g = this.getCoord(axis, p + 1) - f;
 								if (g <= 1.0E-7) {
 									d = Math.max(d, g);

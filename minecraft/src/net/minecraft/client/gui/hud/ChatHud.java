@@ -12,8 +12,8 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.ingame.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,31 +110,31 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
-	public void addMessage(TextComponent textComponent) {
-		this.addMessage(textComponent, 0);
+	public void addMessage(Component component) {
+		this.addMessage(component, 0);
 	}
 
-	public void addMessage(TextComponent textComponent, int i) {
-		this.addMessage(textComponent, i, this.client.inGameHud.getTicks(), false);
-		LOGGER.info("[CHAT] {}", textComponent.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
+	public void addMessage(Component component, int i) {
+		this.addMessage(component, i, this.client.inGameHud.getTicks(), false);
+		LOGGER.info("[CHAT] {}", component.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
 	}
 
-	private void addMessage(TextComponent textComponent, int i, int j, boolean bl) {
+	private void addMessage(Component component, int i, int j, boolean bl) {
 		if (i != 0) {
 			this.removeMessage(i);
 		}
 
 		int k = MathHelper.floor((double)this.getWidth() / this.getScale());
-		List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, k, this.client.textRenderer, false, false);
+		List<Component> list = TextComponentUtil.wrapLines(component, k, this.client.textRenderer, false, false);
 		boolean bl2 = this.isChatFocused();
 
-		for (TextComponent textComponent2 : list) {
+		for (Component component2 : list) {
 			if (bl2 && this.field_2066 > 0) {
 				this.field_2067 = true;
 				this.method_1802(1.0);
 			}
 
-			this.visibleMessages.add(0, new ChatHudLine(j, textComponent2, i));
+			this.visibleMessages.add(0, new ChatHudLine(j, component2, i));
 		}
 
 		while (this.visibleMessages.size() > 100) {
@@ -142,7 +142,7 @@ public class ChatHud extends DrawableHelper {
 		}
 
 		if (!bl) {
-			this.messages.add(0, new ChatHudLine(j, textComponent, i));
+			this.messages.add(0, new ChatHudLine(j, component, i));
 
 			while (this.messages.size() > 100) {
 				this.messages.remove(this.messages.size() - 1);
@@ -189,7 +189,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	@Nullable
-	public TextComponent getTextComponentAt(double d, double e) {
+	public Component getTextComponentAt(double d, double e) {
 		if (!this.isChatFocused()) {
 			return null;
 		} else {
@@ -206,11 +206,11 @@ public class ChatHud extends DrawableHelper {
 						ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(j);
 						int k = 0;
 
-						for (TextComponent textComponent : chatHudLine.getContents()) {
-							if (textComponent instanceof StringTextComponent) {
-								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((StringTextComponent)textComponent).getTextField(), false));
+						for (Component component : chatHudLine.getContents()) {
+							if (component instanceof TextComponent) {
+								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((TextComponent)component).getTextField(), false));
 								if ((double)k > g) {
-									return textComponent;
+									return component;
 								}
 							}
 						}

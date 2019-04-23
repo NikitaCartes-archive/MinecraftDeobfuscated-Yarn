@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void method_8273(int i) {
+		public void sendStatus(int i) {
 			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, i, 0);
 		}
 
@@ -39,7 +39,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	};
 
 	public MobSpawnerBlockEntity() {
-		super(BlockEntityType.MOB_SPAWNER);
+		super(BlockEntityType.field_11889);
 	}
 
 	@Override

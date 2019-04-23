@@ -9,7 +9,7 @@ public class DamageUtil {
 		return f * (1.0F - j / 25.0F);
 	}
 
-	public static float method_5497(float f, float g) {
+	public static float getInflictedDamage(float f, float g) {
 		float h = MathHelper.clamp(g, 0.0F, 20.0F);
 		return f * (1.0F - h / 25.0F);
 	}

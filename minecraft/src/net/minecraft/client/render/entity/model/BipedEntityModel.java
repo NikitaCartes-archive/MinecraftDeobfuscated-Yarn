@@ -15,12 +15,12 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	public Cuboid head;
 	public Cuboid headwear;
 	public Cuboid body;
-	public Cuboid armRight;
-	public Cuboid armLeft;
-	public Cuboid legRight;
-	public Cuboid legLeft;
-	public BipedEntityModel.ArmPose armPoseLeft = BipedEntityModel.ArmPose.field_3409;
-	public BipedEntityModel.ArmPose armPoseRight = BipedEntityModel.ArmPose.field_3409;
+	public Cuboid rightArm;
+	public Cuboid leftArm;
+	public Cuboid rightLeg;
+	public Cuboid leftLeg;
+	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.field_3409;
+	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.field_3409;
 	public boolean isSneaking;
 	public float field_3396;
 	private float field_3393;
@@ -45,20 +45,20 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.body = new Cuboid(this, 16, 16);
 		this.body.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, f);
 		this.body.setRotationPoint(0.0F, 0.0F + g, 0.0F);
-		this.armRight = new Cuboid(this, 40, 16);
-		this.armRight.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
-		this.armRight.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
-		this.armLeft = new Cuboid(this, 40, 16);
-		this.armLeft.mirror = true;
-		this.armLeft.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
-		this.armLeft.setRotationPoint(5.0F, 2.0F + g, 0.0F);
-		this.legRight = new Cuboid(this, 0, 16);
-		this.legRight.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
-		this.legRight.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
-		this.legLeft = new Cuboid(this, 0, 16);
-		this.legLeft.mirror = true;
-		this.legLeft.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
-		this.legLeft.setRotationPoint(1.9F, 12.0F + g, 0.0F);
+		this.rightArm = new Cuboid(this, 40, 16);
+		this.rightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
+		this.leftArm = new Cuboid(this, 40, 16);
+		this.leftArm.mirror = true;
+		this.leftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.leftArm.setRotationPoint(5.0F, 2.0F + g, 0.0F);
+		this.rightLeg = new Cuboid(this, 0, 16);
+		this.rightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
+		this.leftLeg = new Cuboid(this, 0, 16);
+		this.leftLeg.mirror = true;
+		this.leftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.leftLeg.setRotationPoint(1.9F, 12.0F + g, 0.0F);
 	}
 
 	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
@@ -74,10 +74,10 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			GlStateManager.translatef(0.0F, 24.0F * k, 0.0F);
 			this.body.render(k);
-			this.armRight.render(k);
-			this.armLeft.render(k);
-			this.legRight.render(k);
-			this.legLeft.render(k);
+			this.rightArm.render(k);
+			this.leftArm.render(k);
+			this.rightLeg.render(k);
+			this.leftLeg.render(k);
 			this.headwear.render(k);
 		} else {
 			if (livingEntity.isInSneakingPose()) {
@@ -86,10 +86,10 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 
 			this.head.render(k);
 			this.body.render(k);
-			this.armRight.render(k);
-			this.armLeft.render(k);
-			this.legRight.render(k);
-			this.legLeft.render(k);
+			this.rightArm.render(k);
+			this.leftArm.render(k);
+			this.rightLeg.render(k);
+			this.leftLeg.render(k);
 			this.headwear.render(k);
 		}
 
@@ -119,10 +119,10 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		}
 
 		this.body.yaw = 0.0F;
-		this.armRight.rotationPointZ = 0.0F;
-		this.armRight.rotationPointX = -5.0F;
-		this.armLeft.rotationPointZ = 0.0F;
-		this.armLeft.rotationPointX = 5.0F;
+		this.rightArm.rotationPointZ = 0.0F;
+		this.rightArm.rotationPointX = -5.0F;
+		this.leftArm.rotationPointZ = 0.0F;
+		this.leftArm.rotationPointX = 5.0F;
 		float l = 1.0F;
 		if (bl) {
 			l = (float)livingEntity.getVelocity().lengthSquared();
@@ -134,65 +134,65 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			l = 1.0F;
 		}
 
-		this.armRight.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 2.0F * g * 0.5F / l;
-		this.armLeft.pitch = MathHelper.cos(f * 0.6662F) * 2.0F * g * 0.5F / l;
-		this.armRight.roll = 0.0F;
-		this.armLeft.roll = 0.0F;
-		this.legRight.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g / l;
-		this.legLeft.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g / l;
-		this.legRight.yaw = 0.0F;
-		this.legLeft.yaw = 0.0F;
-		this.legRight.roll = 0.0F;
-		this.legLeft.roll = 0.0F;
+		this.rightArm.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 2.0F * g * 0.5F / l;
+		this.leftArm.pitch = MathHelper.cos(f * 0.6662F) * 2.0F * g * 0.5F / l;
+		this.rightArm.roll = 0.0F;
+		this.leftArm.roll = 0.0F;
+		this.rightLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g / l;
+		this.leftLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g / l;
+		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
+		this.rightLeg.roll = 0.0F;
+		this.leftLeg.roll = 0.0F;
 		if (this.isRiding) {
-			this.armRight.pitch += (float) (-Math.PI / 5);
-			this.armLeft.pitch += (float) (-Math.PI / 5);
-			this.legRight.pitch = -1.4137167F;
-			this.legRight.yaw = (float) (Math.PI / 10);
-			this.legRight.roll = 0.07853982F;
-			this.legLeft.pitch = -1.4137167F;
-			this.legLeft.yaw = (float) (-Math.PI / 10);
-			this.legLeft.roll = -0.07853982F;
+			this.rightArm.pitch += (float) (-Math.PI / 5);
+			this.leftArm.pitch += (float) (-Math.PI / 5);
+			this.rightLeg.pitch = -1.4137167F;
+			this.rightLeg.yaw = (float) (Math.PI / 10);
+			this.rightLeg.roll = 0.07853982F;
+			this.leftLeg.pitch = -1.4137167F;
+			this.leftLeg.yaw = (float) (-Math.PI / 10);
+			this.leftLeg.roll = -0.07853982F;
 		}
 
-		this.armRight.yaw = 0.0F;
-		this.armRight.roll = 0.0F;
-		switch (this.armPoseLeft) {
+		this.rightArm.yaw = 0.0F;
+		this.rightArm.roll = 0.0F;
+		switch (this.leftArmPose) {
 			case field_3409:
-				this.armLeft.yaw = 0.0F;
+				this.leftArm.yaw = 0.0F;
 				break;
 			case field_3406:
-				this.armLeft.pitch = this.armLeft.pitch * 0.5F - 0.9424779F;
-				this.armLeft.yaw = (float) (Math.PI / 6);
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.9424779F;
+				this.leftArm.yaw = (float) (Math.PI / 6);
 				break;
 			case field_3410:
-				this.armLeft.pitch = this.armLeft.pitch * 0.5F - (float) (Math.PI / 10);
-				this.armLeft.yaw = 0.0F;
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 10);
+				this.leftArm.yaw = 0.0F;
 		}
 
-		switch (this.armPoseRight) {
+		switch (this.rightArmPose) {
 			case field_3409:
-				this.armRight.yaw = 0.0F;
+				this.rightArm.yaw = 0.0F;
 				break;
 			case field_3406:
-				this.armRight.pitch = this.armRight.pitch * 0.5F - 0.9424779F;
-				this.armRight.yaw = (float) (-Math.PI / 6);
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
+				this.rightArm.yaw = (float) (-Math.PI / 6);
 				break;
 			case field_3410:
-				this.armRight.pitch = this.armRight.pitch * 0.5F - (float) (Math.PI / 10);
-				this.armRight.yaw = 0.0F;
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 10);
+				this.rightArm.yaw = 0.0F;
 				break;
 			case field_3407:
-				this.armRight.pitch = this.armRight.pitch * 0.5F - (float) Math.PI;
-				this.armRight.yaw = 0.0F;
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
+				this.rightArm.yaw = 0.0F;
 		}
 
-		if (this.armPoseLeft == BipedEntityModel.ArmPose.field_3407
-			&& this.armPoseRight != BipedEntityModel.ArmPose.field_3406
-			&& this.armPoseRight != BipedEntityModel.ArmPose.field_3407
-			&& this.armPoseRight != BipedEntityModel.ArmPose.field_3403) {
-			this.armLeft.pitch = this.armLeft.pitch * 0.5F - (float) Math.PI;
-			this.armLeft.yaw = 0.0F;
+		if (this.leftArmPose == BipedEntityModel.ArmPose.field_3407
+			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3406
+			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3407
+			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3403) {
+			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
+			this.leftArm.yaw = 0.0F;
 		}
 
 		if (this.handSwingProgress > 0.0F) {
@@ -204,13 +204,13 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 				this.body.yaw *= -1.0F;
 			}
 
-			this.armRight.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0F;
-			this.armRight.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0F;
-			this.armLeft.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0F;
-			this.armLeft.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0F;
-			this.armRight.yaw = this.armRight.yaw + this.body.yaw;
-			this.armLeft.yaw = this.armLeft.yaw + this.body.yaw;
-			this.armLeft.pitch = this.armLeft.pitch + this.body.yaw;
+			this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0F;
+			this.rightArm.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0F;
+			this.leftArm.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0F;
+			this.leftArm.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0F;
+			this.rightArm.yaw = this.rightArm.yaw + this.body.yaw;
+			this.leftArm.yaw = this.leftArm.yaw + this.body.yaw;
+			this.leftArm.pitch = this.leftArm.pitch + this.body.yaw;
 			m = 1.0F - this.handSwingProgress;
 			m *= m;
 			m *= m;
@@ -224,101 +224,101 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 
 		if (this.isSneaking) {
 			this.body.pitch = 0.5F;
-			this.armRight.pitch += 0.4F;
-			this.armLeft.pitch += 0.4F;
-			this.legRight.rotationPointZ = 4.0F;
-			this.legLeft.rotationPointZ = 4.0F;
-			this.legRight.rotationPointY = 9.0F;
-			this.legLeft.rotationPointY = 9.0F;
+			this.rightArm.pitch += 0.4F;
+			this.leftArm.pitch += 0.4F;
+			this.rightLeg.rotationPointZ = 4.0F;
+			this.leftLeg.rotationPointZ = 4.0F;
+			this.rightLeg.rotationPointY = 9.0F;
+			this.leftLeg.rotationPointY = 9.0F;
 			this.head.rotationPointY = 1.0F;
 		} else {
 			this.body.pitch = 0.0F;
-			this.legRight.rotationPointZ = 0.1F;
-			this.legLeft.rotationPointZ = 0.1F;
-			this.legRight.rotationPointY = 12.0F;
-			this.legLeft.rotationPointY = 12.0F;
+			this.rightLeg.rotationPointZ = 0.1F;
+			this.leftLeg.rotationPointZ = 0.1F;
+			this.rightLeg.rotationPointY = 12.0F;
+			this.leftLeg.rotationPointY = 12.0F;
 			this.head.rotationPointY = 0.0F;
 		}
 
-		this.armRight.roll = this.armRight.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-		this.armLeft.roll = this.armLeft.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-		this.armRight.pitch = this.armRight.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-		this.armLeft.pitch = this.armLeft.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
-		if (this.armPoseRight == BipedEntityModel.ArmPose.field_3403) {
-			this.armRight.yaw = -0.1F + this.head.yaw;
-			this.armLeft.yaw = 0.1F + this.head.yaw + 0.4F;
-			this.armRight.pitch = (float) (-Math.PI / 2) + this.head.pitch;
-			this.armLeft.pitch = (float) (-Math.PI / 2) + this.head.pitch;
-		} else if (this.armPoseLeft == BipedEntityModel.ArmPose.field_3403
-			&& this.armPoseRight != BipedEntityModel.ArmPose.field_3407
-			&& this.armPoseRight != BipedEntityModel.ArmPose.field_3406) {
-			this.armRight.yaw = -0.1F + this.head.yaw - 0.4F;
-			this.armLeft.yaw = 0.1F + this.head.yaw;
-			this.armRight.pitch = (float) (-Math.PI / 2) + this.head.pitch;
-			this.armLeft.pitch = (float) (-Math.PI / 2) + this.head.pitch;
+		this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
+		this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
+		this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
+		this.leftArm.pitch = this.leftArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3403) {
+			this.rightArm.yaw = -0.1F + this.head.yaw;
+			this.leftArm.yaw = 0.1F + this.head.yaw + 0.4F;
+			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
+			this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3403
+			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3407
+			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3406) {
+			this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
+			this.leftArm.yaw = 0.1F + this.head.yaw;
+			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
+			this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 		}
 
 		float p = (float)CrossbowItem.getPullTime(livingEntity.getActiveItem());
-		if (this.armPoseRight == BipedEntityModel.ArmPose.field_3405) {
-			this.armRight.yaw = -0.8F;
-			this.armRight.pitch = -0.97079635F;
-			this.armLeft.pitch = -0.97079635F;
+		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3405) {
+			this.rightArm.yaw = -0.8F;
+			this.rightArm.pitch = -0.97079635F;
+			this.leftArm.pitch = -0.97079635F;
 			float q = MathHelper.clamp(this.field_3393, 0.0F, p);
-			this.armLeft.yaw = MathHelper.lerp(q / p, 0.4F, 0.85F);
-			this.armLeft.pitch = MathHelper.lerp(q / p, this.armLeft.pitch, (float) (-Math.PI / 2));
-		} else if (this.armPoseLeft == BipedEntityModel.ArmPose.field_3405) {
-			this.armLeft.yaw = 0.8F;
-			this.armRight.pitch = -0.97079635F;
-			this.armLeft.pitch = -0.97079635F;
+			this.leftArm.yaw = MathHelper.lerp(q / p, 0.4F, 0.85F);
+			this.leftArm.pitch = MathHelper.lerp(q / p, this.leftArm.pitch, (float) (-Math.PI / 2));
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3405) {
+			this.leftArm.yaw = 0.8F;
+			this.rightArm.pitch = -0.97079635F;
+			this.leftArm.pitch = -0.97079635F;
 			float q = MathHelper.clamp(this.field_3393, 0.0F, p);
-			this.armRight.yaw = MathHelper.lerp(q / p, -0.4F, -0.85F);
-			this.armRight.pitch = MathHelper.lerp(q / p, this.armRight.pitch, (float) (-Math.PI / 2));
+			this.rightArm.yaw = MathHelper.lerp(q / p, -0.4F, -0.85F);
+			this.rightArm.pitch = MathHelper.lerp(q / p, this.rightArm.pitch, (float) (-Math.PI / 2));
 		}
 
-		if (this.armPoseRight == BipedEntityModel.ArmPose.field_3408 && this.handSwingProgress <= 0.0F) {
-			this.armRight.yaw = -0.3F + this.head.yaw;
-			this.armLeft.yaw = 0.6F + this.head.yaw;
-			this.armRight.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
-			this.armLeft.pitch = -1.5F + this.head.pitch;
-		} else if (this.armPoseLeft == BipedEntityModel.ArmPose.field_3408) {
-			this.armRight.yaw = -0.6F + this.head.yaw;
-			this.armLeft.yaw = 0.3F + this.head.yaw;
-			this.armRight.pitch = -1.5F + this.head.pitch;
-			this.armLeft.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
+		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3408 && this.handSwingProgress <= 0.0F) {
+			this.rightArm.yaw = -0.3F + this.head.yaw;
+			this.leftArm.yaw = 0.6F + this.head.yaw;
+			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
+			this.leftArm.pitch = -1.5F + this.head.pitch;
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3408) {
+			this.rightArm.yaw = -0.6F + this.head.yaw;
+			this.leftArm.yaw = 0.3F + this.head.yaw;
+			this.rightArm.pitch = -1.5F + this.head.pitch;
+			this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
 		}
 
 		if (this.field_3396 > 0.0F) {
 			float q = f % 26.0F;
 			float m = this.handSwingProgress > 0.0F ? 0.0F : this.field_3396;
 			if (q < 14.0F) {
-				this.armLeft.pitch = this.method_2804(this.armLeft.pitch, 0.0F, this.field_3396);
-				this.armRight.pitch = MathHelper.lerp(m, this.armRight.pitch, 0.0F);
-				this.armLeft.yaw = this.method_2804(this.armLeft.yaw, (float) Math.PI, this.field_3396);
-				this.armRight.yaw = MathHelper.lerp(m, this.armRight.yaw, (float) Math.PI);
-				this.armLeft.roll = this.method_2804(this.armLeft.roll, (float) Math.PI + 1.8707964F * this.method_2807(q) / this.method_2807(14.0F), this.field_3396);
-				this.armRight.roll = MathHelper.lerp(m, this.armRight.roll, (float) Math.PI - 1.8707964F * this.method_2807(q) / this.method_2807(14.0F));
+				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, 0.0F, this.field_3396);
+				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0F);
+				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+				this.leftArm.roll = this.method_2804(this.leftArm.roll, (float) Math.PI + 1.8707964F * this.method_2807(q) / this.method_2807(14.0F), this.field_3396);
+				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI - 1.8707964F * this.method_2807(q) / this.method_2807(14.0F));
 			} else if (q >= 14.0F && q < 22.0F) {
 				float n = (q - 14.0F) / 8.0F;
-				this.armLeft.pitch = this.method_2804(this.armLeft.pitch, (float) (Math.PI / 2) * n, this.field_3396);
-				this.armRight.pitch = MathHelper.lerp(m, this.armRight.pitch, (float) (Math.PI / 2) * n);
-				this.armLeft.yaw = this.method_2804(this.armLeft.yaw, (float) Math.PI, this.field_3396);
-				this.armRight.yaw = MathHelper.lerp(m, this.armRight.yaw, (float) Math.PI);
-				this.armLeft.roll = this.method_2804(this.armLeft.roll, 5.012389F - 1.8707964F * n, this.field_3396);
-				this.armRight.roll = MathHelper.lerp(m, this.armRight.roll, 1.2707963F + 1.8707964F * n);
+				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, (float) (Math.PI / 2) * n, this.field_3396);
+				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) * n);
+				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+				this.leftArm.roll = this.method_2804(this.leftArm.roll, 5.012389F - 1.8707964F * n, this.field_3396);
+				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963F + 1.8707964F * n);
 			} else if (q >= 22.0F && q < 26.0F) {
 				float n = (q - 22.0F) / 4.0F;
-				this.armLeft.pitch = this.method_2804(this.armLeft.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n, this.field_3396);
-				this.armRight.pitch = MathHelper.lerp(m, this.armRight.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n);
-				this.armLeft.yaw = this.method_2804(this.armLeft.yaw, (float) Math.PI, this.field_3396);
-				this.armRight.yaw = MathHelper.lerp(m, this.armRight.yaw, (float) Math.PI);
-				this.armLeft.roll = this.method_2804(this.armLeft.roll, (float) Math.PI, this.field_3396);
-				this.armRight.roll = MathHelper.lerp(m, this.armRight.roll, (float) Math.PI);
+				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n, this.field_3396);
+				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n);
+				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+				this.leftArm.roll = this.method_2804(this.leftArm.roll, (float) Math.PI, this.field_3396);
+				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI);
 			}
 
 			float n = 0.3F;
 			float o = 0.33333334F;
-			this.legLeft.pitch = MathHelper.lerp(this.field_3396, this.legLeft.pitch, 0.3F * MathHelper.cos(f * 0.33333334F + (float) Math.PI));
-			this.legRight.pitch = MathHelper.lerp(this.field_3396, this.legRight.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
+			this.leftLeg.pitch = MathHelper.lerp(this.field_3396, this.leftLeg.pitch, 0.3F * MathHelper.cos(f * 0.33333334F + (float) Math.PI));
+			this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
 		this.headwear.copyRotation(this.head);
@@ -343,8 +343,8 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 
 	public void setAttributes(BipedEntityModel<T> bipedEntityModel) {
 		super.copyStateTo(bipedEntityModel);
-		bipedEntityModel.armPoseLeft = this.armPoseLeft;
-		bipedEntityModel.armPoseRight = this.armPoseRight;
+		bipedEntityModel.leftArmPose = this.leftArmPose;
+		bipedEntityModel.rightArmPose = this.rightArmPose;
 		bipedEntityModel.isSneaking = this.isSneaking;
 	}
 
@@ -352,10 +352,10 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.head.visible = bl;
 		this.headwear.visible = bl;
 		this.body.visible = bl;
-		this.armRight.visible = bl;
-		this.armLeft.visible = bl;
-		this.legRight.visible = bl;
-		this.legLeft.visible = bl;
+		this.rightArm.visible = bl;
+		this.leftArm.visible = bl;
+		this.rightLeg.visible = bl;
+		this.leftLeg.visible = bl;
 	}
 
 	@Override
@@ -364,7 +364,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	}
 
 	protected Cuboid getArm(AbsoluteHand absoluteHand) {
-		return absoluteHand == AbsoluteHand.field_6182 ? this.armLeft : this.armRight;
+		return absoluteHand == AbsoluteHand.field_6182 ? this.leftArm : this.rightArm;
 	}
 
 	@Override
@@ -374,7 +374,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 
 	protected AbsoluteHand getPreferedHand(T livingEntity) {
 		AbsoluteHand absoluteHand = livingEntity.getMainHand();
-		return livingEntity.preferredHand == Hand.MAIN ? absoluteHand : absoluteHand.getOpposite();
+		return livingEntity.preferredHand == Hand.field_5808 ? absoluteHand : absoluteHand.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)

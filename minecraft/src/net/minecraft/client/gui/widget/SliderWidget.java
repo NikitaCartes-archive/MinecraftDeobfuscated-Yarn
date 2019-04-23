@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)

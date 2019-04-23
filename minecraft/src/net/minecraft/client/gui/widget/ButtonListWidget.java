@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 
 @Environment(EnvType.CLIENT)
 public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonItem> {
@@ -17,17 +17,17 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonI
 		this.centerListVertically = false;
 	}
 
-	public int method_20406(GameOption gameOption) {
-		return this.addEntry(ButtonListWidget.ButtonItem.method_20409(this.minecraft.options, this.width, gameOption));
+	public int method_20406(Option option) {
+		return this.addEntry(ButtonListWidget.ButtonItem.method_20409(this.minecraft.options, this.width, option));
 	}
 
-	public void method_20407(GameOption gameOption, @Nullable GameOption gameOption2) {
-		this.addEntry(ButtonListWidget.ButtonItem.method_20410(this.minecraft.options, this.width, gameOption, gameOption2));
+	public void method_20407(Option option, @Nullable Option option2) {
+		this.addEntry(ButtonListWidget.ButtonItem.method_20410(this.minecraft.options, this.width, option, option2));
 	}
 
-	public void addAll(GameOption[] gameOptions) {
-		for (int i = 0; i < gameOptions.length; i += 2) {
-			this.method_20407(gameOptions[i], i < gameOptions.length - 1 ? gameOptions[i + 1] : null);
+	public void addAll(Option[] options) {
+		for (int i = 0; i < options.length; i += 2) {
+			this.method_20407(options[i], i < options.length - 1 ? options[i + 1] : null);
 		}
 	}
 
@@ -49,15 +49,15 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonI
 			this.buttons = list;
 		}
 
-		public static ButtonListWidget.ButtonItem method_20409(GameOptions gameOptions, int i, GameOption gameOption) {
-			return new ButtonListWidget.ButtonItem(ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 310)));
+		public static ButtonListWidget.ButtonItem method_20409(GameOptions gameOptions, int i, Option option) {
+			return new ButtonListWidget.ButtonItem(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
-		public static ButtonListWidget.ButtonItem method_20410(GameOptions gameOptions, int i, GameOption gameOption, @Nullable GameOption gameOption2) {
-			AbstractButtonWidget abstractButtonWidget = gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 150);
-			return gameOption2 == null
+		public static ButtonListWidget.ButtonItem method_20410(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
+			AbstractButtonWidget abstractButtonWidget = option.createButton(gameOptions, i / 2 - 155, 0, 150);
+			return option2 == null
 				? new ButtonListWidget.ButtonItem(ImmutableList.of(abstractButtonWidget))
-				: new ButtonListWidget.ButtonItem(ImmutableList.of(abstractButtonWidget, gameOption2.createOptionButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
+				: new ButtonListWidget.ButtonItem(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
 		}
 
 		@Override

@@ -6,12 +6,12 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 
 public class ComposterBlock extends Block implements InventoryProvider {
 	public static final IntegerProperty LEVEL = Properties.COMPOSTER_LEVEL;
-	public static final Object2FloatMap<ItemProvider> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
+	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
 	public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
 	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = SystemUtil.consume(
 		new VoxelShape[9],
@@ -126,8 +126,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(1.0F, Items.field_8741);
 	}
 
-	private static void registerCompostableItem(float f, ItemProvider itemProvider) {
-		ITEM_TO_LEVEL_INCREASE_CHANCE.put(itemProvider.getItem(), f);
+	private static void registerCompostableItem(float f, ItemConvertible itemConvertible) {
+		ITEM_TO_LEVEL_INCREASE_CHANCE.put(itemConvertible.asItem(), f);
 	}
 
 	public ComposterBlock(Block.Settings settings) {
@@ -170,7 +170,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return LEVEL_TO_COLLISION_SHAPE[blockState.get(LEVEL)];
 	}
 
@@ -180,7 +180,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return LEVEL_TO_COLLISION_SHAPE[0];
 	}
 
@@ -268,7 +268,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LEVEL);
+		builder.add(LEVEL);
 	}
 
 	@Override
@@ -282,7 +282,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i == 8) {
 			return new ComposterBlock.FullComposterInventory(blockState, iWorld, blockPos, new ItemStack(Items.field_8324));
 		} else {
-			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(blockState, iWorld, blockPos) : new ComposterBlock.class_3925());
+			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(blockState, iWorld, blockPos) : new ComposterBlock.DummyInventory());
 		}
 	}
 
@@ -306,12 +306,12 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public int[] getInvAvailableSlots(Direction direction) {
-			return direction == Direction.UP ? new int[]{0} : new int[0];
+			return direction == Direction.field_11036 ? new int[]{0} : new int[0];
 		}
 
 		@Override
 		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-			return !this.dirty && direction == Direction.UP && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem());
+			return !this.dirty && direction == Direction.field_11036 && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem());
 		}
 
 		@Override
@@ -327,6 +327,27 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
 				this.removeInvStack(0);
 			}
+		}
+	}
+
+	static class DummyInventory extends BasicInventory implements SidedInventory {
+		public DummyInventory() {
+			super(0);
+		}
+
+		@Override
+		public int[] getInvAvailableSlots(Direction direction) {
+			return new int[0];
+		}
+
+		@Override
+		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
+			return false;
+		}
+
+		@Override
+		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+			return false;
 		}
 	}
 
@@ -350,7 +371,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public int[] getInvAvailableSlots(Direction direction) {
-			return direction == Direction.DOWN ? new int[]{0} : new int[0];
+			return direction == Direction.field_11033 ? new int[]{0} : new int[0];
 		}
 
 		@Override
@@ -360,34 +381,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-			return !this.dirty && direction == Direction.DOWN && itemStack.getItem() == Items.field_8324;
+			return !this.dirty && direction == Direction.field_11033 && itemStack.getItem() == Items.field_8324;
 		}
 
 		@Override
 		public void markDirty() {
 			ComposterBlock.emptyComposter(this.state, this.world, this.pos);
 			this.dirty = true;
-		}
-	}
-
-	static class class_3925 extends BasicInventory implements SidedInventory {
-		public class_3925() {
-			super(0);
-		}
-
-		@Override
-		public int[] getInvAvailableSlots(Direction direction) {
-			return new int[0];
-		}
-
-		@Override
-		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-			return false;
-		}
-
-		@Override
-		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-			return false;
 		}
 	}
 }

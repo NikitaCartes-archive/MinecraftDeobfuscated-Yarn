@@ -12,16 +12,16 @@ import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.data.block.invalid")
+		new TranslatableComponent("commands.data.block.invalid")
 	);
 	public static final Function<String, DataCommand.ObjectType> field_13786 = string -> new DataCommand.ObjectType() {
 			@Override
@@ -71,18 +71,18 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public TextComponent getModifiedFeedback() {
-		return new TranslatableTextComponent("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
+	public Component getModifiedFeedback() {
+		return new TranslatableComponent("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
 	}
 
 	@Override
-	public TextComponent getQueryFeedback(Tag tag) {
-		return new TranslatableTextComponent("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toTextComponent());
+	public Component getQueryFeedback(Tag tag) {
+		return new TranslatableComponent("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toTextComponent());
 	}
 
 	@Override
-	public TextComponent getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-		return new TranslatableTextComponent(
+	public Component getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+		return new TranslatableComponent(
 			"commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i
 		);
 	}

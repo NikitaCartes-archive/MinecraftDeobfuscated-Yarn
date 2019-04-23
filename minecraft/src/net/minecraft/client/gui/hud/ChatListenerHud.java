@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ClientChatListener;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class ChatListenerHud implements ClientChatListener {
@@ -16,7 +16,7 @@ public class ChatListenerHud implements ClientChatListener {
 	}
 
 	@Override
-	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
-		this.client.inGameHud.getChatHud().addMessage(textComponent);
+	public void onChatMessage(ChatMessageType chatMessageType, Component component) {
+		this.client.inGameHud.getChatHud().addMessage(component);
 	}
 }

@@ -3,8 +3,8 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class EndTag implements Tag {
 	@Override
@@ -31,8 +31,8 @@ public class EndTag implements Tag {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
-		return new StringTextComponent("");
+	public Component toTextComponent(String string, int i) {
+		return new TextComponent("");
 	}
 
 	public boolean equals(Object object) {

@@ -6,16 +6,16 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -51,7 +51,7 @@ public class MusicDiscItem extends Item {
 
 			return ActionResult.field_5812;
 		} else {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		}
 	}
 
@@ -61,13 +61,13 @@ public class MusicDiscItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		list.add(this.getDescription().applyFormat(TextFormat.field_1080));
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().applyFormat(ChatFormat.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getDescription() {
-		return new TranslatableTextComponent(this.getTranslationKey() + ".desc");
+	public Component getDescription() {
+		return new TranslatableComponent(this.getTranslationKey() + ".desc");
 	}
 
 	@Nullable

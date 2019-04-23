@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
@@ -23,7 +23,7 @@ public class EndRodBlock extends FacingBlock {
 
 	protected EndRodBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11036));
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class EndRodBlock extends FacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch (((Direction)blockState.get(FACING)).getAxis()) {
 			case X:
 			default:
@@ -81,12 +81,12 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 
 	@Override

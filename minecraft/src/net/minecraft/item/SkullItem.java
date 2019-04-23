@@ -4,8 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,7 +15,7 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
+	public Component getTranslatedNameTrimmed(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
 			String string = null;
 			CompoundTag compoundTag = itemStack.getTag();
@@ -29,7 +29,7 @@ public class SkullItem extends WallStandingBlockItem {
 			}
 
 			if (string != null) {
-				return new TranslatableTextComponent(this.getTranslationKey() + ".named", string);
+				return new TranslatableComponent(this.getTranslationKey() + ".named", string);
 			}
 		}
 

@@ -35,13 +35,13 @@ import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.DisconnectS2CPacket;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Lazy;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -69,7 +69,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private Channel channel;
 	private SocketAddress address;
 	private PacketListener packetListener;
-	private TextComponent disconnectReason;
+	private Component disconnectReason;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -104,7 +104,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext channelHandlerContext) throws Exception {
-		this.disconnect(new TranslatableTextComponent("disconnect.endOfStream"));
+		this.disconnect(new TranslatableComponent("disconnect.endOfStream"));
 	}
 
 	@Override
@@ -117,16 +117,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			if (this.channel.isOpen()) {
 				if (throwable instanceof TimeoutException) {
 					LOGGER.debug("Timeout", throwable);
-					this.disconnect(new TranslatableTextComponent("disconnect.timeout"));
+					this.disconnect(new TranslatableComponent("disconnect.timeout"));
 				} else {
-					TextComponent textComponent = new TranslatableTextComponent("disconnect.genericReason", "Internal Exception: " + throwable);
+					Component component = new TranslatableComponent("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.send(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
+						this.send(new DisconnectS2CPacket(component), future -> this.disconnect(component));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
-						this.disconnect(textComponent);
+						this.disconnect(component);
 					}
 				}
 			}
@@ -250,10 +250,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.address;
 	}
 
-	public void disconnect(TextComponent textComponent) {
+	public void disconnect(Component component) {
 		if (this.channel.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.disconnectReason = textComponent;
+			this.disconnectReason = component;
 		}
 	}
 
@@ -263,7 +263,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(InetAddress inetAddress, int i, boolean bl) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENT);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && bl) {
@@ -288,9 +288,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 						channel.pipeline()
 							.addLast("timeout", new ReadTimeoutHandler(30))
 							.addLast("splitter", new SplitterHandler())
-							.addLast("decoder", new DecoderHandler(NetworkSide.CLIENT))
+							.addLast("decoder", new DecoderHandler(NetworkSide.field_11942))
 							.addLast("prepender", new SizePrepender())
-							.addLast("encoder", new PacketEncoder(NetworkSide.SERVER))
+							.addLast("encoder", new PacketEncoder(NetworkSide.field_11941))
 							.addLast("packet_handler", clientConnection);
 					}
 				}
@@ -303,7 +303,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(SocketAddress socketAddress) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENT);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
 		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
@@ -337,7 +337,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Nullable
-	public TextComponent getDisconnectReason() {
+	public Component getDisconnectReason() {
 		return this.disconnectReason;
 	}
 
@@ -378,7 +378,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				if (this.getDisconnectReason() != null) {
 					this.getPacketListener().onDisconnected(this.getDisconnectReason());
 				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().onDisconnected(new TranslatableTextComponent("multiplayer.disconnect.generic"));
+					this.getPacketListener().onDisconnected(new TranslatableComponent("multiplayer.disconnect.generic"));
 				}
 			}
 		}

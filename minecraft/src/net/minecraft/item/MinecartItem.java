@@ -46,7 +46,7 @@ public class MinecartItem extends Item {
 				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
 					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
 					: RailShape.field_12665;
-				if (direction != Direction.DOWN && railShape2.isAscending()) {
+				if (direction != Direction.field_11033 && railShape2.isAscending()) {
 					g = -0.4;
 				} else {
 					g = -0.9;

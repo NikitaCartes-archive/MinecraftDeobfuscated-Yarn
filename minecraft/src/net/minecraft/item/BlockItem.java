@@ -10,9 +10,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
@@ -20,7 +21,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -136,9 +136,9 @@ public class BlockItem extends Item {
 
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
 		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
-		VerticalEntityPosition verticalEntityPosition = playerEntity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(playerEntity);
+		EntityContext entityContext = playerEntity == null ? EntityContext.absent() : EntityContext.of(playerEntity);
 		return (!this.shouldCheckIfStateAllowsPlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
-			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), verticalEntityPosition);
+			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), entityContext);
 	}
 
 	protected boolean shouldCheckIfStateAllowsPlacement() {
@@ -194,7 +194,7 @@ public class BlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, world, list, tooltipContext);
 		this.getBlock().buildTooltip(itemStack, world, list, tooltipContext);
 	}

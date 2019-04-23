@@ -5,17 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.options.GameOption;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class SkinOptionsScreen extends Screen {
 	private final Screen parent;
 
 	public SkinOptionsScreen(Screen screen) {
-		super(new TranslatableTextComponent("options.skinCustomisation.title"));
+		super(new TranslatableComponent("options.skinCustomisation.title"));
 		this.parent = screen;
 	}
 
@@ -41,12 +41,12 @@ public class SkinOptionsScreen extends Screen {
 				this.height / 6 + 24 * (i >> 1),
 				150,
 				20,
-				GameOption.MAIN_HAND,
-				GameOption.MAIN_HAND.get(this.minecraft.options),
+				Option.MAIN_HAND,
+				Option.MAIN_HAND.getMessage(this.minecraft.options),
 				buttonWidget -> {
-					GameOption.MAIN_HAND.method_18500(this.minecraft.options, 1);
+					Option.MAIN_HAND.cycle(this.minecraft.options, 1);
 					this.minecraft.options.write();
-					buttonWidget.setMessage(GameOption.MAIN_HAND.get(this.minecraft.options));
+					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.minecraft.options));
 					this.minecraft.options.onPlayerModelPartChange();
 				}
 			)

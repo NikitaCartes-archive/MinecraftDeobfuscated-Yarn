@@ -7,7 +7,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -69,7 +69,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
+	public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
 		return blockState2.getFluidState().getFluid().matchesType(this.fluid) ? true : super.isFullBoundsCubeForCulling(blockState);
 	}
 
@@ -84,7 +84,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return VoxelShapes.empty();
 	}
 
@@ -123,7 +123,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && world.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
+				if (direction != Direction.field_11033 && world.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
 					bl = true;
 					break;
 				}
@@ -154,23 +154,23 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LEVEL);
+		builder.add(LEVEL);
 	}
 
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		if ((Integer)blockState.get(LEVEL) == 0) {
-			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
+			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 			return this.fluid;
 		} else {
-			return Fluids.EMPTY;
+			return Fluids.field_15906;
 		}
 	}
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (this.fluid.matches(FluidTags.field_15518)) {
-			entity.method_20447();
+			entity.setInLava();
 		}
 	}
 }

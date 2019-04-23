@@ -27,7 +27,7 @@ public class MinecartTNTEntityRenderer extends MinecartEntityRenderer<TNTMinecar
 			GlStateManager.scalef(h, h, h);
 		}
 
-		super.method_4064(tNTMinecartEntity, f, blockState);
+		super.renderBlock(tNTMinecartEntity, f, blockState);
 		if (i > -1 && i / 5 % 2 == 0) {
 			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 			GlStateManager.disableTexture();

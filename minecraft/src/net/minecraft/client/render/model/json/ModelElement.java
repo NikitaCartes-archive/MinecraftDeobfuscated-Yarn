@@ -45,18 +45,18 @@ public class ModelElement {
 
 	private float[] method_3401(Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				return new float[]{this.from.x(), 16.0F - this.to.z(), this.to.x(), 16.0F - this.from.z()};
-			case UP:
+			case field_11036:
 				return new float[]{this.from.x(), this.from.z(), this.to.x(), this.to.z()};
-			case NORTH:
+			case field_11043:
 			default:
 				return new float[]{16.0F - this.to.x(), 16.0F - this.to.y(), 16.0F - this.from.x(), 16.0F - this.from.y()};
-			case SOUTH:
+			case field_11035:
 				return new float[]{this.from.x(), 16.0F - this.to.y(), this.to.x(), 16.0F - this.from.y()};
-			case WEST:
+			case field_11039:
 				return new float[]{this.from.z(), 16.0F - this.to.y(), this.to.z(), 16.0F - this.from.y()};
-			case EAST:
+			case field_11034:
 				return new float[]{16.0F - this.to.z(), 16.0F - this.to.y(), 16.0F - this.from.z(), 16.0F - this.from.y()};
 		}
 	}

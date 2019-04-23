@@ -3,7 +3,7 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
@@ -18,29 +18,29 @@ public class WallSkullBlock extends AbstractSkullBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.NORTH,
+			Direction.field_11043,
 			Block.createCuboidShape(4.0, 4.0, 8.0, 12.0, 12.0, 16.0),
-			Direction.SOUTH,
+			Direction.field_11035,
 			Block.createCuboidShape(4.0, 4.0, 0.0, 12.0, 12.0, 8.0),
-			Direction.EAST,
+			Direction.field_11034,
 			Block.createCuboidShape(0.0, 4.0, 4.0, 8.0, 12.0, 12.0),
-			Direction.WEST,
+			Direction.field_11039,
 			Block.createCuboidShape(8.0, 4.0, 4.0, 16.0, 12.0, 12.0)
 		)
 	);
 
 	protected WallSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
 		super(skullType, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
 	public String getTranslationKey() {
-		return this.getItem().getTranslationKey();
+		return this.asItem().getTranslationKey();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
 	}
 
@@ -76,6 +76,6 @@ public class WallSkullBlock extends AbstractSkullBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 }

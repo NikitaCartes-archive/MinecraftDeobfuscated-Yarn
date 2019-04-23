@@ -191,22 +191,22 @@ public class BufferBuilder {
 	public BufferBuilder texture(double d, double e) {
 		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
 		switch (this.currentElement.getFormat()) {
-			case FLOAT:
+			case field_1623:
 				this.bufByte.putFloat(i, (float)d);
 				this.bufByte.putFloat(i + 4, (float)e);
 				break;
-			case UNSIGNED_INT:
-			case INT:
+			case UINT:
+			case field_1617:
 				this.bufByte.putInt(i, (int)d);
 				this.bufByte.putInt(i + 4, (int)e);
 				break;
-			case UNSIGNED_SHORT:
-			case SHORT:
+			case USHORT:
+			case field_1625:
 				this.bufByte.putShort(i, (short)((int)e));
 				this.bufByte.putShort(i + 2, (short)((int)d));
 				break;
-			case UNSIGNED_BYTE:
-			case BYTE:
+			case UBYTE:
+			case field_1621:
 				this.bufByte.put(i, (byte)((int)e));
 				this.bufByte.put(i + 1, (byte)((int)d));
 		}
@@ -218,22 +218,22 @@ public class BufferBuilder {
 	public BufferBuilder texture(int i, int j) {
 		int k = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
 		switch (this.currentElement.getFormat()) {
-			case FLOAT:
+			case field_1623:
 				this.bufByte.putFloat(k, (float)i);
 				this.bufByte.putFloat(k + 4, (float)j);
 				break;
-			case UNSIGNED_INT:
-			case INT:
+			case UINT:
+			case field_1617:
 				this.bufByte.putInt(k, i);
 				this.bufByte.putInt(k + 4, j);
 				break;
-			case UNSIGNED_SHORT:
-			case SHORT:
+			case USHORT:
+			case field_1625:
 				this.bufByte.putShort(k, (short)j);
 				this.bufByte.putShort(k + 2, (short)i);
 				break;
-			case UNSIGNED_BYTE:
-			case BYTE:
+			case UBYTE:
+			case field_1621:
 				this.bufByte.put(k, (byte)j);
 				this.bufByte.put(k + 1, (byte)i);
 		}
@@ -338,28 +338,28 @@ public class BufferBuilder {
 		} else {
 			int m = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
 			switch (this.currentElement.getFormat()) {
-				case FLOAT:
+				case field_1623:
 					this.bufByte.putFloat(m, (float)i / 255.0F);
 					this.bufByte.putFloat(m + 4, (float)j / 255.0F);
 					this.bufByte.putFloat(m + 8, (float)k / 255.0F);
 					this.bufByte.putFloat(m + 12, (float)l / 255.0F);
 					break;
-				case UNSIGNED_INT:
-				case INT:
+				case UINT:
+				case field_1617:
 					this.bufByte.putFloat(m, (float)i);
 					this.bufByte.putFloat(m + 4, (float)j);
 					this.bufByte.putFloat(m + 8, (float)k);
 					this.bufByte.putFloat(m + 12, (float)l);
 					break;
-				case UNSIGNED_SHORT:
-				case SHORT:
+				case USHORT:
+				case field_1625:
 					this.bufByte.putShort(m, (short)i);
 					this.bufByte.putShort(m + 2, (short)j);
 					this.bufByte.putShort(m + 4, (short)k);
 					this.bufByte.putShort(m + 6, (short)l);
 					break;
-				case UNSIGNED_BYTE:
-				case BYTE:
+				case UBYTE:
+				case field_1621:
 					if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
 						this.bufByte.put(m, (byte)i);
 						this.bufByte.put(m + 1, (byte)j);
@@ -393,25 +393,25 @@ public class BufferBuilder {
 	public BufferBuilder vertex(double d, double e, double f) {
 		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
 		switch (this.currentElement.getFormat()) {
-			case FLOAT:
+			case field_1623:
 				this.bufByte.putFloat(i, (float)(d + this.offsetX));
 				this.bufByte.putFloat(i + 4, (float)(e + this.offsetY));
 				this.bufByte.putFloat(i + 8, (float)(f + this.offsetZ));
 				break;
-			case UNSIGNED_INT:
-			case INT:
+			case UINT:
+			case field_1617:
 				this.bufByte.putInt(i, Float.floatToRawIntBits((float)(d + this.offsetX)));
 				this.bufByte.putInt(i + 4, Float.floatToRawIntBits((float)(e + this.offsetY)));
 				this.bufByte.putInt(i + 8, Float.floatToRawIntBits((float)(f + this.offsetZ)));
 				break;
-			case UNSIGNED_SHORT:
-			case SHORT:
+			case USHORT:
+			case field_1625:
 				this.bufByte.putShort(i, (short)((int)(d + this.offsetX)));
 				this.bufByte.putShort(i + 2, (short)((int)(e + this.offsetY)));
 				this.bufByte.putShort(i + 4, (short)((int)(f + this.offsetZ)));
 				break;
-			case UNSIGNED_BYTE:
-			case BYTE:
+			case UBYTE:
+			case field_1621:
 				this.bufByte.put(i, (byte)((int)(d + this.offsetX)));
 				this.bufByte.put(i + 1, (byte)((int)(e + this.offsetY)));
 				this.bufByte.put(i + 2, (byte)((int)(f + this.offsetZ)));
@@ -438,7 +438,7 @@ public class BufferBuilder {
 		this.currentElementId++;
 		this.currentElementId = this.currentElementId % this.format.getElementCount();
 		this.currentElement = this.format.getElement(this.currentElementId);
-		if (this.currentElement.getType() == VertexFormatElement.Type.PADDING) {
+		if (this.currentElement.getType() == VertexFormatElement.Type.field_1629) {
 			this.nextElement();
 		}
 	}
@@ -446,25 +446,25 @@ public class BufferBuilder {
 	public BufferBuilder normal(float f, float g, float h) {
 		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
 		switch (this.currentElement.getFormat()) {
-			case FLOAT:
+			case field_1623:
 				this.bufByte.putFloat(i, f);
 				this.bufByte.putFloat(i + 4, g);
 				this.bufByte.putFloat(i + 8, h);
 				break;
-			case UNSIGNED_INT:
-			case INT:
+			case UINT:
+			case field_1617:
 				this.bufByte.putInt(i, (int)f);
 				this.bufByte.putInt(i + 4, (int)g);
 				this.bufByte.putInt(i + 8, (int)h);
 				break;
-			case UNSIGNED_SHORT:
-			case SHORT:
+			case USHORT:
+			case field_1625:
 				this.bufByte.putShort(i, (short)((int)f * 32767 & 65535));
 				this.bufByte.putShort(i + 2, (short)((int)g * 32767 & 65535));
 				this.bufByte.putShort(i + 4, (short)((int)h * 32767 & 65535));
 				break;
-			case UNSIGNED_BYTE:
-			case BYTE:
+			case UBYTE:
+			case field_1621:
 				this.bufByte.put(i, (byte)((int)f * 127 & 0xFF));
 				this.bufByte.put(i + 1, (byte)((int)g * 127 & 0xFF));
 				this.bufByte.put(i + 2, (byte)((int)h * 127 & 0xFF));

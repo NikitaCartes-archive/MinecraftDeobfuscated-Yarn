@@ -5,40 +5,40 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class StopFollowingCustomerGoal extends Goal {
-	private final AbstractTraderEntity field_6610;
+	private final AbstractTraderEntity trader;
 
 	public StopFollowingCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
-		this.field_6610 = abstractTraderEntity;
+		this.trader = abstractTraderEntity;
 		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.field_6610.isAlive()) {
+		if (!this.trader.isAlive()) {
 			return false;
-		} else if (this.field_6610.isInsideWater()) {
+		} else if (this.trader.isInsideWater()) {
 			return false;
-		} else if (!this.field_6610.onGround) {
+		} else if (!this.trader.onGround) {
 			return false;
-		} else if (this.field_6610.velocityModified) {
+		} else if (this.trader.velocityModified) {
 			return false;
 		} else {
-			PlayerEntity playerEntity = this.field_6610.getCurrentCustomer();
+			PlayerEntity playerEntity = this.trader.getCurrentCustomer();
 			if (playerEntity == null) {
 				return false;
 			} else {
-				return this.field_6610.squaredDistanceTo(playerEntity) > 16.0 ? false : playerEntity.container != null;
+				return this.trader.squaredDistanceTo(playerEntity) > 16.0 ? false : playerEntity.container != null;
 			}
 		}
 	}
 
 	@Override
 	public void start() {
-		this.field_6610.getNavigation().stop();
+		this.trader.getNavigation().stop();
 	}
 
 	@Override
 	public void stop() {
-		this.field_6610.setCurrentCustomer(null);
+		this.trader.setCurrentCustomer(null);
 	}
 }

@@ -3,7 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
@@ -37,12 +37,12 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE, LEAVES, STAGE);
+		builder.add(AGE, LEAVES, STAGE);
 	}
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+		return Block.OffsetType.field_10657;
 	}
 
 	@Override
@@ -51,14 +51,14 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		VoxelShape voxelShape = blockState.get(LEAVES) == BambooLeaves.field_12468 ? LARGE_LEAVES_SHAPE : SMALL_LEAVES_SHAPE;
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return NO_LEAVES_SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
@@ -114,7 +114,7 @@ public class BambooBlock extends Block implements Fertilizable {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
+		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
 			iWorld.setBlockState(blockPos, blockState.cycle(AGE), 2);
 		}
 
@@ -160,7 +160,7 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	protected void updateLeaves(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {

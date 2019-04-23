@@ -7,7 +7,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.particle.BlockStateParticleParameters;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -33,7 +33,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -43,7 +43,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
@@ -64,7 +64,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
+	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
 		private final SpriteProvider field_17809;
 
 		public Factory(SpriteProvider spriteProvider) {
@@ -72,14 +72,12 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		}
 
 		@Nullable
-		public Particle method_3033(
-			BlockStateParticleParameters blockStateParticleParameters, World world, double d, double e, double f, double g, double h, double i
-		) {
-			BlockState blockState = blockStateParticleParameters.getBlockState();
+		public Particle method_3033(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+			BlockState blockState = blockStateParticleEffect.getBlockState();
 			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.field_11455) {
 				return null;
 			} else {
-				int j = MinecraftClient.getInstance().getBlockColorMap().method_1691(blockState, world, new BlockPos(d, e, f));
+				int j = MinecraftClient.getInstance().getBlockColorMap().getColor(blockState, world, new BlockPos(d, e, f));
 				if (blockState.getBlock() instanceof FallingBlock) {
 					j = ((FallingBlock)blockState.getBlock()).getColor(blockState);
 				}

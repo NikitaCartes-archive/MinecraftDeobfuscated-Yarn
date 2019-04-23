@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TextureManager implements TextureTickListener, ResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Identifier field_5285 = new Identifier("");
+	public static final Identifier MISSING_IDENTIFIER = new Identifier("");
 	private final Map<Identifier, Texture> textures = Maps.<Identifier, Texture>newHashMap();
 	private final List<TextureTickListener> tickListeners = Lists.<TextureTickListener>newArrayList();
 	private final Map<String, Integer> dynamicIdCounters = Maps.<String, Integer>newHashMap();
@@ -64,7 +64,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		try {
 			texture.load(this.resourceContainer);
 		} catch (IOException var8) {
-			if (identifier != field_5285) {
+			if (identifier != MISSING_IDENTIFIER) {
 				LOGGER.warn("Failed to load texture: {}", identifier, var8);
 			}
 
@@ -127,10 +127,15 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+		ResourceReloadListener.Synchronizer synchronizer,
+		ResourceManager resourceManager,
+		Profiler profiler,
+		Profiler profiler2,
+		Executor executor,
+		Executor executor2
 	) {
-		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
-			.thenCompose(helper::waitForAll)
+		return CompletableFuture.allOf(MainMenuScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
+			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();
 				Iterator<Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();

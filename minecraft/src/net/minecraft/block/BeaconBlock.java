@@ -66,6 +66,6 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 }

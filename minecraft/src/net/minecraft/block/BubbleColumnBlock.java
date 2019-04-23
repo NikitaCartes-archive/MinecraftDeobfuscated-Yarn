@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -36,7 +36,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		BlockState blockState2 = world.getBlockState(blockPos.up());
 		if (blockState2.isAir()) {
-			entity.method_5700((Boolean)blockState.get(DRAG));
+			entity.onBubbleColumnSurfaceCollision((Boolean)blockState.get(DRAG));
 			if (!world.isClient) {
 				ServerWorld serverWorld = (ServerWorld)world;
 
@@ -66,7 +66,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 				}
 			}
 		} else {
-			entity.method_5764((Boolean)blockState.get(DRAG));
+			entity.onBubbleColumnCollision((Boolean)blockState.get(DRAG));
 		}
 	}
 
@@ -136,9 +136,9 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10382.getDefaultState();
 		} else {
-			if (direction == Direction.DOWN) {
+			if (direction == Direction.field_11033) {
 				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(iWorld, blockPos2))), 2);
-			} else if (direction == Direction.UP && blockState2.getBlock() != Blocks.field_10422 && isStillWater(iWorld, blockPos2)) {
+			} else if (direction == Direction.field_11036 && blockState2.getBlock() != Blocks.field_10422 && isStillWater(iWorld, blockPos2)) {
 				iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 			}
 
@@ -154,13 +154,13 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 
 	@Override
@@ -170,12 +170,12 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(DRAG);
+		builder.add(DRAG);
 	}
 
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
+		iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 		return Fluids.WATER;
 	}
 }

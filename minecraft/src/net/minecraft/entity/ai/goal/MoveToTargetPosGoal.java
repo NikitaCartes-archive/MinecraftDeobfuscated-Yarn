@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
 public abstract class MoveToTargetPosGoal extends Goal {
-	protected final MobEntityWithAi owner;
+	protected final MobEntityWithAi mob;
 	public final double speed;
 	protected int cooldown;
 	protected int tryingTime;
@@ -22,7 +22,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	}
 
 	public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i, int j) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.range = i;
 		this.lowestY = 0;
@@ -36,7 +36,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			this.cooldown--;
 			return false;
 		} else {
-			this.cooldown = this.getInterval(this.owner);
+			this.cooldown = this.getInterval(this.mob);
 			return this.findTargetPos();
 		}
 	}
@@ -47,18 +47,18 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.owner.world, this.targetPos);
+		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.mob.world, this.targetPos);
 	}
 
 	@Override
 	public void start() {
 		this.startMovingToTarget();
 		this.tryingTime = 0;
-		this.safeWaitingTime = this.owner.getRand().nextInt(this.owner.getRand().nextInt(1200) + 1200) + 1200;
+		this.safeWaitingTime = this.mob.getRand().nextInt(this.mob.getRand().nextInt(1200) + 1200) + 1200;
 	}
 
 	protected void startMovingToTarget() {
-		this.owner
+		this.mob
 			.getNavigation()
 			.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
 	}
@@ -69,11 +69,11 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (!this.targetPos.up().isWithinDistance(this.owner.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+		if (!this.targetPos.up().isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
-				this.owner
+				this.mob
 					.getNavigation()
 					.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
 			}
@@ -94,7 +94,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	protected boolean findTargetPos() {
 		int i = this.range;
 		int j = this.maxYDifference;
-		BlockPos blockPos = new BlockPos(this.owner);
+		BlockPos blockPos = new BlockPos(this.mob);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = this.lowestY; k <= j; k = k > 0 ? -k : 1 - k) {
@@ -102,7 +102,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
 						mutable.set(blockPos).setOffset(m, k - 1, n);
-						if (this.owner.isInWalkTargetRange(mutable) && this.isTargetPos(this.owner.world, mutable)) {
+						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
 							this.targetPos = mutable;
 							return true;
 						}

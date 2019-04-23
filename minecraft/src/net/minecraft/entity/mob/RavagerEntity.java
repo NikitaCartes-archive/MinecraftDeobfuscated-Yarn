@@ -33,7 +33,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.EntityTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -58,7 +58,7 @@ public class RavagerEntity extends RaiderEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(4, new RavagerEntity.class_1585());
+		this.goalSelector.add(4, new RavagerEntity.AttackGoal());
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.4));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
@@ -70,7 +70,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Override
 	protected void method_20417() {
-		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTags.field_19168);
+		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTypeTags.field_19168);
 		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
@@ -137,8 +137,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.isAlive()) {
 			if (this.cannotMove()) {
 				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
@@ -328,8 +328,8 @@ public class RavagerEntity extends RaiderEntity {
 		return false;
 	}
 
-	class class_1585 extends MeleeAttackGoal {
-		public class_1585() {
+	class AttackGoal extends MeleeAttackGoal {
+		public AttackGoal() {
 			super(RavagerEntity.this, 1.0, true);
 		}
 

@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,8 +35,8 @@ public class CoralBlock extends CoralParentBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.AIR.getDefaultState();
+		if (direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)) {
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			this.checkLivingConditions(blockState, iWorld, blockPos);
 			if ((Boolean)blockState.get(WATERLOGGED)) {
@@ -48,7 +48,7 @@ public class CoralBlock extends CoralParentBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 }

@@ -37,9 +37,9 @@ public final class PerlinNoiseSampler {
 		double o = i - (double)l;
 		double p = j - (double)m;
 		double q = k - (double)n;
-		double r = MathHelper.ease(o);
-		double s = MathHelper.ease(p);
-		double t = MathHelper.ease(q);
+		double r = MathHelper.perlinFade(o);
+		double s = MathHelper.perlinFade(p);
+		double t = MathHelper.perlinFade(q);
 		double v;
 		if (g != 0.0) {
 			double u = Math.min(h, p);
@@ -53,7 +53,7 @@ public final class PerlinNoiseSampler {
 
 	private static double method_16448(int i, double d, double e, double f) {
 		int j = i & 15;
-		return SimplexNoiseSampler.method_15431(SimplexNoiseSampler.field_15766[j], d, e, f);
+		return SimplexNoiseSampler.dot(SimplexNoiseSampler.gradients[j], d, e, f);
 	}
 
 	private int method_16449(int i) {

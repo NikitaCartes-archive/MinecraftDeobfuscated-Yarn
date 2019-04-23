@@ -33,7 +33,7 @@ public class RailBlock extends AbstractRailBlock {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_180:
+			case field_11464:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12666);
@@ -52,7 +52,7 @@ public class RailBlock extends AbstractRailBlock {
 					case field_12663:
 						return blockState.with(SHAPE, RailShape.field_12671);
 				}
-			case ROT_270:
+			case field_11465:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12670);
@@ -75,7 +75,7 @@ public class RailBlock extends AbstractRailBlock {
 					case field_12674:
 						return blockState.with(SHAPE, RailShape.field_12665);
 				}
-			case ROT_90:
+			case field_11463:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12668);
@@ -107,7 +107,7 @@ public class RailBlock extends AbstractRailBlock {
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		RailShape railShape = blockState.get(SHAPE);
 		switch (blockMirror) {
-			case LEFT_RIGHT:
+			case field_11300:
 				switch (railShape) {
 					case field_12670:
 						return blockState.with(SHAPE, RailShape.field_12668);
@@ -124,7 +124,7 @@ public class RailBlock extends AbstractRailBlock {
 					default:
 						return super.mirror(blockState, blockMirror);
 				}
-			case FRONT_BACK:
+			case field_11301:
 				switch (railShape) {
 					case field_12667:
 						return blockState.with(SHAPE, RailShape.field_12666);
@@ -150,6 +150,6 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(SHAPE);
+		builder.add(SHAPE);
 	}
 }

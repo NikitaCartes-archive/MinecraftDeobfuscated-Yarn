@@ -6,10 +6,10 @@ import net.minecraft.recipe.RecipeType;
 
 public class BlastFurnaceContainer extends AbstractFurnaceContainer {
 	public BlastFurnaceContainer(int i, PlayerInventory playerInventory) {
-		super(ContainerType.BLAST_FURNACE, RecipeType.BLASTING, i, playerInventory);
+		super(ContainerType.field_17331, RecipeType.BLASTING, i, playerInventory);
 	}
 
 	public BlastFurnaceContainer(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ContainerType.BLAST_FURNACE, RecipeType.BLASTING, i, playerInventory, inventory, propertyDelegate);
+		super(ContainerType.field_17331, RecipeType.BLASTING, i, playerInventory, inventory, propertyDelegate);
 	}
 }

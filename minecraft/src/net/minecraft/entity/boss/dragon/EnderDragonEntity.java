@@ -68,7 +68,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	public float field_7030;
 	public boolean field_7027;
 	public int field_7031;
-	public EnderCrystalEntity field_7024;
+	public EnderCrystalEntity connectedCrystal;
 	private final EnderDragonFight fight;
 	private final PhaseManager phaseManager;
 	private int field_7018 = 100;
@@ -78,7 +78,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private final PathMinHeap field_7008 = new PathMinHeap();
 
 	public EnderDragonEntity(EntityType<? extends EnderDragonEntity> entityType, World world) {
-		super(EntityType.ENDER_DRAGON, world);
+		super(EntityType.field_6116, world);
 		this.partHead = new EnderDragonPart(this, "head", 1.0F, 1.0F);
 		this.partNeck = new EnderDragonPart(this, "neck", 3.0F, 3.0F);
 		this.partBody = new EnderDragonPart(this, "body", 5.0F, 3.0F);
@@ -111,7 +111,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.getDataTracker().startTracking(PHASE_TYPE, PhaseType.HOVER.getTypeId());
+		this.getDataTracker().startTracking(PHASE_TYPE, PhaseType.field_7075.getTypeId());
 	}
 
 	public double[] method_6817(int i, float f) {
@@ -134,7 +134,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.world.isClient) {
 			this.setHealth(this.getHealth());
 			if (!this.isSilent()) {
@@ -353,9 +353,9 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	private void method_6830() {
-		if (this.field_7024 != null) {
-			if (this.field_7024.removed) {
-				this.field_7024 = null;
+		if (this.connectedCrystal != null) {
+			if (this.connectedCrystal.removed) {
+				this.connectedCrystal = null;
 			} else if (this.age % 10 == 0 && this.getHealth() < this.getHealthMaximum()) {
 				this.setHealth(this.getHealth() + 1.0F);
 			}
@@ -374,7 +374,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				}
 			}
 
-			this.field_7024 = enderCrystalEntity;
+			this.connectedCrystal = enderCrystalEntity;
 		}
 	}
 
@@ -459,14 +459,14 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.method_6819(damageSource, f);
 				if (this.getHealth() <= 0.0F && !this.phaseManager.getCurrent().method_6848()) {
 					this.setHealth(1.0F);
-					this.phaseManager.setPhase(PhaseType.DYING);
+					this.phaseManager.setPhase(PhaseType.field_7068);
 				}
 
 				if (this.phaseManager.getCurrent().method_6848()) {
 					this.field_7029 = (int)((float)this.field_7029 + (g - this.getHealth()));
 					if ((float)this.field_7029 > 0.25F * this.getHealthMaximum()) {
 						this.field_7029 = 0;
-						this.phaseManager.setPhase(PhaseType.TAKEOFF);
+						this.phaseManager.setPhase(PhaseType.field_7077);
 					}
 				}
 			}
@@ -775,7 +775,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		Phase phase = this.phaseManager.getCurrent();
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		double d;
-		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
+		if (phaseType == PhaseType.field_7067 || phaseType == PhaseType.field_7077) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			d = (double)((float)i / f);
@@ -794,7 +794,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		Phase phase = this.phaseManager.getCurrent();
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		Vec3d vec3d;
-		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
+		if (phaseType == PhaseType.field_7067 || phaseType == PhaseType.field_7077) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			float g = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			float h = 6.0F / g;
@@ -824,7 +824,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 
-		if (enderCrystalEntity == this.field_7024) {
+		if (enderCrystalEntity == this.connectedCrystal) {
 			this.damagePart(this.partHead, DamageSource.explosion(playerEntity), 10.0F);
 		}
 

@@ -4,18 +4,18 @@ import net.minecraft.container.BlastFurnaceContainer;
 import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	public BlastFurnaceBlockEntity() {
-		super(BlockEntityType.BLAST_FURNACE, RecipeType.BLASTING);
+		super(BlockEntityType.field_16415, RecipeType.BLASTING);
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.blast_furnace");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.blast_furnace");
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {
-		super(EntityType.FIREWORK_ROCKET, world);
+		super(EntityType.field_6133, world);
 		this.life = 0;
 		this.setPosition(d, e, f);
 		int i = 1;
@@ -200,24 +200,24 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	protected void handleCollision(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY && !this.world.isClient) {
+		if (hitResult.getType() == HitResult.Type.field_1331 && !this.world.isClient) {
 			this.explodeAndRemove();
 		} else if (this.collided) {
 			BlockPos blockPos;
-			if (hitResult.getType() == HitResult.Type.BLOCK) {
+			if (hitResult.getType() == HitResult.Type.field_1332) {
 				blockPos = new BlockPos(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				blockPos = new BlockPos(this);
 			}
 
 			this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
-			if (this.method_20308()) {
+			if (this.hasExplosionEffects()) {
 				this.explodeAndRemove();
 			}
 		}
 	}
 
-	private boolean method_20308() {
+	private boolean hasExplosionEffects() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
 		ListTag listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
@@ -248,8 +248,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5 * (double)i, livingEntity.z);
 						HitResult hitResult = this.world
-							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
-						if (hitResult.getType() == HitResult.Type.NONE) {
+							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this));
+						if (hitResult.getType() == HitResult.Type.field_1333) {
 							bl = true;
 							break;
 						}
@@ -276,7 +276,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	@Override
 	public void handleStatus(byte b) {
 		if (b == 17 && this.world.isClient) {
-			if (!this.method_20308()) {
+			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
 					this.world.addParticle(ParticleTypes.field_11203, this.x, this.y, this.z, this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
 				}

@@ -48,13 +48,13 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
 		}
 
 		blockRenderManager.getModelRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -106,7 +106,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.field_4319);
 			}
 
 			GlStateManager.popMatrix();

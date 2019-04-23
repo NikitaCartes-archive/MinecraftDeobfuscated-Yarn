@@ -197,7 +197,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
@@ -289,7 +289,7 @@ public class GuardianEntity extends HostileEntity {
 			}
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	protected SoundEvent getFlopSound() {
@@ -326,7 +326,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+	protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
 		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
@@ -366,67 +366,67 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	static class FireBeamGoal extends Goal {
-		private final GuardianEntity owner;
+		private final GuardianEntity guardian;
 		private int beamTicks;
-		private final boolean elderOwner;
+		private final boolean elder;
 
 		public FireBeamGoal(GuardianEntity guardianEntity) {
-			this.owner = guardianEntity;
-			this.elderOwner = guardianEntity instanceof ElderGuardianEntity;
+			this.guardian = guardianEntity;
+			this.elder = guardianEntity instanceof ElderGuardianEntity;
 			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
-			LivingEntity livingEntity = this.owner.getTarget();
+			LivingEntity livingEntity = this.guardian.getTarget();
 			return livingEntity != null && livingEntity.isAlive();
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return super.shouldContinue() && (this.elderOwner || this.owner.squaredDistanceTo(this.owner.getTarget()) > 9.0);
+			return super.shouldContinue() && (this.elder || this.guardian.squaredDistanceTo(this.guardian.getTarget()) > 9.0);
 		}
 
 		@Override
 		public void start() {
 			this.beamTicks = -10;
-			this.owner.getNavigation().stop();
-			this.owner.getLookControl().lookAt(this.owner.getTarget(), 90.0F, 90.0F);
-			this.owner.velocityDirty = true;
+			this.guardian.getNavigation().stop();
+			this.guardian.getLookControl().lookAt(this.guardian.getTarget(), 90.0F, 90.0F);
+			this.guardian.velocityDirty = true;
 		}
 
 		@Override
 		public void stop() {
-			this.owner.setBeamTarget(0);
-			this.owner.setTarget(null);
-			this.owner.wanderGoal.ignoreChanceOnce();
+			this.guardian.setBeamTarget(0);
+			this.guardian.setTarget(null);
+			this.guardian.wanderGoal.ignoreChanceOnce();
 		}
 
 		@Override
 		public void tick() {
-			LivingEntity livingEntity = this.owner.getTarget();
-			this.owner.getNavigation().stop();
-			this.owner.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
-			if (!this.owner.canSee(livingEntity)) {
-				this.owner.setTarget(null);
+			LivingEntity livingEntity = this.guardian.getTarget();
+			this.guardian.getNavigation().stop();
+			this.guardian.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
+			if (!this.guardian.canSee(livingEntity)) {
+				this.guardian.setTarget(null);
 			} else {
 				this.beamTicks++;
 				if (this.beamTicks == 0) {
-					this.owner.setBeamTarget(this.owner.getTarget().getEntityId());
-					this.owner.world.sendEntityStatus(this.owner, (byte)21);
-				} else if (this.beamTicks >= this.owner.getWarmupTime()) {
+					this.guardian.setBeamTarget(this.guardian.getTarget().getEntityId());
+					this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
-					if (this.owner.world.getDifficulty() == Difficulty.HARD) {
+					if (this.guardian.world.getDifficulty() == Difficulty.field_5807) {
 						f += 2.0F;
 					}
 
-					if (this.elderOwner) {
+					if (this.elder) {
 						f += 2.0F;
 					}
 
-					livingEntity.damage(DamageSource.magic(this.owner, this.owner), f);
-					livingEntity.damage(DamageSource.mob(this.owner), (float)this.owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
-					this.owner.setTarget(null);
+					livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
+					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
+					this.guardian.setTarget(null);
 				}
 
 				super.tick();

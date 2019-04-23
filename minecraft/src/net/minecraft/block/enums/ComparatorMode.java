@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum ComparatorMode implements StringRepresentable {
+public enum ComparatorMode implements SnakeCaseIdentifiable {
 	field_12576("compare"),
 	field_12578("subtract");
 
@@ -17,7 +17,7 @@ public enum ComparatorMode implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

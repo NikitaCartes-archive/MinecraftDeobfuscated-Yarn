@@ -16,8 +16,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.WITCH, 1, 1, 1));
-	private static final List<Biome.SpawnEntry> CREATURE_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.CAT, 1, 1, 1));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.field_6145, 1, 1, 1));
+	private static final List<Biome.SpawnEntry> CREATURE_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.field_16281, 1, 1, 1));
 
 	public SwampHutFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);

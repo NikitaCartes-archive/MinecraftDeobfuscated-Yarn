@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class ServerEntry {
@@ -19,7 +19,7 @@ public class ServerEntry {
 	public String version = SharedConstants.getGameVersion().getName();
 	public boolean online;
 	public String playerListSummary;
-	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.PROMPT;
+	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.field_3767;
 	private String icon;
 	private boolean local;
 
@@ -37,9 +37,9 @@ public class ServerEntry {
 			compoundTag.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerEntry.ResourcePackState.ENABLED) {
+		if (this.resourcePackState == ServerEntry.ResourcePackState.field_3768) {
 			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerEntry.ResourcePackState.DISABLED) {
+		} else if (this.resourcePackState == ServerEntry.ResourcePackState.field_3764) {
 			compoundTag.putBoolean("acceptTextures", false);
 		}
 
@@ -62,12 +62,12 @@ public class ServerEntry {
 
 		if (compoundTag.containsKey("acceptTextures", 1)) {
 			if (compoundTag.getBoolean("acceptTextures")) {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
+				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3768);
 			} else {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
+				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3764);
 			}
 		} else {
-			serverEntry.setResourcePackState(ServerEntry.ResourcePackState.PROMPT);
+			serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3767);
 		}
 
 		return serverEntry;
@@ -96,17 +96,17 @@ public class ServerEntry {
 
 	@Environment(EnvType.CLIENT)
 	public static enum ResourcePackState {
-		ENABLED("enabled"),
-		DISABLED("disabled"),
-		PROMPT("prompt");
+		field_3768("enabled"),
+		field_3764("disabled"),
+		field_3767("prompt");
 
-		private final TextComponent component;
+		private final Component component;
 
 		private ResourcePackState(String string2) {
-			this.component = new TranslatableTextComponent("addServer.resourcePack." + string2);
+			this.component = new TranslatableComponent("addServer.resourcePack." + string2);
 		}
 
-		public TextComponent getComponent() {
+		public Component getComponent() {
 			return this.component;
 		}
 	}

@@ -34,7 +34,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			return 0;
 		} else {
 			boolean bl = bakedModel.hasDepthInGui();
-			int i = this.method_3998(itemStack);
+			int i = this.getRenderedAmount(itemStack);
 			float h = 0.25F;
 			float j = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
 			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.field_4318).scale.y();
@@ -49,7 +49,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		}
 	}
 
-	private int method_3998(ItemStack itemStack) {
+	private int getRenderedAmount(ItemStack itemStack) {
 		int i = 1;
 		if (itemStack.getAmount() > 48) {
 			i = 5;
@@ -95,7 +95,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			GlStateManager.translatef(n, o, p);
 		}
 
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemEntity));
 		}
@@ -128,7 +128,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 		}
 
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

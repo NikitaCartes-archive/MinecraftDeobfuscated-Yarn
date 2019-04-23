@@ -37,7 +37,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 			}
 		};
 		return pointOfInterestStorage.getNearestPosition(
-			PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.ANY
+			PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.field_18489
 		);
 	}
 }

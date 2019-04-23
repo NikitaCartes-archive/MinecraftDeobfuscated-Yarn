@@ -7,8 +7,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class ListTag extends AbstractListTag<Tag> {
 	private List<Tag> value = Lists.<Tag>newArrayList();
@@ -253,31 +253,31 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public Component toTextComponent(String string, int i) {
 		if (this.isEmpty()) {
-			return new StringTextComponent("[]");
+			return new TextComponent("[]");
 		} else {
-			TextComponent textComponent = new StringTextComponent("[");
+			Component component = new TextComponent("[");
 			if (!string.isEmpty()) {
-				textComponent.append("\n");
+				component.append("\n");
 			}
 
 			for (int j = 0; j < this.value.size(); j++) {
-				TextComponent textComponent2 = new StringTextComponent(Strings.repeat(string, i + 1));
-				textComponent2.append(((Tag)this.value.get(j)).toTextComponent(string, i + 1));
+				Component component2 = new TextComponent(Strings.repeat(string, i + 1));
+				component2.append(((Tag)this.value.get(j)).toTextComponent(string, i + 1));
 				if (j != this.value.size() - 1) {
-					textComponent2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
+					component2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}
 
-				textComponent.append(textComponent2);
+				component.append(component2);
 			}
 
 			if (!string.isEmpty()) {
-				textComponent.append("\n").append(Strings.repeat(string, i));
+				component.append("\n").append(Strings.repeat(string, i));
 			}
 
-			textComponent.append("]");
-			return textComponent;
+			component.append("]");
+			return component;
 		}
 	}
 

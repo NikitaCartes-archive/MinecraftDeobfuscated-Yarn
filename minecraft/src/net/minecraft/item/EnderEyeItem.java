@@ -32,7 +32,7 @@ public class EnderEyeItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() != Blocks.field_10398 || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
@@ -62,17 +62,17 @@ public class EnderEyeItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.NONE);
-		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10398) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1348);
+		if (hitResult.getType() == HitResult.Type.field_1332 && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10398) {
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
 			if (!world.isClient) {
 				BlockPos blockPos = world.getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0F), playerEntity.z);
-					enderEyeEntity.method_16933(itemStack);
-					enderEyeEntity.method_7478(blockPos);
+					enderEyeEntity.setItem(itemStack);
+					enderEyeEntity.moveTowards(blockPos);
 					world.spawnEntity(enderEyeEntity);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);

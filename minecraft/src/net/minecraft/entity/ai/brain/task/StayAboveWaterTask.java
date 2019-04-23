@@ -18,7 +18,7 @@ public class StayAboveWaterTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_19010(ServerWorld serverWorld, MobEntity mobEntity) {
-		return mobEntity.isInsideWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isTouchingLava();
+		return mobEntity.isInsideWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
 	}
 
 	protected boolean method_19011(ServerWorld serverWorld, MobEntity mobEntity, long l) {

@@ -72,28 +72,28 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
 			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.HEAD);
-			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.BODY);
-			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_LEG);
-			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_LEG);
-			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_ARM);
-			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_ARM);
+			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7563);
+			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7564);
+			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7566);
+			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7565);
+			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7568);
+			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7570);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN);
-			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF);
+			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
+			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
 			if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.field_6183) {
-				playerEntityModel.armPoseRight = armPose;
-				playerEntityModel.armPoseLeft = armPose2;
+				playerEntityModel.rightArmPose = armPose;
+				playerEntityModel.leftArmPose = armPose2;
 			} else {
-				playerEntityModel.armPoseRight = armPose2;
-				playerEntityModel.armPoseLeft = armPose;
+				playerEntityModel.rightArmPose = armPose2;
+				playerEntityModel.leftArmPose = armPose;
 			}
 		}
 	}
 
 	private BipedEntityModel.ArmPose method_4210(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
 		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack3 = hand == Hand.MAIN ? itemStack : itemStack2;
+		ItemStack itemStack3 = hand == Hand.field_5808 ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
 			armPose = BipedEntityModel.ArmPose.field_3410;
 			if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
@@ -148,7 +148,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		super.renderLabel(abstractClientPlayerEntity, d, e, f, string, g);
 	}
 
-	public void method_4220(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public void renderRightArm(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		float f = 1.0F;
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		float g = 0.0625F;
@@ -159,14 +159,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		playerEntityModel.armRight.pitch = 0.0F;
-		playerEntityModel.armRight.render(0.0625F);
+		playerEntityModel.rightArm.pitch = 0.0F;
+		playerEntityModel.rightArm.render(0.0625F);
 		playerEntityModel.rightArmOverlay.pitch = 0.0F;
 		playerEntityModel.rightArmOverlay.render(0.0625F);
 		GlStateManager.disableBlend();
 	}
 
-	public void method_4221(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public void renderLeftArm(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		float f = 1.0F;
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		float g = 0.0625F;
@@ -177,8 +177,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		playerEntityModel.armLeft.pitch = 0.0F;
-		playerEntityModel.armLeft.render(0.0625F);
+		playerEntityModel.leftArm.pitch = 0.0F;
+		playerEntityModel.leftArm.render(0.0625F);
 		playerEntityModel.leftArmOverlay.pitch = 0.0F;
 		playerEntityModel.leftArmOverlay.render(0.0625F);
 		GlStateManager.disableBlend();

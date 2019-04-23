@@ -32,8 +32,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundInstance;
 import net.minecraft.client.gl.GlBuffer;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.GlProgramManager;
@@ -54,6 +52,8 @@ import net.minecraft.client.render.chunk.DisplayListChunkRendererList;
 import net.minecraft.client.render.chunk.VboChunkRendererList;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -61,16 +61,16 @@ import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.particle.ItemStackParticleParameters;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.ResourceManager;
@@ -156,8 +156,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private ChunkRendererList chunkRendererList;
 	private int renderDistance = -1;
 	private int field_4076 = 2;
-	private int renderedEntities;
-	private int field_4110;
+	private int regularEntityCount;
+	private int blockEntityCount;
 	private boolean field_4066;
 	private Frustum forcedFrustum;
 	private final Vector4f[] field_4065 = new Vector4f[8];
@@ -184,8 +184,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.field_4100 = new VertexFormat();
-		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3));
-		this.setupStarRendering();
+		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.field_1623, VertexFormatElement.Type.field_1633, 3));
+		this.renderStars();
 		this.method_3277();
 		this.method_3265();
 	}
@@ -342,7 +342,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	private void setupStarRendering() {
+	private void renderStars() {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		if (this.starsBuffer != null) {
@@ -423,7 +423,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.cameraChunkX = Integer.MIN_VALUE;
 		this.cameraChunkY = Integer.MIN_VALUE;
 		this.cameraChunkZ = Integer.MIN_VALUE;
-		this.entityRenderDispatcher.method_3944(clientWorld);
+		this.entityRenderDispatcher.setWorld(clientWorld);
 		this.world = clientWorld;
 		if (clientWorld != null) {
 			this.reload();
@@ -436,7 +436,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 
 			if (this.chunkBatcher != null) {
-				this.chunkBatcher.method_3619();
+				this.chunkBatcher.stop();
 			}
 
 			this.chunkBatcher = null;
@@ -465,7 +465,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 
 			if (bl != this.vertexBufferObjectsEnabled) {
-				this.setupStarRendering();
+				this.renderStars();
 				this.method_3277();
 				this.method_3265();
 			}
@@ -474,7 +474,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.chunkRenderDispatcher.delete();
 			}
 
-			this.method_3280();
+			this.clearChunkRenderers();
 			synchronized (this.blockEntities) {
 				this.blockEntities.clear();
 			}
@@ -491,9 +491,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	protected void method_3280() {
+	protected void clearChunkRenderers() {
 		this.chunkRenderers.clear();
-		this.chunkBatcher.method_3632();
+		this.chunkBatcher.reset();
 	}
 
 	public void onResized(int i, int j) {
@@ -515,8 +515,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.world.getProfiler().push("prepare");
 			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
 			this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
-			this.renderedEntities = 0;
-			this.field_4110 = 0;
+			this.regularEntityCount = 0;
+			this.blockEntityCount = 0;
 			double h = camera.getPos().x;
 			double i = camera.getPos().y;
 			double j = camera.getPos().z;
@@ -530,13 +530,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			List<Entity> list2 = Lists.<Entity>newArrayList();
 
 			for (Entity entity : this.world.getEntities()) {
-				if ((this.entityRenderDispatcher.method_3950(entity, visibleRegion, d, e, g) || entity.method_5821(this.client.player))
+				if ((this.entityRenderDispatcher.shouldRender(entity, visibleRegion, d, e, g) || entity.hasPassengerDeep(this.client.player))
 					&& (
 						entity != camera.getFocusedEntity()
 							|| camera.isThirdPerson()
 							|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
 					)) {
-					this.renderedEntities++;
+					this.regularEntityCount++;
 					this.entityRenderDispatcher.render(entity, f, false);
 					if (entity.isGlowing() || entity instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
 						list.add(entity);
@@ -590,7 +590,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			GuiLighting.enable();
 
 			for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-				List<BlockEntity> list3 = chunkInfo.renderer.getChunkRenderData().getBlockEntities();
+				List<BlockEntity> list3 = chunkInfo.renderer.getData().getBlockEntities();
 				if (!list3.isEmpty()) {
 					for (BlockEntity blockEntity : list3) {
 						BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, -1);
@@ -645,7 +645,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		int i = 0;
 
 		for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-			ChunkRenderData chunkRenderData = chunkInfo.renderer.chunkRenderData;
+			ChunkRenderData chunkRenderData = chunkInfo.renderer.data;
 			if (chunkRenderData != ChunkRenderData.EMPTY && !chunkRenderData.isEmpty()) {
 				i++;
 			}
@@ -655,7 +655,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public String getEntitiesDebugString() {
-		return "E: " + this.renderedEntities + "/" + this.world.getRegularEntityCount() + ", B: " + this.field_4110;
+		return "E: " + this.regularEntityCount + "/" + this.world.getRegularEntityCount() + ", B: " + this.blockEntityCount;
 	}
 
 	public void setUpTerrain(Camera camera, VisibleRegion visibleRegion, int i, boolean bl) {
@@ -682,7 +682,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.world.getProfiler().swap("renderlistcamera");
 		this.chunkRendererList.setCameraPosition(camera.getPos().x, camera.getPos().y, camera.getPos().z);
-		this.chunkBatcher.method_19419(camera.getPos());
+		this.chunkBatcher.setCameraPosition(camera.getPos());
 		this.world.getProfiler().swap("cull");
 		if (this.forcedFrustum != null) {
 			FrustumWithOrigin frustumWithOrigin = new FrustumWithOrigin(this.forcedFrustum);
@@ -765,11 +765,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.chunkInfos.add(chunkInfo2);
 
 				for (Direction direction3 : DIRECTIONS) {
-					ChunkRenderer chunkRenderer4 = this.getChunkRenderer(blockPos2, chunkRenderer3, direction3);
+					ChunkRenderer chunkRenderer4 = this.getAdjacentChunkRenderer(blockPos2, chunkRenderer3, direction3);
 					if ((!bl3 || !chunkInfo2.method_3298(direction3.getOpposite()))
-						&& (!bl3 || direction2 == null || chunkRenderer3.getChunkRenderData().method_3650(direction2.getOpposite(), direction3))
+						&& (!bl3 || direction2 == null || chunkRenderer3.getData().isVisibleThrough(direction2.getOpposite(), direction3))
 						&& chunkRenderer4 != null
-						&& chunkRenderer4.method_3673()
+						&& chunkRenderer4.shouldBuild()
 						&& chunkRenderer4.method_3671(i)
 						&& visibleRegion.intersects(chunkRenderer4.boundingBox)) {
 						WorldRenderer.ChunkInfo chunkInfo3 = new WorldRenderer.ChunkInfo(chunkRenderer4, direction3, chunkInfo2.field_4122 + 1);
@@ -794,16 +794,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		for (WorldRenderer.ChunkInfo chunkInfo2 : this.chunkInfos) {
 			ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
-			if (chunkRenderer3.method_3672() || set2.contains(chunkRenderer3)) {
+			if (chunkRenderer3.shouldRebuild() || set2.contains(chunkRenderer3)) {
 				this.terrainUpdateNecessary = true;
 				BlockPos blockPos3 = chunkRenderer3.getOrigin().add(8, 8, 8);
 				boolean bl5 = blockPos3.getSquaredDistance(blockPos) < 768.0;
-				if (!chunkRenderer3.method_3661() && !bl5) {
+				if (!chunkRenderer3.shouldRebuildOnClientThread() && !bl5) {
 					this.chunkRenderers.add(chunkRenderer3);
 				} else {
 					this.client.getProfiler().push("build near");
-					this.chunkBatcher.method_3627(chunkRenderer3);
-					chunkRenderer3.method_3662();
+					this.chunkBatcher.rebuildSync(chunkRenderer3);
+					chunkRenderer3.unscheduleRebuild();
 					this.client.getProfiler().pop();
 				}
 			}
@@ -828,8 +828,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	@Nullable
-	private ChunkRenderer getChunkRenderer(BlockPos blockPos, ChunkRenderer chunkRenderer, Direction direction) {
-		BlockPos blockPos2 = chunkRenderer.method_3676(direction);
+	private ChunkRenderer getAdjacentChunkRenderer(BlockPos blockPos, ChunkRenderer chunkRenderer, Direction direction) {
+		BlockPos blockPos2 = chunkRenderer.getNeighborPosition(direction);
 		if (MathHelper.abs(blockPos.getX() - blockPos2.getX()) > this.renderDistance * 16) {
 			return null;
 		} else if (blockPos2.getY() < 0 || blockPos2.getY() >= 256) {
@@ -844,7 +844,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	public int renderLayer(BlockRenderLayer blockRenderLayer, Camera camera) {
 		GuiLighting.disable();
-		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT) {
+		if (blockRenderLayer == BlockRenderLayer.field_9179) {
 			this.client.getProfiler().push("translucent_sort");
 			double d = camera.getPos().x - this.lastTranslucentSortX;
 			double e = camera.getPos().y - this.lastTranslucentSortY;
@@ -856,8 +856,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				int i = 0;
 
 				for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-					if (chunkInfo.renderer.chunkRenderData.isBufferInitialized(blockRenderLayer) && i++ < 15) {
-						this.chunkBatcher.method_3620(chunkInfo.renderer);
+					if (chunkInfo.renderer.data.isBufferInitialized(blockRenderLayer) && i++ < 15) {
+						this.chunkBatcher.resortTransparency(chunkInfo.renderer);
 					}
 				}
 			}
@@ -867,14 +867,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.client.getProfiler().push("filterempty");
 		int j = 0;
-		boolean bl = blockRenderLayer == BlockRenderLayer.TRANSLUCENT;
+		boolean bl = blockRenderLayer == BlockRenderLayer.field_9179;
 		int k = bl ? this.chunkInfos.size() - 1 : 0;
 		int l = bl ? -1 : this.chunkInfos.size();
 		int m = bl ? -1 : 1;
 
 		for (int n = k; n != l; n += m) {
 			ChunkRenderer chunkRenderer = ((WorldRenderer.ChunkInfo)this.chunkInfos.get(n)).renderer;
-			if (!chunkRenderer.getChunkRenderData().method_3641(blockRenderLayer)) {
+			if (!chunkRenderer.getData().isEmpty(blockRenderLayer)) {
 				j++;
 				this.chunkRendererList.add(chunkRenderer, blockRenderLayer);
 			}
@@ -904,10 +904,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				VertexFormatElement.Type type = vertexFormatElement.getType();
 				int i = vertexFormatElement.getIndex();
 				switch (type) {
-					case POSITION:
+					case field_1633:
 						GlStateManager.disableClientState(32884);
 						break;
-					case UV:
+					case field_1636:
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0 + i);
 						GlStateManager.disableClientState(32888);
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0);
@@ -1028,7 +1028,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.shadeModel(7425);
 				GlStateManager.pushMatrix();
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotatef(MathHelper.sin(this.world.method_8442(f)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotatef(MathHelper.sin(this.world.getSkyAngleRadians(f)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 				float j = fs[0];
 				float k = fs[1];
@@ -1216,7 +1216,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.texCoordPointer(2, 5126, 28, 12);
 				GlStateManager.colorPointer(4, 5121, 28, 20);
 				GlStateManager.normalPointer(5120, 28, 24);
-				int u = this.field_4080 == CloudRenderMode.field_18164 ? 0 : 1;
+				int u = this.field_4080 == CloudRenderMode.FANCY ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
 					if (v == 0) {
@@ -1234,7 +1234,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.disableClientState(32886);
 				GlStateManager.disableClientState(32885);
 			} else if (this.cloudsDisplayList >= 0) {
-				int u = this.field_4080 == CloudRenderMode.field_18164 ? 0 : 1;
+				int u = this.field_4080 == CloudRenderMode.FANCY ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
 					if (v == 0) {
@@ -1277,7 +1277,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		float y = p * 0.8F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
 		float z = (float)Math.floor(e / 4.0) * 4.0F;
-		if (this.field_4080 == CloudRenderMode.field_18164) {
+		if (this.field_4080 == CloudRenderMode.FANCY) {
 			for (int aa = -3; aa <= 4; aa++) {
 				for (int ab = -3; ab <= 4; ab++) {
 					float ac = (float)(aa * 8);
@@ -1461,24 +1461,24 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void updateChunks(long l) {
-		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.method_3631(l);
+		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.runTasksSync(l);
 		if (!this.chunkRenderers.isEmpty()) {
 			Iterator<ChunkRenderer> iterator = this.chunkRenderers.iterator();
 
 			while (iterator.hasNext()) {
 				ChunkRenderer chunkRenderer = (ChunkRenderer)iterator.next();
 				boolean bl;
-				if (chunkRenderer.method_3661()) {
-					bl = this.chunkBatcher.method_3627(chunkRenderer);
+				if (chunkRenderer.shouldRebuildOnClientThread()) {
+					bl = this.chunkBatcher.rebuildSync(chunkRenderer);
 				} else {
-					bl = this.chunkBatcher.method_3624(chunkRenderer);
+					bl = this.chunkBatcher.rebuild(chunkRenderer);
 				}
 
 				if (!bl) {
 					break;
 				}
 
-				chunkRenderer.method_3662();
+				chunkRenderer.unscheduleRebuild();
 				iterator.remove();
 				long m = l - SystemUtil.getMeasuringTimeNano();
 				if (m < 0L) {
@@ -1664,7 +1664,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void drawHighlightedBlockOutline(Camera camera, HitResult hitResult, int i) {
-		if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK) {
+		if (i == 0 && hitResult.getType() == HitResult.Type.field_1332) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
@@ -1682,7 +1682,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				double e = camera.getPos().y;
 				double f = camera.getPos().z;
 				drawShapeOutline(
-					blockState.getOutlineShape(this.world, blockPos, VerticalEntityPosition.fromEntity(camera.getFocusedEntity())),
+					blockState.getOutlineShape(this.world, blockPos, EntityContext.of(camera.getFocusedEntity())),
 					(double)blockPos.getX() - d,
 					(double)blockPos.getY() - e,
 					(double)blockPos.getZ() - f,
@@ -1861,43 +1861,43 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void addParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.addParticle(particleParameters, bl, false, d, e, f, g, h, i);
+	public void addParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.addParticle(particleEffect, bl, false, d, e, f, g, h, i);
 	}
 
-	public void addParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+	public void addParticle(ParticleEffect particleEffect, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 		try {
-			this.spawnParticle(particleParameters, bl, bl2, d, e, f, g, h, i);
+			this.spawnParticle(particleEffect, bl, bl2, d, e, f, g, h, i);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
-			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
-			crashReportSection.add("Parameters", particleParameters.asString());
+			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()));
+			crashReportSection.add("Parameters", particleEffect.asString());
 			crashReportSection.add("Position", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(d, e, f)));
 			throw new CrashException(crashReport);
 		}
 	}
 
-	private <T extends ParticleParameters> void addParticle(T particleParameters, double d, double e, double f, double g, double h, double i) {
-		this.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
+	private <T extends ParticleEffect> void addParticle(T particleEffect, double d, double e, double f, double g, double h, double i) {
+		this.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
 	}
 
 	@Nullable
-	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		return this.spawnParticle(particleParameters, bl, false, d, e, f, g, h, i);
+	private Particle spawnParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
+		return this.spawnParticle(particleEffect, bl, false, d, e, f, g, h, i);
 	}
 
 	@Nullable
-	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+	private Particle spawnParticle(ParticleEffect particleEffect, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		if (this.client != null && camera.isReady() && this.client.particleManager != null) {
 			ParticlesOption particlesOption = this.getRandomParticleSpawnChance(bl2);
 			if (bl) {
-				return this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
+				return this.client.particleManager.addParticle(particleEffect, d, e, f, g, h, i);
 			} else if (camera.getPos().squaredDistanceTo(d, e, f) > 1024.0) {
 				return null;
 			} else {
-				return particlesOption == ParticlesOption.field_18199 ? null : this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
+				return particlesOption == ParticlesOption.MINIMAL ? null : this.client.particleManager.addParticle(particleEffect, d, e, f, g, h, i);
 			}
 		} else {
 			return null;
@@ -1906,12 +1906,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	private ParticlesOption getRandomParticleSpawnChance(boolean bl) {
 		ParticlesOption particlesOption = this.client.options.particles;
-		if (bl && particlesOption == ParticlesOption.field_18199 && this.world.random.nextInt(10) == 0) {
-			particlesOption = ParticlesOption.field_18198;
+		if (bl && particlesOption == ParticlesOption.MINIMAL && this.world.random.nextInt(10) == 0) {
+			particlesOption = ParticlesOption.DECREASED;
 		}
 
-		if (particlesOption == ParticlesOption.field_18198 && this.world.random.nextInt(3) == 0) {
-			particlesOption = ParticlesOption.field_18199;
+		if (particlesOption == ParticlesOption.DECREASED && this.world.random.nextInt(3) == 0) {
+			particlesOption = ParticlesOption.MINIMAL;
 		}
 
 		return particlesOption;
@@ -2179,7 +2179,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int v = 0; v < 8; v++) {
 					this.addParticle(
-						new ItemStackParticleParameters(ParticleTypes.field_11218, new ItemStack(Items.field_8436)),
+						new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8436)),
 						t,
 						u,
 						d,
@@ -2192,7 +2192,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				float w = (float)(j >> 16 & 0xFF) / 255.0F;
 				float x = (float)(j >> 8 & 0xFF) / 255.0F;
 				float y = (float)(j >> 0 & 0xFF) / 255.0F;
-				ParticleParameters particleParameters = i == 2007 ? ParticleTypes.field_11213 : ParticleTypes.field_11245;
+				ParticleEffect particleEffect = i == 2007 ? ParticleTypes.field_11213 : ParticleTypes.field_11245;
 
 				for (int n = 0; n < 100; n++) {
 					double g = random.nextDouble() * 4.0;
@@ -2200,7 +2200,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double o = Math.cos(h) * g;
 					double p = 0.01 + random.nextDouble() * 0.5;
 					double q = Math.sin(h) * g;
-					Particle particle = this.spawnParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn(), t + o * 0.1, u + 0.3, d + q * 0.1, o, p, q);
+					Particle particle = this.spawnParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), t + o * 0.1, u + 0.3, d + q * 0.1, o, p, q);
 					if (particle != null) {
 						float z = 0.75F + random.nextFloat() * 0.25F;
 						particle.setColor(w * z, x * z, y * z);
@@ -2217,7 +2217,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int v = 0; v < 8; v++) {
 					this.addParticle(
-						new ItemStackParticleParameters(ParticleTypes.field_11218, new ItemStack(Items.field_8449)),
+						new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8449)),
 						t,
 						u,
 						d,

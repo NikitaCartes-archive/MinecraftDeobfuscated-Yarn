@@ -10,57 +10,57 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 public class MeleeAttackGoal extends Goal {
-	protected final MobEntityWithAi entity;
+	protected final MobEntityWithAi mob;
 	protected int ticksUntilAttack;
-	private final double field_6500;
+	private final double speed;
 	private final boolean field_6502;
 	private Path field_6509;
 	private int field_6501;
-	private double field_6508;
-	private double field_6507;
-	private double field_6506;
+	private double targetX;
+	private double targetY;
+	private double targetZ;
 	protected final int field_6504 = 20;
 	private long field_19200;
 
 	public MeleeAttackGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
-		this.entity = mobEntityWithAi;
-		this.field_6500 = d;
+		this.mob = mobEntityWithAi;
+		this.speed = d;
 		this.field_6502 = bl;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		long l = this.entity.world.getTime();
+		long l = this.mob.world.getTime();
 		if (l - this.field_19200 < 20L) {
 			return false;
 		} else {
 			this.field_19200 = l;
-			LivingEntity livingEntity = this.entity.getTarget();
+			LivingEntity livingEntity = this.mob.getTarget();
 			if (livingEntity == null) {
 				return false;
 			} else if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				this.field_6509 = this.entity.getNavigation().findPathTo(livingEntity);
+				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity);
 				return this.field_6509 != null
 					? true
-					: this.getSquaredMaxAttackDistance(livingEntity) >= this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 			}
 		}
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		LivingEntity livingEntity = this.entity.getTarget();
+		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			return false;
 		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else if (!this.field_6502) {
-			return !this.entity.getNavigation().isIdle();
+			return !this.mob.getNavigation().isIdle();
 		} else {
-			return !this.entity.isInWalkTargetRange(new BlockPos(livingEntity))
+			return !this.mob.isInWalkTargetRange(new BlockPos(livingEntity))
 				? false
 				: !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();
 		}
@@ -68,46 +68,46 @@ public class MeleeAttackGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.entity.getNavigation().startMovingAlong(this.field_6509, this.field_6500);
-		this.entity.setAttacking(true);
+		this.mob.getNavigation().startMovingAlong(this.field_6509, this.speed);
+		this.mob.setAttacking(true);
 		this.field_6501 = 0;
 	}
 
 	@Override
 	public void stop() {
-		LivingEntity livingEntity = this.entity.getTarget();
+		LivingEntity livingEntity = this.mob.getTarget();
 		if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
-			this.entity.setTarget(null);
+			this.mob.setTarget(null);
 		}
 
-		this.entity.setAttacking(false);
-		this.entity.getNavigation().stop();
+		this.mob.setAttacking(false);
+		this.mob.getNavigation().stop();
 	}
 
 	@Override
 	public void tick() {
-		LivingEntity livingEntity = this.entity.getTarget();
-		this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+		LivingEntity livingEntity = this.mob.getTarget();
+		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 		this.field_6501--;
-		if ((this.field_6502 || this.entity.getVisibilityCache().canSee(livingEntity))
+		if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
 			&& (
-				this.field_6508 == 0.0 && this.field_6507 == 0.0 && this.field_6506 == 0.0
-					|| livingEntity.squaredDistanceTo(this.field_6508, this.field_6507, this.field_6506) >= 1.0
-					|| this.entity.getRand().nextFloat() < 0.05F
+				this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
+					|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
+					|| this.mob.getRand().nextFloat() < 0.05F
 			)) {
-			this.field_6508 = livingEntity.x;
-			this.field_6507 = livingEntity.getBoundingBox().minY;
-			this.field_6506 = livingEntity.z;
-			this.field_6501 = 4 + this.entity.getRand().nextInt(7);
+			this.targetX = livingEntity.x;
+			this.targetY = livingEntity.getBoundingBox().minY;
+			this.targetZ = livingEntity.z;
+			this.field_6501 = 4 + this.mob.getRand().nextInt(7);
 			if (d > 1024.0) {
 				this.field_6501 += 10;
 			} else if (d > 256.0) {
 				this.field_6501 += 5;
 			}
 
-			if (!this.entity.getNavigation().startMovingTo(livingEntity, this.field_6500)) {
+			if (!this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
 				this.field_6501 += 15;
 			}
 		}
@@ -120,12 +120,12 @@ public class MeleeAttackGoal extends Goal {
 		double e = this.getSquaredMaxAttackDistance(livingEntity);
 		if (d <= e && this.ticksUntilAttack <= 0) {
 			this.ticksUntilAttack = 20;
-			this.entity.swingHand(Hand.MAIN);
-			this.entity.tryAttack(livingEntity);
+			this.mob.swingHand(Hand.field_5808);
+			this.mob.tryAttack(livingEntity);
 		}
 	}
 
 	protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
-		return (double)(this.entity.getWidth() * 2.0F * this.entity.getWidth() * 2.0F + livingEntity.getWidth());
+		return (double)(this.mob.getWidth() * 2.0F * this.mob.getWidth() * 2.0F + livingEntity.getWidth());
 	}
 }

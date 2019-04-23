@@ -13,14 +13,14 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class SummonCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.summon.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.summon.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -69,10 +69,10 @@ public class SummonCommand {
 	private static int execute(ServerCommandSource serverCommandSource, Identifier identifier, Vec3d vec3d, CompoundTag compoundTag, boolean bl) throws CommandSyntaxException {
 		CompoundTag compoundTag2 = compoundTag.method_10553();
 		compoundTag2.putString("id", identifier.toString());
-		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
+		if (EntityType.getId(EntityType.field_6112).equals(identifier)) {
 			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
 			serverCommandSource.getWorld().addLightning(lightningEntity);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
 			ServerWorld serverWorld = serverCommandSource.getWorld();
@@ -88,7 +88,7 @@ public class SummonCommand {
 						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
 				}
 
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.summon.success", entity.getDisplayName()), true);
 				return 1;
 			}
 		}

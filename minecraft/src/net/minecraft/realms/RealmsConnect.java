@@ -8,9 +8,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
-import net.minecraft.text.TranslatableTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,10 +45,8 @@ public class RealmsConnect {
 
 						RealmsConnect.this.connection
 							.setPacketListener(
-								new ClientLoginNetworkHandler(
-									RealmsConnect.this.connection, MinecraftClient.getInstance(), RealmsConnect.this.onlineScreen.getProxy(), textComponent -> {
-									}
-								)
+								new ClientLoginNetworkHandler(RealmsConnect.this.connection, MinecraftClient.getInstance(), RealmsConnect.this.onlineScreen.getProxy(), component -> {
+								})
 							);
 						if (RealmsConnect.this.aborted) {
 							return;
@@ -69,7 +67,7 @@ public class RealmsConnect {
 						RealmsConnect.LOGGER.error("Couldn't connect to world", (Throwable)var5);
 						Realms.setScreen(
 							new DisconnectedRealmsScreen(
-								RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", "Unknown host '" + string + "'")
+								RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host '" + string + "'")
 							)
 						);
 					} catch (Exception var6) {
@@ -86,7 +84,7 @@ public class RealmsConnect {
 						}
 
 						Realms.setScreen(
-							new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", string))
+							new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableComponent("disconnect.genericReason", string))
 						);
 					}
 				}
@@ -97,7 +95,7 @@ public class RealmsConnect {
 	public void abort() {
 		this.aborted = true;
 		if (this.connection != null && this.connection.isOpen()) {
-			this.connection.disconnect(new TranslatableTextComponent("disconnect.genericReason"));
+			this.connection.disconnect(new TranslatableComponent("disconnect.genericReason"));
 			this.connection.handleDisconnection();
 		}
 	}

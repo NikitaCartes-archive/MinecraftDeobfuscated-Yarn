@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 public class ChunkRenderData {
 	public static final ChunkRenderData EMPTY = new ChunkRenderData() {
 		@Override
-		protected void method_3643(BlockRenderLayer blockRenderLayer) {
+		protected void setNonEmpty(BlockRenderLayer blockRenderLayer) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -23,28 +23,28 @@ public class ChunkRenderData {
 		}
 
 		@Override
-		public boolean method_3650(Direction direction, Direction direction2) {
+		public boolean isVisibleThrough(Direction direction, Direction direction2) {
 			return false;
 		}
 	};
-	private final boolean[] field_4450 = new boolean[BlockRenderLayer.values().length];
+	private final boolean[] nonEmpty = new boolean[BlockRenderLayer.values().length];
 	private final boolean[] initialized = new boolean[BlockRenderLayer.values().length];
 	private boolean empty = true;
 	private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
-	private ChunkOcclusionGraph field_4455 = new ChunkOcclusionGraph();
+	private ChunkOcclusionGraph occlusionGraph = new ChunkOcclusionGraph();
 	private BufferBuilder.State bufferState;
 
 	public boolean isEmpty() {
 		return this.empty;
 	}
 
-	protected void method_3643(BlockRenderLayer blockRenderLayer) {
+	protected void setNonEmpty(BlockRenderLayer blockRenderLayer) {
 		this.empty = false;
-		this.field_4450[blockRenderLayer.ordinal()] = true;
+		this.nonEmpty[blockRenderLayer.ordinal()] = true;
 	}
 
-	public boolean method_3641(BlockRenderLayer blockRenderLayer) {
-		return !this.field_4450[blockRenderLayer.ordinal()];
+	public boolean isEmpty(BlockRenderLayer blockRenderLayer) {
+		return !this.nonEmpty[blockRenderLayer.ordinal()];
 	}
 
 	public void markBufferInitialized(BlockRenderLayer blockRenderLayer) {
@@ -63,12 +63,12 @@ public class ChunkRenderData {
 		this.blockEntities.add(blockEntity);
 	}
 
-	public boolean method_3650(Direction direction, Direction direction2) {
-		return this.field_4455.isVisibleThrough(direction, direction2);
+	public boolean isVisibleThrough(Direction direction, Direction direction2) {
+		return this.occlusionGraph.isVisibleThrough(direction, direction2);
 	}
 
-	public void method_3640(ChunkOcclusionGraph chunkOcclusionGraph) {
-		this.field_4455 = chunkOcclusionGraph;
+	public void setOcclusionGraph(ChunkOcclusionGraph chunkOcclusionGraph) {
+		this.occlusionGraph = chunkOcclusionGraph;
 	}
 
 	public BufferBuilder.State getBufferState() {

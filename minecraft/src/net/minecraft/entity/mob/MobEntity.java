@@ -182,7 +182,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean canTarget(EntityType<?> entityType) {
-		return entityType != EntityType.GHAST;
+		return entityType != EntityType.field_6107;
 	}
 
 	public void onEatingGrass() {
@@ -476,8 +476,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		this.world.getProfiler().push("looting");
 		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing")) {
 			for (ItemEntity itemEntity : this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
@@ -503,10 +503,10 @@ public abstract class MobEntity extends LivingEntity {
 
 			this.setEquippedStack(equipmentSlot, itemStack);
 			switch (equipmentSlot.getType()) {
-				case HAND:
+				case field_6177:
 					this.handDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
 					break;
-				case ARMOR:
+				case field_6178:
 					this.armorDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
 			}
 
@@ -519,7 +519,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
 		boolean bl = true;
 		if (!itemStack2.isEmpty()) {
-			if (equipmentSlot.getType() == EquipmentSlot.Type.HAND) {
+			if (equipmentSlot.getType() == EquipmentSlot.Type.field_6177) {
 				if (itemStack.getItem() instanceof SwordItem && !(itemStack2.getItem() instanceof SwordItem)) {
 					bl = true;
 				} else if (itemStack.getItem() instanceof SwordItem && itemStack2.getItem() instanceof SwordItem) {
@@ -669,10 +669,10 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return this.method_20344(iWorld, spawnType, new BlockPos(this));
+		return this.canSpawnAt(iWorld, spawnType, new BlockPos(this));
 	}
 
-	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+	protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		return spawnType == SpawnType.field_16469 || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, this.getType());
 	}
@@ -717,9 +717,9 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				return this.handItems.get(equipmentSlot.getEntitySlotId());
-			case ARMOR:
+			case field_6178:
 				return this.armorItems.get(equipmentSlot.getEntitySlotId());
 			default:
 				return ItemStack.EMPTY;
@@ -729,10 +729,10 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				this.handItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 				break;
-			case ARMOR:
+			case field_6178:
 				this.armorItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
 	}
@@ -758,10 +758,10 @@ public abstract class MobEntity extends LivingEntity {
 	protected float getDropChance(EquipmentSlot equipmentSlot) {
 		float f;
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				f = this.handDropChances[equipmentSlot.getEntitySlotId()];
 				break;
-			case ARMOR:
+			case field_6178:
 				f = this.armorDropChances[equipmentSlot.getEntitySlotId()];
 				break;
 			default:
@@ -774,7 +774,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		if (this.random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
 			int i = this.random.nextInt(2);
-			float f = this.world.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
+			float f = this.world.getDifficulty() == Difficulty.field_5807 ? 0.1F : 0.25F;
 			if (this.random.nextFloat() < 0.095F) {
 				i++;
 			}
@@ -790,7 +790,7 @@ public abstract class MobEntity extends LivingEntity {
 			boolean bl = true;
 
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+				if (equipmentSlot.getType() == EquipmentSlot.Type.field_6178) {
 					ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 					if (!bl && this.random.nextFloat() < f) {
 						break;
@@ -810,23 +810,23 @@ public abstract class MobEntity extends LivingEntity {
 
 	public static EquipmentSlot getPreferredEquipmentSlot(ItemStack itemStack) {
 		Item item = itemStack.getItem();
-		if (item != Blocks.field_10147.getItem() && (!(item instanceof BlockItem) || !(((BlockItem)item).getBlock() instanceof AbstractSkullBlock))) {
+		if (item != Blocks.field_10147.asItem() && (!(item instanceof BlockItem) || !(((BlockItem)item).getBlock() instanceof AbstractSkullBlock))) {
 			if (item instanceof ArmorItem) {
 				return ((ArmorItem)item).getSlotType();
 			} else if (item == Items.field_8833) {
-				return EquipmentSlot.CHEST;
+				return EquipmentSlot.field_6174;
 			} else {
-				return item == Items.field_8255 ? EquipmentSlot.HAND_OFF : EquipmentSlot.HAND_MAIN;
+				return item == Items.field_8255 ? EquipmentSlot.field_6171 : EquipmentSlot.field_6173;
 			}
 		} else {
-			return EquipmentSlot.HEAD;
+			return EquipmentSlot.field_6169;
 		}
 	}
 
 	@Nullable
 	public static Item getEquipmentForSlot(EquipmentSlot equipmentSlot, int i) {
 		switch (equipmentSlot) {
-			case HEAD:
+			case field_6169:
 				if (i == 0) {
 					return Items.field_8267;
 				} else if (i == 1) {
@@ -838,7 +838,7 @@ public abstract class MobEntity extends LivingEntity {
 				} else if (i == 4) {
 					return Items.field_8805;
 				}
-			case CHEST:
+			case field_6174:
 				if (i == 0) {
 					return Items.field_8577;
 				} else if (i == 1) {
@@ -850,7 +850,7 @@ public abstract class MobEntity extends LivingEntity {
 				} else if (i == 4) {
 					return Items.field_8058;
 				}
-			case LEGS:
+			case field_6172:
 				if (i == 0) {
 					return Items.field_8570;
 				} else if (i == 1) {
@@ -862,7 +862,7 @@ public abstract class MobEntity extends LivingEntity {
 				} else if (i == 4) {
 					return Items.field_8348;
 				}
-			case FEET:
+			case field_6166:
 				if (i == 0) {
 					return Items.field_8370;
 				} else if (i == 1) {
@@ -883,12 +883,12 @@ public abstract class MobEntity extends LivingEntity {
 		float f = localDifficulty.getClampedLocalDifficulty();
 		if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25F * f) {
 			this.setEquippedStack(
-				EquipmentSlot.HAND_MAIN, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + f * (float)this.random.nextInt(18)), false)
+				EquipmentSlot.field_6173, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + f * (float)this.random.nextInt(18)), false)
 			);
 		}
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+			if (equipmentSlot.getType() == EquipmentSlot.Type.field_6178) {
 				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * f) {
 					this.setEquippedStack(equipmentSlot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + f * (float)this.random.nextInt(18)), false));
@@ -922,10 +922,10 @@ public abstract class MobEntity extends LivingEntity {
 
 	public void setEquipmentDropChance(EquipmentSlot equipmentSlot, float f) {
 		switch (equipmentSlot.getType()) {
-			case HAND:
+			case field_6177:
 				this.handDropChances[equipmentSlot.getEntitySlotId()] = f;
 				break;
-			case ARMOR:
+			case field_6178:
 				this.armorDropChances[equipmentSlot.getEntitySlotId()] = f;
 		}
 	}
@@ -1098,24 +1098,24 @@ public abstract class MobEntity extends LivingEntity {
 	public boolean equip(int i, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot;
 		if (i == 98) {
-			equipmentSlot = EquipmentSlot.HAND_MAIN;
+			equipmentSlot = EquipmentSlot.field_6173;
 		} else if (i == 99) {
-			equipmentSlot = EquipmentSlot.HAND_OFF;
-		} else if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.HEAD;
-		} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.CHEST;
-		} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.LEGS;
+			equipmentSlot = EquipmentSlot.field_6171;
+		} else if (i == 100 + EquipmentSlot.field_6169.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6169;
+		} else if (i == 100 + EquipmentSlot.field_6174.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6174;
+		} else if (i == 100 + EquipmentSlot.field_6172.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.field_6172;
 		} else {
-			if (i != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
+			if (i != 100 + EquipmentSlot.field_6166.getEntitySlotId()) {
 				return false;
 			}
 
-			equipmentSlot = EquipmentSlot.FEET;
+			equipmentSlot = EquipmentSlot.field_6166;
 		}
 
-		if (!itemStack.isEmpty() && !canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
+		if (!itemStack.isEmpty() && !canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.field_6169) {
 			return false;
 		} else {
 			this.setEquippedStack(equipmentSlot, itemStack);
@@ -1131,8 +1131,8 @@ public abstract class MobEntity extends LivingEntity {
 	public static boolean canEquipmentSlotContain(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot2 = getPreferredEquipmentSlot(itemStack);
 		return equipmentSlot2 == equipmentSlot
-			|| equipmentSlot2 == EquipmentSlot.HAND_MAIN && equipmentSlot == EquipmentSlot.HAND_OFF
-			|| equipmentSlot2 == EquipmentSlot.HAND_OFF && equipmentSlot == EquipmentSlot.HAND_MAIN;
+			|| equipmentSlot2 == EquipmentSlot.field_6173 && equipmentSlot == EquipmentSlot.field_6171
+			|| equipmentSlot2 == EquipmentSlot.field_6171 && equipmentSlot == EquipmentSlot.field_6173;
 	}
 
 	@Override
@@ -1174,7 +1174,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean canTarget(LivingEntity livingEntity) {
-		return livingEntity.getType() == EntityType.PLAYER && ((PlayerEntity)livingEntity).abilities.invulnerable ? false : super.canTarget(livingEntity);
+		return livingEntity.getType() == EntityType.field_6097 && ((PlayerEntity)livingEntity).abilities.invulnerable ? false : super.canTarget(livingEntity);
 	}
 
 	@Override

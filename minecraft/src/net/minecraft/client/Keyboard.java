@@ -4,6 +4,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
@@ -14,8 +15,8 @@ import net.minecraft.client.gui.menu.AccessibilityScreen;
 import net.minecraft.client.gui.menu.options.ChatOptionsScreen;
 import net.minecraft.client.gui.menu.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -23,9 +24,8 @@ import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
@@ -58,10 +58,10 @@ public class Keyboard {
 			.inGameHud
 			.getChatHud()
 			.addMessage(
-				new StringTextComponent("")
-					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.field_1054, TextFormat.field_1067}))
+				new TextComponent("")
+					.append(new TranslatableComponent("debug.prefix").applyFormat(new ChatFormat[]{ChatFormat.field_1054, ChatFormat.field_1067}))
 					.append(" ")
-					.append(new TranslatableTextComponent(string, objects))
+					.append(new TranslatableComponent(string, objects))
 			);
 	}
 
@@ -70,10 +70,10 @@ public class Keyboard {
 			.inGameHud
 			.getChatHud()
 			.addMessage(
-				new StringTextComponent("")
-					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1067}))
+				new TextComponent("")
+					.append(new TranslatableComponent("debug.prefix").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1067}))
 					.append(" ")
-					.append(new TranslatableTextComponent(string, objects))
+					.append(new TranslatableComponent(string, objects))
 			);
 	}
 
@@ -87,8 +87,8 @@ public class Keyboard {
 					this.debugWarn("debug.reload_chunks.message");
 					return true;
 				case 66:
-					boolean bl = !this.client.getEntityRenderManager().showsHitboxes();
-					this.client.getEntityRenderManager().setShowHitboxes(bl);
+					boolean bl = !this.client.getEntityRenderManager().shouldRenderHitboxes();
+					this.client.getEntityRenderManager().setRenderHitboxes(bl);
 					this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
 					return true;
 				case 67:
@@ -127,11 +127,11 @@ public class Keyboard {
 				default:
 					return false;
 				case 70:
-					GameOption.RENDER_DISTANCE
+					Option.RENDER_DISTANCE
 						.set(
 							this.client.options,
 							MathHelper.clamp(
-								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), GameOption.RENDER_DISTANCE.getMin(), GameOption.RENDER_DISTANCE.getMax()
+								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), Option.RENDER_DISTANCE.getMin(), Option.RENDER_DISTANCE.getMax()
 							)
 						);
 					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
@@ -169,18 +169,18 @@ public class Keyboard {
 				case 81:
 					this.debugWarn("debug.help.message");
 					ChatHud chatHud = this.client.inGameHud.getChatHud();
-					chatHud.addMessage(new TranslatableTextComponent("debug.reload_chunks.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.show_hitboxes.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.copy_location.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.clear_chat.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.cycle_renderdistance.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.chunk_boundaries.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.advanced_tooltips.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.inspect.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.creative_spectator.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.pause_focus.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.help.help"));
-					chatHud.addMessage(new TranslatableTextComponent("debug.reload_resourcepacks.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.reload_chunks.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.show_hitboxes.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.copy_location.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.clear_chat.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.cycle_renderdistance.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.chunk_boundaries.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.advanced_tooltips.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.inspect.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.creative_spectator.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.pause_focus.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.help.help"));
+					chatHud.addMessage(new TranslatableComponent("debug.reload_resourcepacks.help"));
 					return true;
 				case 84:
 					this.debugWarn("debug.reload_resourcepacks.message");
@@ -194,12 +194,12 @@ public class Keyboard {
 		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null) {
 			switch (hitResult.getType()) {
-				case BLOCK:
+				case field_1332:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.player.world.getBlockState(blockPos);
 					if (bl) {
 						if (bl2) {
-							this.client.player.networkHandler.getQueryHandler().queryBlockNbt(blockPos, compoundTagx -> {
+							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, compoundTagx -> {
 								this.copyBlock(blockState, blockPos, compoundTagx);
 								this.debugWarn("debug.inspect.server.block");
 							});
@@ -214,13 +214,13 @@ public class Keyboard {
 						this.debugWarn("debug.inspect.client.block");
 					}
 					break;
-				case ENTITY:
+				case field_1331:
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
 					Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
 					if (bl) {
 						if (bl2) {
-							this.client.player.networkHandler.getQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
+							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
 								this.copyEntity(identifier, vec3d, compoundTagx);
 								this.debugWarn("debug.inspect.server.entity");
 							});
@@ -303,7 +303,7 @@ public class Keyboard {
 						this.client.window.getFramebufferWidth(),
 						this.client.window.getFramebufferHeight(),
 						this.client.getFramebuffer(),
-						textComponent -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(textComponent))
+						component -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(component))
 					);
 					return;
 				}
@@ -313,7 +313,7 @@ public class Keyboard {
 				|| !(parentElement.getFocused() instanceof TextFieldWidget)
 				|| !((TextFieldWidget)parentElement.getFocused()).method_20315();
 			if (k != 0 && i == 66 && Screen.hasControlDown() && bl) {
-				GameOption.NARRATOR.method_18500(this.client.options, 1);
+				Option.NARRATOR.cycle(this.client.options, 1);
 				if (parentElement instanceof ChatOptionsScreen) {
 					((ChatOptionsScreen)parentElement).method_2096();
 				}

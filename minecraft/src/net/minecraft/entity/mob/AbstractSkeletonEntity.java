@@ -14,7 +14,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.AvoidSunlightGoal;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.EscapeSunlightGoal;
@@ -43,7 +43,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttacker {
+public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttackMob {
 	private final BowAttackGoal<AbstractSkeletonEntity> bowAttackGoal = new BowAttackGoal<>(this, 1.0, 20, 15.0F);
 	private final MeleeAttackGoal meleeAttackGoal = new MeleeAttackGoal(this, 1.2, false) {
 		@Override
@@ -97,16 +97,16 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		boolean bl = this.isInDaylight();
 		if (bl) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.hasDurability()) {
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getDurability()) {
-						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
-						this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+						this.sendEquipmentBreakStatus(EquipmentSlot.field_6169);
+						this.setEquippedStack(EquipmentSlot.field_6169, ItemStack.EMPTY);
 					}
 				}
 
@@ -118,7 +118,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			}
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		super.initEquipment(localDifficulty);
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8102));
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8102));
 	}
 
 	@Nullable
@@ -146,13 +146,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.updateEnchantments(localDifficulty);
 		this.updateAttackType();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.getClampedLocalDifficulty());
-		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+		if (this.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
 			int i = localDate.get(ChronoField.DAY_OF_MONTH);
 			int j = localDate.get(ChronoField.MONTH_OF_YEAR);
 			if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
-				this.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.field_10009 : Blocks.field_10147));
-				this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0F;
+				this.setEquippedStack(EquipmentSlot.field_6169, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.field_10009 : Blocks.field_10147));
+				this.armorDropChances[EquipmentSlot.field_6169.getEntitySlotId()] = 0.0F;
 			}
 		}
 
@@ -166,7 +166,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102));
 			if (itemStack.getItem() == Items.field_8102) {
 				int i = 20;
-				if (this.world.getDifficulty() != Difficulty.HARD) {
+				if (this.world.getDifficulty() != Difficulty.field_5807) {
 					i = 40;
 				}
 

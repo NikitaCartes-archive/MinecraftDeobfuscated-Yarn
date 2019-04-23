@@ -7,12 +7,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -26,9 +26,9 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	private boolean updateLastExecution = true;
 	private int successCount;
 	private boolean trackOutput = true;
-	private TextComponent lastOutput;
+	private Component lastOutput;
 	private String command = "";
-	private TextComponent customName = new StringTextComponent("@");
+	private Component customName = new TextComponent("@");
 
 	public int getSuccessCount() {
 		return this.successCount;
@@ -38,17 +38,17 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.successCount = i;
 	}
 
-	public TextComponent getLastOutput() {
-		return (TextComponent)(this.lastOutput == null ? new StringTextComponent("") : this.lastOutput);
+	public Component getLastOutput() {
+		return (Component)(this.lastOutput == null ? new TextComponent("") : this.lastOutput);
 	}
 
 	public CompoundTag serialize(CompoundTag compoundTag) {
 		compoundTag.putString("Command", this.command);
 		compoundTag.putInt("SuccessCount", this.successCount);
-		compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
+		compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
 		compoundTag.putBoolean("TrackOutput", this.trackOutput);
 		if (this.lastOutput != null && this.trackOutput) {
-			compoundTag.putString("LastOutput", TextComponent.Serializer.toJsonString(this.lastOutput));
+			compoundTag.putString("LastOutput", Component.Serializer.toJsonString(this.lastOutput));
 		}
 
 		compoundTag.putBoolean("UpdateLastExecution", this.updateLastExecution);
@@ -63,7 +63,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 
 		if (compoundTag.containsKey("TrackOutput", 1)) {
@@ -72,9 +72,9 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 		if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
 			try {
-				this.lastOutput = TextComponent.Serializer.fromJsonString(compoundTag.getString("LastOutput"));
+				this.lastOutput = Component.Serializer.fromJsonString(compoundTag.getString("LastOutput"));
 			} catch (Throwable var3) {
-				this.lastOutput = new StringTextComponent(var3.getMessage());
+				this.lastOutput = new TextComponent(var3.getMessage());
 			}
 		} else {
 			this.lastOutput = null;
@@ -104,7 +104,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
-			this.lastOutput = new StringTextComponent("#itzlipofutzli");
+			this.lastOutput = new TextComponent("#itzlipofutzli");
 			this.successCount = 1;
 			return true;
 		} else {
@@ -138,18 +138,18 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		}
 	}
 
-	public TextComponent getCustomName() {
+	public Component getCustomName() {
 		return this.customName;
 	}
 
-	public void setCustomName(TextComponent textComponent) {
-		this.customName = textComponent;
+	public void setCustomName(Component component) {
+		this.customName = component;
 	}
 
 	@Override
-	public void sendMessage(TextComponent textComponent) {
+	public void sendMessage(Component component) {
 		if (this.trackOutput) {
-			this.lastOutput = new StringTextComponent("[" + DATE_FORMAT.format(new Date()) + "] ").append(textComponent);
+			this.lastOutput = new TextComponent("[" + DATE_FORMAT.format(new Date()) + "] ").append(component);
 			this.markDirty();
 		}
 	}
@@ -158,8 +158,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	public abstract void markDirty();
 
-	public void setLastOutput(@Nullable TextComponent textComponent) {
-		this.lastOutput = textComponent;
+	public void setLastOutput(@Nullable Component component) {
+		this.lastOutput = component;
 	}
 
 	public void shouldTrackOutput(boolean bl) {

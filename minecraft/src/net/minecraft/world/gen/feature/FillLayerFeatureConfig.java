@@ -32,7 +32,7 @@ public class FillLayerFeatureConfig implements FeatureConfig {
 
 	public static <T> FillLayerFeatureConfig deserialize(Dynamic<T> dynamic) {
 		int i = dynamic.get("height").asInt(0);
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
 		return new FillLayerFeatureConfig(i, blockState);
 	}
 }

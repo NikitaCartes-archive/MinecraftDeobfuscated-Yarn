@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public class EnumProperty<T extends Enum<T> & StringRepresentable> extends AbstractProperty<T> {
+public class EnumProperty<T extends Enum<T> & SnakeCaseIdentifiable> extends AbstractProperty<T> {
 	private final ImmutableSet<T> values;
 	private final Map<String, T> valuesByName = Maps.<String, T>newHashMap();
 
@@ -21,7 +21,7 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Abstr
 		this.values = ImmutableSet.copyOf(collection);
 
 		for (T enum_ : collection) {
-			String string2 = enum_.asString();
+			String string2 = enum_.toSnakeCase();
 			if (this.valuesByName.containsKey(string2)) {
 				throw new IllegalArgumentException("Multiple values have the same name '" + string2 + "'");
 			}
@@ -41,7 +41,7 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Abstr
 	}
 
 	public String method_11846(T enum_) {
-		return enum_.asString();
+		return enum_.toSnakeCase();
 	}
 
 	@Override
@@ -63,19 +63,19 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Abstr
 		return 31 * i + this.valuesByName.hashCode();
 	}
 
-	public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String string, Class<T> class_) {
+	public static <T extends Enum<T> & SnakeCaseIdentifiable> EnumProperty<T> create(String string, Class<T> class_) {
 		return create(string, class_, Predicates.alwaysTrue());
 	}
 
-	public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String string, Class<T> class_, Predicate<T> predicate) {
+	public static <T extends Enum<T> & SnakeCaseIdentifiable> EnumProperty<T> create(String string, Class<T> class_, Predicate<T> predicate) {
 		return create(string, class_, (Collection<T>)Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
 	}
 
-	public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String string, Class<T> class_, T... enums) {
+	public static <T extends Enum<T> & SnakeCaseIdentifiable> EnumProperty<T> create(String string, Class<T> class_, T... enums) {
 		return create(string, class_, Lists.<T>newArrayList(enums));
 	}
 
-	public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String string, Class<T> class_, Collection<T> collection) {
+	public static <T extends Enum<T> & SnakeCaseIdentifiable> EnumProperty<T> create(String string, Class<T> class_, Collection<T> collection) {
 		return new EnumProperty<>(string, class_, collection);
 	}
 }

@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
@@ -117,8 +117,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemProvider... itemProviders) {
-		return ofEntries(Arrays.stream(itemProviders).map(itemProvider -> new Ingredient.StackEntry(new ItemStack(itemProvider))));
+	public static Ingredient ofItems(ItemConvertible... itemConvertibles) {
+		return ofEntries(Arrays.stream(itemConvertibles).map(itemConvertible -> new Ingredient.StackEntry(new ItemStack(itemConvertible))));
 	}
 
 	@Environment(EnvType.CLIENT)

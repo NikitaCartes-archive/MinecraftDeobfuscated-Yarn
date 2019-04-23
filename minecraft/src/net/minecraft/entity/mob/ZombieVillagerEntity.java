@@ -176,16 +176,16 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	protected void finishConversion(ServerWorld serverWorld) {
-		VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
-		villagerEntity.setPositionAndAngles(this);
+		VillagerEntity villagerEntity = EntityType.field_6077.create(serverWorld);
+		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.offerData != null) {
-			villagerEntity.setRecipes(new TraderOfferList(this.offerData));
+			villagerEntity.setOffers(new TraderOfferList(this.offerData));
 		}
 
 		villagerEntity.setExperience(this.xp);
 		villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
-		if (this.isChild()) {
+		if (this.isBaby()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
 
@@ -236,7 +236,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Override
 	protected float getSoundPitch() {
-		return this.isChild() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 2.0F : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
+		return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 2.0F : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
 	}
 
 	@Override

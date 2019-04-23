@@ -15,7 +15,7 @@ public class TemptGoal extends Goal {
 		.includeTeammates()
 		.ignoreEntityTargetRules()
 		.includeHidden();
-	protected final MobEntityWithAi owner;
+	protected final MobEntityWithAi mob;
 	private final double speed;
 	private double lastPlayerX;
 	private double lastPlayerY;
@@ -25,7 +25,7 @@ public class TemptGoal extends Goal {
 	protected PlayerEntity closestPlayer;
 	private int cooldown;
 	private boolean active;
-	private final Ingredient temptItem;
+	private final Ingredient food;
 	private final boolean canBeScared;
 
 	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, Ingredient ingredient, boolean bl) {
@@ -33,9 +33,9 @@ public class TemptGoal extends Goal {
 	}
 
 	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl, Ingredient ingredient) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.speed = d;
-		this.temptItem = ingredient;
+		this.food = ingredient;
 		this.canBeScared = bl;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
@@ -49,19 +49,19 @@ public class TemptGoal extends Goal {
 			this.cooldown--;
 			return false;
 		} else {
-			this.closestPlayer = this.owner.world.getClosestPlayer(TEMPTING_ENTITY_PREDICATE, this.owner);
+			this.closestPlayer = this.mob.world.getClosestPlayer(TEMPTING_ENTITY_PREDICATE, this.mob);
 			return this.closestPlayer == null ? false : this.isTempedBy(this.closestPlayer.getMainHandStack()) || this.isTempedBy(this.closestPlayer.getOffHandStack());
 		}
 	}
 
 	protected boolean isTempedBy(ItemStack itemStack) {
-		return this.temptItem.method_8093(itemStack);
+		return this.food.method_8093(itemStack);
 	}
 
 	@Override
 	public boolean shouldContinue() {
 		if (this.canBeScared()) {
-			if (this.owner.squaredDistanceTo(this.closestPlayer) < 36.0) {
+			if (this.mob.squaredDistanceTo(this.closestPlayer) < 36.0) {
 				if (this.closestPlayer.squaredDistanceTo(this.lastPlayerX, this.lastPlayerY, this.lastPlayerZ) > 0.010000000000000002) {
 					return false;
 				}
@@ -97,18 +97,18 @@ public class TemptGoal extends Goal {
 	@Override
 	public void stop() {
 		this.closestPlayer = null;
-		this.owner.getNavigation().stop();
+		this.mob.getNavigation().stop();
 		this.cooldown = 100;
 		this.active = false;
 	}
 
 	@Override
 	public void tick() {
-		this.owner.getLookControl().lookAt(this.closestPlayer, (float)(this.owner.method_5986() + 20), (float)this.owner.getLookPitchSpeed());
-		if (this.owner.squaredDistanceTo(this.closestPlayer) < 6.25) {
-			this.owner.getNavigation().stop();
+		this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.method_5986() + 20), (float)this.mob.getLookPitchSpeed());
+		if (this.mob.squaredDistanceTo(this.closestPlayer) < 6.25) {
+			this.mob.getNavigation().stop();
 		} else {
-			this.owner.getNavigation().startMovingTo(this.closestPlayer, this.speed);
+			this.mob.getNavigation().startMovingTo(this.closestPlayer, this.speed);
 		}
 	}
 

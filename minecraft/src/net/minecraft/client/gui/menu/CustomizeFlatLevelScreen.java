@@ -20,7 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
@@ -34,7 +34,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	private ButtonWidget widgetButtonRemoveLayer;
 
 	public CustomizeFlatLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
-		super(new TranslatableTextComponent("createWorld.customize.flat.title"));
+		super(new TranslatableComponent("createWorld.customize.flat.title"));
 		this.parent = newLevelScreen;
 		this.method_2144(compoundTag);
 	}
@@ -147,9 +147,9 @@ public class CustomizeFlatLevelScreen extends Screen {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1);
-				Item item = flatChunkGeneratorLayer.getBlockState().getBlock().getItem();
+				Item item = flatChunkGeneratorLayer.getBlockState().getBlock().asItem();
 				if (item != Items.AIR) {
-					NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
+					NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
 				}
 			}
 		}
@@ -196,7 +196,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - i - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				Block block = blockState.getBlock();
-				Item item = block.getItem();
+				Item item = block.asItem();
 				if (item == Items.AIR) {
 					if (block == Blocks.field_10382) {
 						item = Items.field_8705;

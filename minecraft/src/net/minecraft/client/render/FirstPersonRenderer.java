@@ -65,7 +65,7 @@ public class FirstPersonRenderer {
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			GlStateManager.pushMatrix();
-			boolean bl2 = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+			boolean bl2 = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.field_9179;
 			if (bl2) {
 				GlStateManager.depthMask(false);
 			}
@@ -139,9 +139,9 @@ public class FirstPersonRenderer {
 		GlStateManager.rotatef(f * -41.0F, 0.0F, 0.0F, 1.0F);
 		GlStateManager.translatef(f * 0.3F, -1.1F, 0.45F);
 		if (absoluteHand == AbsoluteHand.field_6183) {
-			playerEntityRenderer.method_4220(this.client.player);
+			playerEntityRenderer.renderRightArm(this.client.player);
 		} else {
-			playerEntityRenderer.method_4221(this.client.player);
+			playerEntityRenderer.renderLeftArm(this.client.player);
 		}
 
 		GlStateManager.popMatrix();
@@ -233,9 +233,9 @@ public class FirstPersonRenderer {
 		PlayerEntityRenderer playerEntityRenderer = this.renderManager.getRenderer(abstractClientPlayerEntity);
 		GlStateManager.disableCull();
 		if (bl) {
-			playerEntityRenderer.method_4220(abstractClientPlayerEntity);
+			playerEntityRenderer.renderRightArm(abstractClientPlayerEntity);
 		} else {
-			playerEntityRenderer.method_4221(abstractClientPlayerEntity);
+			playerEntityRenderer.renderLeftArm(abstractClientPlayerEntity);
 		}
 
 		GlStateManager.enableCull();
@@ -275,7 +275,7 @@ public class FirstPersonRenderer {
 	public void renderFirstPersonItem(float f) {
 		AbstractClientPlayerEntity abstractClientPlayerEntity = this.client.player;
 		float g = abstractClientPlayerEntity.getHandSwingProgress(f);
-		Hand hand = MoreObjects.firstNonNull(abstractClientPlayerEntity.preferredHand, Hand.MAIN);
+		Hand hand = MoreObjects.firstNonNull(abstractClientPlayerEntity.preferredHand, Hand.field_5808);
 		float h = MathHelper.lerp(f, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
 		float i = MathHelper.lerp(f, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw);
 		boolean bl = true;
@@ -283,12 +283,12 @@ public class FirstPersonRenderer {
 		if (abstractClientPlayerEntity.isUsingItem()) {
 			ItemStack itemStack = abstractClientPlayerEntity.getActiveItem();
 			if (itemStack.getItem() == Items.field_8102 || itemStack.getItem() == Items.field_8399) {
-				bl = abstractClientPlayerEntity.getActiveHand() == Hand.MAIN;
+				bl = abstractClientPlayerEntity.getActiveHand() == Hand.field_5808;
 				bl2 = !bl;
 			}
 
 			Hand hand2 = abstractClientPlayerEntity.getActiveHand();
-			if (hand2 == Hand.MAIN) {
+			if (hand2 == Hand.field_5808) {
 				ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 				if (itemStack2.getItem() == Items.field_8399 && CrossbowItem.isCharged(itemStack2)) {
 					bl2 = false;
@@ -312,15 +312,15 @@ public class FirstPersonRenderer {
 		this.applyCameraAngles(f);
 		GlStateManager.enableRescaleNormal();
 		if (bl) {
-			float j = hand == Hand.MAIN ? g : 0.0F;
+			float j = hand == Hand.field_5808 ? g : 0.0F;
 			float k = 1.0F - MathHelper.lerp(f, this.prevEquipProgressMainHand, this.equipProgressMainHand);
-			this.renderFirstPersonItem(abstractClientPlayerEntity, f, h, Hand.MAIN, j, this.mainHand, k);
+			this.renderFirstPersonItem(abstractClientPlayerEntity, f, h, Hand.field_5808, j, this.mainHand, k);
 		}
 
 		if (bl2) {
-			float j = hand == Hand.OFF ? g : 0.0F;
+			float j = hand == Hand.field_5810 ? g : 0.0F;
 			float k = 1.0F - MathHelper.lerp(f, this.prevEquipProgressOffHand, this.equipProgressOffHand);
-			this.renderFirstPersonItem(abstractClientPlayerEntity, f, h, Hand.OFF, j, this.offHand, k);
+			this.renderFirstPersonItem(abstractClientPlayerEntity, f, h, Hand.field_5810, j, this.offHand, k);
 		}
 
 		GlStateManager.disableRescaleNormal();
@@ -328,7 +328,7 @@ public class FirstPersonRenderer {
 	}
 
 	public void renderFirstPersonItem(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, Hand hand, float h, ItemStack itemStack, float i) {
-		boolean bl = hand == Hand.MAIN;
+		boolean bl = hand == Hand.field_5808;
 		AbsoluteHand absoluteHand = bl ? abstractClientPlayerEntity.getMainHand() : abstractClientPlayerEntity.getMainHand().getOpposite();
 		GlStateManager.pushMatrix();
 		if (itemStack.isEmpty()) {
@@ -609,7 +609,7 @@ public class FirstPersonRenderer {
 			this.equipProgressMainHand = MathHelper.clamp(this.equipProgressMainHand - 0.4F, 0.0F, 1.0F);
 			this.equipProgressOffHand = MathHelper.clamp(this.equipProgressOffHand - 0.4F, 0.0F, 1.0F);
 		} else {
-			float f = clientPlayerEntity.method_7261(1.0F);
+			float f = clientPlayerEntity.getAttackCooldownProgress(1.0F);
 			this.equipProgressMainHand = this.equipProgressMainHand
 				+ MathHelper.clamp((Objects.equals(this.mainHand, itemStack) ? f * f * f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
 			this.equipProgressOffHand = this.equipProgressOffHand
@@ -626,7 +626,7 @@ public class FirstPersonRenderer {
 	}
 
 	public void resetEquipProgress(Hand hand) {
-		if (hand == Hand.MAIN) {
+		if (hand == Hand.field_5808) {
 			this.equipProgressMainHand = 0.0F;
 		} else {
 			this.equipProgressOffHand = 0.0F;

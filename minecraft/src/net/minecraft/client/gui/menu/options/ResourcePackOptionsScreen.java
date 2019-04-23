@@ -12,8 +12,8 @@ import net.minecraft.client.gui.widget.ResourcePackListWidget;
 import net.minecraft.client.gui.widget.SelectedResourcePackListWidget;
 import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePackContainerManager;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
@@ -24,7 +24,7 @@ public class ResourcePackOptionsScreen extends Screen {
 	private boolean field_3155;
 
 	public ResourcePackOptionsScreen(Screen screen) {
-		super(new TranslatableTextComponent("resourcePack.title"));
+		super(new TranslatableComponent("resourcePack.title"));
 		this.parent = screen;
 	}
 
@@ -45,16 +45,16 @@ public class ResourcePackOptionsScreen extends Screen {
 				List<ClientResourcePackContainer> listx = Lists.<ClientResourcePackContainer>newArrayList();
 
 				for (ResourcePackListWidget.ResourcePackItem resourcePackItem : this.selectedList.children()) {
-					listx.add(resourcePackItem.method_20150());
+					listx.add(resourcePackItem.getPackContainer());
 				}
 
 				Collections.reverse(listx);
-				this.minecraft.method_1520().setEnabled(listx);
+				this.minecraft.getResourcePackContainerManager().setEnabled(listx);
 				this.minecraft.options.resourcePacks.clear();
 				this.minecraft.options.incompatibleResourcePacks.clear();
 
 				for (ClientResourcePackContainer clientResourcePackContainerx : listx) {
-					if (!clientResourcePackContainerx.sortsTillEnd()) {
+					if (!clientResourcePackContainerx.isPositionFixed()) {
 						this.minecraft.options.resourcePacks.add(clientResourcePackContainerx.getName());
 						if (!clientResourcePackContainerx.getCompatibility().isCompatible()) {
 							this.minecraft.options.incompatibleResourcePacks.add(clientResourcePackContainerx.getName());
@@ -88,7 +88,7 @@ public class ResourcePackOptionsScreen extends Screen {
 		if (!this.field_3155) {
 			this.availableList.children().clear();
 			this.selectedList.children().clear();
-			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.minecraft.method_1520();
+			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.minecraft.getResourcePackContainerManager();
 			resourcePackContainerManager.callCreators();
 			List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList(resourcePackContainerManager.getAlphabeticallyOrderedContainers());
 			list.removeAll(resourcePackContainerManager.getEnabledContainers());

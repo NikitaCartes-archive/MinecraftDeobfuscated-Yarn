@@ -51,7 +51,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 			Blocks.field_10382,
 			Blocks.field_10164,
 			Blocks.field_10540,
-			Blocks.AIR,
+			Blocks.field_10124,
 			Blocks.field_10543,
 			Blocks.field_10225
 		);
@@ -114,7 +114,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 				} else {
 					boolean bl = false;
 
-					for (Direction direction : Direction.Type.HORIZONTAL) {
+					for (Direction direction : Direction.Type.field_11062) {
 						int r = l + direction.getOffsetX();
 						int s = m + direction.getOffsetZ();
 						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {

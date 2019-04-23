@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
@@ -34,7 +34,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	public PistonExtensionBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.field_12637));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(TYPE, PistonType.field_12637));
 	}
 
 	@Nullable
@@ -52,7 +52,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof PistonBlockEntity) {
-				((PistonBlockEntity)blockEntity).method_11513();
+				((PistonBlockEntity)blockEntity).finish();
 			}
 		}
 	}
@@ -93,23 +93,23 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		PistonBlockEntity pistonBlockEntity = this.getBlockEntityPiston(builder.getWorld(), builder.get(LootContextParameters.field_1232));
+		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(builder.getWorld(), builder.get(LootContextParameters.field_1232));
 		return pistonBlockEntity == null ? Collections.emptyList() : pistonBlockEntity.getPushedBlock().getDroppedStacks(builder);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		PistonBlockEntity pistonBlockEntity = this.getBlockEntityPiston(blockView, blockPos);
-		return pistonBlockEntity != null ? pistonBlockEntity.method_11512(blockView, blockPos) : VoxelShapes.empty();
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(blockView, blockPos);
+		return pistonBlockEntity != null ? pistonBlockEntity.getCollisionShape(blockView, blockPos) : VoxelShapes.empty();
 	}
 
 	@Nullable
-	private PistonBlockEntity getBlockEntityPiston(BlockView blockView, BlockPos blockPos) {
+	private PistonBlockEntity getPistonBlockEntity(BlockView blockView, BlockPos blockPos) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		return blockEntity instanceof PistonBlockEntity ? (PistonBlockEntity)blockEntity : null;
 	}
@@ -132,7 +132,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, TYPE);
+		builder.add(FACING, TYPE);
 	}
 
 	@Override

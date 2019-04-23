@@ -27,12 +27,12 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -55,7 +55,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Nullable
 	private StatusEffect secondary;
 	@Nullable
-	private TextComponent customName;
+	private Component customName;
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
@@ -97,7 +97,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	};
 
 	public BeaconBlockEntity() {
-		super(BlockEntityType.BEACON);
+		super(BlockEntityType.field_11890);
 	}
 
 	@Override
@@ -154,10 +154,6 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			int m = this.level;
 			boolean bl = this.level > 0 && !this.beamSegments.isEmpty();
 			this.beamSegments = this.field_19178;
-			if (!this.beamSegments.isEmpty() && this.world.getTime() % 80L == 0L) {
-				this.updateLevel(i, j, k);
-			}
-
 			if (!this.world.isClient) {
 				if (m < this.level) {
 					for (ServerPlayerEntity serverPlayerEntity : this.world
@@ -173,9 +169,15 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			}
 		}
 
-		if (this.world.getTime() % 80L == 0L && this.level > 0 && !this.beamSegments.isEmpty()) {
-			this.applyPlayerEffects();
-			this.playSound(SoundEvents.field_15045);
+		if (this.world.getTime() % 80L == 0L) {
+			if (!this.beamSegments.isEmpty()) {
+				this.updateLevel(i, j, k);
+			}
+
+			if (this.level > 0 && !this.beamSegments.isEmpty()) {
+				this.applyPlayerEffects();
+				this.playSound(SoundEvents.field_15045);
+			}
 		}
 	}
 
@@ -272,7 +274,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
 		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 
 		this.lock = ContainerLock.deserialize(compoundTag);
@@ -284,15 +286,15 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
 		if (this.customName != null) {
-			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
+			compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
 		}
 
 		this.lock.serialize(compoundTag);
 		return compoundTag;
 	}
 
-	public void setCustomName(@Nullable TextComponent textComponent) {
-		this.customName = textComponent;
+	public void setCustomName(@Nullable Component component) {
+		this.customName = component;
 	}
 
 	@Nullable
@@ -304,8 +306,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Override
-	public TextComponent getDisplayName() {
-		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.beacon"));
+	public Component getDisplayName() {
+		return (Component)(this.customName != null ? this.customName : new TranslatableComponent("container.beacon"));
 	}
 
 	public static class BeamSegment {

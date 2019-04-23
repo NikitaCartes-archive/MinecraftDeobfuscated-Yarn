@@ -4,14 +4,15 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.Container;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -19,13 +20,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DefaultedList;
@@ -45,14 +45,14 @@ import net.minecraft.world.loot.context.LootContextParameters;
 
 public class ShulkerBoxBlock extends BlockWithEntity {
 	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
-	public static final Identifier field_11495 = new Identifier("contents");
+	public static final Identifier CONTENTS = new Identifier("contents");
 	@Nullable
 	private final DyeColor color;
 
 	public ShulkerBoxBlock(@Nullable DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11036));
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				Direction direction = blockState.get(FACING);
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 				boolean bl;
-				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.field_12065) {
 					BoundingBox boundingBox = VoxelShapes.fullCube()
 						.getBoundingBox()
 						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
@@ -117,7 +117,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = builder.getNullable(LootContextParameters.field_1228);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-			builder = builder.putDrop(field_11495, (lootContext, consumer) -> {
+			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
 				for (int i = 0; i < shulkerBoxBlockEntity.getInvSize(); i++) {
 					consumer.accept(shulkerBoxBlockEntity.getInvStack(i));
 				}
@@ -182,12 +182,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, blockView, list, tooltipContext);
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("LootTable", 8)) {
-				list.add(new StringTextComponent("???????"));
+				list.add(new TextComponent("???????"));
 			}
 
 			if (compoundTag.containsKey("Items", 9)) {
@@ -201,15 +201,15 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							TextComponent textComponent = itemStack2.getDisplayName().copy();
-							textComponent.append(" x").append(String.valueOf(itemStack2.getAmount()));
-							list.add(textComponent);
+							Component component = itemStack2.getDisplayName().copy();
+							component.append(" x").append(String.valueOf(itemStack2.getAmount()));
+							list.add(component);
 						}
 					}
 				}
 
 				if (j - i > 0) {
-					list.add(new TranslatableTextComponent("container.shulkerBox.more", j - i).applyFormat(TextFormat.field_1056));
+					list.add(new TranslatableComponent("container.shulkerBox.more", j - i).applyFormat(ChatFormat.field_1056));
 				}
 			}
 		}
@@ -221,7 +221,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		return blockEntity instanceof ShulkerBoxBlockEntity
 			? VoxelShapes.cuboid(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(blockState))
@@ -304,7 +304,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					return Blocks.field_10055;
 				case field_7964:
 					return Blocks.field_10068;
-				case BLACK:
+				case field_7963:
 					return Blocks.field_10371;
 			}
 		}

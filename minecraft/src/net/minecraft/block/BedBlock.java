@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,22 +9,24 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -31,6 +34,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.explosion.Explosion;
@@ -99,7 +103,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				);
 				return true;
 			} else if ((Boolean)blockState.get(OCCUPIED)) {
-				playerEntity.addChatMessage(new TranslatableTextComponent("block.minecraft.bed.occupied"), true);
+				playerEntity.addChatMessage(new TranslatableComponent("block.minecraft.bed.occupied"), true);
 				return true;
 			} else {
 				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
@@ -137,7 +141,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (direction == getDirectionTowardsOtherPart(blockState.get(PART), blockState.get(FACING))) {
 			return blockState2.getBlock() == this && blockState2.get(PART) != blockState.get(PART)
 				? blockState.with(OCCUPIED, blockState2.get(OCCUPIED))
-				: Blocks.AIR.getDefaultState();
+				: Blocks.field_10124.getDefaultState();
 		} else {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
@@ -151,7 +155,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
@@ -160,7 +164,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		BlockPos blockPos2 = blockPos.offset(getDirectionTowardsOtherPart(bedPart, blockState.get(FACING)));
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(PART) != bedPart) {
-			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
+			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				ItemStack itemStack = playerEntity.getMainHandStack();
@@ -184,15 +188,15 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Direction direction = blockState.get(FACING);
 		Direction direction2 = blockState.get(PART) == BedPart.field_12560 ? direction : direction.getOpposite();
 		switch (direction2) {
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
 			default:
 				return EAST_SHAPE;
@@ -205,9 +209,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return true;
 	}
 
-	@Nullable
-	public static BlockPos findWakeUpPosition(BlockView blockView, BlockPos blockPos, int i) {
-		Direction direction = blockView.getBlockState(blockPos).get(FACING);
+	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, ViewableWorld viewableWorld, BlockPos blockPos, int i) {
+		Direction direction = viewableWorld.getBlockState(blockPos).get(FACING);
 		int j = blockPos.getX();
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
@@ -221,9 +224,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			for (int r = n; r <= p; r++) {
 				for (int s = o; s <= q; s++) {
 					BlockPos blockPos2 = new BlockPos(r, k, s);
-					if (canWakeUpAt(blockView, blockPos2)) {
+					Optional<Vec3d> optional = canWakeUpAt(entityType, viewableWorld, blockPos2);
+					if (optional.isPresent()) {
 						if (i <= 0) {
-							return blockPos2;
+							return optional;
 						}
 
 						i--;
@@ -232,15 +236,40 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	protected static boolean canWakeUpAt(BlockView blockView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		BlockPos blockPos3 = blockPos.up();
-		return Block.isSolidFullSquare(blockView.getBlockState(blockPos2), blockView, blockPos2, Direction.UP)
-			&& blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).isEmpty()
-			&& blockView.getBlockState(blockPos3).getCollisionShape(blockView, blockPos3).isEmpty();
+	protected static Optional<Vec3d> canWakeUpAt(EntityType<?> entityType, ViewableWorld viewableWorld, BlockPos blockPos) {
+		VoxelShape voxelShape = viewableWorld.getBlockState(blockPos).getCollisionShape(viewableWorld, blockPos);
+		if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
+			return Optional.empty();
+		} else {
+			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+
+			while (
+				mutable.getY() >= 0 && blockPos.getY() - mutable.getY() <= 2 && viewableWorld.getBlockState(mutable).getCollisionShape(viewableWorld, mutable).isEmpty()
+			) {
+				mutable.setOffset(Direction.field_11033);
+			}
+
+			VoxelShape voxelShape2 = viewableWorld.getBlockState(mutable).getCollisionShape(viewableWorld, mutable);
+			if (voxelShape2.isEmpty()) {
+				return Optional.empty();
+			} else {
+				double d = (double)mutable.getY() + voxelShape2.getMaximum(Direction.Axis.Y) + 2.0E-7;
+				if ((double)blockPos.getY() - d > 2.0) {
+					return Optional.empty();
+				} else {
+					float f = entityType.getWidth() / 2.0F;
+					Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
+					return viewableWorld.doesNotCollide(
+							new BoundingBox(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f)
+						)
+						? Optional.of(vec3d)
+						: Optional.empty();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -250,7 +279,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -260,7 +289,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, PART, OCCUPIED);
+		builder.add(FACING, PART, OCCUPIED);
 	}
 
 	@Override
@@ -274,7 +303,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (!world.isClient) {
 			BlockPos blockPos2 = blockPos.offset(blockState.get(FACING));
 			world.setBlockState(blockPos2, blockState.with(PART, BedPart.field_12560), 3);
-			world.updateNeighbors(blockPos, Blocks.AIR);
+			world.updateNeighbors(blockPos, Blocks.field_10124);
 			blockState.updateNeighborStates(world, blockPos, 3);
 		}
 	}

@@ -71,7 +71,7 @@ public class BowItem extends BaseBowItem {
 
 						itemStack.applyDamage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
 						if (bl2 || playerEntity.abilities.creativeMode && (itemStack2.getItem() == Items.field_8236 || itemStack2.getItem() == Items.field_8087)) {
-							projectileEntity.pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
+							projectileEntity.pickupType = ProjectileEntity.PickupPermission.field_7594;
 						}
 
 						world.spawnEntity(projectileEntity);
@@ -83,7 +83,7 @@ public class BowItem extends BaseBowItem {
 						playerEntity.y,
 						playerEntity.z,
 						SoundEvents.field_14600,
-						SoundCategory.field_15248,
+						SoundCategory.PLAYERS,
 						1.0F,
 						1.0F / (random.nextFloat() * 0.4F + 1.2F) + f * 0.5F
 					);
@@ -128,7 +128,7 @@ public class BowItem extends BaseBowItem {
 			playerEntity.setCurrentHand(hand);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
-			return bl ? new TypedActionResult<>(ActionResult.PASS, itemStack) : new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return bl ? new TypedActionResult<>(ActionResult.field_5811, itemStack) : new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		}
 	}
 

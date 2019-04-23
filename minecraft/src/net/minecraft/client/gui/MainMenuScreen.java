@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.menu.AccessibilityScreen;
@@ -23,10 +24,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -44,7 +44,7 @@ public class MainMenuScreen extends Screen {
 	private String splashText;
 	private ButtonWidget buttonResetDemo;
 	private final Object mutex = new Object();
-	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.RESET + " for more information.";
+	public static final String OUTDATED_GL_TEXT = "Please click " + ChatFormat.field_1073 + "here" + ChatFormat.field_1070 + " for more information.";
 	private int warningTextWidth;
 	private int warningTitleWidth;
 	private int warningAlignLeft;
@@ -69,7 +69,7 @@ public class MainMenuScreen extends Screen {
 	}
 
 	public MainMenuScreen(boolean bl) {
-		super(new TranslatableTextComponent("narrator.screen.title"));
+		super(new TranslatableComponent("narrator.screen.title"));
 		this.doBackgroundFade = bl;
 		this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
 		this.warningTitle = "";
@@ -91,7 +91,7 @@ public class MainMenuScreen extends Screen {
 		}
 	}
 
-	public static CompletableFuture<Void> method_18105(TextureManager textureManager, Executor executor) {
+	public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
 		return CompletableFuture.allOf(
 			textureManager.loadTextureAsync(MINECRAFT_TITLE_TEXTURE, executor),
 			textureManager.loadTextureAsync(EDITION_TITLE_TEXTURE, executor),
@@ -231,8 +231,8 @@ public class MainMenuScreen extends Screen {
 							.openScreen(
 								new YesNoScreen(
 									this::method_20375,
-									new TranslatableTextComponent("selectWorld.deleteQuestion"),
-									new TranslatableTextComponent("selectWorld.deleteWarning", levelPropertiesx.getLevelName()),
+									new TranslatableComponent("selectWorld.deleteQuestion"),
+									new TranslatableComponent("selectWorld.deleteWarning", levelPropertiesx.getLevelName()),
 									I18n.translate("selectWorld.deleteButton"),
 									I18n.translate("gui.cancel")
 								)

@@ -11,7 +11,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -42,7 +42,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public class IllusionerEntity extends SpellcastingIllagerEntity implements RangedAttacker {
+public class IllusionerEntity extends SpellcastingIllagerEntity implements RangedAttackMob {
 	private int field_7296;
 	private final Vec3d[][] field_7297;
 
@@ -86,7 +86,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8102));
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8102));
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
@@ -102,8 +102,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.world.isClient && this.isInvisible()) {
 			this.field_7296--;
 			if (this.field_7296 < 0) {
@@ -244,7 +244,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 			} else {
 				return IllusionerEntity.this.getTarget().getEntityId() == this.targetId
 					? false
-					: IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).method_5455((float)Difficulty.NORMAL.ordinal());
+					: IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).method_5455((float)Difficulty.field_5802.ordinal());
 			}
 		}
 
@@ -275,8 +275,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		}
 
 		@Override
-		protected SpellcastingIllagerEntity.class_1618 method_7147() {
-			return SpellcastingIllagerEntity.class_1618.field_7378;
+		protected SpellcastingIllagerEntity.Spell getSpell() {
+			return SpellcastingIllagerEntity.Spell.field_7378;
 		}
 	}
 
@@ -311,8 +311,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		}
 
 		@Override
-		protected SpellcastingIllagerEntity.class_1618 method_7147() {
-			return SpellcastingIllagerEntity.class_1618.field_7382;
+		protected SpellcastingIllagerEntity.Spell getSpell() {
+			return SpellcastingIllagerEntity.Spell.field_7382;
 		}
 	}
 }

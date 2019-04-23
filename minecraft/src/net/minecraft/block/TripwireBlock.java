@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
@@ -51,7 +51,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return blockState.get(ATTACHED) ? ATTACHED_SHAPE : DETACHED_SHAPE;
 	}
 
@@ -60,10 +60,10 @@ public class TripwireBlock extends Block {
 		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.north()), Direction.NORTH)))
-			.with(EAST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.east()), Direction.EAST)))
-			.with(SOUTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.south()), Direction.SOUTH)))
-			.with(WEST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.west()), Direction.WEST)));
+			.with(NORTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.north()), Direction.field_11043)))
+			.with(EAST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.east()), Direction.field_11034)))
+			.with(SOUTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.south()), Direction.field_11035)))
+			.with(WEST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.west()), Direction.field_11039)));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class TripwireBlock extends Block {
 	}
 
 	private void update(World world, BlockPos blockPos, BlockState blockState) {
-		for (Direction direction : new Direction[]{Direction.SOUTH, Direction.WEST}) {
+		for (Direction direction : new Direction[]{Direction.field_11035, Direction.field_11039}) {
 			for (int i = 1; i < 42; i++) {
 				BlockPos blockPos2 = blockPos.offset(direction, i);
 				BlockState blockState2 = world.getBlockState(blockPos2);
@@ -173,11 +173,11 @@ public class TripwireBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_180:
+			case field_11464:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
-			case ROT_270:
+			case field_11465:
 				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
-			case ROT_90:
+			case field_11463:
 				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
 			default:
 				return blockState;
@@ -187,9 +187,9 @@ public class TripwireBlock extends Block {
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		switch (blockMirror) {
-			case LEFT_RIGHT:
+			case field_11300:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
-			case FRONT_BACK:
+			case field_11301:
 				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
 				return super.mirror(blockState, blockMirror);
@@ -198,6 +198,6 @@ public class TripwireBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(POWERED, ATTACHED, DISARMED, NORTH, EAST, WEST, SOUTH);
+		builder.add(POWERED, ATTACHED, DISARMED, NORTH, EAST, WEST, SOUTH);
 	}
 }

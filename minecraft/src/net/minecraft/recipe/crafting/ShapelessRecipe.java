@@ -63,7 +63,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			ItemStack itemStack = craftingInventory.getInvStack(j);
 			if (!itemStack.isEmpty()) {
 				i++;
-				recipeFinder.addItem(itemStack);
+				recipeFinder.method_20478(itemStack, 1);
 			}
 		}
 

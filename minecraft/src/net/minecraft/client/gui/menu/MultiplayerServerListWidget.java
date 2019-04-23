@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -21,8 +22,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -60,7 +60,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		super.setSelected(entry);
 		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerItem) {
 			NarratorManager.INSTANCE
-				.method_19788(new TranslatableTextComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelected()).server.name).getString());
+				.method_19788(new TranslatableComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelected()).server.name).getString());
 		}
 	}
 
@@ -191,10 +191,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 						this.screen.method_2538().method_3003(this.server);
 					} catch (UnknownHostException var2) {
 						this.server.ping = -1L;
-						this.server.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
+						this.server.label = ChatFormat.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
 					} catch (Exception var3) {
 						this.server.ping = -1L;
-						this.server.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
+						this.server.label = ChatFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
 					}
 				});
 			}
@@ -209,7 +209,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.client.textRenderer.draw((String)list.get(p), (float)(k + 32 + 3), (float)(j + 12 + 9 * p), 8421504);
 			}
 
-			String string = bl4 ? TextFormat.field_1079 + this.server.version : this.server.playerCountLabel;
+			String string = bl4 ? ChatFormat.field_1079 + this.server.version : this.server.playerCountLabel;
 			int q = this.client.textRenderer.getStringWidth(string);
 			this.client.textRenderer.draw(string, (float)(k + l - q - 15 - 2), (float)(j + 1), 8421504);
 			int r = 0;

@@ -43,7 +43,7 @@ public class HoeItem extends ToolItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getFacing() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
+		if (itemUsageContext.getFacing() != Direction.field_11033 && world.getBlockState(blockPos.up()).isAir()) {
 			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
@@ -59,19 +59,19 @@ public class HoeItem extends ToolItem {
 			}
 		}
 
-		return ActionResult.PASS;
+		return ActionResult.field_5811;
 	}
 
 	@Override
 	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
+		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		return true;
 	}
 
 	@Override
 	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (equipmentSlot == EquipmentSlot.field_6173) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(), new EntityAttributeModifier(MODIFIER_DAMAGE, "Weapon modifier", 0.0, EntityAttributeModifier.Operation.field_6328)
 			);

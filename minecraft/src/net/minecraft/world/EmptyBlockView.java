@@ -19,11 +19,11 @@ public enum EmptyBlockView implements BlockView {
 
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
-		return Blocks.AIR.getDefaultState();
+		return Blocks.field_10124.getDefaultState();
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
-		return Fluids.EMPTY.getDefaultState();
+		return Fluids.field_15906.getDefaultState();
 	}
 }

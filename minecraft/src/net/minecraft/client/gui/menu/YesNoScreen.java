@@ -9,25 +9,25 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class YesNoScreen extends Screen {
-	private final TextComponent message;
+	private final Component message;
 	private final List<String> messageSplit = Lists.<String>newArrayList();
 	protected String yesTranslated;
 	protected String noTranslated;
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
 
-	public YesNoScreen(BooleanConsumer booleanConsumer, TextComponent textComponent, TextComponent textComponent2) {
-		this(booleanConsumer, textComponent, textComponent2, I18n.translate("gui.yes"), I18n.translate("gui.no"));
+	public YesNoScreen(BooleanConsumer booleanConsumer, Component component, Component component2) {
+		this(booleanConsumer, component, component2, I18n.translate("gui.yes"), I18n.translate("gui.no"));
 	}
 
-	public YesNoScreen(BooleanConsumer booleanConsumer, TextComponent textComponent, TextComponent textComponent2, String string, String string2) {
-		super(textComponent);
+	public YesNoScreen(BooleanConsumer booleanConsumer, Component component, Component component2, String string, String string2) {
+		super(component);
 		this.callback = booleanConsumer;
-		this.message = textComponent2;
+		this.message = component2;
 		this.yesTranslated = string;
 		this.noTranslated = string2;
 	}

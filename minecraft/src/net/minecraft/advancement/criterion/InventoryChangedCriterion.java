@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
@@ -97,12 +97,12 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemProvider... itemProviders) {
-			ItemPredicate[] itemPredicates = new ItemPredicate[itemProviders.length];
+		public static InventoryChangedCriterion.Conditions items(ItemConvertible... itemConvertibles) {
+			ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
 
-			for (int i = 0; i < itemProviders.length; i++) {
+			for (int i = 0; i < itemConvertibles.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
-					null, itemProviders[i].getItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
+					null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
 				);
 			}
 

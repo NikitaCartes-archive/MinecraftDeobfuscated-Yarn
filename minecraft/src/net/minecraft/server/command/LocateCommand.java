@@ -3,17 +3,17 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
-import net.minecraft.text.event.HoverEvent;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class LocateCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.locate.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.locate.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -44,13 +44,13 @@ public class LocateCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			int i = MathHelper.floor(getDistance(blockPos.getX(), blockPos.getZ(), blockPos2.getX(), blockPos2.getZ()));
-			TextComponent textComponent = TextFormatter.bracketed(new TranslatableTextComponent("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ()))
+			Component component = Components.bracketed(new TranslatableComponent("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ()))
 				.modifyStyle(
-					style -> style.setColor(TextFormat.field_1060)
-							.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
-							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableTextComponent("chat.coordinates.tooltip")))
+					style -> style.setColor(ChatFormat.field_1060)
+							.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
+							.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableComponent("chat.coordinates.tooltip")))
 				);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.locate.success", string, textComponent, i), false);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.locate.success", string, component, i), false);
 			return i;
 		}
 	}

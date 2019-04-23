@@ -41,7 +41,7 @@ public class EntityFlagsPredicate {
 		} else {
 			return this.isSwimming != null && entity.isSwimming() != this.isSwimming
 				? false
-				: this.isBaby == null || !(entity instanceof LivingEntity) || ((LivingEntity)entity).isChild() == this.isBaby;
+				: this.isBaby == null || !(entity instanceof LivingEntity) || ((LivingEntity)entity).isBaby() == this.isBaby;
 		}
 	}
 

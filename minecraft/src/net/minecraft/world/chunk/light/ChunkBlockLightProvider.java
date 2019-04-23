@@ -1,8 +1,11 @@
 package net.minecraft.world.chunk.light;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -13,7 +16,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	private final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
 	public ChunkBlockLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.BLOCK, new BlockLightStorage(chunkProvider));
+		super(chunkProvider, LightType.field_9282, new BlockLightStorage(chunkProvider));
 	}
 
 	private int getLightSourceLuminance(long l) {
@@ -30,8 +33,25 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 			return 15;
 		} else if (l == Long.MAX_VALUE) {
 			return i + 15 - this.getLightSourceLuminance(m);
+		} else if (i >= 15) {
+			return i;
 		} else {
-			return i >= 15 ? i : i + Math.max(1, this.getLightBlockedBetween(l, m));
+			int j = Integer.signum(BlockPos.unpackLongX(m) - BlockPos.unpackLongX(l));
+			int k = Integer.signum(BlockPos.unpackLongY(m) - BlockPos.unpackLongY(l));
+			int n = Integer.signum(BlockPos.unpackLongZ(m) - BlockPos.unpackLongZ(l));
+			Direction direction = Direction.fromVector(j, k, n);
+			if (direction == null) {
+				return 15;
+			} else {
+				AtomicInteger atomicInteger = new AtomicInteger();
+				VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+				if (atomicInteger.get() >= 15) {
+					return 15;
+				} else {
+					VoxelShape voxelShape2 = this.method_20479(l, null);
+					return VoxelShapes.method_1080(voxelShape2, voxelShape, direction) ? 15 : i + Math.max(1, atomicInteger.get());
+				}
+			}
 		}
 	}
 

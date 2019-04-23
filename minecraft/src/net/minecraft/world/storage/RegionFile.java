@@ -16,7 +16,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import javax.annotation.Nullable;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 
 public class RegionFile implements AutoCloseable {
 	private static final byte[] EMPTY_SECTOR = new byte[4096];

@@ -6,16 +6,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class PardonCommand {
 	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.pardon.failed")
+		new TranslatableComponent("commands.pardon.failed")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -44,7 +44,7 @@ public class PardonCommand {
 			if (bannedPlayerList.contains(gameProfile)) {
 				bannedPlayerList.remove(gameProfile);
 				i++;
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.pardon.success", TextFormatter.profile(gameProfile)), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.pardon.success", Components.profile(gameProfile)), true);
 			}
 		}
 

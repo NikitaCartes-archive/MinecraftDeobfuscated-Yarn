@@ -62,7 +62,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			);
 			entityModel.render(livingEntity, f, g, i, j, k, l);
 			entityModel.setHatVisible(true);
-			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isChild()) {
+			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isBaby()) {
 				this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
 				entityModel.render(livingEntity, f, g, i, j, k, l);
 				this.bindTexture(this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));

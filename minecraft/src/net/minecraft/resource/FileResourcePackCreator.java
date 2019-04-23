@@ -28,7 +28,7 @@ public class FileResourcePackCreator implements ResourcePackCreator {
 			for (File file : files) {
 				String string = "file/" + file.getName();
 				T resourcePackContainer = ResourcePackContainer.of(
-					string, false, this.createResourcePack(file), factory, ResourcePackContainer.SortingDirection.field_14280
+					string, false, this.createResourcePack(file), factory, ResourcePackContainer.InsertionPosition.field_14280
 				);
 				if (resourcePackContainer != null) {
 					map.put(string, resourcePackContainer);

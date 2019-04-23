@@ -12,22 +12,22 @@ import net.minecraft.world.World;
 
 public class EatGrassGoal extends Goal {
 	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.field_10479);
-	private final MobEntity owner;
+	private final MobEntity mob;
 	private final World world;
 	private int timer;
 
 	public EatGrassGoal(MobEntity mobEntity) {
-		this.owner = mobEntity;
+		this.mob = mobEntity;
 		this.world = mobEntity.world;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406, Goal.Control.field_18407));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.owner.getRand().nextInt(this.owner.isChild() ? 50 : 1000) != 0) {
+		if (this.mob.getRand().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y, this.owner.z);
+			BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
 			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219;
 		}
 	}
@@ -35,8 +35,8 @@ public class EatGrassGoal extends Goal {
 	@Override
 	public void start() {
 		this.timer = 40;
-		this.world.sendEntityStatus(this.owner, (byte)10);
-		this.owner.getNavigation().stop();
+		this.world.sendEntityStatus(this.mob, (byte)10);
+		this.mob.getNavigation().stop();
 	}
 
 	@Override
@@ -57,13 +57,13 @@ public class EatGrassGoal extends Goal {
 	public void tick() {
 		this.timer = Math.max(0, this.timer - 1);
 		if (this.timer == 4) {
-			BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y, this.owner.z);
+			BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
 			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean("mobGriefing")) {
 					this.world.breakBlock(blockPos, false);
 				}
 
-				this.owner.onEatingGrass();
+				this.mob.onEatingGrass();
 			} else {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.field_10219) {
@@ -72,7 +72,7 @@ public class EatGrassGoal extends Goal {
 						this.world.setBlockState(blockPos2, Blocks.field_10566.getDefaultState(), 2);
 					}
 
-					this.owner.onEatingGrass();
+					this.mob.onEatingGrass();
 				}
 			}
 		}

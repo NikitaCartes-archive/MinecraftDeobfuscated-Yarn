@@ -19,6 +19,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
@@ -26,7 +27,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.chunk.ChunkPos;
 
 public abstract class StructurePiece {
 	protected static final BlockState AIR = Blocks.field_10543.getDefaultState();
@@ -162,12 +162,12 @@ public abstract class StructurePiece {
 			return i;
 		} else {
 			switch (direction) {
-				case NORTH:
-				case SOUTH:
+				case field_11043:
+				case field_11035:
 					return this.boundingBox.minX + i;
-				case WEST:
+				case field_11039:
 					return this.boundingBox.maxX - j;
-				case EAST:
+				case field_11034:
 					return this.boundingBox.minX + j;
 				default:
 					return i;
@@ -185,12 +185,12 @@ public abstract class StructurePiece {
 			return j;
 		} else {
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 					return this.boundingBox.maxZ - j;
-				case SOUTH:
+				case field_11035:
 					return this.boundingBox.minZ + j;
-				case WEST:
-				case EAST:
+				case field_11039:
+				case field_11034:
 					return this.boundingBox.minZ + i;
 				default:
 					return j;
@@ -201,11 +201,11 @@ public abstract class StructurePiece {
 	protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 		if (mutableIntBoundingBox.contains(blockPos)) {
-			if (this.mirror != BlockMirror.NONE) {
+			if (this.mirror != BlockMirror.field_11302) {
 				blockState = blockState.mirror(this.mirror);
 			}
 
-			if (this.rotation != BlockRotation.ROT_0) {
+			if (this.rotation != BlockRotation.field_11467) {
 				blockState = blockState.rotate(this.rotation);
 			}
 
@@ -226,7 +226,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
+		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.field_10124.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
@@ -241,7 +241,7 @@ public abstract class StructurePiece {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					this.addBlock(iWorld, Blocks.AIR.getDefaultState(), p, o, q, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
 				}
 			}
 		}
@@ -389,7 +389,7 @@ public abstract class StructurePiece {
 	public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = null;
 
-		for (Direction direction2 : Direction.Type.HORIZONTAL) {
+		for (Direction direction2 : Direction.Type.field_11062) {
 			BlockPos blockPos2 = blockPos.offset(direction2);
 			BlockState blockState2 = blockView.getBlockState(blockPos2);
 			if (blockState2.getBlock() == Blocks.field_10034) {
@@ -479,25 +479,25 @@ public abstract class StructurePiece {
 	public void setOrientation(@Nullable Direction direction) {
 		this.facing = direction;
 		if (direction == null) {
-			this.rotation = BlockRotation.ROT_0;
-			this.mirror = BlockMirror.NONE;
+			this.rotation = BlockRotation.field_11467;
+			this.mirror = BlockMirror.field_11302;
 		} else {
 			switch (direction) {
-				case SOUTH:
-					this.mirror = BlockMirror.LEFT_RIGHT;
-					this.rotation = BlockRotation.ROT_0;
+				case field_11035:
+					this.mirror = BlockMirror.field_11300;
+					this.rotation = BlockRotation.field_11467;
 					break;
-				case WEST:
-					this.mirror = BlockMirror.LEFT_RIGHT;
-					this.rotation = BlockRotation.ROT_90;
+				case field_11039:
+					this.mirror = BlockMirror.field_11300;
+					this.rotation = BlockRotation.field_11463;
 					break;
-				case EAST:
-					this.mirror = BlockMirror.NONE;
-					this.rotation = BlockRotation.ROT_90;
+				case field_11034:
+					this.mirror = BlockMirror.field_11302;
+					this.rotation = BlockRotation.field_11463;
 					break;
 				default:
-					this.mirror = BlockMirror.NONE;
-					this.rotation = BlockRotation.ROT_0;
+					this.mirror = BlockMirror.field_11302;
+					this.rotation = BlockRotation.field_11467;
 			}
 		}
 	}
@@ -511,7 +511,7 @@ public abstract class StructurePiece {
 	}
 
 	public abstract static class BlockRandomizer {
-		protected BlockState block = Blocks.AIR.getDefaultState();
+		protected BlockState block = Blocks.field_10124.getDefaultState();
 
 		protected BlockRandomizer() {
 		}

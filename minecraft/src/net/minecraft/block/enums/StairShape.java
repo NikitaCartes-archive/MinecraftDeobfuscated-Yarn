@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum StairShape implements StringRepresentable {
+public enum StairShape implements SnakeCaseIdentifiable {
 	field_12710("straight"),
 	field_12712("inner_left"),
 	field_12713("inner_right"),
@@ -20,7 +20,7 @@ public enum StairShape implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

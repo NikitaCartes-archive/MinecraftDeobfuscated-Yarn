@@ -61,9 +61,9 @@ public class FlintAndSteelItem extends Item {
 		BlockState blockState2 = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos);
 		boolean bl = false;
 
-		for (Direction direction : Direction.Type.HORIZONTAL) {
+		for (Direction direction : Direction.Type.field_11062) {
 			if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10540
-				&& ((PortalBlock)Blocks.field_10316).method_10351(iWorld, blockPos) != null) {
+				&& ((PortalBlock)Blocks.field_10316).createAreaHelper(iWorld, blockPos) != null) {
 				bl = true;
 			}
 		}

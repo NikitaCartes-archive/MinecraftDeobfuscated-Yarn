@@ -53,11 +53,11 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	public ThrownPotionEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.POTION, livingEntity, world);
+		super(EntityType.field_6045, livingEntity, world);
 	}
 
 	public ThrownPotionEntity(World world, double d, double e, double f) {
-		super(EntityType.POTION, d, e, f, world);
+		super(EntityType.field_6045, d, e, f, world);
 	}
 
 	@Override
@@ -95,14 +95,14 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 			boolean bl = potion == Potions.field_8991 && list.isEmpty();
-			if (hitResult.getType() == HitResult.Type.BLOCK && bl) {
+			if (hitResult.getType() == HitResult.Type.field_1332 && bl) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				Direction direction = blockHitResult.getSide();
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(direction);
 				this.extinguishFire(blockPos, direction);
 				this.extinguishFire(blockPos.offset(direction.getOpposite()), direction);
 
-				for (Direction direction2 : Direction.Type.HORIZONTAL) {
+				for (Direction direction2 : Direction.Type.field_11062) {
 					this.extinguishFire(blockPos.offset(direction2), direction2);
 				}
 			}
@@ -113,7 +113,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 				if (this.isLingering()) {
 					this.method_7497(itemStack, potion);
 				} else {
-					this.method_7498(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
+					this.method_7498(list, hitResult.getType() == HitResult.Type.field_1331 ? ((EntityHitResult)hitResult).getEntity() : null);
 				}
 			}
 
@@ -174,7 +174,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 		areaEffectCloudEntity.setOwner(this.getOwner());
 		areaEffectCloudEntity.setRadius(3.0F);
-		areaEffectCloudEntity.setRadiusStart(-0.5F);
+		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
 		areaEffectCloudEntity.setPotion(potion);

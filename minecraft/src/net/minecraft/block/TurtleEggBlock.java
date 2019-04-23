@@ -4,9 +4,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,7 +82,7 @@ public class TurtleEggBlock extends Block {
 				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(EGGS); j++) {
 						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
-						TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
+						TurtleEntity turtleEntity = EntityType.field_6113.create(world);
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(blockPos);
 						turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);
@@ -119,9 +119,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getItemStack().getItem() == this.getItem() && blockState.get(EGGS) < 4
-			? true
-			: super.canReplace(blockState, itemPlacementContext);
+		return itemPlacementContext.getItemStack().getItem() == this.asItem() && blockState.get(EGGS) < 4 ? true : super.canReplace(blockState, itemPlacementContext);
 	}
 
 	@Nullable
@@ -135,17 +133,17 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return blockState.get(EGGS) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HATCH, EGGS);
+		builder.add(HATCH, EGGS);
 	}
 
 	private boolean breaksEgg(World world, Entity entity) {

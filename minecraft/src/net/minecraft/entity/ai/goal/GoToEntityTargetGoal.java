@@ -7,36 +7,36 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToEntityTargetGoal extends Goal {
-	private final MobEntityWithAi owner;
+	private final MobEntityWithAi mob;
 	private LivingEntity target;
-	private double field_6527;
-	private double field_6526;
-	private double field_6531;
-	private final double field_6530;
+	private double x;
+	private double y;
+	private double z;
+	private final double speed;
 	private final float maxDistance;
 
 	public GoToEntityTargetGoal(MobEntityWithAi mobEntityWithAi, double d, float f) {
-		this.owner = mobEntityWithAi;
-		this.field_6530 = d;
+		this.mob = mobEntityWithAi;
+		this.speed = d;
 		this.maxDistance = f;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		this.target = this.owner.getTarget();
+		this.target = this.mob.getTarget();
 		if (this.target == null) {
 			return false;
-		} else if (this.target.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance)) {
+		} else if (this.target.squaredDistanceTo(this.mob) > (double)(this.maxDistance * this.maxDistance)) {
 			return false;
 		} else {
-			Vec3d vec3d = PathfindingUtil.method_6373(this.owner, 16, 7, new Vec3d(this.target.x, this.target.y, this.target.z));
+			Vec3d vec3d = PathfindingUtil.method_6373(this.mob, 16, 7, new Vec3d(this.target.x, this.target.y, this.target.z));
 			if (vec3d == null) {
 				return false;
 			} else {
-				this.field_6527 = vec3d.x;
-				this.field_6526 = vec3d.y;
-				this.field_6531 = vec3d.z;
+				this.x = vec3d.x;
+				this.y = vec3d.y;
+				this.z = vec3d.z;
 				return true;
 			}
 		}
@@ -44,9 +44,7 @@ public class GoToEntityTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle()
-			&& this.target.isAlive()
-			&& this.target.squaredDistanceTo(this.owner) < (double)(this.maxDistance * this.maxDistance);
+		return !this.mob.getNavigation().isIdle() && this.target.isAlive() && this.target.squaredDistanceTo(this.mob) < (double)(this.maxDistance * this.maxDistance);
 	}
 
 	@Override
@@ -56,6 +54,6 @@ public class GoToEntityTargetGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.field_6527, this.field_6526, this.field_6531, this.field_6530);
+		this.mob.getNavigation().startMovingTo(this.x, this.y, this.z, this.speed);
 	}
 }

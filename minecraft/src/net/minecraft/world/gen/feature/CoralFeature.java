@@ -40,7 +40,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 				iWorld.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 2);
 			}
 
-			for (Direction direction : Direction.Type.HORIZONTAL) {
+			for (Direction direction : Direction.Type.field_11062) {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos3 = blockPos.offset(direction);
 					if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {

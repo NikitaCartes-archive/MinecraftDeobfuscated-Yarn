@@ -12,7 +12,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
@@ -25,8 +25,8 @@ public class ItemModels {
 		this.modelManager = bakedModelManager;
 	}
 
-	public Sprite getSprite(ItemProvider itemProvider) {
-		return this.getSprite(new ItemStack(itemProvider));
+	public Sprite getSprite(ItemConvertible itemConvertible) {
+		return this.getSprite(new ItemStack(itemConvertible));
 	}
 
 	public Sprite getSprite(ItemStack itemStack) {

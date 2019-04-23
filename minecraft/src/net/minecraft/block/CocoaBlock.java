@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -41,7 +41,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	public CocoaBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -61,17 +61,17 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		int i = (Integer)blockState.get(AGE);
 		switch ((Direction)blockState.get(FACING)) {
-			case SOUTH:
+			case field_11035:
 				return AGE_TO_SOUTH_SHAPE[i];
-			case NORTH:
+			case field_11043:
 			default:
 				return AGE_TO_NORTH_SHAPE[i];
-			case WEST:
+			case field_11039:
 				return AGE_TO_WEST_SHAPE[i];
-			case EAST:
+			case field_11034:
 				return AGE_TO_EAST_SHAPE[i];
 		}
 	}
@@ -100,7 +100,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -121,11 +121,11 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, AGE);
+		builder.add(FACING, AGE);
 	}
 }

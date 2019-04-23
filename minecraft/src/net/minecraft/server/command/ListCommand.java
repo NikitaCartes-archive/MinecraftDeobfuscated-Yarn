@@ -4,11 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class ListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -27,11 +27,11 @@ public class ListCommand {
 		return execute(serverCommandSource, PlayerEntity::getNameAndUuid);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, TextComponent> function) {
+	private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, Component> function) {
 		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
-		TextComponent textComponent = TextFormatter.join(list, function);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), textComponent), false);
+		Component component = Components.join(list, function);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), component), false);
 		return list.size();
 	}
 }

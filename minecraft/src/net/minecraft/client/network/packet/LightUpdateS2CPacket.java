@@ -8,10 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -34,8 +34,8 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.blockLightUpdates = Lists.<byte[]>newArrayList();
 
 		for (int i = 0; i < 18; i++) {
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9284).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.field_9282).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
 			if (chunkNibbleArray != null) {
 				if (chunkNibbleArray.isUninitialized()) {
 					this.filledSkyLightMask |= 1 << i;
@@ -66,7 +66,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for (int k = 0; k < 18; k++) {
 			if ((this.skyLightMask & 1 << k) != 0) {
-				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
+				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9284).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.skyLightUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
@@ -78,7 +78,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			}
 
 			if ((this.blockLightMask & 1 << k) != 0) {
-				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
+				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9282).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.blockLightUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {

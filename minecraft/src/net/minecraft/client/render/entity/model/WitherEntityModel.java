@@ -61,8 +61,8 @@ public class WitherEntityModel<T extends WitherEntity> extends EntityModel<T> {
 
 	public void method_17128(T witherEntity, float f, float g, float h) {
 		for (int i = 1; i < 3; i++) {
-			this.field_3612[i].yaw = (witherEntity.method_6879(i - 1) - witherEntity.field_6283) * (float) (Math.PI / 180.0);
-			this.field_3612[i].pitch = witherEntity.method_6887(i - 1) * (float) (Math.PI / 180.0);
+			this.field_3612[i].yaw = (witherEntity.getHeadYaw(i - 1) - witherEntity.field_6283) * (float) (Math.PI / 180.0);
+			this.field_3612[i].pitch = witherEntity.getHeadPitch(i - 1) * (float) (Math.PI / 180.0);
 		}
 	}
 }

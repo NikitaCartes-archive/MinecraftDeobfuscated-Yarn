@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.Quaternion;
@@ -22,15 +23,14 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -102,7 +102,7 @@ public class CrossbowItem extends BaseBowItem {
 		if (f >= 1.0F && !isCharged(itemStack)) {
 			method_7767(livingEntity, itemStack);
 			setCharged(itemStack, true);
-			SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.field_15248 : SoundCategory.field_15251;
+			SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.field_15251;
 			world.playSound(
 				null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.field_14626, soundCategory, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F
 			);
@@ -212,7 +212,7 @@ public class CrossbowItem extends BaseBowItem {
 			} else {
 				projectile = method_18814(world, livingEntity, itemStack, itemStack2);
 				if (bl || i != 0.0F) {
-					((ProjectileEntity)projectile).pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
+					((ProjectileEntity)projectile).pickupType = ProjectileEntity.PickupPermission.field_7594;
 				}
 			}
 
@@ -230,7 +230,7 @@ public class CrossbowItem extends BaseBowItem {
 
 			itemStack.applyDamage(bl2 ? 3 : 1, livingEntity, livingEntityx -> livingEntityx.sendToolBreakStatus(hand));
 			world.spawnEntity((Entity)projectile);
-			world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.field_15187, SoundCategory.field_15248, 1.0F, f);
+			world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.field_15187, SoundCategory.PLAYERS, 1.0F, f);
 		}
 	}
 
@@ -309,12 +309,12 @@ public class CrossbowItem extends BaseBowItem {
 
 			if (f >= 0.2F && !this.field_7937) {
 				this.field_7937 = true;
-				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent, SoundCategory.field_15248, 0.5F, 1.0F);
+				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 
 			if (f >= 0.5F && soundEvent2 != null && !this.field_7936) {
 				this.field_7936 = true;
-				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent2, SoundCategory.field_15248, 0.5F, 1.0F);
+				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent2, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 		}
 	}
@@ -358,17 +358,17 @@ public class CrossbowItem extends BaseBowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		List<ItemStack> list2 = getChargedProjectiles(itemStack);
 		if (isCharged(itemStack) && !list2.isEmpty()) {
 			ItemStack itemStack2 = (ItemStack)list2.get(0);
-			list.add(new TranslatableTextComponent("item.minecraft.crossbow.projectile").append(" ").append(itemStack2.toTextComponent()));
+			list.add(new TranslatableComponent("item.minecraft.crossbow.projectile").append(" ").append(itemStack2.toTextComponent()));
 			if (tooltipContext.isAdvanced() && itemStack2.getItem() == Items.field_8639) {
-				List<TextComponent> list3 = Lists.<TextComponent>newArrayList();
+				List<Component> list3 = Lists.<Component>newArrayList();
 				Items.field_8639.buildTooltip(itemStack2, world, list3, tooltipContext);
 				if (!list3.isEmpty()) {
 					for (int i = 0; i < list3.size(); i++) {
-						list3.set(i, new StringTextComponent("  ").append((TextComponent)list3.get(i)).applyFormat(TextFormat.field_1080));
+						list3.set(i, new TextComponent("  ").append((Component)list3.get(i)).applyFormat(ChatFormat.field_1080));
 					}
 
 					list.addAll(list3);

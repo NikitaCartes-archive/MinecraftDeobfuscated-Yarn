@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class AbstractTeam {
 	public boolean isEqual(@Nullable AbstractTeam abstractTeam) {
@@ -18,7 +18,7 @@ public abstract class AbstractTeam {
 
 	public abstract String getName();
 
-	public abstract TextComponent modifyText(TextComponent textComponent);
+	public abstract Component modifyText(Component component);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();
@@ -28,7 +28,7 @@ public abstract class AbstractTeam {
 	@Environment(EnvType.CLIENT)
 	public abstract AbstractTeam.VisibilityRule getNameTagVisibilityRule();
 
-	public abstract TextFormat getColor();
+	public abstract ChatFormat getColor();
 
 	public abstract Collection<String> getPlayerList();
 
@@ -37,7 +37,7 @@ public abstract class AbstractTeam {
 	public abstract AbstractTeam.CollisionRule getCollisionRule();
 
 	public static enum CollisionRule {
-		ALWAYS("always", 0),
+		field_1437("always", 0),
 		field_1435("never", 1),
 		field_1434("pushOtherTeams", 2),
 		field_1440("pushOwnTeam", 3);
@@ -57,16 +57,16 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public TextComponent getTranslationKey() {
-			return new TranslatableTextComponent("team.collision." + this.name);
+		public Component getTranslationKey() {
+			return new TranslatableComponent("team.collision." + this.name);
 		}
 	}
 
 	public static enum VisibilityRule {
-		ALWAYS("always", 0),
-		NEVER("never", 1),
-		HIDDEN_FOR_OTHER_TEAMS("hideForOtherTeams", 2),
-		HIDDEN_FOR_TEAM("hideForOwnTeam", 3);
+		field_1442("always", 0),
+		field_1443("never", 1),
+		field_1444("hideForOtherTeams", 2),
+		field_1446("hideForOwnTeam", 3);
 
 		private static final Map<String, AbstractTeam.VisibilityRule> VISIBILITY_RULES = (Map<String, AbstractTeam.VisibilityRule>)Arrays.stream(values())
 			.collect(Collectors.toMap(visibilityRule -> visibilityRule.name, visibilityRule -> visibilityRule));
@@ -83,8 +83,8 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public TextComponent getTranslationKey() {
-			return new TranslatableTextComponent("team.visibility." + this.name);
+		public Component getTranslationKey() {
+			return new TranslatableComponent("team.visibility." + this.name);
 		}
 	}
 }

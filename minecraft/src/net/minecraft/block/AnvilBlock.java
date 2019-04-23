@@ -5,13 +5,13 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -24,20 +24,20 @@ import net.minecraft.world.World;
 
 public class AnvilBlock extends FallingBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	private static final VoxelShape field_9882 = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
-	private static final VoxelShape field_9885 = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
-	private static final VoxelShape field_9888 = Block.createCuboidShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
-	private static final VoxelShape field_9884 = Block.createCuboidShape(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
-	private static final VoxelShape field_9891 = Block.createCuboidShape(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
-	private static final VoxelShape field_9889 = Block.createCuboidShape(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
-	private static final VoxelShape field_9886 = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
-	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(field_9882, field_9885, field_9888, field_9884);
-	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(field_9882, field_9891, field_9889, field_9886);
-	private static final TranslatableTextComponent CONTAINER_NAME = new TranslatableTextComponent("container.repair");
+	private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	private static final VoxelShape X_STEP_SHAPE = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
+	private static final VoxelShape X_STEM_SHAPE = Block.createCuboidShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
+	private static final VoxelShape X_FACE_SHAPE = Block.createCuboidShape(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
+	private static final VoxelShape Z_STEP_SHAPE = Block.createCuboidShape(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
+	private static final VoxelShape Z_STEM_SHAPE = Block.createCuboidShape(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
+	private static final VoxelShape Z_FACE_SHAPE = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
+	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
+	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
+	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.repair");
 
 	public AnvilBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Direction direction = blockState.get(FACING);
 		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
@@ -97,7 +97,7 @@ public class AnvilBlock extends FallingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 
 	@Override

@@ -22,10 +22,10 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.loot.LootTables;
 
 public class StrongholdGenerator {
@@ -228,7 +228,7 @@ public class StrongholdGenerator {
 
 			if (!this.chestGenerated && mutableIntBoundingBox.contains(new BlockPos(this.applyXTransform(3, 3), this.applyYTransform(2), this.applyZTransform(3, 3)))) {
 				this.chestGenerated = true;
-				this.addChest(iWorld, mutableIntBoundingBox, random, 3, 2, 3, LootTables.CHEST_STRONGHOLD_CORRIDOR);
+				this.addChest(iWorld, mutableIntBoundingBox, random, 3, 2, 3, LootTables.field_842);
 			}
 
 			return true;
@@ -285,8 +285,8 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 6);
-			BlockState blockState = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST);
-			BlockState blockState2 = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST);
+			BlockState blockState = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034);
+			BlockState blockState2 = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 1, blockState);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 3, 2, 1, blockState2);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 5, blockState);
@@ -342,7 +342,7 @@ public class StrongholdGenerator {
 			int i = 3;
 			int j = 5;
 			Direction direction = this.getFacing();
-			if (direction == Direction.WEST || direction == Direction.NORTH) {
+			if (direction == Direction.field_11039 || direction == Direction.field_11043) {
 				i = 8 - i;
 				j = 8 - j;
 			}
@@ -418,7 +418,7 @@ public class StrongholdGenerator {
 				Blocks.field_10136.getDefaultState().with(SlabBlock.TYPE, SlabType.field_12682),
 				false
 			);
-			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 6, 5, 6, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035), 6, 5, 6, mutableIntBoundingBox);
 			return true;
 		}
 	}
@@ -438,7 +438,7 @@ public class StrongholdGenerator {
 		@Override
 		public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 			Direction direction = this.getFacing();
-			if (direction != Direction.NORTH && direction != Direction.EAST) {
+			if (direction != Direction.field_11043 && direction != Direction.field_11034) {
 				this.method_14873((StrongholdGenerator.Start)structurePiece, list, random, 1, 1);
 			} else {
 				this.method_14870((StrongholdGenerator.Start)structurePiece, list, random, 1, 1);
@@ -457,7 +457,7 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
 			Direction direction = this.getFacing();
-			if (direction != Direction.NORTH && direction != Direction.EAST) {
+			if (direction != Direction.field_11043 && direction != Direction.field_11034) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
 			} else {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
@@ -471,7 +471,7 @@ public class StrongholdGenerator {
 		private final boolean tall;
 
 		public Library(int i, Random random, MutableIntBoundingBox mutableIntBoundingBox, Direction direction) {
-			super(StructurePieceType.STRONGJOLD_LIBRARY, i);
+			super(StructurePieceType.STRONGHOLD_LIBRARY, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = mutableIntBoundingBox;
@@ -479,7 +479,7 @@ public class StrongholdGenerator {
 		}
 
 		public Library(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.STRONGJOLD_LIBRARY, compoundTag);
+			super(StructurePieceType.STRONGHOLD_LIBRARY, compoundTag);
 			this.tall = compoundTag.getBoolean("Tall");
 		}
 
@@ -520,8 +520,8 @@ public class StrongholdGenerator {
 				if ((l - 1) % 4 == 0) {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST), 2, 3, l, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST), 11, 3, l, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034), 2, 3, l, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039), 11, 3, l, mutableIntBoundingBox);
 					if (this.tall) {
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
@@ -602,7 +602,7 @@ public class StrongholdGenerator {
 					}
 				}
 
-				BlockState blockState3 = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.SOUTH);
+				BlockState blockState3 = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.field_11035);
 				this.addBlock(iWorld, blockState3, 10, 1, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 2, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 3, 13, mutableIntBoundingBox);
@@ -636,10 +636,10 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState7, 7, 8, 8, mutableIntBoundingBox);
 			}
 
-			this.addChest(iWorld, mutableIntBoundingBox, random, 3, 3, 5, LootTables.CHEST_STRONGHOLD_LIBRARY);
+			this.addChest(iWorld, mutableIntBoundingBox, random, 3, 3, 5, LootTables.field_683);
 			if (this.tall) {
 				this.addBlock(iWorld, AIR, 12, 9, 1, mutableIntBoundingBox);
-				this.addChest(iWorld, mutableIntBoundingBox, random, 12, 8, 1, LootTables.CHEST_STRONGHOLD_LIBRARY);
+				this.addChest(iWorld, mutableIntBoundingBox, random, 12, 8, 1, LootTables.field_683);
 			}
 
 			return true;
@@ -723,8 +723,12 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.SOUTH), i + 2, j + 1, k - 1, mutableIntBoundingBox);
+					this.addBlock(
+						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.field_11043), i + 2, j + 1, k + 1, mutableIntBoundingBox
+					);
+					this.addBlock(
+						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.field_11035), i + 2, j + 1, k - 1, mutableIntBoundingBox
+					);
 			}
 		}
 
@@ -749,19 +753,19 @@ public class StrongholdGenerator {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 						return StrongholdGenerator.method_14854(
 							start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.minZ - 1, direction, this.method_14923()
 						);
-					case SOUTH:
+					case field_11035:
 						return StrongholdGenerator.method_14854(
 							start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.maxZ + 1, direction, this.method_14923()
 						);
-					case WEST:
+					case field_11039:
 						return StrongholdGenerator.method_14854(
 							start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.method_14923()
 						);
-					case EAST:
+					case field_11034:
 						return StrongholdGenerator.method_14854(
 							start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.method_14923()
 						);
@@ -776,21 +780,21 @@ public class StrongholdGenerator {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.method_14923()
+							start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.field_11039, this.method_14923()
 						);
-					case SOUTH:
+					case field_11035:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.method_14923()
+							start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.field_11039, this.method_14923()
 						);
-					case WEST:
+					case field_11039:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.method_14923()
+							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.field_11043, this.method_14923()
 						);
-					case EAST:
+					case field_11034:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.method_14923()
+							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.field_11043, this.method_14923()
 						);
 				}
 			}
@@ -803,21 +807,21 @@ public class StrongholdGenerator {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.method_14923()
+							start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.field_11034, this.method_14923()
 						);
-					case SOUTH:
+					case field_11035:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.method_14923()
+							start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.field_11034, this.method_14923()
 						);
-					case WEST:
+					case field_11039:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.method_14923()
+							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.field_11035, this.method_14923()
 						);
-					case EAST:
+					case field_11034:
 						return StrongholdGenerator.method_14854(
-							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.method_14923()
+							start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.field_11035, this.method_14923()
 						);
 				}
 			}
@@ -898,7 +902,7 @@ public class StrongholdGenerator {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, j, 3, 15, j, 4, 15, blockState2, blockState2, false);
 			}
 
-			BlockState blockState3 = Blocks.field_10392.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
+			BlockState blockState3 = Blocks.field_10392.getDefaultState().with(StairsBlock.FACING, Direction.field_11043);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 5, 6, 1, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 2, 6, 6, 2, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 3, 7, 6, 3, 7, false, random, StrongholdGenerator.field_15263);
@@ -909,10 +913,10 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState3, k, 3, 6, mutableIntBoundingBox);
 			}
 
-			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.NORTH);
-			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.SOUTH);
-			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.EAST);
-			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.WEST);
+			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11043);
+			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11035);
+			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11034);
+			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11039);
 			boolean bl = true;
 			boolean[] bls = new boolean[12];
 
@@ -954,7 +958,7 @@ public class StrongholdGenerator {
 					iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 					if (blockEntity instanceof MobSpawnerBlockEntity) {
-						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
+						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.field_6125);
 					}
 				}
 			}
@@ -1068,8 +1072,8 @@ public class StrongholdGenerator {
 				8,
 				mutableIntBoundingBox
 			);
-			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.WEST);
-			BlockState blockState2 = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.WEST).with(DoorBlock.HALF, DoubleBlockHalf.field_12609);
+			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.field_11039);
+			BlockState blockState2 = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.field_11039).with(DoorBlock.HALF, DoubleBlockHalf.field_12609);
 			this.addBlock(iWorld, blockState, 4, 1, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState2, 4, 2, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState, 4, 1, 8, mutableIntBoundingBox);
@@ -1093,7 +1097,7 @@ public class StrongholdGenerator {
 		@Override
 		public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 			Direction direction = this.getFacing();
-			if (direction != Direction.NORTH && direction != Direction.EAST) {
+			if (direction != Direction.field_11043 && direction != Direction.field_11034) {
 				this.method_14870((StrongholdGenerator.Start)structurePiece, list, random, 1, 1);
 			} else {
 				this.method_14873((StrongholdGenerator.Start)structurePiece, list, random, 1, 1);
@@ -1112,7 +1116,7 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
 			Direction direction = this.getFacing();
-			if (direction != Direction.NORTH && direction != Direction.EAST) {
+			if (direction != Direction.field_11043 && direction != Direction.field_11034) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
 			} else {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
@@ -1129,7 +1133,9 @@ public class StrongholdGenerator {
 			super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, i);
 			this.setOrientation(direction);
 			this.boundingBox = mutableIntBoundingBox;
-			this.length = direction != Direction.NORTH && direction != Direction.SOUTH ? mutableIntBoundingBox.getBlockCountX() : mutableIntBoundingBox.getBlockCountZ();
+			this.length = direction != Direction.field_11043 && direction != Direction.field_11035
+				? mutableIntBoundingBox.getBlockCountX()
+				: mutableIntBoundingBox.getBlockCountZ();
 		}
 
 		public SmallCorridor(StructureManager structureManager, CompoundTag compoundTag) {
@@ -1197,7 +1203,7 @@ public class StrongholdGenerator {
 		public SpiralStaircase(StructurePieceType structurePieceType, int i, Random random, int j, int k) {
 			super(structurePieceType, i);
 			this.isStructureStart = true;
-			this.setOrientation(Direction.Type.HORIZONTAL.random(random));
+			this.setOrientation(Direction.Type.field_11062.random(random));
 			this.entryDoor = StrongholdGenerator.Piece.EntranceType.field_15288;
 			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.boundingBox = new MutableIntBoundingBox(j, 64, k, j + 5 - 1, 74, k + 5 - 1);
@@ -1319,10 +1325,10 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 1, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 2, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST), 4, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST), 6, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 5, 3, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH), 5, 3, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039), 4, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034), 6, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035), 5, 3, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11043), 5, 3, 6, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 4, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 6, mutableIntBoundingBox);
@@ -1387,11 +1393,11 @@ public class StrongholdGenerator {
 						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 8, 3, i, mutableIntBoundingBox);
 					}
 
-					BlockState blockState = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.WEST);
+					BlockState blockState = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.field_11039);
 					this.addBlock(iWorld, blockState, 9, 1, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 2, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 3, 3, mutableIntBoundingBox);
-					this.addChest(iWorld, mutableIntBoundingBox, random, 3, 4, 8, LootTables.CHEST_STRONGHOLD_CROSSING);
+					this.addChest(iWorld, mutableIntBoundingBox, random, 3, 4, 8, LootTables.field_800);
 			}
 
 			return true;
@@ -1427,7 +1433,7 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 7, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 7, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 7);
-			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
+			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11035);
 
 			for (int i = 0; i < 6; i++) {
 				this.addBlock(iWorld, blockState, 1, 6 - i, 1 + i, mutableIntBoundingBox);

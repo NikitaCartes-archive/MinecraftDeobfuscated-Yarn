@@ -1,20 +1,25 @@
 package net.minecraft.world.chunk.light;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
 	private static final Direction[] DIRECTIONS_SKYLIGHT = Direction.values();
-	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{
+		Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034
+	};
 
 	public ChunkSkyLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.SKY, new SkyLightStorage(chunkProvider));
+		super(chunkProvider, LightType.field_9284, new SkyLightStorage(chunkProvider));
 	}
 
 	@Override
@@ -33,12 +38,52 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			if (i >= 15) {
 				return i;
 			} else {
-				int j = this.getLightBlockedBetween(l, m);
-				boolean bl = l == Long.MAX_VALUE
-					|| BlockPos.unpackLongX(l) == BlockPos.unpackLongX(m)
-						&& BlockPos.unpackLongZ(l) == BlockPos.unpackLongZ(m)
-						&& BlockPos.unpackLongY(l) > BlockPos.unpackLongY(m);
-				return bl && i == 0 && j == 0 ? 0 : i + Math.max(1, j);
+				AtomicInteger atomicInteger = new AtomicInteger();
+				VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+				if (atomicInteger.get() >= 15) {
+					return 15;
+				} else {
+					int j = BlockPos.unpackLongX(l);
+					int k = BlockPos.unpackLongY(l);
+					int n = BlockPos.unpackLongZ(l);
+					int o = BlockPos.unpackLongX(m);
+					int p = BlockPos.unpackLongY(m);
+					int q = BlockPos.unpackLongZ(m);
+					boolean bl = j == o && n == q;
+					int r = Integer.signum(o - j);
+					int s = Integer.signum(p - k);
+					int t = Integer.signum(q - n);
+					Direction direction;
+					if (l == Long.MAX_VALUE) {
+						direction = Direction.field_11033;
+					} else {
+						direction = Direction.fromVector(r, s, t);
+					}
+
+					VoxelShape voxelShape2 = this.method_20479(l, null);
+					if (direction != null) {
+						if (VoxelShapes.method_1080(voxelShape2, voxelShape, direction)) {
+							return 15;
+						}
+					} else {
+						if (VoxelShapes.method_1080(voxelShape2, VoxelShapes.empty(), Direction.field_11033)) {
+							return 15;
+						}
+
+						int u = bl ? -1 : 0;
+						Direction direction2 = Direction.fromVector(r, u, t);
+						if (direction2 == null) {
+							return 15;
+						}
+
+						if (VoxelShapes.method_1080(VoxelShapes.empty(), voxelShape, direction2)) {
+							return 15;
+						}
+					}
+
+					boolean bl2 = l == Long.MAX_VALUE || bl && k > p;
+					return bl2 && i == 0 && atomicInteger.get() == 0 ? 0 : i + Math.max(1, atomicInteger.get());
+				}
 			}
 		}
 	}
@@ -68,7 +113,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			this.updateRecursively(l, q, i, bl);
 		}
 
-		long s = BlockPos.offset(l, Direction.UP);
+		long s = BlockPos.offset(l, Direction.field_11036);
 		long t = ChunkSectionPos.toChunkLong(s);
 		if (m == t || this.lightStorage.hasChunk(t)) {
 			this.updateRecursively(l, s, i, bl);
@@ -88,7 +133,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				if (this.lightStorage.hasChunk(w)) {
 					this.updateRecursively(l, v, i, bl);
 				}
-			} while (++u >= o * 16);
+			} while (++u > o * 16);
 		}
 	}
 
@@ -130,9 +175,9 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 						return j;
 					}
 				}
-			} else if (direction != Direction.DOWN) {
+			} else if (direction != Direction.field_11033) {
 				for (o = BlockPos.removeChunkSectionLocalY(o); !this.lightStorage.hasChunk(p) && !this.lightStorage.method_15568(p); o = BlockPos.add(o, 0, 16, 0)) {
-					p = ChunkSectionPos.offsetPacked(p, Direction.UP);
+					p = ChunkSectionPos.offsetPacked(p, Direction.field_11036);
 				}
 
 				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getDataForChunk(p, true);
@@ -166,7 +211,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			super.fullyUpdate(l);
 		} else {
 			for (l = BlockPos.removeChunkSectionLocalY(l); !this.lightStorage.hasChunk(m) && !this.lightStorage.method_15568(m); l = BlockPos.add(l, 0, 16, 0)) {
-				m = ChunkSectionPos.offsetPacked(m, Direction.UP);
+				m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
 			}
 
 			if (this.lightStorage.hasChunk(m)) {

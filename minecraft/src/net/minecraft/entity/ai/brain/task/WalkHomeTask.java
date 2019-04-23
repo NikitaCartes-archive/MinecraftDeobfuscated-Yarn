@@ -42,7 +42,11 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)livingEntity;
 			PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(), blockPos -> true, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18517.getCompletionCondition(),
+				blockPos -> true,
+				new BlockPos(livingEntity),
+				48,
+				PointOfInterestStorage.OccupationStatus.field_18489
 			);
 			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(new Vec3i(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z)) <= 4.0);
 		}
@@ -56,18 +60,18 @@ public class WalkHomeTask extends Task<LivingEntity> {
 		Predicate<BlockPos> predicate = blockPos -> {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 			if (serverWorld.getBlockState(blockPos.down()).isAir()) {
-				mutable.setOffset(Direction.DOWN);
+				mutable.setOffset(Direction.field_11033);
 			}
 
 			while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
-				mutable.setOffset(Direction.DOWN);
+				mutable.setOffset(Direction.field_11033);
 			}
 
 			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());
 			return path != null && path.method_19315();
 		};
 		pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.field_18489
 			)
 			.ifPresent(blockPos -> {
 				livingEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(blockPos, this.speed, 1));

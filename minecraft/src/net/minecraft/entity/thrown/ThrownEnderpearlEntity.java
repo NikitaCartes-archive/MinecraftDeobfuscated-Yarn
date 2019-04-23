@@ -31,13 +31,13 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	}
 
 	public ThrownEnderpearlEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.ENDER_PEARL, livingEntity, world);
+		super(EntityType.field_6082, livingEntity, world);
 		this.owner = livingEntity;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public ThrownEnderpearlEntity(World world, double d, double e, double f) {
-		super(EntityType.ENDER_PEARL, d, e, f, world);
+		super(EntityType.field_6082, d, e, f, world);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		LivingEntity livingEntity = this.getOwner();
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
+		if (hitResult.getType() == HitResult.Type.field_1331) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			if (entity == this.owner) {
 				return;
@@ -57,7 +57,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 			entity.damage(DamageSource.thrownProjectile(this, livingEntity), 0.0F);
 		}
 
-		if (hitResult.getType() == HitResult.Type.BLOCK) {
+		if (hitResult.getType() == HitResult.Type.field_1332) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof EndGatewayBlockEntity) {
@@ -89,7 +89,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
+						EndermiteEntity endermiteEntity = EntityType.field_6128.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
 						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);

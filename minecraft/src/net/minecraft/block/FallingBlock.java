@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.particle.BlockStateParticleParameters;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -78,7 +78,7 @@ public class FallingBlock extends Block {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)blockPos.getY() - 0.05;
 				double f = (double)((float)blockPos.getZ() + random.nextFloat());
-				world.addParticle(new BlockStateParticleParameters(ParticleTypes.field_11206, blockState), d, e, f, 0.0, 0.0, 0.0);
+				world.addParticle(new BlockStateParticleEffect(ParticleTypes.field_11206, blockState), d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}

@@ -9,14 +9,14 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.RealmsBridge;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class PauseMenuScreen extends Screen {
 	public PauseMenuScreen() {
-		super(new TranslatableTextComponent("menu.game"));
+		super(new TranslatableComponent("menu.game"));
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class PauseMenuScreen extends Screen {
 				buttonWidgetx.active = false;
 				this.minecraft.world.disconnect();
 				if (bl) {
-					this.minecraft.disconnect(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
+					this.minecraft.disconnect(new CloseWorldScreen(new TranslatableComponent("menu.savingLevel")));
 				} else {
 					this.minecraft.disconnect();
 				}

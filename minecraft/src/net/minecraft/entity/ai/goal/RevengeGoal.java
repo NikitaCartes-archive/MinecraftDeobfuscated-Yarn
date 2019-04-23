@@ -25,8 +25,8 @@ public class RevengeGoal extends TrackTargetGoal {
 
 	@Override
 	public boolean canStart() {
-		int i = this.entity.getLastAttackedTime();
-		LivingEntity livingEntity = this.entity.getAttacker();
+		int i = this.mob.getLastAttackedTime();
+		LivingEntity livingEntity = this.mob.getAttacker();
 		if (i != this.lastAttackedTime && livingEntity != null) {
 			for (Class<?> class_ : this.noRevengeTypes) {
 				if (class_.isAssignableFrom(livingEntity.getClass())) {
@@ -48,9 +48,9 @@ public class RevengeGoal extends TrackTargetGoal {
 
 	@Override
 	public void start() {
-		this.entity.setTarget(this.entity.getAttacker());
-		this.target = this.entity.getTarget();
-		this.lastAttackedTime = this.entity.getLastAttackedTime();
+		this.mob.setTarget(this.mob.getAttacker());
+		this.target = this.mob.getTarget();
+		this.lastAttackedTime = this.mob.getLastAttackedTime();
 		this.maxTimeWithoutVisibility = 300;
 		if (this.groupRevenge) {
 			this.callSameTypeForRevenge();
@@ -61,11 +61,10 @@ public class RevengeGoal extends TrackTargetGoal {
 
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
-		List<MobEntity> list = this.entity
+		List<MobEntity> list = this.mob
 			.world
 			.getEntities(
-				this.entity.getClass(),
-				new BoundingBox(this.entity.x, this.entity.y, this.entity.z, this.entity.x + 1.0, this.entity.y + 1.0, this.entity.z + 1.0).expand(d, 10.0, d)
+				this.mob.getClass(), new BoundingBox(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d)
 			);
 		Iterator var4 = list.iterator();
 
@@ -77,10 +76,10 @@ public class RevengeGoal extends TrackTargetGoal {
 				}
 
 				mobEntity = (MobEntity)var4.next();
-				if (this.entity != mobEntity
+				if (this.mob != mobEntity
 					&& mobEntity.getTarget() == null
-					&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntity).getOwner())
-					&& !mobEntity.isTeammate(this.entity.getAttacker())) {
+					&& (!(this.mob instanceof TameableEntity) || ((TameableEntity)this.mob).getOwner() == ((TameableEntity)mobEntity).getOwner())
+					&& !mobEntity.isTeammate(this.mob.getAttacker())) {
 					if (this.noHelpTypes == null) {
 						break;
 					}
@@ -100,7 +99,7 @@ public class RevengeGoal extends TrackTargetGoal {
 				}
 			}
 
-			this.setMobEntityTarget(mobEntity, this.entity.getAttacker());
+			this.setMobEntityTarget(mobEntity, this.mob.getAttacker());
 		}
 	}
 

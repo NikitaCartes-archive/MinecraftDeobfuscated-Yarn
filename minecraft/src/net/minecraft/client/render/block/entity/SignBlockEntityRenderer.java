@@ -17,7 +17,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
@@ -40,6 +40,11 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
+			if (!(blockState.getBlock() instanceof WallSignBlock)) {
+				GlStateManager.popMatrix();
+				return;
+			}
+
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
@@ -71,9 +76,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		int k = signBlockEntity.getTextColor().getSignColor();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
-				String string = signBlockEntity.getTextBeingEditedOnRow(l, textComponent -> {
-					List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, 90, textRenderer, false, true);
-					return list.isEmpty() ? "" : ((TextComponent)list.get(0)).getFormattedText();
+				String string = signBlockEntity.getTextBeingEditedOnRow(l, component -> {
+					List<Component> list = TextComponentUtil.wrapLines(component, 90, textRenderer, false, true);
+					return list.isEmpty() ? "" : ((Component)list.get(0)).getFormattedText();
 				});
 				if (string != null) {
 					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);

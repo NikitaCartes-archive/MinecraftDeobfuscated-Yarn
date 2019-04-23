@@ -13,7 +13,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.registry.Registry;
 
 public class Blocks {
-	public static final Block AIR = register("air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
+	public static final Block field_10124 = register("air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
 	public static final Block field_10340 = register("stone", new Block(Block.Settings.of(Material.STONE, MaterialColor.STONE).strength(1.5F, 6.0F)));
 	public static final Block field_10474 = register("granite", new Block(Block.Settings.of(Material.STONE, MaterialColor.DIRT).strength(1.5F, 6.0F)));
 	public static final Block field_10289 = register("polished_granite", new Block(Block.Settings.of(Material.STONE, MaterialColor.DIRT).strength(1.5F, 6.0F)));
@@ -245,7 +245,7 @@ public class Blocks {
 		"red_bed", new BedBlock(DyeColor.field_7964, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
 	);
 	public static final Block field_10461 = register(
-		"black_bed", new BedBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"black_bed", new BedBlock(DyeColor.field_7963, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
 	);
 	public static final Block field_10425 = register(
 		"powered_rail", new PoweredRailBlock(Block.Settings.of(Material.PART).noCollision().strength(0.7F).sounds(BlockSoundGroup.METAL))
@@ -467,7 +467,7 @@ public class Blocks {
 		"lever", new LeverBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10158 = register(
-		"stone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.Type.STONE, Block.Settings.of(Material.STONE).noCollision().strength(0.5F))
+		"stone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.field_11362, Block.Settings.of(Material.STONE).noCollision().strength(0.5F))
 	);
 	public static final Block field_9973 = register(
 		"iron_door", new DoorBlock(Block.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0F).sounds(BlockSoundGroup.METAL))
@@ -475,37 +475,43 @@ public class Blocks {
 	public static final Block field_10484 = register(
 		"oak_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_10161.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_10161.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10332 = register(
 		"spruce_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_9975.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_9975.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10592 = register(
 		"birch_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_10148.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_10148.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10026 = register(
 		"jungle_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_10334.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_10334.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10397 = register(
 		"acacia_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_10218.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_10218.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10470 = register(
 		"dark_oak_pressure_plate",
 		new PressurePlateBlock(
-			PressurePlateBlock.Type.WOOD, Block.Settings.of(Material.WOOD, field_10075.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			PressurePlateBlock.ActivationRule.field_11361,
+			Block.Settings.of(Material.WOOD, field_10075.materialColor).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block field_10080 = register(
@@ -516,14 +522,14 @@ public class Blocks {
 	);
 	public static final Block field_10301 = register(
 		"redstone_wall_torch",
-		new RedstoneTorchWallBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(7).sounds(BlockSoundGroup.WOOD).dropsLike(field_10523))
+		new WallRedstoneTorchBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(7).sounds(BlockSoundGroup.WOOD).dropsLike(field_10523))
 	);
 	public static final Block field_10494 = register("stone_button", new StoneButtonBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F)));
 	public static final Block field_10477 = register(
 		"snow", new SnowBlock(Block.Settings.of(Material.SNOW).ticksRandomly().strength(0.1F).sounds(BlockSoundGroup.SNOW))
 	);
 	public static final Block field_10295 = register(
-		"ice", new IceBlock(Block.Settings.of(Material.ICE).friction(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"ice", new IceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10491 = register("snow_block", new Block(Block.Settings.of(Material.SNOW_BLOCK).strength(0.2F).sounds(BlockSoundGroup.SNOW)));
 	public static final Block field_10029 = register(
@@ -621,7 +627,8 @@ public class Blocks {
 		new StainedGlassBlock(DyeColor.field_7964, Block.Settings.of(Material.GLASS, DyeColor.field_7964).strength(0.3F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_9997 = register(
-		"black_stained_glass", new StainedGlassBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS, DyeColor.BLACK).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"black_stained_glass",
+		new StainedGlassBlock(DyeColor.field_7963, Block.Settings.of(Material.GLASS, DyeColor.field_7963).strength(0.3F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10137 = register(
 		"oak_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0F).sounds(BlockSoundGroup.WOOD))
@@ -759,7 +766,7 @@ public class Blocks {
 	);
 	public static final Block field_10625 = register("cobblestone_wall", new WallBlock(Block.Settings.copy(field_10445)));
 	public static final Block field_9990 = register("mossy_cobblestone_wall", new WallBlock(Block.Settings.copy(field_10445)));
-	public static final Block field_10495 = register("flower_pot", new FlowerPotBlock(AIR, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block field_10495 = register("flower_pot", new FlowerPotBlock(field_10124, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10468 = register("potted_oak_sapling", new FlowerPotBlock(field_10394, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10192 = register("potted_spruce_sapling", new FlowerPotBlock(field_10217, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10577 = register("potted_birch_sapling", new FlowerPotBlock(field_10575, Block.Settings.of(Material.PART).breakInstantly()));
@@ -810,29 +817,31 @@ public class Blocks {
 	public static final Block field_10493 = register(
 		"dark_oak_button", new WoodButtonBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD))
 	);
-	public static final Block field_10481 = register("skeleton_skull", new SkullBlock(SkullBlock.Type.SKELETON, Block.Settings.of(Material.PART).strength(1.0F)));
+	public static final Block field_10481 = register(
+		"skeleton_skull", new SkullBlock(SkullBlock.Type.field_11512, Block.Settings.of(Material.PART).strength(1.0F))
+	);
 	public static final Block field_10388 = register(
-		"skeleton_wall_skull", new WallSkullBlock(SkullBlock.Type.SKELETON, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10481))
+		"skeleton_wall_skull", new WallSkullBlock(SkullBlock.Type.field_11512, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10481))
 	);
 	public static final Block field_10177 = register("wither_skeleton_skull", new WitherSkullBlock(Block.Settings.of(Material.PART).strength(1.0F)));
 	public static final Block field_10101 = register(
 		"wither_skeleton_wall_skull", new WallWitherSkullBlock(Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10177))
 	);
-	public static final Block field_10241 = register("zombie_head", new SkullBlock(SkullBlock.Type.ZOMBIE, Block.Settings.of(Material.PART).strength(1.0F)));
+	public static final Block field_10241 = register("zombie_head", new SkullBlock(SkullBlock.Type.field_11508, Block.Settings.of(Material.PART).strength(1.0F)));
 	public static final Block field_10581 = register(
-		"zombie_wall_head", new WallSkullBlock(SkullBlock.Type.ZOMBIE, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10241))
+		"zombie_wall_head", new WallSkullBlock(SkullBlock.Type.field_11508, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10241))
 	);
 	public static final Block field_10432 = register("player_head", new PlayerSkullBlock(Block.Settings.of(Material.PART).strength(1.0F)));
 	public static final Block field_10208 = register(
 		"player_wall_head", new WallPlayerSkullBlock(Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10432))
 	);
-	public static final Block field_10042 = register("creeper_head", new SkullBlock(SkullBlock.Type.CREEPER, Block.Settings.of(Material.PART).strength(1.0F)));
+	public static final Block field_10042 = register("creeper_head", new SkullBlock(SkullBlock.Type.field_11507, Block.Settings.of(Material.PART).strength(1.0F)));
 	public static final Block field_10509 = register(
-		"creeper_wall_head", new WallSkullBlock(SkullBlock.Type.CREEPER, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10042))
+		"creeper_wall_head", new WallSkullBlock(SkullBlock.Type.field_11507, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10042))
 	);
-	public static final Block field_10337 = register("dragon_head", new SkullBlock(SkullBlock.Type.DRAGON, Block.Settings.of(Material.PART).strength(1.0F)));
+	public static final Block field_10337 = register("dragon_head", new SkullBlock(SkullBlock.Type.field_11511, Block.Settings.of(Material.PART).strength(1.0F)));
 	public static final Block field_10472 = register(
-		"dragon_wall_head", new WallSkullBlock(SkullBlock.Type.DRAGON, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10337))
+		"dragon_wall_head", new WallSkullBlock(SkullBlock.Type.field_11511, Block.Settings.of(Material.PART).strength(1.0F).dropsLike(field_10337))
 	);
 	public static final Block field_10535 = register(
 		"anvil", new AnvilBlock(Block.Settings.of(Material.ANVIL, MaterialColor.IRON).strength(5.0F, 1200.0F).sounds(BlockSoundGroup.ANVIL))
@@ -973,12 +982,12 @@ public class Blocks {
 		"red_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.field_7964, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10070 = register(
-		"black_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"black_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.field_7963, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10256 = register("acacia_stairs", new StairsBlock(field_10218.getDefaultState(), Block.Settings.copy(field_10218)));
 	public static final Block field_10616 = register("dark_oak_stairs", new StairsBlock(field_10075.getDefaultState(), Block.Settings.copy(field_10075)));
 	public static final Block field_10030 = register(
-		"slime_block", new SlimeBlock(Block.Settings.of(Material.CLAY, MaterialColor.GRASS).friction(0.8F).sounds(BlockSoundGroup.SLIME))
+		"slime_block", new SlimeBlock(Block.Settings.of(Material.CLAY, MaterialColor.GRASS).slipperiness(0.8F).sounds(BlockSoundGroup.SLIME))
 	);
 	public static final Block field_10499 = register("barrier", new BarrierBlock(Block.Settings.of(Material.BARRIER).strength(-1.0F, 3600000.8F).dropsNothing()));
 	public static final Block field_10453 = register(
@@ -1051,12 +1060,12 @@ public class Blocks {
 		"red_carpet", new CarpetBlock(DyeColor.field_7964, Block.Settings.of(Material.CARPET, MaterialColor.RED).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block field_10106 = register(
-		"black_carpet", new CarpetBlock(DyeColor.BLACK, Block.Settings.of(Material.CARPET, MaterialColor.BLACK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"black_carpet", new CarpetBlock(DyeColor.field_7963, Block.Settings.of(Material.CARPET, MaterialColor.BLACK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block field_10415 = register("terracotta", new Block(Block.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(1.25F, 4.2F)));
 	public static final Block field_10381 = register("coal_block", new Block(Block.Settings.of(Material.STONE, MaterialColor.BLACK).strength(5.0F, 6.0F)));
 	public static final Block field_10225 = register(
-		"packed_ice", new Block(Block.Settings.of(Material.PACKED_ICE).friction(0.98F).strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"packed_ice", new Block(Block.Settings.of(Material.PACKED_ICE).slipperiness(0.98F).strength(0.5F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10583 = register(
 		"sunflower", new TallFlowerBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
@@ -1122,7 +1131,7 @@ public class Blocks {
 		"red_banner", new BannerBlock(DyeColor.field_7964, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10062 = register(
-		"black_banner", new BannerBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"black_banner", new BannerBlock(DyeColor.field_7963, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10202 = register(
 		"white_wall_banner",
@@ -1186,7 +1195,7 @@ public class Blocks {
 	);
 	public static final Block field_10537 = register(
 		"black_wall_banner",
-		new WallBannerBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(field_10062))
+		new WallBannerBlock(DyeColor.field_7963, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(field_10062))
 	);
 	public static final Block field_10344 = register("red_sandstone", new Block(Block.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(0.8F)));
 	public static final Block field_10117 = register("chiseled_red_sandstone", new Block(Block.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(0.8F)));
@@ -1325,7 +1334,7 @@ public class Blocks {
 		"chain_command_block", new CommandBlock(Block.Settings.of(Material.METAL, MaterialColor.GREEN).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
 	public static final Block field_10110 = register(
-		"frosted_ice", new FrostedIceBlock(Block.Settings.of(Material.ICE).friction(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"frosted_ice", new FrostedIceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10092 = register(
 		"magma_block", new MagmaBlock(Block.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(3).ticksRandomly().strength(0.5F))
@@ -1394,7 +1403,7 @@ public class Blocks {
 		"red_shulker_box", new ShulkerBoxBlock(DyeColor.field_7964, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.RED).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10371 = register(
-		"black_shulker_box", new ShulkerBoxBlock(DyeColor.BLACK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).hasDynamicBounds())
+		"black_shulker_box", new ShulkerBoxBlock(DyeColor.field_7963, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10595 = register(
 		"white_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.field_7952).strength(1.4F))
@@ -1442,7 +1451,7 @@ public class Blocks {
 		"red_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.field_7964).strength(1.4F))
 	);
 	public static final Block field_10501 = register(
-		"black_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.BLACK).strength(1.4F))
+		"black_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.field_7963).strength(1.4F))
 	);
 	public static final Block field_10107 = register("white_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7952).strength(1.8F)));
 	public static final Block field_10210 = register("orange_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7946).strength(1.8F)));
@@ -1459,7 +1468,7 @@ public class Blocks {
 	public static final Block field_10439 = register("brown_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7957).strength(1.8F)));
 	public static final Block field_10367 = register("green_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7942).strength(1.8F)));
 	public static final Block field_10058 = register("red_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7964).strength(1.8F)));
-	public static final Block field_10458 = register("black_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.BLACK).strength(1.8F)));
+	public static final Block field_10458 = register("black_concrete", new Block(Block.Settings.of(Material.STONE, DyeColor.field_7963).strength(1.8F)));
 	public static final Block field_10197 = register(
 		"white_concrete_powder",
 		new ConcretePowderBlock(field_10107, Block.Settings.of(Material.SAND, DyeColor.field_7952).strength(0.5F).sounds(BlockSoundGroup.SAND))
@@ -1521,7 +1530,8 @@ public class Blocks {
 		new ConcretePowderBlock(field_10058, Block.Settings.of(Material.SAND, DyeColor.field_7964).strength(0.5F).sounds(BlockSoundGroup.SAND))
 	);
 	public static final Block field_10506 = register(
-		"black_concrete_powder", new ConcretePowderBlock(field_10458, Block.Settings.of(Material.SAND, DyeColor.BLACK).strength(0.5F).sounds(BlockSoundGroup.SAND))
+		"black_concrete_powder",
+		new ConcretePowderBlock(field_10458, Block.Settings.of(Material.SAND, DyeColor.field_7963).strength(0.5F).sounds(BlockSoundGroup.SAND))
 	);
 	public static final Block field_9993 = register(
 		"kelp", new KelpBlock(Block.Settings.of(Material.UNDERWATER_PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WET_GRASS))
@@ -1713,7 +1723,7 @@ public class Blocks {
 		"sea_pickle", new SeaPickleBlock(Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.GREEN).lightLevel(3).sounds(BlockSoundGroup.SLIME))
 	);
 	public static final Block field_10384 = register(
-		"blue_ice", new TransparentBlock(Block.Settings.of(Material.PACKED_ICE).strength(2.8F).friction(0.989F).sounds(BlockSoundGroup.GLASS))
+		"blue_ice", new TransparentBlock(Block.Settings.of(Material.PACKED_ICE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10502 = register(
 		"conduit", new ConduitBlock(Block.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(15))

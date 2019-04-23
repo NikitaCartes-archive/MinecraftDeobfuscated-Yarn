@@ -27,7 +27,7 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(livingEntity.getPos(), 4.0)
 			&& ((List)brain.getOptionalMemory(MemoryModuleType.field_18442).get())
 				.stream()
-				.anyMatch(livingEntityx -> EntityType.VILLAGER.equals(livingEntityx.getType()));
+				.anyMatch(livingEntityx -> EntityType.field_6077.equals(livingEntityx.getType()));
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntityxx -> EntityType.VILLAGER.equals(livingEntityxx.getType()))
+						.filter(livingEntityxx -> EntityType.field_6077.equals(livingEntityxx.getType()))
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= 32.0)
 						.findFirst()
 						.ifPresent(livingEntityxx -> {

@@ -13,9 +13,9 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -26,7 +26,7 @@ public class EditSignScreen extends Screen {
 	private SelectionManager selectionManager;
 
 	public EditSignScreen(SignBlockEntity signBlockEntity) {
-		super(new TranslatableTextComponent("sign.edit"));
+		super(new TranslatableComponent("sign.edit"));
 		this.sign = signBlockEntity;
 	}
 
@@ -36,10 +36,7 @@ public class EditSignScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
-			this.minecraft,
-			() -> this.sign.getTextOnRow(this.currentRow).getString(),
-			string -> this.sign.setTextOnRow(this.currentRow, new StringTextComponent(string)),
-			90
+			this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new TextComponent(string)), 90
 		);
 	}
 
@@ -107,6 +104,12 @@ public class EditSignScreen extends Screen {
 		if (blockState.getBlock() instanceof SignBlock) {
 			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
+			if (!(blockState.getBlock() instanceof WallSignBlock)) {
+				GlStateManager.popMatrix();
+				this.finishEditing();
+				return;
+			}
+
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}
 

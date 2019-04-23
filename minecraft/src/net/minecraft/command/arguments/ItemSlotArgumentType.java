@@ -13,15 +13,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 
 public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
 	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("slot.unknown", object)
+		object -> new TranslatableComponent("slot.unknown", object)
 	);
 	private static final Map<String, Integer> slotNamesToSlotCommandId = SystemUtil.consume(Maps.<String, Integer>newHashMap(), hashMap -> {
 		for (int i = 0; i < 54; i++) {
@@ -51,10 +51,10 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		hashMap.put("weapon", 98);
 		hashMap.put("weapon.mainhand", 98);
 		hashMap.put("weapon.offhand", 99);
-		hashMap.put("armor.head", 100 + EquipmentSlot.HEAD.getEntitySlotId());
-		hashMap.put("armor.chest", 100 + EquipmentSlot.CHEST.getEntitySlotId());
-		hashMap.put("armor.legs", 100 + EquipmentSlot.LEGS.getEntitySlotId());
-		hashMap.put("armor.feet", 100 + EquipmentSlot.FEET.getEntitySlotId());
+		hashMap.put("armor.head", 100 + EquipmentSlot.field_6169.getEntitySlotId());
+		hashMap.put("armor.chest", 100 + EquipmentSlot.field_6174.getEntitySlotId());
+		hashMap.put("armor.legs", 100 + EquipmentSlot.field_6172.getEntitySlotId());
+		hashMap.put("armor.feet", 100 + EquipmentSlot.field_6166.getEntitySlotId());
 		hashMap.put("horse.saddle", 400);
 		hashMap.put("horse.armor", 401);
 		hashMap.put("horse.chest", 499);

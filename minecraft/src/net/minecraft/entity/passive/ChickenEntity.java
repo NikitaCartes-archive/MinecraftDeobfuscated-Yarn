@@ -69,8 +69,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		this.field_6736 = this.field_6741;
 		this.field_6738 = this.field_6743;
 		this.field_6743 = (float)((double)this.field_6743 + (double)(this.onGround ? -1 : 4) * 0.3);
@@ -86,7 +86,7 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
-		if (!this.world.isClient && this.isAlive() && !this.isChild() && !this.hasJockey() && --this.eggLayTime <= 0) {
+		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
 			this.playSound(SoundEvents.field_15219, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			this.dropItem(Items.field_8803);
 			this.eggLayTime = this.random.nextInt(6000) + 6000;
@@ -118,7 +118,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	public ChickenEntity method_6471(PassiveEntity passiveEntity) {
-		return EntityType.CHICKEN.create(this.world);
+		return EntityType.field_6132.create(this.world);
 	}
 
 	@Override

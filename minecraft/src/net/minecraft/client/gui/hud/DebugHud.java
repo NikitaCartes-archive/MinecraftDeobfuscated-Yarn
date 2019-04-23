@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
@@ -30,13 +31,13 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -44,7 +45,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
@@ -173,16 +173,16 @@ public class DebugHud extends DrawableHelper {
 			Direction direction = entity.getHorizontalFacing();
 			String string2;
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 					string2 = "Towards negative Z";
 					break;
-				case SOUTH:
+				case field_11035:
 					string2 = "Towards positive Z";
 					break;
-				case WEST:
+				case field_11039:
 					string2 = "Towards negative X";
 					break;
-				case EAST:
+				case field_11034:
 					string2 = "Towards positive X";
 					break;
 				default:
@@ -243,9 +243,9 @@ public class DebugHud extends DrawableHelper {
 							"Client Light: "
 								+ worldChunk.getLightLevel(blockPos, 0)
 								+ " ("
-								+ this.client.world.getLightLevel(LightType.SKY, blockPos)
+								+ this.client.world.getLightLevel(LightType.field_9284, blockPos)
 								+ " sky, "
-								+ this.client.world.getLightLevel(LightType.BLOCK, blockPos)
+								+ this.client.world.getLightLevel(LightType.field_9282, blockPos)
 								+ " block)"
 						);
 						WorldChunk worldChunk2 = this.getChunk();
@@ -253,9 +253,9 @@ public class DebugHud extends DrawableHelper {
 							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 							list.add(
 								"Server Light: ("
-									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.field_9284).getLightLevel(blockPos)
 									+ " sky, "
-									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.field_9282).getLightLevel(blockPos)
 									+ " block)"
 							);
 						}
@@ -320,12 +320,12 @@ public class DebugHud extends DrawableHelper {
 				list.add("Shader: " + this.client.gameRenderer.getShader().getName());
 			}
 
-			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
+			if (this.blockHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
 				list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
-			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
+			if (this.fluidHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
 				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
@@ -392,11 +392,11 @@ public class DebugHud extends DrawableHelper {
 		if (this.client.hasReducedDebugInfo()) {
 			return list;
 		} else {
-			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
+			if (this.blockHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(TextFormat.field_1073 + "Targeted Block");
+				list.add(ChatFormat.field_1073 + "Targeted Block");
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
@@ -408,11 +408,11 @@ public class DebugHud extends DrawableHelper {
 				}
 			}
 
-			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
+			if (this.fluidHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(TextFormat.field_1073 + "Targeted Fluid");
+				list.add(ChatFormat.field_1073 + "Targeted Fluid");
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
@@ -427,7 +427,7 @@ public class DebugHud extends DrawableHelper {
 			Entity entity = this.client.targetedEntity;
 			if (entity != null) {
 				list.add("");
-				list.add(TextFormat.field_1073 + "Targeted Entity");
+				list.add(ChatFormat.field_1073 + "Targeted Entity");
 				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
@@ -440,9 +440,9 @@ public class DebugHud extends DrawableHelper {
 		Comparable<?> comparable = (Comparable<?>)entry.getValue();
 		String string = SystemUtil.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
-			string = TextFormat.field_1060 + string;
+			string = ChatFormat.field_1060 + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
-			string = TextFormat.field_1061 + string;
+			string = ChatFormat.field_1061 + string;
 		}
 
 		return property.getName() + ": " + string;

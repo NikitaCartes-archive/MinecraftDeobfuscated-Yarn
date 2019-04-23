@@ -15,9 +15,9 @@ public final class BadlandsPlateauBiome extends Biome {
 	public BadlandsPlateauBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.BADLANDS, SurfaceBuilder.BADLANDS_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15698, SurfaceBuilder.BADLANDS_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.MESA)
+				.category(Biome.Category.field_9354)
 				.depth(1.5F)
 				.scale(0.025F)
 				.temperature(2.0F)
@@ -26,7 +26,7 @@ public final class BadlandsPlateauBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13691));
 		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
@@ -41,15 +41,15 @@ public final class BadlandsPlateauBiome extends Biome {
 		DefaultBiomeFeatures.addBadlandsVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ZOMBIE, 95, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 5, 1, 1));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
+		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.field_6108, 10, 8, 8));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6079, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6051, 95, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6054, 5, 1, 1));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6137, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6046, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6069, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 1, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6145, 5, 1, 1));
 	}
 
 	@Environment(EnvType.CLIENT)

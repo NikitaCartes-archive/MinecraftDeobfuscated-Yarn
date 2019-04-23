@@ -23,7 +23,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 	public void method_17078(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableCull();
-		if (livingEntity.isChild()) {
+		if (livingEntity.isBaby()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			GlStateManager.translatef(0.0F, 1.5F, -0.1F);

@@ -36,7 +36,7 @@ public class BeaconContainer extends Container {
 	}
 
 	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
-		super(ContainerType.BEACON, i);
+		super(ContainerType.field_17330, i);
 		checkContainerDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
 		this.context = blockContext;

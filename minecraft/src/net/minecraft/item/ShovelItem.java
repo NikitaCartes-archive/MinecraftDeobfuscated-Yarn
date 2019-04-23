@@ -67,7 +67,7 @@ public class ShovelItem extends MiningToolItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getFacing() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
+		if (itemUsageContext.getFacing() != Direction.field_11033 && world.getBlockState(blockPos.up()).isAir()) {
 			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
@@ -83,6 +83,6 @@ public class ShovelItem extends MiningToolItem {
 			}
 		}
 
-		return ActionResult.PASS;
+		return ActionResult.field_5811;
 	}
 }

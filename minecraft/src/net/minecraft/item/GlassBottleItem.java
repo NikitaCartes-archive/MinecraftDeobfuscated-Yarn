@@ -39,13 +39,13 @@ public class GlassBottleItem extends Item {
 			return new TypedActionResult<>(ActionResult.field_5812, this.fill(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
 			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-			if (hitResult.getType() == HitResult.Type.NONE) {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			if (hitResult.getType() == HitResult.Type.field_1333) {
+				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
-				if (hitResult.getType() == HitResult.Type.BLOCK) {
+				if (hitResult.getType() == HitResult.Type.field_1332) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					if (!world.canPlayerModifyAt(playerEntity, blockPos)) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}
 
 					if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
@@ -56,7 +56,7 @@ public class GlassBottleItem extends Item {
 					}
 				}
 
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			}
 		}
 	}

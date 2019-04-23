@@ -11,11 +11,11 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 

@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.WeakHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.DustParticleParameters;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class RedstoneTorchBlock extends TorchBlock {
 	public static final BooleanProperty LIT = Properties.LIT;
-	private static final Map<BlockView, List<RedstoneTorchBlock.class_2460>> field_11445 = new WeakHashMap();
+	private static final Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> BURNOUT_MAP = new WeakHashMap();
 
 	protected RedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
@@ -49,48 +49,48 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(LIT) && Direction.UP != direction ? 15 : 0;
+		return blockState.get(LIT) && Direction.field_11036 != direction ? 15 : 0;
 	}
 
-	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
-		return world.isEmittingRedstonePower(blockPos.down(), Direction.DOWN);
+	protected boolean shouldUnpower(World world, BlockPos blockPos, BlockState blockState) {
+		return world.isEmittingRedstonePower(blockPos.down(), Direction.field_11033);
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		update(blockState, world, blockPos, random, this.method_10488(world, blockPos, blockState));
+		update(blockState, world, blockPos, random, this.shouldUnpower(world, blockPos, blockState));
 	}
 
 	public static void update(BlockState blockState, World world, BlockPos blockPos, Random random, boolean bl) {
-		List<RedstoneTorchBlock.class_2460> list = (List<RedstoneTorchBlock.class_2460>)field_11445.get(world);
+		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.get(world);
 
-		while (list != null && !list.isEmpty() && world.getTime() - ((RedstoneTorchBlock.class_2460)list.get(0)).field_11447 > 60L) {
+		while (list != null && !list.isEmpty() && world.getTime() - ((RedstoneTorchBlock.BurnoutEntry)list.get(0)).time > 60L) {
 			list.remove(0);
 		}
 
 		if ((Boolean)blockState.get(LIT)) {
 			if (bl) {
 				world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
-				if (method_10489(world, blockPos, true)) {
+				if (isBurnedOut(world, blockPos, true)) {
 					world.playLevelEvent(1502, blockPos, 0);
 					world.getBlockTickScheduler().schedule(blockPos, world.getBlockState(blockPos).getBlock(), 160);
 				}
 			}
-		} else if (!bl && !method_10489(world, blockPos, false)) {
+		} else if (!bl && !isBurnedOut(world, blockPos, false)) {
 			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(true)), 3);
 		}
 	}
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if ((Boolean)blockState.get(LIT) == this.method_10488(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
+		if ((Boolean)blockState.get(LIT) == this.shouldUnpower(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
 			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 		}
 	}
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.DOWN ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
+		return direction == Direction.field_11033 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			double d = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
-			world.addParticle(DustParticleParameters.RED, d, e, f, 0.0, 0.0, 0.0);
+			world.addParticle(DustParticleEffect.RED, d, e, f, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -116,20 +116,20 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LIT);
+		builder.add(LIT);
 	}
 
-	private static boolean method_10489(World world, BlockPos blockPos, boolean bl) {
-		List<RedstoneTorchBlock.class_2460> list = (List<RedstoneTorchBlock.class_2460>)field_11445.computeIfAbsent(world, blockView -> Lists.newArrayList());
+	private static boolean isBurnedOut(World world, BlockPos blockPos, boolean bl) {
+		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.computeIfAbsent(world, blockView -> Lists.newArrayList());
 		if (bl) {
-			list.add(new RedstoneTorchBlock.class_2460(blockPos.toImmutable(), world.getTime()));
+			list.add(new RedstoneTorchBlock.BurnoutEntry(blockPos.toImmutable(), world.getTime()));
 		}
 
 		int i = 0;
 
 		for (int j = 0; j < list.size(); j++) {
-			RedstoneTorchBlock.class_2460 lv = (RedstoneTorchBlock.class_2460)list.get(j);
-			if (lv.field_11448.equals(blockPos)) {
+			RedstoneTorchBlock.BurnoutEntry burnoutEntry = (RedstoneTorchBlock.BurnoutEntry)list.get(j);
+			if (burnoutEntry.pos.equals(blockPos)) {
 				if (++i >= 8) {
 					return true;
 				}
@@ -139,13 +139,13 @@ public class RedstoneTorchBlock extends TorchBlock {
 		return false;
 	}
 
-	public static class class_2460 {
-		private final BlockPos field_11448;
-		private final long field_11447;
+	public static class BurnoutEntry {
+		private final BlockPos pos;
+		private final long time;
 
-		public class_2460(BlockPos blockPos, long l) {
-			this.field_11448 = blockPos;
-			this.field_11447 = l;
+		public BurnoutEntry(BlockPos blockPos, long l) {
+			this.pos = blockPos;
+			this.time = l;
 		}
 	}
 }

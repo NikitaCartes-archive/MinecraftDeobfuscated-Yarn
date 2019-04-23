@@ -4,24 +4,24 @@ import java.util.EnumSet;
 import net.minecraft.entity.mob.MobEntity;
 
 public class SwimGoal extends Goal {
-	private final MobEntity entityMob;
+	private final MobEntity mob;
 
 	public SwimGoal(MobEntity mobEntity) {
-		this.entityMob = mobEntity;
+		this.mob = mobEntity;
 		this.setControls(EnumSet.of(Goal.Control.field_18407));
 		mobEntity.getNavigation().setCanSwim(true);
 	}
 
 	@Override
 	public boolean canStart() {
-		double d = (double)this.entityMob.getStandingEyeHeight() < 0.4 ? 0.2 : 0.4;
-		return this.entityMob.isInsideWater() && this.entityMob.getWaterHeight() > d || this.entityMob.isTouchingLava();
+		double d = (double)this.mob.getStandingEyeHeight() < 0.4 ? 0.2 : 0.4;
+		return this.mob.isInsideWater() && this.mob.getWaterHeight() > d || this.mob.isInLava();
 	}
 
 	@Override
 	public void tick() {
-		if (this.entityMob.getRand().nextFloat() < 0.8F) {
-			this.entityMob.getJumpControl().setActive();
+		if (this.mob.getRand().nextFloat() < 0.8F) {
+			this.mob.getJumpControl().setActive();
 		}
 	}
 }

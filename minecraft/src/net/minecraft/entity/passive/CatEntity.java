@@ -16,19 +16,18 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.GoToOwnerAndPurrGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.FollowTargetIfTamedGoal;
+import net.minecraft.entity.ai.goal.GoToOwnerAndPurrGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -85,7 +84,7 @@ public class CatEntity extends TameableEntity {
 		hashMap.put(10, new Identifier("textures/entity/cat/all_black.png"));
 	});
 	private CatEntity.CatFleeGoal<PlayerEntity> fleeGoal;
-	private TemptGoal temptGoal;
+	private net.minecraft.entity.ai.goal.TemptGoal temptGoal;
 	private float sleepAnimation;
 	private float prevSleepAnimation;
 	private float tailCurlAnimation;
@@ -104,7 +103,7 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected void initGoals() {
 		this.sitGoal = new SitGoal(this);
-		this.temptGoal = new CatEntity.CatTemptGoal(this, 0.6, TAMING_INGREDIENT, true);
+		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(1, new CatEntity.SleepWithOwnerGoal(this));
 		this.goalSelector.add(2, this.sitGoal);
@@ -316,7 +315,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public CatEntity method_6573(PassiveEntity passiveEntity) {
-		CatEntity catEntity = EntityType.CAT.create(this.world);
+		CatEntity catEntity = EntityType.field_16281.create(this.world);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
 				catEntity.setCatType(this.getCatType());
@@ -451,85 +450,54 @@ public class CatEntity extends TameableEntity {
 	}
 
 	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
-		private final CatEntity entity;
+		private final CatEntity cat;
 
 		public CatFleeGoal(CatEntity catEntity, Class<T> class_, float f, double d, double e) {
 			super(catEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
-			this.entity = catEntity;
-		}
-
-		@Override
-		public boolean canStart() {
-			return !this.entity.isTamed() && super.canStart();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return !this.entity.isTamed() && super.shouldContinue();
-		}
-	}
-
-	static class CatTemptGoal extends TemptGoal {
-		@Nullable
-		private PlayerEntity field_16298;
-		private final CatEntity cat;
-
-		public CatTemptGoal(CatEntity catEntity, double d, Ingredient ingredient, boolean bl) {
-			super(catEntity, d, ingredient, bl);
 			this.cat = catEntity;
 		}
 
 		@Override
-		public void tick() {
-			super.tick();
-			if (this.field_16298 == null && this.owner.getRand().nextInt(600) == 0) {
-				this.field_16298 = this.closestPlayer;
-			} else if (this.owner.getRand().nextInt(500) == 0) {
-				this.field_16298 = null;
-			}
-		}
-
-		@Override
-		protected boolean canBeScared() {
-			return this.field_16298 != null && this.field_16298.equals(this.closestPlayer) ? false : super.canBeScared();
-		}
-
-		@Override
 		public boolean canStart() {
-			return super.canStart() && !this.cat.isTamed();
+			return !this.cat.isTamed() && super.canStart();
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			return !this.cat.isTamed() && super.shouldContinue();
 		}
 	}
 
 	static class SleepWithOwnerGoal extends Goal {
-		private final CatEntity entity;
+		private final CatEntity cat;
 		private PlayerEntity owner;
 		private BlockPos bedPos;
 		private int ticksOnBed;
 
 		public SleepWithOwnerGoal(CatEntity catEntity) {
-			this.entity = catEntity;
+			this.cat = catEntity;
 		}
 
 		@Override
 		public boolean canStart() {
-			if (!this.entity.isTamed()) {
+			if (!this.cat.isTamed()) {
 				return false;
-			} else if (this.entity.isSitting()) {
+			} else if (this.cat.isSitting()) {
 				return false;
 			} else {
-				LivingEntity livingEntity = this.entity.getOwner();
+				LivingEntity livingEntity = this.cat.getOwner();
 				if (livingEntity instanceof PlayerEntity) {
 					this.owner = (PlayerEntity)livingEntity;
 					if (!livingEntity.isSleeping()) {
 						return false;
 					}
 
-					if (this.entity.squaredDistanceTo(this.owner) > 100.0) {
+					if (this.cat.squaredDistanceTo(this.owner) > 100.0) {
 						return false;
 					}
 
 					BlockPos blockPos = new BlockPos(this.owner);
-					BlockState blockState = this.entity.world.getBlockState(blockPos);
+					BlockState blockState = this.cat.world.getBlockState(blockPos);
 					if (blockState.getBlock().matches(BlockTags.field_16443)) {
 						Direction direction = blockState.get(BedBlock.FACING);
 						this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
@@ -542,8 +510,8 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private boolean method_16098() {
-			for (CatEntity catEntity : this.entity.world.getEntities(CatEntity.class, new BoundingBox(this.bedPos).expand(2.0))) {
-				if (catEntity != this.entity && (catEntity.isSleepingWithOwner() || catEntity.isHeadDown())) {
+			for (CatEntity catEntity : this.cat.world.getEntities(CatEntity.class, new BoundingBox(this.bedPos).expand(2.0))) {
+				if (catEntity != this.cat && (catEntity.isSleepingWithOwner() || catEntity.isHeadDown())) {
 					return true;
 				}
 			}
@@ -553,57 +521,57 @@ public class CatEntity extends TameableEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.entity.isTamed() && !this.entity.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
+			return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
 		}
 
 		@Override
 		public void start() {
 			if (this.bedPos != null) {
-				this.entity.getSitGoal().setEnabledWithOwner(false);
-				this.entity.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
+				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 			}
 		}
 
 		@Override
 		public void stop() {
-			this.entity.setSleepingWithOwner(false);
-			float f = this.entity.world.getSkyAngle(1.0F);
-			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.entity.world.getRandom().nextFloat() < 0.7) {
+			this.cat.setSleepingWithOwner(false);
+			float f = this.cat.world.getSkyAngle(1.0F);
+			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
 			}
 
 			this.ticksOnBed = 0;
-			this.entity.setHeadDown(false);
-			this.entity.getNavigation().stop();
+			this.cat.setHeadDown(false);
+			this.cat.getNavigation().stop();
 		}
 
 		private void dropMorningGifts() {
-			Random random = this.entity.getRand();
+			Random random = this.cat.getRand();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			mutable.set(this.entity);
-			this.entity
+			mutable.set(this.cat);
+			this.cat
 				.teleport(
 					(double)(mutable.getX() + random.nextInt(11) - 5),
 					(double)(mutable.getY() + random.nextInt(5) - 2),
 					(double)(mutable.getZ() + random.nextInt(11) - 5),
 					false
 				);
-			mutable.set(this.entity);
-			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.ENTITY_CAT_MORNING_GIFT);
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.entity.world)
+			mutable.set(this.cat);
+			LootSupplier lootSupplier = this.cat.world.getServer().getLootManager().getSupplier(LootTables.field_16216);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.put(LootContextParameters.field_1232, mutable)
-				.put(LootContextParameters.field_1226, this.entity)
+				.put(LootContextParameters.field_1226, this.cat)
 				.setRandom(random);
 
-			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.GIFT))) {
-				this.entity
+			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.field_16235))) {
+				this.cat
 					.world
 					.spawnEntity(
 						new ItemEntity(
-							this.entity.world,
-							(double)((float)mutable.getX() - MathHelper.sin(this.entity.field_6283 * (float) (Math.PI / 180.0))),
+							this.cat.world,
+							(double)((float)mutable.getX() - MathHelper.sin(this.cat.field_6283 * (float) (Math.PI / 180.0))),
 							(double)mutable.getY(),
-							(double)((float)mutable.getZ() + MathHelper.cos(this.entity.field_6283 * (float) (Math.PI / 180.0))),
+							(double)((float)mutable.getZ() + MathHelper.cos(this.cat.field_6283 * (float) (Math.PI / 180.0))),
 							itemStack
 						)
 					);
@@ -613,21 +581,52 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			if (this.owner != null && this.bedPos != null) {
-				this.entity.getSitGoal().setEnabledWithOwner(false);
-				this.entity.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
-				if (this.entity.squaredDistanceTo(this.owner) < 2.5) {
+				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
+				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;
 					if (this.ticksOnBed > 16) {
-						this.entity.setSleepingWithOwner(true);
-						this.entity.setHeadDown(false);
+						this.cat.setSleepingWithOwner(true);
+						this.cat.setHeadDown(false);
 					} else {
-						this.entity.lookAtEntity(this.owner, 45.0F, 45.0F);
-						this.entity.setHeadDown(true);
+						this.cat.lookAtEntity(this.owner, 45.0F, 45.0F);
+						this.cat.setHeadDown(true);
 					}
 				} else {
-					this.entity.setSleepingWithOwner(false);
+					this.cat.setSleepingWithOwner(false);
 				}
 			}
+		}
+	}
+
+	static class TemptGoal extends net.minecraft.entity.ai.goal.TemptGoal {
+		@Nullable
+		private PlayerEntity player;
+		private final CatEntity cat;
+
+		public TemptGoal(CatEntity catEntity, double d, Ingredient ingredient, boolean bl) {
+			super(catEntity, d, ingredient, bl);
+			this.cat = catEntity;
+		}
+
+		@Override
+		public void tick() {
+			super.tick();
+			if (this.player == null && this.mob.getRand().nextInt(600) == 0) {
+				this.player = this.closestPlayer;
+			} else if (this.mob.getRand().nextInt(500) == 0) {
+				this.player = null;
+			}
+		}
+
+		@Override
+		protected boolean canBeScared() {
+			return this.player != null && this.player.equals(this.closestPlayer) ? false : super.canBeScared();
+		}
+
+		@Override
+		public boolean canStart() {
+			return super.canStart() && !this.cat.isTamed();
 		}
 	}
 }

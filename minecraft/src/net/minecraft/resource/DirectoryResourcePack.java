@@ -20,8 +20,8 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectoryResourcePack extends AbstractFilenameResourcePack {
-	private static final Logger field_14187 = LogManager.getLogger();
+public class DirectoryResourcePack extends AbstractFileResourcePack {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final boolean IS_WINDOWS = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.WINDOWS;
 	private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 
@@ -39,7 +39,7 @@ public class DirectoryResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	protected InputStream openFilename(String string) throws IOException {
+	protected InputStream openFile(String string) throws IOException {
 		File file = this.getFile(string);
 		if (file == null) {
 			throw new ResourceNotFoundException(this.base, string);
@@ -49,7 +49,7 @@ public class DirectoryResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	protected boolean containsFilename(String string) {
+	protected boolean containsFile(String string) {
 		return this.getFile(string) != null;
 	}
 
@@ -112,7 +112,7 @@ public class DirectoryResourcePack extends AbstractFilenameResourcePack {
 					try {
 						list.add(new Identifier(string, string2 + file2.getName()));
 					} catch (InvalidIdentifierException var13) {
-						field_14187.error(var13.getMessage());
+						LOGGER.error(var13.getMessage());
 					}
 				}
 			}

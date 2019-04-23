@@ -4,23 +4,23 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientLoginPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListener> {
-	private TextComponent reason;
+	private Component reason;
 
 	public LoginDisconnectS2CPacket() {
 	}
 
-	public LoginDisconnectS2CPacket(TextComponent textComponent) {
-		this.reason = textComponent;
+	public LoginDisconnectS2CPacket(Component component) {
+		this.reason = component;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.reason = TextComponent.Serializer.fromLenientJsonString(packetByteBuf.readString(262144));
+		this.reason = Component.Serializer.fromLenientJsonString(packetByteBuf.readString(262144));
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getReason() {
+	public Component getReason() {
 		return this.reason;
 	}
 }

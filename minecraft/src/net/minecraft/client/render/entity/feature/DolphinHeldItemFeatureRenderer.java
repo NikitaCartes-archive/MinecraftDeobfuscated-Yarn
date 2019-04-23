@@ -38,7 +38,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			GlStateManager.pushMatrix();
-			boolean bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+			boolean bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.field_9179;
 			if (bl) {
 				GlStateManager.depthMask(false);
 			}

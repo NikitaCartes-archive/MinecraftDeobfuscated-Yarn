@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
@@ -202,8 +202,8 @@ public class ItemPredicate {
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder item(ItemProvider itemProvider) {
-			this.item = itemProvider.getItem();
+		public ItemPredicate.Builder item(ItemConvertible itemConvertible) {
+			this.item = itemConvertible.asItem();
 			return this;
 		}
 

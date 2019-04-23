@@ -10,11 +10,11 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -28,7 +28,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public BarrelBlockEntity() {
-		this(BlockEntityType.BARREL);
+		this(BlockEntityType.field_16411);
 	}
 
 	@Override
@@ -105,8 +105,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.barrel");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.barrel");
 	}
 
 	@Override

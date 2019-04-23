@@ -57,7 +57,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	private BlockState inBlockState;
 	protected boolean inGround;
 	protected int inGroundTime;
-	public ProjectileEntity.PickupType pickupType = ProjectileEntity.PickupType.NO_PICKUP;
+	public ProjectileEntity.PickupPermission pickupType = ProjectileEntity.PickupPermission.field_7592;
 	public int shake;
 	public UUID ownerUuid;
 	private int life;
@@ -81,7 +81,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
 		this.setOwner(livingEntity);
 		if (livingEntity instanceof PlayerEntity) {
-			this.pickupType = ProjectileEntity.PickupType.PICKUP;
+			this.pickupType = ProjectileEntity.PickupPermission.field_7593;
 		}
 	}
 
@@ -207,8 +207,8 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			Vec3d vec3d2 = new Vec3d(this.x, this.y, this.z);
 			Vec3d vec3d3 = vec3d2.add(vec3d);
 			HitResult hitResult = this.world
-				.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
-			if (hitResult.getType() != HitResult.Type.NONE) {
+				.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this));
+			if (hitResult.getType() != HitResult.Type.field_1333) {
 				vec3d3 = hitResult.getPos();
 			}
 
@@ -218,11 +218,12 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 					hitResult = entityHitResult;
 				}
 
-				if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
+				if (hitResult != null && hitResult.getType() == HitResult.Type.field_1331) {
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Entity entity2 = this.getOwner();
 					if (entity instanceof PlayerEntity && entity2 instanceof PlayerEntity && !((PlayerEntity)entity2).shouldDamagePlayer((PlayerEntity)entity)) {
 						hitResult = null;
+						entityHitResult = null;
 					}
 				}
 
@@ -291,7 +292,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			}
 
 			this.setVelocity(vec3d.multiply((double)j));
-			if (!this.isUnaffectedByGravity() && !bl) {
+			if (!this.hasNoGravity() && !bl) {
 				Vec3d vec3d4 = this.getVelocity();
 				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
 			}
@@ -310,9 +311,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	protected void onHit(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
-		if (type == HitResult.Type.ENTITY) {
+		if (type == HitResult.Type.field_1331) {
 			this.onEntityHit((EntityHitResult)hitResult);
-		} else if (type == HitResult.Type.BLOCK) {
+		} else if (type == HitResult.Type.field_1332) {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
 			this.inBlockState = blockState;
@@ -347,7 +348,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		Entity entity = entityHitResult.getEntity();
 		float f = (float)this.getVelocity().length();
-		int i = MathHelper.ceil((double)f * this.damage);
+		int i = MathHelper.ceil(Math.max((double)f * this.damage, 0.0));
 		if (this.getPierceLevel() > 0) {
 			if (this.piercedEntities == null) {
 				this.piercedEntities = new IntOpenHashSet(5);
@@ -432,7 +433,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.prevYaw += 180.0F;
 			this.field_7577 = 0;
 			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
-				if (this.pickupType == ProjectileEntity.PickupType.PICKUP) {
+				if (this.pickupType == ProjectileEntity.PickupPermission.field_7593) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -503,9 +504,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		if (compoundTag.containsKey("pickup", 99)) {
-			this.pickupType = ProjectileEntity.PickupType.fromOrdinal(compoundTag.getByte("pickup"));
+			this.pickupType = ProjectileEntity.PickupPermission.fromOrdinal(compoundTag.getByte("pickup"));
 		} else if (compoundTag.containsKey("player", 99)) {
-			this.pickupType = compoundTag.getBoolean("player") ? ProjectileEntity.PickupType.PICKUP : ProjectileEntity.PickupType.NO_PICKUP;
+			this.pickupType = compoundTag.getBoolean("player") ? ProjectileEntity.PickupPermission.field_7593 : ProjectileEntity.PickupPermission.field_7592;
 		}
 
 		this.setCritical(compoundTag.getBoolean("crit"));
@@ -524,7 +525,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	public void setOwner(@Nullable Entity entity) {
 		this.ownerUuid = entity == null ? null : entity.getUuid();
 		if (entity instanceof PlayerEntity) {
-			this.pickupType = ((PlayerEntity)entity).abilities.creativeMode ? ProjectileEntity.PickupType.CREATIVE_PICKUP : ProjectileEntity.PickupType.PICKUP;
+			this.pickupType = ((PlayerEntity)entity).abilities.creativeMode
+				? ProjectileEntity.PickupPermission.field_7594
+				: ProjectileEntity.PickupPermission.field_7593;
 		}
 	}
 
@@ -536,10 +539,10 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	@Override
 	public void onPlayerCollision(PlayerEntity playerEntity) {
 		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
-			boolean bl = this.pickupType == ProjectileEntity.PickupType.PICKUP
-				|| this.pickupType == ProjectileEntity.PickupType.CREATIVE_PICKUP && playerEntity.abilities.creativeMode
+			boolean bl = this.pickupType == ProjectileEntity.PickupPermission.field_7593
+				|| this.pickupType == ProjectileEntity.PickupPermission.field_7594 && playerEntity.abilities.creativeMode
 				|| this.isNoClip() && this.getOwner().getUuid() == playerEntity.getUuid();
-			if (this.pickupType == ProjectileEntity.PickupType.PICKUP && !playerEntity.inventory.insertStack(this.asItemStack())) {
+			if (this.pickupType == ProjectileEntity.PickupPermission.field_7593 && !playerEntity.inventory.insertStack(this.asItemStack())) {
 				bl = false;
 			}
 
@@ -650,12 +653,12 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
 	}
 
-	public static enum PickupType {
-		NO_PICKUP,
-		PICKUP,
-		CREATIVE_PICKUP;
+	public static enum PickupPermission {
+		field_7592,
+		field_7593,
+		field_7594;
 
-		public static ProjectileEntity.PickupType fromOrdinal(int i) {
+		public static ProjectileEntity.PickupPermission fromOrdinal(int i) {
 			if (i < 0 || i > values().length) {
 				i = 0;
 			}

@@ -4,9 +4,9 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
@@ -38,7 +38,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 
@@ -51,44 +51,44 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return AGE;
 	}
 
-	public int getCropAgeMaximum() {
+	public int getMaxAge() {
 		return 7;
 	}
 
-	protected int getCropAge(BlockState blockState) {
+	protected int getAge(BlockState blockState) {
 		return (Integer)blockState.get(this.getAgeProperty());
 	}
 
-	public BlockState withCropAge(int i) {
+	public BlockState withAge(int i) {
 		return this.getDefaultState().with(this.getAgeProperty(), Integer.valueOf(i));
 	}
 
-	public boolean isValidState(BlockState blockState) {
-		return (Integer)blockState.get(this.getAgeProperty()) >= this.getCropAgeMaximum();
+	public boolean isMature(BlockState blockState) {
+		return (Integer)blockState.get(this.getAgeProperty()) >= this.getMaxAge();
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, world, blockPos, random);
 		if (world.getLightLevel(blockPos, 0) >= 9) {
-			int i = this.getCropAge(blockState);
-			if (i < this.getCropAgeMaximum()) {
+			int i = this.getAge(blockState);
+			if (i < this.getMaxAge()) {
 				float f = getAvailableMoisture(this, world, blockPos);
 				if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-					world.setBlockState(blockPos, this.withCropAge(i + 1), 2);
+					world.setBlockState(blockPos, this.withAge(i + 1), 2);
 				}
 			}
 		}
 	}
 
 	public void applyGrowth(World world, BlockPos blockPos, BlockState blockState) {
-		int i = this.getCropAge(blockState) + this.getGrowthAmount(world);
-		int j = this.getCropAgeMaximum();
+		int i = this.getAge(blockState) + this.getGrowthAmount(world);
+		int j = this.getMaxAge();
 		if (i > j) {
 			i = j;
 		}
 
-		world.setBlockState(blockPos, this.withCropAge(i), 2);
+		world.setBlockState(blockPos, this.withAge(i), 2);
 	}
 
 	protected int getGrowthAmount(World world) {
@@ -154,19 +154,19 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected ItemProvider getCropItem() {
+	protected ItemConvertible getSeedsItem() {
 		return Items.field_8317;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(this.getCropItem());
+		return new ItemStack(this.getSeedsItem());
 	}
 
 	@Override
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return !this.isValidState(blockState);
+		return !this.isMature(blockState);
 	}
 
 	@Override
@@ -181,6 +181,6 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 }

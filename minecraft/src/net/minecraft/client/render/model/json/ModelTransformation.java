@@ -119,7 +119,7 @@ public class ModelTransformation {
 				return this.gui;
 			case field_4318:
 				return this.ground;
-			case FIXED:
+			case field_4319:
 				return this.fixed;
 			default:
 				return Transformation.NONE;
@@ -173,6 +173,6 @@ public class ModelTransformation {
 		field_4316,
 		field_4317,
 		field_4318,
-		FIXED;
+		field_4319;
 	}
 }

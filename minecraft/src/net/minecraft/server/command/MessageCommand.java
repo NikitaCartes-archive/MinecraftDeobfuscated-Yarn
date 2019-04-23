@@ -3,12 +3,12 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
+import net.minecraft.ChatFormat;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class MessageCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -30,15 +30,15 @@ public class MessageCommand {
 		commandDispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.sendMessage(
-				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.copy())
-					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056})
+				new TranslatableComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), component.copy())
+					.applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056})
 			);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), textComponent.copy())
-					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056}),
+				new TranslatableComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), component.copy())
+					.applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056}),
 				false
 			);
 		}

@@ -8,8 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.gui.ContainerScreen;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.TextureCache;
 import net.minecraft.container.LoomContainer;
 import net.minecraft.container.Slot;
@@ -17,8 +17,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -43,8 +43,8 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	private int firstPatternButtonId = 1;
 	private int lastCachedPatternButtonTextureId = 1;
 
-	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(loomContainer, playerInventory, textComponent);
+	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Component component) {
+		super(loomContainer, playerInventory, component);
 		loomContainer.setInventoryChangeListener(this::onInventoryChanged);
 	}
 

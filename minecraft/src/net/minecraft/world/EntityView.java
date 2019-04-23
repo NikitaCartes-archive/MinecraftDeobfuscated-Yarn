@@ -51,7 +51,7 @@ public interface EntityView {
 				.stream()
 				.filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.isConnectedThroughVehicle(entity2)))
 				.flatMap(
-					entity2 -> Stream.of(entity2.method_5827(), entity == null ? null : entity.method_5708(entity2))
+					entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.method_5708(entity2))
 							.filter(Objects::nonNull)
 							.filter(boundingBox2 -> boundingBox2.intersects(boundingBox))
 							.map(VoxelShapes::cuboid)

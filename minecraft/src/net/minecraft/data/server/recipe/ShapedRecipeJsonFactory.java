@@ -17,7 +17,7 @@ import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
@@ -35,25 +35,25 @@ public class ShapedRecipeJsonFactory {
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 
-	public ShapedRecipeJsonFactory(ItemProvider itemProvider, int i) {
-		this.output = itemProvider.getItem();
+	public ShapedRecipeJsonFactory(ItemConvertible itemConvertible, int i) {
+		this.output = itemConvertible.asItem();
 		this.outputCount = i;
 	}
 
-	public static ShapedRecipeJsonFactory create(ItemProvider itemProvider) {
-		return create(itemProvider, 1);
+	public static ShapedRecipeJsonFactory create(ItemConvertible itemConvertible) {
+		return create(itemConvertible, 1);
 	}
 
-	public static ShapedRecipeJsonFactory create(ItemProvider itemProvider, int i) {
-		return new ShapedRecipeJsonFactory(itemProvider, i);
+	public static ShapedRecipeJsonFactory create(ItemConvertible itemConvertible, int i) {
+		return new ShapedRecipeJsonFactory(itemConvertible, i);
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, Tag<Item> tag) {
 		return this.input(character, Ingredient.fromTag(tag));
 	}
 
-	public ShapedRecipeJsonFactory input(Character character, ItemProvider itemProvider) {
-		return this.input(character, Ingredient.ofItems(itemProvider));
+	public ShapedRecipeJsonFactory input(Character character, ItemConvertible itemConvertible) {
+		return this.input(character, Ingredient.ofItems(itemConvertible));
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, Ingredient ingredient) {

@@ -30,7 +30,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	}
 
 	public void method_17159(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6169);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			GlStateManager.pushMatrix();
@@ -39,7 +39,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			}
 
 			boolean bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
-			if (livingEntity.isChild() && !(livingEntity instanceof VillagerEntity)) {
+			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
 				float m = 2.0F;
 				float n = 1.4F;
 				GlStateManager.translatef(0.0F, 0.5F * l, 0.0F);
@@ -72,7 +72,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				SkullBlockEntityRenderer.INSTANCE
 					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
+			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
 				float mx = 0.625F;
 				GlStateManager.translatef(0.0F, -0.25F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);

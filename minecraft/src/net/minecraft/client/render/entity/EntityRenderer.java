@@ -34,14 +34,14 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected final EntityRenderDispatcher renderManager;
 	protected float field_4673;
 	protected float field_4672 = 1.0F;
-	protected boolean renderOutlines;
+	protected boolean field_4674;
 
 	protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		this.renderManager = entityRenderDispatcher;
 	}
 
-	public void setRenderOutlines(boolean bl) {
-		this.renderOutlines = bl;
+	public void method_3927(boolean bl) {
+		this.field_4674 = bl;
 	}
 
 	public boolean isVisible(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
@@ -60,7 +60,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public void render(T entity, double d, double e, double f, float g, float h) {
-		if (!this.renderOutlines) {
+		if (!this.field_4674) {
 			this.renderLabelIfPresent(entity, d, e, f);
 		}
 	}
@@ -156,12 +156,12 @@ public abstract class EntityRenderer<T extends Entity> {
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
-		ViewableWorld viewableWorld = this.method_3935();
+		ViewableWorld viewableWorld = this.getWorld();
 		GlStateManager.depthMask(false);
 		float i = this.field_4673;
 		if (entity instanceof MobEntity) {
 			MobEntity mobEntity = (MobEntity)entity;
-			if (mobEntity.isChild()) {
+			if (mobEntity.isBaby()) {
 				i *= 0.5F;
 			}
 		}
@@ -196,7 +196,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		GlStateManager.depthMask(true);
 	}
 
-	private ViewableWorld method_3935() {
+	private ViewableWorld getWorld() {
 		return this.renderManager.world;
 	}
 
@@ -215,11 +215,11 @@ public abstract class EntityRenderer<T extends Entity> {
 		double k
 	) {
 		if (Block.isShapeFullCube(blockState.getCollisionShape(viewableWorld, blockPos))) {
-			VoxelShape voxelShape = blockState.getOutlineShape(this.method_3935(), blockPos2.down());
+			VoxelShape voxelShape = blockState.getOutlineShape(this.getWorld(), blockPos2.down());
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.method_3935().getBrightness(blockPos2);
+				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().getBrightness(blockPos2);
 				if (!(l < 0.0)) {
 					if (l > 1.0) {
 						l = 1.0;
@@ -282,8 +282,8 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	public void postRender(Entity entity, double d, double e, double f, float g, float h) {
 		if (this.renderManager.gameOptions != null) {
-			if (this.renderManager.gameOptions.entityShadows && this.field_4673 > 0.0F && !entity.isInvisible() && this.renderManager.method_3951()) {
-				double i = this.renderManager.method_3959(entity.x, entity.y, entity.z);
+			if (this.renderManager.gameOptions.entityShadows && this.field_4673 > 0.0F && !entity.isInvisible() && this.renderManager.shouldRenderShadows()) {
+				double i = this.renderManager.squaredDistanceToCamera(entity.x, entity.y, entity.z);
 				float j = (float)((1.0 - i / 256.0) * (double)this.field_4672);
 				if (j > 0.0F) {
 					this.renderShadow(entity, d, e, f, j, h);

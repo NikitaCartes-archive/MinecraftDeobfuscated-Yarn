@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ContainerScreen;
@@ -18,8 +19,7 @@ import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,8 +38,8 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	public float pageTurningSpeed;
 	private ItemStack field_2913 = ItemStack.EMPTY;
 
-	public EnchantingScreen(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(enchantingTableContainer, playerInventory, textComponent);
+	public EnchantingScreen(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, Component component) {
+		super(enchantingTableContainer, playerInventory, component);
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.font, v);
 				TextRenderer textRenderer = this.minecraft.getFontManager().getTextRenderer(MinecraftClient.ALT_TEXT_RENDERER_ID);
 				int w = 6839882;
-				if ((q < r + 1 || this.minecraft.player.experience < u) && !this.minecraft.player.abilities.creativeMode) {
+				if ((q < r + 1 || this.minecraft.player.experienceLevel < u) && !this.minecraft.player.abilities.creativeMode) {
 					this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
 					this.blit(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
 					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 16711422) >> 1);
@@ -192,11 +192,11 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 			int o = l + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, (double)i, (double)j) && m > 0 && n >= 0 && enchantment != null) {
 				List<String> list = Lists.<String>newArrayList();
-				list.add("" + TextFormat.field_1068 + TextFormat.field_1056 + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
+				list.add("" + ChatFormat.field_1068 + ChatFormat.field_1056 + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
 				if (!bl) {
 					list.add("");
-					if (this.minecraft.player.experience < m) {
-						list.add(TextFormat.field_1061 + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
+					if (this.minecraft.player.experienceLevel < m) {
+						list.add(ChatFormat.field_1061 + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
 					} else {
 						String string;
 						if (o == 1) {
@@ -205,15 +205,15 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 							string = I18n.translate("container.enchant.lapis.many", o);
 						}
 
-						TextFormat textFormat = k >= o ? TextFormat.field_1080 : TextFormat.field_1061;
-						list.add(textFormat + "" + string);
+						ChatFormat chatFormat = k >= o ? ChatFormat.field_1080 : ChatFormat.field_1061;
+						list.add(chatFormat + "" + string);
 						if (o == 1) {
 							string = I18n.translate("container.enchant.level.one");
 						} else {
 							string = I18n.translate("container.enchant.level.many", o);
 						}
 
-						list.add(TextFormat.field_1080 + "" + string);
+						list.add(ChatFormat.field_1080 + "" + string);
 					}
 				}
 

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Void;
+import net.minecraft.util.Unit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,11 +29,11 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	private final List<ResourceReloadListener> initialListeners = Lists.<ResourceReloadListener>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final ResourceType type;
-	private final Thread field_17937;
+	private final Thread mainThread;
 
 	public ReloadableResourceManagerImpl(ResourceType resourceType, Thread thread) {
 		this.type = resourceType;
-		this.field_17937 = thread;
+		this.mainThread = thread;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public CompletableFuture<Void> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture) {
+	public CompletableFuture<Unit> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Unit> completableFuture) {
 		ResourceReloadMonitor resourceReloadMonitor = this.beginMonitoredReload(executor, executor2, completableFuture, list);
 		return resourceReloadMonitor.whenComplete();
 	}
@@ -114,13 +114,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	protected ResourceReloadMonitor beginReloadInner(
-		Executor executor, Executor executor2, List<ResourceReloadListener> list, CompletableFuture<Void> completableFuture
+		Executor executor, Executor executor2, List<ResourceReloadListener> list, CompletableFuture<Unit> completableFuture
 	) {
 		ResourceReloadMonitor resourceReloadMonitor;
 		if (LOGGER.isDebugEnabled()) {
-			resourceReloadMonitor = new ProfilingResourceReloadHandler(this, new ArrayList(list), executor, executor2, completableFuture);
+			resourceReloadMonitor = new ProfilingResourceReloader(this, new ArrayList(list), executor, executor2, completableFuture);
 		} else {
-			resourceReloadMonitor = ResourceReloadHandler.create(this, new ArrayList(list), executor, executor2, completableFuture);
+			resourceReloadMonitor = ResourceReloader.create(this, new ArrayList(list), executor, executor2, completableFuture);
 		}
 
 		this.initialListeners.clear();
@@ -129,12 +129,12 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
+	public ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture) {
 		return this.beginReloadInner(executor, executor2, this.initialListeners, completableFuture);
 	}
 
 	@Override
-	public ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list) {
+	public ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture, List<ResourcePack> list) {
 		this.clear();
 		LOGGER.info("Reloading ResourceManager: {}", list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 

@@ -18,7 +18,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 	}
 
 	public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
+		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.field_6173);
 		if (pandaEntity.isScared() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
 			float m = -0.6F;
 			float n = 1.4F;

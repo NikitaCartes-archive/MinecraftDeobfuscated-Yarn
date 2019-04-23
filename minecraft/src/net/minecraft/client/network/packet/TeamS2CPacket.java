@@ -5,23 +5,23 @@ import java.io.IOException;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.PacketByteBuf;
 
 public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	private String teamName = "";
-	private TextComponent displayName = new StringTextComponent("");
-	private TextComponent prefix = new StringTextComponent("");
-	private TextComponent suffix = new StringTextComponent("");
-	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
-	private String collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
-	private TextFormat color = TextFormat.RESET;
+	private Component displayName = new TextComponent("");
+	private Component prefix = new TextComponent("");
+	private Component suffix = new TextComponent("");
+	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442.name;
+	private String collisionRule = AbstractTeam.CollisionRule.field_1437.name;
+	private ChatFormat color = ChatFormat.field_1070;
 	private final Collection<String> playerList = Lists.<String>newArrayList();
 	private int mode;
 	private int flags;
@@ -68,7 +68,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.flags = packetByteBuf.readByte();
 			this.nameTagVisibilityRule = packetByteBuf.readString(40);
 			this.collisionRule = packetByteBuf.readString(40);
-			this.color = packetByteBuf.readEnumConstant(TextFormat.class);
+			this.color = packetByteBuf.readEnumConstant(ChatFormat.class);
 			this.prefix = packetByteBuf.readTextComponent();
 			this.suffix = packetByteBuf.readTextComponent();
 		}
@@ -115,7 +115,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.displayName;
 	}
 
@@ -135,7 +135,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextFormat getPlayerPrefix() {
+	public ChatFormat getPlayerPrefix() {
 		return this.color;
 	}
 
@@ -150,12 +150,12 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getPrefix() {
+	public Component getPrefix() {
 		return this.prefix;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getSuffix() {
+	public Component getSuffix() {
 		return this.suffix;
 	}
 }

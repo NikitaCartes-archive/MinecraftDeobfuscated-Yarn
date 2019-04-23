@@ -140,13 +140,13 @@ public class SystemUtil {
 		} else if (string.contains("mac")) {
 			return SystemUtil.OperatingSystem.MAC;
 		} else if (string.contains("solaris")) {
-			return SystemUtil.OperatingSystem.SOLARIS;
+			return SystemUtil.OperatingSystem.field_1134;
 		} else if (string.contains("sunos")) {
-			return SystemUtil.OperatingSystem.SOLARIS;
+			return SystemUtil.OperatingSystem.field_1134;
 		} else if (string.contains("linux")) {
-			return SystemUtil.OperatingSystem.UNIX;
+			return SystemUtil.OperatingSystem.field_1135;
 		} else {
-			return string.contains("unix") ? SystemUtil.OperatingSystem.UNIX : SystemUtil.OperatingSystem.UNKNOWN;
+			return string.contains("unix") ? SystemUtil.OperatingSystem.field_1135 : SystemUtil.OperatingSystem.field_1132;
 		}
 	}
 
@@ -204,13 +204,13 @@ public class SystemUtil {
 	}
 
 	public static <K> Strategy<K> identityHashStrategy() {
-		return SystemUtil.IdentityHashStrategy.INSTANCE;
+		return SystemUtil.IdentityHashStrategy.field_1130;
 	}
 
 	public static <V> CompletableFuture<List<V>> thenCombine(List<? extends CompletableFuture<? extends V>> list) {
 		List<V> list2 = Lists.<V>newArrayListWithCapacity(list.size());
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[list.size()];
-		CompletableFuture<java.lang.Void> completableFuture = new CompletableFuture();
+		CompletableFuture<Void> completableFuture = new CompletableFuture();
 		list.forEach(completableFuture2 -> {
 			int i = list2.size();
 			list2.add(null);
@@ -255,7 +255,7 @@ public class SystemUtil {
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {
-		INSTANCE;
+		field_1130;
 
 		@Override
 		public int hashCode(Object object) {
@@ -269,8 +269,8 @@ public class SystemUtil {
 	}
 
 	public static enum OperatingSystem {
-		UNIX,
-		SOLARIS,
+		field_1135,
+		field_1134,
 		WINDOWS {
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -285,7 +285,7 @@ public class SystemUtil {
 				return new String[]{"open", uRL.toString()};
 			}
 		},
-		UNKNOWN;
+		field_1132;
 
 		private OperatingSystem() {
 		}

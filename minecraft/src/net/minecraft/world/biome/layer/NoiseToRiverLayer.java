@@ -4,7 +4,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
 
 public enum NoiseToRiverLayer implements CrossSamplingLayer {
-	INSTANCE;
+	field_16168;
 
 	public static final int RIVER_ID = Registry.BIOME.getRawId(Biomes.field_9438);
 

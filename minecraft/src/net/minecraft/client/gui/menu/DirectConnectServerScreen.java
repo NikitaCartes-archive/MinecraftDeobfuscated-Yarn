@@ -9,7 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerScreen extends Screen {
@@ -19,7 +19,7 @@ public class DirectConnectServerScreen extends Screen {
 	private final BooleanConsumer callback;
 
 	public DirectConnectServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
-		super(new TranslatableTextComponent("selectServer.direct"));
+		super(new TranslatableComponent("selectServer.direct"));
 		this.serverEntry = serverEntry;
 		this.callback = booleanConsumer;
 	}

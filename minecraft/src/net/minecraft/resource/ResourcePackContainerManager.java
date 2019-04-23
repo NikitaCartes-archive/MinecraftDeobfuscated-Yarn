@@ -40,7 +40,7 @@ public class ResourcePackContainerManager<T extends ResourcePackContainer> imple
 
 		for (T resourcePackContainer : this.nameToContainer.values()) {
 			if (resourcePackContainer.canBeSorted() && !this.enabledContainers.contains(resourcePackContainer)) {
-				resourcePackContainer.getSortingDirection().locate(this.enabledContainers, resourcePackContainer, Functions.identity(), false);
+				resourcePackContainer.getInitialPosition().insert(this.enabledContainers, resourcePackContainer, Functions.identity(), false);
 			}
 		}
 	}
@@ -59,7 +59,7 @@ public class ResourcePackContainerManager<T extends ResourcePackContainer> imple
 
 		for (T resourcePackContainer : this.nameToContainer.values()) {
 			if (resourcePackContainer.canBeSorted() && !this.enabledContainers.contains(resourcePackContainer)) {
-				resourcePackContainer.getSortingDirection().locate(this.enabledContainers, resourcePackContainer, Functions.identity(), false);
+				resourcePackContainer.getInitialPosition().insert(this.enabledContainers, resourcePackContainer, Functions.identity(), false);
 			}
 		}
 	}

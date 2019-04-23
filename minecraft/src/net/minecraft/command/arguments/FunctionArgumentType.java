@@ -9,19 +9,19 @@ import com.mojang.datafixers.util.Either;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 
 public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.FunctionArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "#foo");
 	private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("arguments.function.tag.unknown", object)
+		object -> new TranslatableComponent("arguments.function.tag.unknown", object)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("arguments.function.unknown", object)
+		object -> new TranslatableComponent("arguments.function.unknown", object)
 	);
 
 	public static FunctionArgumentType create() {

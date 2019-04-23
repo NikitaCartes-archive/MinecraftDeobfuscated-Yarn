@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,11 +28,11 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+		return Block.OffsetType.field_10657;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
@@ -54,9 +54,9 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
-			if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211) {
+			if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10211) {
 				iWorld.setBlockState(blockPos, Blocks.field_10211.getDefaultState(), 2);
 			}
 
@@ -92,7 +92,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	protected void grow(World world, BlockPos blockPos) {

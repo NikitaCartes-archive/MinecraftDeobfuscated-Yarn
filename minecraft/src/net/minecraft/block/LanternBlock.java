@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
@@ -34,7 +34,7 @@ public class LanternBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis() == Direction.Axis.Y) {
-				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.UP));
+				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.field_11036));
 				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 					return blockState;
 				}
@@ -45,28 +45,28 @@ public class LanternBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return blockState.get(HANGING) ? HANGING_SHAPE : STANDING_SHAPE;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HANGING);
+		builder.add(HANGING);
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = method_16370(blockState).getOpposite();
+		Direction direction = attachedDirection(blockState).getOpposite();
 		return Block.isSolidSmallSquare(viewableWorld, blockPos.offset(direction), direction.getOpposite());
 	}
 
-	protected static Direction method_16370(BlockState blockState) {
-		return blockState.get(HANGING) ? Direction.DOWN : Direction.UP;
+	protected static Direction attachedDirection(BlockState blockState) {
+		return blockState.get(HANGING) ? Direction.field_11033 : Direction.field_11036;
 	}
 
 	@Override
@@ -78,8 +78,8 @@ public class LanternBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return method_16370(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+		return attachedDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 

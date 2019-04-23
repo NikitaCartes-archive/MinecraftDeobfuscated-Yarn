@@ -640,7 +640,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
 				ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
 				HitResult hitResult = this.client.hitResult;
-				if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
+				if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.world.getBlockState(blockPos);
 					if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
@@ -748,11 +748,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.matrixMode(5888);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableAlphaTest();
-		worldRenderer.renderLayer(BlockRenderLayer.SOLID, camera);
+		worldRenderer.renderLayer(BlockRenderLayer.field_9178, camera);
 		GlStateManager.enableAlphaTest();
-		worldRenderer.renderLayer(BlockRenderLayer.MIPPED_CUTOUT, camera);
+		worldRenderer.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera);
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
-		worldRenderer.renderLayer(BlockRenderLayer.CUTOUT, camera);
+		worldRenderer.renderLayer(BlockRenderLayer.field_9174, camera);
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.alphaFunc(516, 0.1F);
@@ -809,7 +809,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		GlStateManager.shadeModel(7425);
 		this.client.getProfiler().swap("translucent");
-		worldRenderer.renderLayer(BlockRenderLayer.TRANSLUCENT, camera);
+		worldRenderer.renderLayer(BlockRenderLayer.field_9179, camera);
 		GlStateManager.shadeModel(7424);
 		GlStateManager.depthMask(true);
 		GlStateManager.enableCull();
@@ -828,7 +828,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void renderAboveClouds(Camera camera, WorldRenderer worldRenderer, float f, double d, double e, double g) {
-		if (this.client.options.getCloudRenderMode() != CloudRenderMode.field_18162) {
+		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
 			this.client.getProfiler().swap("clouds");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
@@ -876,9 +876,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			double g = 0.0;
 			int j = 0;
 			int k = (int)(100.0F * f * f);
-			if (this.client.options.particles == ParticlesOption.field_18198) {
+			if (this.client.options.particles == ParticlesOption.DECREASED) {
 				k >>= 1;
-			} else if (this.client.options.particles == ParticlesOption.field_18199) {
+			} else if (this.client.options.particles == ParticlesOption.MINIMAL) {
 				k = 0;
 			}
 
@@ -1196,7 +1196,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			GlStateManager.rotatef(900.0F * MathHelper.abs(MathHelper.sin(n)), 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 0.0F, 0.0F, 1.0F);
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.field_4319);
 			GlStateManager.popAttributes();
 			GlStateManager.popMatrix();
 			GuiLighting.disable();

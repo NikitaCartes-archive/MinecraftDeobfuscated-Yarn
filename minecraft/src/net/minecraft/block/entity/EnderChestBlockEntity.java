@@ -23,7 +23,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	private int ticks;
 
 	public EnderChestBlockEntity() {
-		super(BlockEntityType.ENDER_CHEST);
+		super(BlockEntityType.field_11901);
 	}
 
 	@Override

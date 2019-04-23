@@ -9,13 +9,13 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.world.chunk.ChunkPos;
 
 public class StructurePlacementData {
-	private BlockMirror mirror = BlockMirror.NONE;
-	private BlockRotation rotation = BlockRotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.field_11302;
+	private BlockRotation rotation = BlockRotation.field_11467;
 	private BlockPos position = BlockPos.ORIGIN;
 	private boolean ignoreEntities;
 	@Nullable

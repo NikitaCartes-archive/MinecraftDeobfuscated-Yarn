@@ -15,8 +15,8 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
@@ -116,8 +116,8 @@ public class StatusEffect {
 		return this.method_5559();
 	}
 
-	public TextComponent method_5560() {
-		return new TranslatableTextComponent(this.getTranslationKey());
+	public Component method_5560() {
+		return new TranslatableComponent(this.getTranslationKey());
 	}
 
 	@Environment(EnvType.CLIENT)

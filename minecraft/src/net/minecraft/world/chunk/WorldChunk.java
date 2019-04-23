@@ -45,6 +45,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
@@ -108,7 +109,7 @@ public class WorldChunk implements Chunk {
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
-			if (ChunkStatus.FULL.isSurfaceGenerated().contains(type)) {
+			if (ChunkStatus.field_12803.isSurfaceGenerated().contains(type)) {
 				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
@@ -165,7 +166,7 @@ public class WorldChunk implements Chunk {
 		this.setStructureReferences(protoChunk.getStructureReferences());
 
 		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-			if (ChunkStatus.FULL.isSurfaceGenerated().contains(entry.getKey())) {
+			if (ChunkStatus.field_12803.isSurfaceGenerated().contains(entry.getKey())) {
 				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
@@ -206,7 +207,7 @@ public class WorldChunk implements Chunk {
 				blockState = DebugChunkGenerator.getBlockState(i, k);
 			}
 
-			return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
+			return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
 		} else {
 			try {
 				if (j >= 0 && j >> 4 < this.sections.length) {
@@ -216,7 +217,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				return Blocks.AIR.getDefaultState();
+				return Blocks.field_10124.getDefaultState();
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -240,7 +241,7 @@ public class WorldChunk implements Chunk {
 				}
 			}
 
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -769,11 +770,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public ChunkStatus getStatus() {
-		return ChunkStatus.FULL;
+		return ChunkStatus.field_12803;
 	}
 
 	public ChunkHolder.LevelType getLevelType() {
-		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
+		return this.levelTypeProvider == null ? ChunkHolder.LevelType.field_13876 : (ChunkHolder.LevelType)this.levelTypeProvider.get();
 	}
 
 	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> supplier) {

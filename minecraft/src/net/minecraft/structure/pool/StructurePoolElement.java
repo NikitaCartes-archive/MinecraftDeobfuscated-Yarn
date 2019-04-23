@@ -22,7 +22,7 @@ public abstract class StructurePoolElement {
 	}
 
 	protected StructurePoolElement(Dynamic<?> dynamic) {
-		this.projection = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.RIGID.getId()));
+		this.projection = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.field_16687.getId()));
 	}
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(

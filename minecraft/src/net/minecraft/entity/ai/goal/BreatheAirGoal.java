@@ -12,16 +12,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ViewableWorld;
 
 public class BreatheAirGoal extends Goal {
-	private final MobEntityWithAi owner;
+	private final MobEntityWithAi mob;
 
 	public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
-		this.owner = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.owner.getBreath() < 140;
+		return this.mob.getBreath() < 140;
 	}
 
 	@Override
@@ -41,34 +41,34 @@ public class BreatheAirGoal extends Goal {
 
 	private void moveToAir() {
 		Iterable<BlockPos> iterable = BlockPos.iterate(
-			MathHelper.floor(this.owner.x - 1.0),
-			MathHelper.floor(this.owner.y),
-			MathHelper.floor(this.owner.z - 1.0),
-			MathHelper.floor(this.owner.x + 1.0),
-			MathHelper.floor(this.owner.y + 8.0),
-			MathHelper.floor(this.owner.z + 1.0)
+			MathHelper.floor(this.mob.x - 1.0),
+			MathHelper.floor(this.mob.y),
+			MathHelper.floor(this.mob.z - 1.0),
+			MathHelper.floor(this.mob.x + 1.0),
+			MathHelper.floor(this.mob.y + 8.0),
+			MathHelper.floor(this.mob.z + 1.0)
 		);
 		BlockPos blockPos = null;
 
 		for (BlockPos blockPos2 : iterable) {
-			if (this.isAirPos(this.owner.world, blockPos2)) {
+			if (this.isAirPos(this.mob.world, blockPos2)) {
 				blockPos = blockPos2;
 				break;
 			}
 		}
 
 		if (blockPos == null) {
-			blockPos = new BlockPos(this.owner.x, this.owner.y + 8.0, this.owner.z);
+			blockPos = new BlockPos(this.mob.x, this.mob.y + 8.0, this.mob.z);
 		}
 
-		this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)(blockPos.getY() + 1), (double)blockPos.getZ(), 1.0);
+		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)(blockPos.getY() + 1), (double)blockPos.getZ(), 1.0);
 	}
 
 	@Override
 	public void tick() {
 		this.moveToAir();
-		this.owner.updateVelocity(0.02F, new Vec3d((double)this.owner.sidewaysSpeed, (double)this.owner.upwardSpeed, (double)this.owner.forwardSpeed));
-		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
+		this.mob.updateVelocity(0.02F, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
+		this.mob.move(MovementType.field_6308, this.mob.getVelocity());
 	}
 
 	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {

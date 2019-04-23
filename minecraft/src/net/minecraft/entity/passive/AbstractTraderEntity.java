@@ -15,7 +15,7 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -44,7 +44,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return this.isChild() ? 0.81F : 1.62F;
+		return this.isBaby() ? 0.81F : 1.62F;
 	}
 
 	@Override
@@ -157,14 +157,14 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected void produceParticles(ParticleParameters particleParameters) {
+	protected void produceParticles(ParticleEffect particleEffect) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleParameters,
+					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 1.0 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

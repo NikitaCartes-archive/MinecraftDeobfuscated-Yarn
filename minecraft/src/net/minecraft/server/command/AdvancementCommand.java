@@ -11,8 +11,8 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class AdvancementCommand {
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
@@ -231,7 +231,7 @@ public class AdvancementCommand {
 			if (collection2.size() == 1) {
 				if (collection.size() == 1) {
 					throw new CommandException(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".one.to.one.failure",
 							((Advancement)collection2.iterator().next()).getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
@@ -239,25 +239,25 @@ public class AdvancementCommand {
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".one.to.many.failure", ((Advancement)collection2.iterator().next()).getTextComponent(), collection.size()
 						)
 					);
 				}
 			} else if (collection.size() == 1) {
 				throw new CommandException(
-					new TranslatableTextComponent(
+					new TranslatableComponent(
 						operation.getCommandPrefix() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
-				throw new CommandException(new TranslatableTextComponent(operation.getCommandPrefix() + ".many.to.many.failure", collection2.size(), collection.size()));
+				throw new CommandException(new TranslatableComponent(operation.getCommandPrefix() + ".many.to.many.failure", collection2.size(), collection.size()));
 			}
 		} else {
 			if (collection2.size() == 1) {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".one.to.one.success",
 							((Advancement)collection2.iterator().next()).getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
@@ -266,7 +266,7 @@ public class AdvancementCommand {
 					);
 				} else {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)collection2.iterator().next()).getTextComponent(), collection.size()
 						),
 						true
@@ -274,14 +274,14 @@ public class AdvancementCommand {
 				}
 			} else if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(
+					new TranslatableComponent(
 						operation.getCommandPrefix() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true
+					new TranslatableComponent(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true
 				);
 			}
 
@@ -298,7 +298,7 @@ public class AdvancementCommand {
 	) {
 		int i = 0;
 		if (!advancement.getCriteria().containsKey(string)) {
-			throw new CommandException(new TranslatableTextComponent("commands.advancement.criterionNotFound", advancement.getTextComponent(), string));
+			throw new CommandException(new TranslatableComponent("commands.advancement.criterionNotFound", advancement.getTextComponent(), string));
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : collection) {
 				if (operation.processEachCriterion(serverPlayerEntity, advancement, string)) {
@@ -309,7 +309,7 @@ public class AdvancementCommand {
 			if (i == 0) {
 				if (collection.size() == 1) {
 					throw new CommandException(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".criterion.to.one.failure",
 							string,
 							advancement.getTextComponent(),
@@ -318,13 +318,13 @@ public class AdvancementCommand {
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableTextComponent(operation.getCommandPrefix() + ".criterion.to.many.failure", string, advancement.getTextComponent(), collection.size())
+						new TranslatableComponent(operation.getCommandPrefix() + ".criterion.to.many.failure", string, advancement.getTextComponent(), collection.size())
 					);
 				}
 			} else {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent(
+						new TranslatableComponent(
 							operation.getCommandPrefix() + ".criterion.to.one.success",
 							string,
 							advancement.getTextComponent(),
@@ -334,8 +334,7 @@ public class AdvancementCommand {
 					);
 				} else {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent(operation.getCommandPrefix() + ".criterion.to.many.success", string, advancement.getTextComponent(), collection.size()),
-						true
+						new TranslatableComponent(operation.getCommandPrefix() + ".criterion.to.many.success", string, advancement.getTextComponent(), collection.size()), true
 					);
 				}
 

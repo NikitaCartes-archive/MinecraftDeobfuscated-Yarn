@@ -76,8 +76,8 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void update() {
-			super.update();
+		public void tick() {
+			super.tick();
 			if (this.trail && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
 				FireworksSparkParticle.ExplosionParticle explosionParticle = new FireworksSparkParticle.ExplosionParticle(
 					this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.particleManager, this.spriteProvider
@@ -134,7 +134,7 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void update() {
+		public void tick() {
 			if (this.age == 0 && this.explosions != null) {
 				boolean bl = this.isFar();
 				boolean bl2 = false;
@@ -169,7 +169,7 @@ public class FireworksSparkParticle {
 				int[] is = compoundTag2.getIntArray("Colors");
 				int[] js = compoundTag2.getIntArray("FadeColors");
 				if (is.length == 0) {
-					is = new int[]{DyeColor.BLACK.getFireworkColor()};
+					is = new int[]{DyeColor.field_7963.getFireworkColor()};
 				}
 
 				switch (type) {
@@ -343,7 +343,7 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public ParticleTextureSheet getTextureSheet() {
+		public ParticleTextureSheet getType() {
 			return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 		}
 

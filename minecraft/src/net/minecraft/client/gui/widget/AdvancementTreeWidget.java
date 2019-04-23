@@ -88,7 +88,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 		if (identifier != null) {
 			this.client.getTextureManager().bindTexture(identifier);
 		} else {
-			this.client.getTextureManager().bindTexture(TextureManager.field_5285);
+			this.client.getTextureManager().bindTexture(TextureManager.MISSING_IDENTIFIER);
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

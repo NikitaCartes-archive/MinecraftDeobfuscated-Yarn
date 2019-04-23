@@ -5,38 +5,38 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends Screen {
 	private final Screen parent;
 	private final GameOptions options;
 	private ButtonListWidget list;
-	private static final GameOption[] OPTIONS = new GameOption[]{
-		GameOption.GRAPHICS,
-		GameOption.RENDER_DISTANCE,
-		GameOption.AO,
-		GameOption.FRAMERATE_LIMIT,
-		GameOption.VSYNC,
-		GameOption.VIEW_BOBBING,
-		GameOption.GUI_SCALE,
-		GameOption.ATTACK_INDICATOR,
-		GameOption.GAMMA,
-		GameOption.CLOUDS,
-		GameOption.FULLSCREEN,
-		GameOption.PARTICLES,
-		GameOption.MIPMAP_LEVELS,
-		GameOption.ENTITY_SHADOWS,
-		GameOption.BIOME_BLEND_RADIUS
+	private static final Option[] OPTIONS = new Option[]{
+		Option.GRAPHICS,
+		Option.RENDER_DISTANCE,
+		Option.AO,
+		Option.FRAMERATE_LIMIT,
+		Option.VSYNC,
+		Option.VIEW_BOBBING,
+		Option.GUI_SCALE,
+		Option.ATTACK_INDICATOR,
+		Option.GAMMA,
+		Option.CLOUDS,
+		Option.FULLSCREEN,
+		Option.PARTICLES,
+		Option.MIPMAP_LEVELS,
+		Option.ENTITY_SHADOWS,
+		Option.BIOME_BLEND_RADIUS
 	};
 	private int mipmapLevels;
 
 	public VideoOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableTextComponent("options.videoTitle"));
+		super(new TranslatableComponent("options.videoTitle"));
 		this.parent = screen;
 		this.options = gameOptions;
 	}
@@ -45,7 +45,7 @@ public class VideoOptionsScreen extends Screen {
 	protected void init() {
 		this.mipmapLevels = this.options.mipmapLevels;
 		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-		this.list.method_20406(GameOption.FULLSCREEN_RESOLUTION);
+		this.list.method_20406(Option.FULLSCREEN_RESOLUTION);
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {

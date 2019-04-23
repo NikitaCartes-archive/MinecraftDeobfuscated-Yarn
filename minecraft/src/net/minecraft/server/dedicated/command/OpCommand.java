@@ -6,14 +6,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class OpCommand {
-	private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.op.failed"));
+	private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.op.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -46,7 +46,7 @@ public class OpCommand {
 			if (!playerManager.isOperator(gameProfile)) {
 				playerManager.addToOperators(gameProfile);
 				i++;
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.op.success", ((GameProfile)collection.iterator().next()).getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.op.success", ((GameProfile)collection.iterator().next()).getName()), true);
 			}
 		}
 

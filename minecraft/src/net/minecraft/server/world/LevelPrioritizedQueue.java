@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 
 public class LevelPrioritizedQueue<T> {
 	public static final int LEVEL_COUNT = ThreadedAnvilChunkStorage.MAX_LEVEL + 2;

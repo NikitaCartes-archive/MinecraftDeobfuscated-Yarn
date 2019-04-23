@@ -33,9 +33,9 @@ public class CaveSpiderEntity extends SpiderEntity {
 		if (super.tryAttack(entity)) {
 			if (entity instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.NORMAL) {
+				if (this.world.getDifficulty() == Difficulty.field_5802) {
 					i = 7;
-				} else if (this.world.getDifficulty() == Difficulty.HARD) {
+				} else if (this.world.getDifficulty() == Difficulty.field_5807) {
 					i = 15;
 				}
 

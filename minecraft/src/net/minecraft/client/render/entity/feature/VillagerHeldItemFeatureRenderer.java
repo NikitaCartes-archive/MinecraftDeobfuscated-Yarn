@@ -23,12 +23,12 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends Fea
 	}
 
 	public void method_18147(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6173);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			GlStateManager.pushMatrix();
-			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.field_9179;
 			if (bl) {
 				GlStateManager.depthMask(false);
 			}

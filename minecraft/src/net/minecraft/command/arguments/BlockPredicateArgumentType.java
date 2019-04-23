@@ -20,18 +20,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
 	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("arguments.block.tag.unknown", object)
+		object -> new TranslatableComponent("arguments.block.tag.unknown", object)
 	);
 
 	public static BlockPredicateArgumentType create() {
@@ -44,11 +44,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
 				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
 			);
-			return tagManager -> statePredicate;
+			return registryTagManager -> statePredicate;
 		} else {
 			Identifier identifier = blockArgumentParser.getTagId();
-			return tagManager -> {
-				Tag<Block> tag = tagManager.blocks().get(identifier);
+			return registryTagManager -> {
+				Tag<Block> tag = registryTagManager.blocks().get(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
@@ -83,7 +83,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	}
 
 	public interface BlockPredicate {
-		Predicate<CachedBlockPosition> create(TagManager tagManager) throws CommandSyntaxException;
+		Predicate<CachedBlockPosition> create(RegistryTagManager registryTagManager) throws CommandSyntaxException;
 	}
 
 	static class StatePredicate implements Predicate<CachedBlockPosition> {

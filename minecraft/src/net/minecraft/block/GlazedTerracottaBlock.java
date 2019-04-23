@@ -11,7 +11,7 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 
 	@Override

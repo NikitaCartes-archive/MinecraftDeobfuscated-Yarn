@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.WorldGenerationProgressLogger;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 
 @Environment(EnvType.CLIENT)

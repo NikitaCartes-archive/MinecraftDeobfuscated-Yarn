@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -18,7 +19,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -66,15 +66,15 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		GlStateManager.disableCull();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
 		this.model.isRiding = livingEntity.hasVehicle();
-		this.model.isChild = livingEntity.isChild();
+		this.model.isChild = livingEntity.isBaby();
 
 		try {
-			float i = MathHelper.method_17821(h, livingEntity.field_6220, livingEntity.field_6283);
-			float j = MathHelper.method_17821(h, livingEntity.prevHeadYaw, livingEntity.headYaw);
+			float i = MathHelper.lerpAngleDegrees(h, livingEntity.field_6220, livingEntity.field_6283);
+			float j = MathHelper.lerpAngleDegrees(h, livingEntity.prevHeadYaw, livingEntity.headYaw);
 			float k = j - i;
 			if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity) {
 				LivingEntity livingEntity2 = (LivingEntity)livingEntity.getVehicle();
-				i = MathHelper.method_17821(h, livingEntity2.field_6220, livingEntity2.field_6283);
+				i = MathHelper.lerpAngleDegrees(h, livingEntity2.field_6220, livingEntity2.field_6283);
 				k = j - i;
 				float l = MathHelper.wrapDegrees(k);
 				if (l < -85.0F) {
@@ -103,7 +103,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
 				o = MathHelper.lerp(h, livingEntity.lastLimbDistance, livingEntity.limbDistance);
 				p = livingEntity.limbAngle - livingEntity.limbDistance * (1.0F - h);
-				if (livingEntity.isChild()) {
+				if (livingEntity.isBaby()) {
 					p *= 3.0F;
 				}
 
@@ -115,7 +115,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.enableAlphaTest();
 			this.model.animateModel(livingEntity, p, o, h);
 			this.model.setAngles(livingEntity, p, o, lx, k, m, n);
-			if (this.renderOutlines) {
+			if (this.field_4674) {
 				boolean bl = this.beforeOutlineRender(livingEntity);
 				GlStateManager.enableColorMaterial();
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
@@ -183,7 +183,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = this.renderLeftArmOverlay(livingEntity);
+		boolean bl = this.method_4056(livingEntity);
 		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
 			if (!this.bindEntityTexture(livingEntity)) {
@@ -201,8 +201,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected boolean renderLeftArmOverlay(T livingEntity) {
-		return !livingEntity.isInvisible() || this.renderOutlines;
+	protected boolean method_4056(T livingEntity) {
+		return !livingEntity.isInvisible() || this.field_4674;
 	}
 
 	protected boolean applyOverlayColor(T livingEntity, float f) {
@@ -334,13 +334,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	private static float method_18656(Direction direction) {
 		switch (direction) {
-			case SOUTH:
+			case field_11035:
 				return 90.0F;
-			case WEST:
+			case field_11039:
 				return 0.0F;
-			case NORTH:
+			case field_11043:
 				return 270.0F;
-			case EAST:
+			case field_11034:
 				return 180.0F;
 			default:
 				return 0.0F;
@@ -370,10 +370,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = TextFormat.stripFormatting(livingEntity.getName().getString());
+			String string = ChatFormat.stripFormatting(livingEntity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.field_7559))) {
 				GlStateManager.translatef(0.0F, livingEntity.getHeight() + 0.1F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			}
@@ -430,13 +430,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			if (abstractTeam != null) {
 				AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {
-					case ALWAYS:
+					case field_1442:
 						return bl;
-					case NEVER:
+					case field_1443:
 						return false;
-					case HIDDEN_FOR_OTHER_TEAMS:
+					case field_1444:
 						return abstractTeam2 == null ? bl : abstractTeam.isEqual(abstractTeam2) && (abstractTeam.shouldShowFriendlyInvisibles() || bl);
-					case HIDDEN_FOR_TEAM:
+					case field_1446:
 						return abstractTeam2 == null ? bl : !abstractTeam.isEqual(abstractTeam2) && bl;
 					default:
 						return true;

@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<ExplodingWitherSkullEntity> {
 	private static final Identifier INVINCIBLE_SKIN = new Identifier("textures/entity/wither/wither_invulnerable.png");
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither.png");
-	private final SkullEntityModel field_4816 = new SkullEntityModel();
+	private final SkullEntityModel model = new SkullEntityModel();
 
 	public ExplodingWitherSkullEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -43,13 +43,13 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.bindEntityTexture(explodingWitherSkullEntity);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(explodingWitherSkullEntity));
 		}
 
-		this.field_4816.setRotationAngles(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
-		if (this.renderOutlines) {
+		this.model.setRotationAngles(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

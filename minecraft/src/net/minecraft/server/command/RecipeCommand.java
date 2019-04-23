@@ -8,16 +8,16 @@ import java.util.Collections;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class RecipeCommand {
 	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.recipe.give.failed")
+		new TranslatableComponent("commands.recipe.give.failed")
 	);
 	private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.recipe.take.failed")
+		new TranslatableComponent("commands.recipe.take.failed")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -93,13 +93,11 @@ public class RecipeCommand {
 		} else {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(
-						"commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
-					),
+					new TranslatableComponent("commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;
@@ -118,13 +116,11 @@ public class RecipeCommand {
 		} else {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(
-						"commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
-					),
+					new TranslatableComponent("commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;

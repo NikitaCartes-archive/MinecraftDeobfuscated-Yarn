@@ -30,12 +30,12 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	public ExplodingWitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.WITHER_SKULL, livingEntity, d, e, f, world);
+		super(EntityType.field_6130, livingEntity, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public ExplodingWitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.WITHER_SKULL, d, e, f, g, h, i, world);
+		super(EntityType.field_6130, d, e, f, g, h, i, world);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
 					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
@@ -74,9 +74,9 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 
 				if (entity instanceof LivingEntity) {
 					int i = 0;
-					if (this.world.getDifficulty() == Difficulty.NORMAL) {
+					if (this.world.getDifficulty() == Difficulty.field_5802) {
 						i = 10;
-					} else if (this.world.getDifficulty() == Difficulty.HARD) {
+					} else if (this.world.getDifficulty() == Difficulty.field_5807) {
 						i = 40;
 					}
 

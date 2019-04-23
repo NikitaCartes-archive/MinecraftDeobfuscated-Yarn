@@ -40,7 +40,7 @@ public class NoteBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.DOWN
+		return direction == Direction.field_11033
 			? blockState.with(INSTRUMENT, Instrument.fromBlockState(blockState2))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -97,6 +97,6 @@ public class NoteBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(INSTRUMENT, POWERED, NOTE);
+		builder.add(INSTRUMENT, POWERED, NOTE);
 	}
 }

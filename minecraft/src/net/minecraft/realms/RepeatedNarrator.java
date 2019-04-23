@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.TextComponent;
 
 @Environment(EnvType.CLIENT)
 class RepeatedNarrator {
@@ -29,7 +29,7 @@ class RepeatedNarrator {
 			);
 		if (lv.field_19211.tryAcquire(1)) {
 			NarratorManager narratorManager = NarratorManager.INSTANCE;
-			narratorManager.onChatMessage(ChatMessageType.field_11735, new StringTextComponent(string));
+			narratorManager.onChatMessage(ChatMessageType.field_11735, new TextComponent(string));
 		}
 	}
 

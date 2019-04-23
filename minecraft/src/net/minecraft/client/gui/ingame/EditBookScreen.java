@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
@@ -23,7 +24,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.network.packet.BookUpdateC2SPacket;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -238,7 +238,7 @@ public class EditBookScreen extends Screen {
 			this.minecraft.keyboard.setClipboard(this.getHighlightedText());
 			return true;
 		} else if (Screen.isPaste(i)) {
-			this.writeString(this.stripFromatting(TextFormat.stripFormatting(this.minecraft.keyboard.getClipboard().replaceAll("\\r", ""))));
+			this.writeString(this.stripFromatting(ChatFormat.stripFormatting(this.minecraft.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.highlightTo = this.cursorIndex;
 			return true;
 		} else if (Screen.isCut(i)) {
@@ -362,7 +362,7 @@ public class EditBookScreen extends Screen {
 	private void applyDownArrowKey(String string) {
 		if (!string.isEmpty()) {
 			EditBookScreen.Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
-			int i = this.font.getStringBoundedHeight(string + "" + TextFormat.BLACK + "_", 114);
+			int i = this.font.getStringBoundedHeight(string + "" + ChatFormat.field_1074 + "_", 114);
 			if (position.y + 9 == i) {
 				this.cursorIndex = string.length();
 				if (!Screen.hasShiftDown()) {
@@ -453,7 +453,7 @@ public class EditBookScreen extends Screen {
 		String string2 = this.getCurrentPageContent();
 		this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, string2.length());
 		String string3 = new StringBuilder(string2).insert(this.cursorIndex, string).toString();
-		int i = this.font.getStringBoundedHeight(string3 + "" + TextFormat.BLACK + "_", 114);
+		int i = this.font.getStringBoundedHeight(string3 + "" + ChatFormat.field_1074 + "_", 114);
 		if (i <= 128 && string3.length() < 1024) {
 			this.setPageContent(string3);
 			this.highlightTo = this.cursorIndex = Math.min(this.getCurrentPageContent().length(), this.cursorIndex + string.length());
@@ -472,9 +472,9 @@ public class EditBookScreen extends Screen {
 		if (this.signing) {
 			String string = this.title;
 			if (this.tickCounter / 6 % 2 == 0) {
-				string = string + "" + TextFormat.BLACK + "_";
+				string = string + "" + ChatFormat.field_1074 + "_";
 			} else {
-				string = string + "" + TextFormat.field_1080 + "_";
+				string = string + "" + ChatFormat.field_1080 + "_";
 			}
 
 			String string2 = I18n.translate("book.editTitle");
@@ -484,7 +484,7 @@ public class EditBookScreen extends Screen {
 			this.font.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
 			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int o = this.getStringWidth(string3);
-			this.font.draw(TextFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
+			this.font.draw(ChatFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");
 			this.font.drawStringBounded(string4, k + 36, 82, 114, 0);
 		} else {
@@ -550,8 +550,8 @@ public class EditBookScreen extends Screen {
 				String string4 = string2.substring(0, l);
 				char c = string2.charAt(l);
 				boolean bl = c == ' ' || c == '\n';
-				string2 = TextFormat.getFormatAtEnd(string4) + string2.substring(l + (bl ? 1 : 0));
-				string3 = TextFormat.getFormatAtEnd(string4) + string3.substring(l + (bl ? 1 : 0));
+				string2 = ChatFormat.getFormatAtEnd(string4) + string2.substring(l + (bl ? 1 : 0));
+				string3 = ChatFormat.getFormatAtEnd(string4) + string3.substring(l + (bl ? 1 : 0));
 				position2.x = position.x + this.getStringWidth(string4 + " ");
 				this.drawHighlightRect(position, position2);
 				position.x = 0;
@@ -606,7 +606,7 @@ public class EditBookScreen extends Screen {
 			String string3 = string2.substring(0, l);
 			char c = string2.charAt(l);
 			boolean bl = c == ' ' || c == '\n';
-			string2 = TextFormat.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
+			string2 = ChatFormat.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
 			j += string3.length() + (bl ? 1 : 0);
 			if (j - 1 >= i) {
 				String string4 = string3.substring(0, Math.min(Math.max(i - k, 0), string3.length()));
@@ -693,7 +693,7 @@ public class EditBookScreen extends Screen {
 
 					char c = string2.charAt(m);
 					boolean bl = c == ' ' || c == '\n';
-					string2 = TextFormat.getFormatAtEnd(string3) + string2.substring(m + (bl ? 1 : 0));
+					string2 = ChatFormat.getFormatAtEnd(string3) + string2.substring(m + (bl ? 1 : 0));
 					l += string3.length() + (bl ? 1 : 0);
 				} else if (position.y >= j && position.y < k) {
 					int o = this.getCharacterCountForStringWidth(string2, position.x);

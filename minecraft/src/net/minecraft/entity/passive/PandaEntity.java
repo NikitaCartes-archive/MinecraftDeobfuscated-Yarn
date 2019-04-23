@@ -26,7 +26,6 @@ import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -45,7 +44,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ItemStackParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -78,13 +77,13 @@ public class PandaEntity extends AnimalEntity {
 	private float lastRollOverAnimationProgress;
 	private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
 		Item item = itemEntity.getStack().getItem();
-		return (item == Blocks.field_10211.getItem() || item == Blocks.field_10183.getItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
+		return (item == Blocks.field_10211.asItem() || item == Blocks.field_10183.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
 	};
 
 	public PandaEntity(EntityType<? extends PandaEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new PandaEntity.PandaMoveControl(this);
-		if (!this.isChild()) {
+		if (!this.isBaby()) {
 			this.setCanPickUpLoot(true);
 		}
 	}
@@ -92,7 +91,7 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.HAND_MAIN && super.canPickUp(itemStack);
+		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.field_6173 && super.canPickUp(itemStack);
 	}
 
 	public int getAskForBambooTicks() {
@@ -227,7 +226,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		PandaEntity pandaEntity = EntityType.PANDA.create(this.world);
+		PandaEntity pandaEntity = EntityType.field_6146.create(this.world);
 		if (passiveEntity instanceof PandaEntity) {
 			pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
 		}
@@ -242,13 +241,13 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(2, new PandaEntity.ExtinguishFireGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.AttackGoal(this, 1.2F, true));
-		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.getItem()), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.asItem()), false));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, PlayerEntity.class, 8.0F, 2.0, 2.0));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, HostileEntity.class, 4.0F, 2.0, 2.0));
 		this.goalSelector.add(7, new PandaEntity.PickUpFoodGoal());
 		this.goalSelector.add(8, new PandaEntity.LieOnBackGoal(this));
 		this.goalSelector.add(8, new PandaEntity.SneezeGoal(this));
-		this.goalSelector.add(9, new PandaEntity.PandaLookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(9, new PandaEntity.LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(10, new LookAroundGoal(this));
 		this.goalSelector.add(12, new PandaEntity.PlayGoal(this));
 		this.goalSelector.add(13, new FollowParentGoal(this, 1.25));
@@ -363,18 +362,18 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	private void updateEatingAnimation() {
-		if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty() && this.random.nextInt(80) == 1) {
+		if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() && this.random.nextInt(80) == 1) {
 			this.setEating(true);
-		} else if (this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty() || !this.isScared()) {
+		} else if (this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() || !this.isScared()) {
 			this.setEating(false);
 		}
 
 		if (this.isEating()) {
 			this.playEatingAnimation();
 			if (!this.world.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
-				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.HAND_MAIN))) {
+				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.field_6173))) {
 					if (!this.world.isClient) {
-						this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+						this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 					}
 
 					this.setScared(false);
@@ -402,7 +401,7 @@ public class PandaEntity extends AnimalEntity {
 				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight() + 1.0, this.z);
 				this.world
 					.addParticle(
-						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.HAND_MAIN)),
+						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.field_6173)),
 						vec3d2.x,
 						vec3d2.y,
 						vec3d2.z,
@@ -465,7 +464,7 @@ public class PandaEntity extends AnimalEntity {
 				Vec3d vec3d = this.getVelocity();
 				if (this.playingTicks == 1) {
 					float f = this.yaw * (float) (Math.PI / 180.0);
-					float g = this.isChild() ? 0.1F : 0.2F;
+					float g = this.isBaby() ? 0.1F : 0.2F;
 					this.playingJump = new Vec3d(vec3d.x + (double)(-MathHelper.sin(f) * g), 0.0, vec3d.z + (double)(MathHelper.cos(f) * g));
 					this.setVelocity(this.playingJump.add(0.0, 0.27, 0.0));
 				} else if ((float)this.playingTicks != 7.0F && (float)this.playingTicks != 15.0F && (float)this.playingTicks != 23.0F) {
@@ -492,7 +491,7 @@ public class PandaEntity extends AnimalEntity {
 		this.playSound(SoundEvents.field_15076, 1.0F, 1.0F);
 
 		for (PandaEntity pandaEntity : this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
-			if (!pandaEntity.isChild() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
+			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
 				pandaEntity.jump();
 			}
 		}
@@ -504,10 +503,10 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	protected void loot(ItemEntity itemEntity) {
-		if (this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty() && IS_FOOD.test(itemEntity)) {
+		if (this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() && IS_FOOD.test(itemEntity)) {
 			ItemStack itemStack = itemEntity.getStack();
-			this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
-			this.handDropChances[EquipmentSlot.HAND_MAIN.getEntitySlotId()] = 2.0F;
+			this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
+			this.handDropChances[EquipmentSlot.field_6173.getEntitySlotId()] = 2.0F;
 			this.sendPickup(itemEntity, itemStack.getAmount());
 			itemEntity.remove();
 		}
@@ -602,7 +601,7 @@ public class PandaEntity extends AnimalEntity {
 				this.shouldGetRevenge = true;
 			}
 
-			if (this.isChild()) {
+			if (this.isBaby()) {
 				this.eat(playerEntity, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
 			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
@@ -615,12 +614,12 @@ public class PandaEntity extends AnimalEntity {
 
 				this.stop();
 				this.setEating(true);
-				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.HAND_MAIN);
+				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.field_6173);
 				if (!itemStack2.isEmpty() && !playerEntity.abilities.creativeMode) {
 					this.dropStack(itemStack2);
 				}
 
-				this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(itemStack.getItem(), 1));
+				this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(itemStack.getItem(), 1));
 				this.eat(playerEntity, itemStack);
 			}
 
@@ -647,11 +646,11 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return itemStack.getItem() == Blocks.field_10211.getItem();
+		return itemStack.getItem() == Blocks.field_10211.asItem();
 	}
 
 	private boolean canEat(ItemStack itemStack) {
-		return this.isBreedingItem(itemStack) || itemStack.getItem() == Blocks.field_10183.getItem();
+		return this.isBreedingItem(itemStack) || itemStack.getItem() == Blocks.field_10183.asItem();
 	}
 
 	@Nullable
@@ -697,7 +696,7 @@ public class PandaEntity extends AnimalEntity {
 			if (!this.panda.isOnFire()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
+				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -829,24 +828,10 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	static class PandaFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
-		private final PandaEntity owner;
-
-		public PandaFleeGoal(PandaEntity pandaEntity, Class<T> class_, float f, double d, double e) {
-			super(pandaEntity, class_, f, d, e, EntityPredicates.EXCEPT_SPECTATOR::test);
-			this.owner = pandaEntity;
-		}
-
-		@Override
-		public boolean canStart() {
-			return this.owner.isWorried() && this.owner.method_18442() && super.canStart();
-		}
-	}
-
-	static class PandaLookAtEntityGoal extends LookAtEntityGoal {
+	static class LookAtEntityGoal extends net.minecraft.entity.ai.goal.LookAtEntityGoal {
 		private final PandaEntity panda;
 
-		public PandaLookAtEntityGoal(PandaEntity pandaEntity, Class<? extends LivingEntity> class_, float f) {
+		public LookAtEntityGoal(PandaEntity pandaEntity, Class<? extends LivingEntity> class_, float f) {
 			super(pandaEntity, class_, f);
 			this.panda = pandaEntity;
 		}
@@ -854,6 +839,20 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			return this.panda.method_18442() && super.canStart();
+		}
+	}
+
+	static class PandaFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
+		private final PandaEntity panda;
+
+		public PandaFleeGoal(PandaEntity pandaEntity, Class<T> class_, float f, double d, double e) {
+			super(pandaEntity, class_, f, d, e, EntityPredicates.EXCEPT_SPECTATOR::test);
+			this.panda = pandaEntity;
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.panda.isWorried() && this.panda.method_18442() && super.canStart();
 		}
 	}
 
@@ -960,12 +959,12 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			if (this.startAge <= PandaEntity.this.age
-				&& !PandaEntity.this.isChild()
+				&& !PandaEntity.this.isBaby()
 				&& !PandaEntity.this.isInsideWater()
 				&& PandaEntity.this.method_18442()
 				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
 				List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
-				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty();
+				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty();
 			} else {
 				return false;
 			}
@@ -980,7 +979,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void tick() {
-			if (!PandaEntity.this.isScared() && !PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
+			if (!PandaEntity.this.isScared() && !PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
 				PandaEntity.this.stop();
 			}
 		}
@@ -988,9 +987,9 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
-			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
+			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
 				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
-			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
+			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
 				PandaEntity.this.stop();
 			}
 
@@ -999,10 +998,10 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void stop() {
-			ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN);
+			ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173);
 			if (!itemStack.isEmpty()) {
 				PandaEntity.this.dropStack(itemStack);
-				PandaEntity.this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+				PandaEntity.this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 				int i = PandaEntity.this.isLazy() ? PandaEntity.this.random.nextInt(50) + 10 : PandaEntity.this.random.nextInt(150) + 10;
 				this.startAge = PandaEntity.this.age + i * 20;
 			}
@@ -1021,7 +1020,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if ((this.panda.isChild() || this.panda.isPlayful()) && this.panda.onGround) {
+			if ((this.panda.isBaby() || this.panda.isPlayful()) && this.panda.onGround) {
 				if (!this.panda.method_18442()) {
 					return false;
 				} else {
@@ -1074,7 +1073,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.panda.isChild() && this.panda.method_18442()) {
+			if (this.panda.isBaby() && this.panda.method_18442()) {
 				return this.panda.isWeak() && this.panda.random.nextInt(500) == 1 ? true : this.panda.random.nextInt(6000) == 1;
 			} else {
 				return false;

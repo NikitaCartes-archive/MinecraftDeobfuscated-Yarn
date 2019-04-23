@@ -16,19 +16,19 @@ public abstract class AbstractZombieModel<T extends HostileEntity> extends Biped
 		boolean bl = this.method_17790(hostileEntity);
 		float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 		float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
-		this.armRight.roll = 0.0F;
-		this.armLeft.roll = 0.0F;
-		this.armRight.yaw = -(0.1F - l * 0.6F);
-		this.armLeft.yaw = 0.1F - l * 0.6F;
+		this.rightArm.roll = 0.0F;
+		this.leftArm.roll = 0.0F;
+		this.rightArm.yaw = -(0.1F - l * 0.6F);
+		this.leftArm.yaw = 0.1F - l * 0.6F;
 		float n = (float) -Math.PI / (bl ? 1.5F : 2.25F);
-		this.armRight.pitch = n;
-		this.armLeft.pitch = n;
-		this.armRight.pitch += l * 1.2F - m * 0.4F;
-		this.armLeft.pitch += l * 1.2F - m * 0.4F;
-		this.armRight.roll = this.armRight.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-		this.armLeft.roll = this.armLeft.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-		this.armRight.pitch = this.armRight.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-		this.armLeft.pitch = this.armLeft.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+		this.rightArm.pitch = n;
+		this.leftArm.pitch = n;
+		this.rightArm.pitch += l * 1.2F - m * 0.4F;
+		this.leftArm.pitch += l * 1.2F - m * 0.4F;
+		this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
+		this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
+		this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
+		this.leftArm.pitch = this.leftArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
 	}
 
 	public abstract boolean method_17790(T hostileEntity);

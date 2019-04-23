@@ -12,10 +12,10 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 
 public abstract class PoolStructurePiece extends StructurePiece {
 	protected final StructurePoolElement poolElement;

@@ -32,7 +32,7 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));

@@ -8,35 +8,39 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.HoverEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ResourcePackContainer implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(
-		new TranslatableTextComponent("resourcePack.broken_assets").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1056}),
+		new TranslatableComponent("resourcePack.broken_assets").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1056}),
 		SharedConstants.getGameVersion().getPackVersion()
 	);
 	private final String name;
 	private final Supplier<ResourcePack> packCreator;
-	private final TextComponent displayName;
-	private final TextComponent description;
+	private final Component displayName;
+	private final Component description;
 	private final ResourcePackCompatibility compatibility;
-	private final ResourcePackContainer.SortingDirection direction;
+	private final ResourcePackContainer.InsertionPosition position;
 	private final boolean notSorting;
-	private final boolean tillEnd;
+	private final boolean positionFixed;
 
 	@Nullable
 	public static <T extends ResourcePackContainer> T of(
-		String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePackContainer.Factory<T> factory, ResourcePackContainer.SortingDirection sortingDirection
+		String string,
+		boolean bl,
+		Supplier<ResourcePack> supplier,
+		ResourcePackContainer.Factory<T> factory,
+		ResourcePackContainer.InsertionPosition insertionPosition
 	) {
 		try {
 			ResourcePack resourcePack = (ResourcePack)supplier.get();
@@ -57,7 +61,7 @@ public class ResourcePackContainer implements AutoCloseable {
 					return null;
 				}
 
-				var8 = factory.create(string, bl, supplier, resourcePack, packResourceMetadata, sortingDirection);
+				var8 = factory.create(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
 			} catch (Throwable var19) {
 				var6 = var19;
 				throw var19;
@@ -86,20 +90,20 @@ public class ResourcePackContainer implements AutoCloseable {
 		String string,
 		boolean bl,
 		Supplier<ResourcePack> supplier,
-		TextComponent textComponent,
-		TextComponent textComponent2,
+		Component component,
+		Component component2,
 		ResourcePackCompatibility resourcePackCompatibility,
-		ResourcePackContainer.SortingDirection sortingDirection,
+		ResourcePackContainer.InsertionPosition insertionPosition,
 		boolean bl2
 	) {
 		this.name = string;
 		this.packCreator = supplier;
-		this.displayName = textComponent;
-		this.description = textComponent2;
+		this.displayName = component;
+		this.description = component2;
 		this.compatibility = resourcePackCompatibility;
 		this.notSorting = bl;
-		this.direction = sortingDirection;
-		this.tillEnd = bl2;
+		this.position = insertionPosition;
+		this.positionFixed = bl2;
 	}
 
 	public ResourcePackContainer(
@@ -108,36 +112,36 @@ public class ResourcePackContainer implements AutoCloseable {
 		Supplier<ResourcePack> supplier,
 		ResourcePack resourcePack,
 		PackResourceMetadata packResourceMetadata,
-		ResourcePackContainer.SortingDirection sortingDirection
+		ResourcePackContainer.InsertionPosition insertionPosition
 	) {
 		this(
 			string,
 			bl,
 			supplier,
-			new StringTextComponent(resourcePack.getName()),
+			new TextComponent(resourcePack.getName()),
 			packResourceMetadata.getDescription(),
 			ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
-			sortingDirection,
+			insertionPosition,
 			false
 		);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.displayName;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getDescription() {
+	public Component getDescription() {
 		return this.description;
 	}
 
-	public TextComponent getInformationText(boolean bl) {
-		return TextFormatter.bracketed(new StringTextComponent(this.name))
+	public Component getInformationText(boolean bl) {
+		return Components.bracketed(new TextComponent(this.name))
 			.modifyStyle(
-				style -> style.setColor(bl ? TextFormat.field_1060 : TextFormat.field_1061)
+				style -> style.setColor(bl ? ChatFormat.field_1060 : ChatFormat.field_1061)
 						.setInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("").append(this.displayName).append("\n").append(this.description)))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent("").append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 
@@ -157,12 +161,12 @@ public class ResourcePackContainer implements AutoCloseable {
 		return this.notSorting;
 	}
 
-	public boolean sortsTillEnd() {
-		return this.tillEnd;
+	public boolean isPositionFixed() {
+		return this.positionFixed;
 	}
 
-	public ResourcePackContainer.SortingDirection getSortingDirection() {
-		return this.direction;
+	public ResourcePackContainer.InsertionPosition getInitialPosition() {
+		return this.position;
 	}
 
 	public boolean equals(Object object) {
@@ -192,21 +196,21 @@ public class ResourcePackContainer implements AutoCloseable {
 			Supplier<ResourcePack> supplier,
 			ResourcePack resourcePack,
 			PackResourceMetadata packResourceMetadata,
-			ResourcePackContainer.SortingDirection sortingDirection
+			ResourcePackContainer.InsertionPosition insertionPosition
 		);
 	}
 
-	public static enum SortingDirection {
+	public static enum InsertionPosition {
 		field_14280,
 		field_14281;
 
-		public <T, P extends ResourcePackContainer> int locate(List<T> list, T object, Function<T, P> function, boolean bl) {
-			ResourcePackContainer.SortingDirection sortingDirection = bl ? this.inverse() : this;
-			if (sortingDirection == field_14281) {
+		public <T, P extends ResourcePackContainer> int insert(List<T> list, T object, Function<T, P> function, boolean bl) {
+			ResourcePackContainer.InsertionPosition insertionPosition = bl ? this.inverse() : this;
+			if (insertionPosition == field_14281) {
 				int i;
 				for (i = 0; i < list.size(); i++) {
 					P resourcePackContainer = (P)function.apply(list.get(i));
-					if (!resourcePackContainer.sortsTillEnd() || resourcePackContainer.getSortingDirection() != this) {
+					if (!resourcePackContainer.isPositionFixed() || resourcePackContainer.getInitialPosition() != this) {
 						break;
 					}
 				}
@@ -217,7 +221,7 @@ public class ResourcePackContainer implements AutoCloseable {
 				int i;
 				for (i = list.size() - 1; i >= 0; i--) {
 					P resourcePackContainer = (P)function.apply(list.get(i));
-					if (!resourcePackContainer.sortsTillEnd() || resourcePackContainer.getSortingDirection() != this) {
+					if (!resourcePackContainer.isPositionFixed() || resourcePackContainer.getInitialPosition() != this) {
 						break;
 					}
 				}
@@ -227,7 +231,7 @@ public class ResourcePackContainer implements AutoCloseable {
 			}
 		}
 
-		public ResourcePackContainer.SortingDirection inverse() {
+		public ResourcePackContainer.InsertionPosition inverse() {
 			return this == field_14280 ? field_14281 : field_14280;
 		}
 	}

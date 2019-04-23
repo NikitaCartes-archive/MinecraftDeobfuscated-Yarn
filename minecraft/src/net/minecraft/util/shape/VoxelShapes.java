@@ -13,10 +13,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.math.AxisCycle;
+import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -171,7 +171,7 @@ public final class VoxelShapes {
 			boolean bl = booleanBiFunction.apply(true, false);
 			boolean bl2 = booleanBiFunction.apply(false, true);
 
-			for (Direction.Axis axis : AxisCycle.AXES) {
+			for (Direction.Axis axis : AxisCycleDirection.AXES) {
 				if (voxelShape.getMaximum(axis) < voxelShape2.getMinimum(axis) - 1.0E-7) {
 					return bl || bl2;
 				}
@@ -228,23 +228,23 @@ public final class VoxelShapes {
 	}
 
 	public static double method_17945(
-		Direction.Axis axis, BoundingBox boundingBox, ViewableWorld viewableWorld, double d, VerticalEntityPosition verticalEntityPosition, Stream<VoxelShape> stream
+		Direction.Axis axis, BoundingBox boundingBox, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream
 	) {
-		return method_17944(boundingBox, viewableWorld, d, verticalEntityPosition, AxisCycle.between(axis, Direction.Axis.Z), stream);
+		return method_17944(boundingBox, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
 	private static double method_17944(
-		BoundingBox boundingBox, ViewableWorld viewableWorld, double d, VerticalEntityPosition verticalEntityPosition, AxisCycle axisCycle, Stream<VoxelShape> stream
+		BoundingBox boundingBox, ViewableWorld viewableWorld, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
 	) {
 		if (boundingBox.getXSize() < 1.0E-6 || boundingBox.getYSize() < 1.0E-6 || boundingBox.getZSize() < 1.0E-6) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
 			return 0.0;
 		} else {
-			AxisCycle axisCycle2 = axisCycle.opposite();
-			Direction.Axis axis = axisCycle2.cycle(Direction.Axis.X);
-			Direction.Axis axis2 = axisCycle2.cycle(Direction.Axis.Y);
-			Direction.Axis axis3 = axisCycle2.cycle(Direction.Axis.Z);
+			AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
+			Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.X);
+			Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
+			Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			int i = MathHelper.floor(boundingBox.getMin(axis) - 1.0E-7) - 1;
 			int j = MathHelper.floor(boundingBox.getMax(axis) + 1.0E-7) + 1;
@@ -277,7 +277,7 @@ public final class VoxelShapes {
 						}
 
 						if (u < 3) {
-							mutable.method_17965(axisCycle2, s, t, r);
+							mutable.method_17965(axisCycleDirection2, s, t, r);
 							int v = mutable.getX() >> 4;
 							int w = mutable.getZ() >> 4;
 							if (v != p || w != q) {
@@ -288,7 +288,7 @@ public final class VoxelShapes {
 
 							BlockState blockState = chunk.getBlockState(mutable);
 							if ((u != 1 || blockState.method_17900()) && (u != 2 || blockState.getBlock() == Blocks.field_10008)) {
-								d = blockState.getCollisionShape(viewableWorld, mutable, verticalEntityPosition)
+								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
 									.method_1108(axis3, boundingBox.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {
 									return 0.0;

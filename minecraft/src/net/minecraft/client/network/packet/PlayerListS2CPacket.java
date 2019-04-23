@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.GameMode;
 
@@ -64,9 +64,9 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			GameProfile gameProfile = null;
 			int k = 0;
 			GameMode gameMode = null;
-			TextComponent textComponent = null;
+			Component component = null;
 			switch (this.action) {
-				case ADD:
+				case field_12372:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
 					int l = packetByteBuf.readVarInt();
 					int m = 0;
@@ -84,28 +84,28 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					k = packetByteBuf.readVarInt();
 					if (packetByteBuf.readBoolean()) {
-						textComponent = packetByteBuf.readTextComponent();
+						component = packetByteBuf.readTextComponent();
 					}
 					break;
-				case UPDATE_GAMEMODE:
+				case field_12375:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					break;
-				case UPDATE_LATENCY:
+				case field_12371:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					k = packetByteBuf.readVarInt();
 					break;
-				case UPDATE_DISPLAY_NAME:
+				case field_12374:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					if (packetByteBuf.readBoolean()) {
-						textComponent = packetByteBuf.readTextComponent();
+						component = packetByteBuf.readTextComponent();
 					}
 					break;
-				case REMOVE:
+				case field_12376:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 			}
 
-			this.entries.add(new PlayerListS2CPacket.Entry(gameProfile, k, gameMode, textComponent));
+			this.entries.add(new PlayerListS2CPacket.Entry(gameProfile, k, gameMode, component));
 		}
 	}
 
@@ -116,7 +116,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for (PlayerListS2CPacket.Entry entry : this.entries) {
 			switch (this.action) {
-				case ADD:
+				case field_12372:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeString(entry.getProfile().getName());
 					packetByteBuf.writeVarInt(entry.getProfile().getProperties().size());
@@ -141,15 +141,15 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeTextComponent(entry.getDisplayName());
 					}
 					break;
-				case UPDATE_GAMEMODE:
+				case field_12375:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeVarInt(entry.getGameMode().getId());
 					break;
-				case UPDATE_LATENCY:
+				case field_12371:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeVarInt(entry.getLatency());
 					break;
-				case UPDATE_DISPLAY_NAME:
+				case field_12374:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					if (entry.getDisplayName() == null) {
 						packetByteBuf.writeBoolean(false);
@@ -158,7 +158,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeTextComponent(entry.getDisplayName());
 					}
 					break;
-				case REMOVE:
+				case field_12376:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 			}
 		}
@@ -183,24 +183,24 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Action {
-		ADD,
-		UPDATE_GAMEMODE,
-		UPDATE_LATENCY,
-		UPDATE_DISPLAY_NAME,
-		REMOVE;
+		field_12372,
+		field_12375,
+		field_12371,
+		field_12374,
+		field_12376;
 	}
 
 	public class Entry {
 		private final int latency;
 		private final GameMode gameMode;
 		private final GameProfile profile;
-		private final TextComponent displayName;
+		private final Component displayName;
 
-		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable TextComponent textComponent) {
+		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable Component component) {
 			this.profile = gameProfile;
 			this.latency = i;
 			this.gameMode = gameMode;
-			this.displayName = textComponent;
+			this.displayName = component;
 		}
 
 		public GameProfile getProfile() {
@@ -216,7 +216,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Nullable
-		public TextComponent getDisplayName() {
+		public Component getDisplayName() {
 			return this.displayName;
 		}
 
@@ -225,7 +225,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add("latency", this.latency)
 				.add("gameMode", this.gameMode)
 				.add("profile", this.profile)
-				.add("displayName", this.displayName == null ? null : TextComponent.Serializer.toJsonString(this.displayName))
+				.add("displayName", this.displayName == null ? null : Component.Serializer.toJsonString(this.displayName))
 				.toString();
 		}
 	}

@@ -20,7 +20,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 	}
 
 	public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
-		Direction direction = Direction.UP;
+		Direction direction = Direction.field_11036;
 		if (shulkerBoxBlockEntity.hasWorld()) {
 			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
 			if (blockState.getBlock() instanceof ShulkerBoxBlock) {
@@ -42,9 +42,9 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		} else {
 			DyeColor dyeColor = shulkerBoxBlockEntity.getColor();
 			if (dyeColor == null) {
-				this.bindTexture(ShulkerEntityRenderer.field_4781);
+				this.bindTexture(ShulkerEntityRenderer.SKIN);
 			} else {
-				this.bindTexture(ShulkerEntityRenderer.SKIN[dyeColor.getId()]);
+				this.bindTexture(ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()]);
 			}
 		}
 
@@ -61,27 +61,27 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		GlStateManager.scalef(0.9995F, 0.9995F, 0.9995F);
 		GlStateManager.translatef(0.0F, -1.0F, 0.0F);
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				GlStateManager.translatef(0.0F, 2.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-			case UP:
+			case field_11036:
 			default:
 				break;
-			case NORTH:
+			case field_11043:
 				GlStateManager.translatef(0.0F, 1.0F, 1.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case SOUTH:
+			case field_11035:
 				GlStateManager.translatef(0.0F, 1.0F, -1.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				break;
-			case WEST:
+			case field_11039:
 				GlStateManager.translatef(-1.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case EAST:
+			case field_11034:
 				GlStateManager.translatef(1.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);

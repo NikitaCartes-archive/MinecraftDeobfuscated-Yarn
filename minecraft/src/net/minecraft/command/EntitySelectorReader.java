@@ -20,31 +20,29 @@ import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class EntitySelectorReader {
-	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.invalid")
-	);
+	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.entity.selector.unknown", object)
+		object -> new TranslatableComponent("argument.entity.selector.unknown", object)
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.selector.not_allowed")
+		new TranslatableComponent("argument.entity.selector.not_allowed")
 	);
 	public static final SimpleCommandExceptionType MISSING_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.selector.missing")
+		new TranslatableComponent("argument.entity.selector.missing")
 	);
 	public static final SimpleCommandExceptionType UNTERMINATED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.options.unterminated")
+		new TranslatableComponent("argument.entity.options.unterminated")
 	);
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.entity.options.valueless", object)
+		object -> new TranslatableComponent("argument.entity.options.valueless", object)
 	);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> UNSORTED = (vec3d, list) -> {
 	};
@@ -173,7 +171,7 @@ public class EntitySelectorReader {
 
 		if (!this.experienceRange.isDummy()) {
 			this.predicate = this.predicate
-				.and(entity -> !(entity instanceof ServerPlayerEntity) ? false : this.experienceRange.test(((ServerPlayerEntity)entity).experience));
+				.and(entity -> !(entity instanceof ServerPlayerEntity) ? false : this.experienceRange.test(((ServerPlayerEntity)entity).experienceLevel));
 		}
 	}
 
@@ -198,17 +196,17 @@ public class EntitySelectorReader {
 				this.count = 1;
 				this.includingNonPlayer = false;
 				this.sorter = NEAREST_FIRST;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 'a') {
 				this.count = Integer.MAX_VALUE;
 				this.includingNonPlayer = false;
 				this.sorter = UNSORTED;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 'r') {
 				this.count = 1;
 				this.includingNonPlayer = false;
 				this.sorter = RANDOM;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 's') {
 				this.count = 1;
 				this.includingNonPlayer = true;
@@ -451,11 +449,11 @@ public class EntitySelectorReader {
 	}
 
 	private static void suggestSelector(SuggestionsBuilder suggestionsBuilder) {
-		suggestionsBuilder.suggest("@p", new TranslatableTextComponent("argument.entity.selector.nearestPlayer"));
-		suggestionsBuilder.suggest("@a", new TranslatableTextComponent("argument.entity.selector.allPlayers"));
-		suggestionsBuilder.suggest("@r", new TranslatableTextComponent("argument.entity.selector.randomPlayer"));
-		suggestionsBuilder.suggest("@s", new TranslatableTextComponent("argument.entity.selector.self"));
-		suggestionsBuilder.suggest("@e", new TranslatableTextComponent("argument.entity.selector.allEntities"));
+		suggestionsBuilder.suggest("@p", new TranslatableComponent("argument.entity.selector.nearestPlayer"));
+		suggestionsBuilder.suggest("@a", new TranslatableComponent("argument.entity.selector.allPlayers"));
+		suggestionsBuilder.suggest("@r", new TranslatableComponent("argument.entity.selector.randomPlayer"));
+		suggestionsBuilder.suggest("@s", new TranslatableComponent("argument.entity.selector.self"));
+		suggestionsBuilder.suggest("@e", new TranslatableComponent("argument.entity.selector.allEntities"));
 	}
 
 	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {

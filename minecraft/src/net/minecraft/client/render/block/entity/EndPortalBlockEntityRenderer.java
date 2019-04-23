@@ -84,42 +84,42 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
 			float q = (RANDOM.nextFloat() * 0.5F + 0.5F) * m;
-			if (endPortalBlockEntity.shouldDrawSide(Direction.SOUTH)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11035)) {
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.NORTH)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11043)) {
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.EAST)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11034)) {
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.WEST)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11039)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.DOWN)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11033)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.UP)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11036)) {
 				bufferBuilder.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0F).next();

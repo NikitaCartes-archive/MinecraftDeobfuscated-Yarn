@@ -33,13 +33,13 @@ public class TallPlantBlock extends PlantBlock {
 	) {
 		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y
-			|| doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.UP)
+			|| doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.field_11036)
 			|| blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
-				? Blocks.AIR.getDefaultState()
+			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
+				? Blocks.field_10124.getDefaultState()
 				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		}
 	}
 
@@ -76,7 +76,7 @@ public class TallPlantBlock extends PlantBlock {
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class TallPlantBlock extends PlantBlock {
 		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.field_12607 ? blockPos.up() : blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
+			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				dropStacks(blockState, world, blockPos, null, playerEntity, playerEntity.getMainHandStack());
@@ -98,12 +98,12 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HALF);
+		builder.add(HALF);
 	}
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+		return Block.OffsetType.field_10657;
 	}
 
 	@Environment(EnvType.CLIENT)

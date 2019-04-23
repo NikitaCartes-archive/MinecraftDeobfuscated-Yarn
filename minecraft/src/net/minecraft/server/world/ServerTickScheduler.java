@@ -19,10 +19,10 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickScheduler;
-import net.minecraft.world.chunk.ChunkPos;
 
 public class ServerTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> invalidObjPredicate;

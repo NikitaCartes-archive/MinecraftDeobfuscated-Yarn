@@ -1,12 +1,12 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
+import net.minecraft.ChatFormat;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class SeedCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -16,15 +16,15 @@ public class SeedCommand {
 				.executes(
 					commandContext -> {
 						long l = commandContext.getSource().getWorld().getSeed();
-						TextComponent textComponent = TextFormatter.bracketed(
-							new StringTextComponent(String.valueOf(l))
+						Component component = Components.bracketed(
+							new TextComponent(String.valueOf(l))
 								.modifyStyle(
-									style -> style.setColor(TextFormat.field_1060)
-											.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(l)))
+									style -> style.setColor(ChatFormat.field_1060)
+											.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, String.valueOf(l)))
 											.setInsertion(String.valueOf(l))
 								)
 						);
-						commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.seed.success", textComponent), false);
+						commandContext.getSource().sendFeedback(new TranslatableComponent("commands.seed.success", component), false);
 						return (int)l;
 					}
 				)

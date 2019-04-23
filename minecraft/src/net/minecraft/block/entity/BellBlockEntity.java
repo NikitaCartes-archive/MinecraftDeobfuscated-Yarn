@@ -8,7 +8,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.EntityTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -26,7 +26,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private int field_19158;
 
 	public BellBlockEntity() {
-		super(BlockEntityType.BELL);
+		super(BlockEntityType.field_16413);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
-				&& livingEntity.getType().isTaggedWith(EntityTags.field_19168)) {
+				&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168)) {
 				this.field_19157 = true;
 			}
 		}
@@ -121,7 +121,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
-				&& livingEntity.getType().isTaggedWith(EntityTags.field_19168)) {
+				&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168)) {
 				if (!world.isClient) {
 					livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5912, 60));
 				} else {

@@ -8,18 +8,16 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.command.arguments.MessageArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
-import net.minecraft.text.event.HoverEvent;
 
 public class TeammsgCommand {
-	private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.teammsg.failed.noteam")
-	);
+	private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.teammsg.failed.noteam"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
@@ -32,31 +30,27 @@ public class TeammsgCommand {
 		commandDispatcher.register(CommandManager.literal("tm").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, TextComponent textComponent) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Component component) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
 		Team team = (Team)entity.getScoreboardTeam();
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
-			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableTextComponent("chat.type.team.hover")))
-					.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
-			TextComponent textComponent2 = team.getFormattedName().modifyStyle(consumer);
+			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableComponent("chat.type.team.hover")))
+					.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/teammsg "));
+			Component component2 = team.getFormattedName().modifyStyle(consumer);
 
-			for (TextComponent textComponent3 : textComponent2.getSiblings()) {
-				textComponent3.modifyStyle(consumer);
+			for (Component component3 : component2.getSiblings()) {
+				component3.modifyStyle(consumer);
 			}
 
 			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList();
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.sendMessage(
-						new TranslatableTextComponent("chat.type.team.sent", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
-					);
+					serverPlayerEntity.sendMessage(new TranslatableComponent("chat.type.team.sent", component2, serverCommandSource.getDisplayName(), component.copy()));
 				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
-					serverPlayerEntity.sendMessage(
-						new TranslatableTextComponent("chat.type.team.text", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
-					);
+					serverPlayerEntity.sendMessage(new TranslatableComponent("chat.type.team.text", component2, serverCommandSource.getDisplayName(), component.copy()));
 				}
 			}
 

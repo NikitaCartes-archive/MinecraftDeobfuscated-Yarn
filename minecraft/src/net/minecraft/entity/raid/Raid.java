@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
@@ -31,14 +32,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -51,11 +51,11 @@ import net.minecraft.world.World;
 
 public class Raid {
 	public static final ItemStack OMINOUS_BANNER = getIllagerBanner();
-	private static final TranslatableTextComponent EVENT_TEXT = new TranslatableTextComponent("event.minecraft.raid");
-	private static final TranslatableTextComponent VICTORY_SUFFIX_TEXT = new TranslatableTextComponent("event.minecraft.raid.victory");
-	private static final TranslatableTextComponent DEFEAT_SUFFIX_TEXT = new TranslatableTextComponent("event.minecraft.raid.defeat");
-	private static final TextComponent VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
-	private static final TextComponent DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+	private static final TranslatableComponent EVENT_TEXT = new TranslatableComponent("event.minecraft.raid");
+	private static final TranslatableComponent VICTORY_SUFFIX_TEXT = new TranslatableComponent("event.minecraft.raid.victory");
+	private static final TranslatableComponent DEFEAT_SUFFIX_TEXT = new TranslatableComponent("event.minecraft.raid.defeat");
+	private static final Component VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
+	private static final Component DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();
@@ -199,7 +199,7 @@ public class Raid {
 			if (this.status == Raid.Status.field_19026) {
 				boolean bl = this.active;
 				this.active = this.world.isBlockLoaded(this.center);
-				if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
+				if (this.world.getDifficulty() == Difficulty.field_5801) {
 					this.invalidate();
 					return;
 				}
@@ -260,7 +260,7 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableTextComponent("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableComponent("event.minecraft.raid.raiders_remaining", i)));
 						} else {
 							this.bar.setName(EVENT_TEXT);
 						}
@@ -436,15 +436,15 @@ public class Raid {
 					bl = true;
 				}
 
-				if (member.type == EntityType.RAVAGER) {
+				if (member.type == EntityType.field_6134) {
 					RaiderEntity raiderEntity2 = null;
-					if (i == this.getMaxWaves(Difficulty.NORMAL)) {
-						raiderEntity2 = EntityType.PILLAGER.create(this.world);
-					} else if (i >= this.getMaxWaves(Difficulty.HARD)) {
+					if (i == this.getMaxWaves(Difficulty.field_5802)) {
+						raiderEntity2 = EntityType.field_6105.create(this.world);
+					} else if (i >= this.getMaxWaves(Difficulty.field_5807)) {
 						if (k == 0) {
-							raiderEntity2 = EntityType.EVOKER.create(this.world);
+							raiderEntity2 = EntityType.field_6090.create(this.world);
 						} else {
-							raiderEntity2 = EntityType.VINDICATOR.create(this.world);
+							raiderEntity2 = EntityType.field_6117.create(this.world);
 						}
 					}
 
@@ -529,17 +529,17 @@ public class Raid {
 		ItemStack itemStack = new ItemStack(Items.field_8539);
 		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
 		ListTag listTag = new BannerPattern.Builder()
-			.with(BannerPattern.RHOMBUS, DyeColor.field_7955)
+			.with(BannerPattern.RHOMBUS_MIDDLE, DyeColor.field_7955)
 			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.field_7967)
 			.with(BannerPattern.STRIPE_CENTER, DyeColor.field_7944)
 			.with(BannerPattern.BORDER, DyeColor.field_7967)
-			.with(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK)
-			.with(BannerPattern.HALF_HORIZONTAL_TOP, DyeColor.field_7967)
-			.with(BannerPattern.CIRCLE, DyeColor.field_7967)
-			.with(BannerPattern.BORDER, DyeColor.BLACK)
+			.with(BannerPattern.STRIPE_MIDDLE, DyeColor.field_7963)
+			.with(BannerPattern.HALF_HORIZONTAL, DyeColor.field_7967)
+			.with(BannerPattern.CIRCLE_MIDDLE, DyeColor.field_7967)
+			.with(BannerPattern.BORDER, DyeColor.field_7963)
 			.build();
 		compoundTag.put("Patterns", listTag);
-		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.ominous_banner").applyFormat(TextFormat.field_1065));
+		itemStack.setDisplayName(new TranslatableComponent("block.minecraft.ominous_banner").applyFormat(ChatFormat.field_1065));
 		return itemStack;
 	}
 
@@ -562,7 +562,7 @@ public class Raid {
 			if ((!this.world.isNearOccupiedPointOfInterest(mutable) || i >= 2)
 				&& this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
 				&& (
-					SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, mutable, EntityType.RAVAGER)
+					SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, mutable, EntityType.field_6134)
 						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.field_10477 && this.world.getBlockState(mutable).isAir()
 				)) {
 				return mutable;
@@ -605,8 +605,8 @@ public class Raid {
 
 	public void setWaveCaptain(int i, RaiderEntity raiderEntity) {
 		this.waveToCaptain.put(i, raiderEntity);
-		raiderEntity.setEquippedStack(EquipmentSlot.HEAD, OMINOUS_BANNER);
-		raiderEntity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
+		raiderEntity.setEquippedStack(EquipmentSlot.field_6169, OMINOUS_BANNER);
+		raiderEntity.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
 	}
 
 	public void removeLeader(int i) {
@@ -622,24 +622,24 @@ public class Raid {
 	}
 
 	private int getCount(Raid.Member member, int i, boolean bl) {
-		return bl ? member.waveToCount[this.waveCount] : member.waveToCount[i];
+		return bl ? member.countInWave[this.waveCount] : member.countInWave[i];
 	}
 
 	private int getBonusCount(Raid.Member member, Random random, int i, LocalDifficulty localDifficulty, boolean bl) {
 		Difficulty difficulty = localDifficulty.getGlobalDifficulty();
-		boolean bl2 = difficulty == Difficulty.EASY;
-		boolean bl3 = difficulty == Difficulty.NORMAL;
+		boolean bl2 = difficulty == Difficulty.field_5805;
+		boolean bl3 = difficulty == Difficulty.field_5802;
 		int j;
 		switch (member) {
-			case WITCH:
+			case field_16635:
 				if (bl2 || i <= 2 || i == 4) {
 					return 0;
 				}
 
 				j = 1;
 				break;
-			case PILLAGER:
-			case VINDICATOR:
+			case field_16633:
+			case field_16631:
 				if (bl2) {
 					j = random.nextInt(2);
 				} else if (bl3) {
@@ -648,7 +648,7 @@ public class Raid {
 					j = 2;
 				}
 				break;
-			case RAVAGER:
+			case field_16630:
 				j = !bl2 && bl ? 1 : 0;
 				break;
 			default:
@@ -691,11 +691,11 @@ public class Raid {
 
 	public int getMaxWaves(Difficulty difficulty) {
 		switch (difficulty) {
-			case EASY:
+			case field_5805:
 				return 3;
-			case NORMAL:
+			case field_5802:
 				return 5;
-			case HARD:
+			case field_5807:
 				return 7;
 			default:
 				return 0;
@@ -720,19 +720,19 @@ public class Raid {
 	}
 
 	static enum Member {
-		VINDICATOR(EntityType.VINDICATOR, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
-		EVOKER(EntityType.EVOKER, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
-		PILLAGER(EntityType.PILLAGER, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
-		WITCH(EntityType.WITCH, new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
-		RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
+		field_16631(EntityType.field_6117, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
+		field_16634(EntityType.field_6090, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
+		field_16633(EntityType.field_6105, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
+		field_16635(EntityType.field_6145, new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
+		field_16630(EntityType.field_6134, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
 
 		private static final Raid.Member[] VALUES = values();
 		private final EntityType<? extends RaiderEntity> type;
-		private final int[] waveToCount;
+		private final int[] countInWave;
 
 		private Member(EntityType<? extends RaiderEntity> entityType, int[] is) {
 			this.type = entityType;
-			this.waveToCount = is;
+			this.countInWave = is;
 		}
 	}
 

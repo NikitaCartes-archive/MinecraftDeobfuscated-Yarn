@@ -7,27 +7,26 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.world.SafeWorldView;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	private final ChunkRenderer chunkRenderer;
 	private final ReentrantLock lock = new ReentrantLock();
-	private final List<Runnable> runnables = Lists.<Runnable>newArrayList();
+	private final List<Runnable> completionActions = Lists.<Runnable>newArrayList();
 	private final ChunkRenderTask.Mode mode;
-	private final double distanceToPlayerSquared;
+	private final double squaredCameraDistance;
 	@Nullable
-	private SafeWorldView worldView;
+	private ChunkRendererRegion region;
 	private BlockLayeredBufferBuilder bufferBuilder;
 	private ChunkRenderData renderData;
 	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
 	private boolean cancelled;
 
-	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable SafeWorldView safeWorldView) {
+	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
 		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
-		this.distanceToPlayerSquared = d;
-		this.worldView = safeWorldView;
+		this.squaredCameraDistance = d;
+		this.region = chunkRendererRegion;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
@@ -39,10 +38,10 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	}
 
 	@Nullable
-	public SafeWorldView getAndInvalidateWorldView() {
-		SafeWorldView safeWorldView = this.worldView;
-		this.worldView = null;
-		return safeWorldView;
+	public ChunkRendererRegion takeRegion() {
+		ChunkRendererRegion chunkRendererRegion = this.region;
+		this.region = null;
+		return chunkRendererRegion;
 	}
 
 	public ChunkRenderData getRenderData() {
@@ -75,15 +74,15 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		this.lock.lock();
 
 		try {
-			this.worldView = null;
+			this.region = null;
 			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
-				this.chunkRenderer.scheduleRender(false);
+				this.chunkRenderer.scheduleRebuild(false);
 			}
 
 			this.cancelled = true;
 			this.stage = ChunkRenderTask.Stage.field_4423;
 
-			for (Runnable runnable : this.runnables) {
+			for (Runnable runnable : this.completionActions) {
 				runnable.run();
 			}
 		} finally {
@@ -91,11 +90,11 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		}
 	}
 
-	public void add(Runnable runnable) {
+	public void addCompletionAction(Runnable runnable) {
 		this.lock.lock();
 
 		try {
-			this.runnables.add(runnable);
+			this.completionActions.add(runnable);
 			if (this.cancelled) {
 				runnable.run();
 			}
@@ -117,11 +116,11 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	}
 
 	public int method_3601(ChunkRenderTask chunkRenderTask) {
-		return Doubles.compare(this.distanceToPlayerSquared, chunkRenderTask.distanceToPlayerSquared);
+		return Doubles.compare(this.squaredCameraDistance, chunkRenderTask.squaredCameraDistance);
 	}
 
-	public double getDistanceToPlayerSquared() {
-		return this.distanceToPlayerSquared;
+	public double getSquaredCameraDistance() {
+		return this.squaredCameraDistance;
 	}
 
 	@Environment(EnvType.CLIENT)

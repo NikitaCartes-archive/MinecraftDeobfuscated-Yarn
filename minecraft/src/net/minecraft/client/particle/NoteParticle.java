@@ -22,7 +22,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -32,7 +32,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;

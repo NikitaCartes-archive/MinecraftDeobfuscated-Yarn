@@ -4,18 +4,18 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
-	private TextComponent reason;
+	private Component reason;
 
 	public DisconnectS2CPacket() {
 	}
 
-	public DisconnectS2CPacket(TextComponent textComponent) {
-		this.reason = textComponent;
+	public DisconnectS2CPacket(Component component) {
+		this.reason = component;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getReason() {
+	public Component getReason() {
 		return this.reason;
 	}
 }

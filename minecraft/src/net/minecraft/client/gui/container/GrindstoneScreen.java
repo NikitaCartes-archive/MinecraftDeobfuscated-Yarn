@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GrindstoneScreen extends ContainerScreen<GrindstoneContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
-	public GrindstoneScreen(GrindstoneContainer grindstoneContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(grindstoneContainer, playerInventory, textComponent);
+	public GrindstoneScreen(GrindstoneContainer grindstoneContainer, PlayerInventory playerInventory, Component component) {
+		super(grindstoneContainer, playerInventory, component);
 	}
 
 	@Override

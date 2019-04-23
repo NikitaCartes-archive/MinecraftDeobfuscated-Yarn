@@ -1,10 +1,10 @@
 package net.minecraft.scoreboard;
 
+import net.minecraft.ChatFormat;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,13 +51,13 @@ public class ScoreboardState extends PersistentState {
 			}
 
 			Team team = this.scoreboard.addTeam(string);
-			TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
-			if (textComponent != null) {
-				team.setDisplayName(textComponent);
+			Component component = Component.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
+			if (component != null) {
+				team.setDisplayName(component);
 			}
 
 			if (compoundTag.containsKey("TeamColor", 8)) {
-				team.setColor(TextFormat.getFormatByName(compoundTag.getString("TeamColor")));
+				team.setColor(ChatFormat.getFormatByName(compoundTag.getString("TeamColor")));
 			}
 
 			if (compoundTag.containsKey("AllowFriendlyFire", 99)) {
@@ -69,16 +69,16 @@ public class ScoreboardState extends PersistentState {
 			}
 
 			if (compoundTag.containsKey("MemberNamePrefix", 8)) {
-				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNamePrefix"));
-				if (textComponent2 != null) {
-					team.setPrefix(textComponent2);
+				Component component2 = Component.Serializer.fromJsonString(compoundTag.getString("MemberNamePrefix"));
+				if (component2 != null) {
+					team.setPrefix(component2);
 				}
 			}
 
 			if (compoundTag.containsKey("MemberNameSuffix", 8)) {
-				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNameSuffix"));
-				if (textComponent2 != null) {
-					team.setSuffix(textComponent2);
+				Component component2 = Component.Serializer.fromJsonString(compoundTag.getString("MemberNameSuffix"));
+				if (component2 != null) {
+					team.setSuffix(component2);
 				}
 			}
 
@@ -132,9 +132,9 @@ public class ScoreboardState extends PersistentState {
 					string = string.substring(0, 16);
 				}
 
-				TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
+				Component component = Component.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
 				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
-				this.scoreboard.addObjective(string, scoreboardCriterion, textComponent, renderType);
+				this.scoreboard.addObjective(string, scoreboardCriterion, component, renderType);
 			});
 		}
 	}
@@ -159,15 +159,15 @@ public class ScoreboardState extends PersistentState {
 		for (Team team : this.scoreboard.getTeams()) {
 			CompoundTag compoundTag = new CompoundTag();
 			compoundTag.putString("Name", team.getName());
-			compoundTag.putString("DisplayName", TextComponent.Serializer.toJsonString(team.getDisplayName()));
+			compoundTag.putString("DisplayName", Component.Serializer.toJsonString(team.getDisplayName()));
 			if (team.getColor().getId() >= 0) {
 				compoundTag.putString("TeamColor", team.getColor().getName());
 			}
 
 			compoundTag.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
 			compoundTag.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
-			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(team.getPrefix()));
-			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(team.getSuffix()));
+			compoundTag.putString("MemberNamePrefix", Component.Serializer.toJsonString(team.getPrefix()));
+			compoundTag.putString("MemberNameSuffix", Component.Serializer.toJsonString(team.getSuffix()));
 			compoundTag.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
 			compoundTag.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
 			compoundTag.putString("CollisionRule", team.getCollisionRule().name);
@@ -209,7 +209,7 @@ public class ScoreboardState extends PersistentState {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putString("Name", scoreboardObjective.getName());
 				compoundTag.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
-				compoundTag.putString("DisplayName", TextComponent.Serializer.toJsonString(scoreboardObjective.getDisplayName()));
+				compoundTag.putString("DisplayName", Component.Serializer.toJsonString(scoreboardObjective.getDisplayName()));
 				compoundTag.putString("RenderType", scoreboardObjective.getRenderType().getName());
 				listTag.add(compoundTag);
 			}

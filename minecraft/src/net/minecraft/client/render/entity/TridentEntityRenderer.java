@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
-	public static final Identifier field_4796 = new Identifier("textures/entity/trident.png");
+	public static final Identifier SKIN = new Identifier("textures/entity/trident.png");
 	private final TridentEntityModel model = new TridentEntityModel();
 
 	public TridentEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -38,7 +38,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 	}
 
 	protected Identifier method_4134(TridentEntity tridentEntity) {
-		return field_4796;
+		return SKIN;
 	}
 
 	protected void method_4131(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {

@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
 
 public class Scoreboard {
 	private final Map<String, ScoreboardObjective> objectives = Maps.<String, ScoreboardObjective>newHashMap();
@@ -40,15 +40,13 @@ public class Scoreboard {
 		return (ScoreboardObjective)this.objectives.get(string);
 	}
 
-	public ScoreboardObjective addObjective(
-		String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.RenderType renderType
-	) {
+	public ScoreboardObjective addObjective(String string, ScoreboardCriterion scoreboardCriterion, Component component, ScoreboardCriterion.RenderType renderType) {
 		if (string.length() > 16) {
 			throw new IllegalArgumentException("The objective name '" + string + "' is too long!");
 		} else if (this.objectives.containsKey(string)) {
 			throw new IllegalArgumentException("An objective with the name '" + string + "' already exists!");
 		} else {
-			ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, string, scoreboardCriterion, textComponent, renderType);
+			ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, string, scoreboardCriterion, component, renderType);
 			((List)this.objectivesByCriterion.computeIfAbsent(scoreboardCriterion, scoreboardCriterionx -> Lists.newArrayList())).add(scoreboardObjective);
 			this.objectives.put(string, scoreboardObjective);
 			this.updateObjective(scoreboardObjective);
@@ -284,9 +282,9 @@ public class Scoreboard {
 				return "belowName";
 			default:
 				if (i >= 3 && i <= 18) {
-					TextFormat textFormat = TextFormat.byId(i - 3);
-					if (textFormat != null && textFormat != TextFormat.RESET) {
-						return "sidebar.team." + textFormat.getName();
+					ChatFormat chatFormat = ChatFormat.byId(i - 3);
+					if (chatFormat != null && chatFormat != ChatFormat.field_1070) {
+						return "sidebar.team." + chatFormat.getName();
 					}
 				}
 
@@ -304,9 +302,9 @@ public class Scoreboard {
 		} else {
 			if (string.startsWith("sidebar.team.")) {
 				String string2 = string.substring("sidebar.team.".length());
-				TextFormat textFormat = TextFormat.getFormatByName(string2);
-				if (textFormat != null && textFormat.getId() >= 0) {
-					return textFormat.getId() + 3;
+				ChatFormat chatFormat = ChatFormat.getFormatByName(string2);
+				if (chatFormat != null && chatFormat.getId() >= 0) {
+					return chatFormat.getId() + 3;
 				}
 			}
 

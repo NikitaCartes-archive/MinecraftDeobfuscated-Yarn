@@ -15,12 +15,12 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -39,7 +39,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private boolean exactTeleport;
 
 	public EndGatewayBlockEntity() {
-		super(BlockEntityType.END_GATEWAY);
+		super(BlockEntityType.field_11906);
 	}
 
 	@Override

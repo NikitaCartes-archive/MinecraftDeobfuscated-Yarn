@@ -15,14 +15,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.render.block.FoliageColorHandler;
-import net.minecraft.client.render.block.GrassColorHandler;
+import net.minecraft.client.color.world.FoliageColors;
+import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.IdList;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
@@ -177,7 +177,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				FluidState fluidState = viewableWorld.getFluidState(blockPos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -203,7 +203,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
 					return true;
@@ -272,14 +272,14 @@ public abstract class Biome {
 	public int getGrassColorAt(BlockPos blockPos) {
 		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
-		return GrassColorHandler.getColor(d, e);
+		return GrassColors.getColor(d, e);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getFoliageColorAt(BlockPos blockPos) {
 		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
-		return FoliageColorHandler.getColor(d, e);
+		return FoliageColors.getColor(d, e);
 	}
 
 	public void buildSurface(Random random, Chunk chunk, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m) {
@@ -288,12 +288,12 @@ public abstract class Biome {
 	}
 
 	public Biome.TemperatureGroup getTemperatureGroup() {
-		if (this.category == Biome.Category.OCEAN) {
-			return Biome.TemperatureGroup.OCEAN;
+		if (this.category == Biome.Category.field_9367) {
+			return Biome.TemperatureGroup.field_9379;
 		} else if ((double)this.getTemperature() < 0.2) {
-			return Biome.TemperatureGroup.COLD;
+			return Biome.TemperatureGroup.field_9377;
 		} else {
-			return (double)this.getTemperature() < 1.0 ? Biome.TemperatureGroup.MEDIUM : Biome.TemperatureGroup.WARM;
+			return (double)this.getTemperature() < 1.0 ? Biome.TemperatureGroup.field_9375 : Biome.TemperatureGroup.field_9378;
 		}
 	}
 
@@ -306,8 +306,8 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getTextComponent() {
-		return new TranslatableTextComponent(this.getTranslationKey());
+	public Component getTextComponent() {
+		return new TranslatableComponent(this.getTranslationKey());
 	}
 
 	public String getTranslationKey() {
@@ -352,23 +352,23 @@ public abstract class Biome {
 	}
 
 	public static enum Category {
-		NONE("none"),
-		TAIGA("taiga"),
-		EXTREME_HILLS("extreme_hills"),
-		JUNGLE("jungle"),
-		MESA("mesa"),
-		PLAINS("plains"),
-		SAVANNA("savanna"),
-		ICY("icy"),
-		THE_END("the_end"),
-		BEACH("beach"),
-		FOREST("forest"),
-		OCEAN("ocean"),
-		DESERT("desert"),
-		RIVER("river"),
-		SWAMP("swamp"),
-		MUSHROOM("mushroom"),
-		NETHER("nether");
+		field_9371("none"),
+		field_9361("taiga"),
+		field_9357("extreme_hills"),
+		field_9358("jungle"),
+		field_9354("mesa"),
+		field_9355("plains"),
+		field_9356("savanna"),
+		field_9362("icy"),
+		THEEND("the_end"),
+		field_9363("beach"),
+		field_9370("forest"),
+		field_9367("ocean"),
+		field_9368("desert"),
+		field_9369("river"),
+		field_9364("swamp"),
+		field_9365("mushroom"),
+		field_9366("nether");
 
 		private static final Map<String, Biome.Category> NAME_MAP = (Map<String, Biome.Category>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.Category::getName, category -> category));
@@ -523,10 +523,10 @@ public abstract class Biome {
 	}
 
 	public static enum TemperatureGroup {
-		OCEAN("ocean"),
-		COLD("cold"),
-		MEDIUM("medium"),
-		WARM("warm");
+		field_9379("ocean"),
+		field_9377("cold"),
+		field_9375("medium"),
+		field_9378("warm");
 
 		private static final Map<String, Biome.TemperatureGroup> NAME_MAP = (Map<String, Biome.TemperatureGroup>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.TemperatureGroup::getName, temperatureGroup -> temperatureGroup));

@@ -5,14 +5,14 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.chat.Component;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,8 +24,8 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	private int scrollOffset;
 	private boolean canCraft;
 
-	public StonecutterScreen(StonecutterContainer stonecutterContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(stonecutterContainer, playerInventory, textComponent);
+	public StonecutterScreen(StonecutterContainer stonecutterContainer, PlayerInventory playerInventory, Component component) {
+		super(stonecutterContainer, playerInventory, component);
 		stonecutterContainer.setContentsChangedListener(this::onInventoryChange);
 	}
 

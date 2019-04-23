@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-	private static final Identifier ZOMBIE_VILLAGER_SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
 	public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
 		super(entityRenderDispatcher, new ZombieVillagerEntityModel<>(), 0.5F);
@@ -20,7 +20,7 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 	}
 
 	protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
-		return ZOMBIE_VILLAGER_SKIN;
+		return SKIN;
 	}
 
 	protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, float f, float g, float h) {

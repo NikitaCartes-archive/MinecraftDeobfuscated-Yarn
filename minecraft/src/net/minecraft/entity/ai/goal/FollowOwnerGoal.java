@@ -14,23 +14,23 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
 
 public class FollowOwnerGoal extends Goal {
-	protected final TameableEntity caller;
+	protected final TameableEntity tameable;
 	private LivingEntity owner;
 	protected final ViewableWorld world;
 	private final double field_6442;
-	private final EntityNavigation field_6446;
+	private final EntityNavigation navigation;
 	private int field_6443;
-	private final float field_6450;
+	private final float maxDistance;
 	private final float minDistance;
 	private float field_6447;
 
 	public FollowOwnerGoal(TameableEntity tameableEntity, double d, float f, float g) {
-		this.caller = tameableEntity;
+		this.tameable = tameableEntity;
 		this.world = tameableEntity.world;
 		this.field_6442 = d;
-		this.field_6446 = tameableEntity.getNavigation();
+		this.navigation = tameableEntity.getNavigation();
 		this.minDistance = f;
-		this.field_6450 = g;
+		this.maxDistance = g;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
@@ -39,14 +39,14 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		LivingEntity livingEntity = this.caller.getOwner();
+		LivingEntity livingEntity = this.tameable.getOwner();
 		if (livingEntity == null) {
 			return false;
 		} else if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).isSpectator()) {
 			return false;
-		} else if (this.caller.isSitting()) {
+		} else if (this.tameable.isSitting()) {
 			return false;
-		} else if (this.caller.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
+		} else if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
 			return false;
 		} else {
 			this.owner = livingEntity;
@@ -56,32 +56,32 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6446.isIdle() && this.caller.squaredDistanceTo(this.owner) > (double)(this.field_6450 * this.field_6450) && !this.caller.isSitting();
+		return !this.navigation.isIdle() && this.tameable.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance) && !this.tameable.isSitting();
 	}
 
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.caller.getPathNodeTypeWeight(PathNodeType.field_18);
-		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.field_18);
+		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
-		this.field_6446.stop();
-		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
+		this.navigation.stop();
+		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
 	}
 
 	@Override
 	public void tick() {
-		this.caller.getLookControl().lookAt(this.owner, 10.0F, (float)this.caller.getLookPitchSpeed());
-		if (!this.caller.isSitting()) {
+		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getLookPitchSpeed());
+		if (!this.tameable.isSitting()) {
 			if (--this.field_6443 <= 0) {
 				this.field_6443 = 10;
-				if (!this.field_6446.startMovingTo(this.owner, this.field_6442)) {
-					if (!this.caller.isLeashed() && !this.caller.hasVehicle()) {
-						if (!(this.caller.squaredDistanceTo(this.owner) < 144.0)) {
+				if (!this.navigation.startMovingTo(this.owner, this.field_6442)) {
+					if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
+						if (!(this.tameable.squaredDistanceTo(this.owner) < 144.0)) {
 							int i = MathHelper.floor(this.owner.x) - 2;
 							int j = MathHelper.floor(this.owner.z) - 2;
 							int k = MathHelper.floor(this.owner.getBoundingBox().minY);
@@ -89,8 +89,9 @@ public class FollowOwnerGoal extends Goal {
 							for (int l = 0; l <= 4; l++) {
 								for (int m = 0; m <= 4; m++) {
 									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(new BlockPos(i + l, k - 1, j + m))) {
-										this.caller.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.caller.yaw, this.caller.pitch);
-										this.field_6446.stop();
+										this.tameable
+											.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.tameable.yaw, this.tameable.pitch);
+										this.navigation.stop();
 										return;
 									}
 								}
@@ -104,6 +105,6 @@ public class FollowOwnerGoal extends Goal {
 
 	protected boolean method_6263(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return blockState.allowsSpawning(this.world, blockPos, this.caller.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
+		return blockState.allowsSpawning(this.world, blockPos, this.tameable.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
 	}
 }

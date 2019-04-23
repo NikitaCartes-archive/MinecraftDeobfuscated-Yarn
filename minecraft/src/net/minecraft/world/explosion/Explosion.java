@@ -94,9 +94,9 @@ public class Explosion {
 						double p = MathHelper.lerp((double)m, boundingBox.minZ, boundingBox.maxZ);
 						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
 						if (entity.world
-								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, entity))
+								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
 								.getType()
-							== HitResult.Type.NONE) {
+							== HitResult.Type.field_1333) {
 							i++;
 						}
 
@@ -260,7 +260,7 @@ public class Explosion {
 						Block.dropStacks(blockState, builder);
 					}
 
-					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+					this.world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 				}
 			}

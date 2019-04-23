@@ -15,7 +15,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class Items {
-	public static final Item AIR = register(Blocks.AIR, new AirBlockItem(Blocks.AIR, new Item.Settings()));
+	public static final Item AIR = register(Blocks.field_10124, new AirBlockItem(Blocks.field_10124, new Item.Settings()));
 	public static final Item STONE = registerBlock(Blocks.field_10340, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GRANITE = registerBlock(Blocks.field_10474, ItemGroup.BUILDING_BLOCKS);
 	public static final Item POLISHED_GRANITE = registerBlock(Blocks.field_10289, ItemGroup.BUILDING_BLOCKS);
@@ -85,7 +85,7 @@ public class Items {
 	public static final Item DISPENSER = registerBlock(Blocks.field_10200, ItemGroup.REDSTONE);
 	public static final Item SANDSTONE = registerBlock(Blocks.field_9979, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_SANDSTONE = registerBlock(Blocks.field_10292, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19174 = registerBlock(Blocks.field_10361, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CUT_SANDSTONE = registerBlock(Blocks.field_10361, ItemGroup.BUILDING_BLOCKS);
 	public static final Item NOTE_BLOCK = registerBlock(Blocks.field_10179, ItemGroup.REDSTONE);
 	public static final Item POWERED_RAIL = registerBlock(Blocks.field_10425, ItemGroup.TRANSPORTATION);
 	public static final Item DETECTOR_RAIL = registerBlock(Blocks.field_10025, ItemGroup.TRANSPORTATION);
@@ -97,22 +97,22 @@ public class Items {
 	public static final Item SEAGRASS = registerBlock(Blocks.field_10376, ItemGroup.DECORATIONS);
 	public static final Item SEA_PICKLE = registerBlock(Blocks.field_10476, ItemGroup.DECORATIONS);
 	public static final Item PISTON = registerBlock(Blocks.field_10560, ItemGroup.REDSTONE);
-	public static final Item field_19044 = registerBlock(Blocks.field_10446, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19045 = registerBlock(Blocks.field_10095, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19046 = registerBlock(Blocks.field_10215, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19047 = registerBlock(Blocks.field_10294, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19048 = registerBlock(Blocks.field_10490, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19049 = registerBlock(Blocks.field_10028, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19050 = registerBlock(Blocks.field_10459, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19051 = registerBlock(Blocks.field_10423, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19052 = registerBlock(Blocks.field_10222, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19053 = registerBlock(Blocks.field_10619, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19054 = registerBlock(Blocks.field_10259, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19055 = registerBlock(Blocks.field_10514, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19056 = registerBlock(Blocks.field_10113, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19057 = registerBlock(Blocks.field_10170, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19058 = registerBlock(Blocks.field_10314, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19059 = registerBlock(Blocks.field_10146, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WHITE_WOOL = registerBlock(Blocks.field_10446, ItemGroup.BUILDING_BLOCKS);
+	public static final Item ORANGE_WOOL = registerBlock(Blocks.field_10095, ItemGroup.BUILDING_BLOCKS);
+	public static final Item MAGENTA_WOOL = registerBlock(Blocks.field_10215, ItemGroup.BUILDING_BLOCKS);
+	public static final Item LIGHT_BLUE_WOOL = registerBlock(Blocks.field_10294, ItemGroup.BUILDING_BLOCKS);
+	public static final Item YELLOW_WOOL = registerBlock(Blocks.field_10490, ItemGroup.BUILDING_BLOCKS);
+	public static final Item LIME_WOOL = registerBlock(Blocks.field_10028, ItemGroup.BUILDING_BLOCKS);
+	public static final Item PINK_WOOL = registerBlock(Blocks.field_10459, ItemGroup.BUILDING_BLOCKS);
+	public static final Item GRAY_WOOL = registerBlock(Blocks.field_10423, ItemGroup.BUILDING_BLOCKS);
+	public static final Item LIGHT_GRAY_WOOL = registerBlock(Blocks.field_10222, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CYAN_WOOL = registerBlock(Blocks.field_10619, ItemGroup.BUILDING_BLOCKS);
+	public static final Item PURPLE_WOOL = registerBlock(Blocks.field_10259, ItemGroup.BUILDING_BLOCKS);
+	public static final Item BLUE_WOOL = registerBlock(Blocks.field_10514, ItemGroup.BUILDING_BLOCKS);
+	public static final Item BROWN_WOOL = registerBlock(Blocks.field_10113, ItemGroup.BUILDING_BLOCKS);
+	public static final Item GREEN_WOOL = registerBlock(Blocks.field_10170, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RED_WOOL = registerBlock(Blocks.field_10314, ItemGroup.BUILDING_BLOCKS);
+	public static final Item BLACK_WOOL = registerBlock(Blocks.field_10146, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DANDELION = registerBlock(Blocks.field_10182, ItemGroup.DECORATIONS);
 	public static final Item POPPY = registerBlock(Blocks.field_10449, ItemGroup.DECORATIONS);
 	public static final Item BLUE_ORCHID = registerBlock(Blocks.field_10086, ItemGroup.DECORATIONS);
@@ -138,16 +138,16 @@ public class Items {
 	public static final Item DARK_OAK_SLAB = registerBlock(Blocks.field_10500, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STONE_SLAB = registerBlock(Blocks.field_10454, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SMOOTH_STONE_SLAB = registerBlock(Blocks.field_10136, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_18888 = registerBlock(Blocks.field_10007, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_18889 = registerBlock(Blocks.field_18890, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SANDSTONE_SLAB = registerBlock(Blocks.field_10007, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CUT_SANDSTONE_SLAB = registerBlock(Blocks.field_18890, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PETRIFIED_OAK_SLAB = registerBlock(Blocks.field_10298, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COBBLESTONE_SLAB = registerBlock(Blocks.field_10351, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BRICK_SLAB = registerBlock(Blocks.field_10191, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STONE_BRICK_SLAB = registerBlock(Blocks.field_10131, ItemGroup.BUILDING_BLOCKS);
 	public static final Item NETHER_BRICK_SLAB = registerBlock(Blocks.field_10390, ItemGroup.BUILDING_BLOCKS);
 	public static final Item QUARTZ_SLAB = registerBlock(Blocks.field_10237, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_18886 = registerBlock(Blocks.field_10624, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_18887 = registerBlock(Blocks.field_18891, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RED_SANDSTONE_SLAB = registerBlock(Blocks.field_10624, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CUT_RED_SANDSTONE_SLAB = registerBlock(Blocks.field_18891, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_SLAB = registerBlock(Blocks.field_10175, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PRISMARINE_SLAB = registerBlock(Blocks.field_10389, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PRISMARINE_BRICK_SLAB = registerBlock(Blocks.field_10236, ItemGroup.BUILDING_BLOCKS);
@@ -198,7 +198,7 @@ public class Items {
 	public static final Item ICE = registerBlock(Blocks.field_10295, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SNOW_BLOCK = registerBlock(Blocks.field_10491, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CACTUS = registerBlock(Blocks.field_10029, ItemGroup.DECORATIONS);
-	public static final Item field_19060 = registerBlock(Blocks.field_10460, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CLAY = registerBlock(Blocks.field_10460, ItemGroup.BUILDING_BLOCKS);
 	public static final Item JUKEBOX = registerBlock(Blocks.field_10223, ItemGroup.DECORATIONS);
 	public static final Item OAK_FENCE = registerBlock(Blocks.field_10620, ItemGroup.DECORATIONS);
 	public static final Item SPRUCE_FENCE = registerBlock(Blocks.field_10020, ItemGroup.DECORATIONS);
@@ -389,7 +389,7 @@ public class Items {
 	public static final Item SEA_LANTERN = registerBlock(Blocks.field_10174, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RED_SANDSTONE = registerBlock(Blocks.field_10344, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_RED_SANDSTONE = registerBlock(Blocks.field_10117, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_19175 = registerBlock(Blocks.field_10518, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CUT_RED_SANDSTONE = registerBlock(Blocks.field_10518, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RED_SANDSTONE_STAIRS = registerBlock(Blocks.field_10420, ItemGroup.BUILDING_BLOCKS);
 	public static final Item REPEATING_COMMAND_BLOCK = register(new CommandBlockItem(Blocks.field_10263, new Item.Settings().rarity(Rarity.field_8904)));
 	public static final Item CHAIN_COMMAND_BLOCK = register(new CommandBlockItem(Blocks.field_10395, new Item.Settings().rarity(Rarity.field_8904)));
@@ -562,7 +562,7 @@ public class Items {
 	public static final Item JIGSAW = register(new CommandBlockItem(Blocks.field_16540, new Item.Settings().rarity(Rarity.field_8904)));
 	public static final Item COMPOSTER = registerBlock(Blocks.field_17563, ItemGroup.MISC);
 	public static final Item field_8090 = register(
-		"turtle_helmet", new ArmorItem(ArmorMaterials.field_7890, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"turtle_helmet", new ArmorItem(ArmorMaterials.field_7890, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8161 = register("scute", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8699 = register(
@@ -647,71 +647,71 @@ public class Items {
 	public static final Item field_8861 = register("wheat", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8229 = register("bread", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BREAD)));
 	public static final Item field_8267 = register(
-		"leather_helmet", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"leather_helmet", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8577 = register(
-		"leather_chestplate", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.CHEST, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"leather_chestplate", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.field_6174, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8570 = register(
-		"leather_leggings", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.LEGS, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"leather_leggings", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.field_6172, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8370 = register(
-		"leather_boots", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.FEET, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"leather_boots", new DyeableArmorItem(ArmorMaterials.field_7897, EquipmentSlot.field_6166, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8283 = register(
-		"chainmail_helmet", new ArmorItem(ArmorMaterials.field_7887, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8873 = register(
-		"chainmail_chestplate", new ArmorItem(ArmorMaterials.field_7887, EquipmentSlot.CHEST, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"chainmail_chestplate", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.field_6174, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8218 = register(
-		"chainmail_leggings", new ArmorItem(ArmorMaterials.field_7887, EquipmentSlot.LEGS, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.field_6172, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8313 = register(
-		"chainmail_boots", new ArmorItem(ArmorMaterials.field_7887, EquipmentSlot.FEET, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.field_6166, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8743 = register(
-		"iron_helmet", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"iron_helmet", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8523 = register(
-		"iron_chestplate", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.CHEST, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"iron_chestplate", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.field_6174, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8396 = register(
-		"iron_leggings", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.LEGS, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"iron_leggings", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.field_6172, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8660 = register(
-		"iron_boots", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.FEET, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"iron_boots", new ArmorItem(ArmorMaterials.field_7892, EquipmentSlot.field_6166, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8805 = register(
-		"diamond_helmet", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"diamond_helmet", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8058 = register(
-		"diamond_chestplate", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.CHEST, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"diamond_chestplate", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.field_6174, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8348 = register(
-		"diamond_leggings", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.LEGS, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"diamond_leggings", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.field_6172, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8285 = register(
-		"diamond_boots", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.FEET, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"diamond_boots", new ArmorItem(ArmorMaterials.field_7889, EquipmentSlot.field_6166, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8862 = register(
-		"golden_helmet", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.HEAD, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"golden_helmet", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.field_6169, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8678 = register(
-		"golden_chestplate", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.CHEST, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"golden_chestplate", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.field_6174, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8416 = register(
-		"golden_leggings", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.LEGS, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"golden_leggings", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.field_6172, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8753 = register(
-		"golden_boots", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.FEET, new Item.Settings().itemGroup(ItemGroup.COMBAT))
+		"golden_boots", new ArmorItem(ArmorMaterials.field_7895, EquipmentSlot.field_6166, new Item.Settings().itemGroup(ItemGroup.COMBAT))
 	);
 	public static final Item field_8145 = register("flint", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8389 = register("porkchop", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.PORKCHOP)));
 	public static final Item field_8261 = register(
 		"cooked_porkchop", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.COOKED_PORKCHOP))
 	);
-	public static final Item field_8892 = register("painting", new DecorationItem(EntityType.PAINTING, new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
+	public static final Item field_8892 = register("painting", new DecorationItem(EntityType.field_6120, new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
 	public static final Item field_8463 = register(
 		"golden_apple", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8903).food(FoodItemSettings.GOLDEN_APPLE))
 	);
@@ -737,7 +737,7 @@ public class Items {
 	public static final Item field_8496 = register(
 		"dark_oak_sign", new SignItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.DECORATIONS), Blocks.field_10330, Blocks.field_10265)
 	);
-	public static final Item field_8550 = register("bucket", new BucketItem(Fluids.EMPTY, new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
+	public static final Item field_8550 = register("bucket", new BucketItem(Fluids.field_15906, new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
 	public static final Item field_8705 = register(
 		"water_bucket", new BucketItem(Fluids.WATER, new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
@@ -751,23 +751,23 @@ public class Items {
 	public static final Item field_8725 = register("redstone", new AliasedBlockItem(Blocks.field_10091, new Item.Settings().itemGroup(ItemGroup.REDSTONE)));
 	public static final Item field_8543 = register("snowball", new SnowballItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
 	public static final Item field_8533 = register(
-		"oak_boat", new BoatItem(BoatEntity.Type.OAK, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"oak_boat", new BoatItem(BoatEntity.Type.field_7727, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8745 = register("leather", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8103 = register(
 		"milk_bucket", new MilkBucketItem(new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8108 = register(
-		"pufferfish_bucket", new FishBucketItem(EntityType.PUFFERFISH, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+		"pufferfish_bucket", new FishBucketItem(EntityType.field_6062, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8714 = register(
-		"salmon_bucket", new FishBucketItem(EntityType.SALMON, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+		"salmon_bucket", new FishBucketItem(EntityType.field_6073, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8666 = register(
-		"cod_bucket", new FishBucketItem(EntityType.COD, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+		"cod_bucket", new FishBucketItem(EntityType.field_6070, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8478 = register(
-		"tropical_fish_bucket", new FishBucketItem(EntityType.TROPICAL_FISH, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+		"tropical_fish_bucket", new FishBucketItem(EntityType.field_6111, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8621 = register("brick", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8696 = register("clay_ball", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
@@ -813,7 +813,7 @@ public class Items {
 	public static final Item field_8324 = register("bone_meal", new BoneMealItem(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8345 = register("blue_dye", new DyeItem(DyeColor.field_7966, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8099 = register("brown_dye", new DyeItem(DyeColor.field_7957, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8226 = register("black_dye", new DyeItem(DyeColor.BLACK, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8226 = register("black_dye", new DyeItem(DyeColor.field_7963, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8446 = register("white_dye", new DyeItem(DyeColor.field_7952, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8606 = register("bone", new Item(new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8479 = register("sugar", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
@@ -862,178 +862,178 @@ public class Items {
 	public static final Item field_8449 = register("ender_eye", new EnderEyeItem(new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8597 = register("glistering_melon_slice", new Item(new Item.Settings().itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8727 = register(
-		"bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"bat_spawn_egg", new SpawnEggItem(EntityType.field_6108, 4996656, 986895, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8154 = register(
-		"blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"blaze_spawn_egg", new SpawnEggItem(EntityType.field_6099, 16167425, 16775294, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_16314 = register(
-		"cat_spawn_egg", new SpawnEggItem(EntityType.CAT, 15714446, 9794134, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"cat_spawn_egg", new SpawnEggItem(EntityType.field_16281, 15714446, 9794134, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8068 = register(
-		"cave_spider_spawn_egg", new SpawnEggItem(EntityType.CAVE_SPIDER, 803406, 11013646, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"cave_spider_spawn_egg", new SpawnEggItem(EntityType.field_6084, 803406, 11013646, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8835 = register(
-		"chicken_spawn_egg", new SpawnEggItem(EntityType.CHICKEN, 10592673, 16711680, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"chicken_spawn_egg", new SpawnEggItem(EntityType.field_6132, 10592673, 16711680, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8661 = register(
-		"cod_spawn_egg", new SpawnEggItem(EntityType.COD, 12691306, 15058059, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"cod_spawn_egg", new SpawnEggItem(EntityType.field_6070, 12691306, 15058059, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8433 = register(
-		"cow_spawn_egg", new SpawnEggItem(EntityType.COW, 4470310, 10592673, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"cow_spawn_egg", new SpawnEggItem(EntityType.field_6085, 4470310, 10592673, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8503 = register(
-		"creeper_spawn_egg", new SpawnEggItem(EntityType.CREEPER, 894731, 0, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"creeper_spawn_egg", new SpawnEggItem(EntityType.field_6046, 894731, 0, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8751 = register(
-		"dolphin_spawn_egg", new SpawnEggItem(EntityType.DOLPHIN, 2243405, 16382457, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"dolphin_spawn_egg", new SpawnEggItem(EntityType.field_6087, 2243405, 16382457, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8306 = register(
-		"donkey_spawn_egg", new SpawnEggItem(EntityType.DONKEY, 5457209, 8811878, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"donkey_spawn_egg", new SpawnEggItem(EntityType.field_6067, 5457209, 8811878, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8083 = register(
-		"drowned_spawn_egg", new SpawnEggItem(EntityType.DROWNED, 9433559, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"drowned_spawn_egg", new SpawnEggItem(EntityType.field_6123, 9433559, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8769 = register(
-		"elder_guardian_spawn_egg", new SpawnEggItem(EntityType.ELDER_GUARDIAN, 13552826, 7632531, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"elder_guardian_spawn_egg", new SpawnEggItem(EntityType.field_6086, 13552826, 7632531, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8374 = register(
-		"enderman_spawn_egg", new SpawnEggItem(EntityType.ENDERMAN, 1447446, 0, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"enderman_spawn_egg", new SpawnEggItem(EntityType.field_6091, 1447446, 0, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8510 = register(
-		"endermite_spawn_egg", new SpawnEggItem(EntityType.ENDERMITE, 1447446, 7237230, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"endermite_spawn_egg", new SpawnEggItem(EntityType.field_6128, 1447446, 7237230, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8795 = register(
-		"evoker_spawn_egg", new SpawnEggItem(EntityType.EVOKER, 9804699, 1973274, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"evoker_spawn_egg", new SpawnEggItem(EntityType.field_6090, 9804699, 1973274, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_18005 = register(
 		"fox_spawn_egg", new SpawnEggItem(EntityType.field_17943, 14005919, 13396256, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8265 = register(
-		"ghast_spawn_egg", new SpawnEggItem(EntityType.GHAST, 16382457, 12369084, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"ghast_spawn_egg", new SpawnEggItem(EntityType.field_6107, 16382457, 12369084, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8409 = register(
-		"guardian_spawn_egg", new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"guardian_spawn_egg", new SpawnEggItem(EntityType.field_6118, 5931634, 15826224, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8117 = register(
-		"horse_spawn_egg", new SpawnEggItem(EntityType.HORSE, 12623485, 15656192, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"horse_spawn_egg", new SpawnEggItem(EntityType.field_6139, 12623485, 15656192, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8760 = register(
-		"husk_spawn_egg", new SpawnEggItem(EntityType.HUSK, 7958625, 15125652, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"husk_spawn_egg", new SpawnEggItem(EntityType.field_6071, 7958625, 15125652, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8633 = register(
-		"llama_spawn_egg", new SpawnEggItem(EntityType.LLAMA, 12623485, 10051392, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"llama_spawn_egg", new SpawnEggItem(EntityType.field_6074, 12623485, 10051392, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8852 = register(
-		"magma_cube_spawn_egg", new SpawnEggItem(EntityType.MAGMA_CUBE, 3407872, 16579584, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"magma_cube_spawn_egg", new SpawnEggItem(EntityType.field_6102, 3407872, 16579584, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8299 = register(
-		"mooshroom_spawn_egg", new SpawnEggItem(EntityType.MOOSHROOM, 10489616, 12040119, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"mooshroom_spawn_egg", new SpawnEggItem(EntityType.field_6143, 10489616, 12040119, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8331 = register(
-		"mule_spawn_egg", new SpawnEggItem(EntityType.MULE, 1769984, 5321501, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"mule_spawn_egg", new SpawnEggItem(EntityType.field_6057, 1769984, 5321501, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8132 = register(
-		"ocelot_spawn_egg", new SpawnEggItem(EntityType.OCELOT, 15720061, 5653556, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"ocelot_spawn_egg", new SpawnEggItem(EntityType.field_6081, 15720061, 5653556, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8193 = register(
-		"panda_spawn_egg", new SpawnEggItem(EntityType.PANDA, 15198183, 1776418, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"panda_spawn_egg", new SpawnEggItem(EntityType.field_6146, 15198183, 1776418, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8274 = register(
-		"parrot_spawn_egg", new SpawnEggItem(EntityType.PARROT, 894731, 16711680, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"parrot_spawn_egg", new SpawnEggItem(EntityType.field_6104, 894731, 16711680, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8670 = register(
-		"phantom_spawn_egg", new SpawnEggItem(EntityType.PHANTOM, 4411786, 8978176, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"phantom_spawn_egg", new SpawnEggItem(EntityType.field_6078, 4411786, 8978176, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8493 = register(
-		"pig_spawn_egg", new SpawnEggItem(EntityType.PIG, 15771042, 14377823, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"pig_spawn_egg", new SpawnEggItem(EntityType.field_6093, 15771042, 14377823, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8325 = register(
-		"pillager_spawn_egg", new SpawnEggItem(EntityType.PILLAGER, 5451574, 9804699, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"pillager_spawn_egg", new SpawnEggItem(EntityType.field_6105, 5451574, 9804699, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8346 = register(
-		"polar_bear_spawn_egg", new SpawnEggItem(EntityType.POLAR_BEAR, 15921906, 9803152, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"polar_bear_spawn_egg", new SpawnEggItem(EntityType.field_6042, 15921906, 9803152, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8100 = register(
-		"pufferfish_spawn_egg", new SpawnEggItem(EntityType.PUFFERFISH, 16167425, 3654642, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"pufferfish_spawn_egg", new SpawnEggItem(EntityType.field_6062, 16167425, 3654642, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8227 = register(
-		"rabbit_spawn_egg", new SpawnEggItem(EntityType.RABBIT, 10051392, 7555121, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"rabbit_spawn_egg", new SpawnEggItem(EntityType.field_6140, 10051392, 7555121, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8297 = register(
-		"ravager_spawn_egg", new SpawnEggItem(EntityType.RAVAGER, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"ravager_spawn_egg", new SpawnEggItem(EntityType.field_6134, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8447 = register(
-		"salmon_spawn_egg", new SpawnEggItem(EntityType.SALMON, 10489616, 951412, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"salmon_spawn_egg", new SpawnEggItem(EntityType.field_6073, 10489616, 951412, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8607 = register(
-		"sheep_spawn_egg", new SpawnEggItem(EntityType.SHEEP, 15198183, 16758197, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"sheep_spawn_egg", new SpawnEggItem(EntityType.field_6115, 15198183, 16758197, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8480 = register(
-		"shulker_spawn_egg", new SpawnEggItem(EntityType.SHULKER, 9725844, 5060690, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"shulker_spawn_egg", new SpawnEggItem(EntityType.field_6109, 9725844, 5060690, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8564 = register(
-		"silverfish_spawn_egg", new SpawnEggItem(EntityType.SILVERFISH, 7237230, 3158064, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"silverfish_spawn_egg", new SpawnEggItem(EntityType.field_6125, 7237230, 3158064, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8300 = register(
-		"skeleton_spawn_egg", new SpawnEggItem(EntityType.SKELETON, 12698049, 4802889, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"skeleton_spawn_egg", new SpawnEggItem(EntityType.field_6137, 12698049, 4802889, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8232 = register(
-		"skeleton_horse_spawn_egg", new SpawnEggItem(EntityType.SKELETON_HORSE, 6842447, 15066584, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"skeleton_horse_spawn_egg", new SpawnEggItem(EntityType.field_6075, 6842447, 15066584, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8881 = register(
-		"slime_spawn_egg", new SpawnEggItem(EntityType.SLIME, 5349438, 8306542, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"slime_spawn_egg", new SpawnEggItem(EntityType.field_6069, 5349438, 8306542, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8185 = register(
-		"spider_spawn_egg", new SpawnEggItem(EntityType.SPIDER, 3419431, 11013646, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"spider_spawn_egg", new SpawnEggItem(EntityType.field_6079, 3419431, 11013646, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8307 = register(
-		"squid_spawn_egg", new SpawnEggItem(EntityType.SQUID, 2243405, 7375001, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"squid_spawn_egg", new SpawnEggItem(EntityType.field_6114, 2243405, 7375001, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8514 = register(
-		"stray_spawn_egg", new SpawnEggItem(EntityType.STRAY, 6387319, 14543594, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"stray_spawn_egg", new SpawnEggItem(EntityType.field_6098, 6387319, 14543594, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_17731 = register(
 		"trader_llama_spawn_egg", new SpawnEggItem(EntityType.field_17714, 15377456, 4547222, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8612 = register(
-		"tropical_fish_spawn_egg", new SpawnEggItem(EntityType.TROPICAL_FISH, 15690005, 16775663, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"tropical_fish_spawn_egg", new SpawnEggItem(EntityType.field_6111, 15690005, 16775663, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8435 = register(
-		"turtle_spawn_egg", new SpawnEggItem(EntityType.TURTLE, 15198183, 44975, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"turtle_spawn_egg", new SpawnEggItem(EntityType.field_6113, 15198183, 44975, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8235 = register(
-		"vex_spawn_egg", new SpawnEggItem(EntityType.VEX, 8032420, 15265265, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"vex_spawn_egg", new SpawnEggItem(EntityType.field_6059, 8032420, 15265265, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8086 = register(
-		"villager_spawn_egg", new SpawnEggItem(EntityType.VILLAGER, 5651507, 12422002, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"villager_spawn_egg", new SpawnEggItem(EntityType.field_6077, 5651507, 12422002, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8149 = register(
-		"vindicator_spawn_egg", new SpawnEggItem(EntityType.VINDICATOR, 9804699, 2580065, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"vindicator_spawn_egg", new SpawnEggItem(EntityType.field_6117, 9804699, 2580065, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_17732 = register(
 		"wandering_trader_spawn_egg", new SpawnEggItem(EntityType.field_17713, 4547222, 15377456, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8254 = register(
-		"witch_spawn_egg", new SpawnEggItem(EntityType.WITCH, 3407872, 5349438, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"witch_spawn_egg", new SpawnEggItem(EntityType.field_6145, 3407872, 5349438, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8832 = register(
-		"wither_skeleton_spawn_egg", new SpawnEggItem(EntityType.WITHER_SKELETON, 1315860, 4672845, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"wither_skeleton_spawn_egg", new SpawnEggItem(EntityType.field_6076, 1315860, 4672845, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8485 = register(
-		"wolf_spawn_egg", new SpawnEggItem(EntityType.WOLF, 14144467, 13545366, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"wolf_spawn_egg", new SpawnEggItem(EntityType.field_6055, 14144467, 13545366, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8441 = register(
-		"zombie_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE, 44975, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"zombie_spawn_egg", new SpawnEggItem(EntityType.field_6051, 44975, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8728 = register(
-		"zombie_horse_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"zombie_horse_spawn_egg", new SpawnEggItem(EntityType.field_6048, 3232308, 9945732, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8093 = register(
-		"zombie_pigman_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_PIGMAN, 15373203, 5009705, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"zombie_pigman_spawn_egg", new SpawnEggItem(EntityType.field_6050, 15373203, 5009705, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8136 = register(
-		"zombie_villager_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_VILLAGER, 5651507, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"zombie_villager_spawn_egg", new SpawnEggItem(EntityType.field_6054, 5651507, 7969893, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8287 = register(
 		"experience_bottle", new ExperienceBottleItem(new Item.Settings().itemGroup(ItemGroup.MISC).rarity(Rarity.field_8907))
@@ -1189,19 +1189,19 @@ public class Items {
 		"elytra", new ElytraItem(new Item.Settings().durability(432).itemGroup(ItemGroup.TRANSPORTATION).rarity(Rarity.field_8907))
 	);
 	public static final Item field_8486 = register(
-		"spruce_boat", new BoatItem(BoatEntity.Type.SPRUCE, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"spruce_boat", new BoatItem(BoatEntity.Type.field_7728, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8442 = register(
-		"birch_boat", new BoatItem(BoatEntity.Type.BIRCH, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"birch_boat", new BoatItem(BoatEntity.Type.field_7729, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8730 = register(
-		"jungle_boat", new BoatItem(BoatEntity.Type.JUNGLE, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"jungle_boat", new BoatItem(BoatEntity.Type.field_7730, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8094 = register(
-		"acacia_boat", new BoatItem(BoatEntity.Type.ACACIA, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"acacia_boat", new BoatItem(BoatEntity.Type.field_7725, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8138 = register(
-		"dark_oak_boat", new BoatItem(BoatEntity.Type.DARK_OAK, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
+		"dark_oak_boat", new BoatItem(BoatEntity.Type.field_7723, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8288 = register(
 		"totem_of_undying", new Item(new Item.Settings().stackSize(1).itemGroup(ItemGroup.COMBAT).rarity(Rarity.field_8907))

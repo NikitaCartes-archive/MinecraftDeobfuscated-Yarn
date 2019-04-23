@@ -8,34 +8,34 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
-public class ComponentArgumentType implements ArgumentType<TextComponent> {
+public class ComponentArgumentType implements ArgumentType<Component> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
 	public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.component.invalid", object)
+		object -> new TranslatableComponent("argument.component.invalid", object)
 	);
 
 	private ComponentArgumentType() {
 	}
 
-	public static TextComponent getComponent(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, TextComponent.class);
+	public static Component getComponent(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, Component.class);
 	}
 
 	public static ComponentArgumentType create() {
 		return new ComponentArgumentType();
 	}
 
-	public TextComponent method_9283(StringReader stringReader) throws CommandSyntaxException {
+	public Component method_9283(StringReader stringReader) throws CommandSyntaxException {
 		try {
-			TextComponent textComponent = TextComponent.Serializer.fromJsonString(stringReader);
-			if (textComponent == null) {
+			Component component = Component.Serializer.fromJsonString(stringReader);
+			if (component == null) {
 				throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
 			} else {
-				return textComponent;
+				return component;
 			}
 		} catch (JsonParseException var4) {
 			String string = var4.getCause() != null ? var4.getCause().getMessage() : var4.getMessage();

@@ -12,7 +12,7 @@ import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
@@ -29,30 +29,30 @@ public class ShapelessRecipeJsonFactory {
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 
-	public ShapelessRecipeJsonFactory(ItemProvider itemProvider, int i) {
-		this.output = itemProvider.getItem();
+	public ShapelessRecipeJsonFactory(ItemConvertible itemConvertible, int i) {
+		this.output = itemConvertible.asItem();
 		this.outputCount = i;
 	}
 
-	public static ShapelessRecipeJsonFactory create(ItemProvider itemProvider) {
-		return new ShapelessRecipeJsonFactory(itemProvider, 1);
+	public static ShapelessRecipeJsonFactory create(ItemConvertible itemConvertible) {
+		return new ShapelessRecipeJsonFactory(itemConvertible, 1);
 	}
 
-	public static ShapelessRecipeJsonFactory create(ItemProvider itemProvider, int i) {
-		return new ShapelessRecipeJsonFactory(itemProvider, i);
+	public static ShapelessRecipeJsonFactory create(ItemConvertible itemConvertible, int i) {
+		return new ShapelessRecipeJsonFactory(itemConvertible, i);
 	}
 
 	public ShapelessRecipeJsonFactory input(Tag<Item> tag) {
 		return this.input(Ingredient.fromTag(tag));
 	}
 
-	public ShapelessRecipeJsonFactory input(ItemProvider itemProvider) {
-		return this.input(itemProvider, 1);
+	public ShapelessRecipeJsonFactory input(ItemConvertible itemConvertible) {
+		return this.input(itemConvertible, 1);
 	}
 
-	public ShapelessRecipeJsonFactory input(ItemProvider itemProvider, int i) {
+	public ShapelessRecipeJsonFactory input(ItemConvertible itemConvertible, int i) {
 		for (int j = 0; j < i; j++) {
-			this.input(Ingredient.ofItems(itemProvider));
+			this.input(Ingredient.ofItems(itemConvertible));
 		}
 
 		return this;

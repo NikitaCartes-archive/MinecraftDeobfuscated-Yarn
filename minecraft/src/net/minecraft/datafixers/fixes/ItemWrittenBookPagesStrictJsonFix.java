@@ -10,8 +10,8 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,42 +26,42 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 						return dynamicxx;
 					} else {
 						String string = dynamicxx.asString("");
-						TextComponent textComponent = null;
+						Component component = null;
 						if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
 							if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
 								try {
-									textComponent = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, TextComponent.class, true);
-									if (textComponent == null) {
-										textComponent = new StringTextComponent("");
+									component = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Component.class, true);
+									if (component == null) {
+										component = new TextComponent("");
 									}
 								} catch (JsonParseException var6) {
 								}
 
-								if (textComponent == null) {
+								if (component == null) {
 									try {
-										textComponent = TextComponent.Serializer.fromJsonString(string);
+										component = Component.Serializer.fromJsonString(string);
 									} catch (JsonParseException var5) {
 									}
 								}
 
-								if (textComponent == null) {
+								if (component == null) {
 									try {
-										textComponent = TextComponent.Serializer.fromLenientJsonString(string);
+										component = Component.Serializer.fromLenientJsonString(string);
 									} catch (JsonParseException var4) {
 									}
 								}
 
-								if (textComponent == null) {
-									textComponent = new StringTextComponent(string);
+								if (component == null) {
+									component = new TextComponent(string);
 								}
 							} else {
-								textComponent = new StringTextComponent(string);
+								component = new TextComponent(string);
 							}
 						} else {
-							textComponent = new StringTextComponent("");
+							component = new TextComponent("");
 						}
 
-						return dynamicxx.createString(TextComponent.Serializer.toJsonString(textComponent));
+						return dynamicxx.createString(Component.Serializer.toJsonString(component));
 					}
 				})).map(dynamic::createList), dynamic.emptyList()));
 	}

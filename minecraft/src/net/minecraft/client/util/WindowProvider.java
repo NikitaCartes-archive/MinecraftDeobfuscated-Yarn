@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.WindowSettings;
-import net.minecraft.client.options.GameOption;
+import net.minecraft.client.options.Option;
 
 @Environment(EnvType.CLIENT)
 public final class WindowProvider implements AutoCloseable {
@@ -18,7 +18,7 @@ public final class WindowProvider implements AutoCloseable {
 
 	public Monitor createMonitor(long l) {
 		Monitor monitor = new Monitor(this.monitorTracker, l);
-		GameOption.FULLSCREEN_RESOLUTION.setMax((float)monitor.getVideoModeCount());
+		Option.FULLSCREEN_RESOLUTION.setMax((float)monitor.getVideoModeCount());
 		return monitor;
 	}
 

@@ -137,8 +137,10 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			this.field_7637 = null;
 		}
 
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10316) {
+		if (hitResult.getType() != HitResult.Type.field_1333) {
+			if (hitResult.getType() == HitResult.Type.field_1332 && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10316
+				)
+			 {
 				this.setInPortal(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				this.onCollision(hitResult);
@@ -184,7 +186,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		this.setVelocity(vec3d.multiply((double)h));
-		if (!this.isUnaffectedByGravity()) {
+		if (!this.hasNoGravity()) {
 			Vec3d vec3d2 = this.getVelocity();
 			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
 		}

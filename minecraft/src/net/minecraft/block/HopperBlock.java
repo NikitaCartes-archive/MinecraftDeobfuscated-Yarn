@@ -5,8 +5,8 @@ import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -31,9 +31,9 @@ import net.minecraft.world.World;
 public class HopperBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = Properties.HOPPER_FACING;
 	public static final BooleanProperty ENABLED = Properties.ENABLED;
-	private static final VoxelShape field_11131 = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
-	private static final VoxelShape field_11127 = Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);
-	private static final VoxelShape OUTSIDE_SHAPE = VoxelShapes.union(field_11127, field_11131);
+	private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
+	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);
+	private static final VoxelShape OUTSIDE_SHAPE = VoxelShapes.union(MIDDLE_SHAPE, TOP_SHAPE);
 	private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.combineAndSimplify(OUTSIDE_SHAPE, Hopper.INSIDE_SHAPE, BooleanBiFunction.ONLY_FIRST);
 	private static final VoxelShape DOWN_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 4.0, 10.0));
 	private static final VoxelShape EAST_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(12.0, 4.0, 6.0, 16.0, 8.0, 10.0));
@@ -48,21 +48,21 @@ public class HopperBlock extends BlockWithEntity {
 
 	public HopperBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.DOWN).with(ENABLED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11033).with(ENABLED, Boolean.valueOf(true)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case DOWN:
+			case field_11033:
 				return DOWN_SHAPE;
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_SHAPE;
 			default:
 				return DEFAULT_SHAPE;
@@ -72,15 +72,15 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		switch ((Direction)blockState.get(FACING)) {
-			case DOWN:
+			case field_11033:
 				return DOWN_RAY_TRACE_SHAPE;
-			case NORTH:
+			case field_11043:
 				return NORTH_RAY_TRACE_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_RAY_TRACE_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_RAY_TRACE_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_RAY_TRACE_SHAPE;
 			default:
 				return Hopper.INSIDE_SHAPE;
@@ -90,7 +90,7 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		Direction direction = itemPlacementContext.getFacing().getOpposite();
-		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction).with(ENABLED, Boolean.valueOf(true));
+		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.field_11033 : direction).with(ENABLED, Boolean.valueOf(true));
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.MIPPED_CUTOUT;
+		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, ENABLED);
+		builder.add(FACING, ENABLED);
 	}
 
 	@Override

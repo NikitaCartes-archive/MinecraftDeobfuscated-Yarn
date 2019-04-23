@@ -30,7 +30,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class HorseEntity extends HorseBaseEntity {
-	private static final UUID field_6985 = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
+	private static final UUID HORSE_ARMOR_BONUS_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final String[] HORSE_TEX = new String[]{
 		"textures/entity/horse/horse_white.png",
@@ -73,12 +73,12 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	public ItemStack getArmorType() {
-		return this.getEquippedStack(EquipmentSlot.CHEST);
+		return this.getEquippedStack(EquipmentSlot.field_6174);
 	}
 
-	private void method_18445(ItemStack itemStack) {
-		this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
-		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
+	private void equipArmor(ItemStack itemStack) {
+		this.setEquippedStack(EquipmentSlot.field_6174, itemStack);
+		this.setEquipmentDropChance(EquipmentSlot.field_6174, 0.0F);
 	}
 
 	@Override
@@ -143,14 +143,16 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	private void setArmorTypeFromStack(ItemStack itemStack) {
-		this.method_18445(itemStack);
+		this.equipArmor(itemStack);
 		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(field_6985);
+			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
 			if (this.canEquip(itemStack)) {
 				int i = ((HorseArmorItem)itemStack.getItem()).getBonus();
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.ARMOR)
-						.addModifier(new EntityAttributeModifier(field_6985, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false));
+						.addModifier(
+							new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false)
+						);
 				}
 			}
 		}
@@ -222,7 +224,7 @@ public class HorseEntity extends HorseBaseEntity {
 		if (bl && itemStack.getItem() instanceof SpawnEggItem) {
 			return super.interactMob(playerEntity, hand);
 		} else {
-			if (!this.isChild()) {
+			if (!this.isBaby()) {
 				if (this.isTame() && playerEntity.isSneaking()) {
 					this.openInventory(playerEntity);
 					return true;
@@ -251,14 +253,14 @@ public class HorseEntity extends HorseBaseEntity {
 					return true;
 				}
 
-				boolean bl2 = !this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
+				boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
 				if (this.canEquip(itemStack) || bl2) {
 					this.openInventory(playerEntity);
 					return true;
 				}
 			}
 
-			if (this.isChild()) {
+			if (this.isBaby()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
 				this.putPlayerOnBack(playerEntity);
@@ -282,10 +284,10 @@ public class HorseEntity extends HorseBaseEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		HorseBaseEntity horseBaseEntity;
 		if (passiveEntity instanceof DonkeyEntity) {
-			horseBaseEntity = EntityType.MULE.create(this.world);
+			horseBaseEntity = EntityType.field_6057.create(this.world);
 		} else {
 			HorseEntity horseEntity = (HorseEntity)passiveEntity;
-			horseBaseEntity = EntityType.HORSE.create(this.world);
+			horseBaseEntity = EntityType.field_6139.create(this.world);
 			int i = this.random.nextInt(9);
 			int j;
 			if (i < 4) {

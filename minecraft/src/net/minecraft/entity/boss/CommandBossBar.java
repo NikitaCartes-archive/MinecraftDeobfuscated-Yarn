@@ -6,11 +6,11 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
@@ -21,8 +21,8 @@ public class CommandBossBar extends ServerBossBar {
 	private int value;
 	private int maxValue = 100;
 
-	public CommandBossBar(Identifier identifier, TextComponent textComponent) {
-		super(textComponent, BossBar.Color.field_5786, BossBar.Style.field_5795);
+	public CommandBossBar(Identifier identifier, Component component) {
+		super(component, BossBar.Color.field_5786, BossBar.Style.field_5795);
 		this.id = identifier;
 		this.setPercent(0.0F);
 	}
@@ -71,11 +71,11 @@ public class CommandBossBar extends ServerBossBar {
 		this.setPercent(MathHelper.clamp((float)this.value / (float)i, 0.0F, 1.0F));
 	}
 
-	public final TextComponent getTextComponent() {
-		return TextFormatter.bracketed(this.getName())
+	public final Component getTextComponent() {
+		return Components.bracketed(this.getName())
 			.modifyStyle(
 				style -> style.setColor(this.getColor().getTextFormat())
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getId().toString())))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent(this.getId().toString())))
 						.setInsertion(this.getId().toString())
 			);
 	}
@@ -134,7 +134,7 @@ public class CommandBossBar extends ServerBossBar {
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.name));
+		compoundTag.putString("Name", Component.Serializer.toJsonString(this.name));
 		compoundTag.putBoolean("Visible", this.isVisible());
 		compoundTag.putInt("Value", this.value);
 		compoundTag.putInt("Max", this.maxValue);
@@ -154,7 +154,7 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	public static CommandBossBar fromTag(CompoundTag compoundTag, Identifier identifier) {
-		CommandBossBar commandBossBar = new CommandBossBar(identifier, TextComponent.Serializer.fromJsonString(compoundTag.getString("Name")));
+		CommandBossBar commandBossBar = new CommandBossBar(identifier, Component.Serializer.fromJsonString(compoundTag.getString("Name")));
 		commandBossBar.setVisible(compoundTag.getBoolean("Visible"));
 		commandBossBar.setValue(compoundTag.getInt("Value"));
 		commandBossBar.setMaxValue(compoundTag.getInt("Max"));
@@ -172,13 +172,13 @@ public class CommandBossBar extends ServerBossBar {
 		return commandBossBar;
 	}
 
-	public void method_12957(ServerPlayerEntity serverPlayerEntity) {
+	public void onPlayerConnect(ServerPlayerEntity serverPlayerEntity) {
 		if (this.playerUuids.contains(serverPlayerEntity.getUuid())) {
 			this.addPlayer(serverPlayerEntity);
 		}
 	}
 
-	public void method_12961(ServerPlayerEntity serverPlayerEntity) {
+	public void onPlayerDisconnect(ServerPlayerEntity serverPlayerEntity) {
 		super.removePlayer(serverPlayerEntity);
 	}
 }

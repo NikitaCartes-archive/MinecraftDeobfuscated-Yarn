@@ -44,7 +44,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
-		this.goalSelector.add(7, new GhastEntity.class_1572(this));
+		this.goalSelector.add(7, new GhastEntity.LookAtTargetGoal(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
 		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.y - this.y) <= 4.0));
 	}
@@ -65,7 +65,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -122,7 +122,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return this.random.nextInt(20) == 0 && super.canSpawn(iWorld, spawnType) && iWorld.getDifficulty() != Difficulty.PEACEFUL;
+		return this.random.nextInt(20) == 0 && super.canSpawn(iWorld, spawnType) && iWorld.getDifficulty() != Difficulty.field_5801;
 	}
 
 	@Override
@@ -150,22 +150,22 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	static class FlyRandomlyGoal extends Goal {
-		private final GhastEntity field_7279;
+		private final GhastEntity ghast;
 
 		public FlyRandomlyGoal(GhastEntity ghastEntity) {
-			this.field_7279 = ghastEntity;
+			this.ghast = ghastEntity;
 			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
 		public boolean canStart() {
-			MoveControl moveControl = this.field_7279.getMoveControl();
+			MoveControl moveControl = this.ghast.getMoveControl();
 			if (!moveControl.isMoving()) {
 				return true;
 			} else {
-				double d = moveControl.getTargetX() - this.field_7279.x;
-				double e = moveControl.getTargetY() - this.field_7279.y;
-				double f = moveControl.getTargetZ() - this.field_7279.z;
+				double d = moveControl.getTargetX() - this.ghast.x;
+				double e = moveControl.getTargetY() - this.ghast.y;
+				double f = moveControl.getTargetZ() - this.ghast.z;
 				double g = d * d + e * e + f * f;
 				return g < 1.0 || g > 3600.0;
 			}
@@ -178,11 +178,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void start() {
-			Random random = this.field_7279.getRand();
-			double d = this.field_7279.x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			double e = this.field_7279.y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			double f = this.field_7279.z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			this.field_7279.getMoveControl().moveTo(d, e, f, 1.0);
+			Random random = this.ghast.getRand();
+			double d = this.ghast.x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			double e = this.ghast.y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			double f = this.ghast.z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
 		}
 	}
 
@@ -226,68 +226,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		}
 	}
 
-	static class ShootFireballGoal extends Goal {
-		private final GhastEntity owner;
-		public int cooldown;
+	static class LookAtTargetGoal extends Goal {
+		private final GhastEntity ghast;
 
-		public ShootFireballGoal(GhastEntity ghastEntity) {
-			this.owner = ghastEntity;
-		}
-
-		@Override
-		public boolean canStart() {
-			return this.owner.getTarget() != null;
-		}
-
-		@Override
-		public void start() {
-			this.cooldown = 0;
-		}
-
-		@Override
-		public void stop() {
-			this.owner.setShooting(false);
-		}
-
-		@Override
-		public void tick() {
-			LivingEntity livingEntity = this.owner.getTarget();
-			double d = 64.0;
-			if (livingEntity.squaredDistanceTo(this.owner) < 4096.0 && this.owner.canSee(livingEntity)) {
-				World world = this.owner.world;
-				this.cooldown++;
-				if (this.cooldown == 10) {
-					world.playLevelEvent(null, 1015, new BlockPos(this.owner), 0);
-				}
-
-				if (this.cooldown == 20) {
-					double e = 4.0;
-					Vec3d vec3d = this.owner.getRotationVec(1.0F);
-					double f = livingEntity.x - (this.owner.x + vec3d.x * 4.0);
-					double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.owner.y + (double)(this.owner.getHeight() / 2.0F));
-					double h = livingEntity.z - (this.owner.z + vec3d.z * 4.0);
-					world.playLevelEvent(null, 1016, new BlockPos(this.owner), 0);
-					FireballEntity fireballEntity = new FireballEntity(world, this.owner, f, g, h);
-					fireballEntity.explosionPower = this.owner.getFireballStrength();
-					fireballEntity.x = this.owner.x + vec3d.x * 4.0;
-					fireballEntity.y = this.owner.y + (double)(this.owner.getHeight() / 2.0F) + 0.5;
-					fireballEntity.z = this.owner.z + vec3d.z * 4.0;
-					world.spawnEntity(fireballEntity);
-					this.cooldown = -40;
-				}
-			} else if (this.cooldown > 0) {
-				this.cooldown--;
-			}
-
-			this.owner.setShooting(this.cooldown > 10);
-		}
-	}
-
-	static class class_1572 extends Goal {
-		private final GhastEntity field_7274;
-
-		public class_1572(GhastEntity ghastEntity) {
-			this.field_7274 = ghastEntity;
+		public LookAtTargetGoal(GhastEntity ghastEntity) {
+			this.ghast = ghastEntity;
 			this.setControls(EnumSet.of(Goal.Control.field_18406));
 		}
 
@@ -298,20 +241,77 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (this.field_7274.getTarget() == null) {
-				Vec3d vec3d = this.field_7274.getVelocity();
-				this.field_7274.yaw = -((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI);
-				this.field_7274.field_6283 = this.field_7274.yaw;
+			if (this.ghast.getTarget() == null) {
+				Vec3d vec3d = this.ghast.getVelocity();
+				this.ghast.yaw = -((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI);
+				this.ghast.field_6283 = this.ghast.yaw;
 			} else {
-				LivingEntity livingEntity = this.field_7274.getTarget();
+				LivingEntity livingEntity = this.ghast.getTarget();
 				double d = 64.0;
-				if (livingEntity.squaredDistanceTo(this.field_7274) < 4096.0) {
-					double e = livingEntity.x - this.field_7274.x;
-					double f = livingEntity.z - this.field_7274.z;
-					this.field_7274.yaw = -((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI);
-					this.field_7274.field_6283 = this.field_7274.yaw;
+				if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0) {
+					double e = livingEntity.x - this.ghast.x;
+					double f = livingEntity.z - this.ghast.z;
+					this.ghast.yaw = -((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI);
+					this.ghast.field_6283 = this.ghast.yaw;
 				}
 			}
+		}
+	}
+
+	static class ShootFireballGoal extends Goal {
+		private final GhastEntity ghast;
+		public int cooldown;
+
+		public ShootFireballGoal(GhastEntity ghastEntity) {
+			this.ghast = ghastEntity;
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.ghast.getTarget() != null;
+		}
+
+		@Override
+		public void start() {
+			this.cooldown = 0;
+		}
+
+		@Override
+		public void stop() {
+			this.ghast.setShooting(false);
+		}
+
+		@Override
+		public void tick() {
+			LivingEntity livingEntity = this.ghast.getTarget();
+			double d = 64.0;
+			if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
+				World world = this.ghast.world;
+				this.cooldown++;
+				if (this.cooldown == 10) {
+					world.playLevelEvent(null, 1015, new BlockPos(this.ghast), 0);
+				}
+
+				if (this.cooldown == 20) {
+					double e = 4.0;
+					Vec3d vec3d = this.ghast.getRotationVec(1.0F);
+					double f = livingEntity.x - (this.ghast.x + vec3d.x * 4.0);
+					double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0F));
+					double h = livingEntity.z - (this.ghast.z + vec3d.z * 4.0);
+					world.playLevelEvent(null, 1016, new BlockPos(this.ghast), 0);
+					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
+					fireballEntity.explosionPower = this.ghast.getFireballStrength();
+					fireballEntity.x = this.ghast.x + vec3d.x * 4.0;
+					fireballEntity.y = this.ghast.y + (double)(this.ghast.getHeight() / 2.0F) + 0.5;
+					fireballEntity.z = this.ghast.z + vec3d.z * 4.0;
+					world.spawnEntity(fireballEntity);
+					this.cooldown = -40;
+				}
+			} else if (this.cooldown > 0) {
+				this.cooldown--;
+			}
+
+			this.ghast.setShooting(this.cooldown > 10);
 		}
 	}
 }

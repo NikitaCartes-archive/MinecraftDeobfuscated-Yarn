@@ -53,8 +53,8 @@ public class Session {
 
 	@Environment(EnvType.CLIENT)
 	public static enum AccountType {
-		LEGACY("legacy"),
-		MOJANG("mojang");
+		field_1990("legacy"),
+		field_1988("mojang");
 
 		private static final Map<String, Session.AccountType> field_1989 = (Map<String, Session.AccountType>)Arrays.stream(values())
 			.collect(Collectors.toMap(accountType -> accountType.field_1986, Function.identity()));

@@ -45,7 +45,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -208,7 +208,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
 		Entity entity = damageSource.getAttacker();
-		return this.hasPassengers() && entity != null && this.method_5821(entity) ? false : super.damage(damageSource, f);
+		return this.hasPassengers() && entity != null && this.hasPassengerDeep(entity) ? false : super.damage(damageSource, f);
 	}
 
 	@Override
@@ -416,7 +416,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			f = 1.0F;
 			i = 30;
 			j = 3;
-		} else if (item == Blocks.field_10359.getItem()) {
+		} else if (item == Blocks.field_10359.asItem()) {
 			f = 20.0F;
 			i = 180;
 		} else if (item == Items.field_8279) {
@@ -446,7 +446,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			bl = true;
 		}
 
-		if (this.isChild() && i > 0) {
+		if (this.isBaby() && i > 0) {
 			this.world
 				.addParticle(
 					ParticleTypes.field_11211,
@@ -516,12 +516,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.random.nextInt(200) == 0) {
 			this.method_6759();
 		}
 
-		super.updateState();
+		super.tickMovement();
 		if (!this.world.isClient && this.isAlive()) {
 			if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
 				this.heal(1.0F);
@@ -546,7 +546,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	protected void walkToParent() {
-		if (this.isBred() && this.isChild() && !this.isEatingGrass()) {
+		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
 			LivingEntity livingEntity = this.world
 				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().stretch(16.0, 16.0, 16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
@@ -808,7 +808,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	protected boolean canBreed() {
-		return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isChild() && this.getHealth() >= this.getHealthMaximum() && this.isInLove();
+		return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getHealthMaximum() && this.isInLove();
 	}
 
 	@Nullable
@@ -888,7 +888,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 	@Environment(EnvType.CLIENT)
 	protected void spawnPlayerReactionParticles(boolean bl) {
-		ParticleParameters particleParameters = bl ? ParticleTypes.field_11201 : ParticleTypes.field_11251;
+		ParticleEffect particleEffect = bl ? ParticleTypes.field_11201 : ParticleTypes.field_11251;
 
 		for (int i = 0; i < 7; i++) {
 			double d = this.random.nextGaussian() * 0.02;
@@ -896,7 +896,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleParameters,
+					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

@@ -31,7 +31,7 @@ public class ChunkCache implements ExtendedBlockView {
 
 		for (int k = this.minX; k <= i; k++) {
 			for (int l = this.minZ; l <= j; l++) {
-				this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.FULL, false);
+				this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.field_12803, false);
 			}
 		}
 
@@ -63,7 +63,7 @@ public class ChunkCache implements ExtendedBlockView {
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
 		if (World.isHeightInvalid(blockPos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			Chunk chunk = this.method_18474(blockPos);
 			return chunk != null ? chunk.getBlockState(blockPos) : Blocks.field_9987.getDefaultState();
@@ -73,10 +73,10 @@ public class ChunkCache implements ExtendedBlockView {
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
 		if (World.isHeightInvalid(blockPos)) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			Chunk chunk = this.method_18474(blockPos);
-			return chunk != null ? chunk.getFluidState(blockPos) : Fluids.EMPTY.getDefaultState();
+			return chunk != null ? chunk.getFluidState(blockPos) : Fluids.field_15906.getDefaultState();
 		}
 	}
 

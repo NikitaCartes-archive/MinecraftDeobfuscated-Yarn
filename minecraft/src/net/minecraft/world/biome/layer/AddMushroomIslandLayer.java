@@ -4,7 +4,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
 
 public enum AddMushroomIslandLayer implements DiagonalCrossSamplingLayer {
-	INSTANCE;
+	field_16055;
 
 	private static final int MUSHROOM_FIELDS_ID = Registry.BIOME.getRawId(Biomes.field_9462);
 

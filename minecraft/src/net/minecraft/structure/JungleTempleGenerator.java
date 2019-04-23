@@ -14,10 +14,10 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.loot.LootTables;
 
 public class JungleTempleGenerator extends StructurePieceWithDimensions {
@@ -75,10 +75,10 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.fill(iWorld, mutableIntBoundingBox, 5, 2, 12, 6, 2, 12);
 			this.fill(iWorld, mutableIntBoundingBox, 5, 5, 1, 6, 5, 1);
 			this.fill(iWorld, mutableIntBoundingBox, 5, 5, 13, 6, 5, 13);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 1, 5, 5, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 10, 5, 5, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 1, 5, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 10, 5, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 1, 5, 5, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 10, 5, 5, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 1, 5, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), 10, 5, 9, mutableIntBoundingBox);
 
 			for (int i = 0; i <= 14; i += 14) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 4, i, 2, 5, i, false, random, COBBLESTONE_RANDOMIZER);
@@ -107,10 +107,10 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 9, 10, 4, 9, 10, false, random, COBBLESTONE_RANDOMIZER);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 9, 10, 7, 9, 10, false, random, COBBLESTONE_RANDOMIZER);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 9, 7, 6, 9, 7, false, random, COBBLESTONE_RANDOMIZER);
-			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
-			BlockState blockState2 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
-			BlockState blockState3 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
-			BlockState blockState4 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
+			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11034);
+			BlockState blockState2 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11039);
+			BlockState blockState3 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11035);
+			BlockState blockState4 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11043);
 			this.addBlock(iWorld, blockState4, 5, 9, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState4, 6, 9, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState3, 5, 9, 8, mutableIntBoundingBox);
@@ -156,7 +156,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -1, 1, 6, -1, 1, false, random, COBBLESTONE_RANDOMIZER);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.EAST).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.field_11034).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				1,
 				-3,
 				8,
@@ -164,7 +164,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.WEST).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.field_11039).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				4,
 				-3,
 				8,
@@ -222,13 +222,13 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 3, -3, 1, mutableIntBoundingBox);
 			if (!this.placedTrap1) {
-				this.placedTrap1 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 3, -2, 1, Direction.NORTH, LootTables.DISPENSER_JUNGLE_TEMPLE);
+				this.placedTrap1 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 3, -2, 1, Direction.field_11043, LootTables.field_751);
 			}
 
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.SOUTH, Boolean.valueOf(true)), 3, -2, 2, mutableIntBoundingBox);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.NORTH).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.field_11043).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				1,
@@ -236,7 +236,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.SOUTH).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.field_11035).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				5,
@@ -308,13 +308,13 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689), 9, -2, 4, mutableIntBoundingBox
 			);
 			if (!this.placedTrap2) {
-				this.placedTrap2 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 9, -2, 3, Direction.WEST, LootTables.DISPENSER_JUNGLE_TEMPLE);
+				this.placedTrap2 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 9, -2, 3, Direction.field_11039, LootTables.field_751);
 			}
 
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -1, 3, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -2, 3, mutableIntBoundingBox);
 			if (!this.placedMainChest) {
-				this.placedMainChest = this.addChest(iWorld, mutableIntBoundingBox, random, 8, -3, 3, LootTables.CHEST_JUNGLE_TEMPLE);
+				this.placedMainChest = this.addChest(iWorld, mutableIntBoundingBox, random, 8, -3, 3, LootTables.field_803);
 			}
 
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 9, -3, 2, mutableIntBoundingBox);
@@ -331,7 +331,10 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 8, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 9, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 10, -2, 11, mutableIntBoundingBox);
-			BlockState blockState6 = Blocks.field_10363.getDefaultState().with(LeverBlock.FACING, Direction.NORTH).with(LeverBlock.FACE, WallMountLocation.field_12471);
+			BlockState blockState6 = Blocks.field_10363
+				.getDefaultState()
+				.with(LeverBlock.FACING, Direction.field_11043)
+				.with(LeverBlock.FACE, WallMountLocation.field_12471);
 			this.addBlock(iWorld, blockState6, 8, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 9, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 10, -2, 12, mutableIntBoundingBox);
@@ -345,12 +348,12 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12689), 8, -2, 10, mutableIntBoundingBox
 			);
 			this.addBlock(iWorld, Blocks.field_10091.getDefaultState(), 10, -1, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.UP), 9, -2, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -2, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -1, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.FACING, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.field_11036), 9, -2, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.field_11039), 10, -2, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.field_11039), 10, -1, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.FACING, Direction.field_11043), 10, -2, 10, mutableIntBoundingBox);
 			if (!this.placedHiddenChest) {
-				this.placedHiddenChest = this.addChest(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.CHEST_JUNGLE_TEMPLE);
+				this.placedHiddenChest = this.addChest(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.field_803);
 			}
 
 			return true;

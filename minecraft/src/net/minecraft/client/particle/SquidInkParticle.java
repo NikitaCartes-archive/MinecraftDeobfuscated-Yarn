@@ -23,7 +23,7 @@ public class SquidInkParticle extends AnimatedParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;

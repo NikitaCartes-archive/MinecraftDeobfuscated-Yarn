@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class UnbreakingEnchantment extends Enchantment {
 	protected UnbreakingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.TOOL, equipmentSlots);
+		super(weight, EnchantmentTarget.BREAKABLE, equipmentSlots);
 	}
 
 	@Override

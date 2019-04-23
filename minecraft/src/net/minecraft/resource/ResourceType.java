@@ -1,8 +1,8 @@
 package net.minecraft.resource;
 
 public enum ResourceType {
-	ASSETS("assets"),
-	DATA("data");
+	field_14188("assets"),
+	field_14190("data");
 
 	private final String name;
 

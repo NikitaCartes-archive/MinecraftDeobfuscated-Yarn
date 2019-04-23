@@ -34,7 +34,7 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 			BlockState blockState;
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
-					.with(FACE, direction == Direction.UP ? WallMountLocation.field_12473 : WallMountLocation.field_12475)
+					.with(FACE, direction == Direction.field_11036 ? WallMountLocation.field_12473 : WallMountLocation.field_12475)
 					.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
 			} else {
 				blockState = this.getDefaultState().with(FACE, WallMountLocation.field_12471).with(FACING, direction.getOpposite());
@@ -53,16 +53,16 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return getDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	protected static Direction getDirection(BlockState blockState) {
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12473:
-				return Direction.DOWN;
+				return Direction.field_11033;
 			case field_12475:
-				return Direction.UP;
+				return Direction.field_11036;
 			default:
 				return blockState.get(FACING);
 		}

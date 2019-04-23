@@ -46,7 +46,7 @@ public class AdvancementRewards {
 			.put(LootContextParameters.field_1226, serverPlayerEntity)
 			.put(LootContextParameters.field_1232, new BlockPos(serverPlayerEntity))
 			.setRandom(serverPlayerEntity.getRand())
-			.build(LootContextTypes.ADVANCEMENT_REWARD);
+			.build(LootContextTypes.field_1174);
 		boolean bl = false;
 
 		for (Identifier identifier : this.loot) {
@@ -59,7 +59,7 @@ public class AdvancementRewards {
 							serverPlayerEntity.y,
 							serverPlayerEntity.z,
 							SoundEvents.field_15197,
-							SoundCategory.field_15248,
+							SoundCategory.PLAYERS,
 							0.2F,
 							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);

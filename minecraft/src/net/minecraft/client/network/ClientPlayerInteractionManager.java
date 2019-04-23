@@ -9,8 +9,8 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.Entity;
@@ -188,11 +188,11 @@ public class ClientPlayerInteractionManager {
 			this.client
 				.getTutorialManager()
 				.onBlockAttacked(this.client.world, this.currentBreakingPos, this.client.world.getBlockState(this.currentBreakingPos), -1.0F);
-			this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12971, this.currentBreakingPos, Direction.DOWN));
+			this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12971, this.currentBreakingPos, Direction.field_11033));
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
 			this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
-			this.client.player.method_7350();
+			this.client.player.resetLastAttackedTicks();
 		}
 	}
 
@@ -309,7 +309,7 @@ public class ClientPlayerInteractionManager {
 
 						return actionResult;
 					} else {
-						return ActionResult.PASS;
+						return ActionResult.field_5811;
 					}
 				}
 			}
@@ -318,13 +318,13 @@ public class ClientPlayerInteractionManager {
 
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, Hand hand) {
 		if (this.gameMode == GameMode.field_9219) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-				return ActionResult.PASS;
+				return ActionResult.field_5811;
 			} else {
 				int i = itemStack.getAmount();
 				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
@@ -347,21 +347,21 @@ public class ClientPlayerInteractionManager {
 		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity));
 		if (this.gameMode != GameMode.field_9219) {
 			playerEntity.attack(entity);
-			playerEntity.method_7350();
+			playerEntity.resetLastAttackedTicks();
 		}
 	}
 
 	public ActionResult interactEntity(PlayerEntity playerEntity, Entity entity, Hand hand) {
 		this.syncSelectedSlot();
 		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, hand));
-		return this.gameMode == GameMode.field_9219 ? ActionResult.PASS : playerEntity.interact(entity, hand);
+		return this.gameMode == GameMode.field_9219 ? ActionResult.field_5811 : playerEntity.interact(entity, hand);
 	}
 
 	public ActionResult interactEntityAtLocation(PlayerEntity playerEntity, Entity entity, EntityHitResult entityHitResult, Hand hand) {
 		this.syncSelectedSlot();
 		Vec3d vec3d = entityHitResult.getPos().subtract(entity.x, entity.y, entity.z);
 		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, hand, vec3d));
-		return this.gameMode == GameMode.field_9219 ? ActionResult.PASS : entity.interactAt(playerEntity, vec3d, hand);
+		return this.gameMode == GameMode.field_9219 ? ActionResult.field_5811 : entity.interactAt(playerEntity, vec3d, hand);
 	}
 
 	public ItemStack method_2906(int i, int j, int k, SlotActionType slotActionType, PlayerEntity playerEntity) {
@@ -393,7 +393,7 @@ public class ClientPlayerInteractionManager {
 
 	public void stopUsingItem(PlayerEntity playerEntity) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12974, BlockPos.ORIGIN, Direction.DOWN));
+		this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12974, BlockPos.ORIGIN, Direction.field_11033));
 		playerEntity.stopUsingItem();
 	}
 

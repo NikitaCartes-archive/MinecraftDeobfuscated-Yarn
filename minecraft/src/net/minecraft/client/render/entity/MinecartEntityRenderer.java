@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
 	private static final Identifier SKIN = new Identifier("textures/entity/minecart.png");
-	protected final EntityModel<T> field_4747 = new MinecartEntityModel<>();
+	protected final EntityModel<T> model = new MinecartEntityModel<>();
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -75,7 +75,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		int t = abstractMinecartEntity.getBlockOffset();
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
 		}
@@ -87,16 +87,16 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			float u = 0.75F;
 			GlStateManager.scalef(0.75F, 0.75F, 0.75F);
 			GlStateManager.translatef(-0.5F, (float)(t - 8) / 16.0F, 0.5F);
-			this.method_4064(abstractMinecartEntity, h, blockState);
+			this.renderBlock(abstractMinecartEntity, h, blockState);
 			GlStateManager.popMatrix();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.bindEntityTexture(abstractMinecartEntity);
 		}
 
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		this.field_4747.render(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.model.render(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -108,7 +108,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		return SKIN;
 	}
 
-	protected void method_4064(T abstractMinecartEntity, float f, BlockState blockState) {
+	protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
 		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.getBrightnessAtEyes());
 		GlStateManager.popMatrix();

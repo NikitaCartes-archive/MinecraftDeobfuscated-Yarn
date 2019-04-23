@@ -6,8 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
 
@@ -169,13 +169,13 @@ public class DamageSource {
 		return this;
 	}
 
-	public TextComponent getDeathMessage(LivingEntity livingEntity) {
+	public Component getDeathMessage(LivingEntity livingEntity) {
 		LivingEntity livingEntity2 = livingEntity.method_6124();
 		String string = "death.attack." + this.name;
 		String string2 = string + ".player";
 		return livingEntity2 != null
-			? new TranslatableTextComponent(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName())
-			: new TranslatableTextComponent(string, livingEntity.getDisplayName());
+			? new TranslatableComponent(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName())
+			: new TranslatableComponent(string, livingEntity.getDisplayName());
 	}
 
 	public boolean isFire() {

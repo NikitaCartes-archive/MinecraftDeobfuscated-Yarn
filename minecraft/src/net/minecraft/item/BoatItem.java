@@ -29,8 +29,8 @@ public class BoatItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
-		if (hitResult.getType() == HitResult.Type.NONE) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		if (hitResult.getType() == HitResult.Type.field_1333) {
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
@@ -41,12 +41,12 @@ public class BoatItem extends Item {
 				for (Entity entity : list) {
 					BoundingBox boundingBox = entity.getBoundingBox().expand((double)entity.getBoundingBoxMarginForTargeting());
 					if (boundingBox.contains(vec3d2)) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}
 				}
 			}
 
-			if (hitResult.getType() == HitResult.Type.BLOCK) {
+			if (hitResult.getType() == HitResult.Type.field_1332) {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
@@ -65,7 +65,7 @@ public class BoatItem extends Item {
 					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			} else {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			}
 		}
 	}

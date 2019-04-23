@@ -32,20 +32,20 @@ public class TagContainer<T> {
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
 	private final Map<Identifier, Tag<T>> idMap = Maps.<Identifier, Tag<T>>newHashMap();
 	private final Function<Identifier, Optional<T>> getter;
-	private final String path;
+	private final String dataType;
 	private final boolean ordered;
-	private final String type;
+	private final String entryType;
 
 	public TagContainer(Function<Identifier, Optional<T>> function, String string, boolean bl, String string2) {
 		this.getter = function;
-		this.path = string;
+		this.dataType = string;
 		this.ordered = bl;
-		this.type = string2;
+		this.entryType = string2;
 	}
 
 	public void add(Tag<T> tag) {
 		if (this.idMap.containsKey(tag.getId())) {
-			throw new IllegalArgumentException("Duplicate " + this.type + " tag '" + tag.getId() + "'");
+			throw new IllegalArgumentException("Duplicate " + this.entryType + " tag '" + tag.getId() + "'");
 		} else {
 			this.idMap.put(tag.getId(), tag);
 		}
@@ -87,9 +87,9 @@ public class TagContainer<T> {
 			() -> {
 				Map<Identifier, Tag.Builder<T>> map = Maps.<Identifier, Tag.Builder<T>>newHashMap();
 
-				for (Identifier identifier : resourceManager.findResources(this.path, stringx -> stringx.endsWith(".json"))) {
+				for (Identifier identifier : resourceManager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
 					String string = identifier.getPath();
-					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.path.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
+					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
 
 					try {
 						for (Resource resource : resourceManager.getAllResources(identifier)) {
@@ -97,7 +97,7 @@ public class TagContainer<T> {
 								JsonObject jsonObject = JsonHelper.deserialize(GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
 								if (jsonObject == null) {
 									LOGGER.error(
-										"Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.type, identifier2, identifier, resource.getResourcePackName()
+										"Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.entryType, identifier2, identifier, resource.getResourcePackName()
 									);
 								} else {
 									Tag.Builder<T> builder = (Tag.Builder<T>)map.getOrDefault(identifier2, Tag.Builder.create());
@@ -105,13 +105,13 @@ public class TagContainer<T> {
 									map.put(identifier2, builder);
 								}
 							} catch (RuntimeException | IOException var15) {
-								LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.type, identifier2, identifier, resource.getResourcePackName(), var15);
+								LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.entryType, identifier2, identifier, resource.getResourcePackName(), var15);
 							} finally {
 								IOUtils.closeQuietly(resource);
 							}
 						}
 					} catch (IOException var17) {
-						LOGGER.error("Couldn't read {} tag list {} from {}", this.type, identifier2, identifier, var17);
+						LOGGER.error("Couldn't read {} tag list {} from {}", this.entryType, identifier2, identifier, var17);
 					}
 				}
 
@@ -137,7 +137,9 @@ public class TagContainer<T> {
 
 			if (!bl) {
 				for (Entry<Identifier, Tag.Builder<T>> entry : map.entrySet()) {
-					LOGGER.error("Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", this.type, entry.getKey());
+					LOGGER.error(
+						"Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", this.entryType, entry.getKey()
+					);
 				}
 				break;
 			}

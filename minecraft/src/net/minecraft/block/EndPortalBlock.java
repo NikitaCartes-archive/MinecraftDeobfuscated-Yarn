@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.BooleanBiFunction;
@@ -30,7 +30,7 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 

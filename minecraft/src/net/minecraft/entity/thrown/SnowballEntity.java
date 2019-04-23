@@ -10,8 +10,8 @@ import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ItemStackParticleParameters;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -23,11 +23,11 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	public SnowballEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.SNOWBALL, livingEntity, world);
+		super(EntityType.field_6068, livingEntity, world);
 	}
 
 	public SnowballEntity(World world, double d, double e, double f) {
-		super(EntityType.SNOWBALL, d, e, f, world);
+		super(EntityType.field_6068, d, e, f, world);
 	}
 
 	@Override
@@ -36,26 +36,26 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private ParticleParameters getParticleParameters() {
+	private ParticleEffect getParticleParameters() {
 		ItemStack itemStack = this.getItem();
-		return (ParticleParameters)(itemStack.isEmpty() ? ParticleTypes.field_11230 : new ItemStackParticleParameters(ParticleTypes.field_11218, itemStack));
+		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.field_11230 : new ItemStackParticleEffect(ParticleTypes.field_11218, itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte b) {
 		if (b == 3) {
-			ParticleParameters particleParameters = this.getParticleParameters();
+			ParticleEffect particleEffect = this.getParticleParameters();
 
 			for (int i = 0; i < 8; i++) {
-				this.world.addParticle(particleParameters, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+				this.world.addParticle(particleEffect, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 			}
 		}
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
+		if (hitResult.getType() == HitResult.Type.field_1331) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			int i = entity instanceof BlazeEntity ? 3 : 0;
 			entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), (float)i);

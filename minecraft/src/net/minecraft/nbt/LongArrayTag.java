@@ -6,8 +6,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
@@ -95,20 +95,20 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
-		TextComponent textComponent = new StringTextComponent("L").applyFormat(RED);
-		TextComponent textComponent2 = new StringTextComponent("[").append(textComponent).append(";");
+	public Component toTextComponent(String string, int i) {
+		Component component = new TextComponent("L").applyFormat(RED);
+		Component component2 = new TextComponent("[").append(component).append(";");
 
 		for (int j = 0; j < this.value.length; j++) {
-			TextComponent textComponent3 = new StringTextComponent(String.valueOf(this.value[j])).applyFormat(GOLD);
-			textComponent2.append(" ").append(textComponent3).append(textComponent);
+			Component component3 = new TextComponent(String.valueOf(this.value[j])).applyFormat(GOLD);
+			component2.append(" ").append(component3).append(component);
 			if (j != this.value.length - 1) {
-				textComponent2.append(",");
+				component2.append(",");
 			}
 		}
 
-		textComponent2.append("]");
-		return textComponent2;
+		component2.append("]");
+		return component2;
 	}
 
 	public long[] getLongArray() {

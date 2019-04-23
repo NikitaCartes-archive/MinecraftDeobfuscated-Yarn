@@ -30,7 +30,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -71,42 +71,42 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
 	public static final MutableRegistry<MutableRegistry<?>> REGISTRIES = new SimpleRegistry<>();
 	public static final Registry<SoundEvent> SOUND_EVENT = create("sound_event", new SimpleRegistry<>(), () -> SoundEvents.field_15197);
-	public static final DefaultedRegistry<Fluid> FLUID = create("fluid", new DefaultedRegistry<>("empty"), () -> Fluids.EMPTY);
+	public static final DefaultedRegistry<Fluid> FLUID = create("fluid", new DefaultedRegistry<>("empty"), () -> Fluids.field_15906);
 	public static final Registry<StatusEffect> STATUS_EFFECT = create("mob_effect", new SimpleRegistry<>(), () -> StatusEffects.field_5926);
-	public static final DefaultedRegistry<Block> BLOCK = create("block", new DefaultedRegistry<>("air"), () -> Blocks.AIR);
+	public static final DefaultedRegistry<Block> BLOCK = create("block", new DefaultedRegistry<>("air"), () -> Blocks.field_10124);
 	public static final Registry<Enchantment> ENCHANTMENT = create("enchantment", new SimpleRegistry<>(), () -> Enchantments.field_9130);
-	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = create("entity_type", new DefaultedRegistry<>("pig"), () -> EntityType.PIG);
+	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = create("entity_type", new DefaultedRegistry<>("pig"), () -> EntityType.field_6093);
 	public static final DefaultedRegistry<Item> ITEM = create("item", new DefaultedRegistry<>("air"), () -> Items.AIR);
 	public static final DefaultedRegistry<Potion> POTION = create("potion", new DefaultedRegistry<>("empty"), () -> Potions.field_8984);
-	public static final Registry<Carver<?>> CARVER = create("carver", new SimpleRegistry<>(), () -> Carver.CAVE);
-	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create("surface_builder", new SimpleRegistry<>(), () -> SurfaceBuilder.DEFAULT);
+	public static final Registry<Carver<?>> CARVER = create("carver", new SimpleRegistry<>(), () -> Carver.field_13304);
+	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create("surface_builder", new SimpleRegistry<>(), () -> SurfaceBuilder.field_15701);
 	public static final Registry<Feature<?>> FEATURE = create("feature", new SimpleRegistry<>(), () -> Feature.field_13517);
-	public static final Registry<Decorator<?>> DECORATOR = create("decorator", new SimpleRegistry<>(), () -> Decorator.NOPE);
+	public static final Registry<Decorator<?>> DECORATOR = create("decorator", new SimpleRegistry<>(), () -> Decorator.field_14250);
 	public static final Registry<Biome> BIOME = create("biome", new SimpleRegistry<>(), () -> Biomes.DEFAULT);
-	public static final Registry<ParticleType<? extends ParticleParameters>> PARTICLE_TYPE = create(
+	public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = create(
 		"particle_type", new SimpleRegistry<>(), () -> ParticleTypes.field_11217
 	);
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create(
 		"biome_source_type", new SimpleRegistry<>(), () -> BiomeSourceType.VANILLA_LAYERED
 	);
-	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY = create("block_entity_type", new SimpleRegistry<>(), () -> BlockEntityType.FURNACE);
+	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY = create("block_entity_type", new SimpleRegistry<>(), () -> BlockEntityType.field_11903);
 	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create(
 		"chunk_generator_type", new SimpleRegistry<>(), () -> ChunkGeneratorType.field_12766
 	);
 	public static final Registry<DimensionType> DIMENSION = create("dimension_type", new SimpleRegistry<>(), () -> DimensionType.field_13072);
 	public static final DefaultedRegistry<PaintingMotive> MOTIVE = create("motive", new DefaultedRegistry<>("kebab"), () -> PaintingMotive.field_7146);
 	public static final Registry<Identifier> CUSTOM_STAT = create("custom_stat", new SimpleRegistry<>(), () -> Stats.field_15428);
-	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create("chunk_status", new DefaultedRegistry<>("empty"), () -> ChunkStatus.EMPTY);
-	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = create("structure_feature", new SimpleRegistry<>(), () -> StructureFeatures.MINESHAFT);
+	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create("chunk_status", new DefaultedRegistry<>("empty"), () -> ChunkStatus.field_12798);
+	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = create("structure_feature", new SimpleRegistry<>(), () -> StructureFeatures.field_16709);
 	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", new SimpleRegistry<>(), () -> StructurePieceType.MINESHAFT_ROOM);
 	public static final Registry<RuleTest> RULE_TEST = create("rule_test", new SimpleRegistry<>(), () -> RuleTest.field_16982);
 	public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = create(
 		"structure_processor", new SimpleRegistry<>(), () -> StructureProcessorType.field_16986
 	);
 	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = create(
-		"structure_pool_element", new SimpleRegistry<>(), () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
+		"structure_pool_element", new SimpleRegistry<>(), () -> StructurePoolElementType.field_16972
 	);
-	public static final Registry<ContainerType<?>> CONTAINER = create("menu", new SimpleRegistry<>(), () -> ContainerType.ANVIL);
+	public static final Registry<ContainerType<?>> CONTAINER = create("menu", new SimpleRegistry<>(), () -> ContainerType.field_17329);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create("recipe_type", new SimpleRegistry<>(), () -> RecipeType.CRAFTING);
 	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", new SimpleRegistry<>(), () -> RecipeSerializer.SHAPELESS);
 	public static final Registry<StatType<?>> STAT_TYPE = create("stat_type", new SimpleRegistry<>());

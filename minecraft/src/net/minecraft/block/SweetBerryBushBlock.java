@@ -4,9 +4,9 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -41,11 +41,11 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		if ((Integer)blockState.get(AGE) == 0) {
 			return SMALL_SHAPE;
 		} else {
-			return blockState.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(blockState, blockView, blockPos, verticalEntityPosition);
+			return blockState.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(blockState, blockView, blockPos, entityContext);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	@Override

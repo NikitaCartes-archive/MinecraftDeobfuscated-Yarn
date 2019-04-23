@@ -6,7 +6,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +24,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -34,7 +34,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
@@ -84,8 +84,8 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	static class DrippingLavaParticle extends BlockLeakParticle.DrippingParticle {
-		private DrippingLavaParticle(World world, double d, double e, double f, Fluid fluid, ParticleParameters particleParameters) {
-			super(world, d, e, f, fluid, particleParameters);
+		private DrippingLavaParticle(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
+			super(world, d, e, f, fluid, particleEffect);
 		}
 
 		@Override
@@ -99,11 +99,11 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	static class DrippingParticle extends BlockLeakParticle {
-		private final ParticleParameters nextParticle;
+		private final ParticleEffect nextParticle;
 
-		private DrippingParticle(World world, double d, double e, double f, Fluid fluid, ParticleParameters particleParameters) {
+		private DrippingParticle(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
 			super(world, d, e, f, fluid);
-			this.nextParticle = particleParameters;
+			this.nextParticle = particleEffect;
 			this.gravityStrength *= 0.02F;
 			this.maxAge = 40;
 		}
@@ -158,11 +158,11 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	static class FallingParticle extends BlockLeakParticle {
-		private final ParticleParameters nextParticle;
+		private final ParticleEffect nextParticle;
 
-		private FallingParticle(World world, double d, double e, double f, Fluid fluid, ParticleParameters particleParameters) {
+		private FallingParticle(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
 			super(world, d, e, f, fluid);
-			this.nextParticle = particleParameters;
+			this.nextParticle = particleEffect;
 			this.maxAge = (int)(64.0 / (Math.random() * 0.8 + 0.2));
 		}
 

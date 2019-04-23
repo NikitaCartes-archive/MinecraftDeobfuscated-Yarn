@@ -9,11 +9,11 @@ import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSourceType;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorConfig;
@@ -32,7 +32,7 @@ public class TheEndDimension extends Dimension {
 	public ChunkGenerator<?> createChunkGenerator() {
 		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.field_12770.createSettings();
 		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.field_10471.getDefaultState());
-		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.AIR.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.field_10124.getDefaultState());
 		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.field_12770
 			.create(

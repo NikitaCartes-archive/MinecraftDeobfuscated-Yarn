@@ -50,7 +50,7 @@ public class MagmaBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10382) {
+		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10382) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 		}
 

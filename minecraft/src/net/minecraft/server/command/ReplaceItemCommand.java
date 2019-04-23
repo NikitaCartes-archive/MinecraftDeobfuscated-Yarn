@@ -17,19 +17,19 @@ import net.minecraft.command.arguments.ItemStackArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class ReplaceItemCommand {
 	public static final SimpleCommandExceptionType BLOCK_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.replaceitem.block.failed")
+		new TranslatableComponent("commands.replaceitem.block.failed")
 	);
 	public static final DynamicCommandExceptionType SLOT_INAPPLICABLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.replaceitem.slot.inapplicable", object)
+		object -> new TranslatableComponent("commands.replaceitem.slot.inapplicable", object)
 	);
 	public static final Dynamic2CommandExceptionType ENTITY_FAILED_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableTextComponent("commands.replaceitem.entity.failed", object, object2)
+		(object, object2) -> new TranslatableComponent("commands.replaceitem.entity.failed", object, object2)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -110,7 +110,7 @@ public class ReplaceItemCommand {
 			if (i >= 0 && i < inventory.getInvSize()) {
 				inventory.setInvStack(i, itemStack);
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toTextComponent()), true
+					new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toTextComponent()), true
 				);
 				return 1;
 			} else {
@@ -140,13 +140,11 @@ public class ReplaceItemCommand {
 		} else {
 			if (list.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toTextComponent()),
+					new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toTextComponent()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toTextComponent()), true
-				);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toTextComponent()), true);
 			}
 
 			return list.size();

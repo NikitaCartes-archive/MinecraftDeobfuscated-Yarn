@@ -114,7 +114,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 			List<Item> list = Lists.<Item>newArrayList();
 
 			for (Block block : ((Tag.CollectionEntry)entry).getValues()) {
-				Item item = block.getItem();
+				Item item = block.asItem();
 				if (item == Items.AIR) {
 					LOG.warn("Itemless block copied to item tag: {}", Registry.BLOCK.getId(block));
 				} else {

@@ -43,7 +43,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	private long nextAmbientSoundTime;
 
 	public ConduitBlockEntity() {
-		this(BlockEntityType.CONDUIT);
+		this(BlockEntityType.field_11902);
 	}
 
 	public ConduitBlockEntity(BlockEntityType<?> blockEntityType) {

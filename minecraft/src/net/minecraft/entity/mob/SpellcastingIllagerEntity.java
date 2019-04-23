@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	private static final TrackedData<Byte> SPELL = DataTracker.registerData(SpellcastingIllagerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected int spellTicks;
-	private SpellcastingIllagerEntity.class_1618 spell = SpellcastingIllagerEntity.class_1618.field_7377;
+	private SpellcastingIllagerEntity.Spell spell = SpellcastingIllagerEntity.Spell.field_7377;
 
 	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
 		super(entityType, world);
@@ -57,13 +57,13 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		return this.world.isClient ? this.dataTracker.get(SPELL) > 0 : this.spellTicks > 0;
 	}
 
-	public void setSpell(SpellcastingIllagerEntity.class_1618 arg) {
-		this.spell = arg;
-		this.dataTracker.set(SPELL, (byte)arg.field_7375);
+	public void setSpell(SpellcastingIllagerEntity.Spell spell) {
+		this.spell = spell;
+		this.dataTracker.set(SPELL, (byte)spell.id);
 	}
 
-	protected SpellcastingIllagerEntity.class_1618 getSpell() {
-		return !this.world.isClient ? this.spell : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(SPELL));
+	protected SpellcastingIllagerEntity.Spell getSpell() {
+		return !this.world.isClient ? this.spell : SpellcastingIllagerEntity.Spell.byId(this.dataTracker.get(SPELL));
 	}
 
 	@Override
@@ -78,10 +78,10 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient && this.isSpellcasting()) {
-			SpellcastingIllagerEntity.class_1618 lv = this.getSpell();
-			double d = lv.field_7374[0];
-			double e = lv.field_7374[1];
-			double f = lv.field_7374[2];
+			SpellcastingIllagerEntity.Spell spell = this.getSpell();
+			double d = spell.particleVelocity[0];
+			double e = spell.particleVelocity[1];
+			double f = spell.particleVelocity[2];
 			float g = this.field_6283 * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
 			float h = MathHelper.cos(g);
 			float i = MathHelper.sin(g);
@@ -129,7 +129,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 				SpellcastingIllagerEntity.this.playSound(soundEvent, 1.0F, 1.0F);
 			}
 
-			SpellcastingIllagerEntity.this.setSpell(this.method_7147());
+			SpellcastingIllagerEntity.this.setSpell(this.getSpell());
 		}
 
 		@Override
@@ -154,7 +154,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Nullable
 		protected abstract SoundEvent getSoundPrepare();
 
-		protected abstract SpellcastingIllagerEntity.class_1618 method_7147();
+		protected abstract SpellcastingIllagerEntity.Spell getSpell();
 	}
 
 	public class LookAtTargetGoal extends Goal {
@@ -176,7 +176,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Override
 		public void stop() {
 			super.stop();
-			SpellcastingIllagerEntity.this.setSpell(SpellcastingIllagerEntity.class_1618.field_7377);
+			SpellcastingIllagerEntity.this.setSpell(SpellcastingIllagerEntity.Spell.field_7377);
 		}
 
 		@Override
@@ -192,7 +192,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		}
 	}
 
-	public static enum class_1618 {
+	public static enum Spell {
 		field_7377(0, 0.0, 0.0, 0.0),
 		field_7379(1, 0.7, 0.7, 0.8),
 		field_7380(2, 0.4, 0.3, 0.35),
@@ -200,18 +200,18 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		field_7382(4, 0.3, 0.3, 0.8),
 		field_7378(5, 0.1, 0.1, 0.2);
 
-		private final int field_7375;
-		private final double[] field_7374;
+		private final int id;
+		private final double[] particleVelocity;
 
-		private class_1618(int j, double d, double e, double f) {
-			this.field_7375 = j;
-			this.field_7374 = new double[]{d, e, f};
+		private Spell(int j, double d, double e, double f) {
+			this.id = j;
+			this.particleVelocity = new double[]{d, e, f};
 		}
 
-		public static SpellcastingIllagerEntity.class_1618 method_7144(int i) {
-			for (SpellcastingIllagerEntity.class_1618 lv : values()) {
-				if (i == lv.field_7375) {
-					return lv;
+		public static SpellcastingIllagerEntity.Spell byId(int i) {
+			for (SpellcastingIllagerEntity.Spell spell : values()) {
+				if (i == spell.id) {
+					return spell;
 				}
 			}
 

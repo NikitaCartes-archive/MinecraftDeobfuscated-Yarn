@@ -13,12 +13,6 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.AmbientSoundLoops;
-import net.minecraft.client.audio.AmbientSoundPlayer;
-import net.minecraft.client.audio.BubbleColumnSoundPlayer;
-import net.minecraft.client.audio.ElytraSoundInstance;
-import net.minecraft.client.audio.MinecartSoundInstance;
-import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.gui.CommandBlockMinecartScreen;
 import net.minecraft.client.gui.CommandBlockScreen;
 import net.minecraft.client.gui.ContainerScreen;
@@ -28,15 +22,21 @@ import net.minecraft.client.gui.ingame.JigsawBlockScreen;
 import net.minecraft.client.gui.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.sound.AmbientSoundLoops;
+import net.minecraft.client.sound.AmbientSoundPlayer;
+import net.minecraft.client.sound.BubbleColumnSoundPlayer;
+import net.minecraft.client.sound.ElytraSoundInstance;
+import net.minecraft.client.sound.MinecartSoundInstance;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffect;
@@ -48,6 +48,7 @@ import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
@@ -66,7 +67,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -258,7 +258,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public ItemEntity dropSelectedItem(boolean bl) {
 		PlayerActionC2SPacket.Action action = bl ? PlayerActionC2SPacket.Action.field_12970 : PlayerActionC2SPacket.Action.field_12975;
-		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
+		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.field_11033));
 		this.inventory
 			.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getAmount() : 1);
 		return null;
@@ -371,11 +371,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void addChatMessage(TextComponent textComponent, boolean bl) {
+	public void addChatMessage(Component component, boolean bl) {
 		if (bl) {
-			this.client.inGameHud.setOverlayMessage(textComponent, false);
+			this.client.inGameHud.setOverlayMessage(component, false);
 		} else {
-			this.client.inGameHud.getChatHud().addMessage(textComponent);
+			this.client.inGameHud.getChatHud().addMessage(component);
 		}
 	}
 
@@ -389,37 +389,37 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			double i = 9999.0;
 			if (!this.cannotFitAt(blockPos.west()) && g < i) {
 				i = g;
-				direction = Direction.WEST;
+				direction = Direction.field_11039;
 			}
 
 			if (!this.cannotFitAt(blockPos.east()) && 1.0 - g < i) {
 				i = 1.0 - g;
-				direction = Direction.EAST;
+				direction = Direction.field_11034;
 			}
 
 			if (!this.cannotFitAt(blockPos.north()) && h < i) {
 				i = h;
-				direction = Direction.NORTH;
+				direction = Direction.field_11043;
 			}
 
 			if (!this.cannotFitAt(blockPos.south()) && 1.0 - h < i) {
 				i = 1.0 - h;
-				direction = Direction.SOUTH;
+				direction = Direction.field_11035;
 			}
 
 			if (direction != null) {
 				Vec3d vec3d = this.getVelocity();
 				switch (direction) {
-					case WEST:
+					case field_11039:
 						this.setVelocity(-0.1, vec3d.y, vec3d.z);
 						break;
-					case EAST:
+					case field_11034:
 						this.setVelocity(0.1, vec3d.y, vec3d.z);
 						break;
-					case NORTH:
+					case field_11043:
 						this.setVelocity(vec3d.x, vec3d.y, -0.1);
 						break;
-					case SOUTH:
+					case field_11035:
 						this.setVelocity(vec3d.x, vec3d.y, 0.1);
 				}
 			}
@@ -447,14 +447,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	public void method_3145(float f, int i, int j) {
-		this.experienceLevelProgress = f;
-		this.experienceLevel = i;
-		this.experience = j;
+		this.experienceProgress = f;
+		this.totalExperience = i;
+		this.experienceLevel = j;
 	}
 
 	@Override
-	public void sendMessage(TextComponent textComponent) {
-		this.client.inGameHud.getChatHud().addMessage(textComponent);
+	public void sendMessage(Component component) {
+		this.client.inGameHud.getChatHud().addMessage(component);
 	}
 
 	@Override
@@ -512,7 +512,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		super.onTrackedDataSet(trackedData);
 		if (LIVING_FLAGS.equals(trackedData)) {
 			boolean bl = (this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
-			Hand hand = (this.dataTracker.get(LIVING_FLAGS) & 2) > 0 ? Hand.OFF : Hand.MAIN;
+			Hand hand = (this.dataTracker.get(LIVING_FLAGS) & 2) > 0 ? Hand.field_5810 : Hand.field_5808;
 			if (bl && !this.field_3915) {
 				this.setCurrentHand(hand);
 			} else if (!bl && this.field_3915) {
@@ -612,7 +612,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		this.field_3921++;
 		if (this.field_3935 > 0) {
 			this.field_3935--;
@@ -623,7 +623,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl2 = this.input.sneaking;
 		float f = 0.8F;
 		boolean bl3 = this.input.movementForward >= 0.8F;
-		boolean bl4 = this.isInSneakingPose() || this.method_20448();
+		boolean bl4 = this.isInSneakingPose() || this.shouldLeaveSwimmingPose();
 		this.input.tick(bl4, this.isSpectator());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
@@ -703,7 +703,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.input.jumping && !bl && !this.onGround && this.getVelocity().y < 0.0 && !this.isFallFlying() && !this.abilities.flying) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6174);
 			if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12982));
 			}
@@ -767,7 +767,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.field_3922 = 0.0F;
 		}
 
-		super.updateState();
+		super.tickMovement();
 		if (this.onGround && this.abilities.flying && !this.client.interactionManager.isFlyingLocked()) {
 			this.abilities.flying = false;
 			this.sendAbilitiesUpdate();
@@ -810,7 +810,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		this.updatePortalCooldown();
+		this.tickPortalCooldown();
 	}
 
 	@Override
@@ -878,13 +878,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					Vec3d vec3d5 = this.getRotationVecClient();
 					float m = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
 					if (!(m < -0.15F)) {
-						VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
+						EntityContext entityContext = EntityContext.of(this);
 						BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().maxY, this.z);
 						BlockState blockState = this.world.getBlockState(blockPos);
-						if (blockState.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+						if (blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
 							blockPos = blockPos.up();
 							BlockState blockState2 = this.world.getBlockState(blockPos);
-							if (blockState2.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+							if (blockState2.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
 								float n = 7.0F;
 								float o = 1.2F;
 								if (this.hasStatusEffect(StatusEffects.field_5913)) {
@@ -921,7 +921,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 											BlockPos blockPos3 = blockPos2.up(t);
 											BlockState blockState3 = this.world.getBlockState(blockPos3);
 											VoxelShape voxelShape;
-											if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, verticalEntityPosition)).isEmpty()) {
+											if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, entityContext)).isEmpty()) {
 												s = (float)voxelShape.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY();
 												if ((double)s - this.getBoundingBox().minY > (double)o) {
 													return;
@@ -931,7 +931,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 											if (t > 1) {
 												blockPos = blockPos.up();
 												BlockState blockState4 = this.world.getBlockState(blockPos);
-												if (!blockState4.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+												if (!blockState4.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
 													return;
 												}
 											}

@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntity> {
-	private static final Identifier field_4663 = new Identifier("textures/entity/end_crystal/end_crystal.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/end_crystal/end_crystal.png");
 	private final EntityModel<EnderCrystalEntity> field_4662 = new EndCrystalEntityModel<>(0.0F, true);
 	private final EntityModel<EnderCrystalEntity> field_4664 = new EndCrystalEntityModel<>(0.0F, false);
 
@@ -26,10 +26,10 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		float i = (float)enderCrystalEntity.field_7034 + h;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
-		this.bindTexture(field_4663);
+		this.bindTexture(SKIN);
 		float j = MathHelper.sin(i * 0.2F) / 2.0F + 0.5F;
 		j = j * j + j;
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
 		}
@@ -40,7 +40,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			this.field_4664.render(enderCrystalEntity, 0.0F, i * 3.0F, j * 0.2F, 0.0F, 0.0F, 0.0625F);
 		}
 
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -55,7 +55,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			double n = (double)k - enderCrystalEntity.x;
 			double o = (double)l - enderCrystalEntity.y;
 			double p = (double)m - enderCrystalEntity.z;
-			EnderDragonEntityRenderer.method_3917(
+			EnderDragonEntityRenderer.renderCrystalBeam(
 				d + n,
 				e - 0.3 + (double)(j * 0.4F) + o,
 				f + p,
@@ -74,7 +74,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 	}
 
 	protected Identifier method_3909(EnderCrystalEntity enderCrystalEntity) {
-		return field_4663;
+		return SKIN;
 	}
 
 	public boolean method_3907(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {

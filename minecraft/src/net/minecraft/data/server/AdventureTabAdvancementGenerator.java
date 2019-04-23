@@ -18,14 +18,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.tag.EntityTags;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
@@ -78,41 +78,41 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Biomes.field_9468
 	};
 	private static final EntityType<?>[] MONSTERS = new EntityType[]{
-		EntityType.CAVE_SPIDER,
-		EntityType.SPIDER,
-		EntityType.ZOMBIE_PIGMAN,
-		EntityType.ENDERMAN,
-		EntityType.BLAZE,
-		EntityType.CREEPER,
-		EntityType.EVOKER,
-		EntityType.GHAST,
-		EntityType.GUARDIAN,
-		EntityType.HUSK,
-		EntityType.MAGMA_CUBE,
-		EntityType.SHULKER,
-		EntityType.SILVERFISH,
-		EntityType.SKELETON,
-		EntityType.SLIME,
-		EntityType.STRAY,
-		EntityType.VINDICATOR,
-		EntityType.WITCH,
-		EntityType.WITHER_SKELETON,
-		EntityType.ZOMBIE,
-		EntityType.ZOMBIE_VILLAGER,
-		EntityType.PHANTOM,
-		EntityType.DROWNED,
-		EntityType.PILLAGER,
-		EntityType.RAVAGER
+		EntityType.field_6084,
+		EntityType.field_6079,
+		EntityType.field_6050,
+		EntityType.field_6091,
+		EntityType.field_6099,
+		EntityType.field_6046,
+		EntityType.field_6090,
+		EntityType.field_6107,
+		EntityType.field_6118,
+		EntityType.field_6071,
+		EntityType.field_6102,
+		EntityType.field_6109,
+		EntityType.field_6125,
+		EntityType.field_6137,
+		EntityType.field_6069,
+		EntityType.field_6098,
+		EntityType.field_6117,
+		EntityType.field_6145,
+		EntityType.field_6076,
+		EntityType.field_6051,
+		EntityType.field_6054,
+		EntityType.field_6078,
+		EntityType.field_6123,
+		EntityType.field_6105,
+		EntityType.field_6134
 	};
 
 	public void method_10335(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Items.field_8895,
-				new TranslatableTextComponent("advancements.adventure.root.title"),
-				new TranslatableTextComponent("advancements.adventure.root.description"),
+				new TranslatableComponent("advancements.adventure.root.title"),
+				new TranslatableComponent("advancements.adventure.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/adventure.png"),
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				false,
 				false,
 				false
@@ -125,10 +125,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.field_10069,
-				new TranslatableTextComponent("advancements.adventure.sleep_in_bed.title"),
-				new TranslatableTextComponent("advancements.adventure.sleep_in_bed.description"),
+				new TranslatableComponent("advancements.adventure.sleep_in_bed.title"),
+				new TranslatableComponent("advancements.adventure.sleep_in_bed.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -139,10 +139,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.field_8285,
-				new TranslatableTextComponent("advancements.adventure.adventuring_time.title"),
-				new TranslatableTextComponent("advancements.adventure.adventuring_time.description"),
+				new TranslatableComponent("advancements.adventure.adventuring_time.title"),
+				new TranslatableComponent("advancements.adventure.adventuring_time.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -153,10 +153,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8687,
-				new TranslatableTextComponent("advancements.adventure.trade.title"),
-				new TranslatableTextComponent("advancements.adventure.trade.description"),
+				new TranslatableComponent("advancements.adventure.trade.title"),
+				new TranslatableComponent("advancements.adventure.trade.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -167,10 +167,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8371,
-				new TranslatableTextComponent("advancements.adventure.kill_a_mob.title"),
-				new TranslatableTextComponent("advancements.adventure.kill_a_mob.description"),
+				new TranslatableComponent("advancements.adventure.kill_a_mob.title"),
+				new TranslatableComponent("advancements.adventure.kill_a_mob.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -181,10 +181,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8802,
-				new TranslatableTextComponent("advancements.adventure.kill_all_mobs.title"),
-				new TranslatableTextComponent("advancements.adventure.kill_all_mobs.description"),
+				new TranslatableComponent("advancements.adventure.kill_all_mobs.title"),
+				new TranslatableComponent("advancements.adventure.kill_all_mobs.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -195,10 +195,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8102,
-				new TranslatableTextComponent("advancements.adventure.shoot_arrow.title"),
-				new TranslatableTextComponent("advancements.adventure.shoot_arrow.description"),
+				new TranslatableComponent("advancements.adventure.shoot_arrow.title"),
+				new TranslatableComponent("advancements.adventure.shoot_arrow.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -207,7 +207,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"shot_arrow",
 				PlayerHurtEntityCriterion.Conditions.create(
 					DamagePredicate.Builder.create()
-						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.ARROW)))
+						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.field_6122)))
 				)
 			)
 			.build(consumer, "adventure/shoot_arrow");
@@ -215,10 +215,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8547,
-				new TranslatableTextComponent("advancements.adventure.throw_trident.title"),
-				new TranslatableTextComponent("advancements.adventure.throw_trident.description"),
+				new TranslatableComponent("advancements.adventure.throw_trident.title"),
+				new TranslatableComponent("advancements.adventure.throw_trident.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -227,7 +227,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"shot_trident",
 				PlayerHurtEntityCriterion.Conditions.create(
 					DamagePredicate.Builder.create()
-						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.TRIDENT)))
+						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.field_6127)))
 				)
 			)
 			.build(consumer, "adventure/throw_trident");
@@ -235,38 +235,38 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement8)
 			.display(
 				Items.field_8547,
-				new TranslatableTextComponent("advancements.adventure.very_very_frightening.title"),
-				new TranslatableTextComponent("advancements.adventure.very_very_frightening.description"),
+				new TranslatableComponent("advancements.adventure.very_very_frightening.title"),
+				new TranslatableComponent("advancements.adventure.very_very_frightening.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
 			)
-			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.VILLAGER).build()))
+			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.field_6077).build()))
 			.build(consumer, "adventure/very_very_frightening");
 		Advancement advancement10 = Advancement.Task.create()
 			.parent(advancement4)
 			.display(
 				Blocks.field_10147,
-				new TranslatableTextComponent("advancements.adventure.summon_iron_golem.title"),
-				new TranslatableTextComponent("advancements.adventure.summon_iron_golem.description"),
+				new TranslatableComponent("advancements.adventure.summon_iron_golem.title"),
+				new TranslatableComponent("advancements.adventure.summon_iron_golem.description"),
 				null,
-				AdvancementFrame.GOAL,
+				AdvancementFrame.field_1249,
 				true,
 				true,
 				false
 			)
-			.criterion("summoned_golem", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.IRON_GOLEM)))
+			.criterion("summoned_golem", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.field_6147)))
 			.build(consumer, "adventure/summon_iron_golem");
 		Advancement advancement11 = Advancement.Task.create()
 			.parent(advancement7)
 			.display(
 				Items.field_8107,
-				new TranslatableTextComponent("advancements.adventure.sniper_duel.title"),
-				new TranslatableTextComponent("advancements.adventure.sniper_duel.description"),
+				new TranslatableComponent("advancements.adventure.sniper_duel.title"),
+				new TranslatableComponent("advancements.adventure.sniper_duel.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -275,7 +275,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0F))),
+					EntityPredicate.Builder.create().type(EntityType.field_6137).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0F))),
 					DamageSourcePredicate.Builder.create().projectile(true)
 				)
 			)
@@ -284,10 +284,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8288,
-				new TranslatableTextComponent("advancements.adventure.totem_of_undying.title"),
-				new TranslatableTextComponent("advancements.adventure.totem_of_undying.description"),
+				new TranslatableComponent("advancements.adventure.totem_of_undying.title"),
+				new TranslatableComponent("advancements.adventure.totem_of_undying.description"),
 				null,
-				AdvancementFrame.GOAL,
+				AdvancementFrame.field_1249,
 				true,
 				true,
 				false
@@ -298,10 +298,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8399,
-				new TranslatableTextComponent("advancements.adventure.ol_betsy.title"),
-				new TranslatableTextComponent("advancements.adventure.ol_betsy.description"),
+				new TranslatableComponent("advancements.adventure.ol_betsy.title"),
+				new TranslatableComponent("advancements.adventure.ol_betsy.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -312,24 +312,24 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableTextComponent("advancements.adventure.whos_the_pillager_now.title"),
-				new TranslatableTextComponent("advancements.adventure.whos_the_pillager_now.description"),
+				new TranslatableComponent("advancements.adventure.whos_the_pillager_now.title"),
+				new TranslatableComponent("advancements.adventure.whos_the_pillager_now.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
 			)
-			.criterion("kill_pillager", KilledByCrossbowCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.PILLAGER)))
+			.criterion("kill_pillager", KilledByCrossbowCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.field_6105)))
 			.build(consumer, "adventure/whos_the_pillager_now");
 		Advancement advancement15 = Advancement.Task.create()
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableTextComponent("advancements.adventure.two_birds_one_arrow.title"),
-				new TranslatableTextComponent("advancements.adventure.two_birds_one_arrow.description"),
+				new TranslatableComponent("advancements.adventure.two_birds_one_arrow.title"),
+				new TranslatableComponent("advancements.adventure.two_birds_one_arrow.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -338,7 +338,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"two_birds",
 				KilledByCrossbowCriterion.Conditions.create(
-					EntityPredicate.Builder.create().type(EntityType.PHANTOM), EntityPredicate.Builder.create().type(EntityType.PHANTOM)
+					EntityPredicate.Builder.create().type(EntityType.field_6078), EntityPredicate.Builder.create().type(EntityType.field_6078)
 				)
 			)
 			.build(consumer, "adventure/two_birds_one_arrow");
@@ -346,10 +346,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableTextComponent("advancements.adventure.arbalistic.title"),
-				new TranslatableTextComponent("advancements.adventure.arbalistic.description"),
+				new TranslatableComponent("advancements.adventure.arbalistic.title"),
+				new TranslatableComponent("advancements.adventure.arbalistic.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				true
@@ -361,10 +361,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Raid.OMINOUS_BANNER,
-				new TranslatableTextComponent("advancements.adventure.voluntary_exile.title"),
-				new TranslatableTextComponent("advancements.adventure.voluntary_exile.description"),
+				new TranslatableComponent("advancements.adventure.voluntary_exile.title"),
+				new TranslatableComponent("advancements.adventure.voluntary_exile.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				true
@@ -372,7 +372,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"voluntary_exile",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityTags.field_19168).equipment(EntityEquipmentPredicate.field_19240)
+					EntityPredicate.Builder.create().type(EntityTypeTags.field_19168).equipment(EntityEquipmentPredicate.field_19240)
 				)
 			)
 			.build(consumer, "adventure/voluntary_exile");
@@ -380,10 +380,10 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement17)
 			.display(
 				Raid.OMINOUS_BANNER,
-				new TranslatableTextComponent("advancements.adventure.hero_of_the_village.title"),
-				new TranslatableTextComponent("advancements.adventure.hero_of_the_village.description"),
+				new TranslatableComponent("advancements.adventure.hero_of_the_village.title"),
+				new TranslatableComponent("advancements.adventure.hero_of_the_village.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				true

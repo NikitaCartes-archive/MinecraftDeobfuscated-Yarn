@@ -22,7 +22,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<LandingApproachPhase> getType() {
-		return PhaseType.LANDING_APPROACH;
+		return PhaseType.field_7071;
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 		this.method_6845();
 		if (this.field_7047 != null && this.field_7047.isFinished()) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.LANDING);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7067);
 		}
 	}
 

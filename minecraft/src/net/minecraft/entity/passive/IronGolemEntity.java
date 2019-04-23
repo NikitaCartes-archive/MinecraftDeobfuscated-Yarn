@@ -28,7 +28,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.BlockStateParticleParameters;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -96,8 +96,8 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.field_6762 > 0) {
 			this.field_6762--;
 		}
@@ -114,7 +114,7 @@ public class IronGolemEntity extends GolemEntity {
 			if (!blockState.isAir()) {
 				this.world
 					.addParticle(
-						new BlockStateParticleParameters(ParticleTypes.field_11217, blockState),
+						new BlockStateParticleEffect(ParticleTypes.field_11217, blockState),
 						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						this.getBoundingBox().minY + 0.1,
 						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
@@ -128,10 +128,10 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	public boolean canTarget(EntityType<?> entityType) {
-		if (this.isPlayerCreated() && entityType == EntityType.PLAYER) {
+		if (this.isPlayerCreated() && entityType == EntityType.field_6097) {
 			return false;
 		} else {
-			return entityType == EntityType.CREEPER ? false : super.canTarget(entityType);
+			return entityType == EntityType.field_6046 ? false : super.canTarget(entityType);
 		}
 	}
 
@@ -240,7 +240,7 @@ public class IronGolemEntity extends GolemEntity {
 			BlockPos blockPos3 = blockPos.up();
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())
-				&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
+				&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
 				&& viewableWorld.intersectsEntities(this);
 		}
 	}

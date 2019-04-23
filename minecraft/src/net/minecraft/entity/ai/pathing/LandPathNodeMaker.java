@@ -104,10 +104,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 
 		double d = method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-		PathNode pathNode3 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1, j, d, Direction.SOUTH);
-		PathNode pathNode4 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z, j, d, Direction.WEST);
-		PathNode pathNode5 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z, j, d, Direction.EAST);
-		PathNode pathNode6 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z - 1, j, d, Direction.NORTH);
+		PathNode pathNode3 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
+		PathNode pathNode4 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z, j, d, Direction.field_11039);
+		PathNode pathNode5 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z, j, d, Direction.field_11034);
+		PathNode pathNode6 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
 		if (pathNode3 != null && !pathNode3.field_42 && pathNode3.distance(pathNode2) < f) {
 			pathNodes[i++] = pathNode3;
 		}
@@ -129,28 +129,28 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		boolean bl3 = pathNode5 == null || pathNode5.type == PathNodeType.field_7 || pathNode5.field_43 != 0.0F;
 		boolean bl4 = pathNode4 == null || pathNode4.type == PathNodeType.field_7 || pathNode4.field_43 != 0.0F;
 		if (bl && bl4) {
-			PathNode pathNode7 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z - 1, j, d, Direction.NORTH);
+			PathNode pathNode7 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
 			if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
 				pathNodes[i++] = pathNode7;
 			}
 		}
 
 		if (bl && bl3) {
-			PathNode pathNode7 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z - 1, j, d, Direction.NORTH);
+			PathNode pathNode7 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
 			if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
 				pathNodes[i++] = pathNode7;
 			}
 		}
 
 		if (bl2 && bl4) {
-			PathNode pathNode7 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z + 1, j, d, Direction.SOUTH);
+			PathNode pathNode7 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
 			if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
 				pathNodes[i++] = pathNode7;
 			}
 		}
 
 		if (bl2 && bl3) {
-			PathNode pathNode7 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z + 1, j, d, Direction.SOUTH);
+			PathNode pathNode7 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
 			if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
 				pathNodes[i++] = pathNode7;
 			}

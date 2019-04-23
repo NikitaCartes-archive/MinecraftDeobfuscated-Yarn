@@ -393,35 +393,38 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
 		for (int n = 0; n < m; n++) {
-			int o = j + n * this.itemHeight + this.headerHeight;
-			int p = this.itemHeight - 4;
-			E entry = this.getEntry(n);
-			int q = this.getRowWidth();
-			if (this.renderSelection && this.isSelectedItem(n)) {
-				int r = this.left + this.width / 2 - q / 2;
-				int s = this.left + this.width / 2 + q / 2;
-				GlStateManager.disableTexture();
-				float g = this.isFocused() ? 1.0F : 0.5F;
-				GlStateManager.color4f(g, g, g, 1.0F);
-				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
-				bufferBuilder.vertex((double)s, (double)(o + p + 2), 0.0).next();
-				bufferBuilder.vertex((double)s, (double)(o - 2), 0.0).next();
-				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
-				tessellator.draw();
-				GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
-				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)(r + 1), (double)(o + p + 1), 0.0).next();
-				bufferBuilder.vertex((double)(s - 1), (double)(o + p + 1), 0.0).next();
-				bufferBuilder.vertex((double)(s - 1), (double)(o - 1), 0.0).next();
-				bufferBuilder.vertex((double)(r + 1), (double)(o - 1), 0.0).next();
-				tessellator.draw();
-				GlStateManager.enableTexture();
-			}
+			int o = this.getRowTop(n);
+			int p = this.getRowBottom(n);
+			if (p >= this.top && o <= this.bottom) {
+				int q = j + n * this.itemHeight + this.headerHeight;
+				int r = this.itemHeight - 4;
+				E entry = this.getEntry(n);
+				int s = this.getRowWidth();
+				if (this.renderSelection && this.isSelectedItem(n)) {
+					int t = this.left + this.width / 2 - s / 2;
+					int u = this.left + this.width / 2 + s / 2;
+					GlStateManager.disableTexture();
+					float g = this.isFocused() ? 1.0F : 0.5F;
+					GlStateManager.color4f(g, g, g, 1.0F);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
+					bufferBuilder.vertex((double)t, (double)(q + r + 2), 0.0).next();
+					bufferBuilder.vertex((double)u, (double)(q + r + 2), 0.0).next();
+					bufferBuilder.vertex((double)u, (double)(q - 2), 0.0).next();
+					bufferBuilder.vertex((double)t, (double)(q - 2), 0.0).next();
+					tessellator.draw();
+					GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
+					bufferBuilder.vertex((double)(t + 1), (double)(q + r + 1), 0.0).next();
+					bufferBuilder.vertex((double)(u - 1), (double)(q + r + 1), 0.0).next();
+					bufferBuilder.vertex((double)(u - 1), (double)(q - 1), 0.0).next();
+					bufferBuilder.vertex((double)(t + 1), (double)(q - 1), 0.0).next();
+					tessellator.draw();
+					GlStateManager.enableTexture();
+				}
 
-			int r = this.getRowTop(n);
-			int s = this.getRowLeft();
-			entry.render(n, r, s, q, p, k, l, this.isMouseOver((double)k, (double)l) && Objects.equals(this.getEntryAtPosition((double)k, (double)l), entry), f);
+				int t = this.getRowLeft();
+				entry.render(n, o, t, s, r, k, l, this.isMouseOver((double)k, (double)l) && Objects.equals(this.getEntryAtPosition((double)k, (double)l), entry), f);
+			}
 		}
 	}
 
@@ -431,6 +434,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	protected int getRowTop(int i) {
 		return this.top + 4 - (int)this.getScrollAmount() + i * this.itemHeight + this.headerHeight;
+	}
+
+	private int getRowBottom(int i) {
+		return this.getRowTop(i) + this.itemHeight;
 	}
 
 	protected boolean isFocused() {

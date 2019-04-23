@@ -25,7 +25,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 
 	protected AbstractFurnaceBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(LIT, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -99,6 +99,6 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, LIT);
+		builder.add(FACING, LIT);
 	}
 }

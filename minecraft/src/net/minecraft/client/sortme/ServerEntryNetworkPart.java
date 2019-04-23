@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.network.packet.QueryPongS2CPacket;
 import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.client.options.ServerEntry;
@@ -30,14 +31,13 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.QueryPingC2SPacket;
 import net.minecraft.server.network.packet.QueryRequestC2SPacket;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
@@ -66,7 +66,7 @@ public class ServerEntryNetworkPart {
 				@Override
 				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
 					if (this.field_3773) {
-						clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.unrequested"));
+						clientConnection.disconnect(new TranslatableComponent("multiplayer.status.unrequested"));
 					} else {
 						this.field_3773 = true;
 						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
@@ -85,13 +85,13 @@ public class ServerEntryNetworkPart {
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							serverEntry.playerCountLabel = TextFormat.field_1080
+							serverEntry.playerCountLabel = ChatFormat.field_1080
 								+ ""
 								+ serverMetadata.getPlayers().getOnlinePlayerCount()
 								+ ""
-								+ TextFormat.field_1063
+								+ ChatFormat.field_1063
 								+ "/"
-								+ TextFormat.field_1080
+								+ ChatFormat.field_1080
 								+ serverMetadata.getPlayers().getPlayerLimit();
 							if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
 								StringBuilder stringBuilder = new StringBuilder();
@@ -117,7 +117,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.playerListSummary = stringBuilder.toString();
 							}
 						} else {
-							serverEntry.playerCountLabel = TextFormat.field_1063 + I18n.translate("multiplayer.status.unknown");
+							serverEntry.playerCountLabel = ChatFormat.field_1063 + I18n.translate("multiplayer.status.unknown");
 						}
 
 						if (serverMetadata.getFavicon() != null) {
@@ -142,14 +142,14 @@ public class ServerEntryNetworkPart {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
-					clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.finished"));
+					clientConnection.disconnect(new TranslatableComponent("multiplayer.status.finished"));
 				}
 
 				@Override
-				public void onDisconnected(TextComponent textComponent) {
+				public void onDisconnected(Component component) {
 					if (!this.field_3775) {
-						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, textComponent.getString());
-						serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
+						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, component.getString());
+						serverEntry.label = ChatFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
 						serverEntry.playerCountLabel = "";
 						ServerEntryNetworkPart.this.ping(serverEntry);
 					}
@@ -222,7 +222,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.protocolVersion = -1;
 								serverEntry.version = string2;
 								serverEntry.label = string3;
-								serverEntry.playerCountLabel = TextFormat.field_1080 + "" + j + "" + TextFormat.field_1063 + "/" + TextFormat.field_1080 + k;
+								serverEntry.playerCountLabel = ChatFormat.field_1080 + "" + j + "" + ChatFormat.field_1063 + "/" + ChatFormat.field_1080 + k;
 							}
 						}
 
@@ -262,7 +262,7 @@ public class ServerEntryNetworkPart {
 				ClientConnection clientConnection = (ClientConnection)iterator.next();
 				if (clientConnection.isOpen()) {
 					iterator.remove();
-					clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.cancelled"));
+					clientConnection.disconnect(new TranslatableComponent("multiplayer.status.cancelled"));
 				}
 			}
 		}

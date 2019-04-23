@@ -3,8 +3,8 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import java.util.Date;
 import javax.annotation.Nullable;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class BannedIpEntry extends BanEntry<String> {
 	public BannedIpEntry(String string) {
@@ -16,8 +16,8 @@ public class BannedIpEntry extends BanEntry<String> {
 	}
 
 	@Override
-	public TextComponent asTextComponent() {
-		return new StringTextComponent(this.getKey());
+	public Component asTextComponent() {
+		return new TextComponent(this.getKey());
 	}
 
 	public BannedIpEntry(JsonObject jsonObject) {

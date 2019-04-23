@@ -3,8 +3,8 @@ package net.minecraft.block;
 import com.google.common.base.MoreObjects;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -27,30 +27,30 @@ public class TripwireHookBlock extends Block {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
-	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
-	protected static final VoxelShape field_11668 = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
-	protected static final VoxelShape field_11670 = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
-	protected static final VoxelShape field_11667 = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
+	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
+	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
+	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
+	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
 
 	public TripwireHookBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case EAST:
+			case field_11034:
 			default:
-				return field_11667;
-			case WEST:
-				return field_11670;
-			case SOUTH:
-				return field_11668;
-			case NORTH:
-				return field_11665;
+				return WEST_SHAPE;
+			case field_11039:
+				return EAST_SHAPE;
+			case field_11035:
+				return NORTH_SHAPE;
+			case field_11043:
+				return SOUTH_SHAPE;
 		}
 	}
 
@@ -67,7 +67,7 @@ public class TripwireHookBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -228,7 +228,7 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.MIPPED_CUTOUT;
+		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
 	@Override
@@ -243,6 +243,6 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, POWERED, ATTACHED);
+		builder.add(FACING, POWERED, ATTACHED);
 	}
 }

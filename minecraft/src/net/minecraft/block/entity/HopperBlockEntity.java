@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.InventoryProvider;
@@ -20,9 +21,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
@@ -38,7 +39,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	private long lastTickTime;
 
 	public HopperBlockEntity() {
-		super(BlockEntityType.HOPPER);
+		super(BlockEntityType.field_11888);
 	}
 
 	@Override
@@ -84,18 +85,20 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.hopper");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.hopper");
 	}
 
 	@Override
 	public void tick() {
 		if (this.world != null && !this.world.isClient) {
-			this.transferCooldown--;
-			this.lastTickTime = this.world.getTime();
-			if (!this.needsCooldown()) {
-				this.setCooldown(0);
-				this.insertAndExtract(() -> extract(this));
+			if (this.getCachedState().getBlock() == Blocks.field_10312) {
+				this.transferCooldown--;
+				this.lastTickTime = this.world.getTime();
+				if (!this.needsCooldown()) {
+					this.setCooldown(0);
+					this.insertAndExtract(() -> extract(this));
+				}
 			}
 		}
 	}
@@ -197,7 +200,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public static boolean extract(Hopper hopper) {
 		Inventory inventory = getInputInventory(hopper);
 		if (inventory != null) {
-			Direction direction = Direction.DOWN;
+			Direction direction = Direction.field_11033;
 			return isInventoryEmpty(inventory, direction) ? false : getAvailableSlots(inventory, direction).anyMatch(i -> extract(hopper, inventory, i, direction));
 		} else {
 			for (ItemEntity itemEntity : getInputItemEntities(hopper)) {

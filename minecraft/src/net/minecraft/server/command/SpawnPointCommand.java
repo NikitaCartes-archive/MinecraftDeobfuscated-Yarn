@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class SpawnPointCommand {
@@ -45,7 +45,7 @@ public class SpawnPointCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
+				new TranslatableComponent(
 					"commands.spawnpoint.success.single",
 					blockPos.getX(),
 					blockPos.getY(),
@@ -56,7 +56,7 @@ public class SpawnPointCommand {
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true
+				new TranslatableComponent("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true
 			);
 		}
 

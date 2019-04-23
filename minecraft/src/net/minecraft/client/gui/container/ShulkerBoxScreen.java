@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.container.ShulkerBoxContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
-	public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(shulkerBoxContainer, playerInventory, textComponent);
+	public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, Component component) {
+		super(shulkerBoxContainer, playerInventory, component);
 		this.containerHeight++;
 	}
 

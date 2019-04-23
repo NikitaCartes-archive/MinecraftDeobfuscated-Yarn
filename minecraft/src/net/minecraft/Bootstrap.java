@@ -36,7 +36,7 @@ public class Bootstrap {
 			} else {
 				FireBlock.registerDefaultFlammables();
 				ComposterBlock.registerDefaultCompostableItems();
-				if (EntityType.getId(EntityType.PLAYER) == null) {
+				if (EntityType.getId(EntityType.field_6097) == null) {
 					throw new IllegalStateException("Failed loading EntityTypes");
 				} else {
 					BrewingRecipeRegistry.registerDefaults();

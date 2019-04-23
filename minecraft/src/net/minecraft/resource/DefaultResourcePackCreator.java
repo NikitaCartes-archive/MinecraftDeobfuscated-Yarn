@@ -7,7 +7,7 @@ public class DefaultResourcePackCreator implements ResourcePackCreator {
 
 	@Override
 	public <T extends ResourcePackContainer> void registerContainer(Map<String, T> map, ResourcePackContainer.Factory<T> factory) {
-		T resourcePackContainer = ResourcePackContainer.of("vanilla", false, () -> this.pack, factory, ResourcePackContainer.SortingDirection.field_14281);
+		T resourcePackContainer = ResourcePackContainer.of("vanilla", false, () -> this.pack, factory, ResourcePackContainer.InsertionPosition.field_14281);
 		if (resourcePackContainer != null) {
 			map.put("vanilla", resourcePackContainer);
 		}

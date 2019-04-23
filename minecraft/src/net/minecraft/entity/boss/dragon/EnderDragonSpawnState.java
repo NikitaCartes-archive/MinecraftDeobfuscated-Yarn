@@ -23,10 +23,10 @@ public enum EnderDragonSpawnState {
 				enderCrystalEntity.setBeamTarget(blockPos2);
 			}
 
-			enderDragonFight.setSpawnState(PREPARE_CREATE_SPIKES);
+			enderDragonFight.setSpawnState(PREPARING_TO_SUMMON_PILLARS);
 		}
 	},
-	PREPARE_CREATE_SPIKES {
+	PREPARING_TO_SUMMON_PILLARS {
 		@Override
 		public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {
 			if (i < 100) {
@@ -34,11 +34,11 @@ public enum EnderDragonSpawnState {
 					serverWorld.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
 				}
 			} else {
-				enderDragonFight.setSpawnState(CREATE_SPIKES);
+				enderDragonFight.setSpawnState(SUMMONING_PILLARS);
 			}
 		}
 	},
-	CREATE_SPIKES {
+	SUMMONING_PILLARS {
 		@Override
 		public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {
 			int j = 40;
@@ -82,12 +82,12 @@ public enum EnderDragonSpawnState {
 							);
 					}
 				} else if (bl) {
-					enderDragonFight.setSpawnState(SPAWN_DRAGON);
+					enderDragonFight.setSpawnState(SUMMONING_DRAGOM);
 				}
 			}
 		}
 	},
-	SPAWN_DRAGON {
+	SUMMONING_DRAGOM {
 		@Override
 		public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {
 			if (i >= 100) {

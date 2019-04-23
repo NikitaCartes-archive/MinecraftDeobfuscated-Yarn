@@ -23,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -80,10 +81,10 @@ public class UpgradeData {
 			Set<Direction> set = eightWayDirection.getDirections();
 			int i = 0;
 			int j = 15;
-			boolean bl = set.contains(Direction.EAST);
-			boolean bl2 = set.contains(Direction.WEST);
-			boolean bl3 = set.contains(Direction.SOUTH);
-			boolean bl4 = set.contains(Direction.NORTH);
+			boolean bl = set.contains(Direction.field_11034);
+			boolean bl2 = set.contains(Direction.field_11039);
+			boolean bl3 = set.contains(Direction.field_11035);
+			boolean bl4 = set.contains(Direction.field_11043);
 			boolean bl5 = set.size() == 1;
 			ChunkPos chunkPos = worldChunk.getPos();
 			int k = chunkPos.getStartX() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 1);
@@ -108,7 +109,7 @@ public class UpgradeData {
 	}
 
 	private static BlockState method_12351(BlockState blockState, Direction direction, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return ((UpgradeData.class_2844)field_12953.getOrDefault(blockState.getBlock(), UpgradeData.class_2845.field_12962))
+		return ((UpgradeData.class_2844)field_12953.getOrDefault(blockState.getBlock(), UpgradeData.class_2845.DEFAULT))
 			.method_12358(blockState, direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 	}
 
@@ -201,7 +202,7 @@ public class UpgradeData {
 	}
 
 	static enum class_2845 implements UpgradeData.class_2844 {
-		field_12957(
+		BLACKLIST(
 			Blocks.field_10282,
 			Blocks.field_10316,
 			Blocks.field_10197,
@@ -245,13 +246,13 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		field_12962 {
+		DEFAULT {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				return blockState.getStateForNeighborUpdate(direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 			}
 		},
-		field_12960(Blocks.field_10034, Blocks.field_10380) {
+		CHEST(Blocks.field_10034, Blocks.field_10380) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if (blockState2.getBlock() == blockState.getBlock()
@@ -262,7 +263,7 @@ public class UpgradeData {
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.field_12574 : ChestType.field_12571;
 						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
-						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
+						if (direction2 == Direction.field_11043 || direction2 == Direction.field_11034) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos2);
 							if (blockEntity instanceof ChestBlockEntity && blockEntity2 instanceof ChestBlockEntity) {
@@ -277,7 +278,7 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		field_12963(true, Blocks.field_10098, Blocks.field_10539, Blocks.field_10035, Blocks.field_10335, Blocks.field_10503, Blocks.field_9988) {
+		LEAVES(true, Blocks.field_10098, Blocks.field_10539, Blocks.field_10035, Blocks.field_10335, Blocks.field_10503, Blocks.field_9988) {
 			private final ThreadLocal<List<ObjectSet<BlockPos>>> field_12964 = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 
 			@Override
@@ -328,7 +329,7 @@ public class UpgradeData {
 				list.clear();
 			}
 		},
-		field_12958(Blocks.field_10168, Blocks.field_9984) {
+		STEM_BLOCK(Blocks.field_10168, Blocks.field_9984) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if ((Integer)blockState.get(StemBlock.AGE) == 7) {

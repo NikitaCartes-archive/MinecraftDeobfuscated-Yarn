@@ -11,8 +11,8 @@ public class ProtectionEnchantment extends Enchantment {
 	public ProtectionEnchantment(Enchantment.Weight weight, ProtectionEnchantment.Type type, EquipmentSlot... equipmentSlots) {
 		super(weight, EnchantmentTarget.ARMOR, equipmentSlots);
 		this.type = type;
-		if (type == ProtectionEnchantment.Type.FALL) {
-			this.type = EnchantmentTarget.FEET;
+		if (type == ProtectionEnchantment.Type.field_9140) {
+			this.type = EnchantmentTarget.ARMOR_FEET;
 		}
 	}
 
@@ -30,16 +30,16 @@ public class ProtectionEnchantment extends Enchantment {
 	public int getProtectionAmount(int i, DamageSource damageSource) {
 		if (damageSource.doesDamageToCreative()) {
 			return 0;
-		} else if (this.type == ProtectionEnchantment.Type.ALL) {
+		} else if (this.type == ProtectionEnchantment.Type.field_9138) {
 			return i;
-		} else if (this.type == ProtectionEnchantment.Type.FIRE && damageSource.isFire()) {
+		} else if (this.type == ProtectionEnchantment.Type.field_9139 && damageSource.isFire()) {
 			return i * 2;
-		} else if (this.type == ProtectionEnchantment.Type.FALL && damageSource == DamageSource.FALL) {
+		} else if (this.type == ProtectionEnchantment.Type.field_9140 && damageSource == DamageSource.FALL) {
 			return i * 3;
-		} else if (this.type == ProtectionEnchantment.Type.EXPLOSION && damageSource.isExplosive()) {
+		} else if (this.type == ProtectionEnchantment.Type.field_9141 && damageSource.isExplosive()) {
 			return i * 2;
 		} else {
-			return this.type == ProtectionEnchantment.Type.PROJECTILE && damageSource.isProjectile() ? i * 2 : 0;
+			return this.type == ProtectionEnchantment.Type.field_9142 && damageSource.isProjectile() ? i * 2 : 0;
 		}
 	}
 
@@ -72,11 +72,11 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	public static enum Type {
-		ALL("all", 1, 11),
-		FIRE("fire", 10, 8),
-		FALL("fall", 5, 6),
-		EXPLOSION("explosion", 5, 8),
-		PROJECTILE("projectile", 3, 6);
+		field_9138("all", 1, 11),
+		field_9139("fire", 10, 8),
+		field_9140("fall", 5, 6),
+		field_9141("explosion", 5, 8),
+		field_9142("projectile", 3, 6);
 
 		private final String name;
 		private final int basePower;

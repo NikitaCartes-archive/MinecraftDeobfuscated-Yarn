@@ -10,14 +10,14 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockStateArgument;
 import net.minecraft.command.arguments.BlockStateArgumentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class SetBlockCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.setblock.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.setblock.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -102,7 +102,7 @@ public class SetBlockCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				serverWorld.updateNeighbors(blockPos, blockStateArgument.getBlockState().getBlock());
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 				return 1;
 			}
 		}

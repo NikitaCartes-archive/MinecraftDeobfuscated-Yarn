@@ -6,36 +6,36 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.TameableEntity;
 
 public class AttackWithOwnerGoal extends TrackTargetGoal {
-	private final TameableEntity owner;
+	private final TameableEntity tameable;
 	private LivingEntity attacking;
 	private int lastAttackTime;
 
 	public AttackWithOwnerGoal(TameableEntity tameableEntity) {
 		super(tameableEntity, false);
-		this.owner = tameableEntity;
+		this.tameable = tameableEntity;
 		this.setControls(EnumSet.of(Goal.Control.field_18408));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.owner.isTamed()) {
+		if (!this.tameable.isTamed()) {
 			return false;
 		} else {
-			LivingEntity livingEntity = this.owner.getOwner();
+			LivingEntity livingEntity = this.tameable.getOwner();
 			if (livingEntity == null) {
 				return false;
 			} else {
 				this.attacking = livingEntity.getAttacking();
 				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, TargetPredicate.DEFAULT) && this.owner.canAttackWithOwner(this.attacking, livingEntity);
+				return i != this.lastAttackTime && this.canTrack(this.attacking, TargetPredicate.DEFAULT) && this.tameable.canAttackWithOwner(this.attacking, livingEntity);
 			}
 		}
 	}
 
 	@Override
 	public void start() {
-		this.entity.setTarget(this.attacking);
-		LivingEntity livingEntity = this.owner.getOwner();
+		this.mob.setTarget(this.attacking);
+		LivingEntity livingEntity = this.tameable.getOwner();
 		if (livingEntity != null) {
 			this.lastAttackTime = livingEntity.getLastAttackTime();
 		}

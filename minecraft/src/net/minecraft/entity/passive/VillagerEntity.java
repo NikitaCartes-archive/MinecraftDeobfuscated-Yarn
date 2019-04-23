@@ -53,6 +53,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
@@ -61,8 +63,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -180,7 +180,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private void initBrain(Brain<VillagerEntity> brain) {
 		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
 		float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
-		if (this.isChild()) {
+		if (this.isBaby()) {
 			brain.setSchedule(Schedule.VILLAGER_BABY);
 			brain.setTaskList(Activity.field_18885, VillagerTaskListProvider.createPlayTasks(f));
 		} else {
@@ -280,12 +280,12 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			return true;
 		} else if (itemStack.getItem() == Items.field_8086 || !this.isAlive() || this.hasCustomer() || this.isSleeping()) {
 			return super.interactMob(playerEntity, hand);
-		} else if (this.isChild()) {
+		} else if (this.isBaby()) {
 			this.sayNo();
 			return super.interactMob(playerEntity, hand);
 		} else {
 			boolean bl2 = this.getOffers().isEmpty();
-			if (hand == Hand.MAIN) {
+			if (hand == Hand.field_5808) {
 				if (bl2) {
 					this.sayNo();
 				}
@@ -535,7 +535,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.foodLevel = (byte)(this.foodLevel - i);
 	}
 
-	public void setRecipes(TraderOfferList traderOfferList) {
+	public void setOffers(TraderOfferList traderOfferList) {
 		this.offers = traderOfferList;
 	}
 
@@ -550,23 +550,21 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		AbstractTeam abstractTeam = this.getScoreboardTeam();
-		TextComponent textComponent = this.getCustomName();
-		if (textComponent != null) {
-			return Team.modifyText(abstractTeam, textComponent)
+		Component component = this.getCustomName();
+		if (component != null) {
+			return Team.modifyText(abstractTeam, component)
 				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 		} else {
 			VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-			TextComponent textComponent2 = new TranslatableTextComponent(
-					this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath()
-				)
+			Component component2 = new TranslatableComponent(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath())
 				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 			if (abstractTeam != null) {
-				textComponent2.applyFormat(abstractTeam.getColor());
+				component2.applyFormat(abstractTeam.getColor());
 			}
 
-			return textComponent2;
+			return component2;
 		}
 	}
 
@@ -613,14 +611,14 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			villagerType = ((VillagerEntity)passiveEntity).getVillagerData().getType();
 		}
 
-		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
+		VillagerEntity villagerEntity = new VillagerEntity(EntityType.field_6077, this.world, villagerType);
 		villagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16466, null, null);
 		return villagerEntity;
 	}
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		WitchEntity witchEntity = EntityType.WITCH.create(this.world);
+		WitchEntity witchEntity = EntityType.field_6145.create(this.world);
 		witchEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.field_16468, null, null);
 		witchEntity.setAiDisabled(this.isAiDisabled());
@@ -755,7 +753,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			if (this.oneMinAfterLastGolemCheckTimestamp < l + 1200L) {
 				this.oneMinAfterLastGolemCheckTimestamp = l + 1200L;
 				Entity entity = ((ServerWorld)this.world).getEntity(this.buddyGolemId);
-				if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 80.0) {
+				if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 6400.0) {
 					this.buddyGolemId = null;
 					return true;
 				}
@@ -771,7 +769,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
-			IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos2, SpawnType.field_16471, false, false);
+			IronGolemEntity ironGolemEntity = EntityType.field_6147.create(this.world, null, null, null, blockPos2, SpawnType.field_16471, false, false);
 			if (ironGolemEntity != null) {
 				if (ironGolemEntity.canSpawn(this.world, SpawnType.field_16471) && ironGolemEntity.canSpawn(this.world)) {
 					this.world.spawnEntity(ironGolemEntity);

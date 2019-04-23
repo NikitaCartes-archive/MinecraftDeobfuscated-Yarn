@@ -117,7 +117,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
+					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.field_11036, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;
@@ -232,24 +232,24 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public float applyRotation(BlockRotation blockRotation) {
 		if (this.facing != null && this.facing.getAxis() != Direction.Axis.Y) {
 			switch (blockRotation) {
-				case ROT_180:
+				case field_11464:
 					this.facing = this.facing.getOpposite();
 					break;
-				case ROT_270:
+				case field_11465:
 					this.facing = this.facing.rotateYCounterclockwise();
 					break;
-				case ROT_90:
+				case field_11463:
 					this.facing = this.facing.rotateYClockwise();
 			}
 		}
 
 		float f = MathHelper.wrapDegrees(this.yaw);
 		switch (blockRotation) {
-			case ROT_180:
+			case field_11464:
 				return f + 180.0F;
-			case ROT_270:
+			case field_11465:
 				return f + 90.0F;
-			case ROT_90:
+			case field_11463:
 				return f + 270.0F;
 			default:
 				return f;

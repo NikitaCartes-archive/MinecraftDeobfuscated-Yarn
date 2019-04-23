@@ -71,7 +71,11 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -85,25 +89,21 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Void;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class PlayerEntity extends LivingEntity {
@@ -131,7 +131,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected int field_7489;
 	public float field_7505;
 	public float field_7483;
-	public int field_7504;
+	public int experiencePickUpDelay;
 	public double field_7524;
 	public double field_7502;
 	public double field_7522;
@@ -143,22 +143,22 @@ public abstract class PlayerEntity extends LivingEntity {
 	private BlockPos spawnPosition;
 	private boolean spawnForced;
 	public final PlayerAbilities abilities = new PlayerAbilities();
-	public int experience;
 	public int experienceLevel;
-	public float experienceLevelProgress;
+	public int totalExperience;
+	public float experienceProgress;
 	protected int enchantmentTableSeed;
 	protected final float field_7509 = 0.02F;
-	private int field_7508;
+	private int lastPlayedLevelUpSoundTime;
 	private final GameProfile gameProfile;
 	@Environment(EnvType.CLIENT)
 	private boolean reducedDebugInfo;
-	private ItemStack field_7525 = ItemStack.EMPTY;
+	private ItemStack selectedItem = ItemStack.EMPTY;
 	private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
 	@Nullable
 	public FishHookEntity fishHook;
 
 	public PlayerEntity(World world, GameProfile gameProfile) {
-		super(EntityType.PLAYER, world);
+		super(EntityType.field_6097, world);
 		this.setUuid(getUuidFromProfile(gameProfile));
 		this.gameProfile = gameProfile;
 		this.playerContainer = new PlayerContainer(this.inventory, !world.isClient, this);
@@ -195,8 +195,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.onGround = false;
 		}
 
-		if (this.field_7504 > 0) {
-			this.field_7504--;
+		if (this.experiencePickUpDelay > 0) {
+			this.experiencePickUpDelay--;
 		}
 
 		if (this.isSleeping()) {
@@ -250,14 +250,14 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.setPosition(d, this.y, e);
 		}
 
-		this.field_6273++;
+		this.lastAttackedTicks++;
 		ItemStack itemStack = this.getMainHandStack();
-		if (!ItemStack.areEqual(this.field_7525, itemStack)) {
-			if (!ItemStack.areEqualIgnoreDurability(this.field_7525, itemStack)) {
-				this.method_7350();
+		if (!ItemStack.areEqual(this.selectedItem, itemStack)) {
+			if (!ItemStack.areEqualIgnoreDurability(this.selectedItem, itemStack)) {
+				this.resetLastAttackedTicks();
 			}
 
-			this.field_7525 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+			this.selectedItem = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
 		}
 
 		this.updateTurtleHelmet();
@@ -271,7 +271,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private void updateTurtleHelmet() {
-		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
 		if (itemStack.getItem() == Items.field_8090 && !this.isInFluid(FluidTags.field_15517)) {
 			this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5923, 200, 0, false, false, true));
 		}
@@ -389,7 +389,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15248;
+		return SoundCategory.PLAYERS;
 	}
 
 	@Override
@@ -414,14 +414,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void spawnParticles(ParticleParameters particleParameters) {
+	private void spawnParticles(ParticleEffect particleEffect) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleParameters,
+					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 1.0 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -461,9 +461,9 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5823() {
+	public void afterSpawn() {
 		this.setPose(EntityPose.field_18076);
-		super.method_5823();
+		super.afterSpawn();
 		this.setHealth(this.getHealthMaximum());
 		this.deathTime = 0;
 	}
@@ -476,12 +476,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (this.field_7489 > 0) {
 			this.field_7489--;
 		}
 
-		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.world.getGameRules().getBoolean("naturalRegeneration")) {
+		if (this.world.getDifficulty() == Difficulty.field_5801 && this.world.getGameRules().getBoolean("naturalRegeneration")) {
 			if (this.getHealth() < this.getHealthMaximum() && this.age % 20 == 0) {
 				this.heal(1.0F);
 			}
@@ -493,7 +493,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.inventory.updateItems();
 		this.field_7505 = this.field_7483;
-		super.updateState();
+		super.tickMovement();
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (!this.world.isClient) {
 			entityAttributeInstance.setBaseValue((double)this.abilities.getWalkSpeed());
@@ -541,7 +541,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && !compoundTag.containsKey("Silent") || !compoundTag.getBoolean("Silent")) {
 			String string = compoundTag.getString("id");
-			EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> ParrotEntity.playMobSound(this.world, this));
+			EntityType.get(string).filter(entityType -> entityType == EntityType.field_6104).ifPresent(entityType -> ParrotEntity.playMobSound(this.world, this));
 		}
 	}
 
@@ -728,9 +728,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.inventory.deserialize(listTag);
 		this.inventory.selectedSlot = compoundTag.getInt("SelectedItemSlot");
 		this.sleepTimer = compoundTag.getShort("SleepTimer");
-		this.experienceLevelProgress = compoundTag.getFloat("XpP");
-		this.experience = compoundTag.getInt("XpLevel");
-		this.experienceLevel = compoundTag.getInt("XpTotal");
+		this.experienceProgress = compoundTag.getFloat("XpP");
+		this.experienceLevel = compoundTag.getInt("XpLevel");
+		this.totalExperience = compoundTag.getInt("XpTotal");
 		this.enchantmentTableSeed = compoundTag.getInt("XpSeed");
 		if (this.enchantmentTableSeed == 0) {
 			this.enchantmentTableSeed = this.random.nextInt();
@@ -764,9 +764,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		compoundTag.put("Inventory", this.inventory.serialize(new ListTag()));
 		compoundTag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
 		compoundTag.putShort("SleepTimer", (short)this.sleepTimer);
-		compoundTag.putFloat("XpP", this.experienceLevelProgress);
-		compoundTag.putInt("XpLevel", this.experience);
-		compoundTag.putInt("XpTotal", this.experienceLevel);
+		compoundTag.putFloat("XpP", this.experienceProgress);
+		compoundTag.putInt("XpLevel", this.experienceLevel);
+		compoundTag.putInt("XpTotal", this.totalExperience);
 		compoundTag.putInt("XpSeed", this.enchantmentTableSeed);
 		compoundTag.putInt("Score", this.getScore());
 		if (this.spawnPosition != null) {
@@ -801,15 +801,15 @@ public abstract class PlayerEntity extends LivingEntity {
 			} else {
 				this.dropShoulderEntities();
 				if (damageSource.isScaledWithDifficulty()) {
-					if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
+					if (this.world.getDifficulty() == Difficulty.field_5801) {
 						f = 0.0F;
 					}
 
-					if (this.world.getDifficulty() == Difficulty.EASY) {
+					if (this.world.getDifficulty() == Difficulty.field_5805) {
 						f = Math.min(f / 2.0F + 1.0F, f);
 					}
 
-					if (this.world.getDifficulty() == Difficulty.HARD) {
+					if (this.world.getDifficulty() == Difficulty.field_5807) {
 						f = f * 3.0F / 2.0F;
 					}
 				}
@@ -849,10 +849,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			Hand hand = this.getActiveHand();
 			this.activeItemStack.applyDamage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			if (this.activeItemStack.isEmpty()) {
-				if (hand == Hand.MAIN) {
-					this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+				if (hand == Hand.field_5808) {
+					this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 				} else {
-					this.setEquippedStack(EquipmentSlot.HAND_OFF, ItemStack.EMPTY);
+					this.setEquippedStack(EquipmentSlot.field_6171, ItemStack.EMPTY);
 				}
 
 				this.activeItemStack = ItemStack.EMPTY;
@@ -919,7 +919,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.openContainer((NameableContainerProvider)entity);
 			}
 
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			ItemStack itemStack = this.getStackInHand(hand);
 			ItemStack itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
@@ -944,7 +944,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					}
 				}
 
-				return ActionResult.PASS;
+				return ActionResult.field_5811;
 			}
 		}
 	}
@@ -976,10 +976,10 @@ public abstract class PlayerEntity extends LivingEntity {
 					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), EntityGroup.DEFAULT);
 				}
 
-				float h = this.method_7261(0.5F);
+				float h = this.getAttackCooldownProgress(0.5F);
 				f *= 0.2F + h * h * 0.8F;
 				g *= h;
-				this.method_7350();
+				this.resetLastAttackedTicks();
 				if (f > 0.0F || g > 0.0F) {
 					boolean bl = h > 0.9F;
 					boolean bl2 = false;
@@ -1008,7 +1008,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					boolean bl4 = false;
 					double d = (double)(this.field_5973 - this.field_6039);
 					if (bl && !bl3 && !bl2 && this.onGround && d < (double)this.getMovementSpeed()) {
-						ItemStack itemStack = this.getStackInHand(Hand.MAIN);
+						ItemStack itemStack = this.getStackInHand(Hand.field_5808);
 						if (itemStack.getItem() instanceof SwordItem) {
 							bl4 = true;
 						}
@@ -1104,7 +1104,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						if (!this.world.isClient && !itemStack2.isEmpty() && entity2 instanceof LivingEntity) {
 							itemStack2.onEntityDamaged((LivingEntity)entity2, this);
 							if (itemStack2.isEmpty()) {
-								this.setStackInHand(Hand.MAIN, ItemStack.EMPTY);
+								this.setStackInHand(Hand.field_5808, ItemStack.EMPTY);
 							}
 						}
 
@@ -1187,23 +1187,23 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.gameProfile;
 	}
 
-	public Either<PlayerEntity.SleepFailureReason, Void> trySleep(BlockPos blockPos) {
+	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos blockPos) {
 		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.FACING);
 		if (!this.world.isClient) {
 			if (this.isSleeping() || !this.isAlive()) {
-				return Either.left(PlayerEntity.SleepFailureReason.INVALID_ATTEMPT);
+				return Either.left(PlayerEntity.SleepFailureReason.field_7531);
 			}
 
 			if (!this.world.dimension.hasVisibleSky()) {
-				return Either.left(PlayerEntity.SleepFailureReason.INVALID_WORLD);
+				return Either.left(PlayerEntity.SleepFailureReason.field_7528);
 			}
 
 			if (this.world.isDaylight()) {
-				return Either.left(PlayerEntity.SleepFailureReason.WRONG_TIME);
+				return Either.left(PlayerEntity.SleepFailureReason.field_7529);
 			}
 
 			if (!this.isWithinSleepingRange(blockPos, direction)) {
-				return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
+				return Either.left(PlayerEntity.SleepFailureReason.field_7530);
 			}
 
 			if (this.isBedObstructed(blockPos, direction)) {
@@ -1227,7 +1227,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						hostileEntity -> hostileEntity.isAngryAt(this)
 					);
 				if (!list.isEmpty()) {
-					return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
+					return Either.left(PlayerEntity.SleepFailureReason.field_7532);
 				}
 			}
 		}
@@ -1238,7 +1238,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			((ServerWorld)this.world).updatePlayersSleeping();
 		}
 
-		return Either.right(Void.INSTANCE);
+		return Either.right(Unit.field_17274);
 	}
 
 	@Override
@@ -1284,19 +1284,18 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true, false);
 	}
 
-	@Nullable
-	public static BlockPos method_7288(BlockView blockView, BlockPos blockPos, boolean bl) {
-		Block block = blockView.getBlockState(blockPos).getBlock();
+	public static Optional<Vec3d> method_7288(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
+		Block block = viewableWorld.getBlockState(blockPos).getBlock();
 		if (!(block instanceof BedBlock)) {
 			if (!bl) {
-				return null;
+				return Optional.empty();
 			} else {
 				boolean bl2 = block.canMobSpawnInside();
-				boolean bl3 = blockView.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
-				return bl2 && bl3 ? blockPos : null;
+				boolean bl3 = viewableWorld.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
+				return bl2 && bl3 ? Optional.of(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.1, (double)blockPos.getZ() + 0.5)) : Optional.empty();
 			}
 		} else {
-			return BedBlock.findWakeUpPosition(blockView, blockPos, 0);
+			return BedBlock.findWakeUpPosition(EntityType.field_6097, viewableWorld, blockPos, 0);
 		}
 	}
 
@@ -1308,7 +1307,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.sleepTimer;
 	}
 
-	public void addChatMessage(TextComponent textComponent, boolean bl) {
+	public void addChatMessage(Component component, boolean bl) {
 	}
 
 	public BlockPos getSpawnPosition() {
@@ -1509,7 +1508,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_5874(LivingEntity livingEntity) {
+	public void onKilledOther(LivingEntity livingEntity) {
 		this.incrementStat(Stats.field_15403.getOrCreateStat(livingEntity.getType()));
 	}
 
@@ -1522,24 +1521,24 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public void addExperience(int i) {
 		this.addScore(i);
-		this.experienceLevelProgress = this.experienceLevelProgress + (float)i / (float)this.getNextLevelExperience();
-		this.experienceLevel = MathHelper.clamp(this.experienceLevel + i, 0, Integer.MAX_VALUE);
+		this.experienceProgress = this.experienceProgress + (float)i / (float)this.getNextLevelExperience();
+		this.totalExperience = MathHelper.clamp(this.totalExperience + i, 0, Integer.MAX_VALUE);
 
-		while (this.experienceLevelProgress < 0.0F) {
-			float f = this.experienceLevelProgress * (float)this.getNextLevelExperience();
-			if (this.experience > 0) {
-				this.method_7316(-1);
-				this.experienceLevelProgress = 1.0F + f / (float)this.getNextLevelExperience();
+		while (this.experienceProgress < 0.0F) {
+			float f = this.experienceProgress * (float)this.getNextLevelExperience();
+			if (this.experienceLevel > 0) {
+				this.addExperienceLevels(-1);
+				this.experienceProgress = 1.0F + f / (float)this.getNextLevelExperience();
 			} else {
-				this.method_7316(-1);
-				this.experienceLevelProgress = 0.0F;
+				this.addExperienceLevels(-1);
+				this.experienceProgress = 0.0F;
 			}
 		}
 
-		while (this.experienceLevelProgress >= 1.0F) {
-			this.experienceLevelProgress = (this.experienceLevelProgress - 1.0F) * (float)this.getNextLevelExperience();
-			this.method_7316(1);
-			this.experienceLevelProgress = this.experienceLevelProgress / (float)this.getNextLevelExperience();
+		while (this.experienceProgress >= 1.0F) {
+			this.experienceProgress = (this.experienceProgress - 1.0F) * (float)this.getNextLevelExperience();
+			this.addExperienceLevels(1);
+			this.experienceProgress = this.experienceProgress / (float)this.getNextLevelExperience();
 		}
 	}
 
@@ -1547,37 +1546,37 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.enchantmentTableSeed;
 	}
 
-	public void method_7286(ItemStack itemStack, int i) {
-		this.experience -= i;
-		if (this.experience < 0) {
-			this.experience = 0;
-			this.experienceLevelProgress = 0.0F;
+	public void applyEnchantmentCosts(ItemStack itemStack, int i) {
+		this.experienceLevel -= i;
+		if (this.experienceLevel < 0) {
 			this.experienceLevel = 0;
+			this.experienceProgress = 0.0F;
+			this.totalExperience = 0;
 		}
 
 		this.enchantmentTableSeed = this.random.nextInt();
 	}
 
-	public void method_7316(int i) {
-		this.experience += i;
-		if (this.experience < 0) {
-			this.experience = 0;
-			this.experienceLevelProgress = 0.0F;
+	public void addExperienceLevels(int i) {
+		this.experienceLevel += i;
+		if (this.experienceLevel < 0) {
 			this.experienceLevel = 0;
+			this.experienceProgress = 0.0F;
+			this.totalExperience = 0;
 		}
 
-		if (i > 0 && this.experience % 5 == 0 && (float)this.field_7508 < (float)this.age - 100.0F) {
-			float f = this.experience > 30 ? 1.0F : (float)this.experience / 30.0F;
+		if (i > 0 && this.experienceLevel % 5 == 0 && (float)this.lastPlayedLevelUpSoundTime < (float)this.age - 100.0F) {
+			float f = this.experienceLevel > 30 ? 1.0F : (float)this.experienceLevel / 30.0F;
 			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14709, this.getSoundCategory(), f * 0.75F, 1.0F);
-			this.field_7508 = this.age;
+			this.lastPlayedLevelUpSoundTime = this.age;
 		}
 	}
 
 	public int getNextLevelExperience() {
-		if (this.experience >= 30) {
-			return 112 + (this.experience - 30) * 9;
+		if (this.experienceLevel >= 30) {
+			return 112 + (this.experienceLevel - 30) * 9;
 		} else {
-			return this.experience >= 15 ? 37 + (this.experience - 15) * 5 : 7 + this.experience * 2;
+			return this.experienceLevel >= 15 ? 37 + (this.experienceLevel - 15) * 5 : 7 + this.experienceLevel * 2;
 		}
 	}
 
@@ -1618,7 +1617,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected int getCurrentExperience(PlayerEntity playerEntity) {
 		if (!this.world.getGameRules().getBoolean("keepInventory") && !this.isSpectator()) {
-			int i = this.experience * 7;
+			int i = this.experienceLevel * 7;
 			return i > 100 ? 100 : i;
 		} else {
 			return 0;
@@ -1648,8 +1647,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public TextComponent getName() {
-		return new StringTextComponent(this.gameProfile.getName());
+	public Component getName() {
+		return new TextComponent(this.gameProfile.getName());
 	}
 
 	public EnderChestInventory getEnderChestInventory() {
@@ -1658,24 +1657,24 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
-		if (equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (equipmentSlot == EquipmentSlot.field_6173) {
 			return this.inventory.getMainHandStack();
-		} else if (equipmentSlot == EquipmentSlot.HAND_OFF) {
+		} else if (equipmentSlot == EquipmentSlot.field_6171) {
 			return this.inventory.offHand.get(0);
 		} else {
-			return equipmentSlot.getType() == EquipmentSlot.Type.ARMOR ? this.inventory.armor.get(equipmentSlot.getEntitySlotId()) : ItemStack.EMPTY;
+			return equipmentSlot.getType() == EquipmentSlot.Type.field_6178 ? this.inventory.armor.get(equipmentSlot.getEntitySlotId()) : ItemStack.EMPTY;
 		}
 	}
 
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-		if (equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (equipmentSlot == EquipmentSlot.field_6173) {
 			this.onEquipStack(itemStack);
 			this.inventory.main.set(this.inventory.selectedSlot, itemStack);
-		} else if (equipmentSlot == EquipmentSlot.HAND_OFF) {
+		} else if (equipmentSlot == EquipmentSlot.field_6171) {
 			this.onEquipStack(itemStack);
 			this.inventory.offHand.set(0, itemStack);
-		} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+		} else if (equipmentSlot.getType() == EquipmentSlot.Type.field_6178) {
 			this.onEquipStack(itemStack);
 			this.inventory.armor.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
@@ -1763,19 +1762,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public TextComponent getDisplayName() {
-		TextComponent textComponent = Team.modifyText(this.getScoreboardTeam(), this.getName());
-		return this.addTellClickEvent(textComponent);
+	public Component getDisplayName() {
+		Component component = Team.modifyText(this.getScoreboardTeam(), this.getName());
+		return this.addTellClickEvent(component);
 	}
 
-	public TextComponent getNameAndUuid() {
-		return new StringTextComponent("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
+	public Component getNameAndUuid() {
+		return new TextComponent("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
 	}
 
-	private TextComponent addTellClickEvent(TextComponent textComponent) {
+	private Component addTellClickEvent(Component component) {
 		String string = this.getGameProfile().getName();
-		return textComponent.modifyStyle(
-			style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " "))
+		return component.modifyStyle(
+			style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tell " + string + " "))
 					.setHoverEvent(this.getComponentHoverEvent())
 					.setInsertion(string)
 		);
@@ -1839,23 +1838,23 @@ public abstract class PlayerEntity extends LivingEntity {
 			return true;
 		} else {
 			EquipmentSlot equipmentSlot;
-			if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.HEAD;
-			} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.CHEST;
-			} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.LEGS;
-			} else if (i == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.FEET;
+			if (i == 100 + EquipmentSlot.field_6169.getEntitySlotId()) {
+				equipmentSlot = EquipmentSlot.field_6169;
+			} else if (i == 100 + EquipmentSlot.field_6174.getEntitySlotId()) {
+				equipmentSlot = EquipmentSlot.field_6174;
+			} else if (i == 100 + EquipmentSlot.field_6172.getEntitySlotId()) {
+				equipmentSlot = EquipmentSlot.field_6172;
+			} else if (i == 100 + EquipmentSlot.field_6166.getEntitySlotId()) {
+				equipmentSlot = EquipmentSlot.field_6166;
 			} else {
 				equipmentSlot = null;
 			}
 
 			if (i == 98) {
-				this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
+				this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
 				return true;
 			} else if (i == 99) {
-				this.setEquippedStack(EquipmentSlot.HAND_OFF, itemStack);
+				this.setEquippedStack(EquipmentSlot.field_6171, itemStack);
 				return true;
 			} else if (equipmentSlot == null) {
 				int j = i - 200;
@@ -1868,7 +1867,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			} else {
 				if (!itemStack.isEmpty()) {
 					if (!(itemStack.getItem() instanceof ArmorItem) && !(itemStack.getItem() instanceof ElytraItem)) {
-						if (equipmentSlot != EquipmentSlot.HEAD) {
+						if (equipmentSlot != EquipmentSlot.field_6169) {
 							return false;
 						}
 					} else if (MobEntity.getPreferredEquipmentSlot(itemStack) != equipmentSlot) {
@@ -1917,16 +1916,16 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, compoundTag);
 	}
 
-	public float method_7279() {
+	public float getAttackCooldownProgressPerTick() {
 		return (float)(1.0 / this.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getValue() * 20.0);
 	}
 
-	public float method_7261(float f) {
-		return MathHelper.clamp(((float)this.field_6273 + f) / this.method_7279(), 0.0F, 1.0F);
+	public float getAttackCooldownProgress(float f) {
+		return MathHelper.clamp(((float)this.lastAttackedTicks + f) / this.getAttackCooldownProgressPerTick(), 0.0F, 1.0F);
 	}
 
-	public void method_7350() {
-		this.field_6273 = 0;
+	public void resetLastAttackedTicks() {
+		this.lastAttackedTicks = 0;
 	}
 
 	public ItemCooldownManager getItemCooldownManager() {
@@ -1980,7 +1979,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public ItemStack eatFood(World world, ItemStack itemStack) {
 		this.getHungerManager().eat(itemStack.getItem(), itemStack);
 		this.incrementStat(Stats.field_15372.getOrCreateStat(itemStack.getItem()));
-		world.playSound(null, this.x, this.y, this.z, SoundEvents.field_19149, SoundCategory.field_15248, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+		world.playSound(null, this.x, this.y, this.z, SoundEvents.field_19149, SoundCategory.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
 		if (this instanceof ServerPlayerEntity) {
 			Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)this, itemStack);
 		}
@@ -1989,26 +1988,26 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public static enum SleepFailureReason {
-		INVALID_WORLD,
-		WRONG_TIME(new TranslatableTextComponent("block.minecraft.bed.no_sleep")),
-		TOO_FAR_AWAY(new TranslatableTextComponent("block.minecraft.bed.too_far_away")),
-		field_18592(new TranslatableTextComponent("block.minecraft.bed.obstructed")),
-		INVALID_ATTEMPT,
-		NOT_SAFE(new TranslatableTextComponent("block.minecraft.bed.not_safe"));
+		field_7528,
+		field_7529(new TranslatableComponent("block.minecraft.bed.no_sleep")),
+		field_7530(new TranslatableComponent("block.minecraft.bed.too_far_away")),
+		field_18592(new TranslatableComponent("block.minecraft.bed.obstructed")),
+		field_7531,
+		field_7532(new TranslatableComponent("block.minecraft.bed.not_safe"));
 
 		@Nullable
-		private final TextComponent text;
+		private final Component text;
 
 		private SleepFailureReason() {
 			this.text = null;
 		}
 
-		private SleepFailureReason(TextComponent textComponent) {
-			this.text = textComponent;
+		private SleepFailureReason(Component component) {
+			this.text = component;
 		}
 
 		@Nullable
-		public TextComponent getText() {
+		public Component getText() {
 			return this.text;
 		}
 	}

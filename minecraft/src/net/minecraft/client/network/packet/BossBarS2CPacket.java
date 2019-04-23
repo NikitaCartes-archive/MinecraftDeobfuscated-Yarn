@@ -6,14 +6,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	private UUID uuid;
 	private BossBarS2CPacket.Type type;
-	private TextComponent name;
+	private Component name;
 	private float percent;
 	private BossBar.Color color;
 	private BossBar.Style overlay;
@@ -41,26 +41,26 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.uuid = packetByteBuf.readUuid();
 		this.type = packetByteBuf.readEnumConstant(BossBarS2CPacket.Type.class);
 		switch (this.type) {
-			case ADD:
+			case field_12078:
 				this.name = packetByteBuf.readTextComponent();
 				this.percent = packetByteBuf.readFloat();
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
 				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
 				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
-			case REMOVE:
+			case field_12082:
 			default:
 				break;
-			case UPDATE_PCT:
+			case field_12080:
 				this.percent = packetByteBuf.readFloat();
 				break;
-			case UPDATE_TITLE:
+			case field_12084:
 				this.name = packetByteBuf.readTextComponent();
 				break;
-			case UPDATE_STYLE:
+			case field_12081:
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
 				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
 				break;
-			case UPDATE_FLAGS:
+			case field_12083:
 				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
 		}
 	}
@@ -76,26 +76,26 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeUuid(this.uuid);
 		packetByteBuf.writeEnumConstant(this.type);
 		switch (this.type) {
-			case ADD:
+			case field_12078:
 				packetByteBuf.writeTextComponent(this.name);
 				packetByteBuf.writeFloat(this.percent);
 				packetByteBuf.writeEnumConstant(this.color);
 				packetByteBuf.writeEnumConstant(this.overlay);
 				packetByteBuf.writeByte(this.getFlagBitfield());
-			case REMOVE:
+			case field_12082:
 			default:
 				break;
-			case UPDATE_PCT:
+			case field_12080:
 				packetByteBuf.writeFloat(this.percent);
 				break;
-			case UPDATE_TITLE:
+			case field_12084:
 				packetByteBuf.writeTextComponent(this.name);
 				break;
-			case UPDATE_STYLE:
+			case field_12081:
 				packetByteBuf.writeEnumConstant(this.color);
 				packetByteBuf.writeEnumConstant(this.overlay);
 				break;
-			case UPDATE_FLAGS:
+			case field_12083:
 				packetByteBuf.writeByte(this.getFlagBitfield());
 		}
 	}
@@ -132,7 +132,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getName() {
+	public Component getName() {
 		return this.name;
 	}
 
@@ -167,11 +167,11 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Type {
-		ADD,
-		REMOVE,
-		UPDATE_PCT,
-		UPDATE_TITLE,
-		UPDATE_STYLE,
-		UPDATE_FLAGS;
+		field_12078,
+		field_12082,
+		field_12080,
+		field_12084,
+		field_12081,
+		field_12083;
 	}
 }

@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 
 public class EfficiencyEnchantment extends Enchantment {
 	protected EfficiencyEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.BREAKER, equipmentSlots);
+		super(weight, EnchantmentTarget.DIGGER, equipmentSlots);
 	}
 
 	@Override

@@ -91,7 +91,7 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for (int m = 0; m < i; m++) {
-					mutable.set(blockPos).setOffset(Direction.UP, m);
+					mutable.set(blockPos).setOffset(Direction.field_11036, m);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
 						this.setBlockState(iWorld, mutable, blockState3);
 					}

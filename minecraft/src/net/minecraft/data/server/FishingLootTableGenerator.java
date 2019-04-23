@@ -34,18 +34,18 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 
 	public void method_10405(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.GAMEPLAY_FISHING,
+			LootTables.field_353,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.builder(LootTables.GAMEPLAY_FISHING_JUNK).setWeight(10).setQuality(-2))
-						.withEntry(LootTableEntry.builder(LootTables.GAMEPLAY_FISHING_TREASURE).setWeight(5).setQuality(2))
-						.withEntry(LootTableEntry.builder(LootTables.GAMEPLAY_FISHING_FISH).setWeight(85).setQuality(-1))
+						.withEntry(LootTableEntry.builder(LootTables.field_266).setWeight(10).setQuality(-2))
+						.withEntry(LootTableEntry.builder(LootTables.field_854).setWeight(5).setQuality(2))
+						.withEntry(LootTableEntry.builder(LootTables.field_795).setWeight(85).setQuality(-1))
 				)
 		);
 		biConsumer.accept(
-			LootTables.GAMEPLAY_FISHING_FISH,
+			LootTables.field_795,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
@@ -56,7 +56,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 				)
 		);
 		biConsumer.accept(
-			LootTables.GAMEPLAY_FISHING_JUNK,
+			LootTables.field_266,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
@@ -90,7 +90,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 				)
 		);
 		biConsumer.accept(
-			LootTables.GAMEPLAY_FISHING_TREASURE,
+			LootTables.field_854,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()

@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
 
 public class LootSupplier {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final LootSupplier EMPTY = new LootSupplier(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
-	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
+	public static final LootSupplier EMPTY = new LootSupplier(LootContextTypes.field_1175, new LootPool[0], new LootFunction[0]);
+	public static final LootContextType GENERIC = LootContextTypes.field_1177;
 	private final LootContextType type;
 	private final LootPool[] pools;
 	private final LootFunction[] functions;
@@ -214,7 +214,7 @@ public class LootSupplier {
 			}
 
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-			return new LootSupplier(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
+			return new LootSupplier(lootContextType != null ? lootContextType : LootContextTypes.field_1177, lootPools, lootFunctions);
 		}
 
 		public JsonElement method_339(LootSupplier lootSupplier, Type type, JsonSerializationContext jsonSerializationContext) {

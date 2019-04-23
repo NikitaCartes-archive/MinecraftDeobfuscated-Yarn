@@ -82,7 +82,7 @@ public class BoatEntity extends Entity {
 	}
 
 	public BoatEntity(World world, double d, double e, double f) {
-		this(EntityType.BOAT, world);
+		this(EntityType.field_6121, world);
 		this.setPosition(d, e, f);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = d;
@@ -100,7 +100,7 @@ public class BoatEntity extends Entity {
 		this.dataTracker.startTracking(field_7688, 0);
 		this.dataTracker.startTracking(field_7707, 1);
 		this.dataTracker.startTracking(field_7705, 0.0F);
-		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
+		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.field_7727.ordinal());
 		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(field_7691, 0);
@@ -114,7 +114,7 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	@Override
-	public BoundingBox method_5827() {
+	public BoundingBox getCollisionBox() {
 		return this.getBoundingBox();
 	}
 
@@ -155,7 +155,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public void method_5700(boolean bl) {
+	public void onBubbleColumnSurfaceCollision(boolean bl) {
 		if (!this.world.isClient) {
 			this.field_7689 = true;
 			this.field_7703 = bl;
@@ -184,18 +184,18 @@ public class BoatEntity extends Entity {
 
 	public Item asItem() {
 		switch (this.getBoatType()) {
-			case OAK:
+			case field_7727:
 			default:
 				return Items.field_8533;
-			case SPRUCE:
+			case field_7728:
 				return Items.field_8486;
-			case BIRCH:
+			case field_7729:
 				return Items.field_8442;
-			case JUNGLE:
+			case field_7730:
 				return Items.field_8730;
-			case ACACIA:
+			case field_7725:
 				return Items.field_8094;
-			case DARK_OAK:
+			case field_7723:
 				return Items.field_8138;
 		}
 	}
@@ -346,7 +346,7 @@ public class BoatEntity extends Entity {
 						this.setVelocity(vec3d.add(0.0, -0.7, 0.0));
 						this.removeAllPassengers();
 					} else {
-						this.setVelocity(vec3d.x, this.method_5703(PlayerEntity.class) ? 2.7 : 0.6, vec3d.z);
+						this.setVelocity(vec3d.x, this.hasPassengerType(PlayerEntity.class) ? 2.7 : 0.6, vec3d.z);
 					}
 				}
 
@@ -483,7 +483,7 @@ public class BoatEntity extends Entity {
 									&& VoxelShapes.matchesAnywhere(
 										blockState.getCollisionShape(this.world, pooledMutable).offset((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
 									)) {
-									f += blockState.getBlock().getFrictionCoefficient();
+									f += blockState.getBlock().getSlipperiness();
 									o++;
 								}
 							}
@@ -561,7 +561,7 @@ public class BoatEntity extends Entity {
 
 	private void method_7534() {
 		double d = -0.04F;
-		double e = this.isUnaffectedByGravity() ? 0.0 : -0.04F;
+		double e = this.hasNoGravity() ? 0.0 : -0.04F;
 		double f = 0.0;
 		this.field_7692 = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7719
@@ -820,12 +820,12 @@ public class BoatEntity extends Entity {
 	}
 
 	public static enum Type {
-		OAK(Blocks.field_10161, "oak"),
-		SPRUCE(Blocks.field_9975, "spruce"),
-		BIRCH(Blocks.field_10148, "birch"),
-		JUNGLE(Blocks.field_10334, "jungle"),
-		ACACIA(Blocks.field_10218, "acacia"),
-		DARK_OAK(Blocks.field_10075, "dark_oak");
+		field_7727(Blocks.field_10161, "oak"),
+		field_7728(Blocks.field_9975, "spruce"),
+		field_7729(Blocks.field_10148, "birch"),
+		field_7730(Blocks.field_10334, "jungle"),
+		field_7725(Blocks.field_10218, "acacia"),
+		field_7723(Blocks.field_10075, "dark_oak");
 
 		private final String name;
 		private final Block baseBlock;

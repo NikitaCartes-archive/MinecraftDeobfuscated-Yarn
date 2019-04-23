@@ -19,9 +19,9 @@ public final class FrozenOceanBiome extends Biome {
 	public FrozenOceanBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15699, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.SNOW)
-				.category(Biome.Category.OCEAN)
+				.category(Biome.Category.field_9367)
 				.depth(-1.0F)
 				.scale(0.1F)
 				.temperature(0.0F)
@@ -30,8 +30,8 @@ public final class FrozenOceanBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.field_14528, 0.3F, 0.9F));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
 		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
@@ -49,19 +49,19 @@ public final class FrozenOceanBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(EntityCategory.field_6300, new Biome.SpawnEntry(EntityType.SQUID, 1, 1, 4));
-		this.addSpawn(EntityCategory.field_6300, new Biome.SpawnEntry(EntityType.SALMON, 15, 1, 5));
-		this.addSpawn(EntityCategory.field_6294, new Biome.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
-		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ZOMBIE, 95, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 5, 1, 1));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
+		this.addSpawn(EntityCategory.field_6300, new Biome.SpawnEntry(EntityType.field_6114, 1, 1, 4));
+		this.addSpawn(EntityCategory.field_6300, new Biome.SpawnEntry(EntityType.field_6073, 15, 1, 5));
+		this.addSpawn(EntityCategory.field_6294, new Biome.SpawnEntry(EntityType.field_6042, 1, 1, 2));
+		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.field_6108, 10, 8, 8));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6079, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6051, 95, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6123, 5, 1, 1));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6054, 5, 1, 1));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6137, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6046, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6069, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 1, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6145, 5, 1, 1));
 	}
 
 	@Override

@@ -94,59 +94,59 @@ public class ChunkOcclusionGraphBuilder {
 	private void addEdgeFaces(int i, Set<Direction> set) {
 		int j = i >> 0 & 15;
 		if (j == 0) {
-			set.add(Direction.WEST);
+			set.add(Direction.field_11039);
 		} else if (j == 15) {
-			set.add(Direction.EAST);
+			set.add(Direction.field_11034);
 		}
 
 		int k = i >> 8 & 15;
 		if (k == 0) {
-			set.add(Direction.DOWN);
+			set.add(Direction.field_11033);
 		} else if (k == 15) {
-			set.add(Direction.UP);
+			set.add(Direction.field_11036);
 		}
 
 		int l = i >> 4 & 15;
 		if (l == 0) {
-			set.add(Direction.NORTH);
+			set.add(Direction.field_11043);
 		} else if (l == 15) {
-			set.add(Direction.SOUTH);
+			set.add(Direction.field_11035);
 		}
 	}
 
 	private int offset(int i, Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				if ((i >> 8 & 15) == 0) {
 					return -1;
 				}
 
 				return i - STEP_Y;
-			case UP:
+			case field_11036:
 				if ((i >> 8 & 15) == 15) {
 					return -1;
 				}
 
 				return i + STEP_Y;
-			case NORTH:
+			case field_11043:
 				if ((i >> 4 & 15) == 0) {
 					return -1;
 				}
 
 				return i - STEP_Z;
-			case SOUTH:
+			case field_11035:
 				if ((i >> 4 & 15) == 15) {
 					return -1;
 				}
 
 				return i + STEP_Z;
-			case WEST:
+			case field_11039:
 				if ((i >> 0 & 15) == 0) {
 					return -1;
 				}
 
 				return i - STEP_X;
-			case EAST:
+			case field_11034:
 				if ((i >> 0 & 15) == 15) {
 					return -1;
 				}

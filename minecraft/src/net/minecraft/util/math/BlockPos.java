@@ -131,7 +131,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos up(int i) {
-		return this.offset(Direction.UP, i);
+		return this.offset(Direction.field_11036, i);
 	}
 
 	public BlockPos down() {
@@ -139,7 +139,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos down(int i) {
-		return this.offset(Direction.DOWN, i);
+		return this.offset(Direction.field_11033, i);
 	}
 
 	public BlockPos north() {
@@ -147,7 +147,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos north(int i) {
-		return this.offset(Direction.NORTH, i);
+		return this.offset(Direction.field_11043, i);
 	}
 
 	public BlockPos south() {
@@ -155,7 +155,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos south(int i) {
-		return this.offset(Direction.SOUTH, i);
+		return this.offset(Direction.field_11035, i);
 	}
 
 	public BlockPos west() {
@@ -163,7 +163,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos west(int i) {
-		return this.offset(Direction.WEST, i);
+		return this.offset(Direction.field_11039, i);
 	}
 
 	public BlockPos east() {
@@ -171,7 +171,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos east(int i) {
-		return this.offset(Direction.EAST, i);
+		return this.offset(Direction.field_11034, i);
 	}
 
 	public BlockPos offset(Direction direction) {
@@ -186,14 +186,14 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 
 	public BlockPos rotate(BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case ROT_0:
+			case field_11467:
 			default:
 				return this;
-			case ROT_90:
+			case field_11463:
 				return new BlockPos(-this.getZ(), this.getY(), this.getX());
-			case ROT_180:
+			case field_11464:
 				return new BlockPos(-this.getX(), this.getY(), -this.getZ());
-			case ROT_270:
+			case field_11465:
 				return new BlockPos(this.getZ(), this.getY(), -this.getX());
 		}
 	}
@@ -341,8 +341,12 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			return this.set(unpackLongX(l), unpackLongY(l), unpackLongZ(l));
 		}
 
-		public BlockPos.Mutable method_17965(AxisCycle axisCycle, int i, int j, int k) {
-			return this.set(axisCycle.choose(i, j, k, Direction.Axis.X), axisCycle.choose(i, j, k, Direction.Axis.Y), axisCycle.choose(i, j, k, Direction.Axis.Z));
+		public BlockPos.Mutable method_17965(AxisCycleDirection axisCycleDirection, int i, int j, int k) {
+			return this.set(
+				axisCycleDirection.choose(i, j, k, Direction.Axis.X),
+				axisCycleDirection.choose(i, j, k, Direction.Axis.Y),
+				axisCycleDirection.choose(i, j, k, Direction.Axis.Z)
+			);
 		}
 
 		public BlockPos.Mutable setOffset(Direction direction) {

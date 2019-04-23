@@ -6,8 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.menu.YesNoScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmChatLinkScreen extends YesNoScreen {
@@ -17,7 +17,7 @@ public class ConfirmChatLinkScreen extends YesNoScreen {
 	private final boolean drawWarning;
 
 	public ConfirmChatLinkScreen(BooleanConsumer booleanConsumer, String string, boolean bl) {
-		super(booleanConsumer, new TranslatableTextComponent(bl ? "chat.link.confirmTrusted" : "chat.link.confirm"), new StringTextComponent(string));
+		super(booleanConsumer, new TranslatableComponent(bl ? "chat.link.confirmTrusted" : "chat.link.confirm"), new TextComponent(string));
 		this.yesTranslated = I18n.translate(bl ? "chat.link.open" : "gui.yes");
 		this.noTranslated = I18n.translate(bl ? "gui.cancel" : "gui.no");
 		this.copy = I18n.translate("chat.copy");

@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -38,27 +38,33 @@ public class StairsBlock extends Block implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape TOP_SHAPE = SlabBlock.TOP_SHAPE;
 	protected static final VoxelShape BOTTOM_SHAPE = SlabBlock.BOTTOM_SHAPE;
-	protected static final VoxelShape field_11561 = Block.createCuboidShape(0.0, 0.0, 0.0, 8.0, 8.0, 8.0);
-	protected static final VoxelShape field_11578 = Block.createCuboidShape(0.0, 0.0, 8.0, 8.0, 8.0, 16.0);
-	protected static final VoxelShape field_11568 = Block.createCuboidShape(0.0, 8.0, 0.0, 8.0, 16.0, 8.0);
-	protected static final VoxelShape field_11563 = Block.createCuboidShape(0.0, 8.0, 8.0, 8.0, 16.0, 16.0);
-	protected static final VoxelShape field_11575 = Block.createCuboidShape(8.0, 0.0, 0.0, 16.0, 8.0, 8.0);
-	protected static final VoxelShape field_11569 = Block.createCuboidShape(8.0, 0.0, 8.0, 16.0, 8.0, 16.0);
-	protected static final VoxelShape field_11577 = Block.createCuboidShape(8.0, 8.0, 0.0, 16.0, 16.0, 8.0);
-	protected static final VoxelShape field_11567 = Block.createCuboidShape(8.0, 8.0, 8.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape[] field_11566 = method_10672(TOP_SHAPE, field_11561, field_11575, field_11578, field_11569);
-	protected static final VoxelShape[] field_11564 = method_10672(BOTTOM_SHAPE, field_11568, field_11577, field_11563, field_11567);
-	private static final int[] field_11570 = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
+	protected static final VoxelShape BOTTOM_NORTH_WEST_CORNER_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 8.0, 8.0, 8.0);
+	protected static final VoxelShape BOTTOM_SOUTH_WEST_CORNER_SHAPE = Block.createCuboidShape(0.0, 0.0, 8.0, 8.0, 8.0, 16.0);
+	protected static final VoxelShape TOP_NORTH_WEST_CORNER_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 8.0, 16.0, 8.0);
+	protected static final VoxelShape TOP_SOUTH_WEST_CORNER_SHAPE = Block.createCuboidShape(0.0, 8.0, 8.0, 8.0, 16.0, 16.0);
+	protected static final VoxelShape BOTTOM_NORTH_EAST_CORNER_SHAPE = Block.createCuboidShape(8.0, 0.0, 0.0, 16.0, 8.0, 8.0);
+	protected static final VoxelShape BOTTOM_SOUTH_EAST_CORNER_SHAPE = Block.createCuboidShape(8.0, 0.0, 8.0, 16.0, 8.0, 16.0);
+	protected static final VoxelShape TOP_NORTH_EAST_CORNER_SHAPE = Block.createCuboidShape(8.0, 8.0, 0.0, 16.0, 16.0, 8.0);
+	protected static final VoxelShape TOP_SOUTH_EAST_CORNER_SHAPE = Block.createCuboidShape(8.0, 8.0, 8.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape[] TOP_SHAPES = composeShapes(
+		TOP_SHAPE, BOTTOM_NORTH_WEST_CORNER_SHAPE, BOTTOM_NORTH_EAST_CORNER_SHAPE, BOTTOM_SOUTH_WEST_CORNER_SHAPE, BOTTOM_SOUTH_EAST_CORNER_SHAPE
+	);
+	protected static final VoxelShape[] BOTTOM_SHAPES = composeShapes(
+		BOTTOM_SHAPE, TOP_NORTH_WEST_CORNER_SHAPE, TOP_NORTH_EAST_CORNER_SHAPE, TOP_SOUTH_WEST_CORNER_SHAPE, TOP_SOUTH_EAST_CORNER_SHAPE
+	);
+	private static final int[] SHAPE_INDICES = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
 	private final Block baseBlock;
 	private final BlockState baseBlockState;
 
-	private static VoxelShape[] method_10672(VoxelShape voxelShape, VoxelShape voxelShape2, VoxelShape voxelShape3, VoxelShape voxelShape4, VoxelShape voxelShape5) {
+	private static VoxelShape[] composeShapes(
+		VoxelShape voxelShape, VoxelShape voxelShape2, VoxelShape voxelShape3, VoxelShape voxelShape4, VoxelShape voxelShape5
+	) {
 		return (VoxelShape[])IntStream.range(0, 16)
-			.mapToObj(i -> method_10671(i, voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5))
+			.mapToObj(i -> composeShape(i, voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5))
 			.toArray(VoxelShape[]::new);
 	}
 
-	private static VoxelShape method_10671(
+	private static VoxelShape composeShape(
 		int i, VoxelShape voxelShape, VoxelShape voxelShape2, VoxelShape voxelShape3, VoxelShape voxelShape4, VoxelShape voxelShape5
 	) {
 		VoxelShape voxelShape6 = voxelShape;
@@ -86,8 +92,8 @@ public class StairsBlock extends Block implements Waterloggable {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
-				.with(HALF, BlockHalf.BOTTOM)
+				.with(FACING, Direction.field_11043)
+				.with(HALF, BlockHalf.field_12617)
 				.with(SHAPE, StairShape.field_12710)
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
@@ -96,16 +102,16 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return (blockState.get(HALF) == BlockHalf.TOP ? field_11566 : field_11564)[field_11570[this.method_10673(blockState)]];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return (blockState.get(HALF) == BlockHalf.field_12619 ? TOP_SHAPES : BOTTOM_SHAPES)[SHAPE_INDICES[this.getShapeIndexIndex(blockState)]];
 	}
 
-	private int method_10673(BlockState blockState) {
+	private int getShapeIndexIndex(BlockState blockState) {
 		return ((StairShape)blockState.get(SHAPE)).ordinal() * 4 + ((Direction)blockState.get(FACING)).getHorizontal();
 	}
 
@@ -143,7 +149,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState.getBlock()) {
-			this.baseBlockState.neighborUpdate(world, blockPos, Blocks.AIR, blockPos, false);
+			this.baseBlockState.neighborUpdate(world, blockPos, Blocks.field_10124, blockPos, false);
 			this.baseBlock.onBlockAdded(this.baseBlockState, world, blockPos, blockState2, false);
 		}
 	}
@@ -184,9 +190,9 @@ public class StairsBlock extends Block implements Waterloggable {
 			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing())
 			.with(
 				HALF,
-				direction != Direction.DOWN && (direction == Direction.UP || !(itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5))
-					? BlockHalf.BOTTOM
-					: BlockHalf.TOP
+				direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5))
+					? BlockHalf.field_12617
+					: BlockHalf.field_12619
 			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 		return blockState.with(SHAPE, method_10675(blockState, itemPlacementContext.getWorld(), blockPos));
@@ -253,35 +259,35 @@ public class StairsBlock extends Block implements Waterloggable {
 		Direction direction = blockState.get(FACING);
 		StairShape stairShape = blockState.get(SHAPE);
 		switch (blockMirror) {
-			case LEFT_RIGHT:
+			case field_11300:
 				if (direction.getAxis() == Direction.Axis.Z) {
 					switch (stairShape) {
 						case field_12712:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12713);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12713);
 						case field_12713:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12712);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12712);
 						case field_12708:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12709);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12709);
 						case field_12709:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12708);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12708);
 						default:
-							return blockState.rotate(BlockRotation.ROT_180);
+							return blockState.rotate(BlockRotation.field_11464);
 					}
 				}
 				break;
-			case FRONT_BACK:
+			case field_11301:
 				if (direction.getAxis() == Direction.Axis.X) {
 					switch (stairShape) {
 						case field_12712:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12712);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12712);
 						case field_12713:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12713);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12713);
 						case field_12708:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12709);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12709);
 						case field_12709:
-							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12708);
+							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12708);
 						case field_12710:
-							return blockState.rotate(BlockRotation.ROT_180);
+							return blockState.rotate(BlockRotation.field_11464);
 					}
 				}
 		}
@@ -291,7 +297,7 @@ public class StairsBlock extends Block implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, HALF, SHAPE, WATERLOGGED);
+		builder.add(FACING, HALF, SHAPE, WATERLOGGED);
 	}
 
 	@Override

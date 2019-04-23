@@ -36,14 +36,14 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
-		super(EntityType.TRIDENT, livingEntity, world);
+		super(EntityType.field_6127, livingEntity, world);
 		this.tridentStack = itemStack.copy();
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public TridentEntity(World world, double d, double e, double f) {
-		super(EntityType.TRIDENT, d, e, f, world);
+		super(EntityType.field_6127, d, e, f, world);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TridentEntity extends ProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(LOYALTY);
 			if (i > 0 && !this.isOwnerAlive()) {
-				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
+				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.field_7593) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -179,7 +179,7 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	protected void age() {
 		int i = this.dataTracker.get(LOYALTY);
-		if (this.pickupType != ProjectileEntity.PickupType.PICKUP || i <= 0) {
+		if (this.pickupType != ProjectileEntity.PickupPermission.field_7593 || i <= 0) {
 			super.age();
 		}
 	}

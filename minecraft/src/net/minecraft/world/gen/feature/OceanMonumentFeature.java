@@ -9,16 +9,16 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.field_6118, 1, 2, 4));
 
 	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -53,7 +53,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			}
 
 			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 29)) {
-				if (biome2.getCategory() != Biome.Category.OCEAN && biome2.getCategory() != Biome.Category.RIVER) {
+				if (biome2.getCategory() != Biome.Category.field_9367 && biome2.getCategory() != Biome.Category.field_9369) {
 					return false;
 				}
 			}
@@ -99,7 +99,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		private void method_16588(int i, int j) {
 			int k = i * 16 - 29;
 			int l = j * 16 - 29;
-			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
+			Direction direction = Direction.Type.field_11062.random(this.random);
 			this.children.add(new OceanMonumentGenerator.Base(this.random, k, l, direction));
 			this.setBoundingBoxFromChildren();
 			this.field_13717 = true;

@@ -4,8 +4,8 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -32,7 +32,7 @@ public class WitherRoseBlock extends FlowerBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		VoxelShape voxelShape = this.getOutlineShape(blockState, world, blockPos, VerticalEntityPosition.minValue());
+		VoxelShape voxelShape = this.getOutlineShape(blockState, world, blockPos, EntityContext.absent());
 		Vec3d vec3d = voxelShape.getBoundingBox().getCenter();
 		double d = (double)blockPos.getX() + vec3d.x;
 		double e = (double)blockPos.getZ() + vec3d.z;
@@ -54,7 +54,7 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
+		if (!world.isClient && world.getDifficulty() != Difficulty.field_5801) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				if (!livingEntity.isInvulnerableTo(DamageSource.WITHER)) {

@@ -18,11 +18,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.loot.LootTables;
 
@@ -113,20 +113,20 @@ public class MineshaftGenerator {
 			for (l = random.nextInt(3) + 2; l > 0; l--) {
 				int m = l * 5;
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 					default:
 						mutableIntBoundingBox.maxX = i + 3 - 1;
 						mutableIntBoundingBox.minZ = k - (m - 1);
 						break;
-					case SOUTH:
+					case field_11035:
 						mutableIntBoundingBox.maxX = i + 3 - 1;
 						mutableIntBoundingBox.maxZ = k + m - 1;
 						break;
-					case WEST:
+					case field_11039:
 						mutableIntBoundingBox.minX = i - (m - 1);
 						mutableIntBoundingBox.maxZ = k + 3 - 1;
 						break;
-					case EAST:
+					case field_11034:
 						mutableIntBoundingBox.maxX = i + m - 1;
 						mutableIntBoundingBox.maxZ = k + 3 - 1;
 				}
@@ -146,7 +146,7 @@ public class MineshaftGenerator {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 					default:
 						if (j <= 1) {
 							MineshaftGenerator.method_14711(
@@ -154,78 +154,106 @@ public class MineshaftGenerator {
 							);
 						} else if (j == 2) {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, Direction.WEST, i
+								structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, Direction.field_11039, i
 							);
 						} else {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, Direction.EAST, i
+								structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, Direction.field_11034, i
 							);
 						}
 						break;
-					case SOUTH:
+					case field_11035:
 						if (j <= 1) {
 							MineshaftGenerator.method_14711(
 								structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ + 1, direction, i
 							);
 						} else if (j == 2) {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ - 3, Direction.WEST, i
+								structurePiece,
+								list,
+								random,
+								this.boundingBox.minX - 1,
+								this.boundingBox.minY - 1 + random.nextInt(3),
+								this.boundingBox.maxZ - 3,
+								Direction.field_11039,
+								i
 							);
 						} else {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ - 3, Direction.EAST, i
+								structurePiece,
+								list,
+								random,
+								this.boundingBox.maxX + 1,
+								this.boundingBox.minY - 1 + random.nextInt(3),
+								this.boundingBox.maxZ - 3,
+								Direction.field_11034,
+								i
 							);
 						}
 						break;
-					case WEST:
+					case field_11039:
 						if (j <= 1) {
 							MineshaftGenerator.method_14711(
 								structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, direction, i
 							);
 						} else if (j == 2) {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ - 1, Direction.NORTH, i
+								structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ - 1, Direction.field_11043, i
 							);
 						} else {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ + 1, Direction.SOUTH, i
+								structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ + 1, Direction.field_11035, i
 							);
 						}
 						break;
-					case EAST:
+					case field_11034:
 						if (j <= 1) {
 							MineshaftGenerator.method_14711(
 								structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ, direction, i
 							);
 						} else if (j == 2) {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.maxX - 3, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.minZ - 1, Direction.NORTH, i
+								structurePiece,
+								list,
+								random,
+								this.boundingBox.maxX - 3,
+								this.boundingBox.minY - 1 + random.nextInt(3),
+								this.boundingBox.minZ - 1,
+								Direction.field_11043,
+								i
 							);
 						} else {
 							MineshaftGenerator.method_14711(
-								structurePiece, list, random, this.boundingBox.maxX - 3, this.boundingBox.minY - 1 + random.nextInt(3), this.boundingBox.maxZ + 1, Direction.SOUTH, i
+								structurePiece,
+								list,
+								random,
+								this.boundingBox.maxX - 3,
+								this.boundingBox.minY - 1 + random.nextInt(3),
+								this.boundingBox.maxZ + 1,
+								Direction.field_11035,
+								i
 							);
 						}
 				}
 			}
 
 			if (i < 8) {
-				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
+				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
 					for (int k = this.boundingBox.minX + 3; k + 3 <= this.boundingBox.maxX; k += 5) {
 						int l = random.nextInt(5);
 						if (l == 0) {
-							MineshaftGenerator.method_14711(structurePiece, list, random, k, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i + 1);
+							MineshaftGenerator.method_14711(structurePiece, list, random, k, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.field_11043, i + 1);
 						} else if (l == 1) {
-							MineshaftGenerator.method_14711(structurePiece, list, random, k, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.SOUTH, i + 1);
+							MineshaftGenerator.method_14711(structurePiece, list, random, k, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.field_11035, i + 1);
 						}
 					}
 				} else {
 					for (int kx = this.boundingBox.minZ + 3; kx + 3 <= this.boundingBox.maxZ; kx += 5) {
 						int l = random.nextInt(5);
 						if (l == 0) {
-							MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, kx, Direction.WEST, i + 1);
+							MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, kx, Direction.field_11039, i + 1);
 						} else if (l == 1) {
-							MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, kx, Direction.EAST, i + 1);
+							MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, kx, Direction.field_11034, i + 1);
 						}
 					}
 				}
@@ -278,11 +306,11 @@ public class MineshaftGenerator {
 					this.method_14715(iWorld, mutableIntBoundingBox, random, 0.05F, 0, 2, o + 2);
 					this.method_14715(iWorld, mutableIntBoundingBox, random, 0.05F, 2, 2, o + 2);
 					if (random.nextInt(100) == 0) {
-						this.addChest(iWorld, mutableIntBoundingBox, random, 2, 0, o - 1, LootTables.CHEST_ABANDONED_MINESHAFT);
+						this.addChest(iWorld, mutableIntBoundingBox, random, 2, 0, o - 1, LootTables.field_472);
 					}
 
 					if (random.nextInt(100) == 0) {
-						this.addChest(iWorld, mutableIntBoundingBox, random, 0, 0, o + 1, LootTables.CHEST_ABANDONED_MINESHAFT);
+						this.addChest(iWorld, mutableIntBoundingBox, random, 0, 0, o + 1, LootTables.field_472);
 					}
 
 					if (this.hasCobwebs && !this.hasSpawner) {
@@ -296,7 +324,7 @@ public class MineshaftGenerator {
 							iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 							if (blockEntity instanceof MobSpawnerBlockEntity) {
-								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
+								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.field_6084);
 							}
 						}
 					}
@@ -342,10 +370,10 @@ public class MineshaftGenerator {
 				} else {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, l, k, m, l, k, blockState, AIR, false);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k - 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
+						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k - 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11043)
 					);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k + 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
+						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k + 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035)
 					);
 				}
 			}
@@ -389,23 +417,23 @@ public class MineshaftGenerator {
 			}
 
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 				default:
 					mutableIntBoundingBox.minX = i - 1;
 					mutableIntBoundingBox.maxX = i + 3;
 					mutableIntBoundingBox.minZ = k - 4;
 					break;
-				case SOUTH:
+				case field_11035:
 					mutableIntBoundingBox.minX = i - 1;
 					mutableIntBoundingBox.maxX = i + 3;
 					mutableIntBoundingBox.maxZ = k + 3 + 1;
 					break;
-				case WEST:
+				case field_11039:
 					mutableIntBoundingBox.minX = i - 4;
 					mutableIntBoundingBox.minZ = k - 1;
 					mutableIntBoundingBox.maxZ = k + 3;
 					break;
-				case EAST:
+				case field_11034:
 					mutableIntBoundingBox.maxX = i + 3 + 1;
 					mutableIntBoundingBox.minZ = k - 1;
 					mutableIntBoundingBox.maxZ = k + 3;
@@ -418,74 +446,74 @@ public class MineshaftGenerator {
 		public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 			int i = this.method_14923();
 			switch (this.direction) {
-				case NORTH:
+				case field_11043:
 				default:
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.field_11043, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.WEST, i
+						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11039, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.EAST, i
-					);
-					break;
-				case SOUTH:
-					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.SOUTH, i
-					);
-					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.WEST, i
-					);
-					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.EAST, i
+						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11034, i
 					);
 					break;
-				case WEST:
+				case field_11035:
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.field_11035, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.SOUTH, i
+						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11039, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.WEST, i
+						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11034, i
 					);
 					break;
-				case EAST:
+				case field_11039:
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.field_11043, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.SOUTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.field_11035, i
 					);
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.EAST, i
+						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11039, i
+					);
+					break;
+				case field_11034:
+					MineshaftGenerator.method_14711(
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.field_11043, i
+					);
+					MineshaftGenerator.method_14711(
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.field_11035, i
+					);
+					MineshaftGenerator.method_14711(
+						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, Direction.field_11034, i
 					);
 			}
 
 			if (this.twoFloors) {
 				if (random.nextBoolean()) {
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ - 1, Direction.NORTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ - 1, Direction.field_11043, i
 					);
 				}
 
 				if (random.nextBoolean()) {
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ + 1, Direction.WEST, i
+						structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ + 1, Direction.field_11039, i
 					);
 				}
 
 				if (random.nextBoolean()) {
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ + 1, Direction.EAST, i
+						structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.minZ + 1, Direction.field_11034, i
 					);
 				}
 
 				if (random.nextBoolean()) {
 					MineshaftGenerator.method_14711(
-						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.maxZ + 1, Direction.SOUTH, i
+						structurePiece, list, random, this.boundingBox.minX + 1, this.boundingBox.minY + 3 + 1, this.boundingBox.maxZ + 1, Direction.field_11035, i
 					);
 				}
 			}
@@ -637,20 +665,20 @@ public class MineshaftGenerator {
 
 		protected BlockState method_16443() {
 			switch (this.mineshaftType) {
-				case NORMAL:
+				case field_13692:
 				default:
 					return Blocks.field_10161.getDefaultState();
-				case MESA:
+				case field_13691:
 					return Blocks.field_10075.getDefaultState();
 			}
 		}
 
 		protected BlockState method_14718() {
 			switch (this.mineshaftType) {
-				case NORMAL:
+				case field_13692:
 				default:
 					return Blocks.field_10620.getDefaultState();
-				case MESA:
+				case field_13691:
 					return Blocks.field_10132.getDefaultState();
 			}
 		}
@@ -701,7 +729,14 @@ public class MineshaftGenerator {
 				}
 
 				MineshaftGenerator.MineshaftPart mineshaftPart = MineshaftGenerator.method_14711(
-					structurePiece, list, random, this.boundingBox.minX + k, this.boundingBox.minY + random.nextInt(j) + 1, this.boundingBox.minZ - 1, Direction.NORTH, i
+					structurePiece,
+					list,
+					random,
+					this.boundingBox.minX + k,
+					this.boundingBox.minY + random.nextInt(j) + 1,
+					this.boundingBox.minZ - 1,
+					Direction.field_11043,
+					i
 				);
 				if (mineshaftPart != null) {
 					MutableIntBoundingBox mutableIntBoundingBox = mineshaftPart.getBoundingBox();
@@ -730,7 +765,14 @@ public class MineshaftGenerator {
 				}
 
 				MineshaftGenerator.MineshaftPart mineshaftPart = MineshaftGenerator.method_14711(
-					structurePiece, list, random, this.boundingBox.minX + k, this.boundingBox.minY + random.nextInt(j) + 1, this.boundingBox.maxZ + 1, Direction.SOUTH, i
+					structurePiece,
+					list,
+					random,
+					this.boundingBox.minX + k,
+					this.boundingBox.minY + random.nextInt(j) + 1,
+					this.boundingBox.maxZ + 1,
+					Direction.field_11035,
+					i
 				);
 				if (mineshaftPart != null) {
 					MutableIntBoundingBox mutableIntBoundingBox = mineshaftPart.getBoundingBox();
@@ -759,7 +801,14 @@ public class MineshaftGenerator {
 				}
 
 				MineshaftGenerator.MineshaftPart mineshaftPart = MineshaftGenerator.method_14711(
-					structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + random.nextInt(j) + 1, this.boundingBox.minZ + k, Direction.WEST, i
+					structurePiece,
+					list,
+					random,
+					this.boundingBox.minX - 1,
+					this.boundingBox.minY + random.nextInt(j) + 1,
+					this.boundingBox.minZ + k,
+					Direction.field_11039,
+					i
 				);
 				if (mineshaftPart != null) {
 					MutableIntBoundingBox mutableIntBoundingBox = mineshaftPart.getBoundingBox();
@@ -788,7 +837,14 @@ public class MineshaftGenerator {
 				}
 
 				StructurePiece structurePiece2 = MineshaftGenerator.method_14711(
-					structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + random.nextInt(j) + 1, this.boundingBox.minZ + k, Direction.EAST, i
+					structurePiece,
+					list,
+					random,
+					this.boundingBox.maxX + 1,
+					this.boundingBox.minY + random.nextInt(j) + 1,
+					this.boundingBox.minZ + k,
+					Direction.field_11034,
+					i
 				);
 				if (structurePiece2 != null) {
 					MutableIntBoundingBox mutableIntBoundingBox = structurePiece2.getBoundingBox();
@@ -909,20 +965,20 @@ public class MineshaftGenerator {
 		public static MutableIntBoundingBox method_14720(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction) {
 			MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(i, j - 5, k, i, j + 3 - 1, k);
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 				default:
 					mutableIntBoundingBox.maxX = i + 3 - 1;
 					mutableIntBoundingBox.minZ = k - 8;
 					break;
-				case SOUTH:
+				case field_11035:
 					mutableIntBoundingBox.maxX = i + 3 - 1;
 					mutableIntBoundingBox.maxZ = k + 8;
 					break;
-				case WEST:
+				case field_11039:
 					mutableIntBoundingBox.minX = i - 8;
 					mutableIntBoundingBox.maxZ = k + 3 - 1;
 					break;
-				case EAST:
+				case field_11034:
 					mutableIntBoundingBox.maxX = i + 8;
 					mutableIntBoundingBox.maxZ = k + 3 - 1;
 			}
@@ -936,18 +992,26 @@ public class MineshaftGenerator {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
-					case NORTH:
+					case field_11043:
 					default:
-						MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i);
+						MineshaftGenerator.method_14711(
+							structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.field_11043, i
+						);
 						break;
-					case SOUTH:
-						MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.SOUTH, i);
+					case field_11035:
+						MineshaftGenerator.method_14711(
+							structurePiece, list, random, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.maxZ + 1, Direction.field_11035, i
+						);
 						break;
-					case WEST:
-						MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ, Direction.WEST, i);
+					case field_11039:
+						MineshaftGenerator.method_14711(
+							structurePiece, list, random, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ, Direction.field_11039, i
+						);
 						break;
-					case EAST:
-						MineshaftGenerator.method_14711(structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ, Direction.EAST, i);
+					case field_11034:
+						MineshaftGenerator.method_14711(
+							structurePiece, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ, Direction.field_11034, i
+						);
 				}
 			}
 		}
