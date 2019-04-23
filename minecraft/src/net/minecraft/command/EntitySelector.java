@@ -12,11 +12,11 @@ import javax.annotation.Nullable;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
@@ -221,7 +221,7 @@ public class EntitySelector {
 		return list.subList(0, Math.min(this.count, list.size()));
 	}
 
-	public static TextComponent getNames(List<? extends Entity> list) {
-		return TextFormatter.join(list, Entity::getDisplayName);
+	public static Component getNames(List<? extends Entity> list) {
+		return Components.join(list, Entity::getDisplayName);
 	}
 }

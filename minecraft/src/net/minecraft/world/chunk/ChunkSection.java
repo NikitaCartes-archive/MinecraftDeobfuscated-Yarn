@@ -11,7 +11,7 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TagHelper;
 
 public class ChunkSection {
-	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
+	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.field_10124.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
@@ -28,7 +28,7 @@ public class ChunkSection {
 		this.randomTickableBlockCount = t;
 		this.nonEmptyFluidCount = u;
 		this.container = new PalettedContainer<>(
-			palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.AIR.getDefaultState()
+			palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.field_10124.getDefaultState()
 		);
 	}
 

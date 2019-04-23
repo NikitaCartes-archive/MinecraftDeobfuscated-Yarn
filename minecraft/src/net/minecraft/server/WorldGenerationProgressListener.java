@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
 import javax.annotation.Nullable;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 
 public interface WorldGenerationProgressListener {

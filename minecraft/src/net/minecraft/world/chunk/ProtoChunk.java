@@ -27,6 +27,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
@@ -45,7 +46,7 @@ public class ProtoChunk implements Chunk {
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private volatile ChunkStatus status = ChunkStatus.EMPTY;
+	private volatile ChunkStatus status = ChunkStatus.field_12798;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
 	private final ChunkSection[] sections = new ChunkSection[16];
@@ -67,7 +68,7 @@ public class ProtoChunk implements Chunk {
 			upgradeData,
 			null,
 			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, chunkPos)
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, chunkPos)
 		);
 	}
 
@@ -98,7 +99,9 @@ public class ProtoChunk implements Chunk {
 			return Blocks.field_10243.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection) ? Blocks.AIR.getDefaultState() : chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection)
+				? Blocks.field_10124.getDefaultState()
+				: chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
@@ -106,10 +109,12 @@ public class ProtoChunk implements Chunk {
 	public FluidState getFluidState(BlockPos blockPos) {
 		int i = blockPos.getY();
 		if (World.isHeightInvalid(i)) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection) ? Fluids.EMPTY.getDefaultState() : chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection)
+				? Fluids.field_15906.getDefaultState()
+				: chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
@@ -143,7 +148,7 @@ public class ProtoChunk implements Chunk {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 		if (j >= 0 && j < 256) {
-			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && blockState.getBlock() == Blocks.AIR) {
+			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && blockState.getBlock() == Blocks.field_10124) {
 				return blockState;
 			} else {
 				if (blockState.getLuminance() > 0) {
@@ -152,13 +157,13 @@ public class ProtoChunk implements Chunk {
 
 				ChunkSection chunkSection = this.getSection(j >> 4);
 				BlockState blockState2 = chunkSection.setBlockState(i & 15, j & 15, k & 15, blockState);
-				if (this.status.isAtLeast(ChunkStatus.FEATURES)
+				if (this.status.isAtLeast(ChunkStatus.field_12795)
 					&& blockState != blockState2
 					&& (
 						blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
 							|| blockState.getLuminance() != blockState2.getLuminance()
-							|| blockState.method_16386()
-							|| blockState2.method_16386()
+							|| blockState.hasSidedTransparency()
+							|| blockState2.hasSidedTransparency()
 					)) {
 					LightingProvider lightingProvider = this.getLightingProvider();
 					lightingProvider.enqueueLightUpdate(blockPos);

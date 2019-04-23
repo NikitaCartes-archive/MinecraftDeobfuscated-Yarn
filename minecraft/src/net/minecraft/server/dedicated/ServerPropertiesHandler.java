@@ -22,7 +22,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
 	public final boolean generateStructures = this.parseBoolean("generate-structures", true);
 	public final Difficulty difficulty = this.get(
-		"difficulty", wrapIntParsingFunction(Difficulty::getDifficulty, Difficulty::getDifficulty), Difficulty::getTranslationKey, Difficulty.EASY
+		"difficulty", wrapIntParsingFunction(Difficulty::getDifficulty, Difficulty::getDifficulty), Difficulty::getTranslationKey, Difficulty.field_5805
 	);
 	public final GameMode gameMode = this.get("gamemode", wrapIntParsingFunction(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.field_9215);
 	public final String levelName = this.getString("level-name", "world");

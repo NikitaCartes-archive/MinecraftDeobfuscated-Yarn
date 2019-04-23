@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
@@ -82,9 +82,9 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 			return new ConsumeItemCriterion.Conditions(ItemPredicate.ANY);
 		}
 
-		public static ConsumeItemCriterion.Conditions item(ItemProvider itemProvider) {
+		public static ConsumeItemCriterion.Conditions item(ItemConvertible itemConvertible) {
 			return new ConsumeItemCriterion.Conditions(
-				new ItemPredicate(null, itemProvider.getItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY)
+				new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY)
 			);
 		}
 

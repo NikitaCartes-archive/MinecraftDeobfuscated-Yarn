@@ -79,7 +79,7 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	@Environment(EnvType.CLIENT)

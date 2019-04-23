@@ -5,17 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.KeyBindingListWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class ControlsOptionsScreen extends Screen {
-	private static final GameOption[] OPTIONS = new GameOption[]{GameOption.INVERT_MOUSE, GameOption.SENSITIVITY, GameOption.TOUCHSCREEN, GameOption.AUTO_JUMP};
+	private static final Option[] OPTIONS = new Option[]{Option.INVERT_MOUSE, Option.SENSITIVITY, Option.TOUCHSCREEN, Option.AUTO_JUMP};
 	private final Screen parent;
 	private final GameOptions options;
 	public KeyBinding focusedBinding;
@@ -24,7 +24,7 @@ public class ControlsOptionsScreen extends Screen {
 	private ButtonWidget resetButton;
 
 	public ControlsOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableTextComponent("controls.title"));
+		super(new TranslatableComponent("controls.title"));
 		this.parent = screen;
 		this.options = gameOptions;
 	}
@@ -36,7 +36,7 @@ public class ControlsOptionsScreen extends Screen {
 				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this))
 			)
 		);
-		this.addButton(GameOption.AUTO_JUMP.createOptionButton(this.minecraft.options, this.width / 2 - 155 + 160, 18, 150));
+		this.addButton(Option.AUTO_JUMP.createButton(this.minecraft.options, this.width / 2 - 155 + 160, 18, 150));
 		this.keyBindingListWidget = new KeyBindingListWidget(this, this.minecraft);
 		this.children.add(this.keyBindingListWidget);
 		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
@@ -54,7 +54,7 @@ public class ControlsOptionsScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (this.focusedBinding != null) {
-			this.options.setKeyCode(this.focusedBinding, InputUtil.Type.field_1672.createFromCode(i));
+			this.options.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(i));
 			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;

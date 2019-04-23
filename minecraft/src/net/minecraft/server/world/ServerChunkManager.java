@@ -24,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.ThreadExecutor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -35,7 +36,6 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -141,7 +141,7 @@ public class ServerChunkManager extends ChunkManager {
 		int k = 33 + ChunkStatus.getTargetGenerationRadius(chunkStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (bl) {
-			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, k, chunkPos);
+			this.ticketManager.addTicketWithLevel(ChunkTicketType.field_14032, chunkPos, k, chunkPos);
 			if (this.isMissingForLevel(chunkHolder, k)) {
 				this.tick();
 				chunkHolder = this.getChunkHolder(l);
@@ -161,9 +161,9 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public boolean isChunkLoaded(int i, int j) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(i, j).toLong());
-		int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL);
+		int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12803);
 		return chunkHolder != null && chunkHolder.getLevel() <= k
-			? ((Either)chunkHolder.getFutureChecked(ChunkStatus.FULL).getNow(ChunkHolder.UNLOADED_CHUNK)).left().isPresent()
+			? ((Either)chunkHolder.getFutureChecked(ChunkStatus.field_12803).getNow(ChunkHolder.UNLOADED_CHUNK)).left().isPresent()
 			: false;
 	}
 
@@ -183,7 +183,7 @@ public class ServerChunkManager extends ChunkManager {
 					return (BlockView)optional.get();
 				}
 
-				if (chunkStatus == ChunkStatus.LIGHT.getPrevious()) {
+				if (chunkStatus == ChunkStatus.field_12805.getPrevious()) {
 					return null;
 				}
 

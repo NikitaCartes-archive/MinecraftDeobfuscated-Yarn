@@ -26,14 +26,14 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient field_7738 = Ingredient.ofItems(Items.field_8713, Items.field_8665);
+	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.field_8713, Items.field_8665);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public FurnaceMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.FURNACE_MINECART, world, d, e, f);
+		super(EntityType.field_6080, world, d, e, f);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (field_7738.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
+		if (ACCEPTABLE_FUEL.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
 			}
@@ -155,6 +155,6 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
+		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.field_11043).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
 	}
 }

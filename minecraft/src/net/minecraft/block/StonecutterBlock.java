@@ -5,14 +5,14 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.StonecutterContainer;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -24,13 +24,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
-	private static final TranslatableTextComponent CONTAINER_NAME = new TranslatableTextComponent("container.stonecutter");
+	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.stonecutter");
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	public StonecutterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
@@ -75,7 +75,7 @@ public class StonecutterBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class StonecutterBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.add(FACING);
 	}
 
 	@Override

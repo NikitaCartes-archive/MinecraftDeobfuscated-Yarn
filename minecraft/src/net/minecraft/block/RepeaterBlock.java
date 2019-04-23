@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.DustParticleParameters;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntegerProperty;
@@ -27,7 +27,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
+				.with(FACING, Direction.field_11043)
 				.with(DELAY, Integer.valueOf(1))
 				.with(LOCKED, Boolean.valueOf(false))
 				.with(POWERED, Boolean.valueOf(false))
@@ -90,12 +90,12 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			g /= 16.0F;
 			double h = (double)(g * (float)direction.getOffsetX());
 			double i = (double)(g * (float)direction.getOffsetZ());
-			world.addParticle(DustParticleParameters.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
+			world.addParticle(DustParticleEffect.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, DELAY, LOCKED, POWERED);
+		builder.add(FACING, DELAY, LOCKED, POWERED);
 	}
 }

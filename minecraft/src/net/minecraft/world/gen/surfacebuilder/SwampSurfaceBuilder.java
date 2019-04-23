@@ -44,6 +44,6 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			}
 		}
 
-		SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
+		SurfaceBuilder.field_15701.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
 	}
 }

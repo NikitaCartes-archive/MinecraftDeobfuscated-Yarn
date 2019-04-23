@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ItemStackParticleParameters;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class CrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 
@@ -59,9 +59,9 @@ public class CrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ItemFactory implements ParticleFactory<ItemStackParticleParameters> {
-		public Particle method_3007(ItemStackParticleParameters itemStackParticleParameters, World world, double d, double e, double f, double g, double h, double i) {
-			return new CrackParticle(world, d, e, f, g, h, i, itemStackParticleParameters.getItemStack());
+	public static class ItemFactory implements ParticleFactory<ItemStackParticleEffect> {
+		public Particle method_3007(ItemStackParticleEffect itemStackParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+			return new CrackParticle(world, d, e, f, g, h, i, itemStackParticleEffect.getItemStack());
 		}
 	}
 

@@ -28,7 +28,7 @@ public class ResourceImpl implements Resource {
 	private final String packName;
 	private final Identifier id;
 	private final InputStream inputStream;
-	private final InputStream metadataInputStream;
+	private final InputStream metaInputStream;
 	@Environment(EnvType.CLIENT)
 	private boolean readMetadata;
 	@Environment(EnvType.CLIENT)
@@ -38,7 +38,7 @@ public class ResourceImpl implements Resource {
 		this.packName = string;
 		this.id = identifier;
 		this.inputStream = inputStream;
-		this.metadataInputStream = inputStream2;
+		this.metaInputStream = inputStream2;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -54,7 +54,7 @@ public class ResourceImpl implements Resource {
 
 	@Environment(EnvType.CLIENT)
 	public boolean hasMetadata() {
-		return this.metadataInputStream != null;
+		return this.metaInputStream != null;
 	}
 
 	@Nullable
@@ -69,7 +69,7 @@ public class ResourceImpl implements Resource {
 				BufferedReader bufferedReader = null;
 
 				try {
-					bufferedReader = new BufferedReader(new InputStreamReader(this.metadataInputStream, StandardCharsets.UTF_8));
+					bufferedReader = new BufferedReader(new InputStreamReader(this.metaInputStream, StandardCharsets.UTF_8));
 					this.metadata = JsonHelper.deserialize(bufferedReader);
 				} finally {
 					IOUtils.closeQuietly(bufferedReader);
@@ -112,8 +112,8 @@ public class ResourceImpl implements Resource {
 
 	public void close() throws IOException {
 		this.inputStream.close();
-		if (this.metadataInputStream != null) {
-			this.metadataInputStream.close();
+		if (this.metaInputStream != null) {
+			this.metaInputStream.close();
 		}
 	}
 }

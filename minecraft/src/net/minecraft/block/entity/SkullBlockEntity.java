@@ -24,7 +24,7 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	private static MinecraftSessionService sessionService;
 
 	public SkullBlockEntity() {
-		super(BlockEntityType.SKULL);
+		super(BlockEntityType.field_11913);
 	}
 
 	public static void setUserCache(UserCache userCache) {

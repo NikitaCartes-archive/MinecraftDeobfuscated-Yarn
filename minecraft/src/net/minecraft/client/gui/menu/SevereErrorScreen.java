@@ -5,14 +5,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class SevereErrorScreen extends Screen {
 	private final String message;
 
-	public SevereErrorScreen(TextComponent textComponent, String string) {
-		super(textComponent);
+	public SevereErrorScreen(Component component, String string) {
+		super(component);
 		this.message = string;
 	}
 

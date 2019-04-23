@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum SlabType implements StringRepresentable {
+public enum SlabType implements SnakeCaseIdentifiable {
 	field_12679("top"),
 	field_12681("bottom"),
 	field_12682("double");
@@ -18,7 +18,7 @@ public enum SlabType implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

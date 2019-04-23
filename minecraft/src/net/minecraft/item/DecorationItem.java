@@ -31,10 +31,10 @@ public class DecorationItem extends Item {
 		} else {
 			World world = itemUsageContext.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
-			if (this.entityType == EntityType.PAINTING) {
+			if (this.entityType == EntityType.field_6120) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
 			} else {
-				if (this.entityType != EntityType.ITEM_FRAME) {
+				if (this.entityType != EntityType.field_6043) {
 					return ActionResult.field_5812;
 				}
 

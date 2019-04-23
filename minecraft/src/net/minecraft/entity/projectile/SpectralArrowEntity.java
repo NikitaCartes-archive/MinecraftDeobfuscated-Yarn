@@ -18,11 +18,11 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	}
 
 	public SpectralArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.SPECTRAL_ARROW, livingEntity, world);
+		super(EntityType.field_6135, livingEntity, world);
 	}
 
 	public SpectralArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.SPECTRAL_ARROW, d, e, f, world);
+		super(EntityType.field_6135, d, e, f, world);
 	}
 
 	@Override

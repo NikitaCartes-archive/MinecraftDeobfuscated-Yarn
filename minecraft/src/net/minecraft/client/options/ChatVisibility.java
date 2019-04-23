@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 
 public enum ChatVisibility {
 	FULL(0, "options.chat.visibility.full"),
-	COMMANDS(1, "options.chat.visibility.system"),
+	SYSTEM(1, "options.chat.visibility.system"),
 	HIDDEN(2, "options.chat.visibility.hidden");
 
 	private static final ChatVisibility[] field_7534 = (ChatVisibility[])Arrays.stream(values())

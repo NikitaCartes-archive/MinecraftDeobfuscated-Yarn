@@ -57,6 +57,6 @@ public class RedstoneLampBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LIT);
+		builder.add(LIT);
 	}
 }

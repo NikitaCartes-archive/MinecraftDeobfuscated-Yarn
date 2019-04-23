@@ -19,9 +19,9 @@ public class ChargingPlayerPhase extends AbstractPhase {
 	public void method_6855() {
 		if (this.target == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
-			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
 		} else if (this.field_7037 > 0 && this.field_7037++ >= 10) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
 		} else {
 			double d = this.target.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
 			if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
@@ -53,6 +53,6 @@ public class ChargingPlayerPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<ChargingPlayerPhase> getType() {
-		return PhaseType.CHARGING_PLAYER;
+		return PhaseType.field_7078;
 	}
 }

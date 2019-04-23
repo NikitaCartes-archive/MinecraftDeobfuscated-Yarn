@@ -2,29 +2,29 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public enum PlayerModelPart {
-	CAPE(0, "cape"),
-	BODY(1, "jacket"),
-	LEFT_ARM(2, "left_sleeve"),
-	RIGHT_ARM(3, "right_sleeve"),
-	LEFT_LEG(4, "left_pants_leg"),
-	RIGHT_LEG(5, "right_pants_leg"),
-	HEAD(6, "hat");
+	field_7559(0, "cape"),
+	field_7564(1, "jacket"),
+	field_7568(2, "left_sleeve"),
+	field_7570(3, "right_sleeve"),
+	field_7566(4, "left_pants_leg"),
+	field_7565(5, "right_pants_leg"),
+	field_7563(6, "hat");
 
 	private final int id;
 	private final int bitFlag;
 	private final String name;
-	private final TextComponent localizedName;
+	private final Component localizedName;
 
 	private PlayerModelPart(int j, String string2) {
 		this.id = j;
 		this.bitFlag = 1 << j;
 		this.name = string2;
-		this.localizedName = new TranslatableTextComponent("options.modelPart." + string2);
+		this.localizedName = new TranslatableComponent("options.modelPart." + string2);
 	}
 
 	public int getBitFlag() {
@@ -35,7 +35,7 @@ public enum PlayerModelPart {
 		return this.name;
 	}
 
-	public TextComponent getLocalizedName() {
+	public Component getLocalizedName() {
 		return this.localizedName;
 	}
 }

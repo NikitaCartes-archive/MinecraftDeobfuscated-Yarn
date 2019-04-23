@@ -16,11 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -41,7 +41,7 @@ public class ItemEntity extends Entity {
 	}
 
 	public ItemEntity(World world, double d, double e, double f) {
-		this(EntityType.ITEM, world);
+		this(EntityType.field_6052, world);
 		this.setPosition(d, e, f);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
@@ -78,7 +78,7 @@ public class ItemEntity extends Entity {
 			Vec3d vec3d = this.getVelocity();
 			if (this.isInFluid(FluidTags.field_15517)) {
 				this.method_6974();
-			} else if (!this.isUnaffectedByGravity()) {
+			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
@@ -109,7 +109,7 @@ public class ItemEntity extends Entity {
 
 			float f = 0.98F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
 			}
 
 			this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
@@ -167,9 +167,9 @@ public class ItemEntity extends Entity {
 				if (!(itemStack2.hasTag() ^ itemStack.hasTag())) {
 					if (!itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag())) {
 						if (itemStack2.getAmount() < itemStack.getAmount()) {
-							method_18006(this, itemStack, itemEntity, itemStack2);
+							merge(this, itemStack, itemEntity, itemStack2);
 						} else {
-							method_18006(itemEntity, itemStack2, this, itemStack);
+							merge(itemEntity, itemStack2, this, itemStack);
 						}
 					}
 				}
@@ -177,7 +177,7 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	private static void method_18006(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
+	private static void merge(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
 		int i = Math.min(itemStack.getMaxAmount() - itemStack.getAmount(), itemStack2.getAmount());
 		ItemStack itemStack3 = itemStack.copy();
 		itemStack3.addAmount(i);
@@ -279,9 +279,9 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public TextComponent getName() {
-		TextComponent textComponent = this.getCustomName();
-		return (TextComponent)(textComponent != null ? textComponent : new TranslatableTextComponent(this.getStack().getTranslationKey()));
+	public Component getName() {
+		Component component = this.getCustomName();
+		return (Component)(component != null ? component : new TranslatableComponent(this.getStack().getTranslationKey()));
 	}
 
 	@Override

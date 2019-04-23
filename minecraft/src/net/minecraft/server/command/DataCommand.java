@@ -29,30 +29,30 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.math.MathHelper;
 
 public class DataCommand {
 	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.data.merge.failed")
+		new TranslatableComponent("commands.data.merge.failed")
 	);
 	private static final DynamicCommandExceptionType GET_INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.data.get.invalid", object)
+		object -> new TranslatableComponent("commands.data.get.invalid", object)
 	);
 	private static final DynamicCommandExceptionType GET_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.data.get.unknown", object)
+		object -> new TranslatableComponent("commands.data.get.unknown", object)
 	);
 	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("commands.data.get.multiple")
+		new TranslatableComponent("commands.data.get.multiple")
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.data.modify.expected_list", object)
+		object -> new TranslatableComponent("commands.data.modify.expected_list", object)
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.data.modify.expected_object", object)
+		object -> new TranslatableComponent("commands.data.modify.expected_object", object)
 	);
 	private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("commands.data.modify.invalid_index", object)
+		object -> new TranslatableComponent("commands.data.modify.invalid_index", object)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
 	public static final List<DataCommand.ObjectType> TARGET_OBJECT_TYPES = (List<DataCommand.ObjectType>)OBJECT_TYPES.stream()

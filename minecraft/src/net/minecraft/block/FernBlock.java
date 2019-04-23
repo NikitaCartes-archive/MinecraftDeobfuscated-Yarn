@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -15,7 +15,7 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -39,6 +39,6 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XYZ;
+		return Block.OffsetType.field_10655;
 	}
 }

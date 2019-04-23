@@ -23,7 +23,7 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
-		this(EntityType.TNT, world);
+		this(EntityType.field_6063, world);
 		this.setPosition(d, e, f);
 		double g = world.random.nextDouble() * (float) (Math.PI * 2);
 		this.setVelocity(-Math.sin(g) * 0.02, 0.2F, -Math.cos(g) * 0.02);
@@ -54,7 +54,7 @@ public class PrimedTntEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (!this.isUnaffectedByGravity()) {
+		if (!this.hasNoGravity()) {
 			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 		}
 

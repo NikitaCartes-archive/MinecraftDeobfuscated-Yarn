@@ -27,12 +27,12 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.cape.setTextureSize(64, 32);
 		this.cape.addBox(-5.0F, 0.0F, -1.0F, 10, 16, 1, f);
 		if (bl) {
-			this.armLeft = new Cuboid(this, 32, 48);
-			this.armLeft.addBox(-1.0F, -2.0F, -2.0F, 3, 12, 4, f);
-			this.armLeft.setRotationPoint(5.0F, 2.5F, 0.0F);
-			this.armRight = new Cuboid(this, 40, 16);
-			this.armRight.addBox(-2.0F, -2.0F, -2.0F, 3, 12, 4, f);
-			this.armRight.setRotationPoint(-5.0F, 2.5F, 0.0F);
+			this.leftArm = new Cuboid(this, 32, 48);
+			this.leftArm.addBox(-1.0F, -2.0F, -2.0F, 3, 12, 4, f);
+			this.leftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
+			this.rightArm = new Cuboid(this, 40, 16);
+			this.rightArm.addBox(-2.0F, -2.0F, -2.0F, 3, 12, 4, f);
+			this.rightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			this.leftArmOverlay = new Cuboid(this, 48, 48);
 			this.leftArmOverlay.addBox(-1.0F, -2.0F, -2.0F, 3, 12, 4, f + 0.25F);
 			this.leftArmOverlay.setRotationPoint(5.0F, 2.5F, 0.0F);
@@ -40,9 +40,9 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 			this.rightArmOverlay.addBox(-2.0F, -2.0F, -2.0F, 3, 12, 4, f + 0.25F);
 			this.rightArmOverlay.setRotationPoint(-5.0F, 2.5F, 10.0F);
 		} else {
-			this.armLeft = new Cuboid(this, 32, 48);
-			this.armLeft.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
-			this.armLeft.setRotationPoint(5.0F, 2.0F, 0.0F);
+			this.leftArm = new Cuboid(this, 32, 48);
+			this.leftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
+			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.leftArmOverlay = new Cuboid(this, 48, 48);
 			this.leftArmOverlay.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, f + 0.25F);
 			this.leftArmOverlay.setRotationPoint(5.0F, 2.0F, 0.0F);
@@ -51,9 +51,9 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 			this.rightArmOverlay.setRotationPoint(-5.0F, 2.0F, 10.0F);
 		}
 
-		this.legLeft = new Cuboid(this, 16, 48);
-		this.legLeft.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
-		this.legLeft.setRotationPoint(1.9F, 12.0F, 0.0F);
+		this.leftLeg = new Cuboid(this, 16, 48);
+		this.leftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.leftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 		this.leftLegOverlay = new Cuboid(this, 0, 48);
 		this.leftLegOverlay.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.25F);
 		this.leftLegOverlay.setRotationPoint(1.9F, 12.0F, 0.0F);
@@ -107,10 +107,10 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	@Override
 	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(livingEntity, f, g, h, i, j, k);
-		this.leftLegOverlay.copyRotation(this.legLeft);
-		this.rightLegOverlay.copyRotation(this.legRight);
-		this.leftArmOverlay.copyRotation(this.armLeft);
-		this.rightArmOverlay.copyRotation(this.armRight);
+		this.leftLegOverlay.copyRotation(this.leftLeg);
+		this.rightLegOverlay.copyRotation(this.rightLeg);
+		this.leftArmOverlay.copyRotation(this.leftArm);
+		this.rightArmOverlay.copyRotation(this.rightArm);
 		this.bodyOverlay.copyRotation(this.body);
 		if (livingEntity.isInSneakingPose()) {
 			this.cape.rotationPointY = 2.0F;

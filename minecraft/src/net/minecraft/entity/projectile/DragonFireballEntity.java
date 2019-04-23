@@ -9,7 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -23,16 +23,16 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	public DragonFireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.DRAGON_FIREBALL, d, e, f, g, h, i, world);
+		super(EntityType.field_6129, d, e, f, g, h, i, world);
 	}
 
 	public DragonFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.DRAGON_FIREBALL, livingEntity, d, e, f, world);
+		super(EntityType.field_6129, livingEntity, d, e, f, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
+		if (hitResult.getType() != HitResult.Type.field_1331 || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
@@ -70,7 +70,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected ParticleParameters getParticleType() {
+	protected ParticleEffect getParticleType() {
 		return ParticleTypes.field_11216;
 	}
 

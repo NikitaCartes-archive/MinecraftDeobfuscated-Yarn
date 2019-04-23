@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
-public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleParameters {
-	private static final ParticleParameters.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleParameters.Factory<DefaultParticleType>() {
+public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
+	private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>() {
 		public DefaultParticleType method_10307(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
 			return (DefaultParticleType)particleType;
 		}

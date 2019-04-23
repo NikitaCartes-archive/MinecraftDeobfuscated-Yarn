@@ -10,11 +10,11 @@ import net.minecraft.network.Packet;
 public class EnderDragonPart extends Entity {
 	public final EnderDragonEntity owner;
 	public final String name;
-	private final EntitySize field_18119;
+	private final EntitySize partSize;
 
 	public EnderDragonPart(EnderDragonEntity enderDragonEntity, String string, float f, float g) {
 		super(enderDragonEntity.getType(), enderDragonEntity.world);
-		this.field_18119 = EntitySize.resizeable(f, g);
+		this.partSize = EntitySize.resizeable(f, g);
 		this.refreshSize();
 		this.owner = enderDragonEntity;
 		this.name = string;
@@ -54,6 +54,6 @@ public class EnderDragonPart extends Entity {
 
 	@Override
 	public EntitySize getSize(EntityPose entityPose) {
-		return this.field_18119;
+		return this.partSize;
 	}
 }

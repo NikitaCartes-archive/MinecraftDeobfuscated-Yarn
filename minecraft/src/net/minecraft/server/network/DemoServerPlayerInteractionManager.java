@@ -3,8 +3,8 @@ package net.minecraft.server.network;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -43,7 +43,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				if (m == 6L) {
 					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
-					this.player.sendMessage(new TranslatableTextComponent("demo.day." + m));
+					this.player.sendMessage(new TranslatableComponent("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
@@ -55,13 +55,13 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.sendMessage(new TranslatableTextComponent("demo.day.warning"));
+			this.player.sendMessage(new TranslatableComponent("demo.day.warning"));
 		}
 	}
 
 	private void sendDemoReminder() {
 		if (this.field_13888 > 100) {
-			this.player.sendMessage(new TranslatableTextComponent("demo.reminder"));
+			this.player.sendMessage(new TranslatableComponent("demo.reminder"));
 			this.field_13888 = 0;
 		}
 	}
@@ -91,7 +91,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			return super.interactItem(playerEntity, world, itemStack, hand);
 		}
@@ -101,7 +101,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			return super.interactBlock(playerEntity, world, itemStack, hand, blockHitResult);
 		}

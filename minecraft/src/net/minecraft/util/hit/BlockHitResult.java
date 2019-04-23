@@ -40,7 +40,7 @@ public class BlockHitResult extends HitResult {
 
 	@Override
 	public HitResult.Type getType() {
-		return this.missed ? HitResult.Type.NONE : HitResult.Type.BLOCK;
+		return this.missed ? HitResult.Type.field_1333 : HitResult.Type.field_1332;
 	}
 
 	public boolean method_17781() {

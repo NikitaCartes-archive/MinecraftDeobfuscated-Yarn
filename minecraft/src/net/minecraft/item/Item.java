@@ -19,9 +19,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -39,7 +39,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public class Item implements ItemProvider {
+public class Item implements ItemConvertible {
 	public static final Map<Block, Item> BLOCK_ITEM_MAP = Maps.<Block, Item>newHashMap();
 	private static final ItemPropertyGetter GETTER_DAMAGED = (itemStack, world, livingEntity) -> itemStack.isDamaged() ? 1.0F : 0.0F;
 	private static final ItemPropertyGetter GETTER_DAMAGE = (itemStack, world, livingEntity) -> MathHelper.clamp(
@@ -121,7 +121,7 @@ public class Item implements ItemProvider {
 	}
 
 	@Override
-	public Item getItem() {
+	public Item asItem() {
 		return this;
 	}
 
@@ -130,7 +130,7 @@ public class Item implements ItemProvider {
 	}
 
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		return ActionResult.PASS;
+		return ActionResult.field_5811;
 	}
 
 	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
@@ -147,7 +147,7 @@ public class Item implements ItemProvider {
 				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 			}
 		} else {
-			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.field_5811, playerEntity.getStackInHand(hand));
 		}
 	}
 
@@ -184,8 +184,8 @@ public class Item implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getTextComponent() {
-		return new TranslatableTextComponent(this.getTranslationKey());
+	public Component getTextComponent() {
+		return new TranslatableComponent(this.getTranslationKey());
 	}
 
 	protected String getOrCreateTranslationKey() {
@@ -243,11 +243,11 @@ public class Item implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 	}
 
-	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
-		return new TranslatableTextComponent(this.getTranslationKey(itemStack));
+	public Component getTranslatedNameTrimmed(ItemStack itemStack) {
+		return new TranslatableComponent(this.getTranslationKey(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)

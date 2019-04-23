@@ -27,7 +27,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public TNTMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.TNT_MINECART, world, d, e, f);
+		super(EntityType.field_6053, world, d, e, f);
 	}
 
 	@Override

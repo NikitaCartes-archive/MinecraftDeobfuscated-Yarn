@@ -9,11 +9,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -29,9 +29,9 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 		Supplier<ResourcePack> supplier,
 		ResourcePack resourcePack,
 		PackResourceMetadata packResourceMetadata,
-		ResourcePackContainer.SortingDirection sortingDirection
+		ResourcePackContainer.InsertionPosition insertionPosition
 	) {
-		super(string, bl, supplier, resourcePack, packResourceMetadata, sortingDirection);
+		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
 		NativeImage nativeImage = null;
 
 		try {
@@ -66,14 +66,14 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 		String string,
 		boolean bl,
 		Supplier<ResourcePack> supplier,
-		TextComponent textComponent,
-		TextComponent textComponent2,
+		Component component,
+		Component component2,
 		ResourcePackCompatibility resourcePackCompatibility,
-		ResourcePackContainer.SortingDirection sortingDirection,
+		ResourcePackContainer.InsertionPosition insertionPosition,
 		boolean bl2,
 		@Nullable NativeImage nativeImage
 	) {
-		super(string, bl, supplier, textComponent, textComponent2, resourcePackCompatibility, sortingDirection, bl2);
+		super(string, bl, supplier, component, component2, resourcePackCompatibility, insertionPosition, bl2);
 		this.icon = nativeImage;
 	}
 

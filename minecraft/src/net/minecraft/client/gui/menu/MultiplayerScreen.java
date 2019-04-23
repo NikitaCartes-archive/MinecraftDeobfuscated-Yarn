@@ -13,8 +13,8 @@ import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sortme.ServerEntryNetworkPart;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class MultiplayerScreen extends Screen {
 	private boolean initialized;
 
 	public MultiplayerScreen(Screen screen) {
-		super(new TranslatableTextComponent("multiplayer.title"));
+		super(new TranslatableComponent("multiplayer.title"));
 		this.parent = screen;
 	}
 
@@ -88,11 +88,11 @@ public class MultiplayerScreen extends Screen {
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 				String string = ((MultiplayerServerListWidget.ServerItem)entry).getServer().name;
 				if (string != null) {
-					TextComponent textComponent = new TranslatableTextComponent("selectServer.deleteQuestion");
-					TextComponent textComponent2 = new TranslatableTextComponent("selectServer.deleteWarning", string);
+					Component component = new TranslatableComponent("selectServer.deleteQuestion");
+					Component component2 = new TranslatableComponent("selectServer.deleteWarning", string);
 					String string2 = I18n.translate("selectServer.deleteButton");
 					String string3 = I18n.translate("gui.cancel");
-					this.minecraft.openScreen(new YesNoScreen(this::removeEntry, textComponent, textComponent2, string2, string3));
+					this.minecraft.openScreen(new YesNoScreen(this::removeEntry, component, component2, string2, string3));
 				}
 			}
 		}));

@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.sapling.SaplingGenerator;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
@@ -24,7 +24,7 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -61,6 +61,6 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(STAGE);
+		builder.add(STAGE);
 	}
 }

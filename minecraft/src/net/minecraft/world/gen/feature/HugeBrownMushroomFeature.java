@@ -88,7 +88,7 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for(int n = 0; n < i; ++n) {
-					mutable.set(blockPos).setOffset(Direction.UP, n);
+					mutable.set(blockPos).setOffset(Direction.field_11036, n);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
 						this.setBlockState(iWorld, mutable, blockState3);
 					}

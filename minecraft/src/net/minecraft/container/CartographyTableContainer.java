@@ -41,7 +41,7 @@ public class CartographyTableContainer extends Container {
 	}
 
 	public CartographyTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.CARTOGRAPHY, i);
+		super(ContainerType.field_17343, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
 			@Override

@@ -105,6 +105,6 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HAS_RECORD);
+		builder.add(HAS_RECORD);
 	}
 }

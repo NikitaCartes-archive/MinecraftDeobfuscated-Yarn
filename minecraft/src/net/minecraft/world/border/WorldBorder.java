@@ -9,10 +9,10 @@ import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.level.LevelProperties;
 
 public class WorldBorder {
@@ -321,7 +321,7 @@ public class WorldBorder {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
-			return this.newSize < this.oldSize ? WorldBorderStage.SHRINKING : WorldBorderStage.GROWING;
+			return this.newSize < this.oldSize ? WorldBorderStage.field_12756 : WorldBorderStage.field_12754;
 		}
 
 		@Override
@@ -395,7 +395,7 @@ public class WorldBorder {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
-			return WorldBorderStage.STATIC;
+			return WorldBorderStage.field_12753;
 		}
 
 		@Environment(EnvType.CLIENT)

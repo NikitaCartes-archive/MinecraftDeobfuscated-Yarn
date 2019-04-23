@@ -8,8 +8,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ProtoChunk;
 
 public class ChunkTickScheduler<T> implements TickScheduler<T> {

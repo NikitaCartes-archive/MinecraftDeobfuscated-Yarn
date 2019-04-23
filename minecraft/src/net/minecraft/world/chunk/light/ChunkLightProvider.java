@@ -1,12 +1,14 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.LevelPropagator;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -14,7 +16,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
@@ -24,9 +25,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	protected final LightType type;
 	protected final S lightStorage;
 	private boolean field_15794;
-	private final BlockPos.Mutable srcMutablePos = new BlockPos.Mutable();
-	private final BlockPos.Mutable destMutablePos = new BlockPos.Mutable();
-	private final BlockPos.Mutable mutablePosGetLightBlockedBetween = new BlockPos.Mutable();
+	private final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
 	private final long[] field_17397 = new long[2];
 	private final BlockView[] field_17398 = new BlockView[2];
 
@@ -73,45 +72,32 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		Arrays.fill(this.field_17398, null);
 	}
 
-	protected int getLightBlockedBetween(long l, long m) {
-		this.lightStorage.updateAll();
-		this.srcMutablePos.setFromLong(l);
-		this.destMutablePos.setFromLong(m);
-		int i = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getX());
-		int j = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getZ());
-		int k = ChunkSectionPos.toChunkCoord(this.destMutablePos.getX());
-		int n = ChunkSectionPos.toChunkCoord(this.destMutablePos.getZ());
-		BlockView blockView = this.method_17529(k, n);
-		if (blockView == null) {
-			return 16;
+	protected VoxelShape method_20479(long l, @Nullable AtomicInteger atomicInteger) {
+		if (l == Long.MAX_VALUE) {
+			if (atomicInteger != null) {
+				atomicInteger.set(0);
+			}
+
+			return VoxelShapes.empty();
 		} else {
-			BlockState blockState = blockView.getBlockState(this.destMutablePos);
-			BlockView blockView2 = this.chunkProvider.getWorld();
-			int o = blockState.getLightSubtracted(blockView2, this.destMutablePos);
-			if (!blockState.method_16386() && o >= 15) {
-				return 16;
-			} else {
-				BlockView blockView3;
-				if (i == k && j == n) {
-					blockView3 = blockView;
-				} else {
-					blockView3 = this.method_17529(i, j);
+			int i = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l));
+			int j = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l));
+			BlockView blockView = this.method_17529(i, j);
+			if (blockView == null) {
+				if (atomicInteger != null) {
+					atomicInteger.set(16);
 				}
 
-				if (blockView3 == null) {
-					return 16;
-				} else {
-					int p = Integer.signum(this.destMutablePos.getX() - this.srcMutablePos.getX());
-					int q = Integer.signum(this.destMutablePos.getY() - this.srcMutablePos.getY());
-					int r = Integer.signum(this.destMutablePos.getZ() - this.srcMutablePos.getZ());
-					Direction direction = Direction.fromVector(this.mutablePosGetLightBlockedBetween.set(p, q, r));
-					if (direction == null) {
-						return 16;
-					} else {
-						BlockState blockState2 = blockView3.getBlockState(this.srcMutablePos);
-						return method_20049(blockView2, blockState2, this.srcMutablePos, blockState, this.destMutablePos, direction, o);
-					}
+				return VoxelShapes.fullCube();
+			} else {
+				this.field_19284.setFromLong(l);
+				BlockState blockState = blockView.getBlockState(this.field_19284);
+				boolean bl = blockState.isFullBoundsCubeForCulling() && blockState.hasSidedTransparency();
+				if (atomicInteger != null) {
+					atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
 				}
+
+				return bl ? blockState.method_11615(this.chunkProvider.getWorld(), this.field_19284) : VoxelShapes.empty();
 			}
 		}
 	}
@@ -119,8 +105,8 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	public static int method_20049(
 		BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i
 	) {
-		boolean bl = blockState.isFullBoundsCubeForCulling() && blockState.method_16386();
-		boolean bl2 = blockState2.isFullBoundsCubeForCulling() && blockState2.method_16386();
+		boolean bl = blockState.isFullBoundsCubeForCulling() && blockState.hasSidedTransparency();
+		boolean bl2 = blockState2.isFullBoundsCubeForCulling() && blockState2.hasSidedTransparency();
 		if (!bl && !bl2) {
 			return i;
 		} else {
@@ -233,6 +219,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	public void method_15512(ChunkPos chunkPos, boolean bl) {
 		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
+		this.lightStorage.updateAll();
 		this.lightStorage.method_15535(l, bl);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,18 +20,17 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -208,7 +208,7 @@ public class FilledMapItem extends MapItem {
 
 	private BlockState getTopFaceBlockState(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
+		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.field_11036) ? fluidState.getBlockState() : blockState;
 	}
 
 	private static boolean hasPositiveDepth(Biome[] biomes, int i, int j, int k) {
@@ -364,19 +364,19 @@ public class FilledMapItem extends MapItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		MapState mapState = world == null ? null : getOrCreateMapState(itemStack, world);
 		if (mapState != null && mapState.locked) {
-			list.add(new TranslatableTextComponent("filled_map.locked", getMapId(itemStack)).applyFormat(TextFormat.field_1080));
+			list.add(new TranslatableComponent("filled_map.locked", getMapId(itemStack)).applyFormat(ChatFormat.field_1080));
 		}
 
 		if (tooltipContext.isAdvanced()) {
 			if (mapState != null) {
-				list.add(new TranslatableTextComponent("filled_map.id", getMapId(itemStack)).applyFormat(TextFormat.field_1080));
-				list.add(new TranslatableTextComponent("filled_map.scale", 1 << mapState.scale).applyFormat(TextFormat.field_1080));
-				list.add(new TranslatableTextComponent("filled_map.level", mapState.scale, 4).applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableComponent("filled_map.id", getMapId(itemStack)).applyFormat(ChatFormat.field_1080));
+				list.add(new TranslatableComponent("filled_map.scale", 1 << mapState.scale).applyFormat(ChatFormat.field_1080));
+				list.add(new TranslatableComponent("filled_map.level", mapState.scale, 4).applyFormat(ChatFormat.field_1080));
 			} else {
-				list.add(new TranslatableTextComponent("filled_map.unknown").applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableComponent("filled_map.unknown").applyFormat(ChatFormat.field_1080));
 			}
 		}
 	}

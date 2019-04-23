@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -28,13 +28,13 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.field_10092;
+		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036) && blockState.getBlock() != Blocks.field_10092;
 	}
 
 	@Environment(EnvType.CLIENT)

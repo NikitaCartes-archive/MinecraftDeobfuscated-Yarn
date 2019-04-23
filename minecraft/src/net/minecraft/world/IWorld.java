@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +65,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 
 	void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
 
-	void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i);
+	void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i);
 
 	void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j);
 

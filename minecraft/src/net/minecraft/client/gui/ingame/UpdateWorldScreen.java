@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
@@ -29,7 +29,7 @@ public class UpdateWorldScreen extends Screen {
 	private final WorldUpdater updater;
 
 	public UpdateWorldScreen(BooleanConsumer booleanConsumer, String string, LevelStorage levelStorage, boolean bl) {
-		super(new TranslatableTextComponent("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
+		super(new TranslatableComponent("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
 		this.callback = booleanConsumer;
 		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string), bl);
 	}

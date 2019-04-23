@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.LoopingStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -100,7 +100,7 @@ public abstract class Particle {
 		return this.maxAge;
 	}
 
-	public void update() {
+	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
@@ -121,7 +121,7 @@ public abstract class Particle {
 
 	public abstract void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k);
 
-	public abstract ParticleTextureSheet getTextureSheet();
+	public abstract ParticleTextureSheet getType();
 
 	public String toString() {
 		return this.getClass().getSimpleName()
@@ -174,9 +174,7 @@ public abstract class Particle {
 		double h = e;
 		double i = f;
 		if (this.collidesWithWorld && d != 0.0 || e != 0.0 || f != 0.0) {
-			Vec3d vec3d = Entity.method_17833(
-				new Vec3d(d, e, f), this.getBoundingBox(), this.world, VerticalEntityPosition.minValue(), new LoopingStream<>(Stream.empty())
-			);
+			Vec3d vec3d = Entity.method_17833(new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new LoopingStream<>(Stream.empty()));
 			d = vec3d.x;
 			e = vec3d.y;
 			f = vec3d.z;

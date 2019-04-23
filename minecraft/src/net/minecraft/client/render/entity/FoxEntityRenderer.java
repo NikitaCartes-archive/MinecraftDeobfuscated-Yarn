@@ -12,10 +12,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxModel<FoxEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/fox/fox.png");
-	private static final Identifier TEXTURE_SLEEP = new Identifier("textures/entity/fox/fox_sleep.png");
-	private static final Identifier TEXTURE_SNOW = new Identifier("textures/entity/fox/snow_fox.png");
-	private static final Identifier TEXTURE_SNOW_SLEEP = new Identifier("textures/entity/fox/snow_fox_sleep.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/fox/fox.png");
+	private static final Identifier SKIN_SLEEP = new Identifier("textures/entity/fox/fox_sleep.png");
+	private static final Identifier SKIN_SNOW = new Identifier("textures/entity/fox/snow_fox.png");
+	private static final Identifier SKIN_SNOW_SLEEp = new Identifier("textures/entity/fox/snow_fox_sleep.png");
 
 	public FoxEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new FoxModel<>(), 0.4F);
@@ -32,9 +32,9 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxModel<Fox
 	@Nullable
 	protected Identifier method_18333(FoxEntity foxEntity) {
 		if (foxEntity.getFoxType() == FoxEntity.Type.field_17996) {
-			return foxEntity.isSleeping() ? TEXTURE_SLEEP : TEXTURE;
+			return foxEntity.isSleeping() ? SKIN_SLEEP : SKIN;
 		} else {
-			return foxEntity.isSleeping() ? TEXTURE_SNOW_SLEEP : TEXTURE_SNOW;
+			return foxEntity.isSleeping() ? SKIN_SNOW_SLEEp : SKIN_SNOW;
 		}
 	}
 }

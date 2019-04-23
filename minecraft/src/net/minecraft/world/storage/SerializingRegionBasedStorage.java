@@ -23,9 +23,9 @@ import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -14,7 +14,7 @@ public class Generic3x3Container extends Container {
 	}
 
 	public Generic3x3Container(int i, PlayerInventory playerInventory, Inventory inventory) {
-		super(ContainerType.GENERIC_3X3, i);
+		super(ContainerType.field_17328, i);
 		checkContainerSize(inventory, 9);
 		this.inventory = inventory;
 		inventory.onInvOpen(playerInventory.player);

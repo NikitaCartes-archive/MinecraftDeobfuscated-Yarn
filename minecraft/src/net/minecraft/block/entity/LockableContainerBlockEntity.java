@@ -8,15 +8,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Nameable;
 
 public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerProvider, Nameable {
 	private ContainerLock lock = ContainerLock.NONE;
-	private TextComponent customName;
+	private Component customName;
 
 	protected LockableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -27,7 +27,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.fromTag(compoundTag);
 		this.lock = ContainerLock.deserialize(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -36,41 +36,41 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.toTag(compoundTag);
 		this.lock.serialize(compoundTag);
 		if (this.customName != null) {
-			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
+			compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
 		}
 
 		return compoundTag;
 	}
 
-	public void setCustomName(TextComponent textComponent) {
-		this.customName = textComponent;
+	public void setCustomName(Component component) {
+		this.customName = component;
 	}
 
 	@Override
-	public TextComponent getName() {
+	public Component getName() {
 		return this.customName != null ? this.customName : this.getContainerName();
 	}
 
 	@Override
-	public TextComponent getDisplayName() {
+	public Component getDisplayName() {
 		return this.getName();
 	}
 
 	@Nullable
 	@Override
-	public TextComponent getCustomName() {
+	public Component getCustomName() {
 		return this.customName;
 	}
 
-	protected abstract TextComponent getContainerName();
+	protected abstract Component getContainerName();
 
 	public boolean checkUnlocked(PlayerEntity playerEntity) {
 		return checkUnlocked(playerEntity, this.lock, this.getDisplayName());
 	}
 
-	public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, TextComponent textComponent) {
+	public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, Component component) {
 		if (!playerEntity.isSpectator() && !containerLock.isEmpty(playerEntity.getMainHandStack())) {
-			playerEntity.addChatMessage(new TranslatableTextComponent("container.isLocked", textComponent), true);
+			playerEntity.addChatMessage(new TranslatableComponent("container.isLocked", component), true);
 			playerEntity.playSound(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
 			return false;
 		} else {

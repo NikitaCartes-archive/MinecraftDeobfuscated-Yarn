@@ -3,7 +3,7 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.SkeletonHorseGoal;
+import net.minecraft.entity.ai.goal.SkeletonHorseTrapTriggerGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -20,9 +20,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class SkeletonHorseEntity extends HorseBaseEntity {
-	private final SkeletonHorseGoal field_7003 = new SkeletonHorseGoal(this);
-	private boolean field_7005;
-	private int field_7004;
+	private final SkeletonHorseTrapTriggerGoal field_7003 = new SkeletonHorseTrapTriggerGoal(this);
+	private boolean trapped;
+	private int trapTime;
 
 	public SkeletonHorseEntity(EntityType<? extends SkeletonHorseEntity> entityType, World world) {
 		super(entityType, world);
@@ -107,9 +107,9 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
-		if (this.method_6812() && this.field_7004++ >= 18000) {
+	public void tickMovement() {
+		super.tickMovement();
+		if (this.isTrapped() && this.trapTime++ >= 18000) {
 			this.remove();
 		}
 	}
@@ -117,15 +117,15 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("SkeletonTrap", this.method_6812());
-		compoundTag.putInt("SkeletonTrapTime", this.field_7004);
+		compoundTag.putBoolean("SkeletonTrap", this.isTrapped());
+		compoundTag.putInt("SkeletonTrapTime", this.trapTime);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.method_6813(compoundTag.getBoolean("SkeletonTrap"));
-		this.field_7004 = compoundTag.getInt("SkeletonTrapTime");
+		this.setTrapped(compoundTag.getBoolean("SkeletonTrap"));
+		this.trapTime = compoundTag.getInt("SkeletonTrapTime");
 	}
 
 	@Override
@@ -138,13 +138,13 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 		return 0.96F;
 	}
 
-	public boolean method_6812() {
-		return this.field_7005;
+	public boolean isTrapped() {
+		return this.trapped;
 	}
 
-	public void method_6813(boolean bl) {
-		if (bl != this.field_7005) {
-			this.field_7005 = bl;
+	public void setTrapped(boolean bl) {
+		if (bl != this.trapped) {
+			this.trapped = bl;
 			if (bl) {
 				this.goalSelector.add(1, this.field_7003);
 			} else {
@@ -156,7 +156,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.SKELETON_HORSE.create(this.world);
+		return EntityType.field_6075.create(this.world);
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 			return super.interactMob(playerEntity, hand);
 		} else if (!this.isTame()) {
 			return false;
-		} else if (this.isChild()) {
+		} else if (this.isBaby()) {
 			return super.interactMob(playerEntity, hand);
 		} else if (playerEntity.isSneaking()) {
 			this.openInventory(playerEntity);

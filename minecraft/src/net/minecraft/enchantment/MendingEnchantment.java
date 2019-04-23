@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class MendingEnchantment extends Enchantment {
 	public MendingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.TOOL, equipmentSlots);
+		super(weight, EnchantmentTarget.BREAKABLE, equipmentSlots);
 	}
 
 	@Override

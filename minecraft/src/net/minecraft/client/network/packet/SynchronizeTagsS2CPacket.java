@@ -5,22 +5,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.tag.TagManager;
+import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.PacketByteBuf;
 
 public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener> {
-	private TagManager tagManager;
+	private RegistryTagManager tagManager;
 
 	public SynchronizeTagsS2CPacket() {
 	}
 
-	public SynchronizeTagsS2CPacket(TagManager tagManager) {
-		this.tagManager = tagManager;
+	public SynchronizeTagsS2CPacket(RegistryTagManager registryTagManager) {
+		this.tagManager = registryTagManager;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.tagManager = TagManager.fromPacket(packetByteBuf);
+		this.tagManager = RegistryTagManager.fromPacket(packetByteBuf);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TagManager getTagManager() {
+	public RegistryTagManager getTagManager() {
 		return this.tagManager;
 	}
 }

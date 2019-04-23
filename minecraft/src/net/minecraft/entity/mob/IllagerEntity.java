@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
@@ -28,6 +27,17 @@ public abstract class IllagerEntity extends RaiderEntity {
 		return IllagerEntity.State.field_7207;
 	}
 
+	public class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
+		public LongDoorInteractGoal(RaiderEntity raiderEntity) {
+			super(raiderEntity, false);
+		}
+
+		@Override
+		public boolean canStart() {
+			return super.canStart() && IllagerEntity.this.hasActiveRaid();
+		}
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static enum State {
 		field_7207,
@@ -37,16 +47,5 @@ public abstract class IllagerEntity extends RaiderEntity {
 		field_7213,
 		field_7210,
 		field_19012;
-	}
-
-	public class class_4258 extends LongDoorInteractGoal {
-		public class_4258(RaiderEntity raiderEntity) {
-			super(raiderEntity, false);
-		}
-
-		@Override
-		public boolean canStart() {
-			return super.canStart() && IllagerEntity.this.hasActiveRaid();
-		}
 	}
 }

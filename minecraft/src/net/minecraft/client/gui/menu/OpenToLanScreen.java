@@ -6,8 +6,8 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NetworkUtils;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -19,7 +19,7 @@ public class OpenToLanScreen extends Screen {
 	private boolean allowCommands;
 
 	public OpenToLanScreen(Screen screen) {
-		super(new TranslatableTextComponent("lanServer.title"));
+		super(new TranslatableComponent("lanServer.title"));
 		this.parent = screen;
 	}
 
@@ -28,14 +28,14 @@ public class OpenToLanScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
 			this.minecraft.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
-			TextComponent textComponent;
+			Component component;
 			if (this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
-				textComponent = new TranslatableTextComponent("commands.publish.started", i);
+				component = new TranslatableComponent("commands.publish.started", i);
 			} else {
-				textComponent = new TranslatableTextComponent("commands.publish.failed");
+				component = new TranslatableComponent("commands.publish.failed");
 			}
 
-			this.minecraft.inGameHud.getChatHud().addMessage(textComponent);
+			this.minecraft.inGameHud.getChatHud().addMessage(component);
 		}));
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))

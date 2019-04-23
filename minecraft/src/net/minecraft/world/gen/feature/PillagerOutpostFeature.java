@@ -10,13 +10,13 @@ import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageStructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.field_6105, 1, 1, 1));
 
 	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> function) {
 		super(function);

@@ -5,11 +5,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.loot.LootTables;
 
 public class BuriedTreasureGenerator {
@@ -48,7 +48,7 @@ public class BuriedTreasureGenerator {
 						if (blockState4.isAir() || this.isLiquid(blockState4)) {
 							BlockPos blockPos2 = blockPos.down();
 							BlockState blockState5 = iWorld.getBlockState(blockPos2);
-							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
+							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.field_11036) {
 								iWorld.setBlockState(blockPos, blockState2, 3);
 							} else {
 								iWorld.setBlockState(blockPos, blockState3, 3);

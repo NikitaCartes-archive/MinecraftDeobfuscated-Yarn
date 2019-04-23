@@ -17,7 +17,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 	}
 
 	public void method_4195(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
-		if (!mooshroomEntity.isChild() && !mooshroomEntity.isInvisible()) {
+		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GlStateManager.enableCull();

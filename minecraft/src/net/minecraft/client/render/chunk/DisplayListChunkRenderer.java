@@ -16,7 +16,7 @@ public class DisplayListChunkRenderer extends ChunkRenderer {
 	}
 
 	public int method_3639(BlockRenderLayer blockRenderLayer, ChunkRenderData chunkRenderData) {
-		return !chunkRenderData.method_3641(blockRenderLayer) ? this.displayListsStartIndex + blockRenderLayer.ordinal() : -1;
+		return !chunkRenderData.isEmpty(blockRenderLayer) ? this.displayListsStartIndex + blockRenderLayer.ordinal() : -1;
 	}
 
 	@Override

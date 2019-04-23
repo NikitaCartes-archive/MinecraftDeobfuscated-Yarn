@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +34,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		RailShape railShape = blockState.getBlock() == this ? blockState.get(this.getShapeProperty()) : null;
 		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}
@@ -114,7 +114,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override

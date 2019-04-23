@@ -23,7 +23,7 @@ public class ArmorStandItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		Direction direction = itemUsageContext.getFacing();
-		if (direction == Direction.DOWN) {
+		if (direction == Direction.field_11033) {
 			return ActionResult.field_5814;
 		} else {
 			World world = itemUsageContext.getWorld();

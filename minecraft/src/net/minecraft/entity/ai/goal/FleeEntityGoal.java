@@ -12,9 +12,9 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
 
 public class FleeEntityGoal<T extends LivingEntity> extends Goal {
-	protected final MobEntityWithAi fleeingEntity;
-	private final double fleeSlowSpeed;
-	private final double fleeFastSpeed;
+	protected final MobEntityWithAi mob;
+	private final double slowSpeed;
+	private final double fastSpeed;
 	protected T targetEntity;
 	protected final float fleeDistance;
 	protected Path fleePath;
@@ -31,12 +31,12 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	public FleeEntityGoal(
 		MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<LivingEntity> predicate, float f, double d, double e, Predicate<LivingEntity> predicate2
 	) {
-		this.fleeingEntity = mobEntityWithAi;
+		this.mob = mobEntityWithAi;
 		this.classToFleeFrom = class_;
 		this.field_6393 = predicate;
 		this.fleeDistance = f;
-		this.fleeSlowSpeed = d;
-		this.fleeFastSpeed = e;
+		this.slowSpeed = d;
+		this.fastSpeed = e;
 		this.field_6388 = predicate2;
 		this.fleeingEntityNavigation = mobEntityWithAi.getNavigation();
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
@@ -49,24 +49,24 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		this.targetEntity = this.fleeingEntity
+		this.targetEntity = this.mob
 			.world
 			.getClosestEntity(
 				this.classToFleeFrom,
 				this.withinRangePredicate,
-				this.fleeingEntity,
-				this.fleeingEntity.x,
-				this.fleeingEntity.y,
-				this.fleeingEntity.z,
-				this.fleeingEntity.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
+				this.mob,
+				this.mob.x,
+				this.mob.y,
+				this.mob.z,
+				this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
 			);
 		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = PathfindingUtil.method_6379(this.fleeingEntity, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
+			Vec3d vec3d = PathfindingUtil.method_6379(this.mob, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
 			if (vec3d == null) {
 				return false;
-			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.fleeingEntity)) {
+			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {
 				return false;
 			} else {
 				this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z);
@@ -82,7 +82,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public void start() {
-		this.fleeingEntityNavigation.startMovingAlong(this.fleePath, this.fleeSlowSpeed);
+		this.fleeingEntityNavigation.startMovingAlong(this.fleePath, this.slowSpeed);
 	}
 
 	@Override
@@ -92,10 +92,10 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public void tick() {
-		if (this.fleeingEntity.squaredDistanceTo(this.targetEntity) < 49.0) {
-			this.fleeingEntity.getNavigation().setSpeed(this.fleeFastSpeed);
+		if (this.mob.squaredDistanceTo(this.targetEntity) < 49.0) {
+			this.mob.getNavigation().setSpeed(this.fastSpeed);
 		} else {
-			this.fleeingEntity.getNavigation().setSpeed(this.fleeSlowSpeed);
+			this.mob.getNavigation().setSpeed(this.slowSpeed);
 		}
 	}
 }

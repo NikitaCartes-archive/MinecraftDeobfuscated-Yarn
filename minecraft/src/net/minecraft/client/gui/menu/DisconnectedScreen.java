@@ -6,20 +6,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedScreen extends Screen {
-	private final TextComponent reason;
+	private final Component reason;
 	private List<String> reasonFormatted;
 	private final Screen parent;
 	private int reasonHeight;
 
-	public DisconnectedScreen(Screen screen, String string, TextComponent textComponent) {
-		super(new TranslatableTextComponent(string));
+	public DisconnectedScreen(Screen screen, String string, Component component) {
+		super(new TranslatableComponent(string));
 		this.parent = screen;
-		this.reason = textComponent;
+		this.reason = component;
 	}
 
 	@Override

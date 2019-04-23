@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 
 public class ThornsEnchantment extends Enchantment {
 	public ThornsEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.CHEST, equipmentSlots);
+		super(weight, EnchantmentTarget.ARMOR_CHEST, equipmentSlots);
 	}
 
 	@Override

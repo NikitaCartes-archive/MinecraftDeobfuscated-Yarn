@@ -16,8 +16,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
@@ -51,12 +51,12 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	@Nullable
 	private BlockState.ShapeCache shapeCache;
 	private final int luminance;
-	private final boolean field_16554;
+	private final boolean hasSidedTransparency;
 
 	public BlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
 		super(block, immutableMap);
 		this.luminance = block.getLuminance(this);
-		this.field_16554 = block.method_9526(this);
+		this.hasSidedTransparency = block.hasSidedTransparency(this);
 	}
 
 	public void initShapeCache() {
@@ -78,11 +78,11 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public boolean isTranslucent(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.field_16556 : this.getBlock().isTranslucent(this, blockView, blockPos);
+		return this.shapeCache != null ? this.shapeCache.translucent : this.getBlock().isTranslucent(this, blockView, blockPos);
 	}
 
 	public int getLightSubtracted(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.field_16555 : this.getBlock().getLightSubtracted(this, blockView, blockPos);
+		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getLightSubtracted(this, blockView, blockPos);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -96,8 +96,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.shapeCache == null || this.shapeCache.field_17651;
 	}
 
-	public boolean method_16386() {
-		return this.field_16554;
+	public boolean hasSidedTransparency() {
+		return this.hasSidedTransparency;
 	}
 
 	public int getLuminance() {
@@ -184,24 +184,24 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean skipRenderingSide(BlockState blockState, Direction direction) {
-		return this.getBlock().skipRenderingSide(this, blockState, direction);
+	public boolean isSideInvisible(BlockState blockState, Direction direction) {
+		return this.getBlock().isSideInvisible(this, blockState, direction);
 	}
 
 	public VoxelShape getOutlineShape(BlockView blockView, BlockPos blockPos) {
-		return this.getOutlineShape(blockView, blockPos, VerticalEntityPosition.minValue());
+		return this.getOutlineShape(blockView, blockPos, EntityContext.absent());
 	}
 
-	public VoxelShape getOutlineShape(BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.getBlock().getOutlineShape(this, blockView, blockPos, verticalEntityPosition);
+	public VoxelShape getOutlineShape(BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return this.getBlock().getOutlineShape(this, blockView, blockPos, entityContext);
 	}
 
 	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
-		return this.getCollisionShape(blockView, blockPos, VerticalEntityPosition.minValue());
+		return this.getCollisionShape(blockView, blockPos, EntityContext.absent());
 	}
 
-	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.getBlock().getCollisionShape(this, blockView, blockPos, verticalEntityPosition);
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return this.getBlock().getCollisionShape(this, blockView, blockPos, entityContext);
 	}
 
 	public VoxelShape method_11615(BlockView blockView, BlockPos blockPos) {
@@ -213,7 +213,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public final boolean hasSolidTopSurface(BlockView blockView, BlockPos blockPos, Entity entity) {
-		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, VerticalEntityPosition.fromEntity(entity)), Direction.UP);
+		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, EntityContext.of(entity)), Direction.field_11036);
 	}
 
 	public Vec3d getOffsetPos(BlockView blockView, BlockPos blockPos) {
@@ -378,8 +378,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private static final Direction[] DIRECTIONS = Direction.values();
 		private final boolean cull;
 		private final boolean fullOpaque;
-		private final boolean field_16556;
-		private final int field_16555;
+		private final boolean translucent;
+		private final int lightSubtracted;
 		private final VoxelShape[] shapes;
 		private final boolean field_17651;
 
@@ -387,8 +387,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 			Block block = blockState.getBlock();
 			this.cull = block.isFullBoundsCubeForCulling(blockState);
 			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.field_16556 = block.isTranslucent(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.field_16555 = block.getLightSubtracted(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.translucent = block.isTranslucent(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
 			if (!blockState.isFullBoundsCubeForCulling()) {
 				this.shapes = null;
 			} else {
@@ -400,7 +400,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 				}
 			}
 
-			VoxelShape voxelShape = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, VerticalEntityPosition.minValue());
+			VoxelShape voxelShape = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, EntityContext.absent());
 			this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> voxelShape.getMinimum(axis) < 0.0 || voxelShape.getMaximum(axis) > 1.0);
 		}
 	}

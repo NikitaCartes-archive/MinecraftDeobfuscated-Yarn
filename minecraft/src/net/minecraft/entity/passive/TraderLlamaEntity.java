@@ -98,22 +98,22 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	public class DefendTraderGoal extends TrackTargetGoal {
-		private final LlamaEntity field_17718;
+		private final LlamaEntity llama;
 		private LivingEntity offender;
 		private int traderLastAttackedTime;
 
 		public DefendTraderGoal(LlamaEntity llamaEntity) {
 			super(llamaEntity, false);
-			this.field_17718 = llamaEntity;
+			this.llama = llamaEntity;
 			this.setControls(EnumSet.of(Goal.Control.field_18408));
 		}
 
 		@Override
 		public boolean canStart() {
-			if (!this.field_17718.isLeashed()) {
+			if (!this.llama.isLeashed()) {
 				return false;
 			} else {
-				Entity entity = this.field_17718.getHoldingEntity();
+				Entity entity = this.llama.getHoldingEntity();
 				if (!(entity instanceof WanderingTraderEntity)) {
 					return false;
 				} else {
@@ -127,8 +127,8 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 		@Override
 		public void start() {
-			this.entity.setTarget(this.offender);
-			Entity entity = this.field_17718.getHoldingEntity();
+			this.mob.setTarget(this.offender);
+			Entity entity = this.llama.getHoldingEntity();
 			if (entity instanceof WanderingTraderEntity) {
 				this.traderLastAttackedTime = ((WanderingTraderEntity)entity).getLastAttackedTime();
 			}

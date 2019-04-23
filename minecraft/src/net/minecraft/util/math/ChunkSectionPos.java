@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.CuboidBlockIterator;
-import net.minecraft.world.chunk.ChunkPos;
 
 public class ChunkSectionPos extends Vec3i {
 	private ChunkSectionPos(int i, int j, int k) {

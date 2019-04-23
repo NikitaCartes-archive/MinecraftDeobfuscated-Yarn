@@ -25,7 +25,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
-import net.minecraft.resource.SupplyingResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.DummyProfiler;
@@ -41,7 +41,7 @@ public class FontManager implements AutoCloseable {
 	private final Set<Font> fonts = Sets.<Font>newHashSet();
 	private final TextureManager textureManager;
 	private boolean forceUnicodeFont;
-	private final ResourceReloadListener resourceReloadListener = new SupplyingResourceReloadListener<Map<Identifier, List<Font>>>() {
+	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -74,7 +74,7 @@ public class FontManager implements AutoCloseable {
 									try {
 										String string2 = JsonHelper.getString(jsonObject, "type");
 										FontType fontType = FontType.byId(string2);
-										if (!FontManager.this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
+										if (!FontManager.this.forceUnicodeFont || fontType == FontType.field_2313 || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
 											profiler.push(string2);
 											list.add(fontType.createLoader(jsonObject).load(resourceManager));
 											profiler.pop();
@@ -173,13 +173,13 @@ public class FontManager implements AutoCloseable {
 		if (bl != this.forceUnicodeFont) {
 			this.forceUnicodeFont = bl;
 			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-			ResourceReloadListener.Helper helper = new ResourceReloadListener.Helper() {
+			ResourceReloadListener.Synchronizer synchronizer = new ResourceReloadListener.Synchronizer() {
 				@Override
-				public <T> CompletableFuture<T> waitForAll(T object) {
+				public <T> CompletableFuture<T> whenPrepared(T object) {
 					return CompletableFuture.completedFuture(object);
 				}
 			};
-			this.resourceReloadListener.reload(helper, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
 		}
 	}
 

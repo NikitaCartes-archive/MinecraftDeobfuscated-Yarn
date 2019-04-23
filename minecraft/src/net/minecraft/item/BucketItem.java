@@ -39,22 +39,22 @@ public class BucketItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = getHitResult(
-			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.NONE
+			world, playerEntity, this.fluid == Fluids.field_15906 ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.field_1348
 		);
-		if (hitResult.getType() == HitResult.Type.NONE) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
-		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		if (hitResult.getType() == HitResult.Type.field_1333) {
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+		} else if (hitResult.getType() != HitResult.Type.field_1332) {
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
-			} else if (this.fluid == Fluids.EMPTY) {
+			} else if (this.fluid == Fluids.field_15906) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
 					Fluid fluid = ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos, blockState);
-					if (fluid != Fluids.EMPTY) {
+					if (fluid != Fluids.field_15906) {
 						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 						playerEntity.playSound(fluid.matches(FluidTags.field_15518) ? SoundEvents.field_15202 : SoundEvents.field_15126, 1.0F, 1.0F);
 						ItemStack itemStack2 = this.getFilledStack(itemStack, playerEntity, fluid.getBucketItem());

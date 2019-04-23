@@ -29,7 +29,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	public EvokerFangsEntity(World world, double d, double e, double f, float g, int i, LivingEntity livingEntity) {
-		this(EntityType.EVOKER_FANGS, world);
+		this(EntityType.field_6060, world);
 		this.warmup = i;
 		this.setOwner(livingEntity);
 		this.yaw = g * (180.0F / (float)Math.PI);

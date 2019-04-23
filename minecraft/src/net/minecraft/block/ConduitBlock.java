@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ConduitBlockEntity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -32,7 +32,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(WATERLOGGED);
+		builder.add(WATERLOGGED);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -85,7 +85,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class UnderwaterRavineCarver extends RavineCarver {
 			Blocks.field_10382,
 			Blocks.field_10164,
 			Blocks.field_10540,
-			Blocks.AIR,
+			Blocks.field_10124,
 			Blocks.field_10543
 		);
 	}

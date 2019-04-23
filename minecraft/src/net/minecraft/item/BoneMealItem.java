@@ -44,7 +44,7 @@ public class BoneMealItem extends Item {
 
 				return ActionResult.field_5812;
 			} else {
-				return ActionResult.PASS;
+				return ActionResult.field_5811;
 			}
 		}
 	}
@@ -96,7 +96,7 @@ public class BoneMealItem extends Item {
 
 					if (blockState.getBlock().matches(BlockTags.field_15476)) {
 						for(int j = 0; !blockState.canPlaceAt(world, blockPos2) && j < 4; ++j) {
-							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
+							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.field_11062.random(random));
 						}
 					}
 

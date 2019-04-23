@@ -35,7 +35,7 @@ public class GrindstoneContainer extends Container {
 	}
 
 	public GrindstoneContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.GRINDSTONE, i);
+		super(ContainerType.field_17336, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override

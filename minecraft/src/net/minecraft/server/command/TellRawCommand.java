@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.arguments.ComponentArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.chat.Components;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextFormatter;
 
 public class TellRawCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -22,7 +22,7 @@ public class TellRawCommand {
 							
 										for(ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
 											serverPlayerEntity.sendMessage(
-												TextFormatter.resolveAndStyle(commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity)
+												Components.resolveAndStyle(commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity)
 											);
 											++i;
 										}

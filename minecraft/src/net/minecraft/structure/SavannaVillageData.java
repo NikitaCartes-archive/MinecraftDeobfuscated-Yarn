@@ -31,9 +31,9 @@ public class SavannaVillageData {
 		ImmutableList<StructureProcessor> immutableList = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10218, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10256, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10533, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
@@ -73,7 +73,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/town_centers/savanna_meeting_point_3", immutableList), 3),
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/town_centers/savanna_meeting_point_4", immutableList), 3)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList2 = ImmutableList.of(
@@ -112,7 +112,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/streets/split_02", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/savanna/streets/turn_01", immutableList2), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -141,7 +141,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/streets/split_02", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/streets/turn_01", immutableList2), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList3 = ImmutableList.of(
@@ -190,7 +190,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/houses/savanna_animal_pen_3"), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 5)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -232,7 +232,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/houses/savanna_animal_pen_3", immutableList), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 5)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -247,7 +247,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_04", immutableList2), 1),
 						new Pair<>(new SinglePoolElement("village/savanna/terminators/terminator_05", immutableList2), 1)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -262,7 +262,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_04", immutableList2), 1),
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/terminators/terminator_05", immutableList2), 1)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -271,7 +271,7 @@ public class SavannaVillageData {
 					new Identifier("village/savanna/trees"),
 					new Identifier("empty"),
 					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13545, FeatureConfig.DEFAULT)), 1)),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -286,7 +286,7 @@ public class SavannaVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17007, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -301,7 +301,7 @@ public class SavannaVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17007, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -314,7 +314,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/villagers/baby"), 1),
 						new Pair<>(new SinglePoolElement("village/savanna/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -326,7 +326,7 @@ public class SavannaVillageData {
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/savanna/zombie/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 	}

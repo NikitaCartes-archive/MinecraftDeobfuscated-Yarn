@@ -60,7 +60,7 @@ public class ChunkRenderWorker implements Runnable {
 				return;
 			}
 
-			if (!chunkRenderTask.getChunkRenderer().method_3673()) {
+			if (!chunkRenderTask.getChunkRenderer().shouldBuild()) {
 				chunkRenderTask.cancel();
 				return;
 			}
@@ -71,7 +71,7 @@ public class ChunkRenderWorker implements Runnable {
 		}
 
 		chunkRenderTask.setBufferBuilders(this.getBufferBuilders());
-		Vec3d vec3d = this.batcher.method_19420();
+		Vec3d vec3d = this.batcher.getCameraPosition();
 		float f = (float)vec3d.x;
 		float g = (float)vec3d.y;
 		float h = (float)vec3d.z;
@@ -106,12 +106,12 @@ public class ChunkRenderWorker implements Runnable {
 				if (chunkRenderData.isBufferInitialized(blockRenderLayer)) {
 					list.add(
 						this.batcher
-							.method_3635(
+							.upload(
 								blockRenderLayer,
 								chunkRenderTask.getBufferBuilders().get(blockRenderLayer),
 								chunkRenderTask.getChunkRenderer(),
 								chunkRenderData,
-								chunkRenderTask.getDistanceToPlayerSquared()
+								chunkRenderTask.getSquaredCameraDistance()
 							)
 					);
 				}
@@ -119,18 +119,18 @@ public class ChunkRenderWorker implements Runnable {
 		} else if (mode == ChunkRenderTask.Mode.field_4427) {
 			list.add(
 				this.batcher
-					.method_3635(
-						BlockRenderLayer.TRANSLUCENT,
-						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT),
+					.upload(
+						BlockRenderLayer.field_9179,
+						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179),
 						chunkRenderTask.getChunkRenderer(),
 						chunkRenderData,
-						chunkRenderTask.getDistanceToPlayerSquared()
+						chunkRenderTask.getSquaredCameraDistance()
 					)
 			);
 		}
 
 		ListenableFuture<List<Object>> listenableFuture = Futures.allAsList(list);
-		chunkRenderTask.add(() -> listenableFuture.cancel(false));
+		chunkRenderTask.addCompletionAction(() -> listenableFuture.cancel(false));
 		Futures.addCallback(listenableFuture, new FutureCallback<List<Object>>() {
 			public void method_3617(@Nullable List<Object> list) {
 				ChunkRenderWorker.this.freeRenderTask(chunkRenderTask);
@@ -153,7 +153,7 @@ public class ChunkRenderWorker implements Runnable {
 					return;
 				}
 
-				chunkRenderTask.getChunkRenderer().setChunkRenderData(chunkRenderData);
+				chunkRenderTask.getChunkRenderer().setData(chunkRenderData);
 			}
 
 			@Override

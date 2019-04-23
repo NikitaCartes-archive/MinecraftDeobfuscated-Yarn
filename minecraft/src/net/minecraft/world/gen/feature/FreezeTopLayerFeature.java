@@ -31,7 +31,7 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 				int l = blockPos.getZ() + j;
 				int m = iWorld.getTop(Heightmap.Type.field_13197, k, l);
 				mutable.set(k, m, l);
-				mutable2.set(mutable).setOffset(Direction.DOWN, 1);
+				mutable2.set(mutable).setOffset(Direction.field_11033, 1);
 				Biome biome = iWorld.getBiome(mutable);
 				if (biome.canSetSnow(iWorld, mutable2, false)) {
 					iWorld.setBlockState(mutable2, Blocks.field_10295.getDefaultState(), 2);

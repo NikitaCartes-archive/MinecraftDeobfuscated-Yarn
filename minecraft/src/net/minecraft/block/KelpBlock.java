@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -29,7 +29,7 @@ public class KelpBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -46,7 +46,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class KelpBlock extends Block implements FluidFillable {
 		if (block == Blocks.field_10092) {
 			return false;
 		} else {
-			return block == this || block == Blocks.field_10463 || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
+			return block == this || block == Blocks.field_10463 || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.field_11036);
 		}
 	}
 
@@ -84,14 +84,14 @@ public class KelpBlock extends Block implements FluidFillable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			if (direction == Direction.DOWN) {
-				return Blocks.AIR.getDefaultState();
+			if (direction == Direction.field_11033) {
+				return Blocks.field_10124.getDefaultState();
 			}
 
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		if (direction == Direction.UP && blockState2.getBlock() == this) {
+		if (direction == Direction.field_11036 && blockState2.getBlock() == this) {
 			return Blocks.field_10463.getDefaultState();
 		} else {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
@@ -101,7 +101,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	@Override

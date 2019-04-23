@@ -8,9 +8,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +32,7 @@ public class DebugRendererInfoManager {
 	public static void sendPathfindingData(World world, MobEntity mobEntity, @Nullable Path path, float f) {
 	}
 
-	public static void sendBlockUpdate(World world, BlockPos blockPos) {
+	public static void sendNeighborUpdate(World world, BlockPos blockPos) {
 	}
 
 	public static void sendStructureStart(IWorld iWorld, StructureStart structureStart) {

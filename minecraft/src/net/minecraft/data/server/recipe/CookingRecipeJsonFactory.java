@@ -9,7 +9,7 @@ import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.cooking.CookingRecipe;
@@ -26,8 +26,8 @@ public class CookingRecipeJsonFactory {
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
-	private CookingRecipeJsonFactory(ItemProvider itemProvider, Ingredient ingredient, float f, int i, CookingRecipeSerializer<?> cookingRecipeSerializer) {
-		this.output = itemProvider.getItem();
+	private CookingRecipeJsonFactory(ItemConvertible itemConvertible, Ingredient ingredient, float f, int i, CookingRecipeSerializer<?> cookingRecipeSerializer) {
+		this.output = itemConvertible.asItem();
 		this.input = ingredient;
 		this.exp = f;
 		this.time = i;
@@ -35,17 +35,17 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public static CookingRecipeJsonFactory create(
-		Ingredient ingredient, ItemProvider itemProvider, float f, int i, CookingRecipeSerializer<?> cookingRecipeSerializer
+		Ingredient ingredient, ItemConvertible itemConvertible, float f, int i, CookingRecipeSerializer<?> cookingRecipeSerializer
 	) {
-		return new CookingRecipeJsonFactory(itemProvider, ingredient, f, i, cookingRecipeSerializer);
+		return new CookingRecipeJsonFactory(itemConvertible, ingredient, f, i, cookingRecipeSerializer);
 	}
 
-	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
-		return create(ingredient, itemProvider, f, i, RecipeSerializer.BLASTING);
+	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.BLASTING);
 	}
 
-	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
-		return create(ingredient, itemProvider, f, i, RecipeSerializer.SMELTING);
+	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.SMELTING);
 	}
 
 	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {

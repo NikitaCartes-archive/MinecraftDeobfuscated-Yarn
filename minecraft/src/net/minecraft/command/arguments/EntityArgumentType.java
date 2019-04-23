@@ -17,31 +17,31 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", "dd12be42-52a9-4a91-a8a1-11c01849e498");
 	public static final SimpleCommandExceptionType TOO_MANY_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.toomany")
+		new TranslatableComponent("argument.entity.toomany")
 	);
 	public static final SimpleCommandExceptionType TOO_MANY_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.player.toomany")
+		new TranslatableComponent("argument.player.toomany")
 	);
 	public static final SimpleCommandExceptionType PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.player.entities")
+		new TranslatableComponent("argument.player.entities")
 	);
 	public static final SimpleCommandExceptionType ENTITY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.notfound.entity")
+		new TranslatableComponent("argument.entity.notfound.entity")
 	);
 	public static final SimpleCommandExceptionType PLAYER_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.notfound.player")
+		new TranslatableComponent("argument.entity.notfound.player")
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.entity.selector.not_allowed")
+		new TranslatableComponent("argument.entity.selector.not_allowed")
 	);
 	private final boolean singleTarget;
 	private final boolean playersOnly;

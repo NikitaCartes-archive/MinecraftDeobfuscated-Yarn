@@ -3,11 +3,11 @@ package net.minecraft.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-public class ParticleType<T extends ParticleParameters> {
+public class ParticleType<T extends ParticleEffect> {
 	private final boolean shouldAlwaysSpawn;
-	private final ParticleParameters.Factory<T> parametersFactory;
+	private final ParticleEffect.Factory<T> parametersFactory;
 
-	protected ParticleType(boolean bl, ParticleParameters.Factory<T> factory) {
+	protected ParticleType(boolean bl, ParticleEffect.Factory<T> factory) {
 		this.shouldAlwaysSpawn = bl;
 		this.parametersFactory = factory;
 	}
@@ -17,7 +17,7 @@ public class ParticleType<T extends ParticleParameters> {
 		return this.shouldAlwaysSpawn;
 	}
 
-	public ParticleParameters.Factory<T> getParametersFactory() {
+	public ParticleEffect.Factory<T> getParametersFactory() {
 		return this.parametersFactory;
 	}
 }

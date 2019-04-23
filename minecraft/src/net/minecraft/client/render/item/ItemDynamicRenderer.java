@@ -114,9 +114,9 @@ public class ItemDynamicRenderer {
 			GlStateManager.popMatrix();
 		} else if (item instanceof BlockItem && ((BlockItem)item).getBlock() == Blocks.field_10502) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderConduit);
-		} else if (item == Blocks.field_10443.getItem()) {
+		} else if (item == Blocks.field_10443.asItem()) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestEnder);
-		} else if (item == Blocks.field_10380.getItem()) {
+		} else if (item == Blocks.field_10380.asItem()) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestTrapped);
 		} else if (Block.getBlockFromItem(item) instanceof ShulkerBoxBlock) {
 			DyeColor dyeColor = ShulkerBoxBlock.getColor(item);

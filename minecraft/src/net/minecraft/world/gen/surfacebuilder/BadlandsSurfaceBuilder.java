@@ -66,7 +66,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {
-							blockState3 = Blocks.AIR.getDefaultState();
+							blockState3 = Blocks.field_10124.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = WHITE_TERACOTTA;

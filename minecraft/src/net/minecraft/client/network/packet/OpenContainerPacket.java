@@ -6,23 +6,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.ContainerType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	private int syncId;
 	private int containerId;
-	private TextComponent name;
+	private Component name;
 
 	public OpenContainerPacket() {
 	}
 
-	public OpenContainerPacket(int i, ContainerType<?> containerType, TextComponent textComponent) {
+	public OpenContainerPacket(int i, ContainerType<?> containerType, Component component) {
 		this.syncId = i;
 		this.containerId = Registry.CONTAINER.getRawId(containerType);
-		this.name = textComponent;
+		this.name = component;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getName() {
+	public Component getName() {
 		return this.name;
 	}
 }

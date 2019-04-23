@@ -14,6 +14,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.noise.NoiseSampler;
@@ -24,7 +25,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.ChunkRandom;
@@ -41,7 +41,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			}
 		}
 	});
-	private static final BlockState AIR = Blocks.AIR.getDefaultState();
+	private static final BlockState AIR = Blocks.field_10124.getDefaultState();
 	private final int verticalNoiseResolution;
 	private final int horizontalNoiseResolution;
 	private final int noiseSizeX;
@@ -273,7 +273,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 						if (structurePiece.method_16654(chunkPos, 12) && structurePiece instanceof PoolStructurePiece) {
 							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
 							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
-							if (projection == StructurePool.Projection.RIGID) {
+							if (projection == StructurePool.Projection.field_16687) {
 								objectList.add(poolStructurePiece);
 							}
 

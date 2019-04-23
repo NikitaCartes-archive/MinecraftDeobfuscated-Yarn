@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	private static final Identifier field_4654 = new Identifier("textures/entity/dolphin.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/dolphin.png");
 
 	public DolphinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new DolphinEntityModel<>(), 0.7F);
@@ -18,7 +18,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 	}
 
 	protected Identifier method_3903(DolphinEntity dolphinEntity) {
-		return field_4654;
+		return SKIN;
 	}
 
 	protected void method_3901(DolphinEntity dolphinEntity, float f) {

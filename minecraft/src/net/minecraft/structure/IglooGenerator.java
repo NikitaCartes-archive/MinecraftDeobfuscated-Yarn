@@ -14,10 +14,10 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
@@ -76,7 +76,7 @@ public class IglooGenerator {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirrored(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
@@ -92,10 +92,10 @@ public class IglooGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
 			if ("chest".equals(string)) {
-				iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.down());
 				if (blockEntity instanceof ChestBlockEntity) {
-					((ChestBlockEntity)blockEntity).setLootTable(LootTables.CHEST_IGLOO, random.nextLong());
+					((ChestBlockEntity)blockEntity).setLootTable(LootTables.field_662, random.nextLong());
 				}
 			}
 		}
@@ -104,7 +104,7 @@ public class IglooGenerator {
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirrored(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);

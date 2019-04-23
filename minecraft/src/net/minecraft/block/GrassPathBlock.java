@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -19,7 +19,7 @@ public class GrassPathBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
@@ -36,7 +36,7 @@ public class GrassPathBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction == Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -55,7 +55,7 @@ public class GrassPathBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 

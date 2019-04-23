@@ -17,7 +17,7 @@ public class CarrotOnAStickItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			if (playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof PigEntity) {
 				PigEntity pigEntity = (PigEntity)playerEntity.getVehicle();
@@ -34,7 +34,7 @@ public class CarrotOnAStickItem extends Item {
 			}
 
 			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		}
 	}
 }

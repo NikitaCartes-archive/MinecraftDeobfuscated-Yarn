@@ -90,7 +90,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	static enum RunMode {
-		field_18855 {
+		RUN_ALL {
 			@Override
 			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
 				weightedList.stream()
@@ -99,7 +99,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 					.findFirst();
 			}
 		},
-		field_18856 {
+		TRY_ALL {
 			@Override
 			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
 				weightedList.stream().filter(task -> task.getStatus() == Task.Status.field_18337).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));

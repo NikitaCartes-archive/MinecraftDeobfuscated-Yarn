@@ -3,7 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -14,7 +14,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPressurePlateBlock extends Block {
-	protected static final VoxelShape DEPRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
+	protected static final VoxelShape PRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
 	protected static final VoxelShape DEFAULT_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
 	protected static final BoundingBox BOX = new BoundingBox(0.125, 0.0, 0.125, 0.875, 0.25, 0.875);
 
@@ -23,8 +23,8 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.getRedstoneOutput(blockState) > 0 ? DEPRESSED_SHAPE : DEFAULT_SHAPE;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return this.getRedstoneOutput(blockState) > 0 ? PRESSED_SHAPE : DEFAULT_SHAPE;
 	}
 
 	@Override
@@ -41,15 +41,15 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.UP);
+		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.field_11036);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.UP ? this.getRedstoneOutput(blockState) : 0;
+		return direction == Direction.field_11036 ? this.getRedstoneOutput(blockState) : 0;
 	}
 
 	@Override

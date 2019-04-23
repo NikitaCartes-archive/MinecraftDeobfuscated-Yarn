@@ -3,12 +3,12 @@ package net.minecraft.client.texture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SupplyingResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public abstract class SpriteAtlasHolder extends SupplyingResourceReloadListener<SpriteAtlasTexture.Data> implements AutoCloseable {
+public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloadListener<SpriteAtlasTexture.Data> implements AutoCloseable {
 	private final SpriteAtlasTexture atlas;
 
 	public SpriteAtlasHolder(TextureManager textureManager, Identifier identifier, String string) {

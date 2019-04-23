@@ -34,7 +34,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 
 	@Override
 	public boolean canStart() {
-		if (this.reciprocalChance > 0 && this.entity.getRand().nextInt(this.reciprocalChance) != 0) {
+		if (this.reciprocalChance > 0 && this.mob.getRand().nextInt(this.reciprocalChance) != 0) {
 			return false;
 		} else {
 			this.findClosestTarget();
@@ -43,32 +43,32 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	}
 
 	protected BoundingBox getSearchBox(double d) {
-		return this.entity.getBoundingBox().expand(d, 4.0, d);
+		return this.mob.getBoundingBox().expand(d, 4.0, d);
 	}
 
 	protected void findClosestTarget() {
 		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
-			this.targetEntity = this.entity
+			this.targetEntity = this.mob
 				.world
 				.getClosestEntity(
 					this.targetClass,
 					this.targetPredicate,
-					this.entity,
-					this.entity.x,
-					this.entity.y + (double)this.entity.getStandingEyeHeight(),
-					this.entity.z,
+					this.mob,
+					this.mob.x,
+					this.mob.y + (double)this.mob.getStandingEyeHeight(),
+					this.mob.z,
 					this.getSearchBox(this.getFollowRange())
 				);
 		} else {
-			this.targetEntity = this.entity
+			this.targetEntity = this.mob
 				.world
-				.getClosestPlayer(this.targetPredicate, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
+				.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
 		}
 	}
 
 	@Override
 	public void start() {
-		this.entity.setTarget(this.targetEntity);
+		this.mob.setTarget(this.targetEntity);
 		super.start();
 	}
 }

@@ -34,17 +34,17 @@ public class LocalDifficulty {
 	}
 
 	private float setLocalDifficulty(Difficulty difficulty, long l, long m, float f) {
-		if (difficulty == Difficulty.PEACEFUL) {
+		if (difficulty == Difficulty.field_5801) {
 			return 0.0F;
 		} else {
-			boolean bl = difficulty == Difficulty.HARD;
+			boolean bl = difficulty == Difficulty.field_5807;
 			float g = 0.75F;
 			float h = MathHelper.clamp(((float)l + -72000.0F) / 1440000.0F, 0.0F, 1.0F) * 0.25F;
 			g += h;
 			float i = 0.0F;
 			i += MathHelper.clamp((float)m / 3600000.0F, 0.0F, 1.0F) * (bl ? 1.0F : 0.75F);
 			i += MathHelper.clamp(f * 0.25F, 0.0F, h);
-			if (difficulty == Difficulty.EASY) {
+			if (difficulty == Difficulty.field_5805) {
 				i *= 0.5F;
 			}
 

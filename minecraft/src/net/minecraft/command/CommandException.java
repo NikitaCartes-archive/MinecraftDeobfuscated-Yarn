@@ -1,17 +1,17 @@
 package net.minecraft.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class CommandException extends RuntimeException {
-	private final TextComponent message;
+	private final Component message;
 
-	public CommandException(TextComponent textComponent) {
-		super(textComponent.getText(), null, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES);
-		this.message = textComponent;
+	public CommandException(Component component) {
+		super(component.getText(), null, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES);
+		this.message = component;
 	}
 
-	public TextComponent getMessageComponent() {
+	public Component getMessageComponent() {
 		return this.message;
 	}
 }

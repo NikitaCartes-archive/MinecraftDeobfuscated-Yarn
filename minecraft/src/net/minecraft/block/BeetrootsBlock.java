@@ -3,8 +3,8 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -33,13 +33,13 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public int getCropAgeMaximum() {
+	public int getMaxAge() {
 		return 3;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	protected ItemProvider getCropItem() {
+	protected ItemConvertible getSeedsItem() {
 		return Items.field_8309;
 	}
 
@@ -57,11 +57,11 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

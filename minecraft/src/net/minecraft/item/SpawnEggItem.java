@@ -76,7 +76,13 @@ public class SpawnEggItem extends Item {
 
 			EntityType<?> entityType2 = this.entityTypeFromTag(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
-					world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+					world,
+					itemStack,
+					itemUsageContext.getPlayer(),
+					blockPos2,
+					SpawnType.field_16465,
+					true,
+					!Objects.equals(blockPos, blockPos2) && direction == Direction.field_11036
 				)
 				!= null) {
 				itemStack.subtractAmount(1);
@@ -90,20 +96,20 @@ public class SpawnEggItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-			if (hitResult.getType() != HitResult.Type.BLOCK) {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			if (hitResult.getType() != HitResult.Type.field_1332) {
+				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-					return new TypedActionResult<>(ActionResult.PASS, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.subtractAmount(1);

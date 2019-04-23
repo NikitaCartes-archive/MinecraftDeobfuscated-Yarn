@@ -34,7 +34,7 @@ public class PillagerOutpostGenerator {
 					new Identifier("pillager_outpost/base_plates"),
 					new Identifier("empty"),
 					ImmutableList.of(Pair.of(new SinglePoolElement("pillager_outpost/base_plate"), 1)),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -53,7 +53,7 @@ public class PillagerOutpostGenerator {
 							1
 						)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -62,7 +62,7 @@ public class PillagerOutpostGenerator {
 					new Identifier("pillager_outpost/feature_plates"),
 					new Identifier("empty"),
 					ImmutableList.of(Pair.of(new SinglePoolElement("pillager_outpost/feature_plate"), 1)),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -79,7 +79,7 @@ public class PillagerOutpostGenerator {
 						Pair.of(new SinglePoolElement("pillager_outpost/feature_targets"), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 	}

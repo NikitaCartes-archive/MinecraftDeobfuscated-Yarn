@@ -13,10 +13,10 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -77,7 +77,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
-		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
+		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.field_11302, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);

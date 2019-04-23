@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEntity> {
 	private static final Identifier SKIN = new Identifier("textures/entity/shulker/spark.png");
-	private final ShulkerBulletEntityModel<ShulkerBulletEntity> field_4777 = new ShulkerBulletEntityModel<>();
+	private final ShulkerBulletEntityModel<ShulkerBulletEntity> model = new ShulkerBulletEntityModel<>();
 
 	public ShulkerBulletEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -44,11 +44,11 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		this.bindEntityTexture(shulkerBulletEntity);
-		this.field_4777.render(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
+		this.model.render(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
 		GlStateManager.enableBlend();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.5F);
 		GlStateManager.scalef(1.5F, 1.5F, 1.5F);
-		this.field_4777.render(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
+		this.model.render(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
 		super.render(shulkerBulletEntity, d, e, f, g, h);

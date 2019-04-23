@@ -14,7 +14,7 @@ public class ShulkerBoxContainer extends Container {
 	}
 
 	public ShulkerBoxContainer(int i, PlayerInventory playerInventory, Inventory inventory) {
-		super(ContainerType.SHULKER_BOX, i);
+		super(ContainerType.field_17341, i);
 		checkContainerSize(inventory, 27);
 		this.inventory = inventory;
 		inventory.onInvOpen(playerInventory.player);

@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BlockItem;
@@ -49,7 +49,7 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return OUTLINE_SHAPE;
 	}
 
@@ -229,7 +229,7 @@ public class CauldronBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LEVEL);
+		builder.add(LEVEL);
 	}
 
 	@Override

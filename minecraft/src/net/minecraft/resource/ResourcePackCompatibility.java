@@ -3,20 +3,20 @@ package net.minecraft.resource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public enum ResourcePackCompatibility {
-	field_14223("old"),
-	field_14220("new"),
+	TOO_OLD("old"),
+	TOO_NEW("new"),
 	field_14224("compatible");
 
-	private final TextComponent notification;
-	private final TextComponent confirmMessage;
+	private final Component notification;
+	private final Component confirmMessage;
 
 	private ResourcePackCompatibility(String string2) {
-		this.notification = new TranslatableTextComponent("resourcePack.incompatible." + string2);
-		this.confirmMessage = new TranslatableTextComponent("resourcePack.incompatible.confirm." + string2);
+		this.notification = new TranslatableComponent("resourcePack.incompatible." + string2);
+		this.confirmMessage = new TranslatableComponent("resourcePack.incompatible.confirm." + string2);
 	}
 
 	public boolean isCompatible() {
@@ -25,19 +25,19 @@ public enum ResourcePackCompatibility {
 
 	public static ResourcePackCompatibility from(int i) {
 		if (i < SharedConstants.getGameVersion().getPackVersion()) {
-			return field_14223;
+			return TOO_OLD;
 		} else {
-			return i > SharedConstants.getGameVersion().getPackVersion() ? field_14220 : field_14224;
+			return i > SharedConstants.getGameVersion().getPackVersion() ? TOO_NEW : field_14224;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getNotification() {
+	public Component getNotification() {
 		return this.notification;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getConfirmMessage() {
+	public Component getConfirmMessage() {
 		return this.confirmMessage;
 	}
 }

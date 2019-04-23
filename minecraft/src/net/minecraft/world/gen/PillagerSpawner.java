@@ -16,7 +16,7 @@ import net.minecraft.world.biome.Biome;
 
 public class PillagerSpawner {
 	private static final List<PillagerSpawner.SpawnEntry> SPAWN_ENTRIES = Arrays.asList(
-		new PillagerSpawner.SpawnEntry(EntityType.PILLAGER, 80), new PillagerSpawner.SpawnEntry(EntityType.VINDICATOR, 20)
+		new PillagerSpawner.SpawnEntry(EntityType.field_6105, 80), new PillagerSpawner.SpawnEntry(EntityType.field_6117, 20)
 	);
 	private int ticksUntilNextSpawn;
 
@@ -56,7 +56,10 @@ public class PillagerSpawner {
 							} else {
 								Biome biome = serverWorld.getBiome(blockPos);
 								Biome.Category category = biome.getCategory();
-								if (category != Biome.Category.PLAINS && category != Biome.Category.TAIGA && category != Biome.Category.DESERT && category != Biome.Category.SAVANNA) {
+								if (category != Biome.Category.field_9355
+									&& category != Biome.Category.field_9361
+									&& category != Biome.Category.field_9368
+									&& category != Biome.Category.field_9356) {
 									return 0;
 								} else {
 									int m = 1;

@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
 import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class SetWorldSpawnCommand {
@@ -23,7 +23,7 @@ public class SetWorldSpawnCommand {
 	private static int execute(ServerCommandSource serverCommandSource, BlockPos blockPos) {
 		serverCommandSource.getWorld().setSpawnPos(blockPos);
 		serverCommandSource.getMinecraftServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(blockPos));
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.setworldspawn.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.setworldspawn.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 		return 1;
 	}
 }

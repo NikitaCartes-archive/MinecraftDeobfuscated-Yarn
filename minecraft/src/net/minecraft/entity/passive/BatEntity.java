@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
-	private BlockPos field_6729;
+	private BlockPos hangingPosition;
 
 	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
 		super(entityType, world);
@@ -77,7 +77,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void doPushLogic() {
+	protected void tickPushing() {
 	}
 
 	@Override
@@ -130,21 +130,21 @@ public class BatEntity extends AmbientEntity {
 				this.world.playLevelEvent(null, 1025, blockPos, 0);
 			}
 		} else {
-			if (this.field_6729 != null && (!this.world.isAir(this.field_6729) || this.field_6729.getY() < 1)) {
-				this.field_6729 = null;
+			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
+				this.hangingPosition = null;
 			}
 
-			if (this.field_6729 == null || this.random.nextInt(30) == 0 || this.field_6729.isWithinDistance(this.getPos(), 2.0)) {
-				this.field_6729 = new BlockPos(
+			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
+				this.hangingPosition = new BlockPos(
 					(int)this.x + this.random.nextInt(7) - this.random.nextInt(7),
 					(int)this.y + this.random.nextInt(6) - 2,
 					(int)this.z + this.random.nextInt(7) - this.random.nextInt(7)
 				);
 			}
 
-			double d = (double)this.field_6729.getX() + 0.5 - this.x;
-			double e = (double)this.field_6729.getY() + 0.1 - this.y;
-			double f = (double)this.field_6729.getZ() + 0.5 - this.z;
+			double d = (double)this.hangingPosition.getX() + 0.5 - this.x;
+			double e = (double)this.hangingPosition.getY() + 0.1 - this.y;
+			double f = (double)this.hangingPosition.getZ() + 0.5 - this.z;
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * 0.1F, (Math.signum(e) * 0.7F - vec3d.y) * 0.1F, (Math.signum(f) * 0.5 - vec3d.z) * 0.1F);
 			this.setVelocity(vec3d2);
@@ -209,7 +209,7 @@ public class BatEntity extends AmbientEntity {
 		} else {
 			int i = iWorld.getLightLevel(blockPos);
 			int j = 4;
-			if (this.method_6451()) {
+			if (this.isTodayAroundHalloween()) {
 				j = 7;
 			} else if (this.random.nextBoolean()) {
 				return false;
@@ -219,7 +219,7 @@ public class BatEntity extends AmbientEntity {
 		}
 	}
 
-	private boolean method_6451() {
+	private boolean isTodayAroundHalloween() {
 		LocalDate localDate = LocalDate.now();
 		int i = localDate.get(ChronoField.DAY_OF_MONTH);
 		int j = localDate.get(ChronoField.MONTH_OF_YEAR);

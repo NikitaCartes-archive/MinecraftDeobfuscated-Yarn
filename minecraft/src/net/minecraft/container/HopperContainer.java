@@ -14,7 +14,7 @@ public class HopperContainer extends Container {
 	}
 
 	public HopperContainer(int i, PlayerInventory playerInventory, Inventory inventory) {
-		super(ContainerType.HOPPER, i);
+		super(ContainerType.field_17337, i);
 		this.inventory = inventory;
 		checkContainerSize(inventory, 5);
 		inventory.onInvOpen(playerInventory.player);

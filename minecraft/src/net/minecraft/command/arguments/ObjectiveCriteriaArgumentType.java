@@ -12,18 +12,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.registry.Registry;
 
 public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCriterion> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar.baz", "minecraft:foo");
 	public static final DynamicCommandExceptionType INVALID_CRITERIA_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.criteria.invalid", object)
+		object -> new TranslatableComponent("argument.criteria.invalid", object)
 	);
 
 	private ObjectiveCriteriaArgumentType() {

@@ -311,7 +311,7 @@ public class BoundingBox {
 				boundingBox.maxY,
 				boundingBox.minZ,
 				boundingBox.maxZ,
-				Direction.WEST,
+				Direction.field_11039,
 				vec3d.x,
 				vec3d.y,
 				vec3d.z
@@ -328,7 +328,7 @@ public class BoundingBox {
 				boundingBox.maxY,
 				boundingBox.minZ,
 				boundingBox.maxZ,
-				Direction.EAST,
+				Direction.field_11034,
 				vec3d.x,
 				vec3d.y,
 				vec3d.z
@@ -347,14 +347,27 @@ public class BoundingBox {
 				boundingBox.maxZ,
 				boundingBox.minX,
 				boundingBox.maxX,
-				Direction.DOWN,
+				Direction.field_11033,
 				vec3d.y,
 				vec3d.z,
 				vec3d.x
 			);
 		} else if (e < -1.0E-7) {
 			direction = method_998(
-				ds, direction, e, f, d, boundingBox.maxY, boundingBox.minZ, boundingBox.maxZ, boundingBox.minX, boundingBox.maxX, Direction.UP, vec3d.y, vec3d.z, vec3d.x
+				ds,
+				direction,
+				e,
+				f,
+				d,
+				boundingBox.maxY,
+				boundingBox.minZ,
+				boundingBox.maxZ,
+				boundingBox.minX,
+				boundingBox.maxX,
+				Direction.field_11036,
+				vec3d.y,
+				vec3d.z,
+				vec3d.x
 			);
 		}
 
@@ -370,7 +383,7 @@ public class BoundingBox {
 				boundingBox.maxX,
 				boundingBox.minY,
 				boundingBox.maxY,
-				Direction.NORTH,
+				Direction.field_11043,
 				vec3d.z,
 				vec3d.x,
 				vec3d.y
@@ -387,7 +400,7 @@ public class BoundingBox {
 				boundingBox.maxX,
 				boundingBox.minY,
 				boundingBox.maxY,
-				Direction.SOUTH,
+				Direction.field_11035,
 				vec3d.z,
 				vec3d.x,
 				vec3d.y

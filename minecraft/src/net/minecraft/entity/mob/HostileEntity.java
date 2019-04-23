@@ -31,10 +31,10 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		this.tickHandSwing();
 		this.updateDespawnCounter();
-		super.updateState();
+		super.tickMovement();
 	}
 
 	protected void updateDespawnCounter() {
@@ -47,7 +47,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -89,7 +89,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 
 	protected boolean checkLightLevelForSpawn() {
 		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-		if (this.world.getLightLevel(LightType.SKY, blockPos) > this.random.nextInt(32)) {
+		if (this.world.getLightLevel(LightType.field_9284, blockPos) > this.random.nextInt(32)) {
 			return false;
 		} else {
 			int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.getLightLevel(blockPos);
@@ -99,7 +99,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.checkLightLevelForSpawn() && super.canSpawn(iWorld, spawnType);
+		return iWorld.getDifficulty() != Difficulty.field_5801 && this.checkLightLevelForSpawn() && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -42,7 +43,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
-		return Fluids.EMPTY.getDefaultState();
+		return Fluids.field_15906.getDefaultState();
 	}
 
 	@Nullable
@@ -110,6 +111,6 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public ChunkHolder.LevelType getLevelType() {
-		return ChunkHolder.LevelType.BORDER;
+		return ChunkHolder.LevelType.field_13876;
 	}
 }

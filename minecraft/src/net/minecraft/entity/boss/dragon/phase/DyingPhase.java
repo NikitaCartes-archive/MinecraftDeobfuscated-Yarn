@@ -63,6 +63,6 @@ public class DyingPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<DyingPhase> getType() {
-		return PhaseType.DYING;
+		return PhaseType.field_7068;
 	}
 }

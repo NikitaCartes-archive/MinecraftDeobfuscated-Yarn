@@ -8,7 +8,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class LevelSelectScreen extends Screen {
@@ -22,7 +22,7 @@ public class LevelSelectScreen extends Screen {
 	private LevelListWidget levelList;
 
 	public LevelSelectScreen(Screen screen) {
-		super(new TranslatableTextComponent("selectWorld.title"));
+		super(new TranslatableComponent("selectWorld.title"));
 		this.parent = screen;
 	}
 

@@ -149,7 +149,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 					if (random.nextInt(5) == 0 && i > 5) {
 						for(int n = 0; n < 2; ++n) {
-							for(Direction direction : Direction.Type.HORIZONTAL) {
+							for(Direction direction : Direction.Type.field_11062) {
 								if (random.nextInt(4 - n) == 0) {
 									Direction direction2 = direction.getOpposite();
 									this.makeCocoa(modifiableTestableWorld, random.nextInt(3), blockPos.add(direction2.getOffsetX(), i - 5 + n, direction2.getOffsetZ()), direction);

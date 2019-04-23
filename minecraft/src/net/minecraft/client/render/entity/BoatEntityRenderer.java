@@ -18,7 +18,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		new Identifier("textures/entity/boat/acacia.png"),
 		new Identifier("textures/entity/boat/dark_oak.png")
 	};
-	protected final BoatEntityModel field_4647 = new BoatEntityModel();
+	protected final BoatEntityModel model = new BoatEntityModel();
 
 	public BoatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -30,13 +30,13 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		this.method_3890(d, e, f);
 		this.method_3889(boatEntity, g, h);
 		this.bindEntityTexture(boatEntity);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
 		}
 
-		this.field_4647.method_17071(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		if (this.renderOutlines) {
+		this.model.method_17071(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -83,7 +83,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		this.method_3890(d, e, f);
 		this.method_3889(boatEntity, g, h);
 		this.bindEntityTexture(boatEntity);
-		this.field_4647.renderPass(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.model.renderPass(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 	}
 }

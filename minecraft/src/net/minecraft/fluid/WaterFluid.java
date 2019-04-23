@@ -12,7 +12,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -39,7 +39,7 @@ public abstract class WaterFluid extends BaseFluid {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public abstract class WaterFluid extends BaseFluid {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ParticleParameters getParticle() {
+	public ParticleEffect getParticle() {
 		return ParticleTypes.field_11232;
 	}
 
@@ -121,7 +121,7 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Override
 	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
-		return direction == Direction.DOWN && !fluid.matches(FluidTags.field_15517);
+		return direction == Direction.field_11033 && !fluid.matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class WaterFluid extends BaseFluid {
 		@Override
 		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
-			builder.with(LEVEL);
+			builder.add(LEVEL);
 		}
 
 		@Override

@@ -2,12 +2,12 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class CloseWorldScreen extends Screen {
-	public CloseWorldScreen(TextComponent textComponent) {
-		super(textComponent);
+	public CloseWorldScreen(Component component) {
+		super(component);
 	}
 
 	@Override

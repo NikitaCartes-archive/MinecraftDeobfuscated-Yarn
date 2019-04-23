@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class ItemPlacementContext extends ItemUsageContext {
 	private final BlockPos placedPos;
-	protected boolean field_7904 = true;
+	protected boolean canReplaceHitBlock = true;
 
 	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
 		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getItemStack(), itemUsageContext.hitResult);
@@ -20,7 +20,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
 		super(world, playerEntity, hand, itemStack, blockHitResult);
 		this.placedPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-		this.field_7904 = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
+		this.canReplaceHitBlock = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
 	}
 
 	public static ItemPlacementContext create(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
@@ -44,15 +44,15 @@ public class ItemPlacementContext extends ItemUsageContext {
 
 	@Override
 	public BlockPos getBlockPos() {
-		return this.field_7904 ? super.getBlockPos() : this.placedPos;
+		return this.canReplaceHitBlock ? super.getBlockPos() : this.placedPos;
 	}
 
 	public boolean canPlace() {
-		return this.field_7904 || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
+		return this.canReplaceHitBlock || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
 	}
 
-	public boolean method_7717() {
-		return this.field_7904;
+	public boolean canReplaceHitBlock() {
+		return this.canReplaceHitBlock;
 	}
 
 	public Direction getPlayerFacing() {
@@ -61,7 +61,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 
 	public Direction[] getPlacementFacings() {
 		Direction[] directions = Direction.getEntityFacingOrder(this.player);
-		if (this.field_7904) {
+		if (this.canReplaceHitBlock) {
 			return directions;
 		} else {
 			Direction direction = this.getFacing();

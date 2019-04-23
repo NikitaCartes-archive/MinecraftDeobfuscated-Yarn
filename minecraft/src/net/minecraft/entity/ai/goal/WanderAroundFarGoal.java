@@ -6,7 +6,7 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundFarGoal extends WanderAroundGoal {
-	protected final float farWanderProbability;
+	protected final float probability;
 
 	public WanderAroundFarGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this(mobEntityWithAi, d, 0.001F);
@@ -14,17 +14,17 @@ public class WanderAroundFarGoal extends WanderAroundGoal {
 
 	public WanderAroundFarGoal(MobEntityWithAi mobEntityWithAi, double d, float f) {
 		super(mobEntityWithAi, d);
-		this.farWanderProbability = f;
+		this.probability = f;
 	}
 
 	@Nullable
 	@Override
 	protected Vec3d getWanderTarget() {
-		if (this.owner.isInsideWaterOrBubbleColumn()) {
-			Vec3d vec3d = PathfindingUtil.findTargetStraight(this.owner, 15, 7);
+		if (this.mob.isInsideWaterOrBubbleColumn()) {
+			Vec3d vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 7);
 			return vec3d == null ? super.getWanderTarget() : vec3d;
 		} else {
-			return this.owner.getRand().nextFloat() >= this.farWanderProbability ? PathfindingUtil.findTargetStraight(this.owner, 10, 7) : super.getWanderTarget();
+			return this.mob.getRand().nextFloat() >= this.probability ? PathfindingUtil.findTargetStraight(this.mob, 10, 7) : super.getWanderTarget();
 		}
 	}
 }

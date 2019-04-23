@@ -11,7 +11,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ChatUtil;
 
 @Environment(EnvType.CLIENT)
@@ -41,7 +41,7 @@ public class AddServerScreen extends Screen {
 	};
 
 	public AddServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
-		super(new TranslatableTextComponent("addServer.title"));
+		super(new TranslatableComponent("addServer.title"));
 		this.callback = booleanConsumer;
 		this.serverEntry = serverEntry;
 	}

@@ -35,7 +35,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	private final MinecraftServer server;
 	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
 	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
-	private boolean field_13411;
+	private boolean executing;
 	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
@@ -87,7 +87,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 
 	public int execute(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
 		int i = this.getMaxCommandChainLength();
-		if (this.field_13411) {
+		if (this.executing) {
 			if (this.chain.size() < i) {
 				this.chain.addFirst(new CommandFunctionManager.Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
 			}
@@ -95,7 +95,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			return 0;
 		} else {
 			try {
-				this.field_13411 = true;
+				this.executing = true;
 				int j = 0;
 				CommandFunction.Element[] elements = commandFunction.getElements();
 
@@ -120,7 +120,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 				return j;
 			} finally {
 				this.chain.clear();
-				this.field_13411 = false;
+				this.executing = false;
 			}
 		}
 	}

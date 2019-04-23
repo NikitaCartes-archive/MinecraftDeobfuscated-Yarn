@@ -8,8 +8,8 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -37,7 +37,7 @@ public class ShieldItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		BannerItem.buildBannerTooltip(itemStack, list);
 	}
 

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
@@ -16,7 +16,7 @@ public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
 
 	public DemoScreen() {
-		super(new TranslatableTextComponent("demo.help.title"));
+		super(new TranslatableComponent("demo.help.title"));
 	}
 
 	@Override

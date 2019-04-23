@@ -9,10 +9,10 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
@@ -102,7 +102,7 @@ public class ShipwreckGenerator {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirrored(BlockMirror.field_11302)
 				.setPosition(ShipwreckGenerator.field_14536)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);

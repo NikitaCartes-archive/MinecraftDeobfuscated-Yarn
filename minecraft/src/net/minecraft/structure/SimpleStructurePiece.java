@@ -10,10 +10,10 @@ import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +34,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	protected void setStructureData(Structure structure, BlockPos blockPos, StructurePlacementData structurePlacementData) {
 		this.structure = structure;
-		this.setOrientation(Direction.NORTH);
+		this.setOrientation(Direction.field_11043);
 		this.pos = blockPos;
 		this.placementData = structurePlacementData;
 		this.boundingBox = structure.calculateBoundingBox(structurePlacementData, blockPos);
@@ -64,7 +64,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 				if (structureBlockInfo2.tag != null) {
 					String string = structureBlockInfo2.tag.getString("final_state");
 					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
-					BlockState blockState = Blocks.AIR.getDefaultState();
+					BlockState blockState = Blocks.field_10124.getDefaultState();
 
 					try {
 						blockArgumentParser.parse(true);

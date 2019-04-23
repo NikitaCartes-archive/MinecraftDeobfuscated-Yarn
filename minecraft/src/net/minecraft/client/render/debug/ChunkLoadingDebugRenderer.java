@@ -17,7 +17,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 

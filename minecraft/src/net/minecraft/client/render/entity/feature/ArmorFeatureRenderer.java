@@ -38,10 +38,10 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	public void method_17157(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.CHEST);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.LEGS);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.FEET);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.HEAD);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6174);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6172);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6166);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6169);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	private boolean isLegs(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.LEGS;
+		return equipmentSlot == EquipmentSlot.field_6172;
 	}
 
 	public static <T extends Entity> void renderEnchantedGlint(

@@ -13,7 +13,7 @@ public class ParrotMoveControl extends MoveControl {
 	public void tick() {
 		if (this.state == MoveControl.State.field_6378) {
 			this.state = MoveControl.State.field_6377;
-			this.entity.setUnaffectedByGravity(true);
+			this.entity.setNoGravity(true);
 			double d = this.targetX - this.entity.x;
 			double e = this.targetY - this.entity.y;
 			double f = this.targetZ - this.entity.z;
@@ -39,7 +39,7 @@ public class ParrotMoveControl extends MoveControl {
 			this.entity.pitch = this.changeAngle(this.entity.pitch, k, 10.0F);
 			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
 		} else {
-			this.entity.setUnaffectedByGravity(false);
+			this.entity.setNoGravity(false);
 			this.entity.setUpwardSpeed(0.0F);
 			this.entity.setForwardSpeed(0.0F);
 		}

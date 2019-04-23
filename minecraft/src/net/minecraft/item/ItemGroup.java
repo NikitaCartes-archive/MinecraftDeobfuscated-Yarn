@@ -67,7 +67,7 @@ public abstract class ItemGroup {
 		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8475);
 		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.BREAKER, EnchantmentTarget.FISHING, EnchantmentTarget.TOOL});
+	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -79,14 +79,14 @@ public abstract class ItemGroup {
 			new EnchantmentTarget[]{
 				EnchantmentTarget.ALL,
 				EnchantmentTarget.ARMOR,
-				EnchantmentTarget.FEET,
-				EnchantmentTarget.HELM,
-				EnchantmentTarget.LEGS,
-				EnchantmentTarget.CHEST,
+				EnchantmentTarget.ARMOR_FEET,
+				EnchantmentTarget.ARMOR_HEAD,
+				EnchantmentTarget.ARMOR_LEGS,
+				EnchantmentTarget.ARMOR_CHEST,
 				EnchantmentTarget.BOW,
 				EnchantmentTarget.WEAPON,
 				EnchantmentTarget.WEARABLE,
-				EnchantmentTarget.TOOL,
+				EnchantmentTarget.BREAKABLE,
 				EnchantmentTarget.TRIDENT,
 				EnchantmentTarget.CROSSBOW
 			}

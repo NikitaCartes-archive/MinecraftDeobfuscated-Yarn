@@ -36,7 +36,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		if (this.onlyRunIfChild && livingEntity.isChild()) {
+		if (this.onlyRunIfChild && livingEntity.isBaby()) {
 			return false;
 		} else {
 			return serverWorld.getTime() - this.lastRunTime >= 40L;
@@ -51,11 +51,11 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 		Predicate<BlockPos> predicate = blockPos -> {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 			if (serverWorld.getBlockState(blockPos.down()).isAir()) {
-				mutable.setOffset(Direction.DOWN);
+				mutable.setOffset(Direction.field_11033);
 			}
 
 			while(serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
-				mutable.setOffset(Direction.DOWN);
+				mutable.setOffset(Direction.field_11033);
 			}
 
 			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());

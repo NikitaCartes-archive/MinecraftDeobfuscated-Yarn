@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.container.Generic3x3Container;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ContainerScreen9 extends ContainerScreen<Generic3x3Container> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/dispenser.png");
 
-	public ContainerScreen9(Generic3x3Container generic3x3Container, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(generic3x3Container, playerInventory, textComponent);
+	public ContainerScreen9(Generic3x3Container generic3x3Container, PlayerInventory playerInventory, Component component) {
+		super(generic3x3Container, playerInventory, component);
 	}
 
 	@Override

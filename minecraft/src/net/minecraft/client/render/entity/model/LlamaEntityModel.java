@@ -58,7 +58,7 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends QuadrupedE
 	}
 
 	public void method_17100(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = !abstractDonkeyEntity.isChild() && abstractDonkeyEntity.hasChest();
+		boolean bl = !abstractDonkeyEntity.isBaby() && abstractDonkeyEntity.hasChest();
 		this.setAngles(abstractDonkeyEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;

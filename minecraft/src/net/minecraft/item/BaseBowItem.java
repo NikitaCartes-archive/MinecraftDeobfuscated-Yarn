@@ -20,10 +20,10 @@ public abstract class BaseBowItem extends Item {
 	public abstract Predicate<ItemStack> getInventoryProjectilePredicate();
 
 	public static ItemStack getItemHeld(LivingEntity livingEntity, Predicate<ItemStack> predicate) {
-		if (predicate.test(livingEntity.getStackInHand(Hand.OFF))) {
-			return livingEntity.getStackInHand(Hand.OFF);
+		if (predicate.test(livingEntity.getStackInHand(Hand.field_5810))) {
+			return livingEntity.getStackInHand(Hand.field_5810);
 		} else {
-			return predicate.test(livingEntity.getStackInHand(Hand.MAIN)) ? livingEntity.getStackInHand(Hand.MAIN) : ItemStack.EMPTY;
+			return predicate.test(livingEntity.getStackInHand(Hand.field_5808)) ? livingEntity.getStackInHand(Hand.field_5808) : ItemStack.EMPTY;
 		}
 	}
 

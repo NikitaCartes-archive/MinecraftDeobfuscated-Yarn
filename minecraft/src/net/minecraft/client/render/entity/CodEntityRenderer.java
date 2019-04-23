@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
-	private static final Identifier field_4652 = new Identifier("textures/entity/fish/cod.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/fish/cod.png");
 
 	public CodEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CodEntityModel<>(), 0.3F);
@@ -19,7 +19,7 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 
 	@Nullable
 	protected Identifier method_3897(CodEntity codEntity) {
-		return field_4652;
+		return SKIN;
 	}
 
 	protected void method_3896(CodEntity codEntity, float f, float g, float h) {

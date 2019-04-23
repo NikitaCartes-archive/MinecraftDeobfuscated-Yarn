@@ -8,7 +8,7 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 
 public abstract class RegionBasedStorage implements AutoCloseable {
 	protected final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();

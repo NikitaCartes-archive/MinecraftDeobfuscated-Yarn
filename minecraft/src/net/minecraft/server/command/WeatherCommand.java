@@ -3,7 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class WeatherCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -43,7 +43,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(false);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.clear"), true);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.clear"), true);
 		return i;
 	}
 
@@ -53,7 +53,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.rain"), true);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.rain"), true);
 		return i;
 	}
 
@@ -63,7 +63,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(true);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.thunder"), true);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.thunder"), true);
 		return i;
 	}
 }

@@ -232,7 +232,7 @@ public class CreeperEntity extends HostileEntity {
 		if (!collection.isEmpty()) {
 			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 			areaEffectCloudEntity.setRadius(2.5F);
-			areaEffectCloudEntity.setRadiusStart(-0.5F);
+			areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 			areaEffectCloudEntity.setWaitTime(10);
 			areaEffectCloudEntity.setDuration(areaEffectCloudEntity.getDuration() / 2);
 			areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());

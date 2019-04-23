@@ -9,7 +9,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.RegionBasedStorage;
 

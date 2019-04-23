@@ -5,10 +5,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.network.chat.Component;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -37,7 +37,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.125F);
 	}
 

@@ -10,7 +10,7 @@ public class BedBlockEntity extends BlockEntity {
 	private DyeColor color;
 
 	public BedBlockEntity() {
-		super(BlockEntityType.BED);
+		super(BlockEntityType.field_11910);
 	}
 
 	public BedBlockEntity(DyeColor dyeColor) {

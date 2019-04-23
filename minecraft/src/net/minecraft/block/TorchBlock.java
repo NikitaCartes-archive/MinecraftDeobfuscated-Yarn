@@ -3,7 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -21,7 +21,7 @@ public class TorchBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return BOUNDING_SHAPE;
 	}
 
@@ -29,14 +29,14 @@ public class TorchBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+		return direction == Direction.field_11033 && !this.canPlaceAt(blockState, iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.UP);
+		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.field_11036);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -51,6 +51,6 @@ public class TorchBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 }

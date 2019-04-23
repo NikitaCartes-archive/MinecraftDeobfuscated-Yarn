@@ -6,11 +6,11 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.SoundSliderWidget;
-import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class AudioOptionsScreen extends Screen {
@@ -18,7 +18,7 @@ public class AudioOptionsScreen extends Screen {
 	private final GameOptions options;
 
 	public AudioOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableTextComponent("options.sounds.title"));
+		super(new TranslatableComponent("options.sounds.title"));
 		this.parent = screen;
 		this.options = gameOptions;
 	}
@@ -40,15 +40,9 @@ public class AudioOptionsScreen extends Screen {
 
 		this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 75,
-				this.height / 6 - 12 + 24 * (++i >> 1),
-				150,
-				20,
-				GameOption.SUBTITLES,
-				GameOption.SUBTITLES.getDisplayString(this.options),
-				buttonWidget -> {
-					GameOption.SUBTITLES.set(this.minecraft.options);
-					buttonWidget.setMessage(GameOption.SUBTITLES.getDisplayString(this.minecraft.options));
+				this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.options), buttonWidget -> {
+					Option.SUBTITLES.set(this.minecraft.options);
+					buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.minecraft.options));
 					this.minecraft.options.write();
 				}
 			)

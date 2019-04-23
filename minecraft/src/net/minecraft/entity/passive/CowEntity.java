@@ -76,7 +76,7 @@ public class CowEntity extends AnimalEntity {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8550 && !playerEntity.abilities.creativeMode && !this.isChild()) {
+		if (itemStack.getItem() == Items.field_8550 && !playerEntity.abilities.creativeMode && !this.isBaby()) {
 			playerEntity.playSound(SoundEvents.field_14691, 1.0F, 1.0F);
 			itemStack.subtractAmount(1);
 			if (itemStack.isEmpty()) {
@@ -92,11 +92,11 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	public CowEntity method_6483(PassiveEntity passiveEntity) {
-		return EntityType.COW.create(this.world);
+		return EntityType.field_6085.create(this.world);
 	}
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return this.isChild() ? entitySize.height * 0.95F : 1.3F;
+		return this.isBaby() ? entitySize.height * 0.95F : 1.3F;
 	}
 }

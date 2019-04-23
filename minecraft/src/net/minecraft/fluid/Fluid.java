@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.IdList;
@@ -63,7 +63,7 @@ public abstract class Fluid {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	protected ParticleParameters getParticle() {
+	protected ParticleEffect getParticle() {
 		return null;
 	}
 

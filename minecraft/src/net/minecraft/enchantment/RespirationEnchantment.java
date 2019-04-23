@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class RespirationEnchantment extends Enchantment {
 	public RespirationEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.HELM, equipmentSlots);
+		super(weight, EnchantmentTarget.ARMOR_HEAD, equipmentSlots);
 	}
 
 	@Override

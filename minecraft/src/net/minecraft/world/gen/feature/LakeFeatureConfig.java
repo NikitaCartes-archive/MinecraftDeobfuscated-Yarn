@@ -21,7 +21,7 @@ public class LakeFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> LakeFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
 		return new LakeFeatureConfig(blockState);
 	}
 }

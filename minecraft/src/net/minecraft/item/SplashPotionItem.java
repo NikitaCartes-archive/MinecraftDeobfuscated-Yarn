@@ -20,7 +20,7 @@ public class SplashPotionItem extends PotionItem {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		ItemStack itemStack2 = playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack.split(1);
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14910, SoundCategory.field_15248, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
+			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14910, SoundCategory.PLAYERS, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);

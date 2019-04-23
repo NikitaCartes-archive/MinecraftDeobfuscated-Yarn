@@ -21,7 +21,7 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+		if (world.getLightLevel(LightType.field_9282, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
 			this.melt(blockState, world, blockPos);
 		}
 	}
@@ -65,6 +65,6 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType == EntityType.POLAR_BEAR;
+		return entityType == EntityType.field_6042;
 	}
 }

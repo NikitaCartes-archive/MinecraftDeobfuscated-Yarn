@@ -6,12 +6,12 @@ import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 @Environment(EnvType.CLIENT)
 public class OutOfMemoryScreen extends Screen {
 	public OutOfMemoryScreen() {
-		super(new StringTextComponent("Out of memory!"));
+		super(new TextComponent("Out of memory!"));
 	}
 
 	@Override

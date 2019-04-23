@@ -51,8 +51,8 @@ public class StonecutterContainer extends Container {
 		Items.END_STONE,
 		Items.END_STONE_BRICKS,
 		Items.SMOOTH_STONE,
-		Items.field_19174,
-		Items.field_19175
+		Items.CUT_SANDSTONE,
+		Items.CUT_RED_SANDSTONE
 	);
 	private final BlockContext context;
 	private final Property selectedRecipe = Property.create();

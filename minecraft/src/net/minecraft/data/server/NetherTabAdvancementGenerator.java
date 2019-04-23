@@ -17,12 +17,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
@@ -33,10 +33,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_9986,
-				new TranslatableTextComponent("advancements.nether.root.title"),
-				new TranslatableTextComponent("advancements.nether.root.description"),
+				new TranslatableComponent("advancements.nether.root.title"),
+				new TranslatableComponent("advancements.nether.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/nether.png"),
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				false,
 				false,
 				false
@@ -47,10 +47,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.field_8814,
-				new TranslatableTextComponent("advancements.nether.return_to_sender.title"),
-				new TranslatableTextComponent("advancements.nether.return_to_sender.description"),
+				new TranslatableComponent("advancements.nether.return_to_sender.title"),
+				new TranslatableComponent("advancements.nether.return_to_sender.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -59,8 +59,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST),
-					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
+					EntityPredicate.Builder.create().type(EntityType.field_6107),
+					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.field_6066))
 				)
 			)
 			.build(consumer, "nether/return_to_sender");
@@ -68,10 +68,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Blocks.field_10266,
-				new TranslatableTextComponent("advancements.nether.find_fortress.title"),
-				new TranslatableTextComponent("advancements.nether.find_fortress.description"),
+				new TranslatableComponent("advancements.nether.find_fortress.title"),
+				new TranslatableComponent("advancements.nether.find_fortress.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -82,10 +82,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.field_8895,
-				new TranslatableTextComponent("advancements.nether.fast_travel.title"),
-				new TranslatableTextComponent("advancements.nether.fast_travel.description"),
+				new TranslatableComponent("advancements.nether.fast_travel.title"),
+				new TranslatableComponent("advancements.nether.fast_travel.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -97,10 +97,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement2)
 			.display(
 				Items.field_8070,
-				new TranslatableTextComponent("advancements.nether.uneasy_alliance.title"),
-				new TranslatableTextComponent("advancements.nether.uneasy_alliance.description"),
+				new TranslatableComponent("advancements.nether.uneasy_alliance.title"),
+				new TranslatableComponent("advancements.nether.uneasy_alliance.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -109,7 +109,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(DimensionType.field_13072))
+					EntityPredicate.Builder.create().type(EntityType.field_6107).location(LocationPredicate.dimension(DimensionType.field_13072))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
@@ -117,10 +117,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement3)
 			.display(
 				Blocks.field_10177,
-				new TranslatableTextComponent("advancements.nether.get_wither_skull.title"),
-				new TranslatableTextComponent("advancements.nether.get_wither_skull.description"),
+				new TranslatableComponent("advancements.nether.get_wither_skull.title"),
+				new TranslatableComponent("advancements.nether.get_wither_skull.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -131,24 +131,24 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement6)
 			.display(
 				Items.field_8137,
-				new TranslatableTextComponent("advancements.nether.summon_wither.title"),
-				new TranslatableTextComponent("advancements.nether.summon_wither.description"),
+				new TranslatableComponent("advancements.nether.summon_wither.title"),
+				new TranslatableComponent("advancements.nether.summon_wither.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
 			)
-			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
+			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.field_6119)))
 			.build(consumer, "nether/summon_wither");
 		Advancement advancement8 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
 				Items.field_8894,
-				new TranslatableTextComponent("advancements.nether.obtain_blaze_rod.title"),
-				new TranslatableTextComponent("advancements.nether.obtain_blaze_rod.description"),
+				new TranslatableComponent("advancements.nether.obtain_blaze_rod.title"),
+				new TranslatableComponent("advancements.nether.obtain_blaze_rod.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -159,10 +159,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement7)
 			.display(
 				Blocks.field_10327,
-				new TranslatableTextComponent("advancements.nether.create_beacon.title"),
-				new TranslatableTextComponent("advancements.nether.create_beacon.description"),
+				new TranslatableComponent("advancements.nether.create_beacon.title"),
+				new TranslatableComponent("advancements.nether.create_beacon.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -173,10 +173,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement9)
 			.display(
 				Blocks.field_10327,
-				new TranslatableTextComponent("advancements.nether.create_full_beacon.title"),
-				new TranslatableTextComponent("advancements.nether.create_full_beacon.description"),
+				new TranslatableComponent("advancements.nether.create_full_beacon.title"),
+				new TranslatableComponent("advancements.nether.create_full_beacon.description"),
 				null,
-				AdvancementFrame.GOAL,
+				AdvancementFrame.field_1249,
 				true,
 				true,
 				false
@@ -187,10 +187,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement8)
 			.display(
 				Items.field_8574,
-				new TranslatableTextComponent("advancements.nether.brew_potion.title"),
-				new TranslatableTextComponent("advancements.nether.brew_potion.description"),
+				new TranslatableComponent("advancements.nether.brew_potion.title"),
+				new TranslatableComponent("advancements.nether.brew_potion.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.field_1254,
 				true,
 				true,
 				false
@@ -201,10 +201,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement11)
 			.display(
 				Items.field_8103,
-				new TranslatableTextComponent("advancements.nether.all_potions.title"),
-				new TranslatableTextComponent("advancements.nether.all_potions.description"),
+				new TranslatableComponent("advancements.nether.all_potions.title"),
+				new TranslatableComponent("advancements.nether.all_potions.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				false
@@ -234,10 +234,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement12)
 			.display(
 				Items.field_8550,
-				new TranslatableTextComponent("advancements.nether.all_effects.title"),
-				new TranslatableTextComponent("advancements.nether.all_effects.description"),
+				new TranslatableComponent("advancements.nether.all_effects.title"),
+				new TranslatableComponent("advancements.nether.all_effects.description"),
 				null,
-				AdvancementFrame.CHALLENGE,
+				AdvancementFrame.field_1250,
 				true,
 				true,
 				true

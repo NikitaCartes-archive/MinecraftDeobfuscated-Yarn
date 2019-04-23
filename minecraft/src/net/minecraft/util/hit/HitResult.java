@@ -16,8 +16,8 @@ public abstract class HitResult {
 	}
 
 	public static enum Type {
-		NONE,
-		BLOCK,
-		ENTITY;
+		field_1333,
+		field_1332,
+		field_1331;
 	}
 }

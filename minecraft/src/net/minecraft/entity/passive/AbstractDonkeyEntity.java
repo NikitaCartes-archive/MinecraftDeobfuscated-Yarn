@@ -125,7 +125,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return true;
 			}
 
-			if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.getItem()) {
+			if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.asItem()) {
 				this.setHasChest(true);
 				this.method_6721();
 				return true;
@@ -141,7 +141,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		if (itemStack.getItem() instanceof SpawnEggItem) {
 			return super.interactMob(playerEntity, hand);
 		} else {
-			if (!this.isChild()) {
+			if (!this.isBaby()) {
 				if (this.isTame() && playerEntity.isSneaking()) {
 					this.openInventory(playerEntity);
 					return true;
@@ -164,14 +164,14 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 						}
 					}
 
-					if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.getItem()) {
+					if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.asItem()) {
 						this.setHasChest(true);
 						this.playAddChestSound();
 						bl = true;
 						this.method_6721();
 					}
 
-					if (!this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175) {
+					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.field_8175) {
 						this.openInventory(playerEntity);
 						return true;
 					}
@@ -186,7 +186,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				}
 			}
 
-			if (this.isChild()) {
+			if (this.isBaby()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
 				this.putPlayerOnBack(playerEntity);

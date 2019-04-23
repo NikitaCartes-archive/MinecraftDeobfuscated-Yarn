@@ -38,6 +38,6 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.UP ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
+		return direction == Direction.field_11036 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 }

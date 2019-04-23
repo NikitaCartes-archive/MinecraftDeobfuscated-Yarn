@@ -30,7 +30,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		float k = 0.25F;
 		GlStateManager.rotatef(180.0F - this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(dragonFireballEntity));
 		}
@@ -41,7 +41,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		bufferBuilder.vertex(0.5, 0.75, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
 		bufferBuilder.vertex(-0.5, 0.75, 0.0).texture(0.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
 		tessellator.draw();
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

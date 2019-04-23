@@ -9,7 +9,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.DisableableFollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -43,7 +43,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class WitchEntity extends RaiderEntity implements RangedAttacker {
+public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	private static final UUID DRINKING_SPEED_PENALTY_MODIFIER_ID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
 	private static final EntityAttributeModifier DRINKING_SPEED_PENALTY_MODIFIER = new EntityAttributeModifier(
 			DRINKING_SPEED_PENALTY_MODIFIER_ID, "Drinking speed penalty", -0.25, EntityAttributeModifier.Operation.field_6328
@@ -62,7 +62,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	protected void initGoals() {
 		super.initGoals();
 		this.raidGoal = new RaidGoal<>(
-			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.WITCH
+			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.field_6145
 		);
 		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
@@ -112,7 +112,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (!this.world.isClient && this.isAlive()) {
 			this.raidGoal.decreaseCooldown();
 			if (this.raidGoal.getCooldown() <= 0) {
@@ -125,7 +125,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				if (this.drinkTimeLeft-- <= 0) {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
-					this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+					this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 					if (itemStack.getItem() == Items.field_8574) {
 						List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 						if (list != null) {
@@ -155,7 +155,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				}
 
 				if (potion != null) {
-					this.setEquippedStack(EquipmentSlot.HAND_MAIN, PotionUtil.setPotion(new ItemStack(Items.field_8574), potion));
+					this.setEquippedStack(EquipmentSlot.field_6173, PotionUtil.setPotion(new ItemStack(Items.field_8574), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14565, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
@@ -170,7 +170,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 			}
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	@Override

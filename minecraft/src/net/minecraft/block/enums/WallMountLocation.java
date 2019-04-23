@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum WallMountLocation implements StringRepresentable {
+public enum WallMountLocation implements SnakeCaseIdentifiable {
 	field_12475("floor"),
 	field_12471("wall"),
 	field_12473("ceiling");
@@ -14,7 +14,7 @@ public enum WallMountLocation implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

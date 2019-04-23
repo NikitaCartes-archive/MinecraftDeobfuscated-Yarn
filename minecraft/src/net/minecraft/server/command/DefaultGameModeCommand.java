@@ -3,9 +3,9 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
@@ -35,7 +35,7 @@ public class DefaultGameModeCommand {
 			}
 		}
 
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.defaultgamemode.success", gameMode.getTextComponent()), true);
+		serverCommandSource.sendFeedback(new TranslatableComponent("commands.defaultgamemode.success", gameMode.getTextComponent()), true);
 		return i;
 	}
 }

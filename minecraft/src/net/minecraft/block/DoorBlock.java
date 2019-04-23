@@ -7,8 +7,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -47,7 +47,7 @@ public class DoorBlock extends Block {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
+				.with(FACING, Direction.field_11043)
 				.with(OPEN, Boolean.valueOf(false))
 				.with(HINGE, DoorHinge.field_12588)
 				.with(POWERED, Boolean.valueOf(false))
@@ -56,19 +56,19 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Direction direction = blockState.get(FACING);
 		boolean bl = !blockState.get(OPEN);
 		boolean bl2 = blockState.get(HINGE) == DoorHinge.field_12586;
 		switch(direction) {
-			case EAST:
+			case field_11034:
 			default:
 				return bl ? WEST_SHAPE : (bl2 ? SOUTH_SHAPE : NORTH_SHAPE);
-			case SOUTH:
+			case field_11035:
 				return bl ? NORTH_SHAPE : (bl2 ? WEST_SHAPE : EAST_SHAPE);
-			case WEST:
+			case field_11039:
 				return bl ? EAST_SHAPE : (bl2 ? NORTH_SHAPE : SOUTH_SHAPE);
-			case NORTH:
+			case field_11043:
 				return bl ? SOUTH_SHAPE : (bl2 ? EAST_SHAPE : WEST_SHAPE);
 		}
 	}
@@ -78,9 +78,9 @@ public class DoorBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.UP)) {
-			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
-				? Blocks.AIR.getDefaultState()
+		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.field_11036)) {
+			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
+				? Blocks.field_10124.getDefaultState()
 				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			return blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf
@@ -88,7 +88,7 @@ public class DoorBlock extends Block {
 					.with(OPEN, blockState2.get(OPEN))
 					.with(HINGE, blockState2.get(HINGE))
 					.with(POWERED, blockState2.get(POWERED))
-				: Blocks.AIR.getDefaultState();
+				: Blocks.field_10124.getDefaultState();
 		}
 	}
 
@@ -96,7 +96,7 @@ public class DoorBlock extends Block {
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class DoorBlock extends Block {
 		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.field_12607 ? blockPos.up() : blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
+			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (!world.isClient && !playerEntity.isCreative()) {
@@ -224,7 +224,7 @@ public class DoorBlock extends Block {
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		boolean bl2 = world.isReceivingRedstonePower(blockPos)
-			|| world.isReceivingRedstonePower(blockPos.offset(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? Direction.UP : Direction.DOWN));
+			|| world.isReceivingRedstonePower(blockPos.offset(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? Direction.field_11036 : Direction.field_11033));
 		if (block != this && bl2 != blockState.get(POWERED)) {
 			if (bl2 != blockState.get(OPEN)) {
 				this.playOpenCloseSound(world, blockPos, bl2);
@@ -239,7 +239,7 @@ public class DoorBlock extends Block {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		if (blockState.get(HALF) == DoubleBlockHalf.field_12607) {
-			return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
+			return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.field_11036);
 		} else {
 			return blockState2.getBlock() == this;
 		}
@@ -256,7 +256,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
@@ -266,7 +266,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockMirror == BlockMirror.NONE ? blockState : blockState.rotate(blockMirror.getRotation(blockState.get(FACING))).cycle(HINGE);
+		return blockMirror == BlockMirror.field_11302 ? blockState : blockState.rotate(blockMirror.getRotation(blockState.get(FACING))).cycle(HINGE);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -277,6 +277,6 @@ public class DoorBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HALF, FACING, OPEN, HINGE, POWERED);
+		builder.add(HALF, FACING, OPEN, HINGE, POWERED);
 	}
 }

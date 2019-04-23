@@ -112,7 +112,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	}
 
 	private List<ItemStack> getGifts(VillagerEntity villagerEntity) {
-		if (villagerEntity.isChild()) {
+		if (villagerEntity.isBaby()) {
 			return ImmutableList.of(new ItemStack(Items.POPPY));
 		} else {
 			VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
@@ -122,7 +122,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 					.put(LootContextParameters.field_1232, new BlockPos(villagerEntity))
 					.put(LootContextParameters.field_1226, villagerEntity)
 					.setRandom(villagerEntity.getRand());
-				return lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
+				return lootSupplier.getDrops(builder.build(LootContextTypes.field_16235));
 			} else {
 				return ImmutableList.of(new ItemStack(Items.field_8317));
 			}

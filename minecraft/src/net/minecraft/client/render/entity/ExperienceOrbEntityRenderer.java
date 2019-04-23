@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
-	private static final Identifier TEX = new Identifier("textures/entity/experience_orb.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/experience_orb.png");
 
 	public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -23,7 +23,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
-		if (!this.renderOutlines) {
+		if (!this.field_4674) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
 			this.bindEntityTexture(experienceOrbEntity);
@@ -42,7 +42,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)r, (float)s);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float t = 255.0F;
-			float u = ((float)experienceOrbEntity.field_6165 + h) / 2.0F;
+			float u = ((float)experienceOrbEntity.renderTicks + h) / 2.0F;
 			int v = (int)((MathHelper.sin(u + 0.0F) + 1.0F) * 0.5F * 255.0F);
 			int w = 255;
 			int x = (int)((MathHelper.sin(u + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
@@ -67,6 +67,6 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	protected Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
-		return TEX;
+		return SKIN;
 	}
 }

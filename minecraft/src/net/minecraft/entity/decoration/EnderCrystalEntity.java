@@ -36,7 +36,7 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	public EnderCrystalEntity(World world, double d, double e, double f) {
-		this(EntityType.END_CRYSTAL, world);
+		this(EntityType.field_6110, world);
 		this.setPosition(d, e, f);
 	}
 

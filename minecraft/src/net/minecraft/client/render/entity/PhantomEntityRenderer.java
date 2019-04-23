@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
-	private static final Identifier field_4756 = new Identifier("textures/entity/phantom.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/phantom.png");
 
 	public PhantomEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PhantomEntityModel<>(), 0.75F);
@@ -18,7 +18,7 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 	}
 
 	protected Identifier method_4090(PhantomEntity phantomEntity) {
-		return field_4756;
+		return SKIN;
 	}
 
 	protected void method_4088(PhantomEntity phantomEntity, float f) {

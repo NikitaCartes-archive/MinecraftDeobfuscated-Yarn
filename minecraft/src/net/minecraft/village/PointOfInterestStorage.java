@@ -20,8 +20,8 @@ import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionRelativeLevelPropagator;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 
@@ -81,7 +81,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
+		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.field_18487)
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
 			.findFirst()
 			.map(pointOfInterest -> {
@@ -91,7 +91,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
+		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.field_18487)
 			.sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)))
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
 			.findFirst()
@@ -133,7 +133,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	private boolean isOccupied(long l) {
-		return this.get(PointOfInterestType.ALWAYS_TRUE, l, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L;
+		return this.get(PointOfInterestType.ALWAYS_TRUE, l, PointOfInterestStorage.OccupationStatus.field_18488).count() > 0L;
 	}
 
 	@Override
@@ -184,9 +184,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public static enum OccupationStatus {
-		HAS_SPACE(PointOfInterest::hasSpace),
-		IS_OCCUPIED(PointOfInterest::isOccupied),
-		ANY(pointOfInterest -> true);
+		field_18487(PointOfInterest::hasSpace),
+		field_18488(PointOfInterest::isOccupied),
+		field_18489(pointOfInterest -> true);
 
 		private final Predicate<? super PointOfInterest> predicate;
 

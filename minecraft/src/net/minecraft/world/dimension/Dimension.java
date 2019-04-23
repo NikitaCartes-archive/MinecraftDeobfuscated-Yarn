@@ -4,11 +4,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 

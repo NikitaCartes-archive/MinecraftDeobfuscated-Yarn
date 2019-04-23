@@ -3,10 +3,10 @@ package net.minecraft.resource;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Void;
+import net.minecraft.util.Unit;
 
 public interface ResourceReloadMonitor {
-	CompletableFuture<Void> whenComplete();
+	CompletableFuture<Unit> whenComplete();
 
 	@Environment(EnvType.CLIENT)
 	float getProgress();

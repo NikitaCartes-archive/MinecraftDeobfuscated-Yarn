@@ -4,7 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,7 +39,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return AGE_TO_SHAPE[blockState.get(AGE)];
 	}
 
@@ -59,7 +59,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					blockState = blockState.with(AGE, Integer.valueOf(i + 1));
 					world.setBlockState(blockPos, blockState, 2);
 				} else {
-					Direction direction = Direction.Type.HORIZONTAL.random(random);
+					Direction direction = Direction.Type.field_11062.random(random);
 					BlockPos blockPos2 = blockPos.offset(direction);
 					Block block = world.getBlockState(blockPos2.down()).getBlock();
 					if (world.getBlockState(blockPos2).isAir()
@@ -113,7 +113,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE);
+		builder.add(AGE);
 	}
 
 	public GourdBlock getGourdBlock() {

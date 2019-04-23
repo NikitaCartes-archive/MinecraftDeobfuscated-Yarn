@@ -44,7 +44,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.sendAbilitiesUpdate();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAMEMODE, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.field_12375, this.player));
 		this.world.updatePlayersSleeping();
 	}
 
@@ -235,9 +235,9 @@ public class ServerPlayerInteractionManager {
 
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.gameMode == GameMode.field_9219) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		} else {
 			int i = itemStack.getAmount();
 			int j = itemStack.getDamage();
@@ -278,7 +278,7 @@ public class ServerPlayerInteractionManager {
 				playerEntity.openContainer(nameableContainerProvider);
 				return ActionResult.field_5812;
 			} else {
-				return ActionResult.PASS;
+				return ActionResult.field_5811;
 			}
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
@@ -296,7 +296,7 @@ public class ServerPlayerInteractionManager {
 					return itemStack.useOnBlock(itemUsageContext);
 				}
 			} else {
-				return ActionResult.PASS;
+				return ActionResult.field_5811;
 			}
 		}
 	}

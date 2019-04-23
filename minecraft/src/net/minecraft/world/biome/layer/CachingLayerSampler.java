@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
-import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 
 public final class CachingLayerSampler implements LayerSampler {
 	private final LayerOperator operator;

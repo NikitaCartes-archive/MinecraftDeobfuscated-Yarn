@@ -4,24 +4,24 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.PacketByteBuf;
 
 public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
-	private TextComponent message;
+	private Component message;
 	private ChatMessageType location;
 
 	public ChatMessageS2CPacket() {
 	}
 
-	public ChatMessageS2CPacket(TextComponent textComponent) {
-		this(textComponent, ChatMessageType.field_11735);
+	public ChatMessageS2CPacket(Component component) {
+		this(component, ChatMessageType.field_11735);
 	}
 
-	public ChatMessageS2CPacket(TextComponent textComponent, ChatMessageType chatMessageType) {
-		this.message = textComponent;
+	public ChatMessageS2CPacket(Component component, ChatMessageType chatMessageType) {
+		this.message = component;
 		this.location = chatMessageType;
 	}
 
@@ -42,7 +42,7 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getMessage() {
+	public Component getMessage() {
 		return this.message;
 	}
 

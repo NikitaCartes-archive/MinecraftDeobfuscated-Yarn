@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class TrackTargetGoal extends Goal {
-	protected final MobEntity entity;
+	protected final MobEntity mob;
 	protected final boolean checkVisibility;
 	private final boolean checkCanNavigate;
 	private int canNavigateFlag;
@@ -28,14 +28,14 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	public TrackTargetGoal(MobEntity mobEntity, boolean bl, boolean bl2) {
-		this.entity = mobEntity;
+		this.mob = mobEntity;
 		this.checkVisibility = bl;
 		this.checkCanNavigate = bl2;
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		LivingEntity livingEntity = this.entity.getTarget();
+		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			livingEntity = this.target;
 		}
@@ -45,17 +45,17 @@ public abstract class TrackTargetGoal extends Goal {
 		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else {
-			AbstractTeam abstractTeam = this.entity.getScoreboardTeam();
+			AbstractTeam abstractTeam = this.mob.getScoreboardTeam();
 			AbstractTeam abstractTeam2 = livingEntity.getScoreboardTeam();
 			if (abstractTeam != null && abstractTeam2 == abstractTeam) {
 				return false;
 			} else {
 				double d = this.getFollowRange();
-				if (this.entity.squaredDistanceTo(livingEntity) > d * d) {
+				if (this.mob.squaredDistanceTo(livingEntity) > d * d) {
 					return false;
 				} else {
 					if (this.checkVisibility) {
-						if (this.entity.getVisibilityCache().canSee(livingEntity)) {
+						if (this.mob.getVisibilityCache().canSee(livingEntity)) {
 							this.timeWithoutVisibility = 0;
 						} else if (++this.timeWithoutVisibility > this.maxTimeWithoutVisibility) {
 							return false;
@@ -65,7 +65,7 @@ public abstract class TrackTargetGoal extends Goal {
 					if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable) {
 						return false;
 					} else {
-						this.entity.setTarget(livingEntity);
+						this.mob.setTarget(livingEntity);
 						return true;
 					}
 				}
@@ -74,7 +74,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	protected double getFollowRange() {
-		EntityAttributeInstance entityAttributeInstance = this.entity.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
+		EntityAttributeInstance entityAttributeInstance = this.mob.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
 		return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
 	}
 
@@ -87,16 +87,16 @@ public abstract class TrackTargetGoal extends Goal {
 
 	@Override
 	public void stop() {
-		this.entity.setTarget(null);
+		this.mob.setTarget(null);
 		this.target = null;
 	}
 
 	protected boolean canTrack(@Nullable LivingEntity livingEntity, TargetPredicate targetPredicate) {
 		if (livingEntity == null) {
 			return false;
-		} else if (!targetPredicate.test(this.entity, livingEntity)) {
+		} else if (!targetPredicate.test(this.mob, livingEntity)) {
 			return false;
-		} else if (!this.entity.isInWalkTargetRange(new BlockPos(livingEntity))) {
+		} else if (!this.mob.isInWalkTargetRange(new BlockPos(livingEntity))) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {
@@ -118,8 +118,8 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	private boolean canNavigateToEntity(LivingEntity livingEntity) {
-		this.checkCanNavigateCooldown = 10 + this.entity.getRand().nextInt(5);
-		Path path = this.entity.getNavigation().findPathTo(livingEntity);
+		this.checkCanNavigateCooldown = 10 + this.mob.getRand().nextInt(5);
+		Path path = this.mob.getNavigation().findPathTo(livingEntity);
 		if (path == null) {
 			return false;
 		} else {

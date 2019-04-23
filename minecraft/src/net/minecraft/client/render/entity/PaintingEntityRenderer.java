@@ -33,7 +33,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float i = 0.0625F;
 		GlStateManager.scalef(0.0625F, 0.0625F, 0.0625F);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(paintingEntity));
 		}
@@ -42,7 +42,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		this.method_4074(
 			paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite()
 		);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -125,19 +125,19 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		int j = MathHelper.floor(paintingEntity.y + (double)(g / 16.0F));
 		int k = MathHelper.floor(paintingEntity.z);
 		Direction direction = paintingEntity.facing;
-		if (direction == Direction.NORTH) {
+		if (direction == Direction.field_11043) {
 			i = MathHelper.floor(paintingEntity.x + (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.WEST) {
+		if (direction == Direction.field_11039) {
 			k = MathHelper.floor(paintingEntity.z - (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.SOUTH) {
+		if (direction == Direction.field_11035) {
 			i = MathHelper.floor(paintingEntity.x - (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.EAST) {
+		if (direction == Direction.field_11034) {
 			k = MathHelper.floor(paintingEntity.z + (double)(f / 16.0F));
 		}
 

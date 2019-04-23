@@ -14,6 +14,6 @@ public class ReplaceableTallPlantBlock extends TallPlantBlock {
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		boolean bl = super.canReplace(blockState, itemPlacementContext);
-		return bl && itemPlacementContext.getItemStack().getItem() == this.getItem() ? false : bl;
+		return bl && itemPlacementContext.getItemStack().getItem() == this.asItem() ? false : bl;
 	}
 }

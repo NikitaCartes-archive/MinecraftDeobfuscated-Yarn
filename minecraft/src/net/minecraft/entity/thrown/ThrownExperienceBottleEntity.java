@@ -17,11 +17,11 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 	}
 
 	public ThrownExperienceBottleEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.EXPERIENCE_BOTTLE, livingEntity, world);
+		super(EntityType.field_6064, livingEntity, world);
 	}
 
 	public ThrownExperienceBottleEntity(World world, double d, double e, double f) {
-		super(EntityType.EXPERIENCE_BOTTLE, d, e, f, world);
+		super(EntityType.field_6064, d, e, f, world);
 	}
 
 	@Override

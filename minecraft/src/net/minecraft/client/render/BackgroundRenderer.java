@@ -135,7 +135,7 @@ public class BackgroundRenderer {
 		this.green = (float)vec3d2.y;
 		this.blue = (float)vec3d2.z;
 		if (this.client.options.viewDistance >= 4) {
-			double d = MathHelper.sin(world.method_8442(f)) > 0.0F ? -1.0 : 1.0;
+			double d = MathHelper.sin(world.getSkyAngleRadians(f)) > 0.0F ? -1.0 : 1.0;
 			net.minecraft.util.math.Vec3d vec3d3 = new net.minecraft.util.math.Vec3d(d, 0.0, 0.0);
 			float k = (float)camera.method_19335().dotProduct(vec3d3);
 			if (k < 0.0F) {

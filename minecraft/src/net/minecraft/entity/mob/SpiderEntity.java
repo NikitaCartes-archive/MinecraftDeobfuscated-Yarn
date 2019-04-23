@@ -11,7 +11,6 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -52,13 +51,13 @@ public class SpiderEntity extends HostileEntity {
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
-		this.goalSelector.add(4, new SpiderEntity.class_1629(this));
+		this.goalSelector.add(4, new SpiderEntity.AttackGoal(this));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this));
-		this.targetSelector.add(2, new SpiderEntity.class_1631(this, PlayerEntity.class));
-		this.targetSelector.add(3, new SpiderEntity.class_1631(this, IronGolemEntity.class));
+		this.targetSelector.add(2, new SpiderEntity.FollowTargetGoal(this, PlayerEntity.class));
+		this.targetSelector.add(3, new SpiderEntity.FollowTargetGoal(this, IronGolemEntity.class));
 	}
 
 	@Override
@@ -156,7 +155,7 @@ public class SpiderEntity extends HostileEntity {
 	) {
 		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.field_6137.create(this.world);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
@@ -164,14 +163,14 @@ public class SpiderEntity extends HostileEntity {
 		}
 
 		if (entityData == null) {
-			entityData = new SpiderEntity.class_1630();
-			if (iWorld.getDifficulty() == Difficulty.HARD && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.class_1630)entityData).method_7168(iWorld.getRandom());
+			entityData = new SpiderEntity.SpawnEffectData();
+			if (iWorld.getDifficulty() == Difficulty.field_5807 && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpawnEffectData)entityData).setEffect(iWorld.getRandom());
 			}
 		}
 
-		if (entityData instanceof SpiderEntity.class_1630) {
-			StatusEffect statusEffect = ((SpiderEntity.class_1630)entityData).field_7404;
+		if (entityData instanceof SpiderEntity.SpawnEffectData) {
+			StatusEffect statusEffect = ((SpiderEntity.SpawnEffectData)entityData).effect;
 			if (statusEffect != null) {
 				this.addPotionEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
 			}
@@ -185,21 +184,21 @@ public class SpiderEntity extends HostileEntity {
 		return 0.65F;
 	}
 
-	static class class_1629 extends MeleeAttackGoal {
-		public class_1629(SpiderEntity spiderEntity) {
+	static class AttackGoal extends MeleeAttackGoal {
+		public AttackGoal(SpiderEntity spiderEntity) {
 			super(spiderEntity, 1.0, true);
 		}
 
 		@Override
 		public boolean canStart() {
-			return super.canStart() && !this.entity.hasPassengers();
+			return super.canStart() && !this.mob.hasPassengers();
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			float f = this.entity.getBrightnessAtEyes();
-			if (f >= 0.5F && this.entity.getRand().nextInt(100) == 0) {
-				this.entity.setTarget(null);
+			float f = this.mob.getBrightnessAtEyes();
+			if (f >= 0.5F && this.mob.getRand().nextInt(100) == 0) {
+				this.mob.setTarget(null);
 				return false;
 			} else {
 				return super.shouldContinue();
@@ -212,32 +211,32 @@ public class SpiderEntity extends HostileEntity {
 		}
 	}
 
-	public static class class_1630 implements EntityData {
-		public StatusEffect field_7404;
-
-		public void method_7168(Random random) {
-			int i = random.nextInt(5);
-			if (i <= 1) {
-				this.field_7404 = StatusEffects.field_5904;
-			} else if (i <= 2) {
-				this.field_7404 = StatusEffects.field_5910;
-			} else if (i <= 3) {
-				this.field_7404 = StatusEffects.field_5924;
-			} else if (i <= 4) {
-				this.field_7404 = StatusEffects.field_5905;
-			}
-		}
-	}
-
-	static class class_1631<T extends LivingEntity> extends FollowTargetGoal<T> {
-		public class_1631(SpiderEntity spiderEntity, Class<T> class_) {
+	static class FollowTargetGoal<T extends LivingEntity> extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
+		public FollowTargetGoal(SpiderEntity spiderEntity, Class<T> class_) {
 			super(spiderEntity, class_, true);
 		}
 
 		@Override
 		public boolean canStart() {
-			float f = this.entity.getBrightnessAtEyes();
+			float f = this.mob.getBrightnessAtEyes();
 			return f >= 0.5F ? false : super.canStart();
+		}
+	}
+
+	public static class SpawnEffectData implements EntityData {
+		public StatusEffect effect;
+
+		public void setEffect(Random random) {
+			int i = random.nextInt(5);
+			if (i <= 1) {
+				this.effect = StatusEffects.field_5904;
+			} else if (i <= 2) {
+				this.effect = StatusEffects.field_5910;
+			} else if (i <= 3) {
+				this.effect = StatusEffects.field_5924;
+			} else if (i <= 4) {
+				this.effect = StatusEffects.field_5905;
+			}
 		}
 	}
 }

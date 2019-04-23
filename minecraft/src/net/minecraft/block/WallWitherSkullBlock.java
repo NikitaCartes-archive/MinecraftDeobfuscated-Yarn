@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public class WallWitherSkullBlock extends WallSkullBlock {
 	protected WallWitherSkullBlock(Block.Settings settings) {
-		super(SkullBlock.Type.WITHER_SKELETON, settings);
+		super(SkullBlock.Type.field_11513, settings);
 	}
 
 	@Override

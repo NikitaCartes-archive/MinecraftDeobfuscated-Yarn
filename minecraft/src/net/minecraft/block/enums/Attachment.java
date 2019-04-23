@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum Attachment implements StringRepresentable {
+public enum Attachment implements SnakeCaseIdentifiable {
 	field_17098("floor"),
 	field_17099("ceiling"),
 	field_17100("single_wall"),
@@ -15,7 +15,7 @@ public enum Attachment implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

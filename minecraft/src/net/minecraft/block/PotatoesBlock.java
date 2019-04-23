@@ -2,8 +2,8 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -27,12 +27,12 @@ public class PotatoesBlock extends CropBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	protected ItemProvider getCropItem() {
+	protected ItemConvertible getSeedsItem() {
 		return Items.field_8567;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

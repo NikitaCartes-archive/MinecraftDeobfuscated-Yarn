@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.particle.BlockStateParticleParameters;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -32,7 +32,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 
@@ -58,7 +58,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	protected void updateColor(@Nullable BlockPos blockPos) {
-		int i = MinecraftClient.getInstance().getBlockColorMap().getRenderColor(this.block, this.world, blockPos, 0);
+		int i = MinecraftClient.getInstance().getBlockColorMap().getColorMultiplier(this.block, this.world, blockPos, 0);
 		this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0F;
 		this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0F;
 		this.colorBlue *= (float)(i & 0xFF) / 255.0F;
@@ -96,11 +96,9 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
-		public Particle method_3109(
-			BlockStateParticleParameters blockStateParticleParameters, World world, double d, double e, double f, double g, double h, double i
-		) {
-			BlockState blockState = blockStateParticleParameters.getBlockState();
+	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
+		public Particle method_3109(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+			BlockState blockState = blockStateParticleEffect.getBlockState();
 			return !blockState.isAir() && blockState.getBlock() != Blocks.field_10008
 				? new BlockCrackParticle(world, d, e, f, g, h, i, blockState).setBlockPosFromPosition()
 				: null;

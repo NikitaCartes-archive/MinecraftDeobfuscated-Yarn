@@ -12,15 +12,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CartographyTableScreen extends ContainerScreen<CartographyTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
-	public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(cartographyTableContainer, playerInventory, textComponent);
+	public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, Component component) {
+		super(cartographyTableContainer, playerInventory, component);
 	}
 
 	@Override

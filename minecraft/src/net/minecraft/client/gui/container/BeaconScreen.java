@@ -20,9 +20,9 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.packet.GuiCloseC2SPacket;
 import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
@@ -34,8 +34,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	private StatusEffect primaryEffect;
 	private StatusEffect secondaryEffect;
 
-	public BeaconScreen(BeaconContainer beaconContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(beaconContainer, playerInventory, textComponent);
+	public BeaconScreen(BeaconContainer beaconContainer, PlayerInventory playerInventory, Component component) {
+		super(beaconContainer, playerInventory, component);
 		this.containerWidth = 230;
 		this.containerHeight = 219;
 		beaconContainer.addListener(new ContainerListener() {

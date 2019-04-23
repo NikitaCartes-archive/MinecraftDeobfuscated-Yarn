@@ -25,7 +25,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean method_19015(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.field_18447, EntityType.VILLAGER);
+		return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.field_18447, EntityType.field_6077);
 	}
 
 	protected boolean method_19016(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

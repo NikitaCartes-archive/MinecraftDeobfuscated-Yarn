@@ -7,7 +7,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.particle.ParticleParameters;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -34,7 +34,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
+		return iWorld.getDifficulty() != Difficulty.field_5801;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected ParticleParameters getParticles() {
+	protected ParticleEffect getParticles() {
 		return ParticleTypes.field_11240;
 	}
 

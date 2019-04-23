@@ -8,15 +8,15 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:pig", "cow");
 	public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("entity.notFound", object)
+		object -> new TranslatableComponent("entity.notFound", object)
 	);
 
 	public static EntitySummonArgumentType create() {

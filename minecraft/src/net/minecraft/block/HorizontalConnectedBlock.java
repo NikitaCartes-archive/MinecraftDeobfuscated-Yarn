@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.BooleanProperty;
@@ -80,12 +80,12 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.boundingShapes[this.getShapeIndex(blockState)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return this.collisionShapes[this.getShapeIndex(blockState)];
 	}
 
@@ -96,19 +96,19 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	protected int getShapeIndex(BlockState blockState) {
 		int i = 0;
 		if (blockState.get(NORTH)) {
-			i |= getDirectionMask(Direction.NORTH);
+			i |= getDirectionMask(Direction.field_11043);
 		}
 
 		if (blockState.get(EAST)) {
-			i |= getDirectionMask(Direction.EAST);
+			i |= getDirectionMask(Direction.field_11034);
 		}
 
 		if (blockState.get(SOUTH)) {
-			i |= getDirectionMask(Direction.SOUTH);
+			i |= getDirectionMask(Direction.field_11035);
 		}
 
 		if (blockState.get(WEST)) {
-			i |= getDirectionMask(Direction.WEST);
+			i |= getDirectionMask(Direction.field_11039);
 		}
 
 		return i;
@@ -127,11 +127,11 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch(blockRotation) {
-			case ROT_180:
+			case field_11464:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
-			case ROT_270:
+			case field_11465:
 				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
-			case ROT_90:
+			case field_11463:
 				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
 			default:
 				return blockState;
@@ -141,9 +141,9 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		switch(blockMirror) {
-			case LEFT_RIGHT:
+			case field_11300:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
-			case FRONT_BACK:
+			case field_11301:
 				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
 				return super.mirror(blockState, blockMirror);

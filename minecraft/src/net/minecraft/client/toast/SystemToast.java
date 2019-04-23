@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
@@ -14,10 +14,10 @@ public class SystemToast implements Toast {
 	private long startTime;
 	private boolean justUpdated;
 
-	public SystemToast(SystemToast.Type type, TextComponent textComponent, @Nullable TextComponent textComponent2) {
+	public SystemToast(SystemToast.Type type, Component component, @Nullable Component component2) {
 		this.field_2213 = type;
-		this.field_2215 = textComponent.getString();
-		this.field_2217 = textComponent2 == null ? null : textComponent2.getString();
+		this.field_2215 = component.getString();
+		this.field_2217 = component2 == null ? null : component2.getString();
 	}
 
 	@Override
@@ -40,9 +40,9 @@ public class SystemToast implements Toast {
 		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
 	}
 
-	public void setContent(TextComponent textComponent, @Nullable TextComponent textComponent2) {
-		this.field_2215 = textComponent.getString();
-		this.field_2217 = textComponent2 == null ? null : textComponent2.getString();
+	public void setContent(Component component, @Nullable Component component2) {
+		this.field_2215 = component.getString();
+		this.field_2217 = component2 == null ? null : component2.getString();
 		this.justUpdated = true;
 	}
 
@@ -50,12 +50,12 @@ public class SystemToast implements Toast {
 		return this.field_2213;
 	}
 
-	public static void show(ToastManager toastManager, SystemToast.Type type, TextComponent textComponent, @Nullable TextComponent textComponent2) {
+	public static void show(ToastManager toastManager, SystemToast.Type type, Component component, @Nullable Component component2) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			toastManager.add(new SystemToast(type, textComponent, textComponent2));
+			toastManager.add(new SystemToast(type, component, component2));
 		} else {
-			systemToast.setContent(textComponent, textComponent2);
+			systemToast.setContent(component, component2);
 		}
 	}
 

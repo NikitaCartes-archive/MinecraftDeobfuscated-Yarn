@@ -29,17 +29,17 @@ public class LilyPadItem extends BlockItem {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		return ActionResult.PASS;
+		return ActionResult.field_5811;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-		if (hitResult.getType() == HitResult.Type.NONE) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		if (hitResult.getType() == HitResult.Type.field_1333) {
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
-			if (hitResult.getType() == HitResult.Type.BLOCK) {
+			if (hitResult.getType() == HitResult.Type.field_1332) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				Direction direction = blockHitResult.getSide();

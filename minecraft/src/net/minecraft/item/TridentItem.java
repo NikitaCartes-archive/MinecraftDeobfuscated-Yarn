@@ -71,11 +71,11 @@ public class TridentItem extends Item {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
 							tridentEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
 							if (playerEntity.abilities.creativeMode) {
-								tridentEntity.pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
+								tridentEntity.pickupType = ProjectileEntity.PickupPermission.field_7594;
 							}
 
 							world.spawnEntity(tridentEntity);
-							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
+							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.PLAYERS, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
 								playerEntity.inventory.removeOne(itemStack);
 							}
@@ -110,7 +110,7 @@ public class TridentItem extends Item {
 							soundEvent = SoundEvents.field_14606;
 						}
 
-						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
+						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					}
 				}
 			}
@@ -132,14 +132,14 @@ public class TridentItem extends Item {
 
 	@Override
 	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
+		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		return true;
 	}
 
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
-			itemStack.applyDamage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
+			itemStack.applyDamage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}
 
 		return true;
@@ -148,7 +148,7 @@ public class TridentItem extends Item {
 	@Override
 	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (equipmentSlot == EquipmentSlot.field_6173) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(), new EntityAttributeModifier(MODIFIER_DAMAGE, "Tool modifier", 8.0, EntityAttributeModifier.Operation.field_6328)
 			);

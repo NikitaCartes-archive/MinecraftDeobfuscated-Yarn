@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -23,29 +23,29 @@ public class WallSignBlock extends AbstractSignBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.NORTH,
+			Direction.field_11043,
 			Block.createCuboidShape(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
-			Direction.SOUTH,
+			Direction.field_11035,
 			Block.createCuboidShape(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
-			Direction.EAST,
+			Direction.field_11034,
 			Block.createCuboidShape(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
-			Direction.WEST,
+			Direction.field_11039,
 			Block.createCuboidShape(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
 		)
 	);
 
 	public WallSignBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public String getTranslationKey() {
-		return this.getItem().getTranslationKey();
+		return this.asItem().getTranslationKey();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
 	}
 
@@ -81,7 +81,7 @@ public class WallSignBlock extends AbstractSignBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
+			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -97,6 +97,6 @@ public class WallSignBlock extends AbstractSignBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, WATERLOGGED);
+		builder.add(FACING, WATERLOGGED);
 	}
 }

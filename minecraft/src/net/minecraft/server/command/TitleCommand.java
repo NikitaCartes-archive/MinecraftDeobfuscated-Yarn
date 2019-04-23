@@ -9,10 +9,10 @@ import java.util.Locale;
 import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.command.arguments.ComponentArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class TitleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -97,7 +97,7 @@ public class TitleCommand {
 	}
 
 	private static int executeClear(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
-		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.HIDE, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.field_12633, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
@@ -105,17 +105,17 @@ public class TitleCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				new TranslatableComponent("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.cleared.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.cleared.multiple", collection.size()), true);
 		}
 
 		return collection.size();
 	}
 
 	private static int executeReset(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
-		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.field_12628, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
@@ -123,33 +123,32 @@ public class TitleCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				new TranslatableComponent("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.reset.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.reset.multiple", collection.size()), true);
 		}
 
 		return collection.size();
 	}
 
 	private static int executeTitle(
-		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleS2CPacket.Action action
+		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component, TitleS2CPacket.Action action
 	) throws CommandSyntaxException {
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler
-				.sendPacket(new TitleS2CPacket(action, TextFormatter.resolveAndStyle(serverCommandSource, textComponent, serverPlayerEntity)));
+			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Components.resolveAndStyle(serverCommandSource, component, serverPlayerEntity)));
 		}
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
+				new TranslatableComponent(
 					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
+				new TranslatableComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
 			);
 		}
 
@@ -165,10 +164,10 @@ public class TitleCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				new TranslatableComponent("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.times.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.times.multiple", collection.size()), true);
 		}
 
 		return collection.size();

@@ -22,12 +22,12 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public abstract class Carver<C extends CarverConfig> {
-	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig::deserialize, 256));
-	public static final Carver<ProbabilityConfig> NETHER_CAVE = register("hell_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
-	public static final Carver<ProbabilityConfig> RAVINE = register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
-	public static final Carver<ProbabilityConfig> UNDERWATER_RAVINE = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
-	public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));
-	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
+	public static final Carver<ProbabilityConfig> field_13304 = register("cave", new CaveCarver(ProbabilityConfig::deserialize, 256));
+	public static final Carver<ProbabilityConfig> field_13297 = register("hell_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
+	public static final Carver<ProbabilityConfig> field_13295 = register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
+	public static final Carver<ProbabilityConfig> field_13303 = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
+	public static final Carver<ProbabilityConfig> field_13300 = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));
+	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
 	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
@@ -150,7 +150,7 @@ public abstract class Carver<C extends CarverConfig> {
 			bitSet.set(q);
 			mutable.set(l, o, m);
 			BlockState blockState = chunk.getBlockState(mutable);
-			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable).setOffset(Direction.UP));
+			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable).setOffset(Direction.field_11036));
 			if (blockState.getBlock() == Blocks.field_10219 || blockState.getBlock() == Blocks.field_10402) {
 				atomicBoolean.set(true);
 			}
@@ -163,7 +163,7 @@ public abstract class Carver<C extends CarverConfig> {
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (atomicBoolean.get()) {
-						mutable3.set(mutable).setOffset(Direction.DOWN);
+						mutable3.set(mutable).setOffset(Direction.field_11033);
 						if (chunk.getBlockState(mutable3).getBlock() == Blocks.field_10566) {
 							chunk.setBlockState(mutable3, chunk.getBiome(mutable).getSurfaceConfig().getTopMaterial(), false);
 						}

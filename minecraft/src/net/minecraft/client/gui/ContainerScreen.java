@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.texture.Sprite;
@@ -16,8 +17,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -54,8 +54,8 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	private boolean isDoubleClicking;
 	private ItemStack quickMovingStack = ItemStack.EMPTY;
 
-	public ContainerScreen(T container, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(textComponent);
+	public ContainerScreen(T container, PlayerInventory playerInventory, Component component) {
+		super(component);
 		this.container = container;
 		this.playerInventory = playerInventory;
 		this.cancelNextRelease = true;
@@ -125,7 +125,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				itemStack = itemStack.copy();
 				itemStack.setAmount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
-					string = "" + TextFormat.field_1054 + "0";
+					string = "" + ChatFormat.field_1054 + "0";
 				}
 			}
 
@@ -195,7 +195,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
 				int k = Math.min(itemStack.getMaxAmount(), slot.getMaxStackAmount(itemStack));
 				if (itemStack.getAmount() > k) {
-					string = TextFormat.field_1054.toString() + k;
+					string = ChatFormat.field_1054.toString() + k;
 					itemStack.setAmount(k);
 				}
 			} else {

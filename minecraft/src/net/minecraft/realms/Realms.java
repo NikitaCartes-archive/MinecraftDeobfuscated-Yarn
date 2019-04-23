@@ -20,8 +20,8 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.text.ChatMessageType;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.network.chat.ChatMessageType;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.GameMode;
@@ -168,7 +168,7 @@ public class Realms {
 	public static void narrateNow(String string) {
 		NarratorManager narratorManager = NarratorManager.INSTANCE;
 		narratorManager.clear();
-		narratorManager.onChatMessage(ChatMessageType.field_11735, new StringTextComponent(fixNarrationNewlines(string)));
+		narratorManager.onChatMessage(ChatMessageType.field_11735, new TextComponent(fixNarrationNewlines(string)));
 	}
 
 	private static String fixNarrationNewlines(String string) {

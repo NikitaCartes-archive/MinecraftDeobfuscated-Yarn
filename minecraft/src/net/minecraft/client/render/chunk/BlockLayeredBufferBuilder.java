@@ -10,10 +10,10 @@ public class BlockLayeredBufferBuilder {
 	private final BufferBuilder[] layerBuilders = new BufferBuilder[BlockRenderLayer.values().length];
 
 	public BlockLayeredBufferBuilder() {
-		this.layerBuilders[BlockRenderLayer.SOLID.ordinal()] = new BufferBuilder(2097152);
-		this.layerBuilders[BlockRenderLayer.CUTOUT.ordinal()] = new BufferBuilder(131072);
-		this.layerBuilders[BlockRenderLayer.MIPPED_CUTOUT.ordinal()] = new BufferBuilder(131072);
-		this.layerBuilders[BlockRenderLayer.TRANSLUCENT.ordinal()] = new BufferBuilder(262144);
+		this.layerBuilders[BlockRenderLayer.field_9178.ordinal()] = new BufferBuilder(2097152);
+		this.layerBuilders[BlockRenderLayer.field_9174.ordinal()] = new BufferBuilder(131072);
+		this.layerBuilders[BlockRenderLayer.CUTOUT_MIPPED.ordinal()] = new BufferBuilder(131072);
+		this.layerBuilders[BlockRenderLayer.field_9179.ordinal()] = new BufferBuilder(262144);
 	}
 
 	public BufferBuilder get(BlockRenderLayer blockRenderLayer) {

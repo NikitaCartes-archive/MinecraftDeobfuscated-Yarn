@@ -26,7 +26,7 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 	}
 
 	private boolean isVillagerBaby(LivingEntity livingEntity) {
-		return livingEntity.getType() == EntityType.VILLAGER && livingEntity.isChild();
+		return livingEntity.getType() == EntityType.field_6077 && livingEntity.isBaby();
 	}
 
 	private List<LivingEntity> getVisibleMobs(LivingEntity livingEntity) {

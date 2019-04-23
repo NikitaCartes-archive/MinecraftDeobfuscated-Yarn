@@ -73,7 +73,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 
 	private boolean method_20391(BlockState blockState) {
 		Block block = blockState.getBlock();
-		return block instanceof CropBlock && ((CropBlock)block).isValidState(blockState) && this.field_18860 || blockState.isAir() && this.field_18859;
+		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860 || blockState.isAir() && this.field_18859;
 	}
 
 	protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -94,7 +94,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		if (this.field_19239 > 15 && this.field_18858 != null && l > this.field_18861) {
 			BlockState blockState = serverWorld.getBlockState(this.field_18858);
 			Block block = blockState.getBlock();
-			if (block instanceof CropBlock && ((CropBlock)block).isValidState(blockState) && this.field_18860) {
+			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
 				serverWorld.breakBlock(this.field_18858, true);
 			} else if (blockState.isAir() && this.field_18859) {
 				BasicInventory basicInventory = villagerEntity.getInventory();

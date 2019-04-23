@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class DepthStriderEnchantment extends Enchantment {
 	public DepthStriderEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.FEET, equipmentSlots);
+		super(weight, EnchantmentTarget.ARMOR_FEET, equipmentSlots);
 	}
 
 	@Override

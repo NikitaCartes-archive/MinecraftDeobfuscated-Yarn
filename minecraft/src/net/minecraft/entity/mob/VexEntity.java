@@ -62,7 +62,7 @@ public class VexEntity extends HostileEntity {
 		this.noClip = true;
 		super.tick();
 		this.noClip = false;
-		this.setUnaffectedByGravity(true);
+		this.setNoGravity(true);
 		if (this.alive && --this.lifeTicks <= 0) {
 			this.lifeTicks = 20;
 			this.damage(DamageSource.STARVE, 1.0F);
@@ -205,8 +205,8 @@ public class VexEntity extends HostileEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8371));
-		this.setEquipmentDropChance(EquipmentSlot.HAND_MAIN, 0.0F);
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8371));
+		this.setEquipmentDropChance(EquipmentSlot.field_6173, 0.0F);
 	}
 
 	class ChargeTargetGoal extends Goal {

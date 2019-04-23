@@ -94,7 +94,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends EntityModel<T> 
 	}
 
 	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = horseBaseEntity.isChild();
+		boolean bl = horseBaseEntity.isBaby();
 		float l = horseBaseEntity.getScaleFactor();
 		boolean bl2 = horseBaseEntity.isSaddled();
 		boolean bl3 = horseBaseEntity.hasPassengers();

@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseSampler {
-	protected static final int[][] field_15766 = new int[][]{
+	protected static final int[][] gradients = new int[][]{
 		{1, 1, 0},
 		{-1, 1, 0},
 		{1, -1, 0},
@@ -22,9 +22,9 @@ public class SimplexNoiseSampler {
 		{-1, 1, 0},
 		{0, -1, -1}
 	};
-	private static final double field_15764 = Math.sqrt(3.0);
-	private static final double field_15768 = 0.5 * (field_15764 - 1.0);
-	private static final double field_15767 = (3.0 - field_15764) / 6.0;
+	private static final double sqrt3 = Math.sqrt(3.0);
+	private static final double field_15768 = 0.5 * (sqrt3 - 1.0);
+	private static final double field_15767 = (3.0 - sqrt3) / 6.0;
 	private final int[] field_15765 = new int[512];
 	public final double field_15763;
 	public final double field_15762;
@@ -52,7 +52,7 @@ public class SimplexNoiseSampler {
 		return this.field_15765[i & 0xFF];
 	}
 
-	protected static double method_15431(int[] is, double d, double e, double f) {
+	protected static double dot(int[] is, double d, double e, double f) {
 		return (double)is[0] * d + (double)is[1] * e + (double)is[2] * f;
 	}
 
@@ -63,13 +63,13 @@ public class SimplexNoiseSampler {
 			j = 0.0;
 		} else {
 			h *= h;
-			j = h * h * method_15431(field_15766[i], d, e, f);
+			j = h * h * dot(gradients[i], d, e, f);
 		}
 
 		return j;
 	}
 
-	public double method_15433(double d, double e) {
+	public double sample(double d, double e) {
 		double f = (d + e) * field_15768;
 		int i = MathHelper.floor(d + f);
 		int j = MathHelper.floor(e + f);

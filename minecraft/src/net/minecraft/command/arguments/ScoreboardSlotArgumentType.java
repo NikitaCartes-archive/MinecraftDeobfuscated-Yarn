@@ -10,15 +10,15 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
 	public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.scoreboardDisplaySlot.invalid", object)
+		object -> new TranslatableComponent("argument.scoreboardDisplaySlot.invalid", object)
 	);
 
 	private ScoreboardSlotArgumentType() {

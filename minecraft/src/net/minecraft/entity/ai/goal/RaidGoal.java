@@ -22,9 +22,9 @@ public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 
 	@Override
 	public boolean canStart() {
-		if (this.cooldown > 0 || !this.entity.getRand().nextBoolean()) {
+		if (this.cooldown > 0 || !this.mob.getRand().nextBoolean()) {
 			return false;
-		} else if (!((RaiderEntity)this.entity).hasActiveRaid()) {
+		} else if (!((RaiderEntity)this.mob).hasActiveRaid()) {
 			return false;
 		} else {
 			this.findClosestTarget();

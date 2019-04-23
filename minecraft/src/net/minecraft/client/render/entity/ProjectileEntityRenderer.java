@@ -45,7 +45,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		GlStateManager.rotatef(45.0F, 1.0F, 0.0F, 0.0F);
 		GlStateManager.scalef(0.05625F, 0.05625F, 0.05625F);
 		GlStateManager.translatef(-4.0F, 0.0F, 0.0F);
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(projectileEntity));
 		}
@@ -76,7 +76,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 			tessellator.draw();
 		}
 
-		if (this.renderOutlines) {
+		if (this.field_4674) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

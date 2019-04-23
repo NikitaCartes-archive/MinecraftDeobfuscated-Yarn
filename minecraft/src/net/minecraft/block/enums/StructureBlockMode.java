@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum StructureBlockMode implements StringRepresentable {
+public enum StructureBlockMode implements SnakeCaseIdentifiable {
 	field_12695("save"),
 	field_12697("load"),
 	field_12699("corner"),
@@ -15,7 +15,7 @@ public enum StructureBlockMode implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

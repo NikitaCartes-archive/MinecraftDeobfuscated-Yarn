@@ -131,8 +131,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.world.isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {
@@ -164,7 +164,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean isChild() {
+	public boolean isBaby() {
 		return this.getBreedingAge() < 0;
 	}
 }

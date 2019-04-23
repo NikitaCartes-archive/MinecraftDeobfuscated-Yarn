@@ -20,7 +20,7 @@ public class SnowyBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction != Direction.UP) {
+		if (direction != Direction.field_11036) {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
@@ -36,6 +36,6 @@ public class SnowyBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(SNOWY);
+		builder.add(SNOWY);
 	}
 }

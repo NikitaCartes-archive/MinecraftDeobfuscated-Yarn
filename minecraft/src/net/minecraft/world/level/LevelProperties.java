@@ -36,7 +36,7 @@ public class LevelProperties {
 	private String versionName;
 	private int versionId;
 	private boolean versionSnapshot;
-	public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.NORMAL;
+	public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.field_5802;
 	private long randomSeed;
 	private LevelGeneratorType generatorType = LevelGeneratorType.DEFAULT;
 	private CompoundTag generatorOptions = new CompoundTag();

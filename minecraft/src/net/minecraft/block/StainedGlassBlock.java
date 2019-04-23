@@ -18,6 +18,6 @@ public class StainedGlassBlock extends AbstractGlassBlock implements ColoredBloc
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.field_9179;
 	}
 }

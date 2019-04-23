@@ -1,7 +1,5 @@
 package net.minecraft.util.math;
 
-import net.minecraft.world.chunk.ChunkPos;
-
 public class ColumnPos {
 	public final int x;
 	public final int z;
@@ -14,10 +12,6 @@ public class ColumnPos {
 	public ColumnPos(BlockPos blockPos) {
 		this.x = blockPos.getX();
 		this.z = blockPos.getZ();
-	}
-
-	public ChunkPos getChunkPos() {
-		return new ChunkPos(this.x >> 4, this.z >> 4);
 	}
 
 	public long toLong() {

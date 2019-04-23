@@ -41,8 +41,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (this.getBreedingAge() != 0) {
 			this.loveTicks = 0;
 		}
@@ -141,7 +141,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				return true;
 			}
 
-			if (this.isChild()) {
+			if (this.isBaby()) {
 				this.eat(playerEntity, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
 				return true;

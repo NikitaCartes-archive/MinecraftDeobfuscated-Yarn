@@ -36,8 +36,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			if (guardianEntity.hasBeamTarget()) {
 				LivingEntity livingEntity = guardianEntity.getBeamTarget();
 				if (livingEntity != null) {
-					Vec3d vec3d = this.method_3979(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
-					Vec3d vec3d2 = this.method_3979(guardianEntity, (double)guardianEntity.getStandingEyeHeight(), 1.0F);
+					Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
+					Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)guardianEntity.getStandingEyeHeight(), 1.0F);
 					if (visibleRegion.intersects(new BoundingBox(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
 						return true;
 					}
@@ -48,7 +48,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		}
 	}
 
-	private Vec3d method_3979(LivingEntity livingEntity, double d, float f) {
+	private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
 		double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.x);
 		double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.y) + d;
 		double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.z);
@@ -79,8 +79,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float m = guardianEntity.getStandingEyeHeight();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e + m, (float)f);
-			Vec3d vec3d = this.method_3979(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
-			Vec3d vec3d2 = this.method_3979(guardianEntity, (double)m, h);
+			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
+			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)m, h);
 			Vec3d vec3d3 = vec3d.subtract(vec3d2);
 			double n = vec3d3.length() + 1.0;
 			vec3d3 = vec3d3.normalize();

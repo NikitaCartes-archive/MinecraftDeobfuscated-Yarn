@@ -24,7 +24,7 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.TrackAttackerGoal;
+import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -58,7 +58,7 @@ public class WolfEntity extends TameableEntity {
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
 		EntityType<?> entityType = livingEntity.getType();
-		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.field_17943;
+		return entityType == EntityType.field_6115 || entityType == EntityType.field_6140 || entityType == EntityType.field_17943;
 	};
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
@@ -86,7 +86,7 @@ public class WolfEntity extends TameableEntity {
 		this.goalSelector.add(9, new WolfBegGoal(this, 8.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(10, new LookAroundGoal(this));
-		this.targetSelector.add(1, new TrackAttackerGoal(this));
+		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
 		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 		this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(4, new FollowTargetIfTamedGoal(this, AnimalEntity.class, false, FOLLOW_TAMED_PREDICATE));
@@ -178,8 +178,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public void updateState() {
-		super.updateState();
+	public void tickMovement() {
+		super.tickMovement();
 		if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
@@ -437,7 +437,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	public WolfEntity method_6717(PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
+		WolfEntity wolfEntity = EntityType.field_6055.create(this.world);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);

@@ -3,15 +3,11 @@ package net.minecraft.command.arguments;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class CoordinateArgument {
-	public static final SimpleCommandExceptionType MISSING_COORDINATE = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.pos.missing.double")
-	);
-	public static final SimpleCommandExceptionType MISSING_BLOCK_POSITION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("argument.pos.missing.int")
-	);
+	public static final SimpleCommandExceptionType MISSING_COORDINATE = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos.missing.double"));
+	public static final SimpleCommandExceptionType MISSING_BLOCK_POSITION = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos.missing.int"));
 	private final boolean relative;
 	private final double value;
 

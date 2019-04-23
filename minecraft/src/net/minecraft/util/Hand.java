@@ -1,6 +1,6 @@
 package net.minecraft.util;
 
 public enum Hand {
-	MAIN,
-	OFF;
+	field_5808,
+	field_5810;
 }

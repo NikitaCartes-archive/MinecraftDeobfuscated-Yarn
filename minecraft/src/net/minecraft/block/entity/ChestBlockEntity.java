@@ -18,11 +18,11 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +48,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public ChestBlockEntity() {
-		this(BlockEntityType.CHEST);
+		this(BlockEntityType.field_11914);
 	}
 
 	@Override
@@ -68,8 +68,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
-		return new TranslatableTextComponent("container.chest");
+	protected Component getContainerName() {
+		return new TranslatableComponent("container.chest");
 	}
 
 	@Override

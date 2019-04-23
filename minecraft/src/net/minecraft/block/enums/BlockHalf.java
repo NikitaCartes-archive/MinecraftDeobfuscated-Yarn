@@ -1,10 +1,10 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.SnakeCaseIdentifiable;
 
-public enum BlockHalf implements StringRepresentable {
-	TOP("top"),
-	BOTTOM("bottom");
+public enum BlockHalf implements SnakeCaseIdentifiable {
+	field_12619("top"),
+	field_12617("bottom");
 
 	private final String name;
 
@@ -17,7 +17,7 @@ public enum BlockHalf implements StringRepresentable {
 	}
 
 	@Override
-	public String asString() {
+	public String toSnakeCase() {
 		return this.name;
 	}
 }

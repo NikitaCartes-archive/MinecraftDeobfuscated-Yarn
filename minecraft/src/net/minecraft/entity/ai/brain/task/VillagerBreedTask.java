@@ -90,7 +90,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
-			return LookTargetUtil.canSee(brain, MemoryModuleType.field_18448, EntityType.VILLAGER)
+			return LookTargetUtil.canSee(brain, MemoryModuleType.field_18448, EntityType.field_6077)
 				&& villagerEntity.isReadyToBreed()
 				&& villagerEntity2.isReadyToBreed();
 		}

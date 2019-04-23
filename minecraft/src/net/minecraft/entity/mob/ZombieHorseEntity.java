@@ -55,7 +55,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.ZOMBIE_HORSE.create(this.world);
+		return EntityType.field_6048.create(this.world);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 			return super.interactMob(playerEntity, hand);
 		} else if (!this.isTame()) {
 			return false;
-		} else if (this.isChild()) {
+		} else if (this.isBaby()) {
 			return super.interactMob(playerEntity, hand);
 		} else if (playerEntity.isSneaking()) {
 			this.openInventory(playerEntity);

@@ -29,7 +29,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NoiseHeightmapDecoratorConfig> field_14236 = register(
 		"noise_heightmap_double", new NoiseHeightmapDoubleDecorator(NoiseHeightmapDecoratorConfig::deserialize)
 	);
-	public static final Decorator<NopeDecoratorConfig> NOPE = register("nope", new NopeDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<NopeDecoratorConfig> field_14250 = register("nope", new NopeDecorator(NopeDecoratorConfig::deserialize));
 	public static final Decorator<ChanceDecoratorConfig> field_14259 = register(
 		"chance_heightmap", new ChanceHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);

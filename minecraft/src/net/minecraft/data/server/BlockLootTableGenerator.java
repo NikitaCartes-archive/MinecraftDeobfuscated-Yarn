@@ -34,7 +34,7 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -109,27 +109,27 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.field_10199,
 			Blocks.field_10600
 		)
-		.map(ItemProvider::getItem)
+		.map(ItemConvertible::asItem)
 		.collect(ImmutableSet.toImmutableSet());
 	private static final float[] field_11339 = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 	private static final float[] field_11338 = new float[]{0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F};
 	private final Map<Identifier, LootSupplier.Builder> field_16493 = Maps.<Identifier, LootSupplier.Builder>newHashMap();
 
-	private static <T> T method_10393(ItemProvider itemProvider, FunctionConsumerBuilder<T> functionConsumerBuilder) {
-		return (T)(!field_11340.contains(itemProvider.getItem())
+	private static <T> T method_10393(ItemConvertible itemConvertible, FunctionConsumerBuilder<T> functionConsumerBuilder) {
+		return (T)(!field_11340.contains(itemConvertible.asItem())
 			? functionConsumerBuilder.withFunction(ExplosionDecayLootFunction.builder())
 			: functionConsumerBuilder.getThis());
 	}
 
-	private static <T> T method_10392(ItemProvider itemProvider, ConditionConsumerBuilder<T> conditionConsumerBuilder) {
-		return (T)(!field_11340.contains(itemProvider.getItem())
+	private static <T> T method_10392(ItemConvertible itemConvertible, ConditionConsumerBuilder<T> conditionConsumerBuilder) {
+		return (T)(!field_11340.contains(itemConvertible.asItem())
 			? conditionConsumerBuilder.withCondition(SurvivesExplosionLootCondition.builder())
 			: conditionConsumerBuilder.getThis());
 	}
 
-	private static LootSupplier.Builder method_10394(ItemProvider itemProvider) {
+	private static LootSupplier.Builder method_10394(ItemConvertible itemConvertible) {
 		return LootSupplier.builder()
-			.withPool(method_10392(itemProvider, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
+			.withPool(method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
 	}
 
 	private static LootSupplier.Builder method_10381(Block block, LootCondition.Builder builder, LootEntry.Builder<?> builder2) {
@@ -153,32 +153,32 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return method_10381(block, field_11342, builder);
 	}
 
-	private static LootSupplier.Builder method_10382(Block block, ItemProvider itemProvider) {
-		return method_10397(block, method_10392(block, ItemEntry.builder(itemProvider)));
+	private static LootSupplier.Builder method_10382(Block block, ItemConvertible itemConvertible) {
+		return method_10397(block, method_10392(block, ItemEntry.builder(itemConvertible)));
 	}
 
-	private static LootSupplier.Builder method_10384(ItemProvider itemProvider, LootTableRange lootTableRange) {
+	private static LootSupplier.Builder method_10384(ItemConvertible itemConvertible, LootTableRange lootTableRange) {
 		return LootSupplier.builder()
 			.withPool(
 				LootPool.builder()
 					.withRolls(ConstantLootTableRange.create(1))
-					.withEntry(method_10393(itemProvider, ItemEntry.builder(itemProvider).method_438(SetCountLootFunction.builder(lootTableRange))))
+					.withEntry(method_10393(itemConvertible, ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(lootTableRange))))
 			);
 	}
 
-	private static LootSupplier.Builder method_10386(Block block, ItemProvider itemProvider, LootTableRange lootTableRange) {
-		return method_10397(block, method_10393(block, ItemEntry.builder(itemProvider).method_438(SetCountLootFunction.builder(lootTableRange))));
+	private static LootSupplier.Builder method_10386(Block block, ItemConvertible itemConvertible, LootTableRange lootTableRange) {
+		return method_10397(block, method_10393(block, ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(lootTableRange))));
 	}
 
-	private static LootSupplier.Builder method_10373(ItemProvider itemProvider) {
+	private static LootSupplier.Builder method_10373(ItemConvertible itemConvertible) {
 		return LootSupplier.builder()
-			.withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider)));
+			.withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible)));
 	}
 
-	private static LootSupplier.Builder method_10389(ItemProvider itemProvider) {
+	private static LootSupplier.Builder method_10389(ItemConvertible itemConvertible) {
 		return LootSupplier.builder()
 			.withPool(method_10392(Blocks.field_10495, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Blocks.field_10495))))
-			.withPool(method_10392(itemProvider, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
+			.withPool(method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
 	}
 
 	private static LootSupplier.Builder method_10383(Block block) {
@@ -218,7 +218,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					block,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))
+						.withEntry(ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023)))
 				)
 			);
 	}
@@ -232,14 +232,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(block)
-								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023))
 								.method_438(
 									CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027)
 										.withOperation("Lock", "BlockEntityTag.Lock")
 										.withOperation("LootTable", "BlockEntityTag.LootTable")
 										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
 								)
-								.method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.field_11495)))
+								.method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS)))
 						)
 				)
 			);
@@ -254,7 +254,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(block)
-								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023))
 								.method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
@@ -265,12 +265,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return method_10397(block, method_10393(block, ItemEntry.builder(item).method_438(ApplyBonusLootFunction.oreDrops(Enchantments.field_9130))));
 	}
 
-	private static LootSupplier.Builder method_10385(Block block, ItemProvider itemProvider) {
+	private static LootSupplier.Builder method_10385(Block block, ItemConvertible itemConvertible) {
 		return method_10397(
 			block,
 			method_10393(
 				block,
-				ItemEntry.builder(itemProvider)
+				ItemEntry.builder(itemConvertible)
 					.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
 					.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))
 			)
@@ -334,9 +334,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
-	private static LootSupplier.Builder method_10372(ItemProvider itemProvider) {
+	private static LootSupplier.Builder method_10372(ItemConvertible itemConvertible) {
 		return LootSupplier.builder()
-			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemProvider)));
+			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemConvertible)));
 	}
 
 	private static LootSupplier.Builder method_10390(Block block, Block block2, float... fs) {
@@ -1060,7 +1060,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.withPool(
 						LootPool.builder()
 							.withRolls(ConstantLootTableRange.create(1))
-							.withEntry(method_10392(blockx, ItemEntry.builder(blockx)).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)))
+							.withEntry(method_10392(blockx, ItemEntry.builder(blockx)).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.field_935)))
 					)
 		);
 		this.method_16293(Blocks.field_10112, BlockLootTableGenerator::method_10371);
@@ -1143,7 +1143,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			blockx -> LootSupplier.builder()
 					.withPool(
 						LootPool.builder()
-							.method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
+							.method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.field_935))
 							.withEntry(
 								AlternativeEntry.builder(
 									AlternativeEntry.builder(
@@ -1310,8 +1310,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16258(block, method_10373(block2));
 	}
 
-	public void method_16256(Block block, ItemProvider itemProvider) {
-		this.method_16258(block, method_10394(itemProvider));
+	public void method_16256(Block block, ItemConvertible itemConvertible) {
+		this.method_16258(block, method_10394(itemConvertible));
 	}
 
 	public void method_16262(Block block) {

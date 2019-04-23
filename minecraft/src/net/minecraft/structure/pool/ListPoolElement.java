@@ -20,7 +20,7 @@ public class ListPoolElement extends StructurePoolElement {
 
 	@Deprecated
 	public ListPoolElement(List<StructurePoolElement> list) {
-		this(list, StructurePool.Projection.RIGID);
+		this(list, StructurePool.Projection.field_16687);
 	}
 
 	public ListPoolElement(List<StructurePoolElement> list, StructurePool.Projection projection) {
@@ -78,7 +78,7 @@ public class ListPoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.LIST_POOL_ELEMENT;
+		return StructurePoolElementType.field_16974;
 	}
 
 	@Override

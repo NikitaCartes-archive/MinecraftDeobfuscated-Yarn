@@ -10,8 +10,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.TradeOffer;
@@ -26,8 +26,8 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	private int field_19163;
 	private boolean field_19164;
 
-	public VillagerScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(merchantContainer, playerInventory, textComponent);
+	public VillagerScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Component component) {
+		super(merchantContainer, playerInventory, component);
 		this.containerWidth = 276;
 	}
 

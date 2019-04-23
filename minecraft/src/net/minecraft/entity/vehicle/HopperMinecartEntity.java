@@ -26,7 +26,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	public HopperMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.HOPPER_MINECART, d, e, f, world);
+		super(EntityType.field_6058, d, e, f, world);
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public Container method_17357(int i, PlayerInventory playerInventory) {
+	public Container getContainer(int i, PlayerInventory playerInventory) {
 		return new HopperContainer(i, playerInventory, this);
 	}
 }

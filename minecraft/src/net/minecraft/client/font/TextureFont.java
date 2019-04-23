@@ -92,7 +92,7 @@ public class TextureFont implements Font {
 				Resource resource = resourceManager.getResource(this.filename);
 				Throwable var3 = null;
 
-				TextureFont var27;
+				TextureFont var28;
 				try {
 					NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.field_4997, resource.getInputStream());
 					int i = nativeImage.getWidth();
@@ -109,22 +109,27 @@ public class TextureFont implements Font {
 							char c = string.charAt(n);
 							if (c != 0 && c != ' ') {
 								int o = this.findCharacterStartX(nativeImage, k, l, n, m);
-								char2ObjectMap.put(c, new TextureFont.TextureFontGlyph(f, nativeImage, n * k, m * l, k, l, (int)(0.5 + (double)((float)o * f)) + 1, this.ascent));
+								TextureFont.TextureFontGlyph textureFontGlyph = char2ObjectMap.put(
+									c, new TextureFont.TextureFontGlyph(f, nativeImage, n * k, m * l, k, l, (int)(0.5 + (double)((float)o * f)) + 1, this.ascent)
+								);
+								if (textureFontGlyph != null) {
+									TextureFont.LOGGER.warn("Codepoint '{}' declared multiple times in {}", Integer.toHexString(c), this.filename);
+								}
 							}
 						}
 					}
 
-					var27 = new TextureFont(nativeImage, char2ObjectMap);
-				} catch (Throwable var24) {
-					var3 = var24;
-					throw var24;
+					var28 = new TextureFont(nativeImage, char2ObjectMap);
+				} catch (Throwable var25) {
+					var3 = var25;
+					throw var25;
 				} finally {
 					if (resource != null) {
 						if (var3 != null) {
 							try {
 								resource.close();
-							} catch (Throwable var23) {
-								var3.addSuppressed(var23);
+							} catch (Throwable var24) {
+								var3.addSuppressed(var24);
 							}
 						} else {
 							resource.close();
@@ -132,9 +137,9 @@ public class TextureFont implements Font {
 					}
 				}
 
-				return var27;
-			} catch (IOException var26) {
-				throw new RuntimeException(var26.getMessage());
+				return var28;
+			} catch (IOException var27) {
+				throw new RuntimeException(var27.getMessage());
 			}
 		}
 

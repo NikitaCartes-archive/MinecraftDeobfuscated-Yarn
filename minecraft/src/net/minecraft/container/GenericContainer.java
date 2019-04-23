@@ -25,7 +25,7 @@ public class GenericContainer extends Container {
 	}
 
 	public static GenericContainer createGeneric9x3(int i, PlayerInventory playerInventory) {
-		return new GenericContainer(ContainerType.GENERIC_9X3, i, playerInventory, 3);
+		return new GenericContainer(ContainerType.field_17326, i, playerInventory, 3);
 	}
 
 	public static GenericContainer createGeneric9x4(int i, PlayerInventory playerInventory) {
@@ -37,15 +37,15 @@ public class GenericContainer extends Container {
 	}
 
 	public static GenericContainer createGeneric9x6(int i, PlayerInventory playerInventory) {
-		return new GenericContainer(ContainerType.GENERIC_9X6, i, playerInventory, 6);
+		return new GenericContainer(ContainerType.field_17327, i, playerInventory, 6);
 	}
 
 	public static GenericContainer createGeneric9x3(int i, PlayerInventory playerInventory, Inventory inventory) {
-		return new GenericContainer(ContainerType.GENERIC_9X3, i, playerInventory, inventory, 3);
+		return new GenericContainer(ContainerType.field_17326, i, playerInventory, inventory, 3);
 	}
 
 	public static GenericContainer createGeneric9x6(int i, PlayerInventory playerInventory, Inventory inventory) {
-		return new GenericContainer(ContainerType.GENERIC_9X6, i, playerInventory, inventory, 6);
+		return new GenericContainer(ContainerType.field_17327, i, playerInventory, inventory, 6);
 	}
 
 	public GenericContainer(ContainerType<?> containerType, int i, PlayerInventory playerInventory, Inventory inventory, int j) {

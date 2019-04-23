@@ -72,11 +72,11 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 
 	public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h) {
 		super.method_4072(enderDragonEntity, d, e, f, g, h);
-		if (enderDragonEntity.field_7024 != null) {
+		if (enderDragonEntity.connectedCrystal != null) {
 			this.bindTexture(CRYSTAL_BEAM);
-			float i = MathHelper.sin(((float)enderDragonEntity.field_7024.age + h) * 0.2F) / 2.0F + 0.5F;
+			float i = MathHelper.sin(((float)enderDragonEntity.connectedCrystal.age + h) * 0.2F) / 2.0F + 0.5F;
 			i = (i * i + i) * 0.2F;
-			method_3917(
+			renderCrystalBeam(
 				d,
 				e,
 				f,
@@ -85,14 +85,14 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 				MathHelper.lerp((double)(1.0F - h), enderDragonEntity.y, enderDragonEntity.prevY),
 				MathHelper.lerp((double)(1.0F - h), enderDragonEntity.z, enderDragonEntity.prevZ),
 				enderDragonEntity.age,
-				enderDragonEntity.field_7024.x,
-				(double)i + enderDragonEntity.field_7024.y,
-				enderDragonEntity.field_7024.z
+				enderDragonEntity.connectedCrystal.x,
+				(double)i + enderDragonEntity.connectedCrystal.y,
+				enderDragonEntity.connectedCrystal.z
 			);
 		}
 	}
 
-	public static void method_3917(double d, double e, double f, float g, double h, double i, double j, int k, double l, double m, double n) {
+	public static void renderCrystalBeam(double d, double e, double f, float g, double h, double i, double j, int k, double l, double m, double n) {
 		float o = (float)(l - h);
 		float p = (float)(m - 1.0 - i);
 		float q = (float)(n - j);

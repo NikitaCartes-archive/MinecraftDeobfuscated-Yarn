@@ -81,11 +81,11 @@ public enum CubeFace {
 
 	@Environment(EnvType.CLIENT)
 	public static final class DirectionIds {
-		public static final int SOUTH = Direction.SOUTH.getId();
-		public static final int UP = Direction.UP.getId();
-		public static final int EAST = Direction.EAST.getId();
-		public static final int NORTH = Direction.NORTH.getId();
-		public static final int DOWN = Direction.DOWN.getId();
-		public static final int WEST = Direction.WEST.getId();
+		public static final int SOUTH = Direction.field_11035.getId();
+		public static final int UP = Direction.field_11036.getId();
+		public static final int EAST = Direction.field_11034.getId();
+		public static final int NORTH = Direction.field_11043.getId();
+		public static final int DOWN = Direction.field_11033.getId();
+		public static final int WEST = Direction.field_11039.getId();
 	}
 }

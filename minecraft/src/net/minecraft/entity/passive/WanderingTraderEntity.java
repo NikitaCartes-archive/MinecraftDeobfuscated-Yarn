@@ -106,8 +106,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		if (bl) {
 			itemStack.interactWithEntity(playerEntity, this, hand);
 			return true;
-		} else if (itemStack.getItem() != Items.field_8086 && this.isAlive() && !this.hasCustomer() && !this.isChild()) {
-			if (hand == Hand.MAIN) {
+		} else if (itemStack.getItem() != Items.field_8086 && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
+			if (hand == Hand.field_5808) {
 				playerEntity.incrementStat(Stats.field_15384);
 			}
 
@@ -235,12 +235,12 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	class WanderToTargetGoal extends Goal {
-		final WanderingTraderEntity field_17759;
+		final WanderingTraderEntity trader;
 		final double proximityDistance;
 		final double speed;
 
 		WanderToTargetGoal(WanderingTraderEntity wanderingTraderEntity2, double d, double e) {
-			this.field_17759 = wanderingTraderEntity2;
+			this.trader = wanderingTraderEntity2;
 			this.proximityDistance = d;
 			this.speed = e;
 			this.setControls(EnumSet.of(Goal.Control.field_18405));
@@ -248,26 +248,24 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 		@Override
 		public void stop() {
-			this.field_17759.setWanderTarget(null);
+			this.trader.setWanderTarget(null);
 			WanderingTraderEntity.this.navigation.stop();
 		}
 
 		@Override
 		public boolean canStart() {
-			BlockPos blockPos = this.field_17759.getWanderTarget();
+			BlockPos blockPos = this.trader.getWanderTarget();
 			return blockPos != null && this.isTooFarFrom(blockPos, this.proximityDistance);
 		}
 
 		@Override
 		public void tick() {
-			BlockPos blockPos = this.field_17759.getWanderTarget();
+			BlockPos blockPos = this.trader.getWanderTarget();
 			if (blockPos != null && WanderingTraderEntity.this.navigation.isIdle()) {
 				if (this.isTooFarFrom(blockPos, 10.0)) {
-					Vec3d vec3d = new Vec3d(
-							(double)blockPos.getX() - this.field_17759.x, (double)blockPos.getY() - this.field_17759.y, (double)blockPos.getZ() - this.field_17759.z
-						)
+					Vec3d vec3d = new Vec3d((double)blockPos.getX() - this.trader.x, (double)blockPos.getY() - this.trader.y, (double)blockPos.getZ() - this.trader.z)
 						.normalize();
-					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.field_17759.x, this.field_17759.y, this.field_17759.z);
+					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.trader.x, this.trader.y, this.trader.z);
 					WanderingTraderEntity.this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 				} else {
 					WanderingTraderEntity.this.navigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.speed);
@@ -276,7 +274,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 
 		private boolean isTooFarFrom(BlockPos blockPos, double d) {
-			return !blockPos.isWithinDistance(this.field_17759.getPos(), d);
+			return !blockPos.isWithinDistance(this.trader.getPos(), d);
 		}
 	}
 }

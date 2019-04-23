@@ -25,7 +25,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<HoldingPatternPhase> getType() {
-		return PhaseType.HOLDING_PATTERN;
+		return PhaseType.field_7069;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRand().nextInt(i + 3) == 0) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);
+				this.dragon.getPhaseManager().setPhase(PhaseType.field_7071);
 				return;
 			}
 
@@ -108,8 +108,8 @@ public class HoldingPatternPhase extends AbstractPhase {
 	}
 
 	private void method_6843(PlayerEntity playerEntity) {
-		this.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-		this.dragon.getPhaseManager().create(PhaseType.STRAFE_PLAYER).method_6862(playerEntity);
+		this.dragon.getPhaseManager().setPhase(PhaseType.field_7076);
+		this.dragon.getPhaseManager().create(PhaseType.field_7076).method_6862(playerEntity);
 	}
 
 	private void method_6842() {

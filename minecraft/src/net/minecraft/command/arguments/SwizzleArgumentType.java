@@ -8,14 +8,14 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
 
 public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("xyz", "x");
 	private static final SimpleCommandExceptionType INVALID_SWIZZLE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("arguments.swizzle.invalid")
+		new TranslatableComponent("arguments.swizzle.invalid")
 	);
 
 	public static SwizzleArgumentType create() {

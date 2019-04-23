@@ -6,9 +6,9 @@ import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
 
 public class GameModeCommand {
@@ -33,15 +33,15 @@ public class GameModeCommand {
 	}
 
 	private static void setGameMode(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
-		TextComponent textComponent = new TranslatableTextComponent("gameMode." + gameMode.getName());
+		Component component = new TranslatableComponent("gameMode." + gameMode.getName());
 		if (serverCommandSource.getEntity() == serverPlayerEntity) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.self", textComponent), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamemode.success.self", component), true);
 		} else {
 			if (serverCommandSource.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-				serverPlayerEntity.sendMessage(new TranslatableTextComponent("gameMode.changed", textComponent));
+				serverPlayerEntity.sendMessage(new TranslatableComponent("gameMode.changed", component));
 			}
 
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), textComponent), true);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), component), true);
 		}
 	}
 

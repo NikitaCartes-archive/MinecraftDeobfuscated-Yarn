@@ -11,7 +11,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -50,7 +50,7 @@ public class NewLevelScreen extends Screen {
 	public CompoundTag generatorOptionsTag = new CompoundTag();
 
 	public NewLevelScreen(Screen screen) {
-		super(new TranslatableTextComponent("selectWorld.create"));
+		super(new TranslatableComponent("selectWorld.create"));
 		this.parent = screen;
 		this.seed = "";
 		this.levelName = I18n.translate("selectWorld.newWorld");

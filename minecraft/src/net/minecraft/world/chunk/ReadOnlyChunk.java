@@ -15,6 +15,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
@@ -197,7 +198,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public ChunkTickScheduler<Fluid> method_12313() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this.getPos());
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, this.getPos());
 	}
 
 	@Override

@@ -22,18 +22,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.NbtPath> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
 	public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableTextComponent("arguments.nbtpath.node.invalid")
+		new TranslatableComponent("arguments.nbtpath.node.invalid")
 	);
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("arguments.nbtpath.nothing_found", object)
+		object -> new TranslatableComponent("arguments.nbtpath.nothing_found", object)
 	);
 
 	public static NbtPathArgumentType create() {

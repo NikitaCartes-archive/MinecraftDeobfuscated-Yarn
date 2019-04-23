@@ -27,7 +27,7 @@ public class LightningEntity extends Entity {
 	private ServerPlayerEntity channeller;
 
 	public LightningEntity(World world, double d, double e, double f, boolean bl) {
-		super(EntityType.LIGHTNING_BOLT, world);
+		super(EntityType.field_6112, world);
 		this.ignoreCameraFrustum = true;
 		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
 		this.ambientTick = 2;
@@ -35,7 +35,7 @@ public class LightningEntity extends Entity {
 		this.remainingActions = this.random.nextInt(3) + 1;
 		this.cosmetic = bl;
 		Difficulty difficulty = world.getDifficulty();
-		if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
+		if (difficulty == Difficulty.field_5802 || difficulty == Difficulty.field_5807) {
 			this.spawnFire(4);
 		}
 	}

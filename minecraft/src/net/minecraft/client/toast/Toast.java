@@ -2,8 +2,8 @@ package net.minecraft.client.toast;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundManager;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;

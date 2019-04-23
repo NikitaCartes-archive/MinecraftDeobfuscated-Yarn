@@ -28,7 +28,7 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 
 	protected void method_4149(VillagerEntity villagerEntity, float f) {
 		float g = 0.9375F;
-		if (villagerEntity.isChild()) {
+		if (villagerEntity.isBaby()) {
 			g = (float)((double)g * 0.5);
 			this.field_4673 = 0.25F;
 		} else {

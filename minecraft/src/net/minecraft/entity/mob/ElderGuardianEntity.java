@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
-	public static final float field_17492 = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
+	public static final float field_17492 = EntityType.field_6086.getWidth() / EntityType.field_6118.getWidth();
 
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);

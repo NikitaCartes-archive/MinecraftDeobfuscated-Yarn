@@ -1,21 +1,21 @@
 package net.minecraft.util;
 
 import javax.annotation.Nullable;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface Nameable {
-	TextComponent getName();
+	Component getName();
 
 	default boolean hasCustomName() {
 		return this.getCustomName() != null;
 	}
 
-	default TextComponent getDisplayName() {
+	default Component getDisplayName() {
 		return this.getName();
 	}
 
 	@Nullable
-	default TextComponent getCustomName() {
+	default Component getCustomName() {
 		return null;
 	}
 }

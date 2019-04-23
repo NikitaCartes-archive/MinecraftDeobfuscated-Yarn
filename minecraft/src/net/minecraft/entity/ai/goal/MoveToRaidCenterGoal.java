@@ -14,47 +14,47 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
-	private final T owner;
+	private final T actor;
 
 	public MoveToRaidCenterGoal(T raiderEntity) {
-		this.owner = raiderEntity;
+		this.actor = raiderEntity;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.owner.getTarget() == null
-			&& !this.owner.hasPassengers()
-			&& this.owner.hasActiveRaid()
-			&& !this.owner.getRaid().isFinished()
-			&& !((ServerWorld)this.owner.world).isNearOccupiedPointOfInterest(new BlockPos(this.owner));
+		return this.actor.getTarget() == null
+			&& !this.actor.hasPassengers()
+			&& this.actor.hasActiveRaid()
+			&& !this.actor.getRaid().isFinished()
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.owner.hasActiveRaid()
-			&& !this.owner.getRaid().isFinished()
-			&& this.owner.world instanceof ServerWorld
-			&& !((ServerWorld)this.owner.world).isNearOccupiedPointOfInterest(new BlockPos(this.owner));
+		return this.actor.hasActiveRaid()
+			&& !this.actor.getRaid().isFinished()
+			&& this.actor.world instanceof ServerWorld
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
 	}
 
 	@Override
 	public void tick() {
-		if (this.owner.hasActiveRaid()) {
-			Raid raid = this.owner.getRaid();
-			if (this.owner.age % 20 == 0) {
+		if (this.actor.hasActiveRaid()) {
+			Raid raid = this.actor.getRaid();
+			if (this.actor.age % 20 == 0) {
 				this.includeFreeRaiders(raid);
 			}
 
-			if (!this.owner.isNavigating()) {
+			if (!this.actor.isNavigating()) {
 				Vec3d vec3d = new Vec3d(raid.getCenter());
-				Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
+				Vec3d vec3d2 = new Vec3d(this.actor.x, this.actor.y, this.actor.z);
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.owner.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
-				if (!this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
+				blockPos = this.actor.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+				if (!this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.moveToAlternativePosition();
 				}
 			}
@@ -64,11 +64,11 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private void includeFreeRaiders(Raid raid) {
 		if (raid.isActive()) {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
-			List<RaiderEntity> list = this.owner
+			List<RaiderEntity> list = this.actor
 				.world
 				.getEntities(
 					RaiderEntity.class,
-					this.owner.getBoundingBox().expand(16.0),
+					this.actor.getBoundingBox().expand(16.0),
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)
 				);
 			set.addAll(list);
@@ -80,10 +80,10 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	}
 
 	private void moveToAlternativePosition() {
-		Random random = this.owner.getRand();
-		BlockPos blockPos = this.owner
+		Random random = this.actor.getRand();
+		BlockPos blockPos = this.actor
 			.world
-			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.owner).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-		this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+		this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

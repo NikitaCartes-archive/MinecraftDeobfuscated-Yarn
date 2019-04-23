@@ -17,10 +17,10 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxMo
 	}
 
 	public void method_18335(FoxEntity foxEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
+		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.field_6173);
 		if (!itemStack.isEmpty()) {
 			boolean bl = foxEntity.isSleeping();
-			boolean bl2 = foxEntity.isChild();
+			boolean bl2 = foxEntity.isBaby();
 			GlStateManager.pushMatrix();
 			if (bl2) {
 				float m = 0.75F;
@@ -35,7 +35,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxMo
 			GlStateManager.rotatef(m, 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(j, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(k, 1.0F, 0.0F, 0.0F);
-			if (foxEntity.isChild()) {
+			if (foxEntity.isBaby()) {
 				if (bl) {
 					GlStateManager.translatef(0.4F, 0.26F, 0.15F);
 				} else {

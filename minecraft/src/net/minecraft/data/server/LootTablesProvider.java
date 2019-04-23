@@ -32,11 +32,11 @@ public class LootTablesProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator root;
 	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootSupplier.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(
-		Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING),
-		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
-		Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY),
-		Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK),
-		Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT)
+		Pair.of(FishingLootTableGenerator::new, LootContextTypes.field_1176),
+		Pair.of(ChestLootTableGenerator::new, LootContextTypes.field_1179),
+		Pair.of(EntityLootTableGenerator::new, LootContextTypes.field_1173),
+		Pair.of(BlockLootTableGenerator::new, LootContextTypes.field_1172),
+		Pair.of(GiftLootTableGenerator::new, LootContextTypes.field_16235)
 	);
 
 	public LootTablesProvider(DataGenerator dataGenerator) {

@@ -4,7 +4,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.math.MathHelper;
 
 public class MapIcon {
@@ -12,14 +12,14 @@ public class MapIcon {
 	private byte x;
 	private byte z;
 	private byte angle;
-	private final TextComponent text;
+	private final Component text;
 
-	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable TextComponent textComponent) {
+	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable Component component) {
 		this.type = type;
 		this.x = b;
 		this.z = c;
 		this.angle = d;
-		this.text = textComponent;
+		this.text = component;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,7 +49,7 @@ public class MapIcon {
 	}
 
 	@Nullable
-	public TextComponent getText() {
+	public Component getText() {
 		return this.text;
 	}
 

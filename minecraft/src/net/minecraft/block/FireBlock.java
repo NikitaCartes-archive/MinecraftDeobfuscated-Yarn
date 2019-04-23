@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -39,7 +39,7 @@ public class FireBlock extends Block {
 	private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectedPlantBlock.FACING_PROPERTIES
 		.entrySet()
 		.stream()
-		.filter(entry -> entry.getKey() != Direction.DOWN)
+		.filter(entry -> entry.getKey() != Direction.field_11033)
 		.collect(SystemUtil.toMap());
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
@@ -59,7 +59,7 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return VoxelShapes.empty();
 	}
 
@@ -69,7 +69,7 @@ public class FireBlock extends Block {
 	) {
 		return this.canPlaceAt(blockState, iWorld, blockPos)
 			? this.getStateForPosition(iWorld, blockPos).with(AGE, blockState.get(AGE))
-			: Blocks.AIR.getDefaultState();
+			: Blocks.field_10124.getDefaultState();
 	}
 
 	@Nullable
@@ -81,7 +81,7 @@ public class FireBlock extends Block {
 	public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = blockView.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState) && !Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) {
+		if (!this.isFlammable(blockState) && !Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11036)) {
 			BlockState blockState2 = this.getDefaultState();
 
 			for(Direction direction : Direction.values()) {
@@ -100,7 +100,7 @@ public class FireBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP)
+		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.field_11036)
 			|| this.areBlocksAroundFlammable(viewableWorld, blockPos);
 	}
 
@@ -132,7 +132,7 @@ public class FireBlock extends Block {
 					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + random.nextInt(10));
 					if (!this.areBlocksAroundFlammable(world, blockPos)) {
 						BlockPos blockPos2 = blockPos.down();
-						if (!Block.isSolidFullSquare(world.getBlockState(blockPos2), world, blockPos2, Direction.UP) || i > 3) {
+						if (!Block.isSolidFullSquare(world.getBlockState(blockPos2), world, blockPos2, Direction.field_11036) || i > 3) {
 							world.clearBlockState(blockPos, false);
 						}
 
@@ -252,7 +252,7 @@ public class FireBlock extends Block {
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (world.dimension.getType() != DimensionType.field_13072 && world.dimension.getType() != DimensionType.field_13076
-				|| !((PortalBlock)Blocks.field_10316).method_10352(world, blockPos)) {
+				|| !((PortalBlock)Blocks.field_10316).createPortalAt(world, blockPos)) {
 				if (!blockState.canPlaceAt(world, blockPos)) {
 					world.clearBlockState(blockPos, false);
 				} else {
@@ -280,7 +280,7 @@ public class FireBlock extends Block {
 
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState2) && !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
+		if (!this.isFlammable(blockState2) && !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.field_11036)) {
 			if (this.isFlammable(world.getBlockState(blockPos.west()))) {
 				for(int i = 0; i < 2; ++i) {
 					double d = (double)blockPos.getX() + random.nextDouble() * 0.1F;
@@ -337,12 +337,12 @@ public class FireBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AGE, NORTH, EAST, SOUTH, WEST, UP);
+		builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
 	}
 
 	public void registerFlammableBlock(Block block, int i, int j) {

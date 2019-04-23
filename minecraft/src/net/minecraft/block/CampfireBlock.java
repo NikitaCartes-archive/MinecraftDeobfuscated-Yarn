@@ -9,8 +9,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -54,7 +54,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				.with(LIT, Boolean.valueOf(true))
 				.with(SIGNAL_FIRE, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
-				.with(FACING, Direction.NORTH)
+				.with(FACING, Direction.field_11043)
 		);
 	}
 
@@ -124,7 +124,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction == Direction.DOWN
+		return direction == Direction.field_11033
 			? blockState.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(blockState2)))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -139,7 +139,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
@@ -150,7 +150,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.field_9174;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -256,7 +256,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(LIT, SIGNAL_FIRE, WATERLOGGED, FACING);
+		builder.add(LIT, SIGNAL_FIRE, WATERLOGGED, FACING);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -17,7 +18,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.resource.Resource;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +72,7 @@ public class EndCreditsScreen extends Screen {
 			Resource resource = null;
 
 			try {
-				String string = "" + TextFormat.field_1068 + TextFormat.field_1051 + TextFormat.field_1060 + TextFormat.field_1075;
+				String string = "" + ChatFormat.field_1068 + ChatFormat.field_1051 + ChatFormat.field_1060 + ChatFormat.field_1075;
 				int i = 274;
 				if (this.inGame) {
 					resource = this.minecraft.getResourceManager().getResource(new Identifier("texts/end.txt"));
@@ -86,7 +86,7 @@ public class EndCreditsScreen extends Screen {
 						String string4;
 						for(string2 = string2.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
 							string2.contains(string);
-							string2 = string3 + TextFormat.field_1068 + TextFormat.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4
+							string2 = string3 + ChatFormat.field_1068 + ChatFormat.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4
 						) {
 							int j = string2.indexOf(string);
 							string3 = string2.substring(0, j);

@@ -30,7 +30,7 @@ public interface StructurePieceType {
 	StructurePieceType STRONGHOLD_SMALL_CORRIDOR = register(StrongholdGenerator.SmallCorridor::new, "SHFC");
 	StructurePieceType STRONGHOLD_FIVE_WAY_CROSSING = register(StrongholdGenerator.FiveWayCrossing::new, "SH5C");
 	StructurePieceType STRONGHOLD_LEFT_TURN = register(StrongholdGenerator.LeftTurn::new, "SHLT");
-	StructurePieceType STRONGJOLD_LIBRARY = register(StrongholdGenerator.Library::new, "SHLi");
+	StructurePieceType STRONGHOLD_LIBRARY = register(StrongholdGenerator.Library::new, "SHLi");
 	StructurePieceType STRONGHOLD_PORTAL_ROOM = register(StrongholdGenerator.PortalRoom::new, "SHPR");
 	StructurePieceType STRONGHOLD_PRISON_HALL = register(StrongholdGenerator.PrisonHall::new, "SHPH");
 	StructurePieceType STRONGHOLD_RIGHT_TURN = register(StrongholdGenerator.RightTurn::new, "SHRT");

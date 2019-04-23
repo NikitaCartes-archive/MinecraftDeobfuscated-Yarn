@@ -12,9 +12,9 @@ import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -36,8 +36,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public TextComponent getPrompt() {
-		return new TranslatableTextComponent("spectatorMenu.team_teleport.prompt");
+	public Component getPrompt() {
+		return new TranslatableComponent("spectatorMenu.team_teleport.prompt");
 	}
 
 	@Override
@@ -46,8 +46,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public TextComponent getName() {
-		return new TranslatableTextComponent("spectatorMenu.team_teleport");
+	public Component getName() {
+		return new TranslatableComponent("spectatorMenu.team_teleport");
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public TextComponent getName() {
+		public Component getName() {
 			return this.team.getDisplayName();
 		}
 

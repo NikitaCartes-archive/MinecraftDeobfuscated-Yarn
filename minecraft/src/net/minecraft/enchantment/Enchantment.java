@@ -5,15 +5,15 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
@@ -94,19 +94,19 @@ public abstract class Enchantment {
 		return this.getOrCreateTranslationKey();
 	}
 
-	public TextComponent getTextComponent(int i) {
-		TextComponent textComponent = new TranslatableTextComponent(this.getTranslationKey());
+	public Component getTextComponent(int i) {
+		Component component = new TranslatableComponent(this.getTranslationKey());
 		if (this.isCursed()) {
-			textComponent.applyFormat(TextFormat.field_1061);
+			component.applyFormat(ChatFormat.field_1061);
 		} else {
-			textComponent.applyFormat(TextFormat.field_1080);
+			component.applyFormat(ChatFormat.field_1080);
 		}
 
 		if (i != 1 || this.getMaximumLevel() != 1) {
-			textComponent.append(" ").append(new TranslatableTextComponent("enchantment.level." + i));
+			component.append(" ").append(new TranslatableComponent("enchantment.level." + i));
 		}
 
-		return textComponent;
+		return component;
 	}
 
 	public boolean isAcceptableItem(ItemStack itemStack) {
@@ -128,10 +128,10 @@ public abstract class Enchantment {
 	}
 
 	public static enum Weight {
-		COMMON(30),
-		UNCOMMON(10),
-		RARE(3),
-		LEGENDARY(1);
+		field_9087(30),
+		field_9090(10),
+		field_9088(3),
+		field_9091(1);
 
 		private final int weight;
 

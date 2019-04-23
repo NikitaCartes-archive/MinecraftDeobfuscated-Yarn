@@ -33,9 +33,9 @@ public class TaigaVillageData {
 			new RuleStructureProcessor(
 				ImmutableList.of(
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState()),
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
 					new StructureProcessorRule(
 						new BlockMatchRuleTest(Blocks.field_17350),
 						AlwaysTrueRuleTest.INSTANCE,
@@ -79,7 +79,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/town_centers/taiga_meeting_point_1", immutableList), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/town_centers/taiga_meeting_point_2", immutableList), 1)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList3 = ImmutableList.of(
@@ -115,7 +115,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/streets/crossroad_06", immutableList3), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/streets/turn_01", immutableList3), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -141,7 +141,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/streets/crossroad_06", immutableList3), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/streets/turn_01", immutableList3), 3)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList4 = ImmutableList.of(
@@ -187,7 +187,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_animal_pen_1", immutableList2), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -224,7 +224,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_animal_pen_1", immutableList), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -238,7 +238,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_03", immutableList3), 1),
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_04", immutableList3), 1)
 					),
-					StructurePool.Projection.TERRAIN_MATCHING
+					StructurePool.Projection.field_16686
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -261,7 +261,7 @@ public class TaigaVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17004, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -281,7 +281,7 @@ public class TaigaVillageData {
 						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17004, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -294,7 +294,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/villagers/baby"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -306,7 +306,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.RIGID
+					StructurePool.Projection.field_16687
 				)
 			);
 	}

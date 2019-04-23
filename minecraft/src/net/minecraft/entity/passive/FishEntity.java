@@ -130,7 +130,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void updateState() {
+	public void tickMovement() {
 		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
 			this.setVelocity(
 				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
@@ -140,7 +140,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			this.playSound(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
 		}
 
-		super.updateState();
+		super.tickMovement();
 	}
 
 	@Override
@@ -220,16 +220,16 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	static class SwimToRandomPlaceGoal extends SwimAroundGoal {
-		private final FishEntity field_6732;
+		private final FishEntity fish;
 
 		public SwimToRandomPlaceGoal(FishEntity fishEntity) {
 			super(fishEntity, 1.0, 40);
-			this.field_6732 = fishEntity;
+			this.fish = fishEntity;
 		}
 
 		@Override
 		public boolean canStart() {
-			return this.field_6732.hasSelfControl() && super.canStart();
+			return this.fish.hasSelfControl() && super.canStart();
 		}
 	}
 }

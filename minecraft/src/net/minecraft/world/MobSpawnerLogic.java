@@ -187,7 +187,7 @@ public abstract class MobSpawnerLogic {
 			this.setSpawnEntry(WeightedPicker.getRandom(this.getWorld().random, this.spawnPotentials));
 		}
 
-		this.method_8273(1);
+		this.sendStatus(1);
 	}
 
 	public void deserialize(CompoundTag compoundTag) {
@@ -280,7 +280,7 @@ public abstract class MobSpawnerLogic {
 		this.spawnEntry = mobSpawnerEntry;
 	}
 
-	public abstract void method_8273(int i);
+	public abstract void sendStatus(int i);
 
 	public abstract World getWorld();
 

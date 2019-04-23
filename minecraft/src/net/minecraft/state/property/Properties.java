@@ -58,10 +58,12 @@ public class Properties {
 	public static final BooleanProperty SOUTH_BOOL = BooleanProperty.create("south");
 	public static final BooleanProperty WEST_BOOL = BooleanProperty.create("west");
 	public static final DirectionProperty FACING = DirectionProperty.create(
-		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
+		"facing", Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039, Direction.field_11036, Direction.field_11033
 	);
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.create("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
-	public static final DirectionProperty FACING_HORIZONTAL = DirectionProperty.create("facing", Direction.Type.HORIZONTAL);
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.create(
+		"facing", (Predicate<Direction>)(direction -> direction != Direction.field_11036)
+	);
+	public static final DirectionProperty FACING_HORIZONTAL = DirectionProperty.create("facing", Direction.Type.field_11062);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.create("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.create("attachment", Attachment.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = EnumProperty.create("east", WireConnection.class);

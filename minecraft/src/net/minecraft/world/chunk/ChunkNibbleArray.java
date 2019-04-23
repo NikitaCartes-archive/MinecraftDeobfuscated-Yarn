@@ -16,6 +16,10 @@ public class ChunkNibbleArray {
 		}
 	}
 
+	protected ChunkNibbleArray(int i) {
+		this.byteArray = new byte[i];
+	}
+
 	public int get(int i, int j, int k) {
 		return this.get(this.getIndex(i, j, k));
 	}

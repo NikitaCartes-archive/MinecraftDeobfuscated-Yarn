@@ -3,8 +3,8 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.arguments.MessageArgumentType;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class SayCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -15,11 +15,11 @@ public class SayCommand {
 					CommandManager.argument("message", MessageArgumentType.create())
 						.executes(
 							commandContext -> {
-								TextComponent textComponent = MessageArgumentType.getMessage(commandContext, "message");
+								Component component = MessageArgumentType.getMessage(commandContext, "message");
 								commandContext.getSource()
 									.getMinecraftServer()
 									.getPlayerManager()
-									.sendToAll(new TranslatableTextComponent("chat.type.announcement", commandContext.getSource().getDisplayName(), textComponent));
+									.sendToAll(new TranslatableComponent("chat.type.announcement", commandContext.getSource().getDisplayName(), component));
 								return 1;
 							}
 						)

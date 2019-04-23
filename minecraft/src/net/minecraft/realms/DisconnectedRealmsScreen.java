@@ -3,20 +3,20 @@ package net.minecraft.realms;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedRealmsScreen extends RealmsScreen {
 	private final String title;
-	private final TextComponent reason;
+	private final Component reason;
 	private List<String> lines;
 	private final RealmsScreen parent;
 	private int textHeight;
 
-	public DisconnectedRealmsScreen(RealmsScreen realmsScreen, String string, TextComponent textComponent) {
+	public DisconnectedRealmsScreen(RealmsScreen realmsScreen, String string, Component component) {
 		this.parent = realmsScreen;
 		this.title = getLocalizedString(string);
-		this.reason = textComponent;
+		this.reason = component;
 	}
 
 	@Override

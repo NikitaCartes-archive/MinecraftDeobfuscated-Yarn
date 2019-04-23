@@ -38,8 +38,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private String metadata = "";
 	private BlockPos offset = new BlockPos(0, 1, 0);
 	private BlockPos size = BlockPos.ORIGIN;
-	private BlockMirror mirror = BlockMirror.NONE;
-	private BlockRotation rotation = BlockRotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.field_11302;
+	private BlockRotation rotation = BlockRotation.field_11467;
 	private StructureBlockMode mode = StructureBlockMode.field_12696;
 	private boolean ignoreEntities = true;
 	private boolean powered;
@@ -49,7 +49,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private long seed;
 
 	public StructureBlockBlockEntity() {
-		super(BlockEntityType.STRUCTURE_BLOCK);
+		super(BlockEntityType.field_11895);
 	}
 
 	@Override
@@ -94,13 +94,13 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		try {
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
 		} catch (IllegalArgumentException var11) {
-			this.rotation = BlockRotation.ROT_0;
+			this.rotation = BlockRotation.field_11467;
 		}
 
 		try {
 			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
 		} catch (IllegalArgumentException var10) {
-			this.mirror = BlockMirror.NONE;
+			this.mirror = BlockMirror.field_11302;
 		}
 
 		try {

@@ -2,23 +2,23 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.options.DoubleGameOption;
-import net.minecraft.client.options.GameOption;
+import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 
 @Environment(EnvType.CLIENT)
 public class GameOptionSliderWidget extends SliderWidget {
-	private final DoubleGameOption option;
+	private final DoubleOption option;
 
-	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleGameOption doubleGameOption) {
-		super(gameOptions, i, j, k, l, (double)((float)doubleGameOption.method_18611(doubleGameOption.get(gameOptions))));
-		this.option = doubleGameOption;
+	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleOption doubleOption) {
+		super(gameOptions, i, j, k, l, (double)((float)doubleOption.method_18611(doubleOption.get(gameOptions))));
+		this.option = doubleOption;
 		this.updateMessage();
 	}
 
 	@Override
 	public void renderButton(int i, int j, float f) {
-		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
+		if (this.option == Option.FULLSCREEN_RESOLUTION) {
 			this.updateMessage();
 		}
 

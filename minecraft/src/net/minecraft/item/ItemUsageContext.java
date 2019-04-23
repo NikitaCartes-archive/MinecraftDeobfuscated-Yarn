@@ -62,7 +62,7 @@ public class ItemUsageContext {
 	}
 
 	public Direction getPlayerHorizontalFacing() {
-		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
+		return this.player == null ? Direction.field_11043 : this.player.getHorizontalFacing();
 	}
 
 	public boolean isPlayerSneaking() {

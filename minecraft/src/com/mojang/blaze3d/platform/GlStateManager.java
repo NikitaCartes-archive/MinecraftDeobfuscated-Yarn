@@ -462,10 +462,10 @@ public class GlStateManager {
 	}
 
 	public static void viewport(int i, int j, int k, int l) {
-		GlStateManager.Viewport.INSTANCE.x = i;
-		GlStateManager.Viewport.INSTANCE.y = j;
-		GlStateManager.Viewport.INSTANCE.width = k;
-		GlStateManager.Viewport.INSTANCE.height = l;
+		GlStateManager.Viewport.field_5169.x = i;
+		GlStateManager.Viewport.field_5169.y = j;
+		GlStateManager.Viewport.field_5169.width = k;
+		GlStateManager.Viewport.field_5169.height = l;
 		GL11.glViewport(i, j, k, l);
 	}
 
@@ -1207,7 +1207,7 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Viewport {
-		INSTANCE;
+		field_5169;
 
 		protected int x;
 		protected int y;

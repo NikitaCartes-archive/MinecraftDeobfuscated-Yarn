@@ -36,10 +36,10 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.field_18447).get();
-			return livingEntity.getType() == EntityType.PLAYER
+			return livingEntity.getType() == EntityType.field_6097
 				&& villagerEntity.isAlive()
 				&& livingEntity.isAlive()
-				&& !villagerEntity.isChild()
+				&& !villagerEntity.isBaby()
 				&& villagerEntity.squaredDistanceTo(livingEntity) <= 17.0;
 		}
 	}
@@ -64,7 +64,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		if (!this.offers.isEmpty()) {
 			this.method_19026(villagerEntity);
 		} else {
-			villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+			villagerEntity.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 			this.field_18396 = Math.min(this.field_18396, 40);
 		}
 
@@ -74,7 +74,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	public void method_19605(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.finishRunning(serverWorld, villagerEntity, l);
 		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
-		villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+		villagerEntity.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 		this.field_18392 = null;
 	}
 
@@ -102,7 +102,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void method_19598(VillagerEntity villagerEntity) {
-		villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, (ItemStack)this.offers.get(0));
+		villagerEntity.setEquippedStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(0));
 	}
 
 	private void method_19601(VillagerEntity villagerEntity) {
@@ -133,7 +133,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 				this.field_18395 = 0;
 			}
 
-			villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, (ItemStack)this.offers.get(this.field_18395));
+			villagerEntity.setEquippedStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(this.field_18395));
 		}
 	}
 }

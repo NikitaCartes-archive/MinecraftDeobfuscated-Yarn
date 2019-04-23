@@ -178,8 +178,8 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
-		zombiePigmanEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.field_6050.create(this.world);
+		zombiePigmanEntity.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
 		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
@@ -251,7 +251,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	public PigEntity method_6574(PassiveEntity passiveEntity) {
-		return EntityType.PIG.create(this.world);
+		return EntityType.field_6093.create(this.world);
 	}
 
 	@Override

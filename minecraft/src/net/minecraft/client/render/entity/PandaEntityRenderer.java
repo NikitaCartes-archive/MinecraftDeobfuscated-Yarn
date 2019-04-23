@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	private static final Map<PandaEntity.Gene, Identifier> field_17595 = SystemUtil.consume(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+	private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = SystemUtil.consume(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
 		enumMap.put(PandaEntity.Gene.field_6788, new Identifier("textures/entity/panda/panda.png"));
 		enumMap.put(PandaEntity.Gene.field_6794, new Identifier("textures/entity/panda/lazy_panda.png"));
 		enumMap.put(PandaEntity.Gene.field_6795, new Identifier("textures/entity/panda/worried_panda.png"));
@@ -33,7 +33,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 	@Nullable
 	protected Identifier method_4083(PandaEntity pandaEntity) {
-		return (Identifier)field_17595.getOrDefault(pandaEntity.getProductGene(), field_17595.get(PandaEntity.Gene.field_6788));
+		return (Identifier)SKIN_MAP.getOrDefault(pandaEntity.getProductGene(), SKIN_MAP.get(PandaEntity.Gene.field_6788));
 	}
 
 	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
@@ -42,7 +42,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			int i = pandaEntity.playingTicks;
 			int j = i + 1;
 			float k = 7.0F;
-			float l = pandaEntity.isChild() ? 0.3F : 0.8F;
+			float l = pandaEntity.isBaby() ? 0.3F : 0.8F;
 			if (i < 8) {
 				float m = (float)(90 * i) / 7.0F;
 				float n = (float)(90 * j) / 7.0F;
@@ -83,7 +83,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			if (pandaEntity.method_6524()) {
 				float r = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * 0.05F);
 				GlStateManager.rotatef(r, 0.0F, 1.0F, 0.0F);
-				if (pandaEntity.isChild()) {
+				if (pandaEntity.isBaby()) {
 					GlStateManager.translatef(0.0F, 0.8F, 0.55F);
 				}
 			}
@@ -91,7 +91,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 		float r = pandaEntity.getLieOnBackAnimationProgress(h);
 		if (r > 0.0F) {
-			float k = pandaEntity.isChild() ? 0.5F : 1.3F;
+			float k = pandaEntity.isBaby() ? 0.5F : 1.3F;
 			GlStateManager.translatef(0.0F, k * r, 0.0F);
 			GlStateManager.rotatef(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0F), 1.0F, 0.0F, 0.0F);
 		}

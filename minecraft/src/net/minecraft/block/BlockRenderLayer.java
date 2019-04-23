@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
 public enum BlockRenderLayer {
-	SOLID("Solid"),
-	MIPPED_CUTOUT("Mipped Cutout"),
-	CUTOUT("Cutout"),
-	TRANSLUCENT("Translucent");
+	field_9178("Solid"),
+	CUTOUT_MIPPED("Mipped Cutout"),
+	field_9174("Cutout"),
+	field_9179("Translucent");
 
 	private final String name;
 

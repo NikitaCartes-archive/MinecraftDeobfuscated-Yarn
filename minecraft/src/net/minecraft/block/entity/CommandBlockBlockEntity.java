@@ -71,7 +71,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	};
 
 	public CommandBlockBlockEntity() {
-		super(BlockEntityType.COMMAND_BLOCK);
+		super(BlockEntityType.field_11904);
 	}
 
 	@Override

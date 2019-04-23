@@ -63,7 +63,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			this.children.add(mineshaftRoom);
 			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.random);
 			this.setBoundingBoxFromChildren();
-			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
+			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.field_13691) {
 				int k = -5;
 				int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
 				this.boundingBox.translate(0, l, 0);
@@ -78,8 +78,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	public static enum Type {
-		NORMAL("normal"),
-		MESA("mesa");
+		field_13692("normal"),
+		field_13691("mesa");
 
 		private static final Map<String, MineshaftFeature.Type> nameMap = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
 			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
@@ -98,7 +98,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		}
 
 		public static MineshaftFeature.Type byIndex(int i) {
-			return i >= 0 && i < values().length ? values()[i] : NORMAL;
+			return i >= 0 && i < values().length ? values()[i] : field_13692;
 		}
 	}
 }

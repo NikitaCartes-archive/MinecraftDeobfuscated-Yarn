@@ -14,9 +14,17 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.dedicated.command.BanCommand;
 import net.minecraft.server.dedicated.command.BanIpCommand;
 import net.minecraft.server.dedicated.command.BanListCommand;
@@ -31,14 +39,6 @@ import net.minecraft.server.dedicated.command.SetIdleTimeoutCommand;
 import net.minecraft.server.dedicated.command.StopCommand;
 import net.minecraft.server.dedicated.command.WhitelistCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.text.event.ClickEvent;
-import net.minecraft.text.event.HoverEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -141,33 +141,32 @@ public class CommandManager {
 				serverCommandSource.sendError(var13.getMessageComponent());
 				return 0;
 			} catch (CommandSyntaxException var14) {
-				serverCommandSource.sendError(TextFormatter.message(var14.getRawMessage()));
+				serverCommandSource.sendError(Components.message(var14.getRawMessage()));
 				if (var14.getInput() != null && var14.getCursor() >= 0) {
 					i = Math.min(var14.getInput().length(), var14.getCursor());
-					TextComponent textComponent = new StringTextComponent("")
-						.applyFormat(TextFormat.field_1080)
-						.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string)));
+					Component component = new TextComponent("")
+						.applyFormat(ChatFormat.field_1080)
+						.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, string)));
 					if (i > 10) {
-						textComponent.append("...");
+						component.append("...");
 					}
 
-					textComponent.append(var14.getInput().substring(Math.max(0, i - 10), i));
+					component.append(var14.getInput().substring(Math.max(0, i - 10), i));
 					if (i < var14.getInput().length()) {
-						TextComponent textComponent2 = new StringTextComponent(var14.getInput().substring(i))
-							.applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1073});
-						textComponent.append(textComponent2);
+						Component component2 = new TextComponent(var14.getInput().substring(i)).applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1073});
+						component.append(component2);
 					}
 
-					textComponent.append(new TranslatableTextComponent("command.context.here").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1056}));
-					serverCommandSource.sendError(textComponent);
+					component.append(new TranslatableComponent("command.context.here").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1056}));
+					serverCommandSource.sendError(component);
 				}
 			} catch (Exception var15) {
-				TextComponent textComponent3 = new StringTextComponent(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
+				Component component3 = new TextComponent(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 				if (LOGGER.isDebugEnabled()) {
 					StackTraceElement[] stackTraceElements = var15.getStackTrace();
 
 					for(int j = 0; j < Math.min(stackTraceElements.length, 3); ++j) {
-						textComponent3.append("\n\n")
+						component3.append("\n\n")
 							.append(stackTraceElements[j].getMethodName())
 							.append("\n ")
 							.append(stackTraceElements[j].getFileName())
@@ -177,7 +176,7 @@ public class CommandManager {
 				}
 
 				serverCommandSource.sendError(
-					new TranslatableTextComponent("command.failed").modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent3)))
+					new TranslatableComponent("command.failed").modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, component3)))
 				);
 				return 0;
 			}

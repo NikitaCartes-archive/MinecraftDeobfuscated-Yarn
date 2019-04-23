@@ -17,7 +17,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -36,10 +35,10 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -47,7 +46,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
-	private static final Predicate<Difficulty> field_19014 = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
+	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.field_5802
+			|| difficulty == Difficulty.field_5807;
 	private boolean isJohnny;
 
 	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
@@ -58,15 +58,15 @@ public class VindicatorEntity extends IllagerEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new VindicatorEntity.VindicatorBreakDoorGoal(this));
-		this.goalSelector.add(2, new IllagerEntity.class_4258(this));
+		this.goalSelector.add(1, new VindicatorEntity.BreakDoorGoal(this));
+		this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
 		this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
-		this.goalSelector.add(4, new VindicatorEntity.class_4293(this));
+		this.goalSelector.add(4, new VindicatorEntity.AttackGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(4, new VindicatorEntity.class_1633(this));
+		this.targetSelector.add(4, new VindicatorEntity.FollowEntityGoal(this));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
@@ -140,7 +140,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		if (this.getRaid() == null) {
-			this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8475));
+			this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8475));
 		}
 	}
 
@@ -156,9 +156,9 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void setCustomName(@Nullable TextComponent textComponent) {
-		super.setCustomName(textComponent);
-		if (!this.isJohnny && textComponent != null && textComponent.getString().equals("Johnny")) {
+	public void setCustomName(@Nullable Component component) {
+		super.setCustomName(component);
+		if (!this.isJohnny && component != null && component.getString().equals("Johnny")) {
 			this.isJohnny = true;
 		}
 	}
@@ -183,7 +183,7 @@ public class VindicatorEntity extends IllagerEntity {
 		ItemStack itemStack = new ItemStack(Items.field_8475);
 		Raid raid = this.getRaid();
 		int j = 1;
-		if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
+		if (i > raid.getMaxWaves(Difficulty.field_5802)) {
 			j = 2;
 		}
 
@@ -194,64 +194,64 @@ public class VindicatorEntity extends IllagerEntity {
 			EnchantmentHelper.set(map, itemStack);
 		}
 
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
+		this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
 	}
 
-	static class VindicatorBreakDoorGoal extends BreakDoorGoal {
-		public VindicatorBreakDoorGoal(MobEntity mobEntity) {
-			super(mobEntity, 6, VindicatorEntity.field_19014);
+	class AttackGoal extends MeleeAttackGoal {
+		public AttackGoal(VindicatorEntity vindicatorEntity2) {
+			super(vindicatorEntity2, 1.0, false);
+		}
+
+		@Override
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+			if (this.mob.getVehicle() instanceof RavagerEntity) {
+				float f = this.mob.getVehicle().getWidth() - 0.1F;
+				return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
+			} else {
+				return super.getSquaredMaxAttackDistance(livingEntity);
+			}
+		}
+	}
+
+	static class BreakDoorGoal extends net.minecraft.entity.ai.goal.BreakDoorGoal {
+		public BreakDoorGoal(MobEntity mobEntity) {
+			super(mobEntity, 6, VindicatorEntity.DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE);
 			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.owner;
+			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.mob;
 			return vindicatorEntity.hasActiveRaid() && super.shouldContinue();
 		}
 
 		@Override
 		public boolean canStart() {
-			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.owner;
+			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.mob;
 			return vindicatorEntity.hasActiveRaid() && vindicatorEntity.random.nextInt(10) == 0 && super.canStart();
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.owner.setDespawnCounter(0);
+			this.mob.setDespawnCounter(0);
 		}
 	}
 
-	static class class_1633 extends FollowTargetGoal<LivingEntity> {
-		public class_1633(VindicatorEntity vindicatorEntity) {
+	static class FollowEntityGoal extends FollowTargetGoal<LivingEntity> {
+		public FollowEntityGoal(VindicatorEntity vindicatorEntity) {
 			super(vindicatorEntity, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
 		}
 
 		@Override
 		public boolean canStart() {
-			return ((VindicatorEntity)this.entity).isJohnny && super.canStart();
+			return ((VindicatorEntity)this.mob).isJohnny && super.canStart();
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.entity.setDespawnCounter(0);
-		}
-	}
-
-	class class_4293 extends MeleeAttackGoal {
-		public class_4293(VindicatorEntity vindicatorEntity2) {
-			super(vindicatorEntity2, 1.0, false);
-		}
-
-		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
-			if (this.entity.getVehicle() instanceof RavagerEntity) {
-				float f = this.entity.getVehicle().getWidth() - 0.1F;
-				return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
-			} else {
-				return super.getSquaredMaxAttackDistance(livingEntity);
-			}
+			this.mob.setDespawnCounter(0);
 		}
 	}
 }

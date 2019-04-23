@@ -69,9 +69,9 @@ public final class ProjectileUtil {
 			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);
 		} else {
 			Vec3d vec3d3 = vec3d2.add(vec3d);
-			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
+			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.field_1348, entity));
 			if (bl) {
-				if (hitResult.getType() != HitResult.Type.NONE) {
+				if (hitResult.getType() != HitResult.Type.field_1333) {
 					vec3d3 = hitResult.getPos();
 				}
 
@@ -177,7 +177,7 @@ public final class ProjectileUtil {
 	}
 
 	public static Hand getHandPossiblyHolding(LivingEntity livingEntity, Item item) {
-		return livingEntity.getMainHandStack().getItem() == item ? Hand.MAIN : Hand.OFF;
+		return livingEntity.getMainHandStack().getItem() == item ? Hand.field_5808 : Hand.field_5810;
 	}
 
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {

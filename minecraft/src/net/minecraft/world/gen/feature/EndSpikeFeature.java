@@ -68,7 +68,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			if (blockPos.isWithinDistance(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {
 				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(iWorld, blockPos, Blocks.AIR.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());
 			}
 		}
 
@@ -100,7 +100,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
+		EnderCrystalEntity enderCrystalEntity = EntityType.field_6110.create(iWorld.getWorld());
 		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
