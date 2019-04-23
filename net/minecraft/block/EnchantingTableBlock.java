@@ -1,0 +1,117 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.EnchantingTableBlockEntity;
+import net.minecraft.client.network.ClientDummyContainerProvider;
+import net.minecraft.container.BlockContext;
+import net.minecraft.container.EnchantingTableContainer;
+import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Nameable;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+public class EnchantingTableBlock
+extends BlockWithEntity {
+    protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
+
+    protected EnchantingTableBlock(Block.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public boolean hasSidedTransparency(BlockState blockState) {
+        return true;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return SHAPE;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+        super.randomDisplayTick(blockState, world, blockPos, random);
+        for (int i = -2; i <= 2; ++i) {
+            block1: for (int j = -2; j <= 2; ++j) {
+                if (i > -2 && i < 2 && j == -1) {
+                    j = 2;
+                }
+                if (random.nextInt(16) != 0) continue;
+                for (int k = 0; k <= 1; ++k) {
+                    BlockPos blockPos2 = blockPos.add(i, k, j);
+                    if (world.getBlockState(blockPos2).getBlock() != Blocks.BOOKSHELF) continue;
+                    if (!world.isAir(blockPos.add(i / 2, 0, j / 2))) continue block1;
+                    world.addParticle(ParticleTypes.ENCHANT, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 2.0, (double)blockPos.getZ() + 0.5, (double)((float)i + random.nextFloat()) - 0.5, (float)k - random.nextFloat() - 1.0f, (double)((float)j + random.nextFloat()) - 0.5);
+                }
+            }
+        }
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState blockState) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockView blockView) {
+        return new EnchantingTableBlockEntity();
+    }
+
+    @Override
+    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        if (world.isClient) {
+            return true;
+        }
+        playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+        return true;
+    }
+
+    @Override
+    @Nullable
+    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        if (blockEntity instanceof EnchantingTableBlockEntity) {
+            Component component = ((Nameable)((Object)blockEntity)).getDisplayName();
+            return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), component);
+        }
+        return null;
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+        BlockEntity blockEntity;
+        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof EnchantingTableBlockEntity) {
+            ((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        }
+    }
+
+    @Override
+    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+        return false;
+    }
+}
+

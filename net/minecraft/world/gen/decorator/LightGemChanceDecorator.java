@@ -1,0 +1,30 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.world.gen.decorator;
+
+import com.mojang.datafixers.Dynamic;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.decorator.CountDecoratorConfig;
+import net.minecraft.world.gen.decorator.SimpleDecorator;
+
+public class LightGemChanceDecorator
+extends SimpleDecorator<CountDecoratorConfig> {
+    public LightGemChanceDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
+        super(function);
+    }
+
+    public Stream<BlockPos> method_15953(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
+        return IntStream.range(0, random.nextInt(random.nextInt(countDecoratorConfig.count) + 1)).mapToObj(i -> {
+            int j = random.nextInt(16);
+            int k = random.nextInt(120) + 4;
+            int l = random.nextInt(16);
+            return blockPos.add(j, k, l);
+        });
+    }
+}
+

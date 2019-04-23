@@ -1,0 +1,72 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import net.minecraft.block.AbstractPressurePlateBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
+
+public class WeightedPressurePlateBlock
+extends AbstractPressurePlateBlock {
+    public static final IntegerProperty POWER = Properties.POWER;
+    private final int weight;
+
+    protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
+        super(settings);
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWER, 0));
+        this.weight = i;
+    }
+
+    @Override
+    protected int getRedstoneOutput(World world, BlockPos blockPos) {
+        int i = Math.min(world.getEntities(Entity.class, BOX.offset(blockPos)).size(), this.weight);
+        if (i > 0) {
+            float f = (float)Math.min(this.weight, i) / (float)this.weight;
+            return MathHelper.ceil(f * 15.0f);
+        }
+        return 0;
+    }
+
+    @Override
+    protected void playPressSound(IWorld iWorld, BlockPos blockPos) {
+        iWorld.playSound(null, blockPos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.90000004f);
+    }
+
+    @Override
+    protected void playDepressSound(IWorld iWorld, BlockPos blockPos) {
+        iWorld.playSound(null, blockPos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.75f);
+    }
+
+    @Override
+    protected int getRedstoneOutput(BlockState blockState) {
+        return blockState.get(POWER);
+    }
+
+    @Override
+    protected BlockState setRedstoneOutput(BlockState blockState, int i) {
+        return (BlockState)blockState.with(POWER, i);
+    }
+
+    @Override
+    public int getTickRate(ViewableWorld viewableWorld) {
+        return 10;
+    }
+
+    @Override
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(POWER);
+    }
+}
+

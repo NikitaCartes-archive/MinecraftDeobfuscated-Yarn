@@ -1,0 +1,220 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import java.util.Random;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.TaskPriority;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
+
+public abstract class AbstractRedstoneGateBlock
+extends HorizontalFacingBlock {
+    protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+    public static final BooleanProperty POWERED = Properties.POWERED;
+
+    protected AbstractRedstoneGateBlock(Block.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return AbstractRedstoneGateBlock.isSolidMediumSquare(viewableWorld, blockPos.down());
+    }
+
+    @Override
+    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+        if (this.isLocked(world, blockPos, blockState)) {
+            return;
+        }
+        boolean bl = blockState.get(POWERED);
+        boolean bl2 = this.hasPower(world, blockPos, blockState);
+        if (bl && !bl2) {
+            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
+        } else if (!bl) {
+            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
+            if (!bl2) {
+                world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
+            }
+        }
+    }
+
+    @Override
+    public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        return blockState.getWeakRedstonePower(blockView, blockPos, direction);
+    }
+
+    @Override
+    public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        if (!blockState.get(POWERED).booleanValue()) {
+            return 0;
+        }
+        if (blockState.get(FACING) == direction) {
+            return this.getOutputLevel(blockView, blockPos, blockState);
+        }
+        return 0;
+    }
+
+    @Override
+    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+        if (blockState.canPlaceAt(world, blockPos)) {
+            this.updatePowered(world, blockPos, blockState);
+            return;
+        }
+        BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(blockPos) : null;
+        AbstractRedstoneGateBlock.dropStacks(blockState, world, blockPos, blockEntity);
+        world.clearBlockState(blockPos, false);
+        for (Direction direction : Direction.values()) {
+            world.updateNeighborsAlways(blockPos.offset(direction), this);
+        }
+    }
+
+    protected void updatePowered(World world, BlockPos blockPos, BlockState blockState) {
+        boolean bl2;
+        if (this.isLocked(world, blockPos, blockState)) {
+            return;
+        }
+        boolean bl = blockState.get(POWERED);
+        if (bl != (bl2 = this.hasPower(world, blockPos, blockState)) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
+            TaskPriority taskPriority = TaskPriority.HIGH;
+            if (this.isTargetNotAligned(world, blockPos, blockState)) {
+                taskPriority = TaskPriority.EXTREMELY_HIGH;
+            } else if (bl) {
+                taskPriority = TaskPriority.VERY_HIGH;
+            }
+            world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), taskPriority);
+        }
+    }
+
+    public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+        return false;
+    }
+
+    protected boolean hasPower(World world, BlockPos blockPos, BlockState blockState) {
+        return this.getPower(world, blockPos, blockState) > 0;
+    }
+
+    protected int getPower(World world, BlockPos blockPos, BlockState blockState) {
+        Direction direction = blockState.get(FACING);
+        BlockPos blockPos2 = blockPos.offset(direction);
+        int i = world.getEmittedRedstonePower(blockPos2, direction);
+        if (i >= 15) {
+            return i;
+        }
+        BlockState blockState2 = world.getBlockState(blockPos2);
+        return Math.max(i, blockState2.getBlock() == Blocks.REDSTONE_WIRE ? blockState2.get(RedstoneWireBlock.POWER) : 0);
+    }
+
+    protected int getMaxInputLevelSides(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+        Direction direction = blockState.get(FACING);
+        Direction direction2 = direction.rotateYClockwise();
+        Direction direction3 = direction.rotateYCounterclockwise();
+        return Math.max(this.getInputLevel(viewableWorld, blockPos.offset(direction2), direction2), this.getInputLevel(viewableWorld, blockPos.offset(direction3), direction3));
+    }
+
+    protected int getInputLevel(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+        BlockState blockState = viewableWorld.getBlockState(blockPos);
+        Block block = blockState.getBlock();
+        if (this.isValidInput(blockState)) {
+            if (block == Blocks.REDSTONE_BLOCK) {
+                return 15;
+            }
+            if (block == Blocks.REDSTONE_WIRE) {
+                return blockState.get(RedstoneWireBlock.POWER);
+            }
+            return viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean emitsRedstonePower(BlockState blockState) {
+        return true;
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+        if (this.hasPower(world, blockPos, blockState)) {
+            world.getBlockTickScheduler().schedule(blockPos, this, 1);
+        }
+    }
+
+    @Override
+    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+        this.updateTarget(world, blockPos, blockState);
+    }
+
+    @Override
+    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+        if (bl || blockState.getBlock() == blockState2.getBlock()) {
+            return;
+        }
+        super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+        this.updateTarget(world, blockPos, blockState);
+    }
+
+    protected void updateTarget(World world, BlockPos blockPos, BlockState blockState) {
+        Direction direction = blockState.get(FACING);
+        BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
+        world.updateNeighbor(blockPos2, this, blockPos);
+        world.updateNeighborsExcept(blockPos2, this, direction);
+    }
+
+    protected boolean isValidInput(BlockState blockState) {
+        return blockState.emitsRedstonePower();
+    }
+
+    protected int getOutputLevel(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        return 15;
+    }
+
+    public static boolean isRedstoneGate(BlockState blockState) {
+        return blockState.getBlock() instanceof AbstractRedstoneGateBlock;
+    }
+
+    public boolean isTargetNotAligned(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        Direction direction = blockState.get(FACING).getOpposite();
+        BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction));
+        return AbstractRedstoneGateBlock.isRedstoneGate(blockState2) && blockState2.get(FACING) != direction;
+    }
+
+    protected abstract int getUpdateDelayInternal(BlockState var1);
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Override
+    public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+        return true;
+    }
+}
+

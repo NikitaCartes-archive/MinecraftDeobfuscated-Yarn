@@ -1,0 +1,59 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.item;
+
+import java.util.List;
+import net.minecraft.block.Block;
+import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BoundingBox;
+import net.minecraft.world.World;
+
+public class LeadItem
+extends Item {
+    public LeadItem(Item.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+        BlockPos blockPos;
+        World world = itemUsageContext.getWorld();
+        Block block = world.getBlockState(blockPos = itemUsageContext.getBlockPos()).getBlock();
+        if (block.matches(BlockTags.FENCES)) {
+            PlayerEntity playerEntity = itemUsageContext.getPlayer();
+            if (!world.isClient && playerEntity != null) {
+                LeadItem.attachNearbyEntities(playerEntity, world, blockPos);
+            }
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
+    }
+
+    public static boolean attachNearbyEntities(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+        LeadKnotEntity leadKnotEntity = null;
+        boolean bl = false;
+        double d = 7.0;
+        int i = blockPos.getX();
+        int j = blockPos.getY();
+        int k = blockPos.getZ();
+        List<MobEntity> list = world.getEntities(MobEntity.class, new BoundingBox((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0));
+        for (MobEntity mobEntity : list) {
+            if (mobEntity.getHoldingEntity() != playerEntity) continue;
+            if (leadKnotEntity == null) {
+                leadKnotEntity = LeadKnotEntity.getOrCreate(world, blockPos);
+            }
+            mobEntity.attachLeash(leadKnotEntity, true);
+            bl = true;
+        }
+        return bl;
+    }
+}
+

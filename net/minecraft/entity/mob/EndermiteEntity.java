@@ -1,0 +1,168 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.mob;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+
+public class EndermiteEntity
+extends HostileEntity {
+    private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
+    private int lifeTime;
+    private boolean playerSpawned;
+
+    public EndermiteEntity(EntityType<? extends EndermiteEntity> entityType, World world) {
+        super((EntityType<? extends HostileEntity>)entityType, world);
+        this.experiencePoints = 3;
+    }
+
+    @Override
+    protected void initGoals() {
+        this.goalSelector.add(1, new SwimGoal(this));
+        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
+        this.goalSelector.add(3, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        this.goalSelector.add(8, new LookAroundGoal(this));
+        this.targetSelector.add(1, new RevengeGoal(this, new Class[0]).setGroupRevenge(new Class[0]));
+        this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
+    }
+
+    @Override
+    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+        return 0.1f;
+    }
+
+    @Override
+    protected void initAttributes() {
+        super.initAttributes();
+        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
+        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+        this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+    }
+
+    @Override
+    protected boolean canClimb() {
+        return false;
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.ENTITY_ENDERMITE_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENTITY_ENDERMITE_DEATH;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+        this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15f, 1.0f);
+    }
+
+    @Override
+    public void readCustomDataFromTag(CompoundTag compoundTag) {
+        super.readCustomDataFromTag(compoundTag);
+        this.lifeTime = compoundTag.getInt("Lifetime");
+        this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
+    }
+
+    @Override
+    public void writeCustomDataToTag(CompoundTag compoundTag) {
+        super.writeCustomDataToTag(compoundTag);
+        compoundTag.putInt("Lifetime", this.lifeTime);
+        compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
+    }
+
+    @Override
+    public void tick() {
+        this.field_6283 = this.yaw;
+        super.tick();
+    }
+
+    @Override
+    public void setYaw(float f) {
+        this.yaw = f;
+        super.setYaw(f);
+    }
+
+    @Override
+    public double getHeightOffset() {
+        return 0.1;
+    }
+
+    public boolean isPlayerSpawned() {
+        return this.playerSpawned;
+    }
+
+    public void setPlayerSpawned(boolean bl) {
+        this.playerSpawned = bl;
+    }
+
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
+        if (this.world.isClient) {
+            for (int i = 0; i < 2; ++i) {
+                this.world.addParticle(ParticleTypes.PORTAL, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.y + this.random.nextDouble() * (double)this.getHeight(), this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), (this.random.nextDouble() - 0.5) * 2.0, -this.random.nextDouble(), (this.random.nextDouble() - 0.5) * 2.0);
+            }
+        } else {
+            if (!this.isPersistent()) {
+                ++this.lifeTime;
+            }
+            if (this.lifeTime >= 2400) {
+                this.remove();
+            }
+        }
+    }
+
+    @Override
+    protected boolean checkLightLevelForSpawn() {
+        return true;
+    }
+
+    @Override
+    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+        if (super.canSpawn(iWorld, spawnType)) {
+            PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this);
+            return playerEntity == null;
+        }
+        return false;
+    }
+
+    @Override
+    public EntityGroup getGroup() {
+        return EntityGroup.ARTHROPOD;
+    }
+}
+

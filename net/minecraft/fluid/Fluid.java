@@ -1,0 +1,109 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.fluid;
+
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.FluidStateImpl;
+import net.minecraft.item.Item;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.state.StateFactory;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.IdList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+public abstract class Fluid {
+    public static final IdList<FluidState> STATE_IDS = new IdList();
+    protected final StateFactory<Fluid, FluidState> stateFactory;
+    private FluidState defaultState;
+
+    protected Fluid() {
+        StateFactory.Builder<Fluid, FluidState> builder = new StateFactory.Builder<Fluid, FluidState>(this);
+        this.appendProperties(builder);
+        this.stateFactory = builder.build(FluidStateImpl::new);
+        this.setDefaultState(this.stateFactory.getDefaultState());
+    }
+
+    protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+    }
+
+    public StateFactory<Fluid, FluidState> getStateFactory() {
+        return this.stateFactory;
+    }
+
+    protected final void setDefaultState(FluidState fluidState) {
+        this.defaultState = fluidState;
+    }
+
+    public final FluidState getDefaultState() {
+        return this.defaultState;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    protected abstract BlockRenderLayer getRenderLayer();
+
+    public abstract Item getBucketItem();
+
+    @Environment(value=EnvType.CLIENT)
+    protected void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+    }
+
+    protected void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
+    }
+
+    protected void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+    }
+
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    protected ParticleEffect getParticle() {
+        return null;
+    }
+
+    protected abstract boolean method_15777(FluidState var1, BlockView var2, BlockPos var3, Fluid var4, Direction var5);
+
+    protected abstract Vec3d getVelocity(BlockView var1, BlockPos var2, FluidState var3);
+
+    public abstract int getTickRate(ViewableWorld var1);
+
+    protected boolean hasRandomTicks() {
+        return false;
+    }
+
+    protected boolean isEmpty() {
+        return false;
+    }
+
+    protected abstract float getBlastResistance();
+
+    public abstract float getHeight(FluidState var1, BlockView var2, BlockPos var3);
+
+    protected abstract BlockState toBlockState(FluidState var1);
+
+    public abstract boolean isStill(FluidState var1);
+
+    public abstract int getLevel(FluidState var1);
+
+    public boolean matchesType(Fluid fluid) {
+        return fluid == this;
+    }
+
+    public boolean matches(Tag<Fluid> tag) {
+        return tag.contains(this);
+    }
+
+    public abstract VoxelShape getShape(FluidState var1, BlockView var2, BlockPos var3);
+}
+

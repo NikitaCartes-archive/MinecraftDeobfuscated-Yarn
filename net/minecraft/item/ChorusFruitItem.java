@@ -1,0 +1,47 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.item;
+
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+
+public class ChorusFruitItem
+extends Item {
+    public ChorusFruitItem(Item.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+        ItemStack itemStack2 = super.onItemFinishedUsing(itemStack, world, livingEntity);
+        if (!world.isClient) {
+            double d = livingEntity.x;
+            double e = livingEntity.y;
+            double f = livingEntity.z;
+            for (int i = 0; i < 16; ++i) {
+                double g = livingEntity.x + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
+                double h = MathHelper.clamp(livingEntity.y + (double)(livingEntity.getRand().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
+                double j = livingEntity.z + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
+                if (livingEntity.hasVehicle()) {
+                    livingEntity.stopRiding();
+                }
+                if (!livingEntity.teleport(g, h, j, true)) continue;
+                world.playSound(null, d, e, f, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                livingEntity.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0f, 1.0f);
+                break;
+            }
+            if (livingEntity instanceof PlayerEntity) {
+                ((PlayerEntity)livingEntity).getItemCooldownManager().set(this, 20);
+            }
+        }
+        return itemStack2;
+    }
+}
+

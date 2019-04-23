@@ -1,0 +1,55 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.entity.model;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.entity.Entity;
+
+@Environment(value=EnvType.CLIENT)
+public class MinecartEntityModel<T extends Entity>
+extends EntityModel<T> {
+    private final Cuboid[] field_3432 = new Cuboid[7];
+
+    public MinecartEntityModel() {
+        this.field_3432[0] = new Cuboid(this, 0, 10);
+        this.field_3432[1] = new Cuboid(this, 0, 0);
+        this.field_3432[2] = new Cuboid(this, 0, 0);
+        this.field_3432[3] = new Cuboid(this, 0, 0);
+        this.field_3432[4] = new Cuboid(this, 0, 0);
+        this.field_3432[5] = new Cuboid(this, 44, 10);
+        int i = 20;
+        int j = 8;
+        int k = 16;
+        int l = 4;
+        this.field_3432[0].addBox(-10.0f, -8.0f, -1.0f, 20, 16, 2, 0.0f);
+        this.field_3432[0].setRotationPoint(0.0f, 4.0f, 0.0f);
+        this.field_3432[5].addBox(-9.0f, -7.0f, -1.0f, 18, 14, 1, 0.0f);
+        this.field_3432[5].setRotationPoint(0.0f, 4.0f, 0.0f);
+        this.field_3432[1].addBox(-8.0f, -9.0f, -1.0f, 16, 8, 2, 0.0f);
+        this.field_3432[1].setRotationPoint(-9.0f, 4.0f, 0.0f);
+        this.field_3432[2].addBox(-8.0f, -9.0f, -1.0f, 16, 8, 2, 0.0f);
+        this.field_3432[2].setRotationPoint(9.0f, 4.0f, 0.0f);
+        this.field_3432[3].addBox(-8.0f, -9.0f, -1.0f, 16, 8, 2, 0.0f);
+        this.field_3432[3].setRotationPoint(0.0f, 4.0f, -7.0f);
+        this.field_3432[4].addBox(-8.0f, -9.0f, -1.0f, 16, 8, 2, 0.0f);
+        this.field_3432[4].setRotationPoint(0.0f, 4.0f, 7.0f);
+        this.field_3432[0].pitch = 1.5707964f;
+        this.field_3432[1].yaw = 4.712389f;
+        this.field_3432[2].yaw = 1.5707964f;
+        this.field_3432[3].yaw = (float)Math.PI;
+        this.field_3432[5].pitch = -1.5707964f;
+    }
+
+    @Override
+    public void render(T entity, float f, float g, float h, float i, float j, float k) {
+        this.field_3432[5].rotationPointY = 4.0f - h;
+        for (int l = 0; l < 6; ++l) {
+            this.field_3432[l].render(k);
+        }
+    }
+}
+

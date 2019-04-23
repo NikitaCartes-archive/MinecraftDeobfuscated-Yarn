@@ -1,0 +1,119 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.model.json;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import java.lang.reflect.Type;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.render.model.ModelBakeSettings;
+import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+
+@Environment(value=EnvType.CLIENT)
+public class ModelVariant
+implements ModelBakeSettings {
+    private final Identifier location;
+    private final ModelRotation rotation;
+    private final boolean uvLock;
+    private final int weight;
+
+    public ModelVariant(Identifier identifier, ModelRotation modelRotation, boolean bl, int i) {
+        this.location = identifier;
+        this.rotation = modelRotation;
+        this.uvLock = bl;
+        this.weight = i;
+    }
+
+    public Identifier getLocation() {
+        return this.location;
+    }
+
+    @Override
+    public ModelRotation getRotation() {
+        return this.rotation;
+    }
+
+    @Override
+    public boolean isUvLocked() {
+        return this.uvLock;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
+    public String toString() {
+        return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
+    }
+
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object instanceof ModelVariant) {
+            ModelVariant modelVariant = (ModelVariant)object;
+            return this.location.equals(modelVariant.location) && this.rotation == modelVariant.rotation && this.uvLock == modelVariant.uvLock && this.weight == modelVariant.weight;
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        int i = this.location.hashCode();
+        i = 31 * i + this.rotation.hashCode();
+        i = 31 * i + Boolean.valueOf(this.uvLock).hashCode();
+        i = 31 * i + this.weight;
+        return i;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class Deserializer
+    implements JsonDeserializer<ModelVariant> {
+        public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            Identifier identifier = this.deserializeModel(jsonObject);
+            ModelRotation modelRotation = this.deserializeRotation(jsonObject);
+            boolean bl = this.deserializeUvLock(jsonObject);
+            int i = this.deserializeWeight(jsonObject);
+            return new ModelVariant(identifier, modelRotation, bl, i);
+        }
+
+        private boolean deserializeUvLock(JsonObject jsonObject) {
+            return JsonHelper.getBoolean(jsonObject, "uvlock", false);
+        }
+
+        protected ModelRotation deserializeRotation(JsonObject jsonObject) {
+            int j;
+            int i = JsonHelper.getInt(jsonObject, "x", 0);
+            ModelRotation modelRotation = ModelRotation.get(i, j = JsonHelper.getInt(jsonObject, "y", 0));
+            if (modelRotation == null) {
+                throw new JsonParseException("Invalid BlockModelRotation x: " + i + ", y: " + j);
+            }
+            return modelRotation;
+        }
+
+        protected Identifier deserializeModel(JsonObject jsonObject) {
+            return new Identifier(JsonHelper.getString(jsonObject, "model"));
+        }
+
+        protected int deserializeWeight(JsonObject jsonObject) {
+            int i = JsonHelper.getInt(jsonObject, "weight", 1);
+            if (i < 1) {
+                throw new JsonParseException("Invalid weight " + i + " found, expected integer >= 1");
+            }
+            return i;
+        }
+
+        @Override
+        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return this.method_3513(jsonElement, type, jsonDeserializationContext);
+        }
+    }
+}
+

@@ -1,0 +1,99 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractRedstoneGateBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
+
+public class RepeaterBlock
+extends AbstractRedstoneGateBlock {
+    public static final BooleanProperty LOCKED = Properties.LOCKED;
+    public static final IntegerProperty DELAY = Properties.DELAY;
+
+    protected RepeaterBlock(Block.Settings settings) {
+        super(settings);
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(DELAY, 1)).with(LOCKED, false)).with(POWERED, false));
+    }
+
+    @Override
+    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        if (!playerEntity.abilities.allowModifyWorld) {
+            return false;
+        }
+        world.setBlockState(blockPos, (BlockState)blockState.cycle(DELAY), 3);
+        return true;
+    }
+
+    @Override
+    protected int getUpdateDelayInternal(BlockState blockState) {
+        return blockState.get(DELAY) * 2;
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        BlockState blockState = super.getPlacementState(itemPlacementContext);
+        return (BlockState)blockState.with(LOCKED, this.isLocked(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), blockState));
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+        if (!iWorld.isClient() && direction.getAxis() != blockState.get(FACING).getAxis()) {
+            return (BlockState)blockState.with(LOCKED, this.isLocked(iWorld, blockPos, blockState));
+        }
+        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    }
+
+    @Override
+    public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+        return this.getMaxInputLevelSides(viewableWorld, blockPos, blockState) > 0;
+    }
+
+    @Override
+    protected boolean isValidInput(BlockState blockState) {
+        return RepeaterBlock.isRedstoneGate(blockState);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+        if (!blockState.get(POWERED).booleanValue()) {
+            return;
+        }
+        Direction direction = blockState.get(FACING);
+        double d = (double)((float)blockPos.getX() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        double e = (double)((float)blockPos.getY() + 0.4f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        double f = (double)((float)blockPos.getZ() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        float g = -5.0f;
+        if (random.nextBoolean()) {
+            g = blockState.get(DELAY) * 2 - 1;
+        }
+        double h = (g /= 16.0f) * (float)direction.getOffsetX();
+        double i = g * (float)direction.getOffsetZ();
+        world.addParticle(DustParticleEffect.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
+    }
+
+    @Override
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(FACING, DELAY, LOCKED, POWERED);
+    }
+}
+

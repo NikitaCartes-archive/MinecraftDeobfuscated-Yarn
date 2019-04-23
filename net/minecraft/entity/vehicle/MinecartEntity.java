@@ -1,0 +1,56 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.vehicle;
+
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+
+public class MinecartEntity
+extends AbstractMinecartEntity {
+    public MinecartEntity(EntityType<?> entityType, World world) {
+        super(entityType, world);
+    }
+
+    public MinecartEntity(World world, double d, double e, double f) {
+        super(EntityType.MINECART, world, d, e, f);
+    }
+
+    @Override
+    public boolean interact(PlayerEntity playerEntity, Hand hand) {
+        if (playerEntity.isSneaking()) {
+            return false;
+        }
+        if (this.hasPassengers()) {
+            return true;
+        }
+        if (!this.world.isClient) {
+            playerEntity.startRiding(this);
+        }
+        return true;
+    }
+
+    @Override
+    public void onActivatorRail(int i, int j, int k, boolean bl) {
+        if (bl) {
+            if (this.hasPassengers()) {
+                this.removeAllPassengers();
+            }
+            if (this.method_7507() == 0) {
+                this.method_7524(-this.method_7522());
+                this.method_7509(10);
+                this.method_7520(50.0f);
+                this.scheduleVelocityUpdate();
+            }
+        }
+    }
+
+    @Override
+    public AbstractMinecartEntity.Type getMinecartType() {
+        return AbstractMinecartEntity.Type.RIDEABLE;
+    }
+}
+

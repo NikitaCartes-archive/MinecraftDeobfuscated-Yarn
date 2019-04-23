@@ -1,0 +1,65 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.PlantBlock;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+
+public class NetherWartBlock
+extends PlantBlock {
+    public static final IntegerProperty AGE = Properties.AGE_3;
+    private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 11.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0)};
+
+    protected NetherWartBlock(Block.Settings settings) {
+        super(settings);
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return AGE_TO_SHAPE[blockState.get(AGE)];
+    }
+
+    @Override
+    protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return blockState.getBlock() == Blocks.SOUL_SAND;
+    }
+
+    @Override
+    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+        int i = blockState.get(AGE);
+        if (i < 3 && random.nextInt(10) == 0) {
+            blockState = (BlockState)blockState.with(AGE, i + 1);
+            world.setBlockState(blockPos, blockState, 2);
+        }
+        super.onScheduledTick(blockState, world, blockPos, random);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        return new ItemStack(Items.NETHER_WART);
+    }
+
+    @Override
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(AGE);
+    }
+}
+

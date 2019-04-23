@@ -1,0 +1,69 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
+import org.jetbrains.annotations.Nullable;
+
+public class WallMountedBlock
+extends HorizontalFacingBlock {
+    public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
+
+    protected WallMountedBlock(Block.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return WallMountedBlock.canPlaceAt(viewableWorld, blockPos, WallMountedBlock.getDirection(blockState).getOpposite());
+    }
+
+    public static boolean canPlaceAt(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+        BlockPos blockPos2 = blockPos.offset(direction);
+        return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, direction.getOpposite());
+    }
+
+    @Override
+    @Nullable
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+            BlockState blockState = direction.getAxis() == Direction.Axis.Y ? (BlockState)((BlockState)this.getDefaultState().with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)).with(FACING, itemPlacementContext.getPlayerHorizontalFacing()) : (BlockState)((BlockState)this.getDefaultState().with(FACE, WallMountLocation.WALL)).with(FACING, direction.getOpposite());
+            if (!blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) continue;
+            return blockState;
+        }
+        return null;
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+        if (WallMountedBlock.getDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)) {
+            return Blocks.AIR.getDefaultState();
+        }
+        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    }
+
+    protected static Direction getDirection(BlockState blockState) {
+        switch (blockState.get(FACE)) {
+            case CEILING: {
+                return Direction.DOWN;
+            }
+            case FLOOR: {
+                return Direction.UP;
+            }
+        }
+        return blockState.get(FACING);
+    }
+}
+

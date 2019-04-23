@@ -1,0 +1,61 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.command.arguments;
+
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
+
+public class ScoreboardSlotArgumentType
+implements ArgumentType<Integer> {
+    private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
+    public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("argument.scoreboardDisplaySlot.invalid", object));
+
+    private ScoreboardSlotArgumentType() {
+    }
+
+    public static ScoreboardSlotArgumentType create() {
+        return new ScoreboardSlotArgumentType();
+    }
+
+    public static int getScorebordSlot(CommandContext<ServerCommandSource> commandContext, String string) {
+        return commandContext.getArgument(string, Integer.class);
+    }
+
+    public Integer method_9466(StringReader stringReader) throws CommandSyntaxException {
+        String string = stringReader.readUnquotedString();
+        int i = Scoreboard.getDisplaySlotId(string);
+        if (i == -1) {
+            throw INVALID_SLOT_EXCEPTION.create(string);
+        }
+        return i;
+    }
+
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+        return CommandSource.suggestMatching(Scoreboard.getDisplaySlotNames(), suggestionsBuilder);
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
+    }
+
+    @Override
+    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
+        return this.method_9466(stringReader);
+    }
+}
+

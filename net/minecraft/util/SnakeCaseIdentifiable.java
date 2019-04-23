@@ -1,0 +1,9 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.util;
+
+public interface SnakeCaseIdentifiable {
+    public String toSnakeCase();
+}
+

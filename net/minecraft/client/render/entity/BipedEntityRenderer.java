@@ -1,0 +1,33 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.entity;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.Identifier;
+
+@Environment(value=EnvType.CLIENT)
+public class BipedEntityRenderer<T extends MobEntity, M extends BipedEntityModel<T>>
+extends MobEntityRenderer<T, M> {
+    private static final Identifier SKIN = new Identifier("textures/entity/steve.png");
+
+    public BipedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M bipedEntityModel, float f) {
+        super(entityRenderDispatcher, bipedEntityModel, f);
+        this.addFeature(new HeadFeatureRenderer(this));
+        this.addFeature(new ElytraFeatureRenderer(this));
+        this.addFeature(new HeldItemFeatureRenderer(this));
+    }
+
+    protected Identifier method_3982(T mobEntity) {
+        return SKIN;
+    }
+}
+

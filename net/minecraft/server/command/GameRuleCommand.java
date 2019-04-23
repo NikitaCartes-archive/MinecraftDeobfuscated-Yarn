@@ -1,0 +1,37 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.server.command;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import java.util.Map;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.world.GameRules;
+
+public class GameRuleCommand {
+    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamerule").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+        for (Map.Entry<String, GameRules.Key> entry : GameRules.getKeys().entrySet()) {
+            literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(entry.getKey()).executes(commandContext -> GameRuleCommand.executeQuery((ServerCommandSource)commandContext.getSource(), (String)entry.getKey()))).then(entry.getValue().getType().argument("value").executes(commandContext -> GameRuleCommand.executeSet((ServerCommandSource)commandContext.getSource(), (String)entry.getKey(), commandContext))));
+        }
+        commandDispatcher.register(literalArgumentBuilder);
+    }
+
+    private static int executeSet(ServerCommandSource serverCommandSource, String string, CommandContext<ServerCommandSource> commandContext) {
+        GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
+        value.getType().set(commandContext, "value", value);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamerule.set", string, value.getString()), true);
+        return value.getInteger();
+    }
+
+    private static int executeQuery(ServerCommandSource serverCommandSource, String string) {
+        GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamerule.query", string, value.getString()), false);
+        return value.getInteger();
+    }
+}
+

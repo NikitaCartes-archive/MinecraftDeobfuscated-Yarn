@@ -1,0 +1,911 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Stream;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.MaterialColor;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.DebugRendererInfoManager;
+import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.stat.Stats;
+import net.minecraft.state.StateFactory;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.Hand;
+import net.minecraft.util.IdList;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+public class Block
+implements ItemConvertible {
+    protected static final Logger LOGGER = LogManager.getLogger();
+    public static final IdList<BlockState> STATE_IDS = new IdList();
+    private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+    private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
+    private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
+    protected final int lightLevel;
+    protected final float hardness;
+    protected final float resistance;
+    protected final boolean randomTicks;
+    protected final BlockSoundGroup soundGroup;
+    protected final Material material;
+    protected final MaterialColor materialColor;
+    private final float slipperiness;
+    protected final StateFactory<Block, BlockState> stateFactory;
+    private BlockState defaultState;
+    protected final boolean collidable;
+    private final boolean dynamicBounds;
+    @Nullable
+    private Identifier dropTableId;
+    @Nullable
+    private String translationKey;
+    @Nullable
+    private Item cachedItem;
+    private static final ThreadLocal<Object2ByteLinkedOpenHashMap<NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
+        Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<NeighborGroup>(200){
+
+            @Override
+            protected void rehash(int i) {
+            }
+        };
+        object2ByteLinkedOpenHashMap.defaultReturnValue((byte)127);
+        return object2ByteLinkedOpenHashMap;
+    });
+
+    public static int getRawIdFromState(@Nullable BlockState blockState) {
+        if (blockState == null) {
+            return 0;
+        }
+        int i = STATE_IDS.getId(blockState);
+        return i == -1 ? 0 : i;
+    }
+
+    public static BlockState getStateFromRawId(int i) {
+        BlockState blockState = STATE_IDS.get(i);
+        return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
+    }
+
+    public static Block getBlockFromItem(@Nullable Item item) {
+        if (item instanceof BlockItem) {
+            return ((BlockItem)item).getBlock();
+        }
+        return Blocks.AIR;
+    }
+
+    public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
+        VoxelShape voxelShape = VoxelShapes.combine(blockState.getCollisionShape(world, blockPos), blockState2.getCollisionShape(world, blockPos), BooleanBiFunction.ONLY_SECOND).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        List<Entity> list = world.getEntities((Entity)null, voxelShape.getBoundingBox());
+        for (Entity entity : list) {
+            double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
+            entity.requestTeleport(entity.x, entity.y + 1.0 + d, entity.z);
+        }
+        return blockState2;
+    }
+
+    public static VoxelShape createCuboidShape(double d, double e, double f, double g, double h, double i) {
+        return VoxelShapes.cuboid(d / 16.0, e / 16.0, f / 16.0, g / 16.0, h / 16.0, i / 16.0);
+    }
+
+    @Deprecated
+    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+        return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.UP);
+    }
+
+    @Deprecated
+    public boolean isAir(BlockState blockState) {
+        return false;
+    }
+
+    @Deprecated
+    public int getLuminance(BlockState blockState) {
+        return this.lightLevel;
+    }
+
+    @Deprecated
+    public Material getMaterial(BlockState blockState) {
+        return this.material;
+    }
+
+    @Deprecated
+    public MaterialColor getMapColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.materialColor;
+    }
+
+    @Deprecated
+    public void updateNeighborStates(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
+        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
+            for (Direction direction : FACINGS) {
+                pooledMutable.method_10114(blockPos).method_10118(direction);
+                BlockState blockState2 = iWorld.getBlockState(pooledMutable);
+                BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
+                Block.replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
+            }
+        }
+    }
+
+    public boolean matches(Tag<Block> tag) {
+        return tag.contains(this);
+    }
+
+    public static BlockState getRenderingState(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+        BlockState blockState2 = blockState;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : FACINGS) {
+            mutable.set(blockPos).setOffset(direction);
+            blockState2 = blockState2.getStateForNeighborUpdate(direction, iWorld.getBlockState(mutable), iWorld, blockPos, mutable);
+        }
+        return blockState2;
+    }
+
+    public static void replaceBlock(BlockState blockState, BlockState blockState2, IWorld iWorld, BlockPos blockPos, int i) {
+        if (blockState2 != blockState) {
+            if (blockState2.isAir()) {
+                if (!iWorld.isClient()) {
+                    iWorld.breakBlock(blockPos, (i & 0x20) == 0);
+                }
+            } else {
+                iWorld.setBlockState(blockPos, blockState2, i & 0xFFFFFFDF);
+            }
+        }
+    }
+
+    @Deprecated
+    public void method_9517(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
+    }
+
+    @Deprecated
+    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+        return blockState;
+    }
+
+    @Deprecated
+    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+        return blockState;
+    }
+
+    @Deprecated
+    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+        return blockState;
+    }
+
+    public Block(Settings settings) {
+        StateFactory.Builder<Block, BlockState> builder = new StateFactory.Builder<Block, BlockState>(this);
+        this.appendProperties(builder);
+        this.material = settings.material;
+        this.materialColor = settings.materialColor;
+        this.collidable = settings.collidable;
+        this.soundGroup = settings.soundGroup;
+        this.lightLevel = settings.luminance;
+        this.resistance = settings.resistance;
+        this.hardness = settings.hardness;
+        this.randomTicks = settings.randomTicks;
+        this.slipperiness = settings.slipperiness;
+        this.dynamicBounds = settings.dynamicBounds;
+        this.dropTableId = settings.dropTableId;
+        this.stateFactory = builder.build(BlockState::new);
+        this.setDefaultState(this.stateFactory.getDefaultState());
+    }
+
+    public static boolean canConnect(Block block) {
+        return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN;
+    }
+
+    @Deprecated
+    public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return blockState.getMaterial().blocksLight() && Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) && !blockState.emitsRedstonePower();
+    }
+
+    @Deprecated
+    public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.material.blocksMovement() && Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+    }
+
+    @Deprecated
+    @Environment(value=EnvType.CLIENT)
+    public boolean hasBlockEntityBreakingRender(BlockState blockState) {
+        return false;
+    }
+
+    @Deprecated
+    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+        switch (blockPlacementEnvironment) {
+            case LAND: {
+                return !Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+            }
+            case WATER: {
+                return blockView.getFluidState(blockPos).matches(FluidTags.WATER);
+            }
+            case AIR: {
+                return !Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+            }
+        }
+        return false;
+    }
+
+    @Deprecated
+    public BlockRenderType getRenderType(BlockState blockState) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Deprecated
+    public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+        return this.material.isReplaceable() && (itemPlacementContext.getItemStack().isEmpty() || itemPlacementContext.getItemStack().getItem() != this.asItem());
+    }
+
+    @Deprecated
+    public float getHardness(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.hardness;
+    }
+
+    public boolean hasRandomTicks(BlockState blockState) {
+        return this.randomTicks;
+    }
+
+    public boolean hasBlockEntity() {
+        return this instanceof BlockEntityProvider;
+    }
+
+    @Deprecated
+    public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return false;
+    }
+
+    @Deprecated
+    @Environment(value=EnvType.CLIENT)
+    public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+        return extendedBlockView.getLightmapIndex(blockPos, blockState.getLuminance());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static boolean shouldDrawSide(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        BlockPos blockPos2 = blockPos.offset(direction);
+        BlockState blockState2 = blockView.getBlockState(blockPos2);
+        if (blockState.isSideInvisible(blockState2, direction)) {
+            return false;
+        }
+        if (blockState2.isFullBoundsCubeForCulling()) {
+            NeighborGroup neighborGroup = new NeighborGroup(blockState, blockState2, direction);
+            Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = FACE_CULL_MAP.get();
+            byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
+            if (b != 127) {
+                return b != 0;
+            }
+            VoxelShape voxelShape = blockState.getCullShape(blockView, blockPos, direction);
+            VoxelShape voxelShape2 = blockState2.getCullShape(blockView, blockPos2, direction.getOpposite());
+            boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
+            if (object2ByteLinkedOpenHashMap.size() == 200) {
+                object2ByteLinkedOpenHashMap.removeLastByte();
+            }
+            object2ByteLinkedOpenHashMap.putAndMoveToFirst(neighborGroup, (byte)(bl ? 1 : 0));
+            return bl;
+        }
+        return true;
+    }
+
+    @Deprecated
+    public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+        return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
+    }
+
+    @Deprecated
+    @Environment(value=EnvType.CLIENT)
+    public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
+        return false;
+    }
+
+    @Deprecated
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return VoxelShapes.fullCube();
+    }
+
+    @Deprecated
+    public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return this.collidable ? blockState.getOutlineShape(blockView, blockPos) : VoxelShapes.empty();
+    }
+
+    @Deprecated
+    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return blockState.getOutlineShape(blockView, blockPos);
+    }
+
+    @Deprecated
+    public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return VoxelShapes.empty();
+    }
+
+    public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
+        BlockState blockState = blockView.getBlockState(blockPos);
+        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+    }
+
+    public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+        BlockState blockState = viewableWorld.getBlockState(blockPos);
+        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+    }
+
+    public static boolean isSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        return !blockState.matches(BlockTags.LEAVES) && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
+    }
+
+    public static boolean isFaceFullSquare(VoxelShape voxelShape, Direction direction) {
+        VoxelShape voxelShape2 = voxelShape.getFace(direction);
+        return Block.isShapeFullCube(voxelShape2);
+    }
+
+    public static boolean isShapeFullCube(VoxelShape voxelShape) {
+        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
+    }
+
+    @Deprecated
+    public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        if (blockState.isFullBoundsCubeForCulling()) {
+            return Block.isShapeFullCube(blockState.method_11615(blockView, blockPos));
+        }
+        return false;
+    }
+
+    public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return !Block.isShapeFullCube(blockState.getOutlineShape(blockView, blockPos)) && blockState.getFluidState().isEmpty();
+    }
+
+    @Deprecated
+    public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        if (blockState.isFullOpaque(blockView, blockPos)) {
+            return blockView.getMaxLightLevel();
+        }
+        return blockState.isTranslucent(blockView, blockPos) ? 0 : 1;
+    }
+
+    @Deprecated
+    public boolean hasSidedTransparency(BlockState blockState) {
+        return false;
+    }
+
+    @Deprecated
+    public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+        this.onScheduledTick(blockState, world, blockPos, random);
+    }
+
+    @Deprecated
+    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    }
+
+    public void onBroken(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+    }
+
+    @Deprecated
+    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+        DebugRendererInfoManager.sendNeighborUpdate(world, blockPos);
+    }
+
+    public int getTickRate(ViewableWorld viewableWorld) {
+        return 10;
+    }
+
+    @Nullable
+    @Deprecated
+    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+        return null;
+    }
+
+    @Deprecated
+    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+    }
+
+    @Deprecated
+    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+        if (this.hasBlockEntity() && blockState.getBlock() != blockState2.getBlock()) {
+            world.removeBlockEntity(blockPos);
+        }
+    }
+
+    @Deprecated
+    public float calcBlockBreakingDelta(BlockState blockState, PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
+        float f = blockState.getHardness(blockView, blockPos);
+        if (f == -1.0f) {
+            return 0.0f;
+        }
+        int i = playerEntity.isUsingEffectiveTool(blockState) ? 30 : 100;
+        return playerEntity.getBlockBreakingSpeed(blockState) / f / (float)i;
+    }
+
+    @Deprecated
+    public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+    }
+
+    public Identifier getDropTableId() {
+        if (this.dropTableId == null) {
+            Identifier identifier = Registry.BLOCK.getId(this);
+            this.dropTableId = new Identifier(identifier.getNamespace(), "blocks/" + identifier.getPath());
+        }
+        return this.dropTableId;
+    }
+
+    @Deprecated
+    public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
+        Identifier identifier = this.getDropTableId();
+        if (identifier == LootTables.EMPTY) {
+            return Collections.emptyList();
+        }
+        LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, blockState).build(LootContextTypes.BLOCK);
+        ServerWorld serverWorld = lootContext.getWorld();
+        LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
+        return lootSupplier.getDrops(lootContext);
+    }
+
+    public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity) {
+        LootContext.Builder builder = new LootContext.Builder(serverWorld).setRandom(serverWorld.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, ItemStack.EMPTY).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+        return blockState.getDroppedStacks(builder);
+    }
+
+    public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack itemStack) {
+        LootContext.Builder builder = new LootContext.Builder(serverWorld).setRandom(serverWorld.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, itemStack).put(LootContextParameters.THIS_ENTITY, entity).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+        return blockState.getDroppedStacks(builder);
+    }
+
+    public static void dropStacks(BlockState blockState, LootContext.Builder builder) {
+        ServerWorld serverWorld = builder.getWorld();
+        BlockPos blockPos = builder.get(LootContextParameters.POSITION);
+        blockState.getDroppedStacks(builder).forEach(itemStack -> Block.dropStack(serverWorld, blockPos, itemStack));
+        blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
+    }
+
+    public static void dropStacks(BlockState blockState, World world, BlockPos blockPos) {
+        if (world instanceof ServerWorld) {
+            Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, null).forEach(itemStack -> Block.dropStack(world, blockPos, itemStack));
+        }
+        blockState.onStacksDropped(world, blockPos, ItemStack.EMPTY);
+    }
+
+    public static void dropStacks(BlockState blockState, World world, BlockPos blockPos, @Nullable BlockEntity blockEntity) {
+        if (world instanceof ServerWorld) {
+            Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, blockEntity).forEach(itemStack -> Block.dropStack(world, blockPos, itemStack));
+        }
+        blockState.onStacksDropped(world, blockPos, ItemStack.EMPTY);
+    }
+
+    public static void dropStacks(BlockState blockState, World world, BlockPos blockPos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack itemStack2) {
+        if (world instanceof ServerWorld) {
+            Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, blockEntity, entity, itemStack2).forEach(itemStack -> Block.dropStack(world, blockPos, itemStack));
+        }
+        blockState.onStacksDropped(world, blockPos, itemStack2);
+    }
+
+    public static void dropStack(World world, BlockPos blockPos, ItemStack itemStack) {
+        if (world.isClient || itemStack.isEmpty() || !world.getGameRules().getBoolean("doTileDrops")) {
+            return;
+        }
+        float f = 0.5f;
+        double d = (double)(world.random.nextFloat() * 0.5f) + 0.25;
+        double e = (double)(world.random.nextFloat() * 0.5f) + 0.25;
+        double g = (double)(world.random.nextFloat() * 0.5f) + 0.25;
+        ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, itemStack);
+        itemEntity.setToDefaultPickupDelay();
+        world.spawnEntity(itemEntity);
+    }
+
+    protected void dropExperience(World world, BlockPos blockPos, int i) {
+        if (!world.isClient && world.getGameRules().getBoolean("doTileDrops")) {
+            while (i > 0) {
+                int j = ExperienceOrbEntity.roundToOrbSize(i);
+                i -= j;
+                world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
+            }
+        }
+    }
+
+    public float getBlastResistance() {
+        return this.resistance;
+    }
+
+    public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
+    }
+
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.SOLID;
+    }
+
+    @Deprecated
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return true;
+    }
+
+    @Deprecated
+    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        return false;
+    }
+
+    public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
+    }
+
+    @Nullable
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        return this.getDefaultState();
+    }
+
+    @Deprecated
+    public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+    }
+
+    @Deprecated
+    public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        return 0;
+    }
+
+    @Deprecated
+    public boolean emitsRedstonePower(BlockState blockState) {
+        return false;
+    }
+
+    @Deprecated
+    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    }
+
+    @Deprecated
+    public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+        return 0;
+    }
+
+    public void afterBreak(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack) {
+        playerEntity.incrementStat(Stats.MINED.getOrCreateStat(this));
+        playerEntity.addExhaustion(0.005f);
+        Block.dropStacks(blockState, world, blockPos, blockEntity, playerEntity, itemStack);
+    }
+
+    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+    }
+
+    public boolean canMobSpawnInside() {
+        return !this.material.isSolid() && !this.material.isLiquid();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Component getTextComponent() {
+        return new TranslatableComponent(this.getTranslationKey(), new Object[0]);
+    }
+
+    public String getTranslationKey() {
+        if (this.translationKey == null) {
+            this.translationKey = SystemUtil.createTranslationKey("block", Registry.BLOCK.getId(this));
+        }
+        return this.translationKey;
+    }
+
+    @Deprecated
+    public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
+        return false;
+    }
+
+    @Deprecated
+    public PistonBehavior getPistonBehavior(BlockState blockState) {
+        return this.material.getPistonBehavior();
+    }
+
+    @Deprecated
+    @Environment(value=EnvType.CLIENT)
+    public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) ? 0.2f : 1.0f;
+    }
+
+    public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+        entity.handleFallDamage(f, 1.0f);
+    }
+
+    public void onEntityLand(BlockView blockView, Entity entity) {
+        entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        return new ItemStack(this);
+    }
+
+    public void addStacksForDisplay(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+        defaultedList.add(new ItemStack(this));
+    }
+
+    @Deprecated
+    public FluidState getFluidState(BlockState blockState) {
+        return Fluids.EMPTY.getDefaultState();
+    }
+
+    public float getSlipperiness() {
+        return this.slipperiness;
+    }
+
+    @Deprecated
+    @Environment(value=EnvType.CLIENT)
+    public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
+        return MathHelper.hashCode(blockPos);
+    }
+
+    public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+    }
+
+    public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+        world.playLevelEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
+    }
+
+    public void onRainTick(World world, BlockPos blockPos) {
+    }
+
+    public boolean shouldDropItemsOnExplosion(Explosion explosion) {
+        return true;
+    }
+
+    @Deprecated
+    public boolean hasComparatorOutput(BlockState blockState) {
+        return false;
+    }
+
+    @Deprecated
+    public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+        return 0;
+    }
+
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    }
+
+    public StateFactory<Block, BlockState> getStateFactory() {
+        return this.stateFactory;
+    }
+
+    protected final void setDefaultState(BlockState blockState) {
+        this.defaultState = blockState;
+    }
+
+    public final BlockState getDefaultState() {
+        return this.defaultState;
+    }
+
+    public OffsetType getOffsetType() {
+        return OffsetType.NONE;
+    }
+
+    @Deprecated
+    public Vec3d getOffsetPos(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        OffsetType offsetType = this.getOffsetType();
+        if (offsetType == OffsetType.NONE) {
+            return Vec3d.ZERO;
+        }
+        long l = MathHelper.hashCode(blockPos.getX(), 0, blockPos.getZ());
+        return new Vec3d(((double)((float)(l & 0xFL) / 15.0f) - 0.5) * 0.5, offsetType == OffsetType.XYZ ? ((double)((float)(l >> 4 & 0xFL) / 15.0f) - 1.0) * 0.2 : 0.0, ((double)((float)(l >> 8 & 0xFL) / 15.0f) - 0.5) * 0.5);
+    }
+
+    public BlockSoundGroup getSoundGroup(BlockState blockState) {
+        return this.soundGroup;
+    }
+
+    @Override
+    public Item asItem() {
+        if (this.cachedItem == null) {
+            this.cachedItem = Item.getItemFromBlock(this);
+        }
+        return this.cachedItem;
+    }
+
+    public boolean hasDynamicBounds() {
+        return this.dynamicBounds;
+    }
+
+    public String toString() {
+        return "Block{" + Registry.BLOCK.getId(this) + "}";
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
+    }
+
+    public static boolean isNaturalStone(Block block) {
+        return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
+    }
+
+    public static boolean isNaturalDirt(Block block) {
+        return block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL;
+    }
+
+    public static enum OffsetType {
+        NONE,
+        XZ,
+        XYZ;
+
+    }
+
+    public static class Settings {
+        private Material material;
+        private MaterialColor materialColor;
+        private boolean collidable = true;
+        private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
+        private int luminance;
+        private float resistance;
+        private float hardness;
+        private boolean randomTicks;
+        private float slipperiness = 0.6f;
+        private Identifier dropTableId;
+        private boolean dynamicBounds;
+
+        private Settings(Material material, MaterialColor materialColor) {
+            this.material = material;
+            this.materialColor = materialColor;
+        }
+
+        public static Settings of(Material material) {
+            return Settings.of(material, material.getColor());
+        }
+
+        public static Settings of(Material material, DyeColor dyeColor) {
+            return Settings.of(material, dyeColor.getMaterialColor());
+        }
+
+        public static Settings of(Material material, MaterialColor materialColor) {
+            return new Settings(material, materialColor);
+        }
+
+        public static Settings copy(Block block) {
+            Settings settings = new Settings(block.material, block.materialColor);
+            settings.material = block.material;
+            settings.hardness = block.hardness;
+            settings.resistance = block.resistance;
+            settings.collidable = block.collidable;
+            settings.randomTicks = block.randomTicks;
+            settings.luminance = block.lightLevel;
+            settings.materialColor = block.materialColor;
+            settings.soundGroup = block.soundGroup;
+            settings.slipperiness = block.getSlipperiness();
+            settings.dynamicBounds = block.dynamicBounds;
+            return settings;
+        }
+
+        public Settings noCollision() {
+            this.collidable = false;
+            return this;
+        }
+
+        public Settings slipperiness(float f) {
+            this.slipperiness = f;
+            return this;
+        }
+
+        protected Settings sounds(BlockSoundGroup blockSoundGroup) {
+            this.soundGroup = blockSoundGroup;
+            return this;
+        }
+
+        protected Settings lightLevel(int i) {
+            this.luminance = i;
+            return this;
+        }
+
+        public Settings strength(float f, float g) {
+            this.hardness = f;
+            this.resistance = Math.max(0.0f, g);
+            return this;
+        }
+
+        protected Settings breakInstantly() {
+            return this.strength(0.0f);
+        }
+
+        protected Settings strength(float f) {
+            this.strength(f, f);
+            return this;
+        }
+
+        protected Settings ticksRandomly() {
+            this.randomTicks = true;
+            return this;
+        }
+
+        protected Settings hasDynamicBounds() {
+            this.dynamicBounds = true;
+            return this;
+        }
+
+        protected Settings dropsNothing() {
+            this.dropTableId = LootTables.EMPTY;
+            return this;
+        }
+
+        public Settings dropsLike(Block block) {
+            this.dropTableId = block.getDropTableId();
+            return this;
+        }
+    }
+
+    public static final class NeighborGroup {
+        private final BlockState self;
+        private final BlockState other;
+        private final Direction facing;
+
+        public NeighborGroup(BlockState blockState, BlockState blockState2, Direction direction) {
+            this.self = blockState;
+            this.other = blockState2;
+            this.facing = direction;
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (!(object instanceof NeighborGroup)) {
+                return false;
+            }
+            NeighborGroup neighborGroup = (NeighborGroup)object;
+            return this.self == neighborGroup.self && this.other == neighborGroup.other && this.facing == neighborGroup.facing;
+        }
+
+        public int hashCode() {
+            return Objects.hash(this.self, this.other, this.facing);
+        }
+    }
+}
+

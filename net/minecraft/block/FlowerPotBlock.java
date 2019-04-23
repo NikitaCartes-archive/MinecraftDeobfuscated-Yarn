@@ -1,0 +1,106 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import com.google.common.collect.Maps;
+import java.util.Map;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+
+public class FlowerPotBlock
+extends Block {
+    private static final Map<Block, Block> CONTENT_TO_POTTED = Maps.newHashMap();
+    protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+    private final Block content;
+
+    public FlowerPotBlock(Block block, Block.Settings settings) {
+        super(settings);
+        this.content = block;
+        CONTENT_TO_POTTED.put(block, this);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+        return SHAPE;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState blockState) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        boolean bl2;
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        Item item = itemStack.getItem();
+        Block block = item instanceof BlockItem ? CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
+        boolean bl = block == Blocks.AIR;
+        boolean bl3 = bl2 = this.content == Blocks.AIR;
+        if (bl != bl2) {
+            if (bl2) {
+                world.setBlockState(blockPos, block.getDefaultState(), 3);
+                playerEntity.incrementStat(Stats.POT_FLOWER);
+                if (!playerEntity.abilities.creativeMode) {
+                    itemStack.subtractAmount(1);
+                }
+            } else {
+                ItemStack itemStack2 = new ItemStack(this.content);
+                if (itemStack.isEmpty()) {
+                    playerEntity.setStackInHand(hand, itemStack2);
+                } else if (!playerEntity.giveItemStack(itemStack2)) {
+                    playerEntity.dropItem(itemStack2, false);
+                }
+                world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), 3);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        if (this.content == Blocks.AIR) {
+            return super.getPickStack(blockView, blockPos, blockState);
+        }
+        return new ItemStack(this.content);
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+        if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
+            return Blocks.AIR.getDefaultState();
+        }
+        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    }
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    public Block getContent() {
+        return this.content;
+    }
+}
+

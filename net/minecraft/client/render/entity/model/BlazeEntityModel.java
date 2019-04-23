@@ -1,0 +1,65 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.entity.model;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+
+@Environment(value=EnvType.CLIENT)
+public class BlazeEntityModel<T extends Entity>
+extends EntityModel<T> {
+    private final Cuboid[] field_3328 = new Cuboid[12];
+    private final Cuboid field_3329;
+
+    public BlazeEntityModel() {
+        for (int i = 0; i < this.field_3328.length; ++i) {
+            this.field_3328[i] = new Cuboid(this, 0, 16);
+            this.field_3328[i].addBox(0.0f, 0.0f, 0.0f, 2, 8, 2);
+        }
+        this.field_3329 = new Cuboid(this, 0, 0);
+        this.field_3329.addBox(-4.0f, -4.0f, -4.0f, 8, 8, 8);
+    }
+
+    @Override
+    public void render(T entity, float f, float g, float h, float i, float j, float k) {
+        this.setAngles(entity, f, g, h, i, j, k);
+        this.field_3329.render(k);
+        for (Cuboid cuboid : this.field_3328) {
+            cuboid.render(k);
+        }
+    }
+
+    @Override
+    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+        int m;
+        float l = h * (float)Math.PI * -0.1f;
+        for (m = 0; m < 4; ++m) {
+            this.field_3328[m].rotationPointY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 9.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 9.0f;
+            l += 1.5707964f;
+        }
+        l = 0.7853982f + h * (float)Math.PI * 0.03f;
+        for (m = 4; m < 8; ++m) {
+            this.field_3328[m].rotationPointY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 7.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 7.0f;
+            l += 1.5707964f;
+        }
+        l = 0.47123894f + h * (float)Math.PI * -0.05f;
+        for (m = 8; m < 12; ++m) {
+            this.field_3328[m].rotationPointY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 5.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 5.0f;
+            l += 1.5707964f;
+        }
+        this.field_3329.yaw = i * ((float)Math.PI / 180);
+        this.field_3329.pitch = j * ((float)Math.PI / 180);
+    }
+}
+

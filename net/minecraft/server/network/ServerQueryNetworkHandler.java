@@ -1,0 +1,48 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.server.network;
+
+import net.minecraft.client.network.packet.QueryPongS2CPacket;
+import net.minecraft.client.network.packet.QueryResponseS2CPacket;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.listener.ServerQueryPacketListener;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.packet.QueryPingC2SPacket;
+import net.minecraft.server.network.packet.QueryRequestC2SPacket;
+
+public class ServerQueryNetworkHandler
+implements ServerQueryPacketListener {
+    private static final Component REQUEST_HANDLED = new TranslatableComponent("multiplayer.status.request_handled", new Object[0]);
+    private final MinecraftServer server;
+    private final ClientConnection client;
+    private boolean responseSent;
+
+    public ServerQueryNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
+        this.server = minecraftServer;
+        this.client = clientConnection;
+    }
+
+    @Override
+    public void onDisconnected(Component component) {
+    }
+
+    @Override
+    public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
+        if (this.responseSent) {
+            this.client.disconnect(REQUEST_HANDLED);
+            return;
+        }
+        this.responseSent = true;
+        this.client.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
+    }
+
+    @Override
+    public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
+        this.client.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
+        this.client.disconnect(REQUEST_HANDLED);
+    }
+}
+

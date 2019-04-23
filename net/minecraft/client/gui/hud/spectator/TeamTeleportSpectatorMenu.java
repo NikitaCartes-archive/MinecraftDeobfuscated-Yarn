@@ -1,0 +1,131 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.gui.hud.spectator;
+
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.List;
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.hud.SpectatorHud;
+import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
+import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
+import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
+import net.minecraft.client.gui.hud.spectator.TeleportSpectatorMenu;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+
+@Environment(value=EnvType.CLIENT)
+public class TeamTeleportSpectatorMenu
+implements SpectatorMenuCommandGroup,
+SpectatorMenuCommand {
+    private final List<SpectatorMenuCommand> commands = Lists.newArrayList();
+
+    public TeamTeleportSpectatorMenu() {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        for (Team team : minecraftClient.world.getScoreboard().getTeams()) {
+            this.commands.add(new TeleportToSpecificTeamCommand(team));
+        }
+    }
+
+    @Override
+    public List<SpectatorMenuCommand> getCommands() {
+        return this.commands;
+    }
+
+    @Override
+    public Component getPrompt() {
+        return new TranslatableComponent("spectatorMenu.team_teleport.prompt", new Object[0]);
+    }
+
+    @Override
+    public void use(SpectatorMenu spectatorMenu) {
+        spectatorMenu.selectElement(this);
+    }
+
+    @Override
+    public Component getName() {
+        return new TranslatableComponent("spectatorMenu.team_teleport", new Object[0]);
+    }
+
+    @Override
+    public void renderIcon(float f, int i) {
+        MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
+        DrawableHelper.blit(0, 0, 16.0f, 0.0f, 16, 16, 256, 256);
+    }
+
+    @Override
+    public boolean enabled() {
+        for (SpectatorMenuCommand spectatorMenuCommand : this.commands) {
+            if (!spectatorMenuCommand.enabled()) continue;
+            return true;
+        }
+        return false;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    class TeleportToSpecificTeamCommand
+    implements SpectatorMenuCommand {
+        private final Team team;
+        private final Identifier skinId;
+        private final List<PlayerListEntry> scoreboardEntries;
+
+        public TeleportToSpecificTeamCommand(Team team) {
+            this.team = team;
+            this.scoreboardEntries = Lists.newArrayList();
+            for (String string : team.getPlayerList()) {
+                PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(string);
+                if (playerListEntry == null) continue;
+                this.scoreboardEntries.add(playerListEntry);
+            }
+            if (this.scoreboardEntries.isEmpty()) {
+                this.skinId = DefaultSkinHelper.getTexture();
+            } else {
+                String string2 = this.scoreboardEntries.get(new Random().nextInt(this.scoreboardEntries.size())).getProfile().getName();
+                this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
+                AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
+            }
+        }
+
+        @Override
+        public void use(SpectatorMenu spectatorMenu) {
+            spectatorMenu.selectElement(new TeleportSpectatorMenu(this.scoreboardEntries));
+        }
+
+        @Override
+        public Component getName() {
+            return this.team.getDisplayName();
+        }
+
+        @Override
+        public void renderIcon(float f, int i) {
+            Integer integer = this.team.getColor().getColor();
+            if (integer != null) {
+                float g = (float)(integer >> 16 & 0xFF) / 255.0f;
+                float h = (float)(integer >> 8 & 0xFF) / 255.0f;
+                float j = (float)(integer & 0xFF) / 255.0f;
+                DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
+            }
+            MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
+            GlStateManager.color4f(f, f, f, (float)i / 255.0f);
+            DrawableHelper.blit(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
+            DrawableHelper.blit(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+        }
+
+        @Override
+        public boolean enabled() {
+            return !this.scoreboardEntries.isEmpty();
+        }
+    }
+}
+

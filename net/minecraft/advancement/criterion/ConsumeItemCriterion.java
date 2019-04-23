@@ -1,0 +1,146 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.advancement.criterion;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.AbstractCriterionConditions;
+import net.minecraft.advancement.criterion.Criterion;
+import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.item.EnchantmentPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
+
+public class ConsumeItemCriterion
+implements Criterion<Conditions> {
+    private static final Identifier ID = new Identifier("consume_item");
+    private final Map<PlayerAdvancementTracker, Handler> handlers = Maps.newHashMap();
+
+    @Override
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    public void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
+        Handler handler = this.handlers.get(playerAdvancementTracker);
+        if (handler == null) {
+            handler = new Handler(playerAdvancementTracker);
+            this.handlers.put(playerAdvancementTracker, handler);
+        }
+        handler.addCondition(conditionsContainer);
+    }
+
+    @Override
+    public void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
+        Handler handler = this.handlers.get(playerAdvancementTracker);
+        if (handler != null) {
+            handler.removeCondition(conditionsContainer);
+            if (handler.isEmpty()) {
+                this.handlers.remove(playerAdvancementTracker);
+            }
+        }
+    }
+
+    @Override
+    public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+        this.handlers.remove(playerAdvancementTracker);
+    }
+
+    public Conditions method_8820(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        return new Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
+    }
+
+    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+        if (handler != null) {
+            handler.handle(itemStack);
+        }
+    }
+
+    @Override
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        return this.method_8820(jsonObject, jsonDeserializationContext);
+    }
+
+    static class Handler {
+        private final PlayerAdvancementTracker manager;
+        private final Set<Criterion.ConditionsContainer<Conditions>> conditions = Sets.newHashSet();
+
+        public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+            this.manager = playerAdvancementTracker;
+        }
+
+        public boolean isEmpty() {
+            return this.conditions.isEmpty();
+        }
+
+        public void addCondition(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
+            this.conditions.add(conditionsContainer);
+        }
+
+        public void removeCondition(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
+            this.conditions.remove(conditionsContainer);
+        }
+
+        public void handle(ItemStack itemStack) {
+            ArrayList<Criterion.ConditionsContainer<Conditions>> list = null;
+            for (Criterion.ConditionsContainer<Conditions> conditionsContainer : this.conditions) {
+                if (!conditionsContainer.getConditions().matches(itemStack)) continue;
+                if (list == null) {
+                    list = Lists.newArrayList();
+                }
+                list.add(conditionsContainer);
+            }
+            if (list != null) {
+                for (Criterion.ConditionsContainer<Conditions> conditionsContainer : list) {
+                    conditionsContainer.apply(this.manager);
+                }
+            }
+        }
+    }
+
+    public static class Conditions
+    extends AbstractCriterionConditions {
+        private final ItemPredicate item;
+
+        public Conditions(ItemPredicate itemPredicate) {
+            super(ID);
+            this.item = itemPredicate;
+        }
+
+        public static Conditions any() {
+            return new Conditions(ItemPredicate.ANY);
+        }
+
+        public static Conditions item(ItemConvertible itemConvertible) {
+            return new Conditions(new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY));
+        }
+
+        public boolean matches(ItemStack itemStack) {
+            return this.item.test(itemStack);
+        }
+
+        @Override
+        public JsonElement toJson() {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add("item", this.item.serialize());
+            return jsonObject;
+        }
+    }
+}
+

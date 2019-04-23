@@ -1,0 +1,66 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.entity.feature;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
+
+@Environment(value=EnvType.CLIENT)
+public class TridentRiptideFeatureRenderer<T extends LivingEntity>
+extends FeatureRenderer<T, PlayerEntityModel<T>> {
+    public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
+    private final class_999 field_4897 = new class_999();
+
+    public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
+        super(featureRendererContext);
+    }
+
+    public void method_4203(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+        if (!((LivingEntity)livingEntity).isUsingRiptide()) {
+            return;
+        }
+        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        this.bindTexture(TEXTURE);
+        for (int m = 0; m < 3; ++m) {
+            GlStateManager.pushMatrix();
+            GlStateManager.rotatef(i * (float)(-(45 + m * 5)), 0.0f, 1.0f, 0.0f);
+            float n = 0.75f * (float)m;
+            GlStateManager.scalef(n, n, n);
+            GlStateManager.translatef(0.0f, -0.2f + 0.6f * (float)m, 0.0f);
+            this.field_4897.method_17166(f, g, i, j, k, l);
+            GlStateManager.popMatrix();
+        }
+    }
+
+    @Override
+    public boolean hasHurtOverlay() {
+        return false;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class class_999
+    extends Model {
+        private final Cuboid field_4900;
+
+        public class_999() {
+            this.textureWidth = 64;
+            this.textureHeight = 64;
+            this.field_4900 = new Cuboid(this, 0, 0);
+            this.field_4900.addBox(-8.0f, -16.0f, -8.0f, 16, 32, 16);
+        }
+
+        public void method_17166(float f, float g, float h, float i, float j, float k) {
+            this.field_4900.render(k);
+        }
+    }
+}
+

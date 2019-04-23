@@ -1,0 +1,210 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.recipe;
+
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.function.Predicate;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.PotionItem;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.util.registry.Registry;
+
+public class BrewingRecipeRegistry {
+    private static final List<Recipe<Potion>> POTION_RECIPES = Lists.newArrayList();
+    private static final List<Recipe<Item>> ITEM_RECIPES = Lists.newArrayList();
+    private static final List<Ingredient> POTION_TYPES = Lists.newArrayList();
+    private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
+        for (Ingredient ingredient : POTION_TYPES) {
+            if (!ingredient.method_8093((ItemStack)itemStack)) continue;
+            return true;
+        }
+        return false;
+    };
+
+    public static boolean isValidIngredient(ItemStack itemStack) {
+        return BrewingRecipeRegistry.isItemRecipeIngredient(itemStack) || BrewingRecipeRegistry.isPotionRecipeIngredient(itemStack);
+    }
+
+    protected static boolean isItemRecipeIngredient(ItemStack itemStack) {
+        int j = ITEM_RECIPES.size();
+        for (int i = 0; i < j; ++i) {
+            if (!((Recipe)ITEM_RECIPES.get(i)).ingredient.method_8093(itemStack)) continue;
+            return true;
+        }
+        return false;
+    }
+
+    protected static boolean isPotionRecipeIngredient(ItemStack itemStack) {
+        int j = POTION_RECIPES.size();
+        for (int i = 0; i < j; ++i) {
+            if (!((Recipe)POTION_RECIPES.get(i)).ingredient.method_8093(itemStack)) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isBrewable(Potion potion) {
+        int j = POTION_RECIPES.size();
+        for (int i = 0; i < j; ++i) {
+            if (((Recipe)POTION_RECIPES.get(i)).output != potion) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean hasRecipe(ItemStack itemStack, ItemStack itemStack2) {
+        if (!POTION_TYPE_PREDICATE.test(itemStack)) {
+            return false;
+        }
+        return BrewingRecipeRegistry.hasItemRecipe(itemStack, itemStack2) || BrewingRecipeRegistry.hasPotionRecipe(itemStack, itemStack2);
+    }
+
+    protected static boolean hasItemRecipe(ItemStack itemStack, ItemStack itemStack2) {
+        Item item = itemStack.getItem();
+        int j = ITEM_RECIPES.size();
+        for (int i = 0; i < j; ++i) {
+            Recipe<Item> recipe = ITEM_RECIPES.get(i);
+            if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.method_8093(itemStack2)) continue;
+            return true;
+        }
+        return false;
+    }
+
+    protected static boolean hasPotionRecipe(ItemStack itemStack, ItemStack itemStack2) {
+        Potion potion = PotionUtil.getPotion(itemStack);
+        int j = POTION_RECIPES.size();
+        for (int i = 0; i < j; ++i) {
+            Recipe<Potion> recipe = POTION_RECIPES.get(i);
+            if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.method_8093(itemStack2)) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public static ItemStack craft(ItemStack itemStack, ItemStack itemStack2) {
+        if (!itemStack2.isEmpty()) {
+            Recipe<Object> recipe;
+            int i;
+            Potion potion = PotionUtil.getPotion(itemStack2);
+            Item item = itemStack2.getItem();
+            int j = ITEM_RECIPES.size();
+            for (i = 0; i < j; ++i) {
+                recipe = ITEM_RECIPES.get(i);
+                if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.method_8093(itemStack)) continue;
+                return PotionUtil.setPotion(new ItemStack((ItemConvertible)((Recipe)recipe).output), potion);
+            }
+            j = POTION_RECIPES.size();
+            for (i = 0; i < j; ++i) {
+                recipe = POTION_RECIPES.get(i);
+                if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.method_8093(itemStack)) continue;
+                return PotionUtil.setPotion(new ItemStack(item), (Potion)((Recipe)recipe).output);
+            }
+        }
+        return itemStack2;
+    }
+
+    public static void registerDefaults() {
+        BrewingRecipeRegistry.registerPotionType(Items.POTION);
+        BrewingRecipeRegistry.registerPotionType(Items.SPLASH_POTION);
+        BrewingRecipeRegistry.registerPotionType(Items.LINGERING_POTION);
+        BrewingRecipeRegistry.registerItemRecipe(Items.POTION, Items.GUNPOWDER, Items.SPLASH_POTION);
+        BrewingRecipeRegistry.registerItemRecipe(Items.SPLASH_POTION, Items.DRAGON_BREATH, Items.LINGERING_POTION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.GLISTERING_MELON_SLICE, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.GHAST_TEAR, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.RABBIT_FOOT, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.BLAZE_POWDER, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.SPIDER_EYE, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.SUGAR, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.MAGMA_CREAM, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.GLOWSTONE_DUST, Potions.THICK);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.REDSTONE, Potions.MUNDANE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.NETHER_WART, Potions.AWKWARD);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.GOLDEN_CARROT, Potions.NIGHT_VISION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.NIGHT_VISION, Items.REDSTONE, Potions.LONG_NIGHT_VISION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LONG_NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.LONG_INVISIBILITY);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.INVISIBILITY, Items.REDSTONE, Potions.LONG_INVISIBILITY);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.MAGMA_CREAM, Potions.FIRE_RESISTANCE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.FIRE_RESISTANCE, Items.REDSTONE, Potions.LONG_FIRE_RESISTANCE);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.RABBIT_FOOT, Potions.LEAPING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LEAPING, Items.REDSTONE, Potions.LONG_LEAPING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LEAPING, Items.GLOWSTONE_DUST, Potions.STRONG_LEAPING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LEAPING, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LONG_LEAPING, Items.FERMENTED_SPIDER_EYE, Potions.LONG_SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SLOWNESS, Items.REDSTONE, Potions.LONG_SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SLOWNESS, Items.GLOWSTONE_DUST, Potions.STRONG_SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.TURTLE_HELMET, Potions.TURTLE_MASTER);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.TURTLE_MASTER, Items.REDSTONE, Potions.LONG_TURTLE_MASTER);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.TURTLE_MASTER, Items.GLOWSTONE_DUST, Potions.STRONG_TURTLE_MASTER);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SWIFTNESS, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LONG_SWIFTNESS, Items.FERMENTED_SPIDER_EYE, Potions.LONG_SLOWNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.SUGAR, Potions.SWIFTNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SWIFTNESS, Items.REDSTONE, Potions.LONG_SWIFTNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SWIFTNESS, Items.GLOWSTONE_DUST, Potions.STRONG_SWIFTNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.PUFFERFISH, Potions.WATER_BREATHING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER_BREATHING, Items.REDSTONE, Potions.LONG_WATER_BREATHING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.GLISTERING_MELON_SLICE, Potions.HEALING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.HEALING, Items.GLOWSTONE_DUST, Potions.STRONG_HEALING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.HEALING, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.STRONG_HEALING, Items.FERMENTED_SPIDER_EYE, Potions.STRONG_HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.HARMING, Items.GLOWSTONE_DUST, Potions.STRONG_HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.POISON, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.LONG_POISON, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.STRONG_POISON, Items.FERMENTED_SPIDER_EYE, Potions.STRONG_HARMING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.SPIDER_EYE, Potions.POISON);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.POISON, Items.REDSTONE, Potions.LONG_POISON);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.POISON, Items.GLOWSTONE_DUST, Potions.STRONG_POISON);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.GHAST_TEAR, Potions.REGENERATION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.REGENERATION, Items.REDSTONE, Potions.LONG_REGENERATION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.REGENERATION, Items.GLOWSTONE_DUST, Potions.STRONG_REGENERATION);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.BLAZE_POWDER, Potions.STRENGTH);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.STRENGTH, Items.REDSTONE, Potions.LONG_STRENGTH);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.STRENGTH, Items.GLOWSTONE_DUST, Potions.STRONG_STRENGTH);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WATER, Items.FERMENTED_SPIDER_EYE, Potions.WEAKNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.WEAKNESS, Items.REDSTONE, Potions.LONG_WEAKNESS);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Items.PHANTOM_MEMBRANE, Potions.SLOW_FALLING);
+        BrewingRecipeRegistry.registerPotionRecipe(Potions.SLOW_FALLING, Items.REDSTONE, Potions.LONG_SLOW_FALLING);
+    }
+
+    private static void registerItemRecipe(Item item, Item item2, Item item3) {
+        if (!(item instanceof PotionItem)) {
+            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
+        }
+        if (!(item3 instanceof PotionItem)) {
+            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item3));
+        }
+        ITEM_RECIPES.add(new Recipe<Item>(item, Ingredient.ofItems(item2), item3));
+    }
+
+    private static void registerPotionType(Item item) {
+        if (!(item instanceof PotionItem)) {
+            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
+        }
+        POTION_TYPES.add(Ingredient.ofItems(item));
+    }
+
+    private static void registerPotionRecipe(Potion potion, Item item, Potion potion2) {
+        POTION_RECIPES.add(new Recipe<Potion>(potion, Ingredient.ofItems(item), potion2));
+    }
+
+    static class Recipe<T> {
+        private final T input;
+        private final Ingredient ingredient;
+        private final T output;
+
+        public Recipe(T object, Ingredient ingredient, T object2) {
+            this.input = object;
+            this.ingredient = ingredient;
+            this.output = object2;
+        }
+    }
+}
+

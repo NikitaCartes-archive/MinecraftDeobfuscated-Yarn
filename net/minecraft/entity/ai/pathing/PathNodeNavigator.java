@@ -1,0 +1,97 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.ai.pathing;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Set;
+import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.ai.pathing.PathMinHeap;
+import net.minecraft.entity.ai.pathing.PathNode;
+import net.minecraft.entity.ai.pathing.PathNodeMaker;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.BlockView;
+import org.jetbrains.annotations.Nullable;
+
+public class PathNodeNavigator {
+    private final PathMinHeap minHeap = new PathMinHeap();
+    private final Set<PathNode> field_59 = Sets.newHashSet();
+    private final PathNode[] field_60 = new PathNode[32];
+    private final int field_18708;
+    private PathNodeMaker pathNodeMaker;
+
+    public PathNodeNavigator(PathNodeMaker pathNodeMaker, int i) {
+        this.pathNodeMaker = pathNodeMaker;
+        this.field_18708 = i;
+    }
+
+    @Nullable
+    public Path pathfind(BlockView blockView, MobEntity mobEntity, double d, double e, double f, float g) {
+        this.minHeap.clear();
+        this.pathNodeMaker.init(blockView, mobEntity);
+        PathNode pathNode = this.pathNodeMaker.getStart();
+        PathNode pathNode2 = this.pathNodeMaker.getPathNode(d, e, f);
+        Path path = this.pathfind(pathNode, pathNode2, g);
+        this.pathNodeMaker.clear();
+        return path;
+    }
+
+    @Nullable
+    private Path pathfind(PathNode pathNode, PathNode pathNode2, float f) {
+        pathNode.field_36 = 0.0f;
+        pathNode.heapWeight = pathNode.field_34 = pathNode.manhattanDistance(pathNode2);
+        this.minHeap.clear();
+        this.field_59.clear();
+        this.minHeap.push(pathNode);
+        PathNode pathNode3 = pathNode;
+        int i = 0;
+        while (!this.minHeap.isEmpty() && ++i < this.field_18708) {
+            PathNode pathNode4 = this.minHeap.pop();
+            if (pathNode4.equals(pathNode2)) {
+                pathNode3 = pathNode2;
+                break;
+            }
+            if (pathNode4.manhattanDistance(pathNode2) < pathNode3.manhattanDistance(pathNode2)) {
+                pathNode3 = pathNode4;
+            }
+            pathNode4.field_42 = true;
+            int j = this.pathNodeMaker.getPathNodes(this.field_60, pathNode4, pathNode2, f);
+            for (int k = 0; k < j; ++k) {
+                PathNode pathNode5 = this.field_60[k];
+                float g = pathNode4.manhattanDistance(pathNode5);
+                pathNode5.field_46 = pathNode4.field_46 + g;
+                pathNode5.field_45 = g + pathNode5.field_43;
+                float h = pathNode4.field_36 + pathNode5.field_45;
+                if (!(pathNode5.field_46 < f) || pathNode5.isInHeap() && !(h < pathNode5.field_36)) continue;
+                pathNode5.field_35 = pathNode4;
+                pathNode5.field_36 = h;
+                pathNode5.field_34 = pathNode5.manhattanDistance(pathNode2) + pathNode5.field_43;
+                if (pathNode5.isInHeap()) {
+                    this.minHeap.setNodeWeight(pathNode5, pathNode5.field_36 + pathNode5.field_34);
+                    continue;
+                }
+                pathNode5.heapWeight = pathNode5.field_36 + pathNode5.field_34;
+                this.minHeap.push(pathNode5);
+            }
+        }
+        if (pathNode3 == pathNode) {
+            return null;
+        }
+        Path path = this.method_55(pathNode3);
+        return path;
+    }
+
+    private Path method_55(PathNode pathNode) {
+        ArrayList<PathNode> list = Lists.newArrayList();
+        PathNode pathNode2 = pathNode;
+        list.add(0, pathNode2);
+        while (pathNode2.field_35 != null) {
+            pathNode2 = pathNode2.field_35;
+            list.add(0, pathNode2);
+        }
+        return new Path(list);
+    }
+}
+

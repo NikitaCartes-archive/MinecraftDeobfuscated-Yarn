@@ -1,0 +1,48 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.server.command;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+
+public class WeatherCommand {
+    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("weather").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((LiteralArgumentBuilder)CommandManager.literal("clear").executes(commandContext -> WeatherCommand.executeClear((ServerCommandSource)commandContext.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(commandContext -> WeatherCommand.executeClear((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20))))).then(((LiteralArgumentBuilder)CommandManager.literal("rain").executes(commandContext -> WeatherCommand.executeRain((ServerCommandSource)commandContext.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(commandContext -> WeatherCommand.executeRain((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20))))).then(((LiteralArgumentBuilder)CommandManager.literal("thunder").executes(commandContext -> WeatherCommand.executeThunder((ServerCommandSource)commandContext.getSource(), 6000))).then(CommandManager.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes(commandContext -> WeatherCommand.executeThunder((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "duration") * 20)))));
+    }
+
+    private static int executeClear(ServerCommandSource serverCommandSource, int i) {
+        serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(i);
+        serverCommandSource.getWorld().getLevelProperties().setRainTime(0);
+        serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
+        serverCommandSource.getWorld().getLevelProperties().setRaining(false);
+        serverCommandSource.getWorld().getLevelProperties().setThundering(false);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.clear", new Object[0]), true);
+        return i;
+    }
+
+    private static int executeRain(ServerCommandSource serverCommandSource, int i) {
+        serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+        serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+        serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+        serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+        serverCommandSource.getWorld().getLevelProperties().setThundering(false);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.rain", new Object[0]), true);
+        return i;
+    }
+
+    private static int executeThunder(ServerCommandSource serverCommandSource, int i) {
+        serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+        serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+        serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+        serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+        serverCommandSource.getWorld().getLevelProperties().setThundering(true);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.thunder", new Object[0]), true);
+        return i;
+    }
+}
+

@@ -1,0 +1,108 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.nbt;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import net.minecraft.nbt.AbstractNumberTag;
+import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+
+public class ByteTag
+extends AbstractNumberTag {
+    private byte value;
+
+    ByteTag() {
+    }
+
+    public ByteTag(byte b) {
+        this.value = b;
+    }
+
+    @Override
+    public void write(DataOutput dataOutput) throws IOException {
+        dataOutput.writeByte(this.value);
+    }
+
+    @Override
+    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        positionTracker.add(72L);
+        this.value = dataInput.readByte();
+    }
+
+    @Override
+    public byte getType() {
+        return 1;
+    }
+
+    @Override
+    public String toString() {
+        return this.value + "b";
+    }
+
+    public ByteTag method_10530() {
+        return new ByteTag(this.value);
+    }
+
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        return object instanceof ByteTag && this.value == ((ByteTag)object).value;
+    }
+
+    public int hashCode() {
+        return this.value;
+    }
+
+    @Override
+    public Component toTextComponent(String string, int i) {
+        Component component = new TextComponent("b").applyFormat(RED);
+        return new TextComponent(String.valueOf(this.value)).append(component).applyFormat(GOLD);
+    }
+
+    @Override
+    public long getLong() {
+        return this.value;
+    }
+
+    @Override
+    public int getInt() {
+        return this.value;
+    }
+
+    @Override
+    public short getShort() {
+        return this.value;
+    }
+
+    @Override
+    public byte getByte() {
+        return this.value;
+    }
+
+    @Override
+    public double getDouble() {
+        return this.value;
+    }
+
+    @Override
+    public float getFloat() {
+        return this.value;
+    }
+
+    @Override
+    public Number getNumber() {
+        return this.value;
+    }
+
+    @Override
+    public /* synthetic */ Tag copy() {
+        return this.method_10530();
+    }
+}
+

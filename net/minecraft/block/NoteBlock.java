@@ -1,0 +1,102 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.block;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.stat.Stats;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+
+public class NoteBlock
+extends Block {
+    public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
+    public static final BooleanProperty POWERED = Properties.POWERED;
+    public static final IntegerProperty NOTE = Properties.NOTE;
+
+    public NoteBlock(Block.Settings settings) {
+        super(settings);
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(INSTRUMENT, Instrument.HARP)).with(NOTE, 0)).with(POWERED, false));
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        return (BlockState)this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down())));
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+        if (direction == Direction.DOWN) {
+            return (BlockState)blockState.with(INSTRUMENT, Instrument.fromBlockState(blockState2));
+        }
+        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    }
+
+    @Override
+    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+        boolean bl2 = world.isReceivingRedstonePower(blockPos);
+        if (bl2 != blockState.get(POWERED)) {
+            if (bl2) {
+                this.playNote(world, blockPos);
+            }
+            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, bl2), 3);
+        }
+    }
+
+    private void playNote(World world, BlockPos blockPos) {
+        if (world.getBlockState(blockPos.up()).isAir()) {
+            world.addBlockAction(blockPos, this, 0, 0);
+        }
+    }
+
+    @Override
+    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        if (world.isClient) {
+            return true;
+        }
+        blockState = (BlockState)blockState.cycle(NOTE);
+        world.setBlockState(blockPos, blockState, 3);
+        this.playNote(world, blockPos);
+        playerEntity.incrementStat(Stats.TUNE_NOTEBLOCK);
+        return true;
+    }
+
+    @Override
+    public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+        if (world.isClient) {
+            return;
+        }
+        this.playNote(world, blockPos);
+        playerEntity.incrementStat(Stats.PLAY_NOTEBLOCK);
+    }
+
+    @Override
+    public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
+        int k = blockState.get(NOTE);
+        float f = (float)Math.pow(2.0, (double)(k - 12) / 12.0);
+        world.playSound(null, blockPos, blockState.get(INSTRUMENT).getSound(), SoundCategory.RECORDS, 3.0f, f);
+        world.addParticle(ParticleTypes.NOTE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, (double)k / 24.0, 0.0, 0.0);
+        return true;
+    }
+
+    @Override
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(INSTRUMENT, POWERED, NOTE);
+    }
+}
+

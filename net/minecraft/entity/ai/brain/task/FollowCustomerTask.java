@@ -1,0 +1,85 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.ai.brain.task;
+
+import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
+import java.util.Set;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+
+public class FollowCustomerTask
+extends Task<VillagerEntity> {
+    private final float speed;
+
+    public FollowCustomerTask(float f) {
+        super(Integer.MAX_VALUE);
+        this.speed = f;
+    }
+
+    protected boolean method_18954(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+        PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
+        return villagerEntity.isAlive() && playerEntity != null && !villagerEntity.isInsideWater() && !villagerEntity.velocityModified && villagerEntity.squaredDistanceTo(playerEntity) <= 16.0 && playerEntity.container != null;
+    }
+
+    protected boolean method_18955(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        return this.method_18954(serverWorld, villagerEntity);
+    }
+
+    protected void method_18956(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        this.update(villagerEntity);
+    }
+
+    protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        villagerEntity.resetCustomer();
+        Brain<VillagerEntity> brain = villagerEntity.getBrain();
+        brain.forget(MemoryModuleType.WALK_TARGET);
+        brain.forget(MemoryModuleType.LOOK_TARGET);
+    }
+
+    protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        this.update(villagerEntity);
+    }
+
+    @Override
+    protected boolean isTimeLimitExceeded(long l) {
+        return false;
+    }
+
+    @Override
+    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
+        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED), Pair.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
+    }
+
+    private void update(VillagerEntity villagerEntity) {
+        EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villagerEntity.getCurrentCustomer());
+        Brain<VillagerEntity> brain = villagerEntity.getBrain();
+        brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(entityPosWrapper, this.speed, 2));
+        brain.putMemory(MemoryModuleType.LOOK_TARGET, entityPosWrapper);
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        return this.method_18955(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+
+    @Override
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        this.method_18957(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        this.method_18956(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+}
+

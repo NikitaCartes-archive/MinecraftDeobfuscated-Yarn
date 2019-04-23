@@ -1,0 +1,166 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.container;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.Blocks;
+import net.minecraft.container.ArrayPropertyDelegate;
+import net.minecraft.container.BlockContext;
+import net.minecraft.container.Container;
+import net.minecraft.container.ContainerType;
+import net.minecraft.container.PropertyDelegate;
+import net.minecraft.container.Slot;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import org.jetbrains.annotations.Nullable;
+
+public class BeaconContainer
+extends Container {
+    private final Inventory paymentInv = new BasicInventory(1){
+
+        @Override
+        public boolean isValidInvStack(int i, ItemStack itemStack) {
+            return itemStack.getItem() == Items.EMERALD || itemStack.getItem() == Items.DIAMOND || itemStack.getItem() == Items.GOLD_INGOT || itemStack.getItem() == Items.IRON_INGOT;
+        }
+
+        @Override
+        public int getInvMaxStackAmount() {
+            return 1;
+        }
+    };
+    private final SlotPayment paymentSlot;
+    private final BlockContext context;
+    private final PropertyDelegate propertyDelegate;
+
+    public BeaconContainer(int i, Inventory inventory) {
+        this(i, inventory, new ArrayPropertyDelegate(3), BlockContext.EMPTY);
+    }
+
+    public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
+        super(ContainerType.BEACON, i);
+        int l;
+        BeaconContainer.checkContainerDataCount(propertyDelegate, 3);
+        this.propertyDelegate = propertyDelegate;
+        this.context = blockContext;
+        this.paymentSlot = new SlotPayment(this.paymentInv, 0, 136, 110);
+        this.addSlot(this.paymentSlot);
+        this.addProperties(propertyDelegate);
+        int j = 36;
+        int k = 137;
+        for (l = 0; l < 3; ++l) {
+            for (int m = 0; m < 9; ++m) {
+                this.addSlot(new Slot(inventory, m + l * 9 + 9, 36 + m * 18, 137 + l * 18));
+            }
+        }
+        for (l = 0; l < 9; ++l) {
+            this.addSlot(new Slot(inventory, l, 36 + l * 18, 195));
+        }
+    }
+
+    @Override
+    public void close(PlayerEntity playerEntity) {
+        super.close(playerEntity);
+        if (playerEntity.world.isClient) {
+            return;
+        }
+        ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
+        if (!itemStack.isEmpty()) {
+            playerEntity.dropItem(itemStack, false);
+        }
+    }
+
+    @Override
+    public boolean canUse(PlayerEntity playerEntity) {
+        return BeaconContainer.canUse(this.context, playerEntity, Blocks.BEACON);
+    }
+
+    @Override
+    public void setProperties(int i, int j) {
+        super.setProperties(i, j);
+        this.sendContentUpdates();
+    }
+
+    @Override
+    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = (Slot)this.slotList.get(i);
+        if (slot != null && slot.hasStack()) {
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
+            if (i == 0) {
+                if (!this.insertItem(itemStack2, 1, 37, true)) {
+                    return ItemStack.EMPTY;
+                }
+                slot.onStackChanged(itemStack2, itemStack);
+            } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getAmount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (i >= 1 && i < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (i >= 28 && i < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
+                return ItemStack.EMPTY;
+            }
+            if (itemStack2.isEmpty()) {
+                slot.setStack(ItemStack.EMPTY);
+            } else {
+                slot.markDirty();
+            }
+            if (itemStack2.getAmount() == itemStack.getAmount()) {
+                return ItemStack.EMPTY;
+            }
+            slot.onTakeItem(playerEntity, itemStack2);
+        }
+        return itemStack;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public int getProperties() {
+        return this.propertyDelegate.get(0);
+    }
+
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public StatusEffect getPrimaryEffect() {
+        return StatusEffect.byRawId(this.propertyDelegate.get(1));
+    }
+
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public StatusEffect getSecondaryEffect() {
+        return StatusEffect.byRawId(this.propertyDelegate.get(2));
+    }
+
+    public void setEffects(int i, int j) {
+        if (this.paymentSlot.hasStack()) {
+            this.propertyDelegate.set(1, i);
+            this.propertyDelegate.set(2, j);
+            this.paymentSlot.takeStack(1);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean hasPayment() {
+        return !this.paymentInv.getInvStack(0).isEmpty();
+    }
+
+    class SlotPayment
+    extends Slot {
+        public SlotPayment(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack itemStack) {
+            Item item = itemStack.getItem();
+            return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
+        }
+
+        @Override
+        public int getMaxStackAmount() {
+            return 1;
+        }
+    }
+}
+

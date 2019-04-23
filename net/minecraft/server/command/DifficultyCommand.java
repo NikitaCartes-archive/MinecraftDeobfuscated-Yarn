@@ -1,0 +1,43 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.server.command;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.dimension.DimensionType;
+
+public class DifficultyCommand {
+    private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("commands.difficulty.failure", object));
+
+    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+        LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
+        for (Difficulty difficulty : Difficulty.values()) {
+            literalArgumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal(difficulty.getTranslationKey()).executes(commandContext -> DifficultyCommand.execute((ServerCommandSource)commandContext.getSource(), difficulty)));
+        }
+        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
+            Difficulty difficulty = ((ServerCommandSource)commandContext.getSource()).getWorld().getDifficulty();
+            ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TranslatableComponent("commands.difficulty.query", difficulty.toTextComponent()), false);
+            return difficulty.getId();
+        }));
+    }
+
+    public static int execute(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+        if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
+            throw FAILURE_EXCEPTION.create(difficulty.getTranslationKey());
+        }
+        minecraftServer.setDifficulty(difficulty, true);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.difficulty.success", difficulty.toTextComponent()), true);
+        return 0;
+    }
+}
+

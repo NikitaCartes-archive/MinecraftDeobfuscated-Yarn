@@ -1,0 +1,103 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.color.block;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MaterialColor;
+import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.ReplaceableTallPlantBlock;
+import net.minecraft.block.StemBlock;
+import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.client.color.block.BlockColorProvider;
+import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.color.world.FoliageColors;
+import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.util.IdList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+@Environment(value=EnvType.CLIENT)
+public class BlockColors {
+    private final IdList<BlockColorProvider> providers = new IdList(32);
+
+    public static BlockColors create() {
+        BlockColors blockColors = new BlockColors();
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return -1;
+            }
+            return BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
+        }, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return GrassColors.getColor(0.5, 1.0);
+            }
+            return BiomeColors.getGrassColor(extendedBlockView, blockPos);
+        }, Blocks.GRASS_BLOCK, Blocks.FERN, Blocks.GRASS, Blocks.POTTED_FERN);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return FoliageColors.getDefaultColor();
+            }
+            return BiomeColors.getFoliageColor(extendedBlockView, blockPos);
+        }, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.VINE);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return -1;
+            }
+            return BiomeColors.getWaterColor(extendedBlockView, blockPos);
+        }, Blocks.WATER, Blocks.BUBBLE_COLUMN, Blocks.CAULDRON);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor(blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return -1;
+            }
+            return BiomeColors.getGrassColor(extendedBlockView, blockPos);
+        }, Blocks.SUGAR_CANE);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            int j = blockState.get(StemBlock.AGE);
+            int k = j * 32;
+            int l = 255 - j * 8;
+            int m = j * 4;
+            return k << 16 | l << 8 | m;
+        }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
+                return 7455580;
+            }
+            return 2129968;
+        }, Blocks.LILY_PAD);
+        return blockColors;
+    }
+
+    public int getColor(BlockState blockState, World world, BlockPos blockPos) {
+        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
+        if (blockColorProvider != null) {
+            return blockColorProvider.getColor(blockState, null, null, 0);
+        }
+        MaterialColor materialColor = blockState.getTopMaterialColor(world, blockPos);
+        return materialColor != null ? materialColor.color : -1;
+    }
+
+    public int getColorMultiplier(BlockState blockState, @Nullable ExtendedBlockView extendedBlockView, @Nullable BlockPos blockPos, int i) {
+        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
+        return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, extendedBlockView, blockPos, i);
+    }
+
+    public void register(BlockColorProvider blockColorProvider, Block ... blocks) {
+        for (Block block : blocks) {
+            this.providers.set(blockColorProvider, Registry.BLOCK.getRawId(block));
+        }
+    }
+}
+

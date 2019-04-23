@@ -1,0 +1,107 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.ai.brain.task;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Set;
+import net.minecraft.entity.FireworkEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.raid.Raid;
+import net.minecraft.item.FireworkItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
+
+public class CelebrateRaidWinTask
+extends Task<VillagerEntity> {
+    @Nullable
+    private Raid raid;
+
+    public CelebrateRaidWinTask(int i, int j) {
+        super(i, j);
+    }
+
+    protected boolean method_19951(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+        this.raid = serverWorld.getRaidAt(new BlockPos(villagerEntity));
+        return this.raid != null && this.raid.hasWon() && serverWorld.isSkyVisible(new BlockPos(villagerEntity));
+    }
+
+    protected boolean method_19952(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        return this.raid != null && !this.raid.hasStopped();
+    }
+
+    @Override
+    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
+        return ImmutableSet.of();
+    }
+
+    protected void method_19953(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        this.raid = null;
+        villagerEntity.getBrain().refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
+    }
+
+    protected void method_19954(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        Random random = villagerEntity.getRand();
+        if (random.nextInt(100) == 0) {
+            villagerEntity.playCelebrateSound();
+        }
+        if (random.nextInt(200) == 0 && serverWorld.isSkyVisible(new BlockPos(villagerEntity))) {
+            DyeColor dyeColor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
+            int i = random.nextInt(3);
+            ItemStack itemStack = this.createFirework(dyeColor, i);
+            FireworkEntity fireworkEntity = new FireworkEntity(villagerEntity.world, villagerEntity.x, villagerEntity.y + (double)villagerEntity.getStandingEyeHeight(), villagerEntity.z, itemStack);
+            villagerEntity.world.spawnEntity(fireworkEntity);
+        }
+    }
+
+    private ItemStack createFirework(DyeColor dyeColor, int i) {
+        ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
+        ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
+        CompoundTag compoundTag = itemStack2.getOrCreateSubCompoundTag("Explosion");
+        ArrayList<Integer> list = Lists.newArrayList();
+        list.add(dyeColor.getFireworkColor());
+        compoundTag.putIntArray("Colors", list);
+        compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
+        CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("Fireworks");
+        ListTag listTag = new ListTag();
+        CompoundTag compoundTag3 = itemStack2.getSubCompoundTag("Explosion");
+        if (compoundTag3 != null) {
+            listTag.add(compoundTag3);
+        }
+        compoundTag2.putByte("Flight", (byte)i);
+        if (!listTag.isEmpty()) {
+            compoundTag2.put("Explosions", listTag);
+        }
+        return itemStack;
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        return this.method_19952(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+
+    @Override
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        this.method_19953(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+
+    @Override
+    protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        this.method_19954(serverWorld, (VillagerEntity)livingEntity, l);
+    }
+}
+

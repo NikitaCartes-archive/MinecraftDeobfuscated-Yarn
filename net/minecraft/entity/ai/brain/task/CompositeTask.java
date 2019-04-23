@@ -1,0 +1,108 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.ai.brain.task;
+
+import com.mojang.datafixers.util.Pair;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.WeightedList;
+
+public class CompositeTask<E extends LivingEntity>
+extends Task<E> {
+    private final Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemoryState;
+    private final Set<MemoryModuleType<?>> memoriesToForgetWhenStopped;
+    private final Order order;
+    private final RunMode runMode;
+    private final WeightedList<Task<? super E>> tasks = new WeightedList();
+
+    public CompositeTask(Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set, Set<MemoryModuleType<?>> set2, Order order, RunMode runMode, List<Pair<Task<? super E>, Integer>> list) {
+        this.requiredMemoryState = set;
+        this.memoriesToForgetWhenStopped = set2;
+        this.order = order;
+        this.runMode = runMode;
+        list.forEach(pair -> this.tasks.add((Task<E>)pair.getFirst(), (Integer)pair.getSecond()));
+    }
+
+    @Override
+    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
+        return this.requiredMemoryState;
+    }
+
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, E livingEntity, long l) {
+        return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(serverWorld, livingEntity, l));
+    }
+
+    @Override
+    protected boolean isTimeLimitExceeded(long l) {
+        return false;
+    }
+
+    @Override
+    protected void run(ServerWorld serverWorld, E livingEntity, long l) {
+        this.order.apply(this.tasks);
+        this.runMode.method_19559(this.tasks, serverWorld, livingEntity, l);
+    }
+
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, E livingEntity, long l) {
+        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(serverWorld, livingEntity, l));
+    }
+
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, E livingEntity, long l) {
+        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(serverWorld, livingEntity, l));
+        this.memoriesToForgetWhenStopped.forEach(((LivingEntity)livingEntity).getBrain()::forget);
+    }
+
+    @Override
+    public String toString() {
+        Set set = this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).collect(Collectors.toSet());
+        return "(" + this.getClass().getSimpleName() + "): " + set;
+    }
+
+    static enum RunMode {
+        RUN_ALL{
+
+            @Override
+            public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
+                weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(serverWorld, livingEntity, l)).findFirst();
+            }
+        }
+        ,
+        TRY_ALL{
+
+            @Override
+            public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
+                weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
+            }
+        };
+
+
+        public abstract <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> var1, ServerWorld var2, E var3, long var4);
+    }
+
+    static enum Order {
+        ORDERED(weightedList -> {}),
+        SHUFFLED(WeightedList::shuffle);
+
+        private final Consumer<WeightedList<?>> consumer;
+
+        private Order(Consumer<WeightedList<?>> consumer) {
+            this.consumer = consumer;
+        }
+
+        public void apply(WeightedList<?> weightedList) {
+            this.consumer.accept(weightedList);
+        }
+    }
+}
+

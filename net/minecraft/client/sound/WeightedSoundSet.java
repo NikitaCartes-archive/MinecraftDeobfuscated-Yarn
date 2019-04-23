@@ -1,0 +1,76 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.sound;
+
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.sound.Sound;
+import net.minecraft.client.sound.SoundContainer;
+import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.sound.SoundSystem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+
+@Environment(value=EnvType.CLIENT)
+public class WeightedSoundSet
+implements SoundContainer<Sound> {
+    private final List<SoundContainer<Sound>> sounds = Lists.newArrayList();
+    private final Random random = new Random();
+    private final Identifier id;
+    private final Component subtitle;
+
+    public WeightedSoundSet(Identifier identifier, @Nullable String string) {
+        this.id = identifier;
+        this.subtitle = string == null ? null : new TranslatableComponent(string, new Object[0]);
+    }
+
+    @Override
+    public int getWeight() {
+        int i = 0;
+        for (SoundContainer<Sound> soundContainer : this.sounds) {
+            i += soundContainer.getWeight();
+        }
+        return i;
+    }
+
+    public Sound method_4887() {
+        int i = this.getWeight();
+        if (this.sounds.isEmpty() || i == 0) {
+            return SoundManager.MISSING_SOUND;
+        }
+        int j = this.random.nextInt(i);
+        for (SoundContainer<Sound> soundContainer : this.sounds) {
+            if ((j -= soundContainer.getWeight()) >= 0) continue;
+            return soundContainer.getSound();
+        }
+        return SoundManager.MISSING_SOUND;
+    }
+
+    public void add(SoundContainer<Sound> soundContainer) {
+        this.sounds.add(soundContainer);
+    }
+
+    @Nullable
+    public Component getSubtitle() {
+        return this.subtitle;
+    }
+
+    @Override
+    public void preload(SoundSystem soundSystem) {
+        for (SoundContainer<Sound> soundContainer : this.sounds) {
+            soundContainer.preload(soundSystem);
+        }
+    }
+
+    @Override
+    public /* synthetic */ Object getSound() {
+        return this.method_4887();
+    }
+}
+

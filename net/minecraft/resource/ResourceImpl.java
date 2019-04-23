@@ -1,0 +1,122 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.resource;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.JsonObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.metadata.ResourceMetadataReader;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.UncaughtExceptionLogger;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+public class ResourceImpl
+implements Resource {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Executor RESOURCE_IO_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Resource IO {0}").setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
+    private final String packName;
+    private final Identifier id;
+    private final InputStream inputStream;
+    private final InputStream metaInputStream;
+    @Environment(value=EnvType.CLIENT)
+    private boolean readMetadata;
+    @Environment(value=EnvType.CLIENT)
+    private JsonObject metadata;
+
+    public ResourceImpl(String string, Identifier identifier, InputStream inputStream, @Nullable InputStream inputStream2) {
+        this.packName = string;
+        this.id = identifier;
+        this.inputStream = inputStream;
+        this.metaInputStream = inputStream2;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Identifier getId() {
+        return this.id;
+    }
+
+    @Override
+    public InputStream getInputStream() {
+        return this.inputStream;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean hasMetadata() {
+        return this.metaInputStream != null;
+    }
+
+    @Override
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public <T> T getMetadata(ResourceMetadataReader<T> resourceMetadataReader) {
+        if (!this.hasMetadata()) {
+            return null;
+        }
+        if (this.metadata == null && !this.readMetadata) {
+            this.readMetadata = true;
+            BufferedReader bufferedReader = null;
+            try {
+                bufferedReader = new BufferedReader(new InputStreamReader(this.metaInputStream, StandardCharsets.UTF_8));
+                this.metadata = JsonHelper.deserialize(bufferedReader);
+            } catch (Throwable throwable) {
+                IOUtils.closeQuietly(bufferedReader);
+                throw throwable;
+            }
+            IOUtils.closeQuietly(bufferedReader);
+        }
+        if (this.metadata == null) {
+            return null;
+        }
+        String string = resourceMetadataReader.getKey();
+        return this.metadata.has(string) ? (T)resourceMetadataReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
+    }
+
+    @Override
+    public String getResourcePackName() {
+        return this.packName;
+    }
+
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof ResourceImpl)) {
+            return false;
+        }
+        ResourceImpl resourceImpl = (ResourceImpl)object;
+        if (this.id != null ? !this.id.equals(resourceImpl.id) : resourceImpl.id != null) {
+            return false;
+        }
+        return !(this.packName != null ? !this.packName.equals(resourceImpl.packName) : resourceImpl.packName != null);
+    }
+
+    public int hashCode() {
+        int i = this.packName != null ? this.packName.hashCode() : 0;
+        i = 31 * i + (this.id != null ? this.id.hashCode() : 0);
+        return i;
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.inputStream.close();
+        if (this.metaInputStream != null) {
+            this.metaInputStream.close();
+        }
+    }
+}
+

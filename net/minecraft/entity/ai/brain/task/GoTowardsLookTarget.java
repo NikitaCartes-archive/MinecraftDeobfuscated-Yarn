@@ -1,0 +1,40 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.entity.ai.brain.task;
+
+import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
+import java.util.Set;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LookTarget;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.server.world.ServerWorld;
+
+public class GoTowardsLookTarget
+extends Task<LivingEntity> {
+    private final float speed;
+    private final int completionRange;
+
+    public GoTowardsLookTarget(float f, int i) {
+        this.speed = f;
+        this.completionRange = i;
+    }
+
+    @Override
+    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
+        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT));
+    }
+
+    @Override
+    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+        Brain<?> brain = livingEntity.getBrain();
+        LookTarget lookTarget = brain.getOptionalMemory(MemoryModuleType.LOOK_TARGET).get();
+        brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(lookTarget, this.speed, this.completionRange));
+    }
+}
+

@@ -1,0 +1,30 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.render.entity.model;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.entity.model.SkullEntityModel;
+
+@Environment(value=EnvType.CLIENT)
+public class SkullOverlayEntityModel
+extends SkullEntityModel {
+    private final Cuboid field_3377 = new Cuboid(this, 32, 0);
+
+    public SkullOverlayEntityModel() {
+        super(0, 0, 64, 64);
+        this.field_3377.addBox(-4.0f, -8.0f, -4.0f, 8, 8, 8, 0.25f);
+        this.field_3377.setRotationPoint(0.0f, 0.0f, 0.0f);
+    }
+
+    @Override
+    public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
+        super.setRotationAngles(f, g, h, i, j, k);
+        this.field_3377.yaw = this.field_3564.yaw;
+        this.field_3377.pitch = this.field_3564.pitch;
+        this.field_3377.render(k);
+    }
+}
+
