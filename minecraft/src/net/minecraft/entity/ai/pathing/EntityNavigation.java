@@ -13,7 +13,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkCache;
 
@@ -105,13 +105,13 @@ public abstract class EntityNavigation {
 		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
 			return this.currentPath;
 		} else {
-			this.targetPos = blockPos;
+			this.targetPos = blockPos.toImmutable();
 			float g = this.getFollowRange();
 			this.world.getProfiler().push("pathfind");
 			BlockPos blockPos2 = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
 			int j = (int)(g + (float)i);
-			BlockView blockView = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
-			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, d, e, f, g);
+			ViewableWorld viewableWorld = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
+			Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, d, e, f, g);
 			this.world.getProfiler().pop();
 			return path;
 		}
@@ -186,34 +186,12 @@ public abstract class EntityNavigation {
 
 	protected void method_6339() {
 		Vec3d vec3d = this.getPos();
-		int i = this.currentPath.getLength();
-
-		for (int j = this.currentPath.getCurrentNodeIndex(); j < this.currentPath.getLength(); j++) {
-			if ((double)this.currentPath.getNode(j).y != Math.floor(vec3d.y)) {
-				i = j;
-				break;
-			}
-		}
-
 		this.field_6683 = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 		Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 		if (Math.abs(this.entity.x - (vec3d2.x + 0.5)) < (double)this.field_6683
 			&& Math.abs(this.entity.z - (vec3d2.z + 0.5)) < (double)this.field_6683
 			&& Math.abs(this.entity.y - vec3d2.y) < 1.0) {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
-		}
-
-		if (this.entity.world.getTime() % 5L == 0L) {
-			int k = MathHelper.ceil(this.entity.getWidth());
-			int l = MathHelper.ceil(this.entity.getHeight());
-			int m = k;
-
-			for (int n = i - 1; n >= this.currentPath.getCurrentNodeIndex(); n--) {
-				if (this.canPathDirectlyThrough(vec3d, this.currentPath.getNodePosition(this.entity, n), k, l, m)) {
-					this.currentPath.setCurrentNodeIndex(n);
-					break;
-				}
-			}
 		}
 
 		this.method_6346(vec3d);

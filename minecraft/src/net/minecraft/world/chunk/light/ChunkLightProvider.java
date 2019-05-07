@@ -187,7 +187,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	@Nullable
 	@Override
 	public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
-		return this.lightStorage.getDataForChunk(chunkSectionPos.asLong(), false);
+		return this.lightStorage.method_20533(chunkSectionPos.asLong());
 	}
 
 	@Override

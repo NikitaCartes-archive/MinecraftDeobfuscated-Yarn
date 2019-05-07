@@ -46,11 +46,20 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 		return this.shouldRunAsync() ? CompletableFuture.supplyAsync(supplier, this) : CompletableFuture.completedFuture(supplier.get());
 	}
 
-	private CompletableFuture<Object> executeFuture(Runnable runnable) {
+	private CompletableFuture<Void> executeFuture(Runnable runnable) {
 		return CompletableFuture.supplyAsync(() -> {
 			runnable.run();
 			return null;
 		}, this);
+	}
+
+	public CompletableFuture<Void> method_20493(Runnable runnable) {
+		if (this.shouldRunAsync()) {
+			return this.executeFuture(runnable);
+		} else {
+			runnable.run();
+			return CompletableFuture.completedFuture(null);
+		}
 	}
 
 	public void executeSync(Runnable runnable) {

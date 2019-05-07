@@ -87,6 +87,7 @@ import net.minecraft.datafixers.fixes.MobSpawnerEntityIdentifiersFix;
 import net.minecraft.datafixers.fixes.NewVillageFix;
 import net.minecraft.datafixers.fixes.ObjectiveDisplayNameFix;
 import net.minecraft.datafixers.fixes.ObjectiveRenderTypeFix;
+import net.minecraft.datafixers.fixes.OminousBannerBlockEntityRenameFix;
 import net.minecraft.datafixers.fixes.OptionsAddTextBackgroundFix;
 import net.minecraft.datafixers.fixes.OptionsForceVBOFix;
 import net.minecraft.datafixers.fixes.OptionsKeyLwjgl3Fix;
@@ -101,7 +102,9 @@ import net.minecraft.datafixers.fixes.SwimStatsRenameFix;
 import net.minecraft.datafixers.fixes.TeamDisplayNameFix;
 import net.minecraft.datafixers.fixes.VillagerProfessionFix;
 import net.minecraft.datafixers.fixes.VillagerTradeFix;
+import net.minecraft.datafixers.fixes.VillagerXpRebuildFix;
 import net.minecraft.datafixers.fixes.WriteAndReadFix;
+import net.minecraft.datafixers.fixes.ZombieVillagerXpRebuildFix;
 import net.minecraft.datafixers.mapping.LegacyCoralBlockMapping;
 import net.minecraft.datafixers.mapping.LegacyCoralFanBlockMapping;
 import net.minecraft.datafixers.mapping.LegacyDyeItemMapping;
@@ -500,5 +503,10 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new PointOfInterestReorganizationFix(schema92, false));
 		Schema schema93 = dataFixerBuilder.addSchema(1948, identNormalize);
 		dataFixerBuilder.addFixer(new ItemOminousBannerRenameFix(schema93, false));
+		Schema schema94 = dataFixerBuilder.addSchema(1953, identNormalize);
+		dataFixerBuilder.addFixer(new OminousBannerBlockEntityRenameFix(schema94, false));
+		Schema schema95 = dataFixerBuilder.addSchema(1955, identNormalize);
+		dataFixerBuilder.addFixer(new VillagerXpRebuildFix(schema95, false));
+		dataFixerBuilder.addFixer(new ZombieVillagerXpRebuildFix(schema95, false));
 	}
 }

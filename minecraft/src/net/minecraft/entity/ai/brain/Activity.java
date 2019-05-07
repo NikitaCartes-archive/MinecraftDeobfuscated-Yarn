@@ -1,6 +1,5 @@
 package net.minecraft.entity.ai.brain;
 
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Activity {
@@ -25,7 +24,7 @@ public class Activity {
 	}
 
 	private static Activity register(String string) {
-		return Registry.ACTIVITY.add(new Identifier(string), new Activity(string));
+		return Registry.register(Registry.ACTIVITY, string, new Activity(string));
 	}
 
 	public String toString() {

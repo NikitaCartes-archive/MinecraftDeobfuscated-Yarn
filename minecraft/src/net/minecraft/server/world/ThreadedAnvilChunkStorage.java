@@ -26,6 +26,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -74,6 +75,7 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -305,29 +307,44 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	@Override
 	public void close() throws IOException {
-		this.chunkTaskPrioritySystem.close();
 		this.save(true);
+		this.chunkTaskPrioritySystem.close();
 		this.pointOfInterestStorage.close();
 		super.close();
 	}
 
 	protected void save(boolean bl) {
-		this.chunkHolders
-			.values()
-			.stream()
-			.filter(ChunkHolder::method_20384)
-			.peek(ChunkHolder::method_20385)
-			.map(chunkHolder -> chunkHolder.getFuture(ChunkStatus.field_12803))
-			.forEach(completableFuture -> {
-				if (bl) {
-					this.mainThreadExecutor.waitFor(completableFuture::isDone);
-					((Either)completableFuture.join()).ifLeft(this::save);
-				} else {
-					((Either)completableFuture.getNow(ChunkHolder.UNLOADED_CHUNK)).ifLeft(this::save);
+		if (bl) {
+			List<ChunkHolder> list = (List<ChunkHolder>)this.chunkHolders
+				.values()
+				.stream()
+				.filter(ChunkHolder::method_20384)
+				.peek(ChunkHolder::method_20385)
+				.collect(Collectors.toList());
+			MutableBoolean mutableBoolean = new MutableBoolean();
+
+			do {
+				mutableBoolean.setFalse();
+				list.stream().map(chunkHolder -> {
+					CompletableFuture<Chunk> completableFuture;
+					do {
+						completableFuture = chunkHolder.getFuture();
+						this.mainThreadExecutor.waitFor(completableFuture::isDone);
+					} while (completableFuture != chunkHolder.getFuture());
+
+					return (Chunk)completableFuture.join();
+				}).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
+			} while (mutableBoolean.isTrue());
+
+			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.saveDir.getName());
+		} else {
+			this.chunkHolders.values().stream().filter(ChunkHolder::method_20384).forEach(chunkHolder -> {
+				Chunk chunk = (Chunk)chunkHolder.getFuture().getNow(null);
+				if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
+					this.save(chunk);
+					chunkHolder.method_20385();
 				}
 			});
-		if (bl) {
-			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.saveDir.getName());
 		}
 	}
 
@@ -533,18 +550,28 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return completableFuture2;
 	}
 
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_20580(ChunkHolder chunkHolder) {
+		return chunkHolder.createFuture(ChunkStatus.field_12803, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
+				WorldChunk worldChunk = (WorldChunk)chunk;
+				worldChunk.method_20530();
+				return worldChunk;
+			}), runnable -> this.mainActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
+	}
+
 	public int getTotalChunksLoadedCount() {
 		return this.totalChunksLoadedCount.get();
 	}
 
-	private void save(Chunk chunk) {
+	private boolean save(Chunk chunk) {
 		this.pointOfInterestStorage.method_20436(chunk.getPos());
-		if (chunk.needsSaving()) {
+		if (!chunk.needsSaving()) {
+			return false;
+		} else {
 			try {
 				this.world.checkSessionLock();
 			} catch (SessionLockException var6) {
 				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var6);
-				return;
+				return false;
 			}
 
 			chunk.setLastSaveTime(this.world.getTime());
@@ -556,18 +583,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
 					CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
 					if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.field_12807) {
-						return;
+						return false;
 					}
 
 					if (chunkStatus == ChunkStatus.field_12798 && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
-						return;
+						return false;
 					}
 				}
 
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
 				this.setTagAt(chunkPos, compoundTagx);
+				return true;
 			} catch (Exception var5) {
 				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
+				return false;
 			}
 		}
 	}
@@ -881,8 +910,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.pointOfInterestStorage;
 	}
 
-	public void method_20459(WorldChunk worldChunk) {
-		this.mainThreadExecutor.method_18858(() -> worldChunk.method_20471(this.world));
+	public CompletableFuture<Void> method_20576(WorldChunk worldChunk) {
+		return this.mainThreadExecutor.method_20493(() -> worldChunk.method_20471(this.world));
 	}
 
 	class EntityTracker {

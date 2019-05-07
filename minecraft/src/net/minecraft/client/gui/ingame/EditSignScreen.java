@@ -56,6 +56,9 @@ public class EditSignScreen extends Screen {
 	@Override
 	public void tick() {
 		this.ticksSinceOpened++;
+		if (!this.sign.getType().supports(this.sign.getCachedState().getBlock())) {
+			this.finishEditing();
+		}
 	}
 
 	private void finishEditing() {
@@ -104,12 +107,6 @@ public class EditSignScreen extends Screen {
 		if (blockState.getBlock() instanceof SignBlock) {
 			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
-			if (!(blockState.getBlock() instanceof WallSignBlock)) {
-				GlStateManager.popMatrix();
-				this.finishEditing();
-				return;
-			}
-
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}
 

@@ -17,7 +17,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 
 @Environment(EnvType.CLIENT)
 public class Sprite {
@@ -402,7 +401,7 @@ public class Sprite {
 		} catch (Throwable var5) {
 			CrashReport crashReport = CrashReport.create(var5, "Generating mipmaps for frame");
 			CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
-			crashReportSection.add("Frame sizes", (ICrashCallable<String>)(() -> {
+			crashReportSection.method_577("Frame sizes", () -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
 				for (NativeImage nativeImage : this.images) {
@@ -414,7 +413,7 @@ public class Sprite {
 				}
 
 				return stringBuilder.toString();
-			}));
+			});
 			throw new CrashException(crashReport);
 		}
 	}

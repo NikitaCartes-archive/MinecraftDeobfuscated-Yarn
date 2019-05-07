@@ -7,7 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class Path {
 	private final List<PathNode> nodes;
@@ -98,14 +100,9 @@ public class Path {
 		}
 	}
 
-	public boolean method_19315() {
+	public boolean method_19313(BlockPos blockPos) {
 		PathNode pathNode = this.getEnd();
-		return pathNode != null && this.method_19313(pathNode.getPos());
-	}
-
-	public boolean method_19313(Vec3d vec3d) {
-		PathNode pathNode = this.getEnd();
-		return pathNode == null ? false : pathNode.x == (int)vec3d.x && pathNode.y == (int)vec3d.y && pathNode.z == (int)vec3d.z;
+		return pathNode == null ? false : blockPos.isWithinDistance(new Vec3i(pathNode.x, pathNode.y, pathNode.z), 2.0);
 	}
 
 	@Environment(EnvType.CLIENT)

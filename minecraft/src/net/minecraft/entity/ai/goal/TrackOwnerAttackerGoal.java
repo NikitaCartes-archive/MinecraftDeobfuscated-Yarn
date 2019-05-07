@@ -18,9 +18,7 @@ public class TrackOwnerAttackerGoal extends TrackTargetGoal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.tameable.isTamed()) {
-			return false;
-		} else {
+		if (this.tameable.isTamed() && !this.tameable.isSitting()) {
 			LivingEntity livingEntity = this.tameable.getOwner();
 			if (livingEntity == null) {
 				return false;
@@ -29,6 +27,8 @@ public class TrackOwnerAttackerGoal extends TrackTargetGoal {
 				int i = livingEntity.getLastAttackedTime();
 				return i != this.lastAttackedTime && this.canTrack(this.attacker, TargetPredicate.DEFAULT) && this.tameable.canAttackWithOwner(this.attacker, livingEntity);
 			}
+		} else {
+			return false;
 		}
 	}
 

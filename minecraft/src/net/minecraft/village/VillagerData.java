@@ -3,6 +3,8 @@ package net.minecraft.village;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -63,6 +65,7 @@ public class VillagerData {
 		);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public static int getLowerLevelExperience(int i) {
 		return canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i - 1] : 0;
 	}

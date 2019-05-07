@@ -22,7 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.ShortTag;
-import net.minecraft.server.world.ServerTickScheduler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
@@ -53,9 +53,9 @@ public class ChunkSerializer {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static ProtoChunk deserialize(
-		World world, StructureManager structureManager, PointOfInterestStorage pointOfInterestStorage, ChunkPos chunkPos, CompoundTag compoundTag
+		ServerWorld serverWorld, StructureManager structureManager, PointOfInterestStorage pointOfInterestStorage, ChunkPos chunkPos, CompoundTag compoundTag
 	) {
-		ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+		ChunkGenerator<?> chunkGenerator = serverWorld.method_14178().getChunkGenerator();
 		BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
 		ChunkPos chunkPos2 = new ChunkPos(compoundTag2.getInt("xPos"), compoundTag2.getInt("zPos"));
@@ -84,17 +84,17 @@ public class ChunkSerializer {
 			? new UpgradeData(compoundTag2.getCompound("UpgradeData"))
 			: UpgradeData.NO_UPGRADE_DATA;
 		ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<>(
-			block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos, compoundTag2.getList("ToBeTicked", 9)
+			block -> block == null || block.getDefaultState().isAir(), chunkPos, compoundTag2.getList("ToBeTicked", 9)
 		);
 		ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<>(
-			fluid -> fluid == null || fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
+			fluid -> fluid == null || fluid == Fluids.field_15906, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
 		);
 		boolean bl = compoundTag2.getBoolean("isLightOn");
 		ListTag listTag = compoundTag2.getList("Sections", 10);
 		int k = 16;
 		ChunkSection[] chunkSections = new ChunkSection[16];
-		boolean bl2 = world.getDimension().hasSkyLight();
-		ChunkManager chunkManager = world.getChunkManager();
+		boolean bl2 = serverWorld.getDimension().hasSkyLight();
+		ChunkManager chunkManager = serverWorld.method_14178();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 
 		for (int l = 0; l < listTag.size(); l++) {
@@ -126,13 +126,27 @@ public class ChunkSerializer {
 		ChunkStatus.ChunkType chunkType = getChunkType(compoundTag);
 		Chunk chunk;
 		if (chunkType == ChunkStatus.ChunkType.field_12807) {
+			TickScheduler<Block> tickScheduler;
+			if (compoundTag2.containsKey("TileTicks", 9)) {
+				tickScheduler = SimpleTickScheduler.method_20512(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
+			} else {
+				tickScheduler = chunkTickScheduler;
+			}
+
+			TickScheduler<Fluid> tickScheduler2;
+			if (compoundTag2.containsKey("LiquidTicks", 9)) {
+				tickScheduler2 = SimpleTickScheduler.method_20512(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get);
+			} else {
+				tickScheduler2 = chunkTickScheduler2;
+			}
+
 			chunk = new WorldChunk(
-				world.getWorld(),
+				serverWorld.getWorld(),
 				chunkPos,
 				biomes,
 				upgradeData,
-				chunkTickScheduler,
-				chunkTickScheduler2,
+				tickScheduler,
+				tickScheduler2,
 				n,
 				chunkSections,
 				worldChunk -> writeEntities(compoundTag2, worldChunk)
@@ -225,7 +239,7 @@ public class ChunkSerializer {
 		}
 	}
 
-	public static CompoundTag serialize(World world, Chunk chunk) {
+	public static CompoundTag serialize(ServerWorld serverWorld, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
@@ -233,7 +247,7 @@ public class ChunkSerializer {
 		compoundTag.put("Level", compoundTag2);
 		compoundTag2.putInt("xPos", chunkPos.x);
 		compoundTag2.putInt("zPos", chunkPos.z);
-		compoundTag2.putLong("LastUpdate", world.getTime());
+		compoundTag2.putLong("LastUpdate", serverWorld.getTime());
 		compoundTag2.putLong("InhabitedTime", chunk.getInhabitedTime());
 		compoundTag2.putString("Status", chunk.getStatus().getName());
 		UpgradeData upgradeData = chunk.getUpgradeData();
@@ -243,7 +257,7 @@ public class ChunkSerializer {
 
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		ListTag listTag = new ListTag();
-		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
+		LightingProvider lightingProvider = serverWorld.method_14178().method_17293();
 
 		for (int i = -1; i < 17; i++) {
 			int j = i;
@@ -351,40 +365,34 @@ public class ChunkSerializer {
 		}
 
 		compoundTag2.put("Entities", listTag3);
-		if (world.getBlockTickScheduler() instanceof ServerTickScheduler) {
-			compoundTag2.put("TileTicks", ((ServerTickScheduler)world.getBlockTickScheduler()).toTag(chunkPos));
+		TickScheduler<Block> tickScheduler = chunk.getBlockTickScheduler();
+		if (tickScheduler instanceof ChunkTickScheduler) {
+			compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)tickScheduler).toNbt());
+		} else if (tickScheduler instanceof SimpleTickScheduler) {
+			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toTag(serverWorld.getTime()));
+		} else {
+			compoundTag2.put("TileTicks", serverWorld.method_14196().toTag(chunkPos));
 		}
 
-		if (chunk.getBlockTickScheduler() instanceof ChunkTickScheduler) {
-			compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)chunk.getBlockTickScheduler()).toNbt());
-		}
-
-		if (chunk.getBlockTickScheduler() instanceof SimpleTickScheduler) {
-			compoundTag2.put("TileTicks", ((SimpleTickScheduler)chunk.getBlockTickScheduler()).toTag(world.getTime()));
-		}
-
-		if (world.getFluidTickScheduler() instanceof ServerTickScheduler) {
-			compoundTag2.put("LiquidTicks", ((ServerTickScheduler)world.getFluidTickScheduler()).toTag(chunkPos));
-		}
-
-		if (chunk.getFluidTickScheduler() instanceof ChunkTickScheduler) {
-			compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)chunk.getFluidTickScheduler()).toNbt());
-		}
-
-		if (chunk.getFluidTickScheduler() instanceof SimpleTickScheduler) {
-			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)chunk.getFluidTickScheduler()).toTag(world.getTime()));
+		TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
+		if (tickScheduler2 instanceof ChunkTickScheduler) {
+			compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)tickScheduler2).toNbt());
+		} else if (tickScheduler2 instanceof SimpleTickScheduler) {
+			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toTag(serverWorld.getTime()));
+		} else {
+			compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
 		}
 
 		compoundTag2.put("PostProcessing", toNbt(chunk.getPostProcessingLists()));
-		CompoundTag compoundTag6 = new CompoundTag();
+		CompoundTag compoundTag4 = new CompoundTag();
 
 		for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
 			if (chunk.getStatus().isSurfaceGenerated().contains(entry.getKey())) {
-				compoundTag6.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
+				compoundTag4.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}
 
-		compoundTag2.put("Heightmaps", compoundTag6);
+		compoundTag2.put("Heightmaps", compoundTag4);
 		compoundTag2.put("Structures", writeStructures(chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences()));
 		return compoundTag;
 	}
@@ -426,14 +434,6 @@ public class ChunkSerializer {
 					worldChunk.addBlockEntity(blockEntity);
 				}
 			}
-		}
-
-		if (compoundTag.containsKey("TileTicks", 9) && world.getBlockTickScheduler() instanceof ServerTickScheduler) {
-			((ServerTickScheduler)world.getBlockTickScheduler()).fromTag(compoundTag.getList("TileTicks", 10));
-		}
-
-		if (compoundTag.containsKey("LiquidTicks", 9) && world.getFluidTickScheduler() instanceof ServerTickScheduler) {
-			((ServerTickScheduler)world.getFluidTickScheduler()).fromTag(compoundTag.getList("LiquidTicks", 10));
 		}
 	}
 

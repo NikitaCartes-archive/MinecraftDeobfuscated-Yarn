@@ -39,23 +39,15 @@ public class CrashReport {
 	}
 
 	private void fillSystemDetails() {
-		this.systemDetailsSection.add("Minecraft Version", (ICrashCallable<String>)(() -> SharedConstants.getGameVersion().getName()));
+		this.systemDetailsSection.method_577("Minecraft Version", () -> SharedConstants.getGameVersion().getName());
 		this.systemDetailsSection
-			.add(
-				"Operating System",
-				(ICrashCallable<String>)(() -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"))
-			);
-		this.systemDetailsSection.add("Java Version", (ICrashCallable<String>)(() -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor")));
+			.method_577("Operating System", () -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
+		this.systemDetailsSection.method_577("Java Version", () -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor"));
 		this.systemDetailsSection
-			.add(
-				"Java VM Version",
-				(ICrashCallable<String>)(() -> System.getProperty("java.vm.name")
-						+ " ("
-						+ System.getProperty("java.vm.info")
-						+ "), "
-						+ System.getProperty("java.vm.vendor"))
+			.method_577(
+				"Java VM Version", () -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor")
 			);
-		this.systemDetailsSection.add("Memory", (ICrashCallable<String>)(() -> {
+		this.systemDetailsSection.method_577("Memory", () -> {
 			Runtime runtime = Runtime.getRuntime();
 			long l = runtime.maxMemory();
 			long m = runtime.totalMemory();
@@ -64,11 +56,11 @@ public class CrashReport {
 			long p = m / 1024L / 1024L;
 			long q = n / 1024L / 1024L;
 			return n + " bytes (" + q + " MB) / " + m + " bytes (" + p + " MB) up to " + l + " bytes (" + o + " MB)";
-		}));
-		this.systemDetailsSection.add("JVM Flags", (ICrashCallable<String>)(() -> {
+		});
+		this.systemDetailsSection.method_577("JVM Flags", () -> {
 			List<String> list = (List<String>)SystemUtil.getJVMFlags().collect(Collectors.toList());
 			return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
-		}));
+		});
 	}
 
 	public String getMessage() {

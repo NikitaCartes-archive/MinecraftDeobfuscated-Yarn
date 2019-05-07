@@ -19,6 +19,8 @@ import net.minecraft.util.math.Vec3d;
 
 public abstract class VoxelShape {
 	protected final VoxelSet voxels;
+	@Nullable
+	private VoxelShape[] shapeCache;
 
 	VoxelShape(VoxelSet voxelSet) {
 		this.voxels = voxelSet;
@@ -26,12 +28,12 @@ public abstract class VoxelShape {
 
 	public double getMinimum(Direction.Axis axis) {
 		int i = this.voxels.getMin(axis);
-		return i >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getCoord(axis, i);
+		return i >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getPointPosition(axis, i);
 	}
 
 	public double getMaximum(Direction.Axis axis) {
 		int i = this.voxels.getMax(axis);
-		return i <= 0 ? Double.NEGATIVE_INFINITY : this.getCoord(axis, i);
+		return i <= 0 ? Double.NEGATIVE_INFINITY : this.getPointPosition(axis, i);
 	}
 
 	public BoundingBox getBoundingBox() {
@@ -49,11 +51,11 @@ public abstract class VoxelShape {
 		}
 	}
 
-	protected double getCoord(Direction.Axis axis, int i) {
-		return this.getIncludedPoints(axis).getDouble(i);
+	protected double getPointPosition(Direction.Axis axis, int i) {
+		return this.getPointPositions(axis).getDouble(i);
 	}
 
-	protected abstract DoubleList getIncludedPoints(Direction.Axis axis);
+	protected abstract DoubleList getPointPositions(Direction.Axis axis);
 
 	public boolean isEmpty() {
 		return this.voxels.isEmpty();
@@ -64,9 +66,9 @@ public abstract class VoxelShape {
 			? VoxelShapes.empty()
 			: new ArrayVoxelShape(
 				this.voxels,
-				new OffsetDoubleList(this.getIncludedPoints(Direction.Axis.X), d),
-				new OffsetDoubleList(this.getIncludedPoints(Direction.Axis.Y), e),
-				new OffsetDoubleList(this.getIncludedPoints(Direction.Axis.Z), f)
+				new OffsetDoubleList(this.getPointPositions(Direction.Axis.X), d),
+				new OffsetDoubleList(this.getPointPositions(Direction.Axis.Y), e),
+				new OffsetDoubleList(this.getPointPositions(Direction.Axis.Z), f)
 			));
 	}
 
@@ -81,12 +83,12 @@ public abstract class VoxelShape {
 		this.voxels
 			.forEachEdge(
 				(i, j, k, l, m, n) -> boxConsumer.consume(
-						this.getCoord(Direction.Axis.X, i),
-						this.getCoord(Direction.Axis.Y, j),
-						this.getCoord(Direction.Axis.Z, k),
-						this.getCoord(Direction.Axis.X, l),
-						this.getCoord(Direction.Axis.Y, m),
-						this.getCoord(Direction.Axis.Z, n)
+						this.getPointPosition(Direction.Axis.X, i),
+						this.getPointPosition(Direction.Axis.Y, j),
+						this.getPointPosition(Direction.Axis.Z, k),
+						this.getPointPosition(Direction.Axis.X, l),
+						this.getPointPosition(Direction.Axis.Y, m),
+						this.getPointPosition(Direction.Axis.Z, n)
 					),
 				true
 			);
@@ -96,12 +98,12 @@ public abstract class VoxelShape {
 		this.voxels
 			.forEachBox(
 				(i, j, k, l, m, n) -> boxConsumer.consume(
-						this.getCoord(Direction.Axis.X, i),
-						this.getCoord(Direction.Axis.Y, j),
-						this.getCoord(Direction.Axis.Z, k),
-						this.getCoord(Direction.Axis.X, l),
-						this.getCoord(Direction.Axis.Y, m),
-						this.getCoord(Direction.Axis.Z, n)
+						this.getPointPosition(Direction.Axis.X, i),
+						this.getPointPosition(Direction.Axis.Y, j),
+						this.getPointPosition(Direction.Axis.Z, k),
+						this.getPointPosition(Direction.Axis.X, l),
+						this.getPointPosition(Direction.Axis.Y, m),
+						this.getPointPosition(Direction.Axis.Z, n)
 					),
 				true
 			);
@@ -120,7 +122,7 @@ public abstract class VoxelShape {
 		int i = this.getCoordIndex(axis2, d);
 		int j = this.getCoordIndex(axis3, e);
 		int k = this.voxels.method_1043(axis, i, j);
-		return k >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getCoord(axis, k);
+		return k >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getPointPosition(axis, k);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -130,7 +132,7 @@ public abstract class VoxelShape {
 		int i = this.getCoordIndex(axis2, d);
 		int j = this.getCoordIndex(axis3, e);
 		int k = this.voxels.method_1058(axis, i, j);
-		return k <= 0 ? Double.NEGATIVE_INFINITY : this.getCoord(axis, k);
+		return k <= 0 ? Double.NEGATIVE_INFINITY : this.getPointPosition(axis, k);
 	}
 
 	protected int getCoordIndex(Direction.Axis axis, double d) {
@@ -138,7 +140,7 @@ public abstract class VoxelShape {
 			if (i < 0) {
 				return false;
 			} else {
-				return i > this.voxels.getSize(axis) ? true : d < this.getCoord(axis, i);
+				return i > this.voxels.getSize(axis) ? true : d < this.getPointPosition(axis, i);
 			}
 		}) - 1;
 	}
@@ -167,17 +169,32 @@ public abstract class VoxelShape {
 
 	public VoxelShape getFace(Direction direction) {
 		if (!this.isEmpty() && this != VoxelShapes.fullCube()) {
-			Direction.Axis axis = direction.getAxis();
-			Direction.AxisDirection axisDirection = direction.getDirection();
-			DoubleList doubleList = this.getIncludedPoints(axis);
-			if (doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7)) {
-				return this;
+			if (this.shapeCache != null) {
+				VoxelShape voxelShape = this.shapeCache[direction.ordinal()];
+				if (voxelShape != null) {
+					return voxelShape;
+				}
 			} else {
-				int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
-				return new SliceVoxelShape(this, axis, i);
+				this.shapeCache = new VoxelShape[6];
 			}
+
+			VoxelShape voxelShape = this.getUncachedFace(direction);
+			this.shapeCache[direction.ordinal()] = voxelShape;
+			return voxelShape;
 		} else {
 			return this;
+		}
+	}
+
+	private VoxelShape getUncachedFace(Direction direction) {
+		Direction.Axis axis = direction.getAxis();
+		Direction.AxisDirection axisDirection = direction.getDirection();
+		DoubleList doubleList = this.getPointPositions(axis);
+		if (doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7)) {
+			return this;
+		} else {
+			int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
+			return new SliceVoxelShape(this, axis, i);
 		}
 	}
 
@@ -209,7 +226,7 @@ public abstract class VoxelShape {
 					for (int q = k; q < l; q++) {
 						for (int r = m; r < n; r++) {
 							if (this.voxels.inBoundsAndContains(axisCycleDirection2, p, q, r)) {
-								double g = this.getCoord(axis, p) - e;
+								double g = this.getPointPosition(axis, p) - e;
 								if (g >= -1.0E-7) {
 									d = Math.min(d, g);
 								}
@@ -224,7 +241,7 @@ public abstract class VoxelShape {
 					for (int q = k; q < l; q++) {
 						for (int rx = m; rx < n; rx++) {
 							if (this.voxels.inBoundsAndContains(axisCycleDirection2, p, q, rx)) {
-								double g = this.getCoord(axis, p + 1) - f;
+								double g = this.getPointPosition(axis, p + 1) - f;
 								if (g <= 1.0E-7) {
 									d = Math.max(d, g);
 								}

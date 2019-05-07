@@ -43,7 +43,6 @@ import net.minecraft.util.UncaughtExceptionHandler;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
@@ -315,11 +314,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		crashReport = super.populateCrashReport(crashReport);
-		crashReport.getSystemDetailsSection().add("Is Modded", (ICrashCallable<String>)(() -> {
+		crashReport.getSystemDetailsSection().method_577("Is Modded", () -> {
 			String string = this.getServerModName();
 			return !"vanilla".equals(string) ? "Definitely; Server brand changed to '" + string + "'" : "Unknown (can't tell)";
-		}));
-		crashReport.getSystemDetailsSection().add("Type", (ICrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
+		});
+		crashReport.getSystemDetailsSection().method_577("Type", () -> "Dedicated Server (map_server.txt)");
 		return crashReport;
 	}
 

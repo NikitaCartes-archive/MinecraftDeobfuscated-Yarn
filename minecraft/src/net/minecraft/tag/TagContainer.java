@@ -22,6 +22,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,18 +101,17 @@ public class TagContainer<T> {
 										"Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.entryType, identifier2, identifier, resource.getResourcePackName()
 									);
 								} else {
-									Tag.Builder<T> builder = (Tag.Builder<T>)map.getOrDefault(identifier2, Tag.Builder.create());
-									builder.fromJson(this.getter, jsonObject);
-									map.put(identifier2, builder);
+									((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> SystemUtil.consume(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
+										.fromJson(this.getter, jsonObject);
 								}
-							} catch (RuntimeException | IOException var15) {
-								LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.entryType, identifier2, identifier, resource.getResourcePackName(), var15);
+							} catch (RuntimeException | IOException var14) {
+								LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.entryType, identifier2, identifier, resource.getResourcePackName(), var14);
 							} finally {
 								IOUtils.closeQuietly(resource);
 							}
 						}
-					} catch (IOException var17) {
-						LOGGER.error("Couldn't read {} tag list {} from {}", this.entryType, identifier2, identifier, var17);
+					} catch (IOException var16) {
+						LOGGER.error("Couldn't read {} tag list {} from {}", this.entryType, identifier2, identifier, var16);
 					}
 				}
 
@@ -146,7 +146,7 @@ public class TagContainer<T> {
 		}
 
 		for (Entry<Identifier, Tag.Builder<T>> entry2 : map.entrySet()) {
-			this.add(((Tag.Builder)entry2.getValue()).ordered(this.ordered).build((Identifier)entry2.getKey()));
+			this.add(((Tag.Builder)entry2.getValue()).build((Identifier)entry2.getKey()));
 		}
 	}
 

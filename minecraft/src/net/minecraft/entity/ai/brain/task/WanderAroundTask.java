@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.Brain;
@@ -27,20 +25,13 @@ public class WanderAroundTask extends Task<MobEntity> {
 	private int field_18964;
 
 	public WanderAroundTask(int i) {
-		super(i);
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18449, MemoryModuleState.field_18457), Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18456)
-		);
+		super(ImmutableMap.of(MemoryModuleType.field_18449, MemoryModuleState.field_18457, MemoryModuleType.field_18445, MemoryModuleState.field_18456), i);
 	}
 
 	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
 		Brain<?> brain = mobEntity.getBrain();
 		WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.field_18445).get();
-		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
+		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
 			this.field_18370 = walkTarget.getLookTarget().getBlockPos();
 			return true;
 		} else {
@@ -76,14 +67,15 @@ public class WanderAroundTask extends Task<MobEntity> {
 		this.field_18964--;
 		if (this.field_18964 <= 0) {
 			Path path = mobEntity.getNavigation().getCurrentPath();
+			Brain<?> brain = mobEntity.getBrain();
 			if (this.field_18369 != path) {
 				this.field_18369 = path;
-				mobEntity.getBrain().putMemory(MemoryModuleType.field_18449, path);
+				brain.putMemory(MemoryModuleType.field_18449, path);
 			}
 
 			if (path != null && this.field_18370 != null) {
-				WalkTarget walkTarget = (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445).get();
-				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget)) {
+				WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.field_18445).get();
+				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
 					this.field_18370 = walkTarget.getLookTarget().getBlockPos();
 					this.method_18982(serverWorld, mobEntity, l);
 				}
@@ -91,11 +83,19 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 	}
 
-	private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget) {
+	private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget, long l) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
 		this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos);
 		this.field_18371 = walkTarget.getSpeed();
 		if (!this.method_18980(mobEntity, walkTarget)) {
+			Brain<?> brain = mobEntity.getBrain();
+			boolean bl = this.field_18369 != null && this.field_18369.method_19313(walkTarget.getLookTarget().getBlockPos());
+			if (bl) {
+				brain.setMemory(MemoryModuleType.field_19293, Optional.empty());
+			} else if (!brain.hasMemoryModule(MemoryModuleType.field_19293)) {
+				brain.putMemory(MemoryModuleType.field_19293, l);
+			}
+
 			if (this.field_18369 != null) {
 				return true;
 			}

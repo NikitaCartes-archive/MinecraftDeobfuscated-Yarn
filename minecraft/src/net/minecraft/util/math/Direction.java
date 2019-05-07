@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum Direction implements SnakeCaseIdentifiable {
+public enum Direction implements StringIdentifiable {
 	field_11033(0, 1, -1, "down", Direction.AxisDirection.NEGATIVE, Direction.Axis.Y, new Vec3i(0, -1, 0)),
 	field_11036(1, 0, -1, "up", Direction.AxisDirection.POSITIVE, Direction.Axis.Y, new Vec3i(0, 1, 0)),
 	field_11043(2, 3, 2, "north", Direction.AxisDirection.NEGATIVE, Direction.Axis.Z, new Vec3i(0, 0, -1)),
@@ -286,7 +286,7 @@ public enum Direction implements SnakeCaseIdentifiable {
 	}
 
 	@Override
-	public String toSnakeCase() {
+	public String asString() {
 		return this.name;
 	}
 
@@ -304,7 +304,7 @@ public enum Direction implements SnakeCaseIdentifiable {
 		return this.vector;
 	}
 
-	public static enum Axis implements Predicate<Direction>, SnakeCaseIdentifiable {
+	public static enum Axis implements Predicate<Direction>, StringIdentifiable {
 		X("x") {
 			@Override
 			public int choose(int i, int j, int k) {
@@ -390,7 +390,7 @@ public enum Direction implements SnakeCaseIdentifiable {
 		}
 
 		@Override
-		public String toSnakeCase() {
+		public String asString() {
 			return this.name;
 		}
 

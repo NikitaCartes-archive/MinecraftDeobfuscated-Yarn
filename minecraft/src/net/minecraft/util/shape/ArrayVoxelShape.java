@@ -5,12 +5,12 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Arrays;
 import net.minecraft.util.math.Direction;
 
-final class ArrayVoxelShape extends VoxelShape {
+public final class ArrayVoxelShape extends VoxelShape {
 	private final DoubleList xPoints;
 	private final DoubleList yPoints;
 	private final DoubleList zPoints;
 
-	ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
+	protected ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
 		this(
 			voxelSet,
 			DoubleArrayList.wrap(Arrays.copyOf(ds, voxelSet.getXSize() + 1)),
@@ -34,7 +34,7 @@ final class ArrayVoxelShape extends VoxelShape {
 	}
 
 	@Override
-	protected DoubleList getIncludedPoints(Direction.Axis axis) {
+	protected DoubleList getPointPositions(Direction.Axis axis) {
 		switch (axis) {
 			case X:
 				return this.xPoints;

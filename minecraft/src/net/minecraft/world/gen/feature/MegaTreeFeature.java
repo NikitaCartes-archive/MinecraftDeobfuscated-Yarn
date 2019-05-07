@@ -2,9 +2,11 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
@@ -74,7 +76,9 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+	protected void makeSquaredLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
+	) {
 		int j = i * i;
 
 		for (int k = -i; k <= i + 1; k++) {
@@ -84,14 +88,16 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (m + n < 7 && m * m + n * n <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}
 		}
 	}
 
-	protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+	protected void makeRoundLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
+	) {
 		int j = i * i;
 
 		for (int k = -i; k <= i; k++) {
@@ -99,7 +105,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (k * k + l * l <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}

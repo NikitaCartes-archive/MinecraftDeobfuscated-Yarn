@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
@@ -13,12 +14,16 @@ import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickScheduler;
 
 public class SimpleTickScheduler<T> implements TickScheduler<T> {
-	protected final Set<ScheduledTick<T>> scheduledTicks = Sets.<ScheduledTick<T>>newHashSet();
+	private final Set<ScheduledTick<T>> scheduledTicks;
 	private final Function<T, Identifier> identifierProvider;
 
 	public SimpleTickScheduler(Function<T, Identifier> function, List<ScheduledTick<T>> list) {
+		this(function, Sets.<ScheduledTick<T>>newHashSet(list));
+	}
+
+	private SimpleTickScheduler(Function<T, Identifier> function, Set<ScheduledTick<T>> set) {
+		this.scheduledTicks = set;
 		this.identifierProvider = function;
-		this.scheduledTicks.addAll(list);
 	}
 
 	@Override
@@ -47,5 +52,26 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 
 	public ListTag toTag(long l) {
 		return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, l);
+	}
+
+	public static <T> SimpleTickScheduler<T> method_20512(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
+		Set<ScheduledTick<T>> set = Sets.<ScheduledTick<T>>newHashSet();
+
+		for (int i = 0; i < listTag.size(); i++) {
+			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			T object = (T)function2.apply(new Identifier(compoundTag.getString("i")));
+			if (object != null) {
+				set.add(
+					new ScheduledTick(
+						new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")),
+						object,
+						(long)compoundTag.getInt("t"),
+						TaskPriority.getByIndex(compoundTag.getInt("p"))
+					)
+				);
+			}
+		}
+
+		return new SimpleTickScheduler<>(function, set);
 	}
 }

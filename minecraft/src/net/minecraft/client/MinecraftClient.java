@@ -176,7 +176,6 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -1127,11 +1126,14 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.isRunning = false;
 	}
 
-	public void openPauseMenu() {
+	public void openPauseMenu(boolean bl) {
 		if (this.currentScreen == null) {
-			this.openScreen(new PauseMenuScreen());
-			if (this.isIntegratedServerRunning() && !this.server.isRemote()) {
+			boolean bl2 = this.isIntegratedServerRunning() && !this.server.isRemote();
+			if (bl2) {
+				this.openScreen(new PauseMenuScreen(!bl));
 				this.soundManager.pauseAll();
+			} else {
+				this.openScreen(new PauseMenuScreen(true));
 			}
 		}
 	}
@@ -1768,14 +1770,14 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.getSystemDetailsSection();
-		crashReportSection.add("Launched Version", (ICrashCallable<String>)(() -> this.gameVersion));
-		crashReportSection.add("LWJGL", GLX::getLWJGLVersion);
-		crashReportSection.add("OpenGL", GLX::getOpenGLVersionString);
-		crashReportSection.add("GL Caps", GLX::getCapsString);
-		crashReportSection.add("Using VBOs", (ICrashCallable<String>)(() -> "Yes"));
-		crashReportSection.add(
+		crashReportSection.method_577("Launched Version", () -> this.gameVersion);
+		crashReportSection.method_577("LWJGL", GLX::getLWJGLVersion);
+		crashReportSection.method_577("OpenGL", GLX::getOpenGLVersionString);
+		crashReportSection.method_577("GL Caps", GLX::getCapsString);
+		crashReportSection.method_577("Using VBOs", () -> "Yes");
+		crashReportSection.method_577(
 			"Is Modded",
-			(ICrashCallable<String>)(() -> {
+			() -> {
 				String string = ClientBrandRetriever.getClientModName();
 				if (!"vanilla".equals(string)) {
 					return "Definitely; Client brand changed to '" + string + "'";
@@ -1784,10 +1786,10 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 						? "Very likely; Jar signature invalidated"
 						: "Probably not. Jar signature remains and client brand is untouched.";
 				}
-			})
+			}
 		);
 		crashReportSection.add("Type", "Client (map_client.txt)");
-		crashReportSection.add("Resource Packs", (ICrashCallable<String>)(() -> {
+		crashReportSection.method_577("Resource Packs", () -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (String string : this.options.resourcePacks) {
@@ -1802,9 +1804,9 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			}
 
 			return stringBuilder.toString();
-		}));
-		crashReportSection.add("Current Language", (ICrashCallable<String>)(() -> this.languageManager.getLanguage().toString()));
-		crashReportSection.add("CPU", GLX::getCpuInfo);
+		});
+		crashReportSection.method_577("Current Language", () -> this.languageManager.getLanguage().toString());
+		crashReportSection.method_577("CPU", GLX::getCpuInfo);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(crashReport);
 		}
@@ -1966,7 +1968,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		} else if (this.player.world.dimension instanceof TheEndDimension) {
 			return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicTracker.MusicType.field_5580 : MusicTracker.MusicType.field_5583;
 		} else {
-			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player.x, this.player.y, this.player.z)).getCategory();
+			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
 			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.field_5576)
 				&& (
 					!this.player.isInWater()

@@ -38,7 +38,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -432,7 +431,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, string);
 			CrashReportSection crashReportSection = crashReport.addElement("Affected screen");
-			crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> string2));
+			crashReportSection.method_577("Screen name", () -> string2);
 			throw new CrashException(crashReport);
 		}
 	}

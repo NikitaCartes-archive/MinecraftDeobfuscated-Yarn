@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.InventoryProvider;
@@ -92,13 +91,11 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	@Override
 	public void tick() {
 		if (this.world != null && !this.world.isClient) {
-			if (this.getCachedState().getBlock() == Blocks.field_10312) {
-				this.transferCooldown--;
-				this.lastTickTime = this.world.getTime();
-				if (!this.needsCooldown()) {
-					this.setCooldown(0);
-					this.insertAndExtract(() -> extract(this));
-				}
+			this.transferCooldown--;
+			this.lastTickTime = this.world.getTime();
+			if (!this.needsCooldown()) {
+				this.setCooldown(0);
+				this.insertAndExtract(() -> extract(this));
 			}
 		}
 	}

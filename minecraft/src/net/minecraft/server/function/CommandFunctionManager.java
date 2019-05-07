@@ -34,8 +34,9 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	public static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private final MinecraftServer server;
 	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
-	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private boolean executing;
+	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
+	private final List<CommandFunctionManager.Entry> pending = Lists.<CommandFunctionManager.Entry>newArrayList();
 	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
@@ -88,8 +89,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	public int execute(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
 		int i = this.getMaxCommandChainLength();
 		if (this.executing) {
-			if (this.chain.size() < i) {
-				this.chain.addFirst(new CommandFunctionManager.Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
+			if (this.chain.size() + this.pending.size() < i) {
+				this.pending.add(new CommandFunctionManager.Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
 			}
 
 			return 0;
@@ -113,6 +114,10 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 						CommandFunctionManager.Entry entry = (CommandFunctionManager.Entry)this.chain.removeFirst();
 						this.server.getProfiler().push(entry::toString);
 						entry.execute(this.chain, i);
+						if (!this.pending.isEmpty()) {
+							Lists.reverse(this.pending).forEach(this.chain::addFirst);
+							this.pending.clear();
+						}
 					} finally {
 						this.server.getProfiler().pop();
 					}
@@ -121,6 +126,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 				var16 = j;
 			} finally {
 				this.chain.clear();
+				this.pending.clear();
 				this.executing = false;
 			}
 

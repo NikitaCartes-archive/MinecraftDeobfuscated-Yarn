@@ -241,7 +241,7 @@ public class BlazeEntity extends HostileEntity {
 
 					if (this.field_7218 > 1) {
 						float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
-						this.blaze.world.playLevelEvent(null, 1018, new BlockPos((int)this.blaze.x, (int)this.blaze.y, (int)this.blaze.z), 0);
+						this.blaze.world.playLevelEvent(null, 1018, new BlockPos(this.blaze), 0);
 
 						for (int i = 0; i < 1; i++) {
 							SmallFireballEntity smallFireballEntity = new SmallFireballEntity(

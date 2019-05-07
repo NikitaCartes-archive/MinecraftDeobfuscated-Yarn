@@ -11,11 +11,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.DebugNameGenerator;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -85,35 +87,40 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.enableTexture();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
-		this.method_19710();
+		if (!this.field_18786.player.isSpectator()) {
+			this.method_19710();
+		}
 	}
 
 	private void method_19699() {
 		BlockPos blockPos = this.getCamera().getBlockPos();
+		this.field_18788.forEach(chunkSectionPos -> {
+			if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 60.0)) {
+				method_19714(chunkSectionPos);
+			}
+		});
+		this.field_18921.values().forEach(arg -> {
+			if (this.method_19715(arg)) {
+				this.method_20571(arg);
+			}
+		});
 
 		for (BlockPos blockPos2 : this.pointsOfInterest.keySet()) {
-			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
+			if (blockPos.isWithinDistance(blockPos2, 30.0)) {
 				method_19709(blockPos2);
 			}
 		}
 
-		for (ChunkSectionPos chunkSectionPos : this.field_18788) {
-			if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 160.0)) {
-				method_19714(chunkSectionPos);
+		this.pointsOfInterest.values().forEach(arg -> {
+			if (blockPos.isWithinDistance(arg.field_18931, 30.0)) {
+				this.method_19708(arg);
 			}
-		}
-
-		for (PointOfInterestDebugRenderer.class_4232 lv : this.field_18921.values()) {
-			if (this.method_19715(lv)) {
-				this.method_19707(lv);
+		});
+		this.method_20572().forEach((blockPos2x, list) -> {
+			if (blockPos.isWithinDistance(blockPos2x, 30.0)) {
+				this.method_20567(blockPos2x, list);
 			}
-		}
-
-		for (PointOfInterestDebugRenderer.class_4233 lv2 : this.pointsOfInterest.values()) {
-			if (blockPos.isWithinDistance(lv2.field_18931, 160.0)) {
-				this.method_19708(lv2);
-			}
-		}
+		});
 	}
 
 	private static void method_19714(ChunkSectionPos chunkSectionPos) {
@@ -129,42 +136,74 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		DebugRenderer.method_19696(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
 	}
 
-	private void method_19708(PointOfInterestDebugRenderer.class_4233 arg) {
-		int i = 0;
-		method_19705("Ticket holders: " + this.method_19712(arg), arg, i, -256);
-		method_19705("Free tickets: " + arg.field_18933, arg, ++i, -256);
-		method_19705(arg.field_18932, arg, ++i, -1);
+	private void method_20567(BlockPos blockPos, List<String> list) {
+		float f = 0.05F;
+		DebugRenderer.method_19696(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
+		method_20569("" + list, blockPos, 0, -256);
+		method_20569("Ghost POI", blockPos, 1, -65536);
 	}
 
-	private void method_19707(PointOfInterestDebugRenderer.class_4232 arg) {
+	private void method_19708(PointOfInterestDebugRenderer.class_4233 arg) {
 		int i = 0;
-		method_19704(arg.field_18926, i, arg.field_18925, -1, 0.03F);
+		if (this.method_19712(arg).size() < 4) {
+			method_20568("" + this.method_19712(arg), arg, i, -256);
+		} else {
+			method_20568("" + this.method_19712(arg).size() + " ticket holders", arg, i, -256);
+		}
+
+		method_20568("Free tickets: " + arg.field_18933, arg, ++i, -256);
+		method_20568(arg.field_18932, arg, ++i, -1);
+	}
+
+	private void method_20570(PointOfInterestDebugRenderer.class_4232 arg) {
+		if (arg.field_19330 != null) {
+			PathfindingDebugRenderer.method_20556(this.getCamera(), arg.field_19330, 0.5F, false, false);
+		}
+	}
+
+	private void method_20571(PointOfInterestDebugRenderer.class_4232 arg) {
+		boolean bl = this.method_19711(arg);
+		int i = 0;
+		method_19704(arg.field_18926, i, arg.field_19328, -1, 0.03F);
+		method_19704(arg.field_18926, ++i, arg.field_18925 + " " + arg.field_19329 + "xp", -1, 0.02F);
 		i++;
-
-		for (String string : arg.field_18928) {
-			method_19704(arg.field_18926, i, string, -16711681, 0.02F);
-			i++;
+		if (bl) {
+			for (String string : arg.field_18928) {
+				method_19704(arg.field_18926, i, string, -16711681, 0.02F);
+				i++;
+			}
 		}
 
-		for (String string : arg.field_18927) {
-			method_19704(arg.field_18926, i, string, -16711936, 0.02F);
-			i++;
+		if (bl) {
+			for (String string : arg.field_18927) {
+				method_19704(arg.field_18926, i, string, -16711936, 0.02F);
+				i++;
+			}
 		}
 
-		if (this.method_19711(arg)) {
+		if (bl) {
 			for (String string : Lists.reverse(arg.field_18929)) {
 				method_19704(arg.field_18926, i, string, -3355444, 0.02F);
 				i++;
 			}
 		}
+
+		if (bl) {
+			this.method_20570(arg);
+		}
 	}
 
-	private static void method_19705(String string, PointOfInterestDebugRenderer.class_4233 arg, int i, int j) {
+	private static void method_20568(String string, PointOfInterestDebugRenderer.class_4233 arg, int i, int j) {
+		BlockPos blockPos = arg.field_18931;
+		method_20569(string, blockPos, i, j);
+	}
+
+	private static void method_20569(String string, BlockPos blockPos, int i, int j) {
 		double d = 1.3;
 		double e = 0.2;
-		double f = (double)arg.field_18931.getX() + 0.5;
-		double g = (double)arg.field_18931.getY() + 1.3 + (double)i * 0.2;
-		double h = (double)arg.field_18931.getZ() + 0.5;
+		double f = (double)blockPos.getX() + 0.5;
+		double g = (double)blockPos.getY() + 1.3 + (double)i * 0.2;
+		double h = (double)blockPos.getZ() + 0.5;
 		DebugRenderer.method_3712(string, f, g, h, j, 0.02F, true, 0.0F, true);
 	}
 
@@ -193,9 +232,9 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 
 	private boolean method_19715(PointOfInterestDebugRenderer.class_4232 arg) {
 		PlayerEntity playerEntity = this.field_18786.player;
-		BlockPos blockPos = new BlockPos(playerEntity.x, 0.0, playerEntity.z);
+		BlockPos blockPos = new BlockPos(playerEntity.x, arg.field_18926.getY(), playerEntity.z);
 		BlockPos blockPos2 = new BlockPos(arg.field_18926);
-		return blockPos.isWithinDistance(blockPos2, 160.0);
+		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 
 	private Collection<UUID> method_19713(BlockPos blockPos) {
@@ -207,26 +246,52 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 			.collect(Collectors.toSet());
 	}
 
+	private Map<BlockPos, List<String>> method_20572() {
+		Map<BlockPos, List<String>> map = Maps.<BlockPos, List<String>>newHashMap();
+
+		for (PointOfInterestDebugRenderer.class_4232 lv : this.field_18921.values()) {
+			for (BlockPos blockPos : lv.field_18930) {
+				if (!this.pointsOfInterest.containsKey(blockPos)) {
+					List<String> list = (List<String>)map.get(blockPos);
+					if (list == null) {
+						list = Lists.<String>newArrayList();
+						map.put(blockPos, list);
+					}
+
+					list.add(lv.field_19328);
+				}
+			}
+		}
+
+		return map;
+	}
+
 	private void method_19710() {
-		DebugRenderer.method_19694(this.field_18786.getCameraEntity(), 16).ifPresent(entity -> this.field_18922 = entity.getUuid());
+		DebugRenderer.method_19694(this.field_18786.getCameraEntity(), 8).ifPresent(entity -> this.field_18922 = entity.getUuid());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class class_4232 {
 		public final UUID field_18923;
 		public final int field_18924;
+		public final String field_19328;
 		public final String field_18925;
+		public final int field_19329;
 		public final Position field_18926;
+		public final Path field_19330;
 		public final List<String> field_18927 = Lists.<String>newArrayList();
 		public final List<String> field_18928 = Lists.<String>newArrayList();
 		public final List<String> field_18929 = Lists.<String>newArrayList();
 		public final Set<BlockPos> field_18930 = Sets.<BlockPos>newHashSet();
 
-		public class_4232(UUID uUID, int i, String string, Position position) {
+		public class_4232(UUID uUID, int i, String string, String string2, int j, Position position, @Nullable Path path) {
 			this.field_18923 = uUID;
 			this.field_18924 = i;
-			this.field_18925 = string;
+			this.field_19328 = string;
+			this.field_18925 = string2;
+			this.field_19329 = j;
 			this.field_18926 = position;
+			this.field_19330 = path;
 		}
 
 		private boolean method_19718(BlockPos blockPos) {

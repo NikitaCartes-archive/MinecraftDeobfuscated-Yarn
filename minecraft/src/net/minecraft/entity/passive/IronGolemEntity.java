@@ -237,10 +237,15 @@ public class IronGolemEntity extends GolemEntity {
 		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
 			return false;
 		} else {
-			BlockPos blockPos3 = blockPos.up();
-			BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())
-				&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
+			for (int i = 1; i < 3; i++) {
+				BlockPos blockPos3 = blockPos.up(i);
+				BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
+				if (!SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())) {
+					return false;
+				}
+			}
+
+			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
 				&& viewableWorld.intersectsEntities(this);
 		}
 	}

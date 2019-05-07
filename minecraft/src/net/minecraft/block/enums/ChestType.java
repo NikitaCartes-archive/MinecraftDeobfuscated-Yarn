@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum ChestType implements SnakeCaseIdentifiable {
+public enum ChestType implements StringIdentifiable {
 	field_12569("single", 0),
 	field_12574("left", 2),
 	field_12571("right", 1);
@@ -17,7 +17,7 @@ public enum ChestType implements SnakeCaseIdentifiable {
 	}
 
 	@Override
-	public String toSnakeCase() {
+	public String asString() {
 		return this.name;
 	}
 

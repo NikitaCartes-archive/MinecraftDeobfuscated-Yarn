@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -56,6 +56,8 @@ public class RaidManager extends PersistentState {
 		if (this.currentTime % 200 == 0) {
 			this.markDirty();
 		}
+
+		DebugRendererInfoManager.sendRaids(this.world, this.raids.values());
 	}
 
 	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
@@ -65,10 +67,6 @@ public class RaidManager extends PersistentState {
 				&& raiderEntity.getDespawnCounter() <= 2400
 				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
 			: false;
-	}
-
-	public static boolean isLivingAroundVillage(LivingEntity livingEntity, BlockPos blockPos, int i) {
-		return blockPos.getSquaredDistance(new BlockPos(livingEntity.x, livingEntity.y, livingEntity.z)) < (double)(i * i + 24);
 	}
 
 	@Nullable
@@ -87,7 +85,7 @@ public class RaidManager extends PersistentState {
 						pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518,
 						Objects::nonNull,
 						blockPos,
-						15,
+						48,
 						PointOfInterestStorage.OccupationStatus.field_18489
 					);
 				if (!optional.isPresent()) {
@@ -167,9 +165,9 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Nullable
-	public Raid getRaidAt(BlockPos blockPos) {
+	public Raid getRaidAt(BlockPos blockPos, int i) {
 		Raid raid = null;
-		double d = 2.147483647E9;
+		double d = (double)i;
 
 		for (Raid raid2 : this.raids.values()) {
 			double e = raid2.getCenter().getSquaredDistance(blockPos);

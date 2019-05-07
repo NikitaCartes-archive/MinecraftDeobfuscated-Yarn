@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
@@ -20,11 +21,13 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureC
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+	public boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	) {
 		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.field_13203, blockPos).down();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
 			blockPos = blockPos.up();
-			this.setBlockState(set, modifiableTestableWorld, blockPos, this.log);
+			this.setBlockState(set, modifiableTestableWorld, blockPos, this.log, mutableIntBoundingBox);
 
 			for (int i = blockPos.getY(); i <= blockPos.getY() + 2; i++) {
 				int j = i - blockPos.getY();
@@ -38,7 +41,7 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureC
 						if (Math.abs(m) != k || Math.abs(o) != k || random.nextInt(2) != 0) {
 							BlockPos blockPos2 = new BlockPos(l, i, n);
 							if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-								this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
+								this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 							}
 						}
 					}

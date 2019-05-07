@@ -9,6 +9,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -45,9 +46,9 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.radius = packetByteBuf.readFloat();
 		int i = packetByteBuf.readInt();
 		this.affectedBlocks = Lists.<BlockPos>newArrayListWithCapacity(i);
-		int j = (int)this.x;
-		int k = (int)this.y;
-		int l = (int)this.z;
+		int j = MathHelper.floor(this.x);
+		int k = MathHelper.floor(this.y);
+		int l = MathHelper.floor(this.z);
 
 		for (int m = 0; m < i; m++) {
 			int n = packetByteBuf.readByte() + j;
@@ -68,9 +69,9 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeFloat((float)this.z);
 		packetByteBuf.writeFloat(this.radius);
 		packetByteBuf.writeInt(this.affectedBlocks.size());
-		int i = (int)this.x;
-		int j = (int)this.y;
-		int k = (int)this.z;
+		int i = MathHelper.floor(this.x);
+		int j = MathHelper.floor(this.y);
+		int k = MathHelper.floor(this.z);
 
 		for (BlockPos blockPos : this.affectedBlocks) {
 			int l = blockPos.getX() - i;

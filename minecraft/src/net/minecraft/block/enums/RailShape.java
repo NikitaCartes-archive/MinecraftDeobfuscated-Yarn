@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum RailShape implements SnakeCaseIdentifiable {
+public enum RailShape implements StringIdentifiable {
 	field_12665(0, "north_south"),
 	field_12674(1, "east_west"),
 	field_12667(2, "ascending_east"),
@@ -35,7 +35,7 @@ public enum RailShape implements SnakeCaseIdentifiable {
 	}
 
 	@Override
-	public String toSnakeCase() {
+	public String asString() {
 		return this.name;
 	}
 }

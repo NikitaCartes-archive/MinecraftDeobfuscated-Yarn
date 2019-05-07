@@ -1,8 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityPosWrapper;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -16,7 +14,9 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	private final float speed;
 
 	public FollowCustomerTask(float f) {
-		super(Integer.MAX_VALUE);
+		super(
+			ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458, MemoryModuleType.field_18446, MemoryModuleState.field_18458), Integer.MAX_VALUE
+		);
 		this.speed = f;
 	}
 
@@ -39,7 +39,6 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.resetCustomer();
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.forget(MemoryModuleType.field_18445);
 		brain.forget(MemoryModuleType.field_18446);
@@ -52,13 +51,6 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	@Override
 	protected boolean isTimeLimitExceeded(long l) {
 		return false;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458), Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458)
-		);
 	}
 
 	private void update(VillagerEntity villagerEntity) {

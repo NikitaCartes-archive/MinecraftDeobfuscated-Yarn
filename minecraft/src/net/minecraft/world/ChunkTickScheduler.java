@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -14,19 +13,15 @@ import net.minecraft.world.chunk.ProtoChunk;
 
 public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> shouldExclude;
-	protected final Function<T, Identifier> idToName;
-	protected final Function<Identifier, T> nameToId;
 	private final ChunkPos pos;
 	private final ShortList[] scheduledPositions = new ShortList[16];
 
-	public ChunkTickScheduler(Predicate<T> predicate, Function<T, Identifier> function, Function<Identifier, T> function2, ChunkPos chunkPos) {
-		this(predicate, function, function2, chunkPos, new ListTag());
+	public ChunkTickScheduler(Predicate<T> predicate, ChunkPos chunkPos) {
+		this(predicate, chunkPos, new ListTag());
 	}
 
-	public ChunkTickScheduler(Predicate<T> predicate, Function<T, Identifier> function, Function<Identifier, T> function2, ChunkPos chunkPos, ListTag listTag) {
+	public ChunkTickScheduler(Predicate<T> predicate, ChunkPos chunkPos, ListTag listTag) {
 		this.shouldExclude = predicate;
-		this.idToName = function;
-		this.nameToId = function2;
 		this.pos = chunkPos;
 
 		for (int i = 0; i < listTag.size(); i++) {

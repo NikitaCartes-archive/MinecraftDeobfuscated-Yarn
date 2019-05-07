@@ -9,6 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
@@ -21,7 +22,9 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+	public boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	) {
 		int i = random.nextInt(4) + 5;
 		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.field_13200, blockPos);
 		boolean bl = true;
@@ -75,7 +78,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 							if (Math.abs(mx) != n || Math.abs(p) != n || random.nextInt(2) != 0 && kx != 0) {
 								BlockPos blockPos2 = new BlockPos(l, j, o);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(modifiableTestableWorld, blockPos2, LEAVES);
+									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
 								}
 							}
 						}
@@ -85,7 +88,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 				for (int j = 0; j < i; j++) {
 					BlockPos blockPos3 = blockPos.up(j);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos3) || isWater(modifiableTestableWorld, blockPos3)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG);
+						this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG, mutableIntBoundingBox);
 					}
 				}
 

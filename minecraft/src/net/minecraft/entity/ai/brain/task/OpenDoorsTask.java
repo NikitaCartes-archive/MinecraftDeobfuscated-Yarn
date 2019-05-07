@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,11 +18,8 @@ import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class OpenDoorsTask extends Task<LivingEntity> {
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18449, MemoryModuleState.field_18456), Pair.of(MemoryModuleType.field_18450, MemoryModuleState.field_18456)
-		);
+	public OpenDoorsTask() {
+		super(ImmutableMap.of(MemoryModuleType.field_18449, MemoryModuleState.field_18456, MemoryModuleType.field_18450, MemoryModuleState.field_18456));
 	}
 
 	@Override

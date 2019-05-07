@@ -42,7 +42,6 @@ import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.ChunkPos;
@@ -78,7 +77,7 @@ public class WorldChunk implements Chunk {
 	private TickScheduler<Fluid> fluidTickScheduler;
 	private boolean field_12837;
 	private long lastSaveTime;
-	private boolean shouldSave;
+	private volatile boolean shouldSave;
 	private long inhabitedTime;
 	@Nullable
 	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
@@ -87,7 +86,6 @@ public class WorldChunk implements Chunk {
 	private final ChunkPos pos;
 	private volatile boolean isLightOn;
 
-	@Environment(EnvType.CLIENT)
 	public WorldChunk(World world, ChunkPos chunkPos, Biome[] biomes) {
 		this(world, chunkPos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
 	}
@@ -221,7 +219,7 @@ public class WorldChunk implements Chunk {
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-				crashReportSection.add("Location", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
+				crashReportSection.method_577("Location", () -> CrashReportSection.createPositionString(i, j, k));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -245,7 +243,7 @@ public class WorldChunk implements Chunk {
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-			crashReportSection.add("Location", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
+			crashReportSection.method_577("Location", () -> CrashReportSection.createPositionString(i, j, k));
 			throw new CrashException(crashReport);
 		}
 	}
@@ -705,19 +703,7 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPosx -> this.getBlockState(blockPosx).getBlock());
-		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
-			this.blockTickScheduler = DummyClientTickScheduler.get();
-		}
-
-		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPosx -> this.getFluidState(blockPosx).getFluid());
-		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
-			this.fluidTickScheduler = DummyClientTickScheduler.get();
-		}
+		this.method_20530();
 
 		for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
 			this.getBlockEntity(blockPos2);
@@ -762,10 +748,34 @@ public class WorldChunk implements Chunk {
 		return this.postProcessingLists;
 	}
 
+	public void method_20530() {
+		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
+			this.blockTickScheduler = DummyClientTickScheduler.get();
+		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
+			this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
+			this.blockTickScheduler = DummyClientTickScheduler.get();
+		}
+
+		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState(blockPos).getFluid());
+			this.fluidTickScheduler = DummyClientTickScheduler.get();
+		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
+			this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+			this.fluidTickScheduler = DummyClientTickScheduler.get();
+		}
+	}
+
 	public void method_20471(ServerWorld serverWorld) {
-		this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
-		this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
-		this.setShouldSave(true);
+		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
+			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
+			this.setShouldSave(true);
+		}
+
+		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
+			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
+			this.setShouldSave(true);
+		}
 	}
 
 	@Override

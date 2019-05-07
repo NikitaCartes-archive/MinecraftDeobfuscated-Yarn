@@ -4,13 +4,13 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
-final class SimpleVoxelShape extends VoxelShape {
-	SimpleVoxelShape(VoxelSet voxelSet) {
+public final class SimpleVoxelShape extends VoxelShape {
+	protected SimpleVoxelShape(VoxelSet voxelSet) {
 		super(voxelSet);
 	}
 
 	@Override
-	protected DoubleList getIncludedPoints(Direction.Axis axis) {
+	protected DoubleList getPointPositions(Direction.Axis axis) {
 		return new FractionalDoubleList(this.voxels.getSize(axis));
 	}
 

@@ -1,13 +1,11 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -48,16 +46,18 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	private long startTime;
 
 	public GiveGiftsToHeroTask(int i) {
-		super(i);
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18447, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18444, MemoryModuleState.field_18456)
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18447,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18444,
+				MemoryModuleState.field_18456
+			),
+			i
 		);
 	}
 

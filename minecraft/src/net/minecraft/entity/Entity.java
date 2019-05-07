@@ -77,7 +77,6 @@ import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -1056,7 +1055,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public float getBrightnessAtEyes() {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
+		BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, 0.0, this.z);
 		if (this.world.isBlockLoaded(mutable)) {
 			mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
 			return this.world.getBrightness(mutable);
@@ -2132,17 +2131,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Entity Type", (ICrashCallable<String>)(() -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")"));
+		crashReportSection.method_577("Entity Type", () -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")");
 		crashReportSection.add("Entity ID", this.entityId);
-		crashReportSection.add("Entity Name", (ICrashCallable<String>)(() -> this.getName().getString()));
+		crashReportSection.method_577("Entity Name", () -> this.getName().getString());
 		crashReportSection.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.x, this.y, this.z));
 		crashReportSection.add(
 			"Entity's Block location", CrashReportSection.createPositionString(MathHelper.floor(this.x), MathHelper.floor(this.y), MathHelper.floor(this.z))
 		);
 		Vec3d vec3d = this.getVelocity();
 		crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
-		crashReportSection.add("Entity's Passengers", (ICrashCallable<String>)(() -> this.getPassengerList().toString()));
-		crashReportSection.add("Entity's Vehicle", (ICrashCallable<String>)(() -> this.getVehicle().toString()));
+		crashReportSection.method_577("Entity's Passengers", () -> this.getPassengerList().toString());
+		crashReportSection.method_577("Entity's Vehicle", () -> this.getVehicle().toString());
 	}
 
 	@Environment(EnvType.CLIENT)

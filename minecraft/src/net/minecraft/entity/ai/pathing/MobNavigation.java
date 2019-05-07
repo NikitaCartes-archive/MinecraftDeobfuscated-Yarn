@@ -74,20 +74,20 @@ public class MobNavigation extends EntityNavigation {
 
 	private int method_6362() {
 		if (this.entity.isInsideWater() && this.canSwim()) {
-			int i = (int)this.entity.getBoundingBox().minY;
-			Block block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.entity.x), i, MathHelper.floor(this.entity.z))).getBlock();
+			int i = MathHelper.floor(this.entity.getBoundingBox().minY);
+			Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
 			int j = 0;
 
 			while (block == Blocks.field_10382) {
-				block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.entity.x), ++i, MathHelper.floor(this.entity.z))).getBlock();
+				block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
 				if (++j > 16) {
-					return (int)this.entity.getBoundingBox().minY;
+					return MathHelper.floor(this.entity.getBoundingBox().minY);
 				}
 			}
 
 			return i;
 		} else {
-			return (int)(this.entity.getBoundingBox().minY + 0.5);
+			return MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class MobNavigation extends EntityNavigation {
 	protected void method_6359() {
 		super.method_6359();
 		if (this.avoidSunlight) {
-			if (this.world.isSkyVisible(new BlockPos(MathHelper.floor(this.entity.x), (int)(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.z)))) {
+			if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY + 0.5, this.entity.z))) {
 				return;
 			}
 
@@ -124,7 +124,7 @@ public class MobNavigation extends EntityNavigation {
 			e *= g;
 			i += 2;
 			k += 2;
-			if (!this.method_6364(l, (int)vec3d.y, m, i, j, k, vec3d, d, e)) {
+			if (!this.method_6364(l, MathHelper.floor(vec3d.y), m, i, j, k, vec3d, d, e)) {
 				return false;
 			} else {
 				i -= 2;
@@ -161,7 +161,7 @@ public class MobNavigation extends EntityNavigation {
 						v = t - m;
 					}
 
-					if (!this.method_6364(l, (int)vec3d.y, m, i, j, k, vec3d, d, e)) {
+					if (!this.method_6364(l, MathHelper.floor(vec3d.y), m, i, j, k, vec3d, d, e)) {
 						return false;
 					}
 				}

@@ -12,6 +12,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -43,7 +44,7 @@ public final class DarkForestBiome extends Biome {
 				Feature.field_13593,
 				new RandomFeatureConfig(
 					new Feature[]{Feature.field_13531, Feature.field_13571, Feature.field_13532, Feature.field_13529},
-					new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
+					new FeatureConfig[]{new PlantedFeatureConfig(false), new PlantedFeatureConfig(false), FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
 					new float[]{0.025F, 0.05F, 0.6666667F, 0.1F},
 					Feature.field_13510,
 					FeatureConfig.DEFAULT

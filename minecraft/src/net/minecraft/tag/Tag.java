@@ -101,11 +101,6 @@ public class Tag<T> {
 			return this;
 		}
 
-		public Tag.Builder<T> add(Identifier identifier) {
-			this.entries.add(new Tag.TagEntry(identifier));
-			return this;
-		}
-
 		public Tag.Builder<T> add(Tag<T> tag) {
 			this.entries.add(new Tag.TagEntry<>(tag));
 			return this;
@@ -132,20 +127,27 @@ public class Tag<T> {
 
 		public Tag.Builder<T> fromJson(Function<Identifier, Optional<T>> function, JsonObject jsonObject) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "values");
-			if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-				this.entries.clear();
-			}
+			List<Tag.Entry<T>> list = Lists.<Tag.Entry<T>>newArrayList();
 
 			for (JsonElement jsonElement : jsonArray) {
 				String string = JsonHelper.asString(jsonElement, "value");
 				if (string.startsWith("#")) {
-					this.add(new Identifier(string.substring(1)));
+					list.add(new Tag.TagEntry(new Identifier(string.substring(1))));
 				} else {
 					Identifier identifier = new Identifier(string);
-					this.add((T)((Optional)function.apply(identifier)).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")));
+					list.add(
+						new Tag.CollectionEntry(
+							Collections.singleton(((Optional)function.apply(identifier)).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")))
+						)
+					);
 				}
 			}
 
+			if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
+				this.entries.clear();
+			}
+
+			this.entries.addAll(list);
 			return this;
 		}
 	}

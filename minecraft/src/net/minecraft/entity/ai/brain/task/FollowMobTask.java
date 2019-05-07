@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
@@ -27,15 +25,9 @@ public class FollowMobTask extends Task<LivingEntity> {
 	}
 
 	public FollowMobTask(Predicate<LivingEntity> predicate, float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457, MemoryModuleType.field_18442, MemoryModuleState.field_18456));
 		this.mobType = predicate;
 		this.maxDistanceSquared = f * f;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457), Pair.of(MemoryModuleType.field_18442, MemoryModuleState.field_18456)
-		);
 	}
 
 	@Override

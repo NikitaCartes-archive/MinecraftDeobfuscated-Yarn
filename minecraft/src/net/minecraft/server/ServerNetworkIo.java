@@ -158,7 +158,7 @@ public class ServerNetworkIo {
 							if (clientConnection.isLocal()) {
 								CrashReport crashReport = CrashReport.create(var8, "Ticking memory connection");
 								CrashReportSection crashReportSection = crashReport.addElement("Ticking connection");
-								crashReportSection.add("Connection", clientConnection::toString);
+								crashReportSection.method_577("Connection", clientConnection::toString);
 								throw new CrashException(crashReport);
 							}
 

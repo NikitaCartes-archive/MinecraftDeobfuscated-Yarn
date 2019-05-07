@@ -118,7 +118,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
-				return blockState.get(TYPE) == SlabType.field_12681;
+				return false;
 			case field_48:
 				return blockView.getFluidState(blockPos).matches(FluidTags.field_15517);
 			case field_51:

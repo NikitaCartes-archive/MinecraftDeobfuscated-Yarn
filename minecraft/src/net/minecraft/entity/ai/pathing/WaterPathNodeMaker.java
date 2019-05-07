@@ -35,13 +35,13 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	}
 
 	@Override
-	public int getPathNodes(PathNode[] pathNodes, PathNode pathNode, PathNode pathNode2, float f) {
+	public int getPathNodes(PathNode[] pathNodes, PathNode pathNode) {
 		int i = 0;
 
 		for (Direction direction : Direction.values()) {
-			PathNode pathNode3 = this.getPathNodeInWater(pathNode.x + direction.getOffsetX(), pathNode.y + direction.getOffsetY(), pathNode.z + direction.getOffsetZ());
-			if (pathNode3 != null && !pathNode3.field_42 && pathNode3.distance(pathNode2) < f) {
-				pathNodes[i++] = pathNode3;
+			PathNode pathNode2 = this.getPathNodeInWater(pathNode.x + direction.getOffsetX(), pathNode.y + direction.getOffsetY(), pathNode.z + direction.getOffsetZ());
+			if (pathNode2 != null && !pathNode2.field_42) {
+				pathNodes[i++] = pathNode2;
 			}
 		}
 

@@ -17,7 +17,6 @@ import net.minecraft.util.ChatUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class CommandBlockExecutor implements CommandOutput {
@@ -122,8 +121,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 				} catch (Throwable var6) {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
 					CrashReportSection crashReportSection = crashReport.addElement("Command to be executed");
-					crashReportSection.add("Command", this::getCommand);
-					crashReportSection.add("Name", (ICrashCallable<String>)(() -> this.getCustomName().getString()));
+					crashReportSection.method_577("Command", this::getCommand);
+					crashReportSection.method_577("Name", () -> this.getCustomName().getString());
 					throw new CrashException(crashReport);
 				}
 			}

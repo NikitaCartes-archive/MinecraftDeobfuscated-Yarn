@@ -27,7 +27,7 @@ public class EatGrassGoal extends Goal {
 		if (this.mob.getRand().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
+			BlockPos blockPos = new BlockPos(this.mob);
 			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219;
 		}
 	}
@@ -57,7 +57,7 @@ public class EatGrassGoal extends Goal {
 	public void tick() {
 		this.timer = Math.max(0, this.timer - 1);
 		if (this.timer == 4) {
-			BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
+			BlockPos blockPos = new BlockPos(this.mob);
 			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean("mobGriefing")) {
 					this.world.breakBlock(blockPos, false);

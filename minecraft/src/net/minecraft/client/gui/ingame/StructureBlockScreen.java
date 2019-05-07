@@ -374,7 +374,7 @@ public class StructureBlockScreen extends Screen {
 				this.inputMetadata.setVisible(true);
 		}
 
-		this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().toSnakeCase()));
+		this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString()));
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -495,7 +495,7 @@ public class StructureBlockScreen extends Screen {
 			this.inputMetadata.render(i, j, f);
 		}
 
-		String string = "structure_block.mode_info." + structureBlockMode.toSnakeCase();
+		String string = "structure_block.mode_info." + structureBlockMode.asString();
 		this.drawString(this.font, I18n.translate(string), this.width / 2 - 153, 174, 10526880);
 		super.render(i, j, f);
 	}

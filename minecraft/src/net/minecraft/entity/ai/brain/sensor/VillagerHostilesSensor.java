@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 
 public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 	private static final ImmutableMap<EntityType<?>, Float> SQUARED_DISTANCES_FOR_DANGER = ImmutableMap.<EntityType<?>, Float>builder()
@@ -47,7 +48,7 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 	}
 
 	private int compareDistances(LivingEntity livingEntity, LivingEntity livingEntity2, LivingEntity livingEntity3) {
-		return (int)livingEntity2.squaredDistanceTo(livingEntity) - (int)livingEntity3.squaredDistanceTo(livingEntity);
+		return MathHelper.floor(livingEntity2.squaredDistanceTo(livingEntity) - livingEntity3.squaredDistanceTo(livingEntity));
 	}
 
 	private boolean isCloseEnoughForDanger(LivingEntity livingEntity, LivingEntity livingEntity2) {

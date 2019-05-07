@@ -22,7 +22,6 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.chunk.Chunk;
 
 public final class VoxelShapes {
 	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
@@ -135,14 +134,14 @@ public final class VoxelShapes {
 			} else if (voxelShape2.isEmpty()) {
 				return bl ? voxelShape : empty();
 			} else {
-				DoubleListPair doubleListPair = createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
+				DoubleListPair doubleListPair = createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
 				DoubleListPair doubleListPair2 = createListPair(
-					doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
+					doubleListPair.getMergedList().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2
 				);
 				DoubleListPair doubleListPair3 = createListPair(
 					(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
-					voxelShape.getIncludedPoints(Direction.Axis.Z),
-					voxelShape2.getIncludedPoints(Direction.Axis.Z),
+					voxelShape.getPointPositions(Direction.Axis.Z),
+					voxelShape2.getPointPositions(Direction.Axis.Z),
 					bl,
 					bl2
 				);
@@ -181,14 +180,14 @@ public final class VoxelShapes {
 				}
 			}
 
-			DoubleListPair doubleListPair = createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
+			DoubleListPair doubleListPair = createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
 			DoubleListPair doubleListPair2 = createListPair(
-				doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
+				doubleListPair.getMergedList().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2
 			);
 			DoubleListPair doubleListPair3 = createListPair(
 				(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
-				voxelShape.getIncludedPoints(Direction.Axis.Z),
-				voxelShape2.getIncludedPoints(Direction.Axis.Z),
+				voxelShape.getPointPositions(Direction.Axis.Z),
+				voxelShape2.getPointPositions(Direction.Axis.Z),
 				bl,
 				bl2
 			);
@@ -256,38 +255,27 @@ public final class VoxelShapes {
 			int m = bl ? MathHelper.floor(boundingBox.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.getMin(axis3) + 1.0E-7) + 1;
 			int n = method_17943(d, e, f);
 			int o = bl ? 1 : -1;
-			int p = Integer.MAX_VALUE;
-			int q = Integer.MAX_VALUE;
-			Chunk chunk = null;
 
-			for (int r = m; bl ? r <= n : r >= n; r += o) {
-				for (int s = i; s <= j; s++) {
-					for (int t = k; t <= l; t++) {
-						int u = 0;
-						if (s == i || s == j) {
-							u++;
+			for (int p = m; bl ? p <= n : p >= n; p += o) {
+				for (int q = i; q <= j; q++) {
+					for (int r = k; r <= l; r++) {
+						int s = 0;
+						if (q == i || q == j) {
+							s++;
 						}
 
-						if (t == k || t == l) {
-							u++;
+						if (r == k || r == l) {
+							s++;
 						}
 
-						if (r == m || r == n) {
-							u++;
+						if (p == m || p == n) {
+							s++;
 						}
 
-						if (u < 3) {
-							mutable.method_17965(axisCycleDirection2, s, t, r);
-							int v = mutable.getX() >> 4;
-							int w = mutable.getZ() >> 4;
-							if (v != p || w != q) {
-								chunk = viewableWorld.getChunk(v, w);
-								p = v;
-								q = w;
-							}
-
-							BlockState blockState = chunk.getBlockState(mutable);
-							if ((u != 1 || blockState.method_17900()) && (u != 2 || blockState.getBlock() == Blocks.field_10008)) {
+						if (s < 3) {
+							mutable.method_17965(axisCycleDirection2, q, r, p);
+							BlockState blockState = viewableWorld.getBlockState(mutable);
+							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.field_10008)) {
 								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
 									.method_1108(axis3, boundingBox.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {

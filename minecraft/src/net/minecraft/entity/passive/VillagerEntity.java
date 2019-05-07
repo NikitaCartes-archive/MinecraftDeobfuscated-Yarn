@@ -124,7 +124,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.field_18873,
 		MemoryModuleType.field_18874,
 		MemoryModuleType.field_19008,
-		MemoryModuleType.field_19009
+		MemoryModuleType.field_19009,
+		MemoryModuleType.field_19293
 	);
 	private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(
 		SensorType.field_18466,
@@ -286,7 +287,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		} else {
 			boolean bl2 = this.getOffers().isEmpty();
 			if (hand == Hand.field_5808) {
-				if (bl2) {
+				if (bl2 && !this.world.isClient) {
 					this.sayNo();
 				}
 
@@ -316,6 +317,15 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.prepareRecipesFor(playerEntity);
 		this.setCurrentCustomer(playerEntity);
 		this.sendOffers(playerEntity, this.getDisplayName(), this.getVillagerData().getLevel());
+	}
+
+	@Override
+	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
+		boolean bl = this.getCurrentCustomer() != null && playerEntity == null;
+		super.setCurrentCustomer(playerEntity);
+		if (bl) {
+			this.resetCustomer();
+		}
 	}
 
 	public void restock() {
@@ -391,11 +401,6 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, listTag));
 		if (compoundTag.containsKey("Xp", 3)) {
 			this.experience = compoundTag.getInt("Xp");
-		} else {
-			int i = this.getVillagerData().getLevel();
-			if (VillagerData.canLevelUp(i)) {
-				this.experience = VillagerData.getLowerLevelExperience(i);
-			}
 		}
 
 		this.lastRestock = compoundTag.getLong("LastRestock");

@@ -121,7 +121,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -1004,7 +1003,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
-			crashReportSection.add("Packet class", (ICrashCallable<String>)(() -> packet.getClass().getCanonicalName()));
+			crashReportSection.method_577("Packet class", () -> packet.getClass().getCanonicalName());
 			throw new CrashException(crashReport);
 		}
 	}

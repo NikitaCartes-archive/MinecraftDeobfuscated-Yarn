@@ -315,7 +315,7 @@ public class TradeOffers {
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 10, 8, 10), new TradeOffers.SellMapFactory(13, "Monument", MapIcon.Type.field_98, 6, 5)
+							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 8, 10), new TradeOffers.SellMapFactory(13, "Monument", MapIcon.Type.field_98, 6, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
@@ -460,7 +460,7 @@ public class TradeOffers {
 							new TradeOffers.SellEnchantedToolFactory(Items.field_8475, 1, 2, 10, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.field_8699, 2, 2, 10, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.field_8403, 3, 2, 10, 0.2F),
-							new TradeOffers.SellEnchantedToolFactory(Items.field_8527, 9, 2, 10, 0.2F)
+							new TradeOffers.SellItemFactory(new ItemStack(Items.field_8527), 4, 1, 2, 10, 0.2F)
 						},
 						4,
 						new TradeOffers.Factory[]{

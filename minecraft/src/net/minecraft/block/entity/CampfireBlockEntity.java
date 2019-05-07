@@ -3,8 +3,6 @@ package net.minecraft.block.entity;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
@@ -35,22 +33,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 
 	@Override
 	public void tick() {
-		BlockState blockState = this.hasWorld() ? this.getCachedState() : null;
-		if (blockState != null && blockState.getBlock() == Blocks.field_17350) {
-			boolean bl = (Boolean)blockState.get(CampfireBlock.LIT);
-			boolean bl2 = this.world.isClient;
-			if (bl2) {
-				if (bl) {
-					this.spawnSmokeParticles();
-				}
+		boolean bl = (Boolean)this.getCachedState().get(CampfireBlock.LIT);
+		boolean bl2 = this.world.isClient;
+		if (bl2) {
+			if (bl) {
+				this.spawnSmokeParticles();
+			}
+		} else {
+			if (bl) {
+				this.updateItemsBeingCooked();
 			} else {
-				if (bl) {
-					this.updateItemsBeingCooked();
-				} else {
-					for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
-						if (this.cookingTimes[i] > 0) {
-							this.cookingTimes[i] = MathHelper.clamp(this.cookingTimes[i] - 2, 0, this.cookingTotalTimes[i]);
-						}
+				for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
+					if (this.cookingTimes[i] > 0) {
+						this.cookingTimes[i] = MathHelper.clamp(this.cookingTimes[i] - 2, 0, this.cookingTotalTimes[i]);
 					}
 				}
 			}

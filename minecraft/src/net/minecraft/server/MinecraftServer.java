@@ -89,7 +89,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -448,11 +447,11 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		serverChunkManager.addTicket(ChunkTicketType.field_14030, new ChunkPos(blockPos), 11, Unit.field_17274);
 
 		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
-			this.timeReference += 100L;
+			this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
 			this.method_16208();
 		}
 
-		this.timeReference += 100L;
+		this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
 		this.method_16208();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
@@ -469,7 +468,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			}
 		}
 
-		this.timeReference += 100L;
+		this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
 		this.method_16208();
 		worldGenerationProgressListener.stop();
 		serverChunkManager.method_17293().setTaskBatchSize(5);
@@ -1005,17 +1004,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		if (this.playerManager != null) {
 			crashReport.getSystemDetailsSection()
-				.add(
+				.method_577(
 					"Player Count",
-					(ICrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
-							+ " / "
-							+ this.playerManager.getMaxPlayerCount()
-							+ "; "
-							+ this.playerManager.getPlayerList())
+					() -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList()
 				);
 		}
 
-		crashReport.getSystemDetailsSection().add("Data Packs", (ICrashCallable<String>)(() -> {
+		crashReport.getSystemDetailsSection().method_577("Data Packs", () -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
@@ -1030,9 +1025,9 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			}
 
 			return stringBuilder.toString();
-		}));
+		});
 		if (this.serverId != null) {
-			crashReport.getSystemDetailsSection().add("Server Id", (ICrashCallable<String>)(() -> this.serverId));
+			crashReport.getSystemDetailsSection().method_577("Server Id", () -> this.serverId);
 		}
 
 		return crashReport;

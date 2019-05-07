@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -12,29 +13,23 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.WeightedList;
 
 public class CompositeTask<E extends LivingEntity> extends Task<E> {
-	private final Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemoryState;
 	private final Set<MemoryModuleType<?>> memoriesToForgetWhenStopped;
 	private final CompositeTask.Order order;
 	private final CompositeTask.RunMode runMode;
 	private final WeightedList<Task<? super E>> tasks = new WeightedList<>();
 
 	public CompositeTask(
-		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set,
-		Set<MemoryModuleType<?>> set2,
+		Map<MemoryModuleType<?>, MemoryModuleState> map,
+		Set<MemoryModuleType<?>> set,
 		CompositeTask.Order order,
 		CompositeTask.RunMode runMode,
 		List<Pair<Task<? super E>, Integer>> list
 	) {
-		this.requiredMemoryState = set;
-		this.memoriesToForgetWhenStopped = set2;
+		super(map);
+		this.memoriesToForgetWhenStopped = set;
 		this.order = order;
 		this.runMode = runMode;
 		list.forEach(pair -> this.tasks.add((Task<? super E>)pair.getFirst(), (Integer)pair.getSecond()));
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return this.requiredMemoryState;
 	}
 
 	@Override

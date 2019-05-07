@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -49,6 +50,10 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	}
 
 	public boolean shouldTickEntity(Entity entity) {
+		return true;
+	}
+
+	public boolean method_20529(BlockPos blockPos) {
 		return true;
 	}
 }

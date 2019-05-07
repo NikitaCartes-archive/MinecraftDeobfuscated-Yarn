@@ -1,8 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -11,9 +9,8 @@ import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 
 public class LoseJobOnSiteLossTask extends Task<VillagerEntity> {
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18439, MemoryModuleState.field_18457));
+	public LoseJobOnSiteLossTask() {
+		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18457));
 	}
 
 	protected boolean method_20449(ServerWorld serverWorld, VillagerEntity villagerEntity) {

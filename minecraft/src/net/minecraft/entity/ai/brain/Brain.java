@@ -65,7 +65,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.putMemory(memoryModuleType, (U)((Function)memoryModuleType.getFactory().orElseThrow(RuntimeException::new)).apply(dynamic));
 	}
 
-	public void forget(MemoryModuleType<?> memoryModuleType) {
+	public <U> void forget(MemoryModuleType<U> memoryModuleType) {
 		this.setMemory(memoryModuleType, Optional.empty());
 	}
 
@@ -186,7 +186,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 				.filter(entry -> ((MemoryModuleType)entry.getKey()).getFactory().isPresent() && ((Optional)entry.getValue()).isPresent())
 				.map(
 					entry -> Pair.of(
-							dynamicOps.createString(((MemoryModuleType)entry.getKey()).getId().toString()),
+							dynamicOps.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()),
 							((DynamicSerializable)((Optional)entry.getValue()).get()).serialize(dynamicOps)
 						)
 				)

@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -18,16 +16,10 @@ public class ForgetBellRingTask extends Task<LivingEntity> {
 	private int field_19001;
 
 	public ForgetBellRingTask(int i, int j) {
+		super(ImmutableMap.of(MemoryModuleType.field_19008, MemoryModuleState.field_18456, MemoryModuleType.field_19009, MemoryModuleState.field_18456));
 		this.field_19000 = i * 20;
 		this.field_19001 = 0;
 		this.field_19154 = j;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_19008, MemoryModuleState.field_18456), Pair.of(MemoryModuleType.field_19009, MemoryModuleState.field_18456)
-		);
 	}
 
 	@Override

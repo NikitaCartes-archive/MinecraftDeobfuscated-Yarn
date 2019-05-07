@@ -41,7 +41,6 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -315,13 +314,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
-				crashReportSection.add("Source block type", (ICrashCallable<String>)(() -> {
+				crashReportSection.method_577("Source block type", () -> {
 					try {
 						return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(block), block.getTranslationKey(), block.getClass().getCanonicalName());
 					} catch (Throwable var2) {
 						return "ID #" + Registry.BLOCK.getId(block);
 					}
-				}));
+				});
 				CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
 				throw new CrashException(crashReport);
 			}
@@ -572,10 +571,15 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
 			if (!blockEntity.isInvalid() && blockEntity.hasWorld()) {
 				BlockPos blockPos = blockEntity.getPos();
-				if (this.isBlockLoaded(blockPos) && this.getWorldBorder().contains(blockPos)) {
+				if (this.chunkManager.method_20529(blockPos) && this.getWorldBorder().contains(blockPos)) {
 					try {
 						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
-						((Tickable)blockEntity).tick();
+						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
+							((Tickable)blockEntity).tick();
+						} else {
+							blockEntity.method_20525();
+						}
+
 						profiler.pop();
 					} catch (Throwable var8) {
 						CrashReport crashReport = CrashReport.create(var8, "Ticking block entity");
@@ -954,11 +958,6 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return this;
 	}
 
-	@Override
-	public int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
-		return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
-	}
-
 	public LevelGeneratorType getGeneratorType() {
 		return this.properties.getGeneratorType();
 	}
@@ -1176,8 +1175,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
 		crashReportSection.add("Level name", this.properties == null ? "????" : this.properties.getLevelName());
-		crashReportSection.add("All players", (ICrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
-		crashReportSection.add("Chunk stats", this.chunkManager::getStatus);
+		crashReportSection.method_577("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
+		crashReportSection.method_577("Chunk stats", this.chunkManager::getStatus);
 
 		try {
 			this.properties.populateCrashReport(crashReportSection);

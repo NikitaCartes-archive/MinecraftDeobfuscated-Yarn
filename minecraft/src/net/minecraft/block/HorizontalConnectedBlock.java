@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
@@ -28,6 +30,7 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		.collect(SystemUtil.toMap());
 	protected final VoxelShape[] collisionShapes;
 	protected final VoxelShape[] boundingShapes;
+	private final Object2IntMap<BlockState> SHAPE_INDEX_CACHE = new Object2IntOpenHashMap<>();
 
 	protected HorizontalConnectedBlock(float f, float g, float h, float i, float j, Block.Settings settings) {
 		super(settings);
@@ -93,24 +96,26 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	protected int getShapeIndex(BlockState blockState) {
-		int i = 0;
-		if ((Boolean)blockState.get(NORTH)) {
-			i |= getDirectionMask(Direction.field_11043);
-		}
+		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(blockState, blockStatex -> {
+			int i = 0;
+			if ((Boolean)blockStatex.get(NORTH)) {
+				i |= getDirectionMask(Direction.field_11043);
+			}
 
-		if ((Boolean)blockState.get(EAST)) {
-			i |= getDirectionMask(Direction.field_11034);
-		}
+			if ((Boolean)blockStatex.get(EAST)) {
+				i |= getDirectionMask(Direction.field_11034);
+			}
 
-		if ((Boolean)blockState.get(SOUTH)) {
-			i |= getDirectionMask(Direction.field_11035);
-		}
+			if ((Boolean)blockStatex.get(SOUTH)) {
+				i |= getDirectionMask(Direction.field_11035);
+			}
 
-		if ((Boolean)blockState.get(WEST)) {
-			i |= getDirectionMask(Direction.field_11039);
-		}
+			if ((Boolean)blockStatex.get(WEST)) {
+				i |= getDirectionMask(Direction.field_11039);
+			}
 
-		return i;
+			return i;
+		});
 	}
 
 	@Override

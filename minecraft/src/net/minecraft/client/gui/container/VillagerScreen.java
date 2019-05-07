@@ -131,12 +131,13 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		if (k > 1) {
 			int l = 139 - (27 + (k - 1) * 139 / k);
 			int m = 1 + l / k + 139 / k;
-			int n = this.field_19163 * m;
+			int n = 113;
+			int o = Math.min(113, this.field_19163 * m);
 			if (this.field_19163 == k - 1) {
-				n = 113;
+				o = 113;
 			}
 
-			blit(i + 94, j + 18 + n, this.blitOffset, 0.0F, 199.0F, 6, 27, 256, 512);
+			blit(i + 94, j + 18 + o, this.blitOffset, 0.0F, 199.0F, 6, 27, 256, 512);
 		} else {
 			blit(i + 94, j + 18, this.blitOffset, 6.0F, 199.0F, 6, 27, 256, 512);
 		}

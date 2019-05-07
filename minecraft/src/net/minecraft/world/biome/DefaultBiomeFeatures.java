@@ -38,6 +38,7 @@ import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
@@ -714,7 +715,7 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.field_13178,
 			Biome.configureFeature(
 				Feature.field_13550,
-				new RandomBooleanFeatureConfig(Feature.field_13571, FeatureConfig.DEFAULT, Feature.field_13531, FeatureConfig.DEFAULT),
+				new RandomBooleanFeatureConfig(Feature.field_13571, new PlantedFeatureConfig(false), Feature.field_13531, new PlantedFeatureConfig(false)),
 				Decorator.field_14238,
 				new CountDecoratorConfig(1)
 			)

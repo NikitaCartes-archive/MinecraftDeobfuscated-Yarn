@@ -48,7 +48,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
-							world.getBlockTickScheduler().schedule(blockPos2.toImmutable(), Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
+							world.getBlockTickScheduler().schedule(blockPos2, Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
 						}
 					}
 				}

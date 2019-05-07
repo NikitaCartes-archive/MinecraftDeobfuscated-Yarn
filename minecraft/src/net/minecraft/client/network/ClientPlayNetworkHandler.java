@@ -1919,6 +1919,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 
 				this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(m, list3);
+			} else if (CustomPayloadS2CPacket.DEBUG_RAIDS.equals(identifier)) {
+				int i = packetByteBuf.readInt();
+				Collection<BlockPos> collection = Lists.<BlockPos>newArrayList();
+
+				for (int m = 0; m < i; m++) {
+					collection.add(packetByteBuf.readBlockPos());
+				}
+
+				this.client.debugRenderer.raidCenterDebugRenderer.setRaidCenters(collection);
 			} else if (CustomPayloadS2CPacket.DEBUG_BRAIN.equals(identifier)) {
 				double d = packetByteBuf.readDouble();
 				double e = packetByteBuf.readDouble();
@@ -1927,31 +1936,41 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				UUID uUID = packetByteBuf.readUuid();
 				int q = packetByteBuf.readInt();
 				String string3 = packetByteBuf.readString();
-				PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string3, position);
+				String string4 = packetByteBuf.readString();
 				int r = packetByteBuf.readInt();
-
-				for (int s = 0; s < r; s++) {
-					String string4 = packetByteBuf.readString();
-					lv2.field_18927.add(string4);
+				boolean bl2 = packetByteBuf.readBoolean();
+				Path path2;
+				if (bl2) {
+					path2 = Path.fromBuffer(packetByteBuf);
+				} else {
+					path2 = null;
 				}
 
+				PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string3, string4, r, position, path2);
 				int s = packetByteBuf.readInt();
 
 				for (int t = 0; t < s; t++) {
 					String string5 = packetByteBuf.readString();
-					lv2.field_18928.add(string5);
+					lv2.field_18927.add(string5);
 				}
 
 				int t = packetByteBuf.readInt();
 
 				for (int u = 0; u < t; u++) {
 					String string6 = packetByteBuf.readString();
-					lv2.field_18929.add(string6);
+					lv2.field_18928.add(string6);
 				}
 
 				int u = packetByteBuf.readInt();
 
 				for (int v = 0; v < u; v++) {
+					String string7 = packetByteBuf.readString();
+					lv2.field_18929.add(string7);
+				}
+
+				int v = packetByteBuf.readInt();
+
+				for (int w = 0; w < v; w++) {
 					BlockPos blockPos4 = packetByteBuf.readBlockPos();
 					lv2.field_18930.add(blockPos4);
 				}

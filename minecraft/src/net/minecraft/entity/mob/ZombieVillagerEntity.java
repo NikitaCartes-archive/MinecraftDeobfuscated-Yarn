@@ -94,8 +94,6 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		if (compoundTag.containsKey("Xp", 3)) {
 			this.xp = compoundTag.getInt("Xp");
-		} else {
-			this.xp = VillagerData.getLowerLevelExperience(this.getVillagerData().getLevel());
 		}
 	}
 
@@ -206,7 +204,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
-		serverWorld.playLevelEvent(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+		serverWorld.playLevelEvent(null, 1027, new BlockPos(this), 0);
 	}
 
 	protected int getConversionRate() {

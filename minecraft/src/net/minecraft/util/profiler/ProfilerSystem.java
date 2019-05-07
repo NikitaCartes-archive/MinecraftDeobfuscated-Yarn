@@ -1,10 +1,12 @@
 package net.minecraft.util.profiler;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
@@ -17,8 +19,8 @@ public class ProfilerSystem implements ReadableProfiler {
 	private static final long TIMEOUT_NANOSECONDS = Duration.ofMillis(100L).toNanos();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<String> nameList = Lists.<String>newArrayList();
-	private final List<Long> timeList = Lists.<Long>newArrayList();
-	private final Map<String, Long> nameDurationMap = Maps.<String, Long>newHashMap();
+	private final LongList timeList = new LongArrayList();
+	private final Object2LongMap<String> nameDurationMap = new Object2LongOpenHashMap<>();
 	private final IntSupplier field_16266;
 	private final long field_15732;
 	private final int field_15729;
@@ -84,15 +86,10 @@ public class ProfilerSystem implements ReadableProfiler {
 			LOGGER.error("Tried to pop one too many times! Mismatched push() and pop()?");
 		} else {
 			long l = SystemUtil.getMeasuringTimeNano();
-			long m = (Long)this.timeList.remove(this.timeList.size() - 1);
+			long m = this.timeList.removeLong(this.timeList.size() - 1);
 			this.nameList.remove(this.nameList.size() - 1);
 			long n = l - m;
-			if (this.nameDurationMap.containsKey(this.location)) {
-				this.nameDurationMap.put(this.location, (Long)this.nameDurationMap.get(this.location) + n);
-			} else {
-				this.nameDurationMap.put(this.location, n);
-			}
-
+			this.nameDurationMap.put(this.location, this.nameDurationMap.getLong(this.location) + n);
 			if (n > TIMEOUT_NANOSECONDS) {
 				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.location, (double)n / 1000000.0);
 			}

@@ -10,7 +10,6 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -26,6 +25,7 @@ public abstract class BlockEntity {
 	protected boolean invalid;
 	@Nullable
 	private BlockState cachedState;
+	private boolean field_19314;
 
 	public BlockEntity(BlockEntityType<?> blockEntityType) {
 		this.type = blockEntityType;
@@ -154,7 +154,7 @@ public abstract class BlockEntity {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Name", (ICrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
+		crashReportSection.method_577("Name", () -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName());
 		if (this.world != null) {
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
@@ -177,5 +177,12 @@ public abstract class BlockEntity {
 
 	public BlockEntityType<?> getType() {
 		return this.type;
+	}
+
+	public void method_20525() {
+		if (!this.field_19314) {
+			this.field_19314 = true;
+			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
+		}
 	}
 }

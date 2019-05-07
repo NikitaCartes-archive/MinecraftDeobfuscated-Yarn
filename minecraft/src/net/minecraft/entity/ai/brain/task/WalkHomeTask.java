@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
@@ -24,14 +22,8 @@ public class WalkHomeTask extends Task<LivingEntity> {
 	private long lastRunTime;
 
 	public WalkHomeTask(float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457, MemoryModuleType.field_18438, MemoryModuleState.field_18457));
 		this.speed = f;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457), Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18457)
-		);
 	}
 
 	@Override
@@ -67,8 +59,8 @@ public class WalkHomeTask extends Task<LivingEntity> {
 				mutable.setOffset(Direction.field_11033);
 			}
 
-			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());
-			return path != null && path.method_19315();
+			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable);
+			return path != null && path.method_19313(mutable);
 		};
 		pointOfInterestStorage.getNearestPosition(
 				PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.field_18489

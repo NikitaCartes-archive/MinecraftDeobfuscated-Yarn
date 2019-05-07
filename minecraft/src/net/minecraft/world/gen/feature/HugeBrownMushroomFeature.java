@@ -14,13 +14,13 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
+	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> function) {
 		super(function);
 	}
 
 	public boolean method_13362(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, PlantedFeatureConfig plantedFeatureConfig
 	) {
 		int i = random.nextInt(3) + 4;
 		if (random.nextInt(12) == 0) {
@@ -90,7 +90,11 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 				for (int nxx = 0; nxx < i; nxx++) {
 					mutable.set(blockPos).setOffset(Direction.field_11036, nxx);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
-						this.setBlockState(iWorld, mutable, blockState3);
+						if (plantedFeatureConfig.planted) {
+							iWorld.setBlockState(mutable, blockState3, 3);
+						} else {
+							this.setBlockState(iWorld, mutable, blockState3);
+						}
 					}
 				}
 

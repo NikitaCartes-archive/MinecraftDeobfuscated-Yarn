@@ -2,13 +2,13 @@ package net.minecraft.server.world;
 
 import java.util.Objects;
 
-final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
+public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final ChunkTicketType<T> type;
 	private final int level;
 	private final T argument;
 	private final long location;
 
-	ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object, long l) {
+	protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object, long l) {
 		this.type = chunkTicketType;
 		this.level = i;
 		this.argument = object;

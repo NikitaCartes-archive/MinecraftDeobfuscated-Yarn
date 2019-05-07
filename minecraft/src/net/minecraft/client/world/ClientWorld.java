@@ -47,7 +47,6 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -415,10 +414,8 @@ public class ClientWorld extends World {
 	@Override
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = super.addDetailsToCrashReport(crashReport);
-		crashReportSection.add("Server brand", (ICrashCallable<String>)(() -> this.client.player.getServerBrand()));
-		crashReportSection.add(
-			"Server type", (ICrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
-		);
+		crashReportSection.method_577("Server brand", () -> this.client.player.getServerBrand());
+		crashReportSection.method_577("Server type", () -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server");
 		return crashReportSection;
 	}
 

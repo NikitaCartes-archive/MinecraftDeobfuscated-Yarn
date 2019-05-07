@@ -71,17 +71,33 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
-		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.getHoldingEntity() instanceof WanderingTraderEntity) {
-			WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)this.getHoldingEntity();
-			int i = wanderingTraderEntity.getDespawnDelay();
-			if (i - 1 > 0) {
-				this.despawnDelay = i - 1;
-			} else {
+	public void tickMovement() {
+		super.tickMovement();
+		if (!this.world.isClient) {
+			this.method_20501();
+		}
+	}
+
+	private void method_20501() {
+		if (this.method_20502()) {
+			this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
+			if (this.despawnDelay <= 0) {
+				this.detachLeash(true, false);
 				this.remove();
 			}
 		}
+	}
+
+	private boolean method_20502() {
+		return !this.isTame() && !this.leashedByPlayer() && !this.method_5817();
+	}
+
+	private boolean heldByTrader() {
+		return this.getHoldingEntity() instanceof WanderingTraderEntity;
+	}
+
+	private boolean leashedByPlayer() {
+		return this.isLeashed() && !this.heldByTrader();
 	}
 
 	@Nullable

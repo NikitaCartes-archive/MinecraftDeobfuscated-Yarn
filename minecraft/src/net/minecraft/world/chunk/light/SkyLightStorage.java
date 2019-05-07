@@ -151,25 +151,18 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
 		if (chunkNibbleArray != null) {
 			return chunkNibbleArray;
-		} else if (!this.method_15566(l)) {
-			return new ChunkNibbleArray();
 		} else {
 			long m = ChunkSectionPos.offsetPacked(l, Direction.field_11036);
 			int i = this.dataStorage.heightMap.get(ChunkSectionPos.toLightStorageIndex(l));
+			if (i != this.dataStorage.defaultHeight && ChunkSectionPos.unpackLongY(m) < i) {
+				ChunkNibbleArray chunkNibbleArray2;
+				while ((chunkNibbleArray2 = this.getDataForChunk(m, true)) == null) {
+					m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
+				}
 
-			while (i != this.dataStorage.defaultHeight && ChunkSectionPos.unpackLongY(m) < i && !this.hasChunk(m)) {
-				m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
-			}
-
-			ChunkNibbleArray chunkNibbleArray2 = this.dataStorage.getDataForChunk(m);
-			if (chunkNibbleArray2 != null) {
 				return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
-			} else if (this.field_15815.contains(ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l)))) {
-				return new ChunkNibbleArray();
 			} else {
-				ChunkNibbleArray chunkNibbleArray3 = new ChunkNibbleArray();
-				Arrays.fill(chunkNibbleArray3.asByteArray(), (byte)-1);
-				return chunkNibbleArray3;
+				return new ChunkNibbleArray();
 			}
 		}
 	}

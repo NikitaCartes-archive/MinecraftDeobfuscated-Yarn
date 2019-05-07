@@ -40,11 +40,6 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
-			if (!(blockState.getBlock() instanceof WallSignBlock)) {
-				GlStateManager.popMatrix();
-				return;
-			}
-
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);

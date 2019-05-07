@@ -76,9 +76,9 @@ public class CrashReportSection {
 		return stringBuilder.toString();
 	}
 
-	public void add(String string, ICrashCallable<String> iCrashCallable) {
+	public void method_577(String string, CrashCallable<String> crashCallable) {
 		try {
-			this.add(string, iCrashCallable.call());
+			this.add(string, crashCallable.call());
 		} catch (Throwable var4) {
 			this.add(string, var4);
 		}
@@ -159,10 +159,10 @@ public class CrashReportSection {
 
 	public static void addBlockInfo(CrashReportSection crashReportSection, BlockPos blockPos, @Nullable BlockState blockState) {
 		if (blockState != null) {
-			crashReportSection.add("Block", blockState::toString);
+			crashReportSection.method_577("Block", blockState::toString);
 		}
 
-		crashReportSection.add("Block location", (ICrashCallable<String>)(() -> createPositionString(blockPos)));
+		crashReportSection.method_577("Block location", () -> createPositionString(blockPos));
 	}
 
 	static class Element {
