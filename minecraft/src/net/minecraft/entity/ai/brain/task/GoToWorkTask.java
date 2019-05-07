@@ -1,8 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -14,9 +12,8 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.VillagerProfession;
 
 public class GoToWorkTask extends Task<VillagerEntity> {
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456));
+	public GoToWorkTask() {
+		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456));
 	}
 
 	protected boolean method_18987(ServerWorld serverWorld, VillagerEntity villagerEntity) {

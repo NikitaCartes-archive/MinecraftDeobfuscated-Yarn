@@ -1,8 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,12 +31,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private long field_18861;
 	private int field_19239;
 
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457),
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457),
-			Pair.of(MemoryModuleType.field_18873, MemoryModuleState.field_18456)
+	public FarmerVillagerTask() {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18873,
+				MemoryModuleState.field_18456
+			)
 		);
 	}
 

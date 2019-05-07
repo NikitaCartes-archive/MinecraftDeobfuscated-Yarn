@@ -173,7 +173,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_shepherds_house_1", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_armorer_house_1", immutableList2), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_armorer_2", immutableList2), 1),
-						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_fisher_cottage_1", immutableList2), 2),
+						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_fisher_cottage_1", immutableList2), 3),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_tannery_1", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_cartographer_house_1", immutableList2), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_library_1", immutableList2), 2),

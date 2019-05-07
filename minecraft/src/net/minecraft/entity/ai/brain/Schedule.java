@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Schedule {
@@ -29,7 +28,7 @@ public class Schedule {
 	private final Map<Activity, ScheduleRule> scheduleRules = Maps.<Activity, ScheduleRule>newHashMap();
 
 	protected static ScheduleBuilder register(String string) {
-		Schedule schedule = Registry.SCHEDULE.add(new Identifier(string), new Schedule());
+		Schedule schedule = Registry.register(Registry.SCHEDULE, string, new Schedule());
 		return new ScheduleBuilder(schedule);
 	}
 

@@ -137,7 +137,7 @@ public class DesertVillageData {
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_weaponsmith_1"), 2),
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_temple_1"), 2),
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_temple_2"), 2),
-						new Pair<>(new SinglePoolElement("village/desert/houses/desert_large_farm_1", immutableList2), 7),
+						new Pair<>(new SinglePoolElement("village/desert/houses/desert_large_farm_1", immutableList2), 11),
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_farm_1", immutableList2), 4),
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_farm_2", immutableList2), 4),
 						new Pair<>(new SinglePoolElement("village/desert/houses/desert_animal_pen_1"), 2),

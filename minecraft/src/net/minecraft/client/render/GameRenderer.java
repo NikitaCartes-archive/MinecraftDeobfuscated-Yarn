@@ -51,7 +51,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -502,7 +501,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			&& this.client.options.pauseOnLostFocus
 			&& (!this.client.options.touchscreen || !this.client.mouse.wasRightButtonClicked())) {
 			if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
-				this.client.openPauseMenu();
+				this.client.openPauseMenu(false);
 			}
 		} else {
 			this.lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
@@ -565,7 +564,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
-					crashReportSection.add("Overlay name", (ICrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
+					crashReportSection.method_577("Overlay name", () -> this.client.overlay.getClass().getCanonicalName());
 					throw new CrashException(crashReport);
 				}
 			} else if (this.client.currentScreen != null) {
@@ -576,16 +575,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
-					crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
-					crashReportSection.add(
-						"Mouse location",
-						(ICrashCallable<String>)(() -> String.format(
-								Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.client.mouse.getX(), this.client.mouse.getY()
-							))
+					crashReportSection.method_577("Screen name", () -> this.client.currentScreen.getClass().getCanonicalName());
+					crashReportSection.method_577(
+						"Mouse location", () -> String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.client.mouse.getX(), this.client.mouse.getY())
 					);
-					crashReportSection.add(
+					crashReportSection.method_577(
 						"Screen size",
-						(ICrashCallable<String>)(() -> String.format(
+						() -> String.format(
 								Locale.ROOT,
 								"Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %f",
 								this.client.window.getScaledWidth(),
@@ -593,7 +589,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 								this.client.window.getFramebufferWidth(),
 								this.client.window.getFramebufferHeight(),
 								this.client.window.getScaleFactor()
-							))
+							)
 					);
 					throw new CrashException(crashReport);
 				}

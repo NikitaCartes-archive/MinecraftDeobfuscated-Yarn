@@ -349,7 +349,7 @@ public class FishHookEntity extends Entity {
 				double d = this.x + (double)(MathHelper.sin(g) * h * 0.1F);
 				double e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0F);
 				double j = this.z + (double)(MathHelper.cos(g) * h * 0.1F);
-				Block block = serverWorld.getBlockState(new BlockPos((int)d, (int)e - 1, (int)j)).getBlock();
+				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.field_10382) {
 					serverWorld.spawnParticles(ParticleTypes.field_11202, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
 				}

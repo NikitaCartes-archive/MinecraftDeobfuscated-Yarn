@@ -11,14 +11,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 
 public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	private float field_65;
 	private float field_64;
 
 	@Override
-	public void init(BlockView blockView, MobEntity mobEntity) {
-		super.init(blockView, mobEntity);
+	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
+		super.init(viewableWorld, mobEntity);
 		mobEntity.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 		this.field_65 = mobEntity.getPathNodeTypeWeight(PathNodeType.field_12);
 		mobEntity.setPathNodeTypeWeight(PathNodeType.field_12, 6.0F);
@@ -48,70 +49,70 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Override
-	public int getPathNodes(PathNode[] pathNodes, PathNode pathNode, PathNode pathNode2, float f) {
+	public int getPathNodes(PathNode[] pathNodes, PathNode pathNode) {
 		int i = 0;
 		int j = 1;
 		BlockPos blockPos = new BlockPos(pathNode.x, pathNode.y, pathNode.z);
 		double d = this.method_66(blockPos);
-		PathNode pathNode3 = this.method_65(pathNode.x, pathNode.y, pathNode.z + 1, 1, d);
-		PathNode pathNode4 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z, 1, d);
-		PathNode pathNode5 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z, 1, d);
-		PathNode pathNode6 = this.method_65(pathNode.x, pathNode.y, pathNode.z - 1, 1, d);
-		PathNode pathNode7 = this.method_65(pathNode.x, pathNode.y + 1, pathNode.z, 0, d);
-		PathNode pathNode8 = this.method_65(pathNode.x, pathNode.y - 1, pathNode.z, 1, d);
-		if (pathNode3 != null && !pathNode3.field_42 && pathNode3.distance(pathNode2) < f) {
+		PathNode pathNode2 = this.method_65(pathNode.x, pathNode.y, pathNode.z + 1, 1, d);
+		PathNode pathNode3 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z, 1, d);
+		PathNode pathNode4 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z, 1, d);
+		PathNode pathNode5 = this.method_65(pathNode.x, pathNode.y, pathNode.z - 1, 1, d);
+		PathNode pathNode6 = this.method_65(pathNode.x, pathNode.y + 1, pathNode.z, 0, d);
+		PathNode pathNode7 = this.method_65(pathNode.x, pathNode.y - 1, pathNode.z, 1, d);
+		if (pathNode2 != null && !pathNode2.field_42) {
+			pathNodes[i++] = pathNode2;
+		}
+
+		if (pathNode3 != null && !pathNode3.field_42) {
 			pathNodes[i++] = pathNode3;
 		}
 
-		if (pathNode4 != null && !pathNode4.field_42 && pathNode4.distance(pathNode2) < f) {
+		if (pathNode4 != null && !pathNode4.field_42) {
 			pathNodes[i++] = pathNode4;
 		}
 
-		if (pathNode5 != null && !pathNode5.field_42 && pathNode5.distance(pathNode2) < f) {
+		if (pathNode5 != null && !pathNode5.field_42) {
 			pathNodes[i++] = pathNode5;
 		}
 
-		if (pathNode6 != null && !pathNode6.field_42 && pathNode6.distance(pathNode2) < f) {
+		if (pathNode6 != null && !pathNode6.field_42) {
 			pathNodes[i++] = pathNode6;
 		}
 
-		if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
+		if (pathNode7 != null && !pathNode7.field_42) {
 			pathNodes[i++] = pathNode7;
 		}
 
-		if (pathNode8 != null && !pathNode8.field_42 && pathNode8.distance(pathNode2) < f) {
-			pathNodes[i++] = pathNode8;
-		}
-
-		boolean bl = pathNode6 == null || pathNode6.type == PathNodeType.field_7 || pathNode6.field_43 != 0.0F;
-		boolean bl2 = pathNode3 == null || pathNode3.type == PathNodeType.field_7 || pathNode3.field_43 != 0.0F;
-		boolean bl3 = pathNode5 == null || pathNode5.type == PathNodeType.field_7 || pathNode5.field_43 != 0.0F;
-		boolean bl4 = pathNode4 == null || pathNode4.type == PathNodeType.field_7 || pathNode4.field_43 != 0.0F;
+		boolean bl = pathNode5 == null || pathNode5.type == PathNodeType.field_7 || pathNode5.field_43 != 0.0F;
+		boolean bl2 = pathNode2 == null || pathNode2.type == PathNodeType.field_7 || pathNode2.field_43 != 0.0F;
+		boolean bl3 = pathNode4 == null || pathNode4.type == PathNodeType.field_7 || pathNode4.field_43 != 0.0F;
+		boolean bl4 = pathNode3 == null || pathNode3.type == PathNodeType.field_7 || pathNode3.field_43 != 0.0F;
 		if (bl && bl4) {
-			PathNode pathNode9 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z - 1, 1, d);
-			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
-				pathNodes[i++] = pathNode9;
+			PathNode pathNode8 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z - 1, 1, d);
+			if (pathNode8 != null && !pathNode8.field_42) {
+				pathNodes[i++] = pathNode8;
 			}
 		}
 
 		if (bl && bl3) {
-			PathNode pathNode9 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z - 1, 1, d);
-			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
-				pathNodes[i++] = pathNode9;
+			PathNode pathNode8 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z - 1, 1, d);
+			if (pathNode8 != null && !pathNode8.field_42) {
+				pathNodes[i++] = pathNode8;
 			}
 		}
 
 		if (bl2 && bl4) {
-			PathNode pathNode9 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z + 1, 1, d);
-			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
-				pathNodes[i++] = pathNode9;
+			PathNode pathNode8 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z + 1, 1, d);
+			if (pathNode8 != null && !pathNode8.field_42) {
+				pathNodes[i++] = pathNode8;
 			}
 		}
 
 		if (bl2 && bl3) {
-			PathNode pathNode9 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z + 1, 1, d);
-			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
-				pathNodes[i++] = pathNode9;
+			PathNode pathNode8 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z + 1, 1, d);
+			if (pathNode8 != null && !pathNode8.field_42) {
+				pathNodes[i++] = pathNode8;
 			}
 		}
 

@@ -1,11 +1,9 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -17,6 +15,23 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 
 public class MeetVillagerTask extends Task<LivingEntity> {
+	public MeetVillagerTask() {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18440,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_18442,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_18447,
+				MemoryModuleState.field_18457
+			)
+		);
+	}
+
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
 		Brain<?> brain = livingEntity.getBrain();
@@ -28,17 +43,6 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 			&& ((List)brain.getOptionalMemory(MemoryModuleType.field_18442).get())
 				.stream()
 				.anyMatch(livingEntityx -> EntityType.field_6077.equals(livingEntityx.getType()));
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456),
-			Pair.of(MemoryModuleType.field_18442, MemoryModuleState.field_18456),
-			Pair.of(MemoryModuleType.field_18447, MemoryModuleState.field_18457)
-		);
 	}
 
 	@Override

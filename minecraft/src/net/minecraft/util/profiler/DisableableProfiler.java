@@ -6,8 +6,11 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.SystemUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisableableProfiler implements Profiler {
+	private static final Logger field_19286 = LogManager.getLogger();
 	private static final long field_16268 = Duration.ofMillis(300L).toNanos();
 	private final IntSupplier tickSupplier;
 	private final DisableableProfiler.ProfilerControllerImpl controller = new DisableableProfiler.ProfilerControllerImpl();

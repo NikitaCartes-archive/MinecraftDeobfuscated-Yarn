@@ -5,9 +5,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 
 public abstract class PathNodeMaker {
-	protected BlockView blockView;
+	protected ViewableWorld blockView;
 	protected MobEntity entity;
 	protected final Int2ObjectMap<PathNode> pathNodeCache = new Int2ObjectOpenHashMap<>();
 	protected int field_31;
@@ -17,8 +18,8 @@ public abstract class PathNodeMaker {
 	protected boolean pathsThroughDoors;
 	protected boolean swims;
 
-	public void init(BlockView blockView, MobEntity mobEntity) {
-		this.blockView = blockView;
+	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
+		this.blockView = viewableWorld;
 		this.entity = mobEntity;
 		this.pathNodeCache.clear();
 		this.field_31 = MathHelper.floor(mobEntity.getWidth() + 1.0F);
@@ -39,7 +40,7 @@ public abstract class PathNodeMaker {
 
 	public abstract PathNode getPathNode(double d, double e, double f);
 
-	public abstract int getPathNodes(PathNode[] pathNodes, PathNode pathNode, PathNode pathNode2, float f);
+	public abstract int getPathNodes(PathNode[] pathNodes, PathNode pathNode);
 
 	public abstract PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2);
 

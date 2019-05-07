@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-final class PlayerChunkWatchingManager {
+public final class PlayerChunkWatchingManager {
 	private final Set<ServerPlayerEntity> watchingPlayers = Sets.<ServerPlayerEntity>newHashSet();
 	private final Set<ServerPlayerEntity> notWatchingPlayers = Sets.<ServerPlayerEntity>newHashSet();
 

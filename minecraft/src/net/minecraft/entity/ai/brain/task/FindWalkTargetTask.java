@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -18,12 +16,8 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private final float walkSpeed;
 
 	public FindWalkTargetTask(float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 		this.walkSpeed = f;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 	}
 
 	protected void method_18996(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {

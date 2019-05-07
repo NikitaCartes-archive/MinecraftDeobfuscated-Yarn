@@ -136,9 +136,9 @@ public class BatEntity extends AmbientEntity {
 
 			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
 				this.hangingPosition = new BlockPos(
-					(int)this.x + this.random.nextInt(7) - this.random.nextInt(7),
-					(int)this.y + this.random.nextInt(6) - 2,
-					(int)this.z + this.random.nextInt(7) - this.random.nextInt(7)
+					this.x + (double)this.random.nextInt(7) - (double)this.random.nextInt(7),
+					this.y + (double)this.random.nextInt(6) - 2.0,
+					this.z + (double)this.random.nextInt(7) - (double)this.random.nextInt(7)
 				);
 			}
 

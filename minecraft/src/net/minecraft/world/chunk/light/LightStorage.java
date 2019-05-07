@@ -56,6 +56,12 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 		return worldNibbleStorage.getDataForChunk(l);
 	}
 
+	@Nullable
+	public ChunkNibbleArray method_20533(long l) {
+		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
+		return chunkNibbleArray != null ? chunkNibbleArray : this.getDataForChunk(l, false);
+	}
+
 	protected abstract int getLight(long l);
 
 	protected int get(long l) {

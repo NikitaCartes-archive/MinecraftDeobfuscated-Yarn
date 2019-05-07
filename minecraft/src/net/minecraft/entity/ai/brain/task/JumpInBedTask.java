@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -16,20 +14,14 @@ import net.minecraft.util.math.BlockPos;
 public class JumpInBedTask extends Task<MobEntity> {
 	private final float walkSpeed;
 	@Nullable
-	private BlockPos bed;
+	private BlockPos bedPos;
 	private int ticksOutOfBedUntilStopped;
 	private int jumpsRemaining;
 	private int ticksToNextJump;
 
 	public JumpInBedTask(float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_19007, MemoryModuleState.field_18456, MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 		this.walkSpeed = f;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_19007, MemoryModuleState.field_18456), Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457)
-		);
 	}
 
 	protected boolean method_19971(ServerWorld serverWorld, MobEntity mobEntity) {
@@ -39,7 +31,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	protected void method_19972(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		super.run(serverWorld, mobEntity, l);
 		this.getNearestBed(mobEntity).ifPresent(blockPos -> {
-			this.bed = blockPos;
+			this.bedPos = blockPos;
 			this.ticksOutOfBedUntilStopped = 100;
 			this.jumpsRemaining = 3 + serverWorld.random.nextInt(4);
 			this.ticksToNextJump = 0;
@@ -49,7 +41,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 
 	protected void method_19976(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		super.finishRunning(serverWorld, mobEntity, l);
-		this.bed = null;
+		this.bedPos = null;
 		this.ticksOutOfBedUntilStopped = 0;
 		this.jumpsRemaining = 0;
 		this.ticksToNextJump = 0;
@@ -57,8 +49,8 @@ public class JumpInBedTask extends Task<MobEntity> {
 
 	protected boolean method_19978(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		return mobEntity.isBaby()
-			&& this.bed != null
-			&& this.isBedAt(serverWorld, this.bed)
+			&& this.bedPos != null
+			&& this.isBedAt(serverWorld, this.bedPos)
 			&& !this.isBedGoneTooLong(serverWorld, mobEntity)
 			&& !this.isDoneJumping(serverWorld, mobEntity);
 	}

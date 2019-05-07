@@ -38,18 +38,15 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<VillagerEntity.GolemSpawnCondition> field_18874 = register("golem_spawn_conditions", Optional.empty());
 	public static final MemoryModuleType<GlobalPos> field_19008 = register("hiding_place", Optional.empty());
 	public static final MemoryModuleType<Long> field_19009 = register("heard_bell_time", Optional.empty());
+	public static final MemoryModuleType<Long> field_19293 = register("cant_reach_walk_target_since", Optional.empty());
 	private final Optional<Function<Dynamic<?>, U>> factory;
 
 	private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {
 		this.factory = optional;
 	}
 
-	public Identifier getId() {
-		return Registry.MEMORY_MODULE_TYPE.getId(this);
-	}
-
 	public String toString() {
-		return this.getId().toString();
+		return Registry.MEMORY_MODULE_TYPE.getId(this).toString();
 	}
 
 	public Optional<Function<Dynamic<?>, U>> getFactory() {

@@ -100,7 +100,7 @@ public class MoveControl {
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.changeAngle(this.entity.yaw, n, 90.0F);
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
-			BlockPos blockPos = new BlockPos(this.entity.x, this.entity.y, this.entity.z);
+			BlockPos blockPos = new BlockPos(this.entity);
 			BlockState blockState = this.entity.world.getBlockState(blockPos);
 			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())

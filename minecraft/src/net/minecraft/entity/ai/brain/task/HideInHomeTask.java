@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -22,18 +20,19 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	private Optional<BlockPos> homePosition = Optional.empty();
 
 	public HideInHomeTask(int i, float f, int j) {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18438,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_19008,
+				MemoryModuleState.field_18458
+			)
+		);
 		this.maxDistance = i;
 		this.walkSpeed = f;
 		this.preferredDistance = j;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457),
-			Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_19008, MemoryModuleState.field_18458)
-		);
 	}
 
 	@Override

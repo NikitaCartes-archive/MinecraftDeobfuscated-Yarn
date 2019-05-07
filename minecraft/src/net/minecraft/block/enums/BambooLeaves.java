@@ -1,8 +1,8 @@
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum BambooLeaves implements SnakeCaseIdentifiable {
+public enum BambooLeaves implements StringIdentifiable {
 	field_12469("none"),
 	field_12466("small"),
 	field_12468("large");
@@ -18,7 +18,7 @@ public enum BambooLeaves implements SnakeCaseIdentifiable {
 	}
 
 	@Override
-	public String toSnakeCase() {
+	public String asString() {
 		return this.name;
 	}
 }

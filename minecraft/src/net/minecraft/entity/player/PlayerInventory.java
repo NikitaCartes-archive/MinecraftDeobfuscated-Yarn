@@ -25,7 +25,6 @@ import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.world.World;
 
 public class PlayerInventory implements Inventory, Nameable {
@@ -324,7 +323,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				CrashReportSection crashReportSection = crashReport.addElement("Item being added");
 				crashReportSection.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
 				crashReportSection.add("Item data", itemStack.getDamage());
-				crashReportSection.add("Item name", (ICrashCallable<String>)(() -> itemStack.getDisplayName().getString()));
+				crashReportSection.method_577("Item name", () -> itemStack.getDisplayName().getString());
 				throw new CrashException(crashReport);
 			}
 		}

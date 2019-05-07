@@ -8,9 +8,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
@@ -73,14 +72,14 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
 		iWorld.clearBlockState(blockPos, false);
-		Feature<DefaultFeatureConfig> feature = null;
+		Feature<PlantedFeatureConfig> feature = null;
 		if (this == Blocks.field_10251) {
 			feature = Feature.field_13531;
 		} else if (this == Blocks.field_10559) {
 			feature = Feature.field_13571;
 		}
 
-		if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT)) {
+		if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, new PlantedFeatureConfig(true))) {
 			return true;
 		} else {
 			iWorld.setBlockState(blockPos, blockState, 3);

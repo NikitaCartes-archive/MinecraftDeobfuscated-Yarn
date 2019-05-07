@@ -54,21 +54,22 @@ public class BellBlock extends BlockWithEntity {
 		if (entity instanceof ProjectileEntity) {
 			Entity entity2 = ((ProjectileEntity)entity).getOwner();
 			PlayerEntity playerEntity = entity2 instanceof PlayerEntity ? (PlayerEntity)entity2 : null;
-			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult, playerEntity);
+			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult, playerEntity, true);
 		}
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult, playerEntity);
+		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult, playerEntity, true);
 	}
 
-	public boolean ring(World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity) {
+	public boolean ring(
+		World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl
+	) {
 		Direction direction = blockHitResult.getSide();
 		BlockPos blockPos = blockHitResult.getBlockPos();
-		if (!world.isClient
-			&& blockEntity instanceof BellBlockEntity
-			&& this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY())) {
+		boolean bl2 = !bl || this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY());
+		if (!world.isClient && blockEntity instanceof BellBlockEntity && bl2) {
 			((BellBlockEntity)blockEntity).activate(direction);
 			this.ring(world, blockPos);
 			if (playerEntity != null) {

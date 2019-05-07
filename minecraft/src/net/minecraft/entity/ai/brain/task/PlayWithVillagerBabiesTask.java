@@ -1,13 +1,11 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
@@ -23,13 +21,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_19006, MemoryModuleState.field_18456),
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457),
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18447, MemoryModuleState.field_18458)
+	public PlayWithVillagerBabiesTask() {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_19006,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18447,
+				MemoryModuleState.field_18458
+			)
 		);
 	}
 

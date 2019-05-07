@@ -1,11 +1,9 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -18,12 +16,8 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 	private final float speed;
 
 	public WanderIndoorsTask(float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 		this.speed = f;
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 	}
 
 	protected boolean method_20421(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {

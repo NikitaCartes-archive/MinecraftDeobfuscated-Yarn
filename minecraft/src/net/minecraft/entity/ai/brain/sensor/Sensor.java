@@ -1,16 +1,19 @@
 package net.minecraft.entity.ai.brain.sensor;
 
+import java.util.Random;
 import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
+	private static final Random field_19294 = new Random();
 	private final int senseInterval;
-	protected long lastSenseTime;
+	private long lastSenseTime;
 
 	public Sensor(int i) {
 		this.senseInterval = i;
+		this.lastSenseTime = (long)field_19294.nextInt(i);
 	}
 
 	public Sensor() {
@@ -18,8 +21,8 @@ public abstract class Sensor<E extends LivingEntity> {
 	}
 
 	public final void canSense(ServerWorld serverWorld, E livingEntity) {
-		if (serverWorld.getTime() - this.lastSenseTime >= (long)this.senseInterval) {
-			this.lastSenseTime = serverWorld.getTime();
+		if (--this.lastSenseTime <= 0L) {
+			this.lastSenseTime = (long)this.senseInterval;
 			this.sense(serverWorld, livingEntity);
 		}
 	}

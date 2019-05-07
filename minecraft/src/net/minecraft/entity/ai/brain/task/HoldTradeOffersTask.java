@@ -1,10 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -27,7 +25,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private int field_18396;
 
 	public HoldTradeOffersTask(int i, int j) {
-		super(i, j);
+		super(ImmutableMap.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456), i, j);
 	}
 
 	public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -76,11 +74,6 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
 		villagerEntity.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 		this.field_18392 = null;
-	}
-
-	@Override
-	public Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456));
 	}
 
 	private void method_19027(LivingEntity livingEntity, VillagerEntity villagerEntity) {

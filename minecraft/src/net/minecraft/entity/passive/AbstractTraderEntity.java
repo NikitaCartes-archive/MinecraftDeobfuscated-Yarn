@@ -10,6 +10,9 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
@@ -26,15 +29,23 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
 
 public abstract class AbstractTraderEntity extends PassiveEntity implements Npc, Trader {
+	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
 	protected TraderOfferList offers;
 	private final BasicInventory inventory = new BasicInventory(8);
-	private int headRollingTimeLeft;
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
+	}
+
+	public int getHeadRollingTimeLeft() {
+		return this.dataTracker.get(HEAD_ROLLING_TIME_LEFT);
+	}
+
+	public void setHeadRollingTimeLeft(int i) {
+		this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, i);
 	}
 
 	@Override
@@ -45,6 +56,12 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return this.isBaby() ? 0.81F : 1.62F;
+	}
+
+	@Override
+	protected void initDataTracker() {
+		super.initDataTracker();
+		this.dataTracker.startTracking(HEAD_ROLLING_TIME_LEFT, 0);
 	}
 
 	@Override
@@ -178,14 +195,6 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	@Override
 	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
 		return false;
-	}
-
-	public int getHeadRollingTimeLeft() {
-		return this.headRollingTimeLeft;
-	}
-
-	public void setHeadRollingTimeLeft(int i) {
-		this.headRollingTimeLeft = i;
 	}
 
 	public BasicInventory getInventory() {

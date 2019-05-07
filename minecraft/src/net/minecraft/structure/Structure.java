@@ -271,21 +271,7 @@ public class Structure {
 							voxelSet.set(blockPos6.getX() - q, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
 						}
 
-						voxelSet.method_1046((direction, mx, nx, ox) -> {
-							BlockPos blockPosxx = new BlockPos(q + mx, r + nx, s + ox);
-							BlockPos blockPos2 = blockPosxx.offset(direction);
-							BlockState blockState = iWorld.getBlockState(blockPosxx);
-							BlockState blockState2xx = iWorld.getBlockState(blockPos2);
-							BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2xx, iWorld, blockPosxx, blockPos2);
-							if (blockState != blockState3) {
-								iWorld.setBlockState(blockPosxx, blockState3, i & -2 | 16);
-							}
-
-							BlockState blockState4 = blockState2xx.getStateForNeighborUpdate(direction.getOpposite(), blockState3, iWorld, blockPos2, blockPosxx);
-							if (blockState2xx != blockState4) {
-								iWorld.setBlockState(blockPos2, blockState4, i & -2 | 16);
-							}
-						});
+						method_20532(iWorld, i, voxelSet, q, r, s);
 					}
 
 					for(Pair<BlockPos, CompoundTag> pair2 : list3) {
@@ -320,6 +306,24 @@ public class Structure {
 				return false;
 			}
 		}
+	}
+
+	public static void method_20532(IWorld iWorld, int i, VoxelSet voxelSet, int j, int k, int l) {
+		voxelSet.method_1046((direction, m, n, o) -> {
+			BlockPos blockPos = new BlockPos(j + m, k + n, l + o);
+			BlockPos blockPos2 = blockPos.offset(direction);
+			BlockState blockState = iWorld.getBlockState(blockPos);
+			BlockState blockState2 = iWorld.getBlockState(blockPos2);
+			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, iWorld, blockPos, blockPos2);
+			if (blockState != blockState3) {
+				iWorld.setBlockState(blockPos, blockState3, i & -2 | 16);
+			}
+
+			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, iWorld, blockPos2, blockPos);
+			if (blockState2 != blockState4) {
+				iWorld.setBlockState(blockPos2, blockState4, i & -2 | 16);
+			}
+		});
 	}
 
 	public static List<Structure.StructureBlockInfo> process(

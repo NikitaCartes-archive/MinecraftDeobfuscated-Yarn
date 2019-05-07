@@ -27,7 +27,7 @@ public class SliceVoxelShape extends VoxelShape {
 	}
 
 	@Override
-	protected DoubleList getIncludedPoints(Direction.Axis axis) {
-		return axis == this.axis ? this.points : this.shape.getIncludedPoints(axis);
+	protected DoubleList getPointPositions(Direction.Axis axis) {
+		return axis == this.axis ? this.points : this.shape.getPointPositions(axis);
 	}
 }

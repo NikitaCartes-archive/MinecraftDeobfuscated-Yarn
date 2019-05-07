@@ -24,7 +24,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
@@ -195,9 +194,9 @@ public class IntegratedServer extends MinecraftServer {
 		crashReport = super.populateCrashReport(crashReport);
 		crashReport.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
 		crashReport.getSystemDetailsSection()
-			.add(
+			.method_577(
 				"Is Modded",
-				(ICrashCallable<String>)(() -> {
+				() -> {
 					String string = ClientBrandRetriever.getClientModName();
 					if (!string.equals("vanilla")) {
 						return "Definitely; Client brand changed to '" + string + "'";
@@ -211,7 +210,7 @@ public class IntegratedServer extends MinecraftServer {
 								: "Probably not. Jar signature remains and both client + server brands are untouched.";
 						}
 					}
-				})
+				}
 			);
 		return crashReport;
 	}

@@ -97,9 +97,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13592 = register("desert_well", new DesertWellFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13516 = register("fossil", new FossilFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13523 = register("hell_fire", new NetherFireFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_13571 = register("huge_red_mushroom", new HugeRedMushroomFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_13531 = register(
-		"huge_brown_mushroom", new HugeBrownMushroomFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<PlantedFeatureConfig> field_13571 = register("huge_red_mushroom", new HugeRedMushroomFeature(PlantedFeatureConfig::deserialize));
+	public static final Feature<PlantedFeatureConfig> field_13531 = register(
+		"huge_brown_mushroom", new HugeBrownMushroomFeature(PlantedFeatureConfig::deserialize)
 	);
 	public static final Feature<DefaultFeatureConfig> field_13562 = register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13568 = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));

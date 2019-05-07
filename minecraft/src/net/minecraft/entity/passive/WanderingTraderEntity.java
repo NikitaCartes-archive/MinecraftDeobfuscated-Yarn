@@ -218,8 +218,14 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void tickMovement() {
+		super.tickMovement();
+		if (!this.world.isClient) {
+			this.tickDespawnDelay();
+		}
+	}
+
+	private void tickDespawnDelay() {
 		if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
 			this.remove();
 		}

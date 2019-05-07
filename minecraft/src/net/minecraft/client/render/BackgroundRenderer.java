@@ -258,9 +258,8 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-			if (this.client.world.dimension.shouldRenderFog((int)camera.getPos().x, (int)camera.getPos().z) || this.client.inGameHud.getBossBarHud().shouldThickenFog()
-				)
-			 {
+			if (this.client.world.dimension.shouldRenderFog(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z))
+				|| this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
 				GlStateManager.fogStart(f * 0.05F);
 				GlStateManager.fogEnd(Math.min(f, 192.0F) * 0.5F);
 			}

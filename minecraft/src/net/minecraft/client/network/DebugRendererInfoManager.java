@@ -1,10 +1,12 @@
 package net.minecraft.client.network;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -39,6 +41,9 @@ public class DebugRendererInfoManager {
 	}
 
 	public static void sendGoalSelector(World world, MobEntity mobEntity, GoalSelector goalSelector) {
+	}
+
+	public static void sendRaids(ServerWorld serverWorld, Collection<Raid> collection) {
 	}
 
 	public static void sendVillagerAiDebugData(LivingEntity livingEntity) {

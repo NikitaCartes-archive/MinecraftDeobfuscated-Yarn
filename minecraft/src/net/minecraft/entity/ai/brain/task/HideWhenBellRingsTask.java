@@ -1,8 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -13,9 +11,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class HideWhenBellRingsTask extends Task<LivingEntity> {
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(MemoryModuleType.field_19009, MemoryModuleState.field_18456));
+	public HideWhenBellRingsTask() {
+		super(ImmutableMap.of(MemoryModuleType.field_19009, MemoryModuleState.field_18456));
 	}
 
 	@Override

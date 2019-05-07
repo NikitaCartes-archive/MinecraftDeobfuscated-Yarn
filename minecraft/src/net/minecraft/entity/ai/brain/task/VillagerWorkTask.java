@@ -1,10 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -17,17 +15,21 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	private int ticks;
 	private boolean field_18403;
 
-	protected boolean method_19037(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return this.method_19036(serverWorld.getTimeOfDay() % 24000L, villagerEntity.getLastRestock());
+	public VillagerWorkTask() {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18439,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18874,
+				MemoryModuleState.field_18458
+			)
+		);
 	}
 
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456),
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18874, MemoryModuleState.field_18458)
-		);
+	protected boolean method_19037(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+		return this.method_19036(serverWorld.getTimeOfDay() % 24000L, villagerEntity.getLastRestock());
 	}
 
 	protected void method_19614(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

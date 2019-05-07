@@ -148,7 +148,7 @@ public class TeleportCommand {
 			teleport(
 				serverCommandSource,
 				entity2,
-				serverCommandSource.getWorld(),
+				(ServerWorld)entity.world,
 				entity.x,
 				entity.y,
 				entity.z,

@@ -83,7 +83,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -446,7 +445,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public void reload() {
 		if (this.world != null) {
 			if (this.chunkBatcher == null) {
-				this.chunkBatcher = new ChunkBatcher();
+				this.chunkBatcher = new ChunkBatcher(this.client.is64Bit());
 			}
 
 			this.terrainUpdateNecessary = true;
@@ -1874,7 +1873,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
 			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId(particleEffect.getType()));
 			crashReportSection.add("Parameters", particleEffect.asString());
-			crashReportSection.add("Position", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(d, e, f)));
+			crashReportSection.method_577("Position", () -> CrashReportSection.createPositionString(d, e, f));
 			throw new CrashException(crashReport);
 		}
 	}

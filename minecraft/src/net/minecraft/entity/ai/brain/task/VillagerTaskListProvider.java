@@ -1,14 +1,15 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.GoToNearbyPositionTask;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.tasks.GoToNearbyPositionTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.VillagerProfession;
@@ -50,7 +51,7 @@ public class VillagerTaskListProvider {
 			),
 			Pair.of(10, new HoldTradeOffersTask(400, 1600)),
 			Pair.of(10, new FindInteractionTargetTask(EntityType.field_6097, 4)),
-			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18439, f, 9, 100)),
+			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18439, f, 9, 100, 1200)),
 			Pair.of(3, new GiveGiftsToHeroTask(100)),
 			Pair.of(3, new ForgetCompletedPointOfInterestTask(villagerProfession.getWorkStation(), MemoryModuleType.field_18439)),
 			Pair.of(99, new ScheduleActivityTask())
@@ -65,7 +66,7 @@ public class VillagerTaskListProvider {
 			Pair.of(
 				5,
 				new RandomTask<>(
-					ImmutableSet.of(Pair.of(MemoryModuleType.field_19006, MemoryModuleState.field_18457)),
+					ImmutableMap.of(MemoryModuleType.field_19006, MemoryModuleState.field_18457),
 					ImmutableList.of(
 						Pair.of(FindEntityTask.create(EntityType.field_6077, 8, MemoryModuleType.field_18447, f, 2), 2),
 						Pair.of(FindEntityTask.create(EntityType.field_16281, 8, MemoryModuleType.field_18447, f, 2), 1),
@@ -82,13 +83,13 @@ public class VillagerTaskListProvider {
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createRestTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
-			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18438, f, 1, 150)),
+			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18438, f, 1, 150, 1200)),
 			Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.field_18517, MemoryModuleType.field_18438)),
 			Pair.of(3, new SleepTask()),
 			Pair.of(
 				5,
 				new RandomTask<>(
-					ImmutableSet.of(Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18457)),
+					ImmutableMap.of(MemoryModuleType.field_18438, MemoryModuleState.field_18457),
 					ImmutableList.of(Pair.of(new WalkHomeTask(f), 1), Pair.of(new WanderIndoorsTask(f), 4), Pair.of(new WaitTask(20, 40), 2))
 				)
 			),
@@ -102,13 +103,13 @@ public class VillagerTaskListProvider {
 			Pair.of(2, new RandomTask<>(ImmutableList.of(Pair.of(new GoToIfNearbyTask(MemoryModuleType.field_18440, 40), 2), Pair.of(new MeetVillagerTask(), 2)))),
 			Pair.of(10, new HoldTradeOffersTask(400, 1600)),
 			Pair.of(10, new FindInteractionTargetTask(EntityType.field_6097, 4)),
-			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18440, f, 6, 100)),
+			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18440, f, 6, 100, 200)),
 			Pair.of(3, new GiveGiftsToHeroTask(100)),
 			Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.field_18518, MemoryModuleType.field_18440)),
 			Pair.of(
 				3,
 				new CompositeTask<>(
-					ImmutableSet.of(),
+					ImmutableMap.of(),
 					ImmutableSet.of(MemoryModuleType.field_18447),
 					CompositeTask.Order.field_18348,
 					CompositeTask.RunMode.RUN_ALL,
@@ -144,7 +145,7 @@ public class VillagerTaskListProvider {
 			Pair.of(
 				3,
 				new CompositeTask<>(
-					ImmutableSet.of(),
+					ImmutableMap.of(),
 					ImmutableSet.of(MemoryModuleType.field_18447),
 					CompositeTask.Order.field_18348,
 					CompositeTask.RunMode.RUN_ALL,
@@ -154,7 +155,7 @@ public class VillagerTaskListProvider {
 			Pair.of(
 				3,
 				new CompositeTask<>(
-					ImmutableSet.of(),
+					ImmutableMap.of(),
 					ImmutableSet.of(MemoryModuleType.field_18448),
 					CompositeTask.Order.field_18348,
 					CompositeTask.RunMode.RUN_ALL,
@@ -183,7 +184,9 @@ public class VillagerTaskListProvider {
 			Pair.of(
 				0,
 				new RandomTask<>(
-					ImmutableList.of(Pair.of(new VillagerWalkTowardsTask(MemoryModuleType.field_18440, f * 1.5F, 3, 150), 6), Pair.of(new FindWalkTargetTask(f * 1.5F), 2))
+					ImmutableList.of(
+						Pair.of(new VillagerWalkTowardsTask(MemoryModuleType.field_18440, f * 1.5F, 2, 150, 200), 6), Pair.of(new FindWalkTargetTask(f * 1.5F), 2)
+					)
 				)
 			),
 			createBusyFollowTask(),

@@ -36,6 +36,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
 	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
+	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
 	private boolean showChunkBorder;
 	private boolean showPathfinding;
@@ -65,6 +66,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
 		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
+		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
 	}
 
@@ -82,6 +84,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer.method_20414();
 		this.chunkLoadingDebugRenderer.method_20414();
 		this.pointsOfInterestDebugRenderer.method_20414();
+		this.raidCenterDebugRenderer.method_20414();
 		this.goalSelectorDebugRenderer.method_20414();
 	}
 

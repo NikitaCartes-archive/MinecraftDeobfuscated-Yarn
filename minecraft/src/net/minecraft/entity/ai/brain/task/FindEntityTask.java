@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +24,18 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	public FindEntityTask(
 		EntityType<? extends T> entityType, int i, Predicate<E> predicate, Predicate<T> predicate2, MemoryModuleType<T> memoryModuleType, float f, int j
 	) {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				memoryModuleType,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18442,
+				MemoryModuleState.field_18456
+			)
+		);
 		this.entityType = entityType;
 		this.speed = f;
 		this.maxSquaredDistance = i * i;
@@ -39,16 +49,6 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 		EntityType<? extends T> entityType, int i, MemoryModuleType<T> memoryModuleType, float f, int j
 	) {
 		return new FindEntityTask<>(entityType, i, livingEntity -> true, livingEntity -> true, memoryModuleType, f, j);
-	}
-
-	@Override
-	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18458),
-			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457),
-			Pair.of(this.targetModule, MemoryModuleState.field_18457),
-			Pair.of(MemoryModuleType.field_18442, MemoryModuleState.field_18456)
-		);
 	}
 
 	@Override

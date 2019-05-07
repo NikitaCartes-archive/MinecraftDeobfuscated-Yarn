@@ -2,7 +2,7 @@ package net.minecraft.util.shape;
 
 import net.minecraft.util.math.Direction;
 
-final class CroppedVoxelSet extends VoxelSet {
+public final class CroppedVoxelSet extends VoxelSet {
 	private final VoxelSet parent;
 	private final int xMin;
 	private final int yMin;
@@ -11,7 +11,7 @@ final class CroppedVoxelSet extends VoxelSet {
 	private final int yMax;
 	private final int zMax;
 
-	public CroppedVoxelSet(VoxelSet voxelSet, int i, int j, int k, int l, int m, int n) {
+	protected CroppedVoxelSet(VoxelSet voxelSet, int i, int j, int k, int l, int m, int n) {
 		super(l - i, m - j, n - k);
 		this.parent = voxelSet;
 		this.xMin = i;

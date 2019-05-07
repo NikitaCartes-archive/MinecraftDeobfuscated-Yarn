@@ -15,7 +15,7 @@ public class EntityPosWrapper implements LookTarget {
 
 	@Override
 	public BlockPos getBlockPos() {
-		return new BlockPos(this.entity.x, this.entity.y, this.entity.z);
+		return new BlockPos(this.entity);
 	}
 
 	@Override

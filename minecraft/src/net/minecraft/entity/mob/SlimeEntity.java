@@ -261,7 +261,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		BlockPos blockPos = new BlockPos(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
+		BlockPos blockPos = new BlockPos(this.x, 0.0, this.z);
 		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && this.random.nextInt(4) != 1) {
 			return false;
 		} else {
