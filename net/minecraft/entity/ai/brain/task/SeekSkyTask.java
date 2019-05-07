@@ -3,11 +3,9 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -16,6 +14,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 public class SeekSkyTask
@@ -23,12 +22,8 @@ extends Task<LivingEntity> {
     private final float speed;
 
     public SeekSkyTask(float f) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
         this.speed = f;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
     }
 
     @Override
@@ -50,10 +45,21 @@ extends Task<LivingEntity> {
         BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-            if (!serverWorld.isSkyVisible(blockPos2)) continue;
+            if (!SeekSkyTask.isSkyVisible(serverWorld, livingEntity)) continue;
             return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
         }
         return null;
+    }
+
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
+    public static boolean isSkyVisible(ServerWorld serverWorld, LivingEntity livingEntity) {
+        if (!serverWorld.isSkyVisible(new BlockPos(livingEntity))) return false;
+        BlockPos blockPos = new BlockPos(livingEntity);
+        if (!((double)serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() <= livingEntity.y)) return false;
+        return true;
     }
 }
 

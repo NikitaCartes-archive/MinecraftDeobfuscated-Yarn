@@ -3,12 +3,10 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -30,6 +28,7 @@ extends Task<VillagerEntity> {
     private GlobalPos chosenPosition;
 
     public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> memoryModuleType, float f, int i, int j, MemoryModuleType<GlobalPos> memoryModuleType2) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT, memoryModuleType2, MemoryModuleState.VALUE_PRESENT));
         this.secondaryPositions = memoryModuleType;
         this.speed = f;
         this.completionRange = i;
@@ -46,11 +45,6 @@ extends Task<VillagerEntity> {
             return this.chosenPosition != null && Objects.equals(serverWorld.getDimension().getType(), this.chosenPosition.getDimension()) && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
         }
         return false;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED), Pair.of(this.secondaryPositions, MemoryModuleState.VALUE_PRESENT), Pair.of(this.primaryPosition, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected void method_19610(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

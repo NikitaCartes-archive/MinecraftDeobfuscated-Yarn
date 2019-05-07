@@ -451,7 +451,7 @@ SynchronousResourceReloadListener {
             return;
         }
         if (this.chunkBatcher == null) {
-            this.chunkBatcher = new ChunkBatcher();
+            this.chunkBatcher = new ChunkBatcher(this.client.is64Bit());
         }
         this.terrainUpdateNecessary = true;
         this.cloudsDirty = true;

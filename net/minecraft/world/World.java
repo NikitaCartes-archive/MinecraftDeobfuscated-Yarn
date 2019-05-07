@@ -535,10 +535,14 @@ AutoCloseable {
         while (iterator.hasNext()) {
             BlockPos blockPos;
             BlockEntity blockEntity = iterator.next();
-            if (!blockEntity.isInvalid() && blockEntity.hasWorld() && this.isBlockLoaded(blockPos = blockEntity.getPos()) && this.getWorldBorder().contains(blockPos)) {
+            if (!blockEntity.isInvalid() && blockEntity.hasWorld() && this.chunkManager.method_20529(blockPos = blockEntity.getPos()) && this.getWorldBorder().contains(blockPos)) {
                 try {
                     profiler.push(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType())));
-                    ((Tickable)((Object)blockEntity)).tick();
+                    if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
+                        ((Tickable)((Object)blockEntity)).tick();
+                    } else {
+                        blockEntity.method_20525();
+                    }
                     profiler.pop();
                 } catch (Throwable throwable) {
                     CrashReport crashReport = CrashReport.create(throwable, "Ticking block entity");
@@ -883,11 +887,6 @@ AutoCloseable {
     @Override
     public World getWorld() {
         return this;
-    }
-
-    @Override
-    public int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
-        return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
     }
 
     public LevelGeneratorType getGeneratorType() {

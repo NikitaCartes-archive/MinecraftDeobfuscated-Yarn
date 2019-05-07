@@ -110,6 +110,7 @@ import net.minecraft.world.gen.feature.PillagerOutpostFeature;
 import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
 import net.minecraft.world.gen.feature.PineTreeFeature;
 import net.minecraft.world.gen.feature.PlainFlowerFeature;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.PumpkinPileFeature;
 import net.minecraft.world.gen.feature.RandomBooleanFeature;
 import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
@@ -191,8 +192,8 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> DESERT_WELL = Feature.register("desert_well", new DesertWellFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> FOSSIL = Feature.register("fossil", new FossilFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> HELL_FIRE = Feature.register("hell_fire", new NetherFireFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final Feature<DefaultFeatureConfig> HUGE_RED_MUSHROOM = Feature.register("huge_red_mushroom", new HugeRedMushroomFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final Feature<DefaultFeatureConfig> HUGE_BROWN_MUSHROOM = Feature.register("huge_brown_mushroom", new HugeBrownMushroomFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
+    public static final Feature<PlantedFeatureConfig> HUGE_RED_MUSHROOM = Feature.register("huge_red_mushroom", new HugeRedMushroomFeature((Function<Dynamic<?>, ? extends PlantedFeatureConfig>)((Function<Dynamic<?>, PlantedFeatureConfig>)PlantedFeatureConfig::deserialize)));
+    public static final Feature<PlantedFeatureConfig> HUGE_BROWN_MUSHROOM = Feature.register("huge_brown_mushroom", new HugeBrownMushroomFeature((Function<Dynamic<?>, ? extends PlantedFeatureConfig>)((Function<Dynamic<?>, PlantedFeatureConfig>)PlantedFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> ICE_SPIKE = Feature.register("ice_spike", new IceSpikeFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = Feature.register("glowstone_blob", new GlowstoneBlobFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> MELON = Feature.register("melon", new MelonFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));

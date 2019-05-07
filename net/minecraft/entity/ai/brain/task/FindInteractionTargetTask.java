@@ -3,10 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -25,6 +23,7 @@ extends Task<LivingEntity> {
     private final Predicate<LivingEntity> shouldRunPredicate;
 
     public FindInteractionTargetTask(EntityType<?> entityType, int i, Predicate<LivingEntity> predicate, Predicate<LivingEntity> predicate2) {
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
         this.entityType = entityType;
         this.maxSquaredDistance = i * i;
         this.predicate = predicate2;
@@ -33,11 +32,6 @@ extends Task<LivingEntity> {
 
     public FindInteractionTargetTask(EntityType<?> entityType, int i) {
         this(entityType, i, livingEntity -> true, livingEntity -> true);
-    }
-
-    @Override
-    public Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), Pair.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
     }
 
     @Override

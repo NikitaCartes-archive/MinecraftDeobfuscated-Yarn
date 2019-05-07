@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
@@ -34,6 +36,7 @@ implements Waterloggable {
     protected static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> ((Direction)entry.getKey()).getAxis().isHorizontal()).collect(SystemUtil.toMap());
     protected final VoxelShape[] collisionShapes;
     protected final VoxelShape[] boundingShapes;
+    private final Object2IntMap<BlockState> SHAPE_INDEX_CACHE = new Object2IntOpenHashMap<BlockState>();
 
     protected HorizontalConnectedBlock(float f, float g, float h, float i, float j, Block.Settings settings) {
         super(settings);
@@ -79,21 +82,23 @@ implements Waterloggable {
         return 1 << direction.getHorizontal();
     }
 
-    protected int getShapeIndex(BlockState blockState) {
-        int i = 0;
-        if (blockState.get(NORTH).booleanValue()) {
-            i |= HorizontalConnectedBlock.getDirectionMask(Direction.NORTH);
-        }
-        if (blockState.get(EAST).booleanValue()) {
-            i |= HorizontalConnectedBlock.getDirectionMask(Direction.EAST);
-        }
-        if (blockState.get(SOUTH).booleanValue()) {
-            i |= HorizontalConnectedBlock.getDirectionMask(Direction.SOUTH);
-        }
-        if (blockState.get(WEST).booleanValue()) {
-            i |= HorizontalConnectedBlock.getDirectionMask(Direction.WEST);
-        }
-        return i;
+    protected int getShapeIndex(BlockState blockState2) {
+        return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(blockState2, blockState -> {
+            int i = 0;
+            if (blockState.get(NORTH).booleanValue()) {
+                i |= HorizontalConnectedBlock.getDirectionMask(Direction.NORTH);
+            }
+            if (blockState.get(EAST).booleanValue()) {
+                i |= HorizontalConnectedBlock.getDirectionMask(Direction.EAST);
+            }
+            if (blockState.get(SOUTH).booleanValue()) {
+                i |= HorizontalConnectedBlock.getDirectionMask(Direction.SOUTH);
+            }
+            if (blockState.get(WEST).booleanValue()) {
+                i |= HorizontalConnectedBlock.getDirectionMask(Direction.WEST);
+            }
+            return i;
+        });
     }
 
     @Override

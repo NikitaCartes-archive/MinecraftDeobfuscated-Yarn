@@ -3,10 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -27,14 +25,10 @@ extends Task<LivingEntity> {
     private Optional<BlockPos> homePosition = Optional.empty();
 
     public HideInHomeTask(int i, float f, int j) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleState.REGISTERED, MemoryModuleType.HIDING_PLACE, MemoryModuleState.REGISTERED));
         this.maxDistance = i;
         this.walkSpeed = f;
         this.preferredDistance = j;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.HOME, MemoryModuleState.REGISTERED), Pair.of(MemoryModuleType.HIDING_PLACE, MemoryModuleState.REGISTERED));
     }
 
     @Override
@@ -47,7 +41,7 @@ extends Task<LivingEntity> {
     @Override
     protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
         Optional<GlobalPos> optional2;
-        Brain<Object> brain = livingEntity.getBrain();
+        Brain<?> brain = livingEntity.getBrain();
         Optional<BlockPos> optional = this.homePosition;
         if (!optional.isPresent() && !(optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, new BlockPos(livingEntity), this.maxDistance, livingEntity.getRand())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
             optional = Optional.of(optional2.get().getPos());

@@ -19,6 +19,11 @@ extends Goal {
     }
 
     @Override
+    public boolean shouldContinue() {
+        return this.enabledWithOwner;
+    }
+
+    @Override
     public boolean canStart() {
         if (!this.tameable.isTamed()) {
             return false;

@@ -30,7 +30,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
@@ -51,7 +50,7 @@ public class ProtoChunk
 implements Chunk {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ChunkPos pos;
-    private boolean shouldSave;
+    private volatile boolean shouldSave;
     private Biome[] biomeArray;
     @Nullable
     private volatile LightingProvider lightingProvider;
@@ -73,7 +72,7 @@ implements Chunk {
     private volatile boolean isLightOn;
 
     public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
-        this(chunkPos, upgradeData, null, new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos), new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, chunkPos));
+        this(chunkPos, upgradeData, null, new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), chunkPos), new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos));
     }
 
     public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData, @Nullable ChunkSection[] chunkSections, ChunkTickScheduler<Block> chunkTickScheduler, ChunkTickScheduler<Fluid> chunkTickScheduler2) {

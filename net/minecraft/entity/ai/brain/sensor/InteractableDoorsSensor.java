@@ -6,7 +6,6 @@ package net.minecraft.entity.ai.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -34,7 +33,7 @@ extends Sensor<LivingEntity> {
                 }
             }
         }
-        Brain<List<GlobalPos>> brain = livingEntity.getBrain();
+        Brain<?> brain = livingEntity.getBrain();
         if (!list.isEmpty()) {
             brain.putMemory(MemoryModuleType.INTERACTABLE_DOORS, list);
         } else {

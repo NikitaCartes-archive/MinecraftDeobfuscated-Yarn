@@ -3,10 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -25,12 +23,7 @@ extends Task<VillagerEntity> {
     private long field_18368;
 
     public VillagerBreedTask() {
-        super(350, 350);
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT), 350, 350);
     }
 
     protected boolean method_19571(ServerWorld serverWorld, VillagerEntity villagerEntity) {

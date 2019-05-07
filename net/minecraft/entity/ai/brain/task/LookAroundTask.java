@@ -3,9 +3,7 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -16,12 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 public class LookAroundTask
 extends Task<MobEntity> {
     public LookAroundTask(int i, int j) {
-        super(i, j);
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
     }
 
     protected boolean method_18967(ServerWorld serverWorld, MobEntity mobEntity, long l) {

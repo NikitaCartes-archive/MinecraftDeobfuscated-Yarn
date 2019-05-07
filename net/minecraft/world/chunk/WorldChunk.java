@@ -86,7 +86,7 @@ implements Chunk {
     private TickScheduler<Fluid> fluidTickScheduler;
     private boolean field_12837;
     private long lastSaveTime;
-    private boolean shouldSave;
+    private volatile boolean shouldSave;
     private long inhabitedTime;
     @Nullable
     private Supplier<ChunkHolder.LevelType> levelTypeProvider;
@@ -95,7 +95,6 @@ implements Chunk {
     private final ChunkPos pos;
     private volatile boolean isLightOn;
 
-    @Environment(value=EnvType.CLIENT)
     public WorldChunk(World world, ChunkPos chunkPos, Biome[] biomes) {
         this(world, chunkPos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
     }
@@ -622,25 +621,14 @@ implements Chunk {
         for (int i = 0; i < this.postProcessingLists.length; ++i) {
             if (this.postProcessingLists[i] == null) continue;
             for (Short short_ : this.postProcessingLists[i]) {
-                BlockPos blockPos2 = ProtoChunk.joinBlockPos(short_, i, chunkPos);
-                BlockState blockState = this.getBlockState(blockPos2);
-                BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos2);
-                this.world.setBlockState(blockPos2, blockState2, 20);
+                BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, chunkPos);
+                BlockState blockState = this.getBlockState(blockPos);
+                BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos);
+                this.world.setBlockState(blockPos, blockState2, 20);
             }
             this.postProcessingLists[i].clear();
         }
-        if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState((BlockPos)blockPos).getBlock());
-        } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-            this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
-            this.blockTickScheduler = DummyClientTickScheduler.get();
-        }
-        if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState((BlockPos)blockPos).getFluid());
-        } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-            this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
-            this.fluidTickScheduler = DummyClientTickScheduler.get();
-        }
+        this.method_20530();
         for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
             this.getBlockEntity(blockPos2);
         }
@@ -681,10 +669,32 @@ implements Chunk {
         return this.postProcessingLists;
     }
 
+    public void method_20530() {
+        if (this.blockTickScheduler instanceof ChunkTickScheduler) {
+            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState((BlockPos)blockPos).getBlock());
+            this.blockTickScheduler = DummyClientTickScheduler.get();
+        } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
+            this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
+            this.blockTickScheduler = DummyClientTickScheduler.get();
+        }
+        if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
+            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState((BlockPos)blockPos).getFluid());
+            this.fluidTickScheduler = DummyClientTickScheduler.get();
+        } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
+            this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+            this.fluidTickScheduler = DummyClientTickScheduler.get();
+        }
+    }
+
     public void method_20471(ServerWorld serverWorld) {
-        this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
-        this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
-        this.setShouldSave(true);
+        if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
+            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
+            this.setShouldSave(true);
+        }
+        if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
+            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
+            this.setShouldSave(true);
+        }
     }
 
     @Override

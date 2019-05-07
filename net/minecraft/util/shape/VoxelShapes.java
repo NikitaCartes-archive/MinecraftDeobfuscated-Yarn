@@ -37,7 +37,6 @@ import net.minecraft.util.shape.SliceVoxelShape;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.chunk.Chunk;
 
 public final class VoxelShapes {
     private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
@@ -137,9 +136,9 @@ public final class VoxelShapes {
         if (voxelShape2.isEmpty()) {
             return bl ? voxelShape : VoxelShapes.empty();
         }
-        DoubleListPair doubleListPair = VoxelShapes.createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
-        DoubleListPair doubleListPair2 = VoxelShapes.createListPair(doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2);
-        DoubleListPair doubleListPair3 = VoxelShapes.createListPair((doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1), voxelShape.getIncludedPoints(Direction.Axis.Z), voxelShape2.getIncludedPoints(Direction.Axis.Z), bl, bl2);
+        DoubleListPair doubleListPair = VoxelShapes.createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
+        DoubleListPair doubleListPair2 = VoxelShapes.createListPair(doubleListPair.getMergedList().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2);
+        DoubleListPair doubleListPair3 = VoxelShapes.createListPair((doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1), voxelShape.getPointPositions(Direction.Axis.Z), voxelShape2.getPointPositions(Direction.Axis.Z), bl, bl2);
         BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(voxelShape.voxels, voxelShape2.voxels, doubleListPair, doubleListPair2, doubleListPair3, booleanBiFunction);
         if (doubleListPair instanceof FractionalDoubleListPair && doubleListPair2 instanceof FractionalDoubleListPair && doubleListPair3 instanceof FractionalDoubleListPair) {
             return new SimpleVoxelShape(bitSetVoxelSet);
@@ -169,9 +168,9 @@ public final class VoxelShapes {
             if (!(voxelShape2.getMaximum(axis) < voxelShape.getMinimum(axis) - 1.0E-7)) continue;
             return bl || bl2;
         }
-        DoubleListPair doubleListPair = VoxelShapes.createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
-        DoubleListPair doubleListPair2 = VoxelShapes.createListPair(doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2);
-        DoubleListPair doubleListPair3 = VoxelShapes.createListPair((doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1), voxelShape.getIncludedPoints(Direction.Axis.Z), voxelShape2.getIncludedPoints(Direction.Axis.Z), bl, bl2);
+        DoubleListPair doubleListPair = VoxelShapes.createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
+        DoubleListPair doubleListPair2 = VoxelShapes.createListPair(doubleListPair.getMergedList().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2);
+        DoubleListPair doubleListPair3 = VoxelShapes.createListPair((doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1), voxelShape.getPointPositions(Direction.Axis.Z), voxelShape2.getPointPositions(Direction.Axis.Z), bl, bl2);
         return VoxelShapes.matchesAnywhere(doubleListPair, doubleListPair2, doubleListPair3, voxelShape.voxels, voxelShape2.voxels, booleanBiFunction);
     }
 
@@ -216,34 +215,24 @@ public final class VoxelShapes {
         int m = bl ? MathHelper.floor(boundingBox.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.getMin(axis3) + 1.0E-7) + 1;
         int n = VoxelShapes.method_17943(d, e, f);
         int o = bl ? 1 : -1;
-        int p = Integer.MAX_VALUE;
-        int q = Integer.MAX_VALUE;
-        Chunk chunk = null;
-        int r = m;
-        while (bl ? r <= n : r >= n) {
-            for (int s = i; s <= j; ++s) {
-                for (int t = k; t <= l; ++t) {
-                    int u = 0;
-                    if (s == i || s == j) {
-                        ++u;
+        int p = m;
+        while (bl ? p <= n : p >= n) {
+            for (int q = i; q <= j; ++q) {
+                for (int r = k; r <= l; ++r) {
+                    int s = 0;
+                    if (q == i || q == j) {
+                        ++s;
                     }
-                    if (t == k || t == l) {
-                        ++u;
+                    if (r == k || r == l) {
+                        ++s;
                     }
-                    if (r == m || r == n) {
-                        ++u;
+                    if (p == m || p == n) {
+                        ++s;
                     }
-                    if (u >= 3) continue;
-                    mutable.method_17965(axisCycleDirection2, s, t, r);
-                    int v = mutable.getX() >> 4;
-                    int w = mutable.getZ() >> 4;
-                    if (v != p || w != q) {
-                        chunk = viewableWorld.getChunk(v, w);
-                        p = v;
-                        q = w;
-                    }
-                    BlockState blockState = chunk.getBlockState(mutable);
-                    if (u == 1 && !blockState.method_17900() || u == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
+                    if (s >= 3) continue;
+                    mutable.method_17965(axisCycleDirection2, q, r, p);
+                    BlockState blockState = viewableWorld.getBlockState(mutable);
+                    if (s == 1 && !blockState.method_17900() || s == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
                     d = blockState.getCollisionShape(viewableWorld, mutable, entityContext).method_1108(axis3, boundingBox.offset(-mutable.getX(), -mutable.getY(), -mutable.getZ()), d);
                     if (Math.abs(d) < 1.0E-7) {
                         return 0.0;
@@ -251,7 +240,7 @@ public final class VoxelShapes {
                     n = VoxelShapes.method_17943(d, e, f);
                 }
             }
-            r += o;
+            p += o;
         }
         double[] ds = new double[]{d};
         stream.forEach(voxelShape -> {

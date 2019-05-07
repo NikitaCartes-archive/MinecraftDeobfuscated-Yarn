@@ -34,7 +34,6 @@ import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.client.render.chunk.DisplayListChunkRenderer;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,12 +53,33 @@ public class ChunkBatcher {
     private final ChunkRenderWorker clientThreadWorker;
     private Vec3d cameraPosition = Vec3d.ZERO;
 
-    public ChunkBatcher() {
-        int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 0xA00000);
-        int j = Math.max(1, MathHelper.clamp(Runtime.getRuntime().availableProcessors(), 1, i / 5));
-        int k = MathHelper.clamp(j * 10, 1, i);
-        if (j > 1) {
-            for (int l = 0; l < j; ++l) {
+    public ChunkBatcher(boolean bl) {
+        int n;
+        int m;
+        int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 0xA00000 - 1);
+        int j = Runtime.getRuntime().availableProcessors();
+        int k = bl ? j : Math.min(j, 4);
+        int l = Math.max(1, Math.min(k * 3, i));
+        this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
+        ArrayList<BlockLayeredBufferBuilder> list = Lists.newArrayListWithExpectedSize(l);
+        try {
+            for (m = 0; m < l; ++m) {
+                list.add(new BlockLayeredBufferBuilder());
+            }
+        } catch (OutOfMemoryError outOfMemoryError) {
+            LOGGER.warn("Allocated only {}/{} buffers", (Object)list.size(), (Object)l);
+            n = list.size() * 2 / 3;
+            for (int o = 0; o < n; ++o) {
+                list.remove(list.size() - 1);
+            }
+            System.gc();
+        }
+        this.bufferCount = list.size();
+        this.availableBuffers = Queues.newArrayBlockingQueue(this.bufferCount);
+        this.availableBuffers.addAll(list);
+        m = Math.min(k, this.bufferCount);
+        if (m > 1) {
+            for (n = 0; n < m; ++n) {
                 ChunkRenderWorker chunkRenderWorker = new ChunkRenderWorker(this);
                 Thread thread = THREAD_FACTORY.newThread(chunkRenderWorker);
                 thread.start();
@@ -67,18 +87,6 @@ public class ChunkBatcher {
                 this.workerThreads.add(thread);
             }
         }
-        ArrayList<BlockLayeredBufferBuilder> list = Lists.newArrayListWithExpectedSize(k);
-        try {
-            list.add(new BlockLayeredBufferBuilder());
-        } catch (OutOfMemoryError outOfMemoryError) {
-            LOGGER.error("Allocated only {}/{} buffers", (Object)list.size(), (Object)k);
-            list.remove(list.size() - 1);
-            System.gc();
-        }
-        this.bufferCount = list.size();
-        this.availableBuffers = Queues.newArrayBlockingQueue(this.bufferCount);
-        this.availableBuffers.addAll(list);
-        this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
     }
 
     public String getDebugString() {

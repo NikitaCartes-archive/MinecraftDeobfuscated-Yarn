@@ -11,6 +11,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -22,6 +23,7 @@ extends Biome {
         this.addStructureFeature(Feature.IGLOO, FeatureConfig.DEFAULT);
         this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
         this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+        this.addStructureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

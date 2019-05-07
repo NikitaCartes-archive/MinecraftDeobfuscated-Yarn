@@ -433,10 +433,10 @@ Runnable {
         this.timeReference = SystemUtil.getMeasuringTimeMs();
         serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
         while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
-            this.timeReference += 100L;
+            this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
             this.method_16208();
         }
-        this.timeReference += 100L;
+        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (DimensionType dimensionType : DimensionType.getAll()) {
             ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
@@ -449,7 +449,7 @@ Runnable {
                 serverWorld2.method_14178().setChunkForced(chunkPos, true);
             }
         }
-        this.timeReference += 100L;
+        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
         this.method_16208();
         worldGenerationProgressListener.stop();
         serverChunkManager.method_17293().setTaskBatchSize(5);

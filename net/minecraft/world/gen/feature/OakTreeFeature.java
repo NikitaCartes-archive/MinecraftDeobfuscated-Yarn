@@ -14,6 +14,7 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
@@ -41,7 +42,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
         BlockPos blockPos2;
         int q;
         int p;
@@ -92,13 +93,13 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 for (q = blockPos.getZ() - m; q <= blockPos.getZ() + m; ++q) {
                     int r = q - blockPos.getZ();
                     if (Math.abs(p) == m && Math.abs(r) == m && (random.nextInt(2) == 0 || l == 0) || !OakTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = new BlockPos(o, n, q)) && !OakTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos2)) continue;
-                    this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
+                    this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
                 }
             }
         }
         for (n = 0; n < i; ++n) {
             if (!OakTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos.up(n)) && !OakTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos.up(n))) continue;
-            this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), this.log);
+            this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), this.log, mutableIntBoundingBox);
             if (!this.hasVinesAndCocoa || n <= 0) continue;
             if (random.nextInt(3) > 0 && OakTreeFeature.isAir(modifiableTestableWorld, blockPos.add(-1, n, 0))) {
                 this.makeVine(modifiableTestableWorld, blockPos.add(-1, n, 0), VineBlock.EAST);

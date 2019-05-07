@@ -3,9 +3,9 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum PistonType implements SnakeCaseIdentifiable
+public enum PistonType implements StringIdentifiable
 {
     DEFAULT("normal"),
     STICKY("sticky");
@@ -21,7 +21,7 @@ public enum PistonType implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 }

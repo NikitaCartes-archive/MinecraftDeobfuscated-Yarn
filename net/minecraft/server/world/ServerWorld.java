@@ -14,7 +14,6 @@ import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
@@ -672,7 +670,7 @@ extends World {
         Object2IntOpenHashMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<EntityCategory>();
         for (Entity entity : this.entitiesById.values()) {
             EntityCategory entityCategory2;
-            if (entity instanceof MobEntity && ((MobEntity)entity).isPersistent() || (entityCategory2 = entity.getType().getCategory()) == EntityCategory.MISC) continue;
+            if (entity instanceof MobEntity && ((MobEntity)entity).isPersistent() || (entityCategory2 = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().shouldTickEntity(entity)) continue;
             object2IntMap.computeInt(entityCategory2, (entityCategory, integer) -> 1 + (integer == null ? 0 : integer));
         }
         return object2IntMap;
@@ -831,8 +829,8 @@ extends World {
 
     public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
         serverPlayerEntity.remove();
-        this.updatePlayersSleeping();
         this.removeEntity(serverPlayerEntity);
+        this.updatePlayersSleeping();
     }
 
     public void addLightning(LightningEntity lightningEntity) {
@@ -894,11 +892,6 @@ extends World {
         return (ServerChunkManager)super.getChunkManager();
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public CompletableFuture<WorldChunk> getChunkFutureSyncOnMainThread(int i, int j, boolean bl) {
-        return this.method_14178().getChunkFutureSyncOnMainThread(i, j, ChunkStatus.FULL, bl).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
-    }
-
     @Override
     public Explosion createExplosion(@Nullable Entity entity, DamageSource damageSource, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
         Explosion explosion = new Explosion(this, entity, d, e, f, g, bl, destructionType);
@@ -936,12 +929,6 @@ extends World {
             return blockState.onBlockAction(this, blockAction.getPos(), blockAction.getType(), blockAction.getData());
         }
         return false;
-    }
-
-    @Override
-    public void close() throws IOException {
-        this.chunkManager.close();
-        super.close();
     }
 
     public ServerTickScheduler<Block> method_14196() {
@@ -1100,11 +1087,11 @@ extends World {
     @Override
     public void onBlockChanged(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
         Optional<PointOfInterestType> optional2;
-        BlockPos blockPos2 = blockPos.toImmutable();
         Optional<PointOfInterestType> optional = PointOfInterestType.from(blockState);
         if (Objects.equals(optional, optional2 = PointOfInterestType.from(blockState2))) {
             return;
         }
+        BlockPos blockPos2 = blockPos.toImmutable();
         optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
             this.getPointOfInterestStorage().remove(blockPos2);
             DebugRendererInfoManager.method_19777(this, blockPos2);
@@ -1121,6 +1108,10 @@ extends World {
 
     public boolean isNearOccupiedPointOfInterest(BlockPos blockPos) {
         return this.isNearOccupiedPointOfInterest(blockPos, 1);
+    }
+
+    public boolean method_20588(ChunkSectionPos chunkSectionPos) {
+        return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
     }
 
     public boolean isNearOccupiedPointOfInterest(BlockPos blockPos, int i) {
@@ -1140,7 +1131,8 @@ extends World {
 
     @Nullable
     public Raid getRaidAt(BlockPos blockPos) {
-        return this.raidManager.getRaidAt(blockPos);
+        Raid raid = this.raidManager.getRaidAt(blockPos, 9216);
+        return this.isNearOccupiedPointOfInterest(blockPos) ? raid : null;
     }
 
     public boolean hasRaidAt(BlockPos blockPos) {

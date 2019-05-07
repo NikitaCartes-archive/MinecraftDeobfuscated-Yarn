@@ -9,8 +9,8 @@ import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,9 +83,9 @@ public class CrashReportSection {
         return stringBuilder.toString();
     }
 
-    public void add(String string, ICrashCallable<String> iCrashCallable) {
+    public void add(String string, CrashCallable<String> crashCallable) {
         try {
-            this.add(string, iCrashCallable.call());
+            this.add(string, crashCallable.call());
         } catch (Throwable throwable) {
             this.add(string, throwable);
         }

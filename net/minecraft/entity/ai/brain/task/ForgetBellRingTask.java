@@ -3,10 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -22,20 +20,16 @@ extends Task<LivingEntity> {
     private int field_19001;
 
     public ForgetBellRingTask(int i, int j) {
+        super(ImmutableMap.of(MemoryModuleType.HIDING_PLACE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
         this.field_19000 = i * 20;
         this.field_19001 = 0;
         this.field_19154 = j;
     }
 
     @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.HIDING_PLACE, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
-    }
-
-    @Override
     protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
         boolean bl;
-        Brain<Object> brain = livingEntity.getBrain();
+        Brain<?> brain = livingEntity.getBrain();
         Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.HEARD_BELL_TIME);
         boolean bl2 = bl = optional.get() + 300L <= l;
         if (this.field_19001 > this.field_19000 || bl) {

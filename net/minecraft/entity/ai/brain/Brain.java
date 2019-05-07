@@ -68,7 +68,7 @@ implements DynamicSerializable {
         this.putMemory(memoryModuleType, memoryModuleType.getFactory().orElseThrow(RuntimeException::new).apply(dynamic));
     }
 
-    public void forget(MemoryModuleType<?> memoryModuleType) {
+    public <U> void forget(MemoryModuleType<U> memoryModuleType) {
         this.setMemory(memoryModuleType, Optional.empty());
     }
 
@@ -168,7 +168,7 @@ implements DynamicSerializable {
 
     @Override
     public <T> T serialize(DynamicOps<T> dynamicOps) {
-        Object object = dynamicOps.createMap(this.memories.entrySet().stream().filter(entry -> ((MemoryModuleType)entry.getKey()).getFactory().isPresent() && ((Optional)entry.getValue()).isPresent()).map(entry -> Pair.of(dynamicOps.createString(((MemoryModuleType)entry.getKey()).getId().toString()), ((DynamicSerializable)((Optional)entry.getValue()).get()).serialize(dynamicOps))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
+        Object object = dynamicOps.createMap(this.memories.entrySet().stream().filter(entry -> ((MemoryModuleType)entry.getKey()).getFactory().isPresent() && ((Optional)entry.getValue()).isPresent()).map(entry -> Pair.of(dynamicOps.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()), ((DynamicSerializable)((Optional)entry.getValue()).get()).serialize(dynamicOps))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
         return (T)dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("memories"), object));
     }
 

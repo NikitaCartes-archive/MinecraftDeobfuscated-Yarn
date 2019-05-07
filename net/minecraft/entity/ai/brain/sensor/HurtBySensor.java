@@ -10,14 +10,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
 
 public class HurtBySensor
 extends Sensor<LivingEntity> {
     @Override
     protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-        Brain<DamageSource> brain = livingEntity.getBrain();
+        Brain<?> brain = livingEntity.getBrain();
         if (livingEntity.getRecentDamageSource() != null) {
             brain.putMemory(MemoryModuleType.HURT_BY, livingEntity.getRecentDamageSource());
             Entity entity = brain.getOptionalMemory(MemoryModuleType.HURT_BY).get().getAttacker();

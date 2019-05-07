@@ -459,7 +459,7 @@ SynchronousResourceReloadListener {
         if (this.client.isWindowFocused() || !this.client.options.pauseOnLostFocus || this.client.options.touchscreen && this.client.mouse.wasRightButtonClicked()) {
             this.lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
         } else if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
-            this.client.openPauseMenu();
+            this.client.openPauseMenu(false);
         }
         if (this.client.skipGameRender) {
             return;

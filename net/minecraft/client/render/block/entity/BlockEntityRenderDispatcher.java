@@ -148,10 +148,9 @@ public class BlockEntityRenderDispatcher {
         BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer != null) {
             try {
-                if (!(bl || blockEntity.hasWorld() && blockEntity.getCachedState().getBlock().hasBlockEntity())) {
-                    return;
+                if (bl || blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
+                    blockEntityRenderer.render(blockEntity, d, e, f, g, i);
                 }
-                blockEntityRenderer.render(blockEntity, d, e, f, g, i);
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Rendering Block Entity");
                 CrashReportSection crashReportSection = crashReport.addElement("Block Entity Details");

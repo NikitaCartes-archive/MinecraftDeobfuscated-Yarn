@@ -113,7 +113,7 @@ public class Keyboard {
                     this.debugWarn("debug.creative_spectator.error", new Object[0]);
                 } else if (this.client.player.isCreative()) {
                     this.client.player.sendChatMessage("/gamemode spectator");
-                } else if (this.client.player.isSpectator()) {
+                } else {
                     this.client.player.sendChatMessage("/gamemode creative");
                 }
                 return true;
@@ -139,6 +139,7 @@ public class Keyboard {
                 chatHud.addMessage(new TranslatableComponent("debug.pause_focus.help", new Object[0]));
                 chatHud.addMessage(new TranslatableComponent("debug.help.help", new Object[0]));
                 chatHud.addMessage(new TranslatableComponent("debug.reload_resourcepacks.help", new Object[0]));
+                chatHud.addMessage(new TranslatableComponent("debug.pause.help", new Object[0]));
                 return true;
             }
             case 84: {
@@ -312,7 +313,8 @@ public class Keyboard {
                 boolean bl22 = false;
                 if (this.client.currentScreen == null) {
                     if (i == 256) {
-                        this.client.openPauseMenu();
+                        boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292);
+                        this.client.openPauseMenu(bl3);
                     }
                     bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292) && this.processF3(i);
                     this.switchF3State |= bl22;

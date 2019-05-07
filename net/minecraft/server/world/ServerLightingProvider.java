@@ -103,6 +103,7 @@ implements AutoCloseable {
 
     public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
         ChunkPos chunkPos = chunk.getPos();
+        chunk.setLightOn(false);
         this.enqueue(chunkPos.x, chunkPos.z, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
             ChunkSection[] chunkSections = chunk.getSectionArray();
             for (int i = 0; i < 16; ++i) {
@@ -114,10 +115,12 @@ implements AutoCloseable {
             if (!bl) {
                 chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560((BlockPos)blockPos, chunk.getLuminance((BlockPos)blockPos)));
             }
-            chunk.setLightOn(true);
             this.chunkStorage.method_20441(chunkPos);
         }, () -> "lightChunk " + chunkPos + " " + bl));
-        return CompletableFuture.supplyAsync(() -> chunk, runnable -> this.enqueue(chunkPos.x, chunkPos.z, class_3901.POST_UPDATE, runnable));
+        return CompletableFuture.supplyAsync(() -> {
+            chunk.setLightOn(true);
+            return chunk;
+        }, runnable -> this.enqueue(chunkPos.x, chunkPos.z, class_3901.POST_UPDATE, runnable));
     }
 
     public void tick() {

@@ -61,7 +61,7 @@ extends BlockEntity {
         this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
             String string = compoundTag.getString("Text" + (i + 1));
-            Component component = Component.Serializer.fromJsonString(string);
+            Component component = Component.Serializer.fromJsonString(string.isEmpty() ? "\"\"" : string);
             if (this.world instanceof ServerWorld) {
                 try {
                     this.text[i] = Components.resolveAndStyle(this.getCommandSource(null), component, null);

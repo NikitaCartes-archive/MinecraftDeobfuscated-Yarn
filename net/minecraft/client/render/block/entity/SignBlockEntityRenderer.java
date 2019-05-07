@@ -43,14 +43,11 @@ extends BlockEntityRenderer<SignBlockEntity> {
             GlStateManager.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
             GlStateManager.rotatef(-((float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0f), 0.0f, 1.0f, 0.0f);
             this.model.getSignpostModel().visible = true;
-        } else if (blockState.getBlock() instanceof WallSignBlock) {
+        } else {
             GlStateManager.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
             GlStateManager.rotatef(-blockState.get(WallSignBlock.FACING).asRotation(), 0.0f, 1.0f, 0.0f);
             GlStateManager.translatef(0.0f, -0.3125f, -0.4375f);
             this.model.getSignpostModel().visible = false;
-        } else {
-            GlStateManager.popMatrix();
-            return;
         }
         if (i >= 0) {
             this.bindTexture(DESTROY_STAGE_TEXTURES[i]);

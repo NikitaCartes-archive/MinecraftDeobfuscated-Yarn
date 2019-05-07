@@ -244,7 +244,7 @@ extends HostileEntity {
 
     protected void convertInWater() {
         this.convertTo(EntityType.DROWNED);
-        this.world.playLevelEvent(null, 1040, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+        this.world.playLevelEvent(null, 1040, new BlockPos(this), 0);
     }
 
     protected void convertTo(EntityType<? extends ZombieEntity> entityType) {

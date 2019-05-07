@@ -6,20 +6,26 @@ package net.minecraft.world.chunk;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.EmptyChunk;
+import net.minecraft.world.dimension.Dimension;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkCache
-implements ExtendedBlockView {
+implements ViewableWorld {
     protected final int minX;
     protected final int minZ;
     protected final Chunk[][] chunks;
@@ -51,23 +57,73 @@ implements ExtendedBlockView {
         }
     }
 
+    @Override
+    public int getLightLevel(BlockPos blockPos, int i) {
+        return this.world.getLightLevel(blockPos, i);
+    }
+
+    @Override
     @Nullable
-    private Chunk method_18474(BlockPos blockPos) {
-        int i = (blockPos.getX() >> 4) - this.minX;
-        int j = (blockPos.getZ() >> 4) - this.minZ;
-        if (i < 0 || i >= this.chunks.length || j < 0 || j >= this.chunks[i].length) {
-            return null;
+    public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+        int k = i - this.minX;
+        int l = j - this.minZ;
+        if (k < 0 || k >= this.chunks.length || l < 0 || l >= this.chunks[k].length) {
+            return new EmptyChunk(this.world, new ChunkPos(i, j));
         }
-        return this.chunks[i][j];
+        return this.chunks[k][l];
+    }
+
+    @Override
+    public boolean isChunkLoaded(int i, int j) {
+        int k = i - this.minX;
+        int l = j - this.minZ;
+        return k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length;
+    }
+
+    @Override
+    public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
+        return this.world.getTopPosition(type, blockPos);
+    }
+
+    @Override
+    public int getTop(Heightmap.Type type, int i, int j) {
+        return this.world.getTop(type, i, j);
+    }
+
+    @Override
+    public int getAmbientDarkness() {
+        return this.world.getAmbientDarkness();
+    }
+
+    @Override
+    public WorldBorder getWorldBorder() {
+        return this.world.getWorldBorder();
+    }
+
+    @Override
+    public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+        return true;
+    }
+
+    @Override
+    public boolean isClient() {
+        return false;
+    }
+
+    @Override
+    public int getSeaLevel() {
+        return this.world.getSeaLevel();
+    }
+
+    @Override
+    public Dimension getDimension() {
+        return this.world.getDimension();
     }
 
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos blockPos) {
-        Chunk chunk = this.method_18474(blockPos);
-        if (chunk == null) {
-            return null;
-        }
+        Chunk chunk = this.getChunk(blockPos);
         return chunk.getBlockEntity(blockPos);
     }
 
@@ -76,11 +132,8 @@ implements ExtendedBlockView {
         if (World.isHeightInvalid(blockPos)) {
             return Blocks.AIR.getDefaultState();
         }
-        Chunk chunk = this.method_18474(blockPos);
-        if (chunk != null) {
-            return chunk.getBlockState(blockPos);
-        }
-        return Blocks.BEDROCK.getDefaultState();
+        Chunk chunk = this.getChunk(blockPos);
+        return chunk.getBlockState(blockPos);
     }
 
     @Override
@@ -88,19 +141,13 @@ implements ExtendedBlockView {
         if (World.isHeightInvalid(blockPos)) {
             return Fluids.EMPTY.getDefaultState();
         }
-        Chunk chunk = this.method_18474(blockPos);
-        if (chunk != null) {
-            return chunk.getFluidState(blockPos);
-        }
-        return Fluids.EMPTY.getDefaultState();
+        Chunk chunk = this.getChunk(blockPos);
+        return chunk.getFluidState(blockPos);
     }
 
     @Override
     public Biome getBiome(BlockPos blockPos) {
-        Chunk chunk = this.method_18474(blockPos);
-        if (chunk == null) {
-            return Biomes.PLAINS;
-        }
+        Chunk chunk = this.getChunk(blockPos);
         return chunk.getBiome(blockPos);
     }
 

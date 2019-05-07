@@ -141,28 +141,20 @@ extends LightStorage<Data> {
 
     @Override
     protected ChunkNibbleArray getDataForChunk(long l) {
+        ChunkNibbleArray chunkNibbleArray2;
         ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.toUpdate.get(l);
         if (chunkNibbleArray != null) {
             return chunkNibbleArray;
         }
-        if (!this.method_15566(l)) {
-            return new ChunkNibbleArray();
-        }
         long m = ChunkSectionPos.offsetPacked(l, Direction.UP);
         int i = ((Data)this.dataStorage).heightMap.get(ChunkSectionPos.toLightStorageIndex(l));
-        while (i != ((Data)this.dataStorage).defaultHeight && ChunkSectionPos.unpackLongY(m) < i && !this.hasChunk(m)) {
-            m = ChunkSectionPos.offsetPacked(m, Direction.UP);
-        }
-        ChunkNibbleArray chunkNibbleArray2 = ((Data)this.dataStorage).getDataForChunk(m);
-        if (chunkNibbleArray2 != null) {
-            return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
-        }
-        if (this.field_15815.contains(ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l)))) {
+        if (i == ((Data)this.dataStorage).defaultHeight || ChunkSectionPos.unpackLongY(m) >= i) {
             return new ChunkNibbleArray();
         }
-        ChunkNibbleArray chunkNibbleArray3 = new ChunkNibbleArray();
-        Arrays.fill(chunkNibbleArray3.asByteArray(), (byte)-1);
-        return chunkNibbleArray3;
+        while ((chunkNibbleArray2 = this.getDataForChunk(m, true)) == null) {
+            m = ChunkSectionPos.offsetPacked(m, Direction.UP);
+        }
+        return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
     }
 
     @Override

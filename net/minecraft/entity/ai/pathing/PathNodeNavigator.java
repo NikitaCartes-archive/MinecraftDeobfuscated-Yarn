@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.pathing.PathMinHeap;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class PathNodeNavigator {
@@ -28,9 +28,9 @@ public class PathNodeNavigator {
     }
 
     @Nullable
-    public Path pathfind(BlockView blockView, MobEntity mobEntity, double d, double e, double f, float g) {
+    public Path pathfind(ViewableWorld viewableWorld, MobEntity mobEntity, double d, double e, double f, float g) {
         this.minHeap.clear();
-        this.pathNodeMaker.init(blockView, mobEntity);
+        this.pathNodeMaker.init(viewableWorld, mobEntity);
         PathNode pathNode = this.pathNodeMaker.getStart();
         PathNode pathNode2 = this.pathNodeMaker.getPathNode(d, e, f);
         Path path = this.pathfind(pathNode, pathNode2, g);
@@ -41,7 +41,7 @@ public class PathNodeNavigator {
     @Nullable
     private Path pathfind(PathNode pathNode, PathNode pathNode2, float f) {
         pathNode.field_36 = 0.0f;
-        pathNode.heapWeight = pathNode.field_34 = pathNode.manhattanDistance(pathNode2);
+        pathNode.heapWeight = pathNode.field_34 = pathNode.distance(pathNode2);
         this.minHeap.clear();
         this.field_59.clear();
         this.minHeap.push(pathNode);
@@ -49,25 +49,25 @@ public class PathNodeNavigator {
         int i = 0;
         while (!this.minHeap.isEmpty() && ++i < this.field_18708) {
             PathNode pathNode4 = this.minHeap.pop();
+            pathNode4.field_42 = true;
             if (pathNode4.equals(pathNode2)) {
                 pathNode3 = pathNode2;
                 break;
             }
-            if (pathNode4.manhattanDistance(pathNode2) < pathNode3.manhattanDistance(pathNode2)) {
+            if (pathNode4.distance(pathNode2) < pathNode3.distance(pathNode2)) {
                 pathNode3 = pathNode4;
             }
-            pathNode4.field_42 = true;
-            int j = this.pathNodeMaker.getPathNodes(this.field_60, pathNode4, pathNode2, f);
+            if (pathNode4.distance(pathNode2) >= f) continue;
+            int j = this.pathNodeMaker.getPathNodes(this.field_60, pathNode4);
             for (int k = 0; k < j; ++k) {
                 PathNode pathNode5 = this.field_60[k];
-                float g = pathNode4.manhattanDistance(pathNode5);
+                float g = pathNode4.distance(pathNode5);
                 pathNode5.field_46 = pathNode4.field_46 + g;
-                pathNode5.field_45 = g + pathNode5.field_43;
-                float h = pathNode4.field_36 + pathNode5.field_45;
+                float h = pathNode4.field_36 + g + pathNode5.field_43;
                 if (!(pathNode5.field_46 < f) || pathNode5.isInHeap() && !(h < pathNode5.field_36)) continue;
                 pathNode5.field_35 = pathNode4;
                 pathNode5.field_36 = h;
-                pathNode5.field_34 = pathNode5.manhattanDistance(pathNode2) + pathNode5.field_43;
+                pathNode5.field_34 = pathNode5.distance(pathNode2) * 1.5f + pathNode5.field_43;
                 if (pathNode5.isInHeap()) {
                     this.minHeap.setNodeWeight(pathNode5, pathNode5.field_36 + pathNode5.field_34);
                     continue;
@@ -76,7 +76,7 @@ public class PathNodeNavigator {
                 this.minHeap.push(pathNode5);
             }
         }
-        if (pathNode3 == pathNode) {
+        if (pathNode3.equals(pathNode)) {
             return null;
         }
         Path path = this.method_55(pathNode3);

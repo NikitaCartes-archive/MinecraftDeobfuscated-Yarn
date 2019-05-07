@@ -8,12 +8,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-final class PlayerChunkWatchingManager {
+public final class PlayerChunkWatchingManager {
     private final Set<ServerPlayerEntity> watchingPlayers = Sets.newHashSet();
     private final Set<ServerPlayerEntity> notWatchingPlayers = Sets.newHashSet();
-
-    PlayerChunkWatchingManager() {
-    }
 
     public Stream<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
         return this.watchingPlayers.stream();

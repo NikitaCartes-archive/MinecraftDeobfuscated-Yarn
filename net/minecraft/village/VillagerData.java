@@ -6,6 +6,8 @@ package net.minecraft.village;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
@@ -55,6 +57,7 @@ public class VillagerData {
         return dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.VILLAGER_TYPE.getId(this.type).toString()), dynamicOps.createString("profession"), dynamicOps.createString(Registry.VILLAGER_PROFESSION.getId(this.profession).toString()), dynamicOps.createString("level"), dynamicOps.createInt(this.level)));
     }
 
+    @Environment(value=EnvType.CLIENT)
     public static int getLowerLevelExperience(int i) {
         return VillagerData.canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i - 1] : 0;
     }

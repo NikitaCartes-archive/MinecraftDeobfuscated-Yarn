@@ -188,11 +188,6 @@ public class Tag<T> {
             return this;
         }
 
-        public Builder<T> add(Identifier identifier) {
-            this.entries.add(new TagEntry(identifier));
-            return this;
-        }
-
         public Builder<T> add(Tag<T> tag) {
             this.entries.add(new TagEntry<T>(tag));
             return this;
@@ -217,18 +212,20 @@ public class Tag<T> {
 
         public Builder<T> fromJson(Function<Identifier, Optional<T>> function, JsonObject jsonObject) {
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "values");
-            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                this.entries.clear();
-            }
+            ArrayList list = Lists.newArrayList();
             for (JsonElement jsonElement : jsonArray) {
                 String string = JsonHelper.asString(jsonElement, "value");
                 if (string.startsWith("#")) {
-                    this.add(new Identifier(string.substring(1)));
+                    list.add(new TagEntry(new Identifier(string.substring(1))));
                     continue;
                 }
                 Identifier identifier = new Identifier(string);
-                this.add(function.apply(identifier).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")));
+                list.add(new CollectionEntry<T>(Collections.singleton(function.apply(identifier).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")))));
             }
+            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
+                this.entries.clear();
+            }
+            this.entries.addAll(list);
             return this;
         }
     }

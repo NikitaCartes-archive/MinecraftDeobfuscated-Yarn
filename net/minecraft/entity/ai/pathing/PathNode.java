@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 public class PathNode {
     public final int x;
@@ -22,7 +21,6 @@ public class PathNode {
     public PathNode field_35;
     public boolean field_42;
     public float field_46;
-    public float field_45;
     public float field_43;
     public PathNodeType type = PathNodeType.BLOCKED;
 
@@ -42,7 +40,6 @@ public class PathNode {
         pathNode.field_35 = this.field_35;
         pathNode.field_42 = this.field_42;
         pathNode.field_46 = this.field_46;
-        pathNode.field_45 = this.field_45;
         pathNode.field_43 = this.field_43;
         pathNode.type = this.type;
         return pathNode;
@@ -64,17 +61,6 @@ public class PathNode {
         float g = pathNode.y - this.y;
         float h = pathNode.z - this.z;
         return f * f + g * g + h * h;
-    }
-
-    public float manhattanDistance(PathNode pathNode) {
-        float f = Math.abs(pathNode.x - this.x);
-        float g = Math.abs(pathNode.y - this.y);
-        float h = Math.abs(pathNode.z - this.z);
-        return f + g + h;
-    }
-
-    public Vec3d getPos() {
-        return new Vec3d(this.x, this.y, this.z);
     }
 
     public boolean equals(Object object) {
@@ -101,7 +87,6 @@ public class PathNode {
     public static PathNode fromBuffer(PacketByteBuf packetByteBuf) {
         PathNode pathNode = new PathNode(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
         pathNode.field_46 = packetByteBuf.readFloat();
-        pathNode.field_45 = packetByteBuf.readFloat();
         pathNode.field_43 = packetByteBuf.readFloat();
         pathNode.field_42 = packetByteBuf.readBoolean();
         pathNode.type = PathNodeType.values()[packetByteBuf.readInt()];

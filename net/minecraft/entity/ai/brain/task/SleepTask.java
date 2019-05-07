@@ -3,11 +3,9 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +22,10 @@ public class SleepTask
 extends Task<LivingEntity> {
     private long field_18848;
 
+    public SleepTask() {
+        super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT));
+    }
+
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
         if (livingEntity.hasVehicle()) {
@@ -35,11 +37,6 @@ extends Task<LivingEntity> {
         }
         BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
         return globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0) && blockState.getBlock().matches(BlockTags.BEDS) && blockState.get(BedBlock.OCCUPIED) == false;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT));
     }
 
     @Override

@@ -3,15 +3,13 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.Brain;
@@ -28,9 +26,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayWithVillagerBabiesTask
 extends Task<MobEntityWithAi> {
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), Pair.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED));
+    public PlayWithVillagerBabiesTask() {
+        super(ImmutableMap.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED));
     }
 
     protected boolean method_19583(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {

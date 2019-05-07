@@ -10,14 +10,14 @@ import net.minecraft.util.shape.FractionalDoubleList;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 
-final class SimpleVoxelShape
+public final class SimpleVoxelShape
 extends VoxelShape {
-    SimpleVoxelShape(VoxelSet voxelSet) {
+    protected SimpleVoxelShape(VoxelSet voxelSet) {
         super(voxelSet);
     }
 
     @Override
-    protected DoubleList getIncludedPoints(Direction.Axis axis) {
+    protected DoubleList getPointPositions(Direction.Axis axis) {
         return new FractionalDoubleList(this.voxels.getSize(axis));
     }
 

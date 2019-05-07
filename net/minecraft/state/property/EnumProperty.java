@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.state.property.AbstractProperty;
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
 public class EnumProperty<T extends Enum<T>>
 extends AbstractProperty<T> {
@@ -25,7 +25,7 @@ extends AbstractProperty<T> {
         super(string, class_);
         this.values = ImmutableSet.copyOf(collection);
         for (Enum enum_ : collection) {
-            String string2 = ((SnakeCaseIdentifiable)((Object)enum_)).toSnakeCase();
+            String string2 = ((StringIdentifiable)((Object)enum_)).asString();
             if (this.valuesByName.containsKey(string2)) {
                 throw new IllegalArgumentException("Multiple values have the same name '" + string2 + "'");
             }
@@ -44,7 +44,7 @@ extends AbstractProperty<T> {
     }
 
     public String method_11846(T enum_) {
-        return ((SnakeCaseIdentifiable)enum_).toSnakeCase();
+        return ((StringIdentifiable)enum_).asString();
     }
 
     @Override

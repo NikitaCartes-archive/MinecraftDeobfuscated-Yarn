@@ -113,13 +113,13 @@ public abstract class EntityNavigation {
         if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
             return this.currentPath;
         }
-        this.targetPos = blockPos;
+        this.targetPos = blockPos.toImmutable();
         float g = this.getFollowRange();
         this.world.getProfiler().push("pathfind");
         BlockPos blockPos2 = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
         int j = (int)(g + (float)i);
-        ChunkCache blockView = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
-        Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, d, e, f, g);
+        ChunkCache viewableWorld = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
+        Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, d, e, f, g);
         this.world.getProfiler().pop();
         return path;
     }
@@ -186,26 +186,10 @@ public abstract class EntityNavigation {
 
     protected void method_6339() {
         Vec3d vec3d = this.getPos();
-        int i = this.currentPath.getLength();
-        for (int j = this.currentPath.getCurrentNodeIndex(); j < this.currentPath.getLength(); ++j) {
-            if ((double)this.currentPath.getNode((int)j).y == Math.floor(vec3d.y)) continue;
-            i = j;
-            break;
-        }
         this.field_6683 = this.entity.getWidth() > 0.75f ? this.entity.getWidth() / 2.0f : 0.75f - this.entity.getWidth() / 2.0f;
         Vec3d vec3d2 = this.currentPath.getCurrentPosition();
         if (Math.abs(this.entity.x - (vec3d2.x + 0.5)) < (double)this.field_6683 && Math.abs(this.entity.z - (vec3d2.z + 0.5)) < (double)this.field_6683 && Math.abs(this.entity.y - vec3d2.y) < 1.0) {
             this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
-        }
-        if (this.entity.world.getTime() % 5L == 0L) {
-            int k = MathHelper.ceil(this.entity.getWidth());
-            int l = MathHelper.ceil(this.entity.getHeight());
-            int m = k;
-            for (int n = i - 1; n >= this.currentPath.getCurrentNodeIndex(); --n) {
-                if (!this.canPathDirectlyThrough(vec3d, this.currentPath.getNodePosition(this.entity, n), k, l, m)) continue;
-                this.currentPath.setCurrentNodeIndex(n);
-                break;
-            }
         }
         this.method_6346(vec3d);
     }

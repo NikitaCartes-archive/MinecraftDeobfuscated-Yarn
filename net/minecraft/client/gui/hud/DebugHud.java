@@ -46,6 +46,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
@@ -248,7 +249,7 @@ extends DrawableHelper {
             ServerWorld serverWorld;
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.dimension.getType())) != null) {
-                this.chunkFuture = serverWorld.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, false);
+                this.chunkFuture = serverWorld.method_14178().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
             }
             if (this.chunkFuture == null) {
                 this.chunkFuture = CompletableFuture.completedFuture(this.getClientChunk());

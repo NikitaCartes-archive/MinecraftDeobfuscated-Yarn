@@ -984,7 +984,7 @@ CommandOutput {
     }
 
     public float getBrightnessAtEyes() {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
+        BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, 0.0, this.z);
         if (this.world.isBlockLoaded(mutable)) {
             mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
             return this.world.getBrightness(mutable);

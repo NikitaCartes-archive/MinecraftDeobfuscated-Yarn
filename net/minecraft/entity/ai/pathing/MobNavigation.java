@@ -77,15 +77,15 @@ extends EntityNavigation {
 
     private int method_6362() {
         if (!this.entity.isInsideWater() || !this.canSwim()) {
-            return (int)(this.entity.getBoundingBox().minY + 0.5);
+            return MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
         }
-        int i = (int)this.entity.getBoundingBox().minY;
-        Block block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.entity.x), i, MathHelper.floor(this.entity.z))).getBlock();
+        int i = MathHelper.floor(this.entity.getBoundingBox().minY);
+        Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
         int j = 0;
         while (block == Blocks.WATER) {
-            block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.entity.x), ++i, MathHelper.floor(this.entity.z))).getBlock();
+            block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
             if (++j <= 16) continue;
-            return (int)this.entity.getBoundingBox().minY;
+            return MathHelper.floor(this.entity.getBoundingBox().minY);
         }
         return i;
     }
@@ -94,7 +94,7 @@ extends EntityNavigation {
     protected void method_6359() {
         super.method_6359();
         if (this.avoidSunlight) {
-            if (this.world.isSkyVisible(new BlockPos(MathHelper.floor(this.entity.x), (int)(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.z)))) {
+            if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY + 0.5, this.entity.z))) {
                 return;
             }
             for (int i = 0; i < this.currentPath.getLength(); ++i) {
@@ -117,7 +117,7 @@ extends EntityNavigation {
             return false;
         }
         double g = 1.0 / Math.sqrt(f);
-        if (!this.method_6364(l, (int)vec3d.y, m, i += 2, j, k += 2, vec3d, d *= g, e *= g)) {
+        if (!this.method_6364(l, MathHelper.floor(vec3d.y), m, i += 2, j, k += 2, vec3d, d *= g, e *= g)) {
             return false;
         }
         i -= 2;
@@ -148,7 +148,7 @@ extends EntityNavigation {
                 p += n;
                 v = t - (m += r);
             }
-            if (this.method_6364(l, (int)vec3d.y, m, i, j, k, vec3d, d, e)) continue;
+            if (this.method_6364(l, MathHelper.floor(vec3d.y), m, i, j, k, vec3d, d, e)) continue;
             return false;
         }
         return true;

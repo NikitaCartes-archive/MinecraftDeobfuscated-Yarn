@@ -3,9 +3,7 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -22,6 +20,7 @@ extends Task<MobEntityWithAi> {
     private final float field_18381;
 
     public GoToNearbyEntityTask(MemoryModuleType<? extends Entity> memoryModuleType, float f) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
         this.entityMemory = memoryModuleType;
         this.field_18381 = f;
     }
@@ -29,11 +28,6 @@ extends Task<MobEntityWithAi> {
     protected boolean method_19002(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Entity entity = mobEntityWithAi.getBrain().getOptionalMemory(this.entityMemory).get();
         return mobEntityWithAi.squaredDistanceTo(entity) < 16.0;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(this.entityMemory, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected void method_19003(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {

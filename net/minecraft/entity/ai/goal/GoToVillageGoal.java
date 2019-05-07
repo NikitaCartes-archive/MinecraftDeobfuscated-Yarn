@@ -67,7 +67,7 @@ extends Goal {
             Vec3d vec3d3 = vec3d2.subtract(vec3d);
             vec3d = vec3d3.multiply(0.4).add(vec3d);
             Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
-            BlockPos blockPos = new BlockPos((int)vec3d4.x, (int)vec3d4.y, (int)vec3d4.z);
+            BlockPos blockPos = new BlockPos(vec3d4);
             if (!entityNavigation.startMovingTo((blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), 1.0)) {
                 this.findOtherWaypoint();
             }

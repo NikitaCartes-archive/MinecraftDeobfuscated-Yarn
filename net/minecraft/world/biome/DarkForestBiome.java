@@ -17,6 +17,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -31,7 +32,7 @@ extends Biome {
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, DarkForestBiome.configureFeature(Feature.RANDOM_SELECTOR, new RandomFeatureConfig(new Feature[]{Feature.HUGE_BROWN_MUSHROOM, Feature.HUGE_RED_MUSHROOM, Feature.DARK_OAK_TREE, Feature.FANCY_TREE}, new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT}, new float[]{0.025f, 0.05f, 0.6666667f, 0.1f}, Feature.NORMAL_TREE, FeatureConfig.DEFAULT), Decorator.DARK_OAK_TREE, DecoratorConfig.DEFAULT));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, DarkForestBiome.configureFeature(Feature.RANDOM_SELECTOR, new RandomFeatureConfig(new Feature[]{Feature.HUGE_BROWN_MUSHROOM, Feature.HUGE_RED_MUSHROOM, Feature.DARK_OAK_TREE, Feature.FANCY_TREE}, new FeatureConfig[]{new PlantedFeatureConfig(false), new PlantedFeatureConfig(false), FeatureConfig.DEFAULT, FeatureConfig.DEFAULT}, new float[]{0.025f, 0.05f, 0.6666667f, 0.1f}, Feature.NORMAL_TREE, FeatureConfig.DEFAULT), Decorator.DARK_OAK_TREE, DecoratorConfig.DEFAULT));
         DefaultBiomeFeatures.addForestFlowers(this);
         DefaultBiomeFeatures.addMineables(this);
         DefaultBiomeFeatures.addDefaultOres(this);

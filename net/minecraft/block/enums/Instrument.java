@@ -10,9 +10,9 @@ import net.minecraft.block.Material;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum Instrument implements SnakeCaseIdentifiable
+public enum Instrument implements StringIdentifiable
 {
     HARP("harp", SoundEvents.BLOCK_NOTE_BLOCK_HARP),
     BASEDRUM("basedrum", SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM),
@@ -40,7 +40,7 @@ public enum Instrument implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 

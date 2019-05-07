@@ -3,8 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityType;
@@ -23,9 +23,8 @@ public class GatherItemsVillagerTask
 extends Task<VillagerEntity> {
     private Set<Item> items = ImmutableSet.of();
 
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
+    public GatherItemsVillagerTask() {
+        super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected boolean method_19015(ServerWorld serverWorld, VillagerEntity villagerEntity) {

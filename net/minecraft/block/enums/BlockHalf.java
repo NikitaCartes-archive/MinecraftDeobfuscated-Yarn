@@ -3,9 +3,9 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum BlockHalf implements SnakeCaseIdentifiable
+public enum BlockHalf implements StringIdentifiable
 {
     TOP("top"),
     BOTTOM("bottom");
@@ -21,7 +21,7 @@ public enum BlockHalf implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 }

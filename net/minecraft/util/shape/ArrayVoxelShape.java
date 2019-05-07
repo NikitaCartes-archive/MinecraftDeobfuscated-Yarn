@@ -10,13 +10,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 
-final class ArrayVoxelShape
+public final class ArrayVoxelShape
 extends VoxelShape {
     private final DoubleList xPoints;
     private final DoubleList yPoints;
     private final DoubleList zPoints;
 
-    ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
+    protected ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
         this(voxelSet, DoubleArrayList.wrap(Arrays.copyOf(ds, voxelSet.getXSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(es, voxelSet.getYSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(fs, voxelSet.getZSize() + 1)));
     }
 
@@ -34,7 +34,7 @@ extends VoxelShape {
     }
 
     @Override
-    protected DoubleList getIncludedPoints(Direction.Axis axis) {
+    protected DoubleList getPointPositions(Direction.Axis axis) {
         switch (axis) {
             case X: {
                 return this.xPoints;

@@ -28,6 +28,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -98,8 +99,18 @@ extends Entity {
                 this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
             }
         }
-        this.move(MovementType.SELF, this.getVelocity());
-        boolean bl = (int)this.prevX != (int)this.x || (int)this.prevY != (int)this.y || (int)this.prevZ != (int)this.z;
+        if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
+            this.move(MovementType.SELF, this.getVelocity());
+            float f = 0.98f;
+            if (this.onGround) {
+                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
+            }
+            this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
+            if (this.onGround) {
+                this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
+            }
+        }
+        boolean bl = MathHelper.floor(this.prevX) != MathHelper.floor(this.x) || MathHelper.floor(this.prevY) != MathHelper.floor(this.y) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.z);
         int n = i = bl ? 2 : 40;
         if (this.age % i == 0) {
             if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
@@ -109,14 +120,6 @@ extends Entity {
             if (!this.world.isClient && this.method_20397()) {
                 this.tryMerge();
             }
-        }
-        float f = 0.98f;
-        if (this.onGround) {
-            f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
-        }
-        this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
-        if (this.onGround) {
-            this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
         }
         if (this.age != Short.MIN_VALUE) {
             ++this.age;

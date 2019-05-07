@@ -8,13 +8,13 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.util.shape.DoubleListPair;
 
-final class SimpleDoubleListPair
+public final class SimpleDoubleListPair
 implements DoubleListPair {
     private final DoubleArrayList mergedList;
     private final IntArrayList field_1376;
     private final IntArrayList field_1378;
 
-    SimpleDoubleListPair(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
+    protected SimpleDoubleListPair(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
         int i = 0;
         int j = 0;
         double d = Double.NaN;

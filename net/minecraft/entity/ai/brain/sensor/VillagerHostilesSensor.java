@@ -13,6 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 
 public class VillagerHostilesSensor
 extends Sensor<LivingEntity> {
@@ -37,7 +38,7 @@ extends Sensor<LivingEntity> {
     }
 
     private int compareDistances(LivingEntity livingEntity, LivingEntity livingEntity2, LivingEntity livingEntity3) {
-        return (int)livingEntity2.squaredDistanceTo(livingEntity) - (int)livingEntity3.squaredDistanceTo(livingEntity);
+        return MathHelper.floor(livingEntity2.squaredDistanceTo(livingEntity) - livingEntity3.squaredDistanceTo(livingEntity));
     }
 
     private boolean isCloseEnoughForDanger(LivingEntity livingEntity, LivingEntity livingEntity2) {

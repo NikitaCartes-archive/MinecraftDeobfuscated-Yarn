@@ -16,9 +16,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.state.property.Properties;
+import net.minecraft.structure.Structure;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.shape.BitSetVoxelSet;
+import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
@@ -93,8 +97,9 @@ extends Feature<T> {
         this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
     }
 
-    protected final void setBlockState(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
+    protected final void setBlockState(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, MutableIntBoundingBox mutableIntBoundingBox) {
         this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
+        mutableIntBoundingBox.setFrom(new MutableIntBoundingBox(blockPos, blockPos));
         if (BlockTags.LOGS.contains(blockState.getBlock())) {
             set.add(blockPos.toImmutable());
         }
@@ -111,21 +116,31 @@ extends Feature<T> {
     @Override
     public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
-        boolean bl = this.generate(set, iWorld, random, blockPos);
+        MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
+        boolean bl = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
+        if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
+            return false;
+        }
         ArrayList list = Lists.newArrayList();
         int i = 6;
         for (int j = 0; j < 6; ++j) {
             list.add(Sets.newHashSet());
         }
+        BitSetVoxelSet voxelSet = new BitSetVoxelSet(mutableIntBoundingBox.getBlockCountX(), mutableIntBoundingBox.getBlockCountY(), mutableIntBoundingBox.getBlockCountZ());
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             if (bl && !set.isEmpty()) {
                 for (BlockPos blockPos2 : Lists.newArrayList(set)) {
+                    if (mutableIntBoundingBox.contains(blockPos2)) {
+                        ((VoxelSet)voxelSet).set(blockPos2.getX() - mutableIntBoundingBox.minX, blockPos2.getY() - mutableIntBoundingBox.minY, blockPos2.getZ() - mutableIntBoundingBox.minZ, true, true);
+                    }
                     for (Direction direction : Direction.values()) {
                         BlockState blockState;
                         pooledMutable.method_10114(blockPos2).method_10118(direction);
                         if (set.contains(pooledMutable) || !(blockState = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7)) continue;
                         ((Set)list.get(0)).add(pooledMutable.toImmutable());
                         this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
+                        if (!mutableIntBoundingBox.contains(pooledMutable)) continue;
+                        ((VoxelSet)voxelSet).set(pooledMutable.getX() - mutableIntBoundingBox.minX, pooledMutable.getY() - mutableIntBoundingBox.minY, pooledMutable.getZ() - mutableIntBoundingBox.minZ, true, true);
                     }
                 }
             }
@@ -133,6 +148,9 @@ extends Feature<T> {
                 Set set2 = (Set)list.get(k - 1);
                 Set set3 = (Set)list.get(k);
                 for (BlockPos blockPos3 : set2) {
+                    if (mutableIntBoundingBox.contains(blockPos3)) {
+                        ((VoxelSet)voxelSet).set(blockPos3.getX() - mutableIntBoundingBox.minX, blockPos3.getY() - mutableIntBoundingBox.minY, blockPos3.getZ() - mutableIntBoundingBox.minZ, true, true);
+                    }
                     for (Direction direction2 : Direction.values()) {
                         int l;
                         BlockState blockState2;
@@ -140,14 +158,18 @@ extends Feature<T> {
                         if (set2.contains(pooledMutable) || set3.contains(pooledMutable) || !(blockState2 = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7) || (l = blockState2.get(Properties.DISTANCE_1_7).intValue()) <= k + 1) continue;
                         BlockState blockState3 = (BlockState)blockState2.with(Properties.DISTANCE_1_7, k + 1);
                         this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
+                        if (mutableIntBoundingBox.contains(pooledMutable)) {
+                            ((VoxelSet)voxelSet).set(pooledMutable.getX() - mutableIntBoundingBox.minX, pooledMutable.getY() - mutableIntBoundingBox.minY, pooledMutable.getZ() - mutableIntBoundingBox.minZ, true, true);
+                        }
                         set3.add(pooledMutable.toImmutable());
                     }
                 }
             }
         }
+        Structure.method_20532(iWorld, 3, voxelSet, mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ);
         return bl;
     }
 
-    protected abstract boolean generate(Set<BlockPos> var1, ModifiableTestableWorld var2, Random var3, BlockPos var4);
+    protected abstract boolean generate(Set<BlockPos> var1, ModifiableTestableWorld var2, Random var3, BlockPos var4, MutableIntBoundingBox var5);
 }
 

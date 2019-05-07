@@ -44,7 +44,7 @@ extends ArrayList<TradeOffer> {
         packetByteBuf.writeByte((byte)(this.size() & 0xFF));
         for (int i = 0; i < this.size(); ++i) {
             TradeOffer tradeOffer = (TradeOffer)this.get(i);
-            packetByteBuf.writeItemStack(tradeOffer.getAdjustedFirstBuyItem());
+            packetByteBuf.writeItemStack(tradeOffer.getOriginalFirstBuyItem());
             packetByteBuf.writeItemStack(tradeOffer.getMutableSellItem());
             ItemStack itemStack = tradeOffer.getSecondBuyItem();
             packetByteBuf.writeBoolean(!itemStack.isEmpty());

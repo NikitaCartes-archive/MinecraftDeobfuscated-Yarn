@@ -166,9 +166,9 @@ public class Structure {
         int j = Integer.MAX_VALUE;
         int k = Integer.MAX_VALUE;
         int l = Integer.MAX_VALUE;
-        int m2 = Integer.MIN_VALUE;
-        int n2 = Integer.MIN_VALUE;
-        int o2 = Integer.MIN_VALUE;
+        int m = Integer.MIN_VALUE;
+        int n = Integer.MIN_VALUE;
+        int o = Integer.MIN_VALUE;
         List<StructureBlockInfo> list4 = Structure.process(iWorld, blockPos, structurePlacementData, list);
         for (StructureBlockInfo structureBlockInfo : list4) {
             BlockEntity blockEntity;
@@ -185,9 +185,9 @@ public class Structure {
             j = Math.min(j, blockPos2.getX());
             k = Math.min(k, blockPos2.getY());
             l = Math.min(l, blockPos2.getZ());
-            m2 = Math.max(m2, blockPos2.getX());
-            n2 = Math.max(n2, blockPos2.getY());
-            o2 = Math.max(o2, blockPos2.getZ());
+            m = Math.max(m, blockPos2.getX());
+            n = Math.max(n, blockPos2.getY());
+            o = Math.max(o, blockPos2.getZ());
             list3.add(Pair.of(blockPos2, structureBlockInfo.tag));
             if (structureBlockInfo.tag != null && (blockEntity = iWorld.getBlockEntity(blockPos2)) != null) {
                 structureBlockInfo.tag.putInt("x", blockPos2.getX());
@@ -226,30 +226,17 @@ public class Structure {
                 iterator.remove();
             }
         }
-        if (j <= m2) {
+        if (j <= m) {
             if (!structurePlacementData.method_16444()) {
-                BitSetVoxelSet voxelSet = new BitSetVoxelSet(m2 - j + 1, n2 - k + 1, o2 - l + 1);
-                int n3 = j;
+                BitSetVoxelSet voxelSet = new BitSetVoxelSet(m - j + 1, n - k + 1, o - l + 1);
+                int n2 = j;
                 int r = k;
                 int s = l;
                 for (Pair pair : list3) {
                     BlockPos blockPos6 = (BlockPos)pair.getFirst();
-                    ((VoxelSet)voxelSet).set(blockPos6.getX() - n3, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
+                    ((VoxelSet)voxelSet).set(blockPos6.getX() - n2, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
                 }
-                voxelSet.method_1046((direction, m, n, o) -> {
-                    BlockState blockState4;
-                    BlockState blockState2;
-                    BlockState blockState3;
-                    BlockPos blockPos = new BlockPos(q + m, r + n, s + o);
-                    BlockPos blockPos2 = blockPos.offset(direction);
-                    BlockState blockState = iWorld.getBlockState(blockPos);
-                    if (blockState != (blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2 = iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2))) {
-                        iWorld.setBlockState(blockPos, blockState3, i & 0xFFFFFFFE | 0x10);
-                    }
-                    if (blockState2 != (blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, iWorld, blockPos2, blockPos))) {
-                        iWorld.setBlockState(blockPos2, blockState4, i & 0xFFFFFFFE | 0x10);
-                    }
-                });
+                Structure.method_20532(iWorld, i, voxelSet, n2, r, s);
             }
             for (Pair pair : list3) {
                 BlockEntity blockEntity;
@@ -270,6 +257,23 @@ public class Structure {
             this.method_15179(iWorld, blockPos, structurePlacementData.getMirror(), structurePlacementData.getRotation(), structurePlacementData.getPosition(), mutableIntBoundingBox);
         }
         return true;
+    }
+
+    public static void method_20532(IWorld iWorld, int i, VoxelSet voxelSet, int j, int k, int l) {
+        voxelSet.method_1046((direction, m, n, o) -> {
+            BlockState blockState4;
+            BlockState blockState2;
+            BlockState blockState3;
+            BlockPos blockPos = new BlockPos(j + m, k + n, l + o);
+            BlockPos blockPos2 = blockPos.offset(direction);
+            BlockState blockState = iWorld.getBlockState(blockPos);
+            if (blockState != (blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2 = iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2))) {
+                iWorld.setBlockState(blockPos, blockState3, i & 0xFFFFFFFE | 0x10);
+            }
+            if (blockState2 != (blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, iWorld, blockPos2, blockPos))) {
+                iWorld.setBlockState(blockPos2, blockState4, i & 0xFFFFFFFE | 0x10);
+            }
+        });
     }
 
     public static List<StructureBlockInfo> process(IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData, List<StructureBlockInfo> list) {

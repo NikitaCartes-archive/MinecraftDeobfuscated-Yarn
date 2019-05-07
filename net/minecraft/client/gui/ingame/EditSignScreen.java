@@ -54,6 +54,9 @@ extends Screen {
     @Override
     public void tick() {
         ++this.ticksSinceOpened;
+        if (!this.sign.getType().supports(this.sign.getCachedState().getBlock())) {
+            this.finishEditing();
+        }
     }
 
     private void finishEditing() {
@@ -92,7 +95,6 @@ extends Screen {
 
     @Override
     public void render(int i, int j, float f) {
-        float h;
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 0xFFFFFF);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -102,15 +104,7 @@ extends Screen {
         GlStateManager.scalef(-93.75f, -93.75f, -93.75f);
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         BlockState blockState = this.sign.getCachedState();
-        if (blockState.getBlock() instanceof SignBlock) {
-            h = (float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0f;
-        } else if (blockState.getBlock() instanceof WallSignBlock) {
-            h = blockState.get(WallSignBlock.FACING).asRotation();
-        } else {
-            GlStateManager.popMatrix();
-            this.finishEditing();
-            return;
-        }
+        float h = blockState.getBlock() instanceof SignBlock ? (float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0f : blockState.get(WallSignBlock.FACING).asRotation();
         GlStateManager.rotatef(h, 0.0f, 1.0f, 0.0f);
         GlStateManager.translatef(0.0f, -1.0625f, 0.0f);
         this.sign.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);

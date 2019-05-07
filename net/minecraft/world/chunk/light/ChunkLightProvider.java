@@ -179,7 +179,7 @@ implements ChunkLightingView {
     @Override
     @Nullable
     public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
-        return ((LightStorage)this.lightStorage).getDataForChunk(chunkSectionPos.asLong(), false);
+        return ((LightStorage)this.lightStorage).method_20533(chunkSectionPos.asLong());
     }
 
     @Override

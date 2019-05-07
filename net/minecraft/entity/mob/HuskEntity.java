@@ -72,7 +72,7 @@ extends ZombieEntity {
     @Override
     protected void convertInWater() {
         this.convertTo(EntityType.ZOMBIE);
-        this.world.playLevelEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+        this.world.playLevelEvent(null, 1041, new BlockPos(this), 0);
     }
 
     @Override

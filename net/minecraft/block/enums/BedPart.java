@@ -3,9 +3,9 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum BedPart implements SnakeCaseIdentifiable
+public enum BedPart implements StringIdentifiable
 {
     HEAD("head"),
     FOOT("foot");
@@ -21,7 +21,7 @@ public enum BedPart implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 }

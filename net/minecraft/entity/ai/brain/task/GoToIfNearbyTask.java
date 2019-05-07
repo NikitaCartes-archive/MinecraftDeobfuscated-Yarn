@@ -3,11 +3,9 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -25,6 +23,7 @@ extends Task<MobEntityWithAi> {
     private final int maxDistance;
 
     public GoToIfNearbyTask(MemoryModuleType<GlobalPos> memoryModuleType, int i) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
         this.target = memoryModuleType;
         this.maxDistance = i;
     }
@@ -32,11 +31,6 @@ extends Task<MobEntityWithAi> {
     protected boolean method_18993(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
         return optional.isPresent() && Objects.equals(serverWorld.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED), Pair.of(this.target, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected void method_18994(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {

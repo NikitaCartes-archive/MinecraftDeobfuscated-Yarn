@@ -42,6 +42,7 @@ import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
@@ -257,7 +258,7 @@ public class DefaultBiomeFeatures {
     }
 
     public static void addMushroomFieldsFeatures(Biome biome) {
-        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Biome.configureFeature(Feature.RANDOM_BOOLEAN_SELECTOR, new RandomBooleanFeatureConfig(Feature.HUGE_RED_MUSHROOM, FeatureConfig.DEFAULT, Feature.HUGE_BROWN_MUSHROOM, FeatureConfig.DEFAULT), Decorator.COUNT_HEIGHTMAP, new CountDecoratorConfig(1)));
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Biome.configureFeature(Feature.RANDOM_BOOLEAN_SELECTOR, new RandomBooleanFeatureConfig(Feature.HUGE_RED_MUSHROOM, new PlantedFeatureConfig(false), Feature.HUGE_BROWN_MUSHROOM, new PlantedFeatureConfig(false)), Decorator.COUNT_HEIGHTMAP, new CountDecoratorConfig(1)));
         biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Biome.configureFeature(Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP, new CountChanceDecoratorConfig(1, 0.25f)));
         biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Biome.configureFeature(Feature.BUSH, new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP_DOUBLE, new CountChanceDecoratorConfig(1, 0.125f)));
     }

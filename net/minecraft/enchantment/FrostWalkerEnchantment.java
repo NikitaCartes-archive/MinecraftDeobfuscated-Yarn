@@ -52,7 +52,7 @@ extends Enchantment {
             BlockState blockState2 = world.getBlockState(mutable);
             if (!blockState2.isAir() || (blockState3 = world.getBlockState(blockPos2)).getMaterial() != Material.WATER || blockState3.get(FluidBlock.LEVEL) != 0 || !blockState.canPlaceAt(world, blockPos2) || !world.canPlace(blockState, blockPos2, EntityContext.absent())) continue;
             world.setBlockState(blockPos2, blockState);
-            world.getBlockTickScheduler().schedule(blockPos2.toImmutable(), Blocks.FROSTED_ICE, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
+            world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
         }
     }
 

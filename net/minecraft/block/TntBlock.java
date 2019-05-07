@@ -103,11 +103,12 @@ extends Block {
     }
 
     @Override
-    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
         if (!world.isClient && entity instanceof ProjectileEntity) {
             ProjectileEntity projectileEntity = (ProjectileEntity)entity;
             Entity entity2 = projectileEntity.getOwner();
             if (projectileEntity.isOnFire()) {
+                BlockPos blockPos = blockHitResult.getBlockPos();
                 TntBlock.primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
                 world.clearBlockState(blockPos, false);
             }

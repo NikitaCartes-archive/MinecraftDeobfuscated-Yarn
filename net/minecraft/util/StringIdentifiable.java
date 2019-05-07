@@ -3,7 +3,7 @@
  */
 package net.minecraft.util;
 
-public interface SnakeCaseIdentifiable {
-    public String toSnakeCase();
+public interface StringIdentifiable {
+    public String asString();
 }
 

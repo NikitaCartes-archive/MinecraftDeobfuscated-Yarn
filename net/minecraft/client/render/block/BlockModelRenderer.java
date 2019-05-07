@@ -4,6 +4,7 @@
 package net.minecraft.client.render.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import it.unimi.dsi.fastutil.objects.Object2FloatLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import java.util.BitSet;
 import java.util.List;
@@ -33,17 +34,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BlockModelRenderer {
     private final BlockColors colorMap;
-    private static final ThreadLocal<Object2IntLinkedOpenHashMap<BlockPos>> brightnessCache = ThreadLocal.withInitial(() -> {
-        Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = new Object2IntLinkedOpenHashMap<BlockPos>(50){
-
-            @Override
-            protected void rehash(int i) {
-            }
-        };
-        object2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
-        return object2IntLinkedOpenHashMap;
-    });
-    private static final ThreadLocal<Boolean> brightnessCacheEnabled = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BrightnessCache());
 
     public BlockModelRenderer(BlockColors blockColors) {
         this.colorMap = blockColors;
@@ -283,29 +274,11 @@ public class BlockModelRenderer {
     }
 
     public static void enableBrightnessCache() {
-        brightnessCacheEnabled.set(true);
+        brightnessCache.get().enable();
     }
 
     public static void disableBrightnessCache() {
-        brightnessCache.get().clear();
-        brightnessCacheEnabled.set(false);
-    }
-
-    private static int method_3371(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-        int i;
-        Boolean boolean_ = brightnessCacheEnabled.get();
-        Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = null;
-        if (boolean_.booleanValue() && (i = (object2IntLinkedOpenHashMap = brightnessCache.get()).getInt(blockPos)) != Integer.MAX_VALUE) {
-            return i;
-        }
-        i = blockState.getBlockBrightness(extendedBlockView, blockPos);
-        if (object2IntLinkedOpenHashMap != null) {
-            if (object2IntLinkedOpenHashMap.size() == 50) {
-                object2IntLinkedOpenHashMap.removeFirstInt();
-            }
-            object2IntLinkedOpenHashMap.put(blockPos.toImmutable(), i);
-        }
-        return i;
+        brightnessCache.get().disable();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -391,22 +364,23 @@ public class BlockModelRenderer {
             BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(direction) : blockPos;
             NeighborData neighborData = NeighborData.getData(direction);
             BlockPos.Mutable mutable = new BlockPos.Mutable();
+            BrightnessCache brightnessCache = (BrightnessCache)brightnessCache.get();
             mutable.set(blockPos2).setOffset(neighborData.faces[0]);
             BlockState blockState2 = extendedBlockView.getBlockState(mutable);
-            int i = BlockModelRenderer.method_3371(blockState2, extendedBlockView, mutable);
-            float f = blockState2.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+            int i = brightnessCache.getInt(blockState2, extendedBlockView, mutable);
+            float f = brightnessCache.getFloat(blockState2, extendedBlockView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[1]);
             BlockState blockState3 = extendedBlockView.getBlockState(mutable);
-            int j = BlockModelRenderer.method_3371(blockState3, extendedBlockView, mutable);
-            float g = blockState3.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+            int j = brightnessCache.getInt(blockState3, extendedBlockView, mutable);
+            float g = brightnessCache.getFloat(blockState3, extendedBlockView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[2]);
             BlockState blockState4 = extendedBlockView.getBlockState(mutable);
-            int k = BlockModelRenderer.method_3371(blockState4, extendedBlockView, mutable);
-            float h = blockState4.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+            int k = brightnessCache.getInt(blockState4, extendedBlockView, mutable);
+            float h = brightnessCache.getFloat(blockState4, extendedBlockView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[3]);
             BlockState blockState5 = extendedBlockView.getBlockState(mutable);
-            int l = BlockModelRenderer.method_3371(blockState5, extendedBlockView, mutable);
-            float m = blockState5.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+            int l = brightnessCache.getInt(blockState5, extendedBlockView, mutable);
+            float m = brightnessCache.getFloat(blockState5, extendedBlockView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(direction);
             boolean bl = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
             mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(direction);
@@ -418,8 +392,8 @@ public class BlockModelRenderer {
             if (bl3 || bl) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[2]);
                 blockState6 = extendedBlockView.getBlockState(mutable);
-                n = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-                o = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
+                n = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
+                o = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
             } else {
                 n = f;
                 o = i;
@@ -427,8 +401,8 @@ public class BlockModelRenderer {
             if (bl4 || bl) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[3]);
                 blockState6 = extendedBlockView.getBlockState(mutable);
-                p = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-                q = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
+                p = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
+                q = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
             } else {
                 p = f;
                 q = i;
@@ -436,8 +410,8 @@ public class BlockModelRenderer {
             if (bl3 || bl2) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[2]);
                 blockState6 = extendedBlockView.getBlockState(mutable);
-                r = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-                s = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
+                r = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
+                s = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
             } else {
                 r = f;
                 s = i;
@@ -445,19 +419,19 @@ public class BlockModelRenderer {
             if (bl4 || bl2) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[3]);
                 blockState6 = extendedBlockView.getBlockState(mutable);
-                t = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-                u = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
+                t = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
+                u = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
             } else {
                 t = f;
                 u = i;
             }
-            int v = BlockModelRenderer.method_3371(blockState, extendedBlockView, blockPos);
+            int v = brightnessCache.getInt(blockState, extendedBlockView, blockPos);
             mutable.set(blockPos).setOffset(direction);
             BlockState blockState7 = extendedBlockView.getBlockState(mutable);
             if (bitSet.get(0) || !blockState7.isFullOpaque(extendedBlockView, mutable)) {
-                v = BlockModelRenderer.method_3371(blockState7, extendedBlockView, mutable);
+                v = brightnessCache.getInt(blockState7, extendedBlockView, mutable);
             }
-            float w = bitSet.get(0) ? extendedBlockView.getBlockState(blockPos2).getAmbientOcclusionLightLevel(extendedBlockView, blockPos2) : extendedBlockView.getBlockState(blockPos).getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
+            float w = bitSet.get(0) ? brightnessCache.getFloat(extendedBlockView.getBlockState(blockPos2), extendedBlockView, blockPos2) : brightnessCache.getFloat(extendedBlockView.getBlockState(blockPos), extendedBlockView, blockPos);
             Translation translation = Translation.getTranslations(direction);
             if (!bitSet.get(1) || !neighborData.nonCubicWeight) {
                 float x = (m + f + p + w) * 0.25f;
@@ -525,6 +499,74 @@ public class BlockModelRenderer {
             int n = (int)((float)(i >> 16 & 0xFF) * f + (float)(j >> 16 & 0xFF) * g + (float)(k >> 16 & 0xFF) * h + (float)(l >> 16 & 0xFF) * m) & 0xFF;
             int o = (int)((float)(i & 0xFF) * f + (float)(j & 0xFF) * g + (float)(k & 0xFF) * h + (float)(l & 0xFF) * m) & 0xFF;
             return n << 16 | o;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class BrightnessCache {
+        private boolean enabled;
+        private final Object2IntLinkedOpenHashMap<BlockPos> intCache = SystemUtil.get(() -> {
+            Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = new Object2IntLinkedOpenHashMap<BlockPos>(50, 0.25f){
+
+                @Override
+                protected void rehash(int i) {
+                }
+            };
+            object2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
+            return object2IntLinkedOpenHashMap;
+        });
+        private final Object2FloatLinkedOpenHashMap<BlockPos> floatCache = SystemUtil.get(() -> {
+            Object2FloatLinkedOpenHashMap<BlockPos> object2FloatLinkedOpenHashMap = new Object2FloatLinkedOpenHashMap<BlockPos>(50, 0.25f){
+
+                @Override
+                protected void rehash(int i) {
+                }
+            };
+            object2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
+            return object2FloatLinkedOpenHashMap;
+        });
+
+        private BrightnessCache() {
+        }
+
+        public void enable() {
+            this.enabled = true;
+        }
+
+        public void disable() {
+            this.enabled = false;
+            this.intCache.clear();
+            this.floatCache.clear();
+        }
+
+        public int getInt(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+            int i;
+            if (this.enabled && (i = this.intCache.getInt(blockPos)) != Integer.MAX_VALUE) {
+                return i;
+            }
+            i = blockState.getBlockBrightness(extendedBlockView, blockPos);
+            if (this.enabled) {
+                if (this.intCache.size() == 50) {
+                    this.intCache.removeFirstInt();
+                }
+                this.intCache.put(blockPos.toImmutable(), i);
+            }
+            return i;
+        }
+
+        public float getFloat(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+            float f;
+            if (this.enabled && !Float.isNaN(f = this.floatCache.getFloat(blockPos))) {
+                return f;
+            }
+            f = blockState.getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
+            if (this.enabled) {
+                if (this.floatCache.size() == 50) {
+                    this.floatCache.removeFirstFloat();
+                }
+                this.floatCache.put(blockPos.toImmutable(), f);
+            }
+            return f;
         }
     }
 

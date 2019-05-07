@@ -29,6 +29,7 @@ public abstract class BlockEntity {
     protected boolean invalid;
     @Nullable
     private BlockState cachedState;
+    private boolean field_19314;
 
     public BlockEntity(BlockEntityType<?> blockEntityType) {
         this.type = blockEntityType;
@@ -179,6 +180,14 @@ public abstract class BlockEntity {
 
     public BlockEntityType<?> getType() {
         return this.type;
+    }
+
+    public void method_20525() {
+        if (this.field_19314) {
+            return;
+        }
+        this.field_19314 = true;
+        LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
     }
 }
 

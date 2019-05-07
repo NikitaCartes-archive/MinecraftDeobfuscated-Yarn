@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.InventoryProvider;
@@ -101,9 +100,6 @@ Tickable {
     @Override
     public void tick() {
         if (this.world == null || this.world.isClient) {
-            return;
-        }
-        if (this.getCachedState().getBlock() != Blocks.HOPPER) {
             return;
         }
         --this.transferCooldown;

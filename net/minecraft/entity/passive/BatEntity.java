@@ -140,7 +140,7 @@ extends AmbientEntity {
                 this.hangingPosition = null;
             }
             if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
-                this.hangingPosition = new BlockPos((int)this.x + this.random.nextInt(7) - this.random.nextInt(7), (int)this.y + this.random.nextInt(6) - 2, (int)this.z + this.random.nextInt(7) - this.random.nextInt(7));
+                this.hangingPosition = new BlockPos(this.x + (double)this.random.nextInt(7) - (double)this.random.nextInt(7), this.y + (double)this.random.nextInt(6) - 2.0, this.z + (double)this.random.nextInt(7) - (double)this.random.nextInt(7));
             }
             double d = (double)this.hangingPosition.getX() + 0.5 - this.x;
             double e = (double)this.hangingPosition.getY() + 0.1 - this.y;

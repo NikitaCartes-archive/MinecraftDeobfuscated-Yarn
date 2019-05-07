@@ -60,6 +60,15 @@ extends SectionRelativeLevelPropagator {
         return ((WorldNibbleStorage)worldNibbleStorage).getDataForChunk(l);
     }
 
+    @Nullable
+    public ChunkNibbleArray method_20533(long l) {
+        ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.toUpdate.get(l);
+        if (chunkNibbleArray != null) {
+            return chunkNibbleArray;
+        }
+        return this.getDataForChunk(l, false);
+    }
+
     protected abstract int getLight(long var1);
 
     protected int get(long l) {

@@ -26,6 +26,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -88,29 +89,27 @@ public class TagContainer<T> {
 
     public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager resourceManager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            HashMap map = Maps.newHashMap();
-            for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
-                String string2 = identifier.getPath();
-                Identifier identifier2 = new Identifier(identifier.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
+            HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
+            for (Identifier identifier2 : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+                String string2 = identifier2.getPath();
+                Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
                 try {
-                    for (Resource resource : resourceManager.getAllResources(identifier)) {
+                    for (Resource resource : resourceManager.getAllResources(identifier2)) {
                         try {
                             JsonObject jsonObject = JsonHelper.deserialize(GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
                             if (jsonObject == null) {
-                                LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier2, (Object)identifier, (Object)resource.getResourcePackName());
+                                LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                 continue;
                             }
-                            Tag.Builder<T> builder = map.getOrDefault(identifier2, Tag.Builder.create());
-                            builder.fromJson(this.getter, jsonObject);
-                            map.put(identifier2, builder);
+                            map.computeIfAbsent(identifier22, identifier -> SystemUtil.consume(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
                         } catch (IOException | RuntimeException exception) {
-                            LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", (Object)this.entryType, (Object)identifier2, (Object)identifier, (Object)resource.getResourcePackName(), (Object)exception);
+                            LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName(), (Object)exception);
                         } finally {
                             IOUtils.closeQuietly((Closeable)resource);
                         }
                     }
                 } catch (IOException iOException) {
-                    LOGGER.error("Couldn't read {} tag list {} from {}", (Object)this.entryType, (Object)identifier2, (Object)identifier, (Object)iOException);
+                    LOGGER.error("Couldn't read {} tag list {} from {}", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)iOException);
                 }
             }
             return map;
@@ -134,7 +133,7 @@ public class TagContainer<T> {
             }
         }
         for (Map.Entry<Identifier, Tag.Builder<T>> entry2 : map.entrySet()) {
-            this.add(entry2.getValue().ordered(this.ordered).build(entry2.getKey()));
+            this.add(entry2.getValue().build(entry2.getKey()));
         }
     }
 

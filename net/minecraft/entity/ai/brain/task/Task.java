@@ -3,30 +3,31 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import java.util.Map;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
+    private final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
     private Status status = Status.STOPPED;
     private long endTime;
     private final int minRunTime;
     private final int maxRunTime;
 
-    public Task() {
-        this(60);
+    public Task(Map<MemoryModuleType<?>, MemoryModuleState> map) {
+        this(map, 60);
     }
 
-    public Task(int i) {
-        this(i, i);
+    public Task(Map<MemoryModuleType<?>, MemoryModuleState> map, int i) {
+        this(map, i, i);
     }
 
-    public Task(int i, int j) {
+    public Task(Map<MemoryModuleType<?>, MemoryModuleState> map, int i, int j) {
         this.minRunTime = i;
         this.maxRunTime = j;
+        this.requiredMemoryState = map;
     }
 
     public Status getStatus() {
@@ -78,16 +79,14 @@ public abstract class Task<E extends LivingEntity> {
         return true;
     }
 
-    protected abstract Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState();
-
     public String toString() {
         return this.getClass().getSimpleName();
     }
 
     private boolean hasRequiredMemoryState(E livingEntity) {
-        return this.getRequiredMemoryState().stream().allMatch(pair -> {
-            MemoryModuleType memoryModuleType = (MemoryModuleType)pair.getFirst();
-            MemoryModuleState memoryModuleState = (MemoryModuleState)((Object)((Object)pair.getSecond()));
+        return this.requiredMemoryState.entrySet().stream().allMatch(entry -> {
+            MemoryModuleType memoryModuleType = (MemoryModuleType)entry.getKey();
+            MemoryModuleState memoryModuleState = (MemoryModuleState)((Object)((Object)entry.getValue()));
             return livingEntity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);
         });
     }

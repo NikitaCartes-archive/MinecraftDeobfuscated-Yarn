@@ -139,7 +139,7 @@ Tickable {
                     beamSegment = new BeamSegment(new float[]{(beamSegment.color[0] + fs[0]) / 2.0f, (beamSegment.color[1] + fs[1]) / 2.0f, (beamSegment.color[2] + fs[2]) / 2.0f});
                     this.field_19178.add(beamSegment);
                 }
-            } else if (blockState.getLightSubtracted(this.world, blockPos) < 15 || block == Blocks.BEDROCK) {
+            } else if (beamSegment != null && (blockState.getLightSubtracted(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
                 beamSegment.increaseHeight();
             } else {
                 this.field_19178.clear();
@@ -271,6 +271,7 @@ Tickable {
         super.toTag(compoundTag);
         compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
         compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+        compoundTag.putInt("Levels", this.level);
         if (this.customName != null) {
             compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
         }

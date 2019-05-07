@@ -11,7 +11,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 
 public class Path {
@@ -104,17 +106,12 @@ public class Path {
         return true;
     }
 
-    public boolean method_19315() {
-        PathNode pathNode = this.getEnd();
-        return pathNode != null && this.method_19313(pathNode.getPos());
-    }
-
-    public boolean method_19313(Vec3d vec3d) {
+    public boolean method_19313(BlockPos blockPos) {
         PathNode pathNode = this.getEnd();
         if (pathNode == null) {
             return false;
         }
-        return pathNode.x == (int)vec3d.x && pathNode.y == (int)vec3d.y && pathNode.z == (int)vec3d.z;
+        return blockPos.isWithinDistance(new Vec3i(pathNode.x, pathNode.y, pathNode.z), 2.0);
     }
 
     @Environment(value=EnvType.CLIENT)

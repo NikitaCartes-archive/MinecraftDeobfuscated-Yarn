@@ -3,9 +3,9 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum StairShape implements SnakeCaseIdentifiable
+public enum StairShape implements StringIdentifiable
 {
     STRAIGHT("straight"),
     INNER_LEFT("inner_left"),
@@ -24,7 +24,7 @@ public enum StairShape implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 }

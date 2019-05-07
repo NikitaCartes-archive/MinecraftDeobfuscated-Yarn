@@ -3,9 +3,10 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.longs.Long2LongMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
@@ -23,20 +24,18 @@ import net.minecraft.village.PointOfInterestType;
 
 public class FindPointOfInterestTask
 extends Task<LivingEntity> {
-    private final Predicate<PointOfInterestType> pointOfInterestType;
+    private final PointOfInterestType poiType;
     private final MemoryModuleType<GlobalPos> targetMemoryModule;
     private final boolean onlyRunIfChild;
     private long lastRunTime;
+    private final Long2LongMap field_19289 = new Long2LongOpenHashMap();
+    private int field_19290;
 
     public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-        this.pointOfInterestType = pointOfInterestType.getCompletionCondition();
+        super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_ABSENT));
+        this.poiType = pointOfInterestType;
         this.targetMemoryModule = memoryModuleType;
         this.onlyRunIfChild = bl;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(this.targetMemoryModule, MemoryModuleState.VALUE_ABSENT));
     }
 
     @Override
@@ -44,29 +43,54 @@ extends Task<LivingEntity> {
         if (this.onlyRunIfChild && livingEntity.isBaby()) {
             return false;
         }
-        return serverWorld.getTime() - this.lastRunTime >= 40L;
+        return serverWorld.getTime() - this.lastRunTime >= 20L;
     }
 
     @Override
     protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.lastRunTime = serverWorld.getTime();
+        this.field_19290 = 0;
+        this.lastRunTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
         MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)livingEntity;
         PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
         Predicate<BlockPos> predicate = blockPos -> {
-            BlockPos.Mutable mutable = new BlockPos.Mutable((BlockPos)blockPos);
-            if (serverWorld.getBlockState(blockPos.down()).isAir()) {
-                mutable.setOffset(Direction.DOWN);
+            boolean bl;
+            BlockPos blockPos2;
+            long l = blockPos.asLong();
+            if (this.field_19289.containsKey(l)) {
+                return false;
             }
-            while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
-                mutable.setOffset(Direction.DOWN);
+            if (++this.field_19290 >= 5) {
+                return false;
             }
-            Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());
-            return path != null && path.method_19315();
+            if (this.poiType == PointOfInterestType.MEETING) {
+                BlockPos.Mutable mutable = new BlockPos.Mutable((BlockPos)blockPos);
+                this.method_20496(serverWorld, mutable);
+                mutable.setOffset(Direction.UP);
+                blockPos2 = mutable;
+            } else {
+                blockPos2 = blockPos;
+            }
+            Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
+            boolean bl2 = bl = path != null && path.method_19313(blockPos2);
+            if (!bl) {
+                this.field_19289.put(l, this.lastRunTime + 40L);
+            }
+            return bl;
         };
-        pointOfInterestStorage.getNearestPosition(this.pointOfInterestType, predicate, new BlockPos(livingEntity), 48).ifPresent(blockPos -> {
-            livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
-            DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
-        });
+        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(this.poiType.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48);
+        if (optional.isPresent()) {
+            BlockPos blockPos2 = optional.get();
+            livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));
+            DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos2);
+        } else if (this.field_19290 < 5) {
+            this.field_19289.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastRunTime);
+        }
+    }
+
+    private void method_20496(ServerWorld serverWorld, BlockPos.Mutable mutable) {
+        do {
+            mutable.setOffset(Direction.DOWN);
+        } while (serverWorld.getBlockState(mutable).getCollisionShape(serverWorld, mutable).isEmpty() && mutable.getY() > 0);
     }
 }
 

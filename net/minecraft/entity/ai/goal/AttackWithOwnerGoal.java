@@ -24,7 +24,7 @@ extends TrackTargetGoal {
 
     @Override
     public boolean canStart() {
-        if (!this.tameable.isTamed()) {
+        if (!this.tameable.isTamed() || this.tameable.isSitting()) {
             return false;
         }
         LivingEntity livingEntity = this.tameable.getOwner();

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -60,6 +60,7 @@ extends PersistentState {
         if (this.currentTime % 200 == 0) {
             this.markDirty();
         }
+        DebugRendererInfoManager.sendRaids(this.world, this.raids.values());
     }
 
     public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
@@ -67,10 +68,6 @@ extends PersistentState {
             return raiderEntity.isAlive() && raiderEntity.canJoinRaid() && raiderEntity.getDespawnCounter() <= 2400 && raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType();
         }
         return false;
-    }
-
-    public static boolean isLivingAroundVillage(LivingEntity livingEntity, BlockPos blockPos, int i) {
-        return blockPos.getSquaredDistance(new BlockPos(livingEntity.x, livingEntity.y, livingEntity.z)) < (double)(i * i + 24);
     }
 
     @Nullable
@@ -83,7 +80,7 @@ extends PersistentState {
             return null;
         }
         BlockPos blockPos = new BlockPos(serverPlayerEntity);
-        Optional<BlockPos> optional = this.world.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.MEETING, Objects::nonNull, blockPos, 15, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.world.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.MEETING, Objects::nonNull, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
         if (!optional.isPresent()) {
             optional = Optional.of(blockPos);
         }
@@ -152,9 +149,9 @@ extends PersistentState {
     }
 
     @Nullable
-    public Raid getRaidAt(BlockPos blockPos) {
+    public Raid getRaidAt(BlockPos blockPos, int i) {
         Raid raid = null;
-        double d = 2.147483647E9;
+        double d = i;
         for (Raid raid2 : this.raids.values()) {
             double e = raid2.getCenter().getSquaredDistance(blockPos);
             if (!raid2.isActive() || !(e < d)) continue;

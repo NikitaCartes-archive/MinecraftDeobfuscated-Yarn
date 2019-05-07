@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.Nullable;
 
-public enum DyeColor implements SnakeCaseIdentifiable
+public enum DyeColor implements StringIdentifiable
 {
     WHITE(0, "white", 0xF9FFFE, MaterialColor.WHITE, 0xF0F0F0, 0xFFFFFF),
     ORANGE(1, "orange", 16351261, MaterialColor.ORANGE, 15435844, 16738335),
@@ -113,7 +113,7 @@ public enum DyeColor implements SnakeCaseIdentifiable
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this.name;
     }
 

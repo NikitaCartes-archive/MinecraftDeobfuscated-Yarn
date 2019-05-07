@@ -322,7 +322,7 @@ extends Entity {
                 float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float)Math.PI / 180);
                 float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
                 double d = this.x + (double)(MathHelper.sin(g) * h * 0.1f);
-                Block block = serverWorld.getBlockState(new BlockPos((int)d, (int)(e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0f)) - 1, (int)(j = this.z + (double)(MathHelper.cos(g) * h * 0.1f)))).getBlock();
+                Block block = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0f)) - 1.0, j = this.z + (double)(MathHelper.cos(g) * h * 0.1f))).getBlock();
                 if (block == Blocks.WATER) {
                     serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
                 }

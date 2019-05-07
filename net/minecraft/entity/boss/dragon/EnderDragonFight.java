@@ -47,6 +47,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -319,8 +320,8 @@ public class EnderDragonFight {
             return;
         }
         int i = this.gateways.remove(this.gateways.size() - 1);
-        int j = (int)(96.0 * Math.cos(2.0 * (-Math.PI + 0.15707963267948966 * (double)i)));
-        int k = (int)(96.0 * Math.sin(2.0 * (-Math.PI + 0.15707963267948966 * (double)i)));
+        int j = MathHelper.floor(96.0 * Math.cos(2.0 * (-Math.PI + 0.15707963267948966 * (double)i)));
+        int k = MathHelper.floor(96.0 * Math.sin(2.0 * (-Math.PI + 0.15707963267948966 * (double)i)));
         this.generateEndGateway(new BlockPos(j, 75, k));
     }
 

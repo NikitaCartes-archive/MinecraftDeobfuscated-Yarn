@@ -3,6 +3,9 @@
  */
 package net.minecraft.block;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.Collections;
 import java.util.List;
@@ -86,6 +89,17 @@ implements ItemConvertible {
     protected static final Logger LOGGER = LogManager.getLogger();
     public static final IdList<BlockState> STATE_IDS = new IdList();
     private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+    private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>(){
+
+        public Boolean method_20516(VoxelShape voxelShape) {
+            return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
+        }
+
+        @Override
+        public /* synthetic */ Object load(Object object) throws Exception {
+            return this.method_20516((VoxelShape)object);
+        }
+    });
     private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
     private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
     protected final int lightLevel;
@@ -398,7 +412,7 @@ implements ItemConvertible {
     }
 
     public static boolean isShapeFullCube(VoxelShape voxelShape) {
-        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
+        return FULL_CUBE_SHAPE_CACHE.getUnchecked(voxelShape);
     }
 
     @Deprecated

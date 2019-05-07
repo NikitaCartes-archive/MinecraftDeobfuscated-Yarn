@@ -3,20 +3,20 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.util.SnakeCaseIdentifiable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum DoorHinge implements SnakeCaseIdentifiable
+public enum DoorHinge implements StringIdentifiable
 {
     LEFT,
     RIGHT;
 
 
     public String toString() {
-        return this.toSnakeCase();
+        return this.asString();
     }
 
     @Override
-    public String toSnakeCase() {
+    public String asString() {
         return this == LEFT ? "left" : "right";
     }
 }

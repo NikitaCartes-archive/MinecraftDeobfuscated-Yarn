@@ -25,6 +25,7 @@ implements Packet<ClientPlayPacketListener> {
     public static final Identifier DEBUG_VILLAGE_SECTIONS = new Identifier("debug/village_sections");
     public static final Identifier DEBUG_GOAL_SELECTOR = new Identifier("debug/goal_selector");
     public static final Identifier DEBUG_BRAIN = new Identifier("debug/brain");
+    public static final Identifier DEBUG_RAIDS = new Identifier("debug/raids");
     private Identifier channel;
     private PacketByteBuf data;
 

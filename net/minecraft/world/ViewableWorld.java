@@ -3,28 +3,28 @@
  */
 package net.minecraft.world;
 
+import com.google.common.collect.Streams;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.BitSetVoxelSet;
-import net.minecraft.util.shape.OffsetVoxelShape;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -78,7 +78,9 @@ extends ExtendedBlockView {
 
     public boolean intersectsEntities(@Nullable Entity var1, VoxelShape var2);
 
-    public int getEmittedStrongRedstonePower(BlockPos var1, Direction var2);
+    default public int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
+        return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
+    }
 
     public boolean isClient();
 
@@ -110,18 +112,18 @@ extends ExtendedBlockView {
     }
 
     default public boolean doesNotCollide(BoundingBox boundingBox) {
-        return this.getCollisionShapes(null, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+        return this.doesNotCollide(null, boundingBox, Collections.emptySet());
     }
 
     default public boolean doesNotCollide(Entity entity) {
-        return this.getCollisionShapes(entity, entity.getBoundingBox(), Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+        return this.doesNotCollide(entity, entity.getBoundingBox(), Collections.emptySet());
     }
 
     default public boolean doesNotCollide(Entity entity, BoundingBox boundingBox) {
-        return this.getCollisionShapes(entity, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+        return this.doesNotCollide(entity, boundingBox, Collections.emptySet());
     }
 
-    default public boolean doesNotCollide(Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+    default public boolean doesNotCollide(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
         return this.getCollisionShapes(entity, boundingBox, set).allMatch(VoxelShape::isEmpty);
     }
 
@@ -129,66 +131,65 @@ extends ExtendedBlockView {
         return Stream.empty();
     }
 
-    default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-        Stream<Object> stream;
-        EntityContext entityContext;
-        VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox);
-        if (entity == null) {
-            entityContext = EntityContext.absent();
-            stream = Stream.empty();
-        } else {
-            entityContext = EntityContext.of(entity);
-            VoxelShape voxelShape22 = this.getWorldBorder().asVoxelShape();
-            boolean bl = VoxelShapes.matchesAnywhere(voxelShape22, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
-            boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape22, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
-            stream = !bl && bl2 ? Stream.concat(Stream.of(voxelShape22), this.getCollisionShapes(entity, voxelShape, set)) : this.getCollisionShapes(entity, voxelShape, set);
-        }
-        int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X)) - 1;
-        int j = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.X)) + 1;
-        int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y)) - 1;
-        int l = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Y)) + 1;
-        int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z)) - 1;
-        int n = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Z)) + 1;
-        BitSetVoxelSet voxelSet = new BitSetVoxelSet(j - i, l - k, n - m);
-        Predicate<VoxelShape> predicate = voxelShape2 -> !voxelShape2.isEmpty() && VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.AND);
-        AtomicReference<ChunkPos> atomicReference = new AtomicReference<ChunkPos>(new ChunkPos(i >> 4, m >> 4));
-        AtomicReference<Chunk> atomicReference2 = new AtomicReference<Chunk>(this.getChunk(i >> 4, m >> 4, this.getLeastChunkStatusForCollisionCalculation(), false));
-        Stream<VoxelShape> stream2 = BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
-            Chunk chunk;
-            int o = blockPos.getX();
-            int p = blockPos.getY();
-            int q = blockPos.getZ();
-            if (World.isHeightInvalid(p)) {
-                return VoxelShapes.empty();
+    default public Stream<VoxelShape> getCollisionShapes(final @Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+        final VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox);
+        final int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X) - 1.0E-7) - 1;
+        final int j = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.X) + 1.0E-7) + 1;
+        final int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y) - 1.0E-7) - 1;
+        final int l = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Y) + 1.0E-7) + 1;
+        final int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z) - 1.0E-7) - 1;
+        final int n = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Z) + 1.0E-7) + 1;
+        final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
+        final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
+        final BlockPos.Mutable mutable = new BlockPos.Mutable();
+        return Streams.concat(StreamSupport.stream(new Spliterators.AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 0){
+            boolean field_19296;
+            {
+                super(l2, i2);
+                this.field_19296 = entity == null;
             }
-            boolean bl = o == i || o == j - 1;
-            boolean bl2 = p == k || p == l - 1;
-            boolean bl3 = q == m || q == n - 1;
-            ChunkPos chunkPos = (ChunkPos)atomicReference.get();
-            int r = o >> 4;
-            int s = q >> 4;
-            if (chunkPos.x != r || chunkPos.z != s) {
-                chunk = this.getChunk(r, s, this.getLeastChunkStatusForCollisionCalculation(), false);
-                atomicReference.set(new ChunkPos(r, s));
-                atomicReference2.set(chunk);
-            } else {
-                chunk = (Chunk)atomicReference2.get();
+
+            @Override
+            public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
+                if (!this.field_19296) {
+                    this.field_19296 = true;
+                    VoxelShape voxelShape4 = ViewableWorld.this.getWorldBorder().asVoxelShape();
+                    boolean bl = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
+                    boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
+                    if (!bl && bl2) {
+                        consumer.accept(voxelShape4);
+                        return true;
+                    }
+                }
+                while (cuboidBlockIterator.step()) {
+                    VoxelShape voxelShape2;
+                    VoxelShape voxelShape3;
+                    int n2;
+                    int m2;
+                    Chunk chunk;
+                    int i2 = cuboidBlockIterator.getX();
+                    int j2 = cuboidBlockIterator.getY();
+                    int k2 = cuboidBlockIterator.getZ();
+                    int l2 = 0;
+                    if (i2 == i || i2 == j) {
+                        ++l2;
+                    }
+                    if (j2 == k || j2 == l) {
+                        ++l2;
+                    }
+                    if (k2 == m || k2 == n) {
+                        ++l2;
+                    }
+                    if (l2 >= 3 || (chunk = ViewableWorld.this.getChunk(m2 = i2 >> 4, n2 = k2 >> 4, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false)) == null) continue;
+                    mutable.set(i2, j2, k2);
+                    BlockState blockState = chunk.getBlockState(mutable);
+                    if (l2 == 1 && !blockState.method_17900() || l2 == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = ViewableWorld.this.getBlockState(mutable).getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i2, j2, k2), BooleanBiFunction.AND)) continue;
+                    consumer.accept(voxelShape3);
+                    return true;
+                }
+                return false;
             }
-            if (bl && bl2 || bl2 && bl3 || bl3 && bl || chunk == null) {
-                return VoxelShapes.empty();
-            }
-            VoxelShape voxelShape = chunk.getBlockState((BlockPos)blockPos).getCollisionShape(this, (BlockPos)blockPos, entityContext);
-            VoxelShape voxelShape2 = VoxelShapes.empty().offset(-o, -p, -q);
-            if (VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND)) {
-                return VoxelShapes.empty();
-            }
-            if (voxelShape == VoxelShapes.fullCube()) {
-                voxelSet.set(o - i, p - k, q - m, true, true);
-                return VoxelShapes.empty();
-            }
-            return voxelShape.offset(o, p, q);
-        });
-        return Stream.concat(stream, Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(voxelSet, i, k, m)).limit(1L)).filter(predicate));
+        }, false), this.getCollisionShapes(entity, voxelShape, set));
     }
 
     default public boolean isWaterAt(BlockPos blockPos) {

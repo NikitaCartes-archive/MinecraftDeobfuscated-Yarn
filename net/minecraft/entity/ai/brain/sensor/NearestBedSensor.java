@@ -19,7 +19,7 @@ import net.minecraft.village.PointOfInterestType;
 public class NearestBedSensor
 extends Sensor<MobEntity> {
     public NearestBedSensor() {
-        super(100);
+        super(200);
     }
 
     @Override
@@ -28,6 +28,9 @@ extends Sensor<MobEntity> {
     }
 
     protected void method_19998(ServerWorld serverWorld, MobEntity mobEntity) {
+        if (!mobEntity.isBaby()) {
+            return;
+        }
         mobEntity.getBrain().setMemory(MemoryModuleType.NEAREST_BED, this.findNearestBed(serverWorld, mobEntity));
     }
 
@@ -38,7 +41,7 @@ extends Sensor<MobEntity> {
                 return true;
             }
             Path path = mobEntity.getNavigation().findPathTo((BlockPos)blockPos);
-            return path != null && path.method_19315();
+            return path != null && path.method_19313((BlockPos)blockPos);
         };
         return pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.ANY);
     }

@@ -223,9 +223,13 @@ extends GolemEntity {
         BlockPos blockPos2 = blockPos.down();
         BlockState blockState = viewableWorld.getBlockState(blockPos2);
         if (blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
-            BlockState blockState2;
-            BlockPos blockPos3 = blockPos.up();
-            return SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2 = viewableWorld.getBlockState(blockPos3), blockState2.getFluidState()) && SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && viewableWorld.intersectsEntities(this);
+            for (int i = 1; i < 3; ++i) {
+                BlockState blockState2;
+                BlockPos blockPos3 = blockPos.up(i);
+                if (SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2 = viewableWorld.getBlockState(blockPos3), blockState2.getFluidState())) continue;
+                return false;
+            }
+            return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && viewableWorld.intersectsEntities(this);
         }
         return false;
     }

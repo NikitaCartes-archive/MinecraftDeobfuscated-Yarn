@@ -12,6 +12,9 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
@@ -33,15 +36,23 @@ public abstract class AbstractTraderEntity
 extends PassiveEntity
 implements Npc,
 Trader {
+    private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
     @Nullable
     private PlayerEntity customer;
     @Nullable
     protected TraderOfferList offers;
     private final BasicInventory inventory = new BasicInventory(8);
-    private int headRollingTimeLeft;
 
     public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
         super((EntityType<? extends PassiveEntity>)entityType, world);
+    }
+
+    public int getHeadRollingTimeLeft() {
+        return this.dataTracker.get(HEAD_ROLLING_TIME_LEFT);
+    }
+
+    public void setHeadRollingTimeLeft(int i) {
+        this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, i);
     }
 
     @Override
@@ -55,6 +66,12 @@ Trader {
             return 0.81f;
         }
         return 1.62f;
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(HEAD_ROLLING_TIME_LEFT, 0);
     }
 
     @Override
@@ -171,14 +188,6 @@ Trader {
     @Override
     public boolean canBeLeashedBy(PlayerEntity playerEntity) {
         return false;
-    }
-
-    public int getHeadRollingTimeLeft() {
-        return this.headRollingTimeLeft;
-    }
-
-    public void setHeadRollingTimeLeft(int i) {
-        this.headRollingTimeLeft = i;
     }
 
     public BasicInventory getInventory() {

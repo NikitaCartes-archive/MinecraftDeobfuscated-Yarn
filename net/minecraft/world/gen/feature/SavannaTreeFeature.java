@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
@@ -26,7 +27,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
         int q;
         int m;
         int l;
@@ -78,26 +79,26 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 --n;
             }
             if (!SavannaTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = new BlockPos(l, q, m))) continue;
-            this.addLog(set, modifiableTestableWorld, blockPos2);
+            this.addLog(set, modifiableTestableWorld, blockPos2, mutableIntBoundingBox);
             o = q;
         }
         BlockPos blockPos3 = new BlockPos(l, o, m);
         for (q = -3; q <= 3; ++q) {
             for (int r = -3; r <= 3; ++r) {
                 if (Math.abs(q) == 3 && Math.abs(r) == 3) continue;
-                this.addLeaves(modifiableTestableWorld, blockPos3.add(q, 0, r));
+                this.addLeaves(set, modifiableTestableWorld, blockPos3.add(q, 0, r), mutableIntBoundingBox);
             }
         }
         blockPos3 = blockPos3.up();
         for (q = -1; q <= 1; ++q) {
             for (int r = -1; r <= 1; ++r) {
-                this.addLeaves(modifiableTestableWorld, blockPos3.add(q, 0, r));
+                this.addLeaves(set, modifiableTestableWorld, blockPos3.add(q, 0, r), mutableIntBoundingBox);
             }
         }
-        this.addLeaves(modifiableTestableWorld, blockPos3.east(2));
-        this.addLeaves(modifiableTestableWorld, blockPos3.west(2));
-        this.addLeaves(modifiableTestableWorld, blockPos3.south(2));
-        this.addLeaves(modifiableTestableWorld, blockPos3.north(2));
+        this.addLeaves(set, modifiableTestableWorld, blockPos3.east(2), mutableIntBoundingBox);
+        this.addLeaves(set, modifiableTestableWorld, blockPos3.west(2), mutableIntBoundingBox);
+        this.addLeaves(set, modifiableTestableWorld, blockPos3.south(2), mutableIntBoundingBox);
+        this.addLeaves(set, modifiableTestableWorld, blockPos3.north(2), mutableIntBoundingBox);
         l = blockPos.getX();
         m = blockPos.getZ();
         Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -111,7 +112,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 t = blockPos.getY() + s;
                 BlockPos blockPos4 = new BlockPos(l += direction2.getOffsetX(), t, m += direction2.getOffsetZ());
                 if (!SavannaTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos4)) continue;
-                this.addLog(set, modifiableTestableWorld, blockPos4);
+                this.addLog(set, modifiableTestableWorld, blockPos4, mutableIntBoundingBox);
                 o = t;
             }
             if (o > 0) {
@@ -119,13 +120,13 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 for (t = -2; t <= 2; ++t) {
                     for (int u = -2; u <= 2; ++u) {
                         if (Math.abs(t) == 2 && Math.abs(u) == 2) continue;
-                        this.addLeaves(modifiableTestableWorld, blockPos5.add(t, 0, u));
+                        this.addLeaves(set, modifiableTestableWorld, blockPos5.add(t, 0, u), mutableIntBoundingBox);
                     }
                 }
                 blockPos5 = blockPos5.up();
                 for (t = -1; t <= 1; ++t) {
                     for (int u = -1; u <= 1; ++u) {
-                        this.addLeaves(modifiableTestableWorld, blockPos5.add(t, 0, u));
+                        this.addLeaves(set, modifiableTestableWorld, blockPos5.add(t, 0, u), mutableIntBoundingBox);
                     }
                 }
             }
@@ -133,13 +134,13 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         return true;
     }
 
-    private void addLog(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos) {
-        this.setBlockState(set, modifiableWorld, blockPos, LOG);
+    private void addLog(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
+        this.setBlockState(set, modifiableWorld, blockPos, LOG, mutableIntBoundingBox);
     }
 
-    private void addLeaves(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+    private void addLeaves(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
         if (SavannaTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos)) {
-            this.setBlockState(modifiableTestableWorld, blockPos, LEAVES);
+            this.setBlockState(set, modifiableTestableWorld, blockPos, LEAVES, mutableIntBoundingBox);
         }
     }
 }

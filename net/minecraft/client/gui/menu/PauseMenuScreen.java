@@ -24,12 +24,21 @@ import net.minecraft.util.SystemUtil;
 @Environment(value=EnvType.CLIENT)
 public class PauseMenuScreen
 extends Screen {
-    public PauseMenuScreen() {
-        super(new TranslatableComponent("menu.game", new Object[0]));
+    private final boolean field_19319;
+
+    public PauseMenuScreen(boolean bl) {
+        super(bl ? new TranslatableComponent("menu.game", new Object[0]) : new TranslatableComponent("menu.paused", new Object[0]));
+        this.field_19319 = bl;
     }
 
     @Override
     protected void init() {
+        if (this.field_19319) {
+            this.method_20543();
+        }
+    }
+
+    private void method_20543() {
         int i = -16;
         int j = 98;
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame", new Object[0]), buttonWidget -> {
@@ -85,8 +94,12 @@ extends Screen {
 
     @Override
     public void render(int i, int j, float f) {
-        this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 0xFFFFFF);
+        if (this.field_19319) {
+            this.renderBackground();
+            this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 0xFFFFFF);
+        } else {
+            this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 10, 0xFFFFFF);
+        }
         super.render(i, j, f);
     }
 }

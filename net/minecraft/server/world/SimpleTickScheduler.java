@@ -4,10 +4,12 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.util.Identifier;
@@ -18,12 +20,16 @@ import net.minecraft.world.TickScheduler;
 
 public class SimpleTickScheduler<T>
 implements TickScheduler<T> {
-    protected final Set<ScheduledTick<T>> scheduledTicks = Sets.newHashSet();
+    private final Set<ScheduledTick<T>> scheduledTicks;
     private final Function<T, Identifier> identifierProvider;
 
     public SimpleTickScheduler(Function<T, Identifier> function, List<ScheduledTick<T>> list) {
+        this(function, Sets.newHashSet(list));
+    }
+
+    private SimpleTickScheduler(Function<T, Identifier> function, Set<ScheduledTick<T>> set) {
+        this.scheduledTicks = set;
         this.identifierProvider = function;
-        this.scheduledTicks.addAll(list);
     }
 
     @Override
@@ -52,6 +58,17 @@ implements TickScheduler<T> {
 
     public ListTag toTag(long l) {
         return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, l);
+    }
+
+    public static <T> SimpleTickScheduler<T> method_20512(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
+        HashSet<ScheduledTick<T>> set = Sets.newHashSet();
+        for (int i = 0; i < listTag.size(); ++i) {
+            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            T object = function2.apply(new Identifier(compoundTag.getString("i")));
+            if (object == null) continue;
+            set.add(new ScheduledTick<T>(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), object, compoundTag.getInt("t"), TaskPriority.getByIndex(compoundTag.getInt("p"))));
+        }
+        return new SimpleTickScheduler<T>(function, set);
     }
 }
 

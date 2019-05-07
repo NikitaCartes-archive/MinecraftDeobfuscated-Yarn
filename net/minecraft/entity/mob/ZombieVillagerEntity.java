@@ -94,7 +94,9 @@ implements VillagerDataContainer {
         if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
             this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
         }
-        this.xp = compoundTag.containsKey("Xp", 3) ? compoundTag.getInt("Xp") : VillagerData.getLowerLevelExperience(this.getVillagerData().getLevel());
+        if (compoundTag.containsKey("Xp", 3)) {
+            this.xp = compoundTag.getInt("Xp");
+        }
     }
 
     @Override
@@ -184,7 +186,7 @@ implements VillagerDataContainer {
             serverWorld.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
         }
         villagerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-        serverWorld.playLevelEvent(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+        serverWorld.playLevelEvent(null, 1027, new BlockPos(this), 0);
     }
 
     protected int getConversionRate() {

@@ -1026,13 +1026,17 @@ AutoCloseable {
         this.isRunning = false;
     }
 
-    public void openPauseMenu() {
+    public void openPauseMenu(boolean bl) {
+        boolean bl2;
         if (this.currentScreen != null) {
             return;
         }
-        this.openScreen(new PauseMenuScreen());
-        if (this.isIntegratedServerRunning() && !this.server.isRemote()) {
+        boolean bl3 = bl2 = this.isIntegratedServerRunning() && !this.server.isRemote();
+        if (bl2) {
+            this.openScreen(new PauseMenuScreen(!bl));
             this.soundManager.pauseAll();
+        } else {
+            this.openScreen(new PauseMenuScreen(true));
         }
     }
 
@@ -1797,7 +1801,7 @@ AutoCloseable {
                 }
                 return MusicTracker.MusicType.END;
             }
-            Biome.Category category = this.player.world.getBiome(new BlockPos(this.player.x, this.player.y, this.player.z)).getCategory();
+            Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
             if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
                 return MusicTracker.MusicType.UNDER_WATER;
             }

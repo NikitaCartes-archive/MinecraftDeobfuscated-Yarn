@@ -30,7 +30,7 @@ extends AbstractPhase {
             this.method_6858();
         } else {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-            if (!blockPos.isWithinDistance(this.dragon.getPos(), 100.0)) {
+            if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {
                 this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
             }
         }

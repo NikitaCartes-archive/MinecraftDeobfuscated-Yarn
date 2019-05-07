@@ -16,9 +16,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 
 public class MushroomPlantBlock
 extends PlantBlock
@@ -74,13 +73,13 @@ implements Fertilizable {
 
     public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
         iWorld.clearBlockState(blockPos, false);
-        Feature<DefaultFeatureConfig> feature = null;
+        Feature<PlantedFeatureConfig> feature = null;
         if (this == Blocks.BROWN_MUSHROOM) {
             feature = Feature.HUGE_BROWN_MUSHROOM;
         } else if (this == Blocks.RED_MUSHROOM) {
             feature = Feature.HUGE_RED_MUSHROOM;
         }
-        if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT)) {
+        if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, new PlantedFeatureConfig(true))) {
             return true;
         }
         iWorld.setBlockState(blockPos, blockState, 3);

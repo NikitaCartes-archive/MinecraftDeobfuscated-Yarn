@@ -67,9 +67,9 @@ public class ZombieSiegeManager {
             if (playerEntity.isSpectator() || !this.world.isNearOccupiedPointOfInterest(blockPos = new BlockPos(playerEntity))) continue;
             for (int i = 0; i < 10; ++i) {
                 float f = this.world.random.nextFloat() * ((float)Math.PI * 2);
-                this.startX = blockPos.getX() + (int)(MathHelper.cos(f) * 32.0f);
+                this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0f);
                 this.startY = blockPos.getY();
-                this.startZ = blockPos.getZ() + (int)(MathHelper.sin(f) * 32.0f);
+                this.startZ = blockPos.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f);
             }
             Vec3d vec3d = this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ));
             if (vec3d == null) continue;

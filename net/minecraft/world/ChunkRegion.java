@@ -26,7 +26,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Heightmap;
@@ -268,11 +267,6 @@ implements IWorld {
     @Override
     public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
         return true;
-    }
-
-    @Override
-    public int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
-        return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
     }
 
     @Override

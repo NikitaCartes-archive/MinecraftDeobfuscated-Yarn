@@ -6,8 +6,6 @@ package net.minecraft.world.chunk;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,7 +24,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
 
-@Environment(value=EnvType.CLIENT)
 public class EmptyChunk
 extends WorldChunk {
     private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.PLAINS));

@@ -14,9 +14,12 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.util.profiler.ReadableProfiler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisableableProfiler
 implements Profiler {
+    private static final Logger field_19286 = LogManager.getLogger();
     private static final long field_16268 = Duration.ofMillis(300L).toNanos();
     private final IntSupplier tickSupplier;
     private final ProfilerControllerImpl controller = new ProfilerControllerImpl();

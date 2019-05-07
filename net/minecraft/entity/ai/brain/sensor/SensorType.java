@@ -28,11 +28,9 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<VillagerBabiesSensor> VILLAGER_BABIES = SensorType.register("villager_babies", VillagerBabiesSensor::new);
     public static final SensorType<SecondaryPointsOfInterestSensor> SECONDARY_POIS = SensorType.register("secondary_pois", SecondaryPointsOfInterestSensor::new);
     private final Supplier<U> factory;
-    private final Identifier id;
 
-    private SensorType(Supplier<U> supplier, String string) {
+    private SensorType(Supplier<U> supplier) {
         this.factory = supplier;
-        this.id = new Identifier(string);
     }
 
     public U create() {
@@ -40,7 +38,7 @@ public class SensorType<U extends Sensor<?>> {
     }
 
     private static <U extends Sensor<?>> SensorType<U> register(String string, Supplier<U> supplier) {
-        return Registry.register(Registry.SENSOR_TYPE, new Identifier(string), new SensorType<U>(supplier, string));
+        return Registry.register(Registry.SENSOR_TYPE, new Identifier(string), new SensorType<U>(supplier));
     }
 }
 

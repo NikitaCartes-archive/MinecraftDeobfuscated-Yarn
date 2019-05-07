@@ -27,11 +27,11 @@ extends VoxelShape {
     }
 
     @Override
-    protected DoubleList getIncludedPoints(Direction.Axis axis) {
+    protected DoubleList getPointPositions(Direction.Axis axis) {
         if (axis == this.axis) {
             return this.points;
         }
-        return this.shape.getIncludedPoints(axis);
+        return this.shape.getPointPositions(axis);
     }
 }
 

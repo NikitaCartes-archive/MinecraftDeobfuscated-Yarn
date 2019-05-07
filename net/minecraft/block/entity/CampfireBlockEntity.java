@@ -5,8 +5,6 @@ package net.minecraft.block.entity;
 
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -42,12 +40,7 @@ Tickable {
 
     @Override
     public void tick() {
-        BlockState blockState;
-        BlockState blockState2 = blockState = this.hasWorld() ? this.getCachedState() : null;
-        if (blockState == null || blockState.getBlock() != Blocks.CAMPFIRE) {
-            return;
-        }
-        boolean bl = blockState.get(CampfireBlock.LIT);
+        boolean bl = this.getCachedState().get(CampfireBlock.LIT);
         boolean bl2 = this.world.isClient;
         if (bl2) {
             if (bl) {

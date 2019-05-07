@@ -5,6 +5,7 @@ package net.minecraft.entity.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -14,6 +15,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
@@ -30,7 +32,6 @@ import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -45,6 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -66,7 +68,7 @@ public class Raid {
     private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.newHashMap();
     private final Set<UUID> heroesOfTheVillage = Sets.newHashSet();
     private long ticksActive;
-    private final BlockPos center;
+    private BlockPos center;
     private final ServerWorld world;
     private boolean started;
     private final int id;
@@ -156,7 +158,10 @@ public class Raid {
     }
 
     private Predicate<ServerPlayerEntity> isInRaidDistance() {
-        return serverPlayerEntity -> serverPlayerEntity.isAlive() && serverPlayerEntity.getServerWorld().isNearOccupiedPointOfInterest(new BlockPos((Entity)serverPlayerEntity), 2);
+        return serverPlayerEntity -> {
+            BlockPos blockPos = new BlockPos((Entity)serverPlayerEntity);
+            return serverPlayerEntity.isAlive() && serverPlayerEntity.getServerWorld().isNearOccupiedPointOfInterest(blockPos) && this.getCenter().getSquaredDistance(blockPos) <= 9216.0;
+        };
     }
 
     private void updateBarToPlayers() {
@@ -212,12 +217,14 @@ public class Raid {
                 return;
             }
             if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
+                this.method_20511();
+            }
+            if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
                 if (this.wavesSpawned > 0) {
                     this.status = Status.LOSS;
                 } else {
                     this.invalidate();
                 }
-                return;
             }
             ++this.ticksActive;
             if (this.ticksActive >= 48000L) {
@@ -316,6 +323,11 @@ public class Raid {
         }
     }
 
+    private void method_20511() {
+        Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
+        stream.filter(this.world::method_20588).map(ChunkSectionPos::getCenterPos).min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center))).ifPresent(this::method_20509);
+    }
+
     private Optional<BlockPos> preCalculateRavagerSpawnLocation(int i) {
         for (int j = 0; j < 3; ++j) {
             BlockPos blockPos = this.getRavagerSpawnLocation(i, 1);
@@ -354,10 +366,13 @@ public class Raid {
         while (iterator.hasNext()) {
             Set<RaiderEntity> set2 = iterator.next();
             for (RaiderEntity raiderEntity : set2) {
-                if (raiderEntity.removed || raiderEntity.dimension != this.world.getDimension().getType()) {
-                    raiderEntity.setOutOfRaidCounter(30);
-                } else if (raiderEntity.age <= 600) continue;
-                if (!RaidManager.isLivingAroundVillage(raiderEntity, this.center, 32) && raiderEntity.getDespawnCounter() > 2400) {
+                BlockPos blockPos = new BlockPos(raiderEntity);
+                if (raiderEntity.removed || raiderEntity.dimension != this.world.getDimension().getType() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
+                    set.add(raiderEntity);
+                    continue;
+                }
+                if (raiderEntity.age <= 600) continue;
+                if (!this.world.isNearOccupiedPointOfInterest(blockPos) && raiderEntity.getDespawnCounter() > 2400) {
                     raiderEntity.setOutOfRaidCounter(raiderEntity.getOutOfRaidCounter() + 1);
                 }
                 if (raiderEntity.getOutOfRaidCounter() < 30) continue;
@@ -378,7 +393,7 @@ public class Raid {
             float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
             double d = vec3d.x + (double)(13.0f / g) * (vec3d2.x - vec3d.x);
             double e = vec3d.z + (double)(13.0f / g) * (vec3d2.z - vec3d.z);
-            if (!(g <= 64.0f) && !RaidManager.isLivingAroundVillage(playerEntity, this.center, 32)) continue;
+            if (!(g <= 64.0f) && !this.world.isNearOccupiedPointOfInterest(new BlockPos(playerEntity))) continue;
             ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, playerEntity.y, e, 64.0f, 1.0f));
         }
     }
@@ -496,8 +511,8 @@ public class Raid {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int l = 0; l < j; ++l) {
             float f = this.world.random.nextFloat() * ((float)Math.PI * 2);
-            int m = this.center.getX() + (int)(MathHelper.cos(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
-            int n = this.center.getZ() + (int)(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
+            int m = this.center.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
+            int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int o = this.world.getTop(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
             if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
@@ -544,6 +559,10 @@ public class Raid {
 
     public BlockPos getCenter() {
         return this.center;
+    }
+
+    private void method_20509(BlockPos blockPos) {
+        this.center = blockPos;
     }
 
     public int getRaidId() {

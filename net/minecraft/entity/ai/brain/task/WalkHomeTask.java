@@ -3,10 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
@@ -29,12 +27,8 @@ extends Task<LivingEntity> {
     private long lastRunTime;
 
     public WalkHomeTask(float f) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT));
         this.speed = f;
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of(Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT));
     }
 
     @Override
@@ -61,8 +55,8 @@ extends Task<LivingEntity> {
             while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
                 mutable.setOffset(Direction.DOWN);
             }
-            Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());
-            return path != null && path.method_19315();
+            Path path = mobEntityWithAi.getNavigation().findPathTo(mutable);
+            return path != null && path.method_19313(mutable);
         };
         pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY).ifPresent(blockPos -> {
             livingEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)blockPos, this.speed, 1));

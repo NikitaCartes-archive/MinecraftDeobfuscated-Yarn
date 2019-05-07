@@ -197,10 +197,11 @@ extends Container {
         itemStack2.setAmount(j);
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack).entrySet().stream().filter(entry -> ((Enchantment)entry.getKey()).isCursed()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         EnchantmentHelper.set(map, itemStack2);
+        itemStack2.setRepairCost(0);
         if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
             itemStack2 = new ItemStack(Items.BOOK);
+            itemStack2.setDisplayName(itemStack.getDisplayName());
         }
-        itemStack2.setRepairCost(0);
         for (int k = 0; k < map.size(); ++k) {
             itemStack2.setRepairCost(AnvilContainer.getNextCost(itemStack2.getRepairCost()));
         }

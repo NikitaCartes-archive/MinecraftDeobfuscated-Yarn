@@ -135,7 +135,7 @@ implements Waterloggable {
     public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
         switch (blockPlacementEnvironment) {
             case LAND: {
-                return blockState.get(TYPE) == SlabType.BOTTOM;
+                return false;
             }
             case WATER: {
                 return blockView.getFluidState(blockPos).matches(FluidTags.WATER);

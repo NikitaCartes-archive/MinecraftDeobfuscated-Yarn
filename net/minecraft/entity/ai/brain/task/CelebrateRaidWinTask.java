@@ -3,16 +3,13 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.SeekSkyTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.raid.Raid;
@@ -32,21 +29,16 @@ extends Task<VillagerEntity> {
     private Raid raid;
 
     public CelebrateRaidWinTask(int i, int j) {
-        super(i, j);
+        super(ImmutableMap.of(), i, j);
     }
 
     protected boolean method_19951(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         this.raid = serverWorld.getRaidAt(new BlockPos(villagerEntity));
-        return this.raid != null && this.raid.hasWon() && serverWorld.isSkyVisible(new BlockPos(villagerEntity));
+        return this.raid != null && this.raid.hasWon() && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity);
     }
 
     protected boolean method_19952(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.raid != null && !this.raid.hasStopped();
-    }
-
-    @Override
-    protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-        return ImmutableSet.of();
     }
 
     protected void method_19953(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -59,7 +51,7 @@ extends Task<VillagerEntity> {
         if (random.nextInt(100) == 0) {
             villagerEntity.playCelebrateSound();
         }
-        if (random.nextInt(200) == 0 && serverWorld.isSkyVisible(new BlockPos(villagerEntity))) {
+        if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity)) {
             DyeColor dyeColor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
             int i = random.nextInt(3);
             ItemStack itemStack = this.createFirework(dyeColor, i);

@@ -49,6 +49,7 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -207,7 +208,7 @@ extends HostileEntity {
         return this.teleport(d, e, f);
     }
 
-    protected boolean teleportTo(Entity entity) {
+    private boolean teleportTo(Entity entity) {
         Vec3d vec3d = new Vec3d(this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0f) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z);
         vec3d = vec3d.normalize();
         double d = 16.0;
@@ -218,6 +219,13 @@ extends HostileEntity {
     }
 
     private boolean teleport(double d, double e, double f) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
+        while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+            mutable.setOffset(Direction.DOWN);
+        }
+        if (!this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+            return false;
+        }
         boolean bl = this.teleport(d, e, f, true);
         if (bl) {
             this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0f, 1.0f);

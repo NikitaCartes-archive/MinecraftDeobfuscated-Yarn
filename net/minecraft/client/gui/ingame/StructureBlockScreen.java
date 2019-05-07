@@ -393,7 +393,7 @@ extends Screen {
                 this.inputMetadata.setVisible(true);
             }
         }
-        this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().toSnakeCase(), new Object[0]));
+        this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString(), new Object[0]));
     }
 
     private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -490,7 +490,7 @@ extends Screen {
             this.drawString(this.font, I18n.translate("structure_block.custom_data", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputMetadata.render(i, j, f);
         }
-        string = "structure_block.mode_info." + structureBlockMode.toSnakeCase();
+        string = "structure_block.mode_info." + structureBlockMode.asString();
         this.drawString(this.font, I18n.translate(string, new Object[0]), this.width / 2 - 153, 174, 0xA0A0A0);
         super.render(i, j, f);
     }

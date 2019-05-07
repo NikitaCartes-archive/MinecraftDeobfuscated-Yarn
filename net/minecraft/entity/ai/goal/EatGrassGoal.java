@@ -32,7 +32,7 @@ extends Goal {
         if (this.mob.getRand().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
             return false;
         }
-        BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
+        BlockPos blockPos = new BlockPos(this.mob);
         if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
             return true;
         }
@@ -66,7 +66,7 @@ extends Goal {
         if (this.timer != 4) {
             return;
         }
-        BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y, this.mob.z);
+        BlockPos blockPos = new BlockPos(this.mob);
         if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
             if (this.world.getGameRules().getBoolean("mobGriefing")) {
                 this.world.breakBlock(blockPos, false);

@@ -24,6 +24,7 @@ import net.minecraft.client.render.debug.HeightmapDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.PathfindingDebugRenderer;
 import net.minecraft.client.render.debug.PointOfInterestDebugRenderer;
+import net.minecraft.client.render.debug.RaidCenterDebugRenderer;
 import net.minecraft.client.render.debug.SkyLightDebugRenderer;
 import net.minecraft.client.render.debug.StructureDebugRenderer;
 import net.minecraft.client.render.debug.VoxelDebugRenderer;
@@ -53,6 +54,7 @@ public class DebugRenderer {
     public final Renderer blockOutlineDebugRenderer;
     public final Renderer chunkLoadingDebugRenderer;
     public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
+    public final RaidCenterDebugRenderer raidCenterDebugRenderer;
     public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
     private boolean showChunkBorder;
     private boolean showPathfinding;
@@ -82,6 +84,7 @@ public class DebugRenderer {
         this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
         this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
         this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
+        this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
         this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
     }
 
@@ -99,6 +102,7 @@ public class DebugRenderer {
         this.blockOutlineDebugRenderer.method_20414();
         this.chunkLoadingDebugRenderer.method_20414();
         this.pointsOfInterestDebugRenderer.method_20414();
+        this.raidCenterDebugRenderer.method_20414();
         this.goalSelectorDebugRenderer.method_20414();
     }
 

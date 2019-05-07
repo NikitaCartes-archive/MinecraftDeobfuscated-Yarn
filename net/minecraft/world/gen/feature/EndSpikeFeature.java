@@ -107,8 +107,8 @@ extends Feature<EndSpikeFeatureConfig> {
             Collections.shuffle(list, new Random(long_));
             ArrayList<Spike> list2 = Lists.newArrayList();
             for (int i = 0; i < 10; ++i) {
-                int j = (int)(42.0 * Math.cos(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
-                int k = (int)(42.0 * Math.sin(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
+                int j = MathHelper.floor(42.0 * Math.cos(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
+                int k = MathHelper.floor(42.0 * Math.sin(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
                 int l = (Integer)list.get(i);
                 int m = 2 + l / 3;
                 int n = 76 + l * 3;
