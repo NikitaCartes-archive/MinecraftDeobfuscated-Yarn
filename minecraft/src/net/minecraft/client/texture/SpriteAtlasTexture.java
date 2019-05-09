@@ -21,6 +21,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -234,9 +235,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		} catch (Throwable var12) {
 			CrashReport crashReport = CrashReport.create(var12, "Applying mipmap");
 			CrashReportSection crashReportSection = crashReport.addElement("Sprite being mipmapped");
-			crashReportSection.method_577("Sprite name", () -> sprite.getId().toString());
-			crashReportSection.method_577("Sprite size", () -> sprite.getWidth() + " x " + sprite.getHeight());
-			crashReportSection.method_577("Sprite frames", () -> sprite.getFrameCount() + " frames");
+			crashReportSection.add("Sprite name", (CrashCallable<String>)(() -> sprite.getId().toString()));
+			crashReportSection.add("Sprite size", (CrashCallable<String>)(() -> sprite.getWidth() + " x " + sprite.getHeight()));
+			crashReportSection.add("Sprite frames", (CrashCallable<String>)(() -> sprite.getFrameCount() + " frames"));
 			crashReportSection.add("Mipmap levels", this.mipLevel);
 			throw new CrashException(crashReport);
 		}

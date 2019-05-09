@@ -24,10 +24,10 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 
 	@Override
 	public TypeRewriteRule makeRule() {
-		return this.method_15703(this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK));
+		return this.fixEquipment(this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK));
 	}
 
-	private <IS> TypeRewriteRule method_15703(Type<IS> type) {
+	private <IS> TypeRewriteRule fixEquipment(Type<IS> type) {
 		Type<Pair<Either<List<IS>, Unit>, Dynamic<?>>> type2 = DSL.and(DSL.optional(DSL.field("Equipment", DSL.list(type))), DSL.remainderType());
 		Type<Pair<Either<List<IS>, Unit>, Pair<Either<List<IS>, Unit>, Dynamic<?>>>> type3 = DSL.and(
 			DSL.optional(DSL.field("ArmorItems", DSL.list(type))), DSL.optional(DSL.field("HandItems", DSL.list(type))), DSL.remainderType()

@@ -162,14 +162,14 @@ public class BlockArgumentParser {
 	}
 
 	private CompletableFuture<Suggestions> suggestSnbt(SuggestionsBuilder suggestionsBuilder) {
-		if (suggestionsBuilder.getRemaining().isEmpty() && this.hasTileEntity()) {
+		if (suggestionsBuilder.getRemaining().isEmpty() && this.hasBlockEntity()) {
 			suggestionsBuilder.suggest(String.valueOf('{'));
 		}
 
 		return suggestionsBuilder.buildFuture();
 	}
 
-	private boolean hasTileEntity() {
+	private boolean hasBlockEntity() {
 		if (this.blockState != null) {
 			return this.blockState.getBlock().hasBlockEntity();
 		} else {
@@ -308,7 +308,7 @@ public class BlockArgumentParser {
 
 	public void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
-		this.blockId = Identifier.parse(this.reader);
+		this.blockId = Identifier.fromCommandInput(this.reader);
 		Block block = (Block)Registry.BLOCK.getOrEmpty(this.blockId).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
@@ -324,7 +324,7 @@ public class BlockArgumentParser {
 			this.suggestions = this::suggestIdentifiers;
 			this.reader.expect('#');
 			this.cursorPos = this.reader.getCursor();
-			this.tagId = Identifier.parse(this.reader);
+			this.tagId = Identifier.fromCommandInput(this.reader);
 		}
 	}
 

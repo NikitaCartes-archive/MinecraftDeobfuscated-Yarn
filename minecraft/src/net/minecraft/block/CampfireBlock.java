@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -210,6 +211,17 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	@Override
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+		if (!world.isClient && entity instanceof ProjectileEntity) {
+			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
+			if (projectileEntity.isOnFire() && !(Boolean)blockState.get(LIT)) {
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
+			}
 		}
 	}
 

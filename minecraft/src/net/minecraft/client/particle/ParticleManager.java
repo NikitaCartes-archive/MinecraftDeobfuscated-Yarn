@@ -344,8 +344,8 @@ public class ParticleManager implements ResourceReloadListener {
 		} catch (Throwable var5) {
 			CrashReport crashReport = CrashReport.create(var5, "Ticking Particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being ticked");
-			crashReportSection.method_577("Particle", particle::toString);
-			crashReportSection.method_577("Particle Type", particle.getType()::toString);
+			crashReportSection.add("Particle", particle::toString);
+			crashReportSection.add("Particle Type", particle.getType()::toString);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -374,8 +374,8 @@ public class ParticleManager implements ResourceReloadListener {
 					} catch (Throwable var18) {
 						CrashReport crashReport = CrashReport.create(var18, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
-						crashReportSection.method_577("Particle", particle::toString);
-						crashReportSection.method_577("Particle Type", particleTextureSheet::toString);
+						crashReportSection.add("Particle", particle::toString);
+						crashReportSection.add("Particle Type", particleTextureSheet::toString);
 						throw new CrashException(crashReport);
 					}
 				}

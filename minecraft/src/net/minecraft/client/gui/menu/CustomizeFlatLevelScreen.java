@@ -149,7 +149,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1);
 				Item item = flatChunkGeneratorLayer.getBlockState().getBlock().asItem();
 				if (item != Items.AIR) {
-					NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
+					NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
 				}
 			}
 		}

@@ -11,12 +11,12 @@ public class EntityArmorStandSilentFix extends ChoiceFix {
 		super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
 	}
 
-	public Dynamic<?> method_15679(Dynamic<?> dynamic) {
+	public Dynamic<?> fixSilent(Dynamic<?> dynamic) {
 		return dynamic.get("Silent").asBoolean(false) && !dynamic.get("Marker").asBoolean(false) ? dynamic.remove("Silent") : dynamic;
 	}
 
 	@Override
 	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_15679);
+		return typed.update(DSL.remainderFinder(), this::fixSilent);
 	}
 }

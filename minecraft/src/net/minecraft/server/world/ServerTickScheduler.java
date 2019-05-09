@@ -30,6 +30,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	private final Set<ScheduledTick<T>> ticksScheduled = Sets.<ScheduledTick<T>>newHashSet();
 	private final Set<ScheduledTick<T>> field_19310 = Sets.<ScheduledTick<T>>newTreeSet();
 	private final List<ScheduledTick<T>> field_19311 = Lists.<ScheduledTick<T>>newArrayList();
+	private final List<ScheduledTick<T>> field_19338 = Lists.<ScheduledTick<T>>newArrayList();
 	private final ServerWorld world;
 	private final List<ScheduledTick<T>> ticksCurrent = Lists.<ScheduledTick<T>>newArrayList();
 	private final Consumer<ScheduledTick<T>> tickConsumer;
@@ -73,6 +74,9 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 			while (iterator.hasNext()) {
 				ScheduledTick<T> scheduledTick = (ScheduledTick<T>)iterator.next();
 				if (this.world.method_14178().method_20529(scheduledTick.pos)) {
+					iterator.remove();
+					this.field_19338.add(scheduledTick);
+
 					try {
 						this.tickConsumer.accept(scheduledTick);
 					} catch (Throwable var7) {
@@ -81,15 +85,14 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 						CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
 						throw new CrashException(crashReport);
 					}
-				} else {
-					iterator.remove();
 				}
 			}
 
 			this.world.getProfiler().swap("cleaning");
-			this.field_19310.removeAll(this.ticksCurrent);
-			this.ticksScheduled.removeAll(this.ticksCurrent);
+			this.field_19310.removeAll(this.field_19338);
+			this.ticksScheduled.removeAll(this.field_19338);
 			this.ticksCurrent.clear();
+			this.field_19338.clear();
 			this.world.getProfiler().pop();
 		}
 	}

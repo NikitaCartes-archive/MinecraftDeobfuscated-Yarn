@@ -18,7 +18,7 @@ public class ItemCustomNameToComponentFix extends DataFix {
 		super(schema, bl);
 	}
 
-	private Dynamic<?> method_5001(Dynamic<?> dynamic) {
+	private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
 		Optional<? extends Dynamic<?>> optional = dynamic.get("display").get();
 		if (optional.isPresent()) {
 			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
@@ -44,7 +44,7 @@ public class ItemCustomNameToComponentFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
 		return this.fixTypeEverywhereTyped(
-			"ItemCustomNameToComponentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::method_5001))
+			"ItemCustomNameToComponentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::fixCustomName))
 		);
 	}
 }

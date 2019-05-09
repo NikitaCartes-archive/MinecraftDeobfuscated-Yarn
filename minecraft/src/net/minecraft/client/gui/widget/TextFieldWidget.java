@@ -35,8 +35,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	private int field_2103;
 	private int cursorMax;
 	private int cursorMin;
-	private int field_2100 = 14737632;
-	private int field_2098 = 7368816;
+	private int editableColor = 14737632;
+	private int uneditableColor = 7368816;
 	private String suggestion;
 	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Predicates.alwaysTrue();
@@ -324,7 +324,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	}
 
 	public boolean method_20315() {
-		return this.isVisible() && this.isFocused() && this.method_20316();
+		return this.isVisible() && this.isFocused() && this.isEditable();
 	}
 
 	@Override
@@ -379,7 +379,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 				fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
 			}
 
-			int k = this.editable ? this.field_2100 : this.field_2098;
+			int k = this.editable ? this.editableColor : this.uneditableColor;
 			int l = this.cursorMax - this.field_2103;
 			int m = this.cursorMin - this.field_2103;
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
@@ -490,12 +490,12 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		this.focused = bl;
 	}
 
-	public void method_1868(int i) {
-		this.field_2100 = i;
+	public void setEditableColor(int i) {
+		this.editableColor = i;
 	}
 
-	public void method_1860(int i) {
-		this.field_2098 = i;
+	public void setUneditableColor(int i) {
+		this.uneditableColor = i;
 	}
 
 	@Override
@@ -515,7 +515,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		}
 	}
 
-	private boolean method_20316() {
+	private boolean isEditable() {
 		return this.editable;
 	}
 

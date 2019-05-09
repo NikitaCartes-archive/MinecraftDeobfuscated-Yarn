@@ -39,6 +39,7 @@ import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TypeFilterableList;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -219,7 +220,7 @@ public class WorldChunk implements Chunk {
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-				crashReportSection.method_577("Location", () -> CrashReportSection.createPositionString(i, j, k));
+				crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -243,7 +244,7 @@ public class WorldChunk implements Chunk {
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-			crashReportSection.method_577("Location", () -> CrashReportSection.createPositionString(i, j, k));
+			crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
 			throw new CrashException(crashReport);
 		}
 	}

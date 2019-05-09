@@ -18,16 +18,16 @@ import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.commons.lang3.StringUtils;
 
 public class Identifier implements Comparable<Identifier> {
-	private static final SimpleCommandExceptionType EXCEPTION_INVALID = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid"));
+	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
 
 	protected Identifier(String[] strings) {
 		this.namespace = StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0];
 		this.path = strings[1];
-		if (!isValidNamespace(this.namespace)) {
+		if (!isNamespaceValid(this.namespace)) {
 			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
-		} else if (!isValidPath(this.path)) {
+		} else if (!isPathValid(this.path)) {
 			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
 		}
 	}
@@ -40,12 +40,12 @@ public class Identifier implements Comparable<Identifier> {
 		this(new String[]{string, string2});
 	}
 
-	public static Identifier createSplit(String string, char c) {
+	public static Identifier splitOn(String string, char c) {
 		return new Identifier(split(string, c));
 	}
 
 	@Nullable
-	public static Identifier create(String string) {
+	public static Identifier ofNullable(String string) {
 		try {
 			return new Identifier(string);
 		} catch (InvalidIdentifierException var2) {
@@ -102,10 +102,10 @@ public class Identifier implements Comparable<Identifier> {
 		return i;
 	}
 
-	public static Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+	public static Identifier fromCommandInput(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
-		while (stringReader.canRead() && isValidChar(stringReader.peek())) {
+		while (stringReader.canRead() && isCharValid(stringReader.peek())) {
 			stringReader.skip();
 		}
 
@@ -115,26 +115,26 @@ public class Identifier implements Comparable<Identifier> {
 			return new Identifier(string);
 		} catch (InvalidIdentifierException var4) {
 			stringReader.setCursor(i);
-			throw EXCEPTION_INVALID.createWithContext(stringReader);
+			throw COMMAND_EXCEPTION.createWithContext(stringReader);
 		}
 	}
 
-	public static boolean isValidChar(char c) {
+	public static boolean isCharValid(char c) {
 		return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
 	}
 
-	private static boolean isValidPath(String string) {
+	private static boolean isPathValid(String string) {
 		return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 47 || i == 46);
 	}
 
-	private static boolean isValidNamespace(String string) {
+	private static boolean isNamespaceValid(String string) {
 		return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 46);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean isValidIdentifier(String string) {
+	public static boolean isValid(String string) {
 		String[] strings = split(string, ':');
-		return isValidNamespace(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isValidPath(strings[1]);
+		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);
 	}
 
 	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {

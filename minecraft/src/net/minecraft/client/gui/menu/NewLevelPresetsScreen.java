@@ -242,7 +242,7 @@ public class NewLevelPresetsScreen extends Screen {
 			super.setSelected(superflatPresetItem);
 			if (superflatPresetItem != null) {
 				NarratorManager.INSTANCE
-					.method_19788(
+					.narrate(
 						new TranslatableComponent(
 								"narrator.select", ((NewLevelPresetsScreen.SuperflatPreset)NewLevelPresetsScreen.presets.get(this.children().indexOf(superflatPresetItem))).field_2528
 							)

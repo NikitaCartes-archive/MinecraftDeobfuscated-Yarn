@@ -341,7 +341,7 @@ public class EntityType<T extends Entity> {
 		"small_fireball", EntityType.Builder.<SmallFireballEntity>create(SmallFireballEntity::new, EntityCategory.field_17715).setSize(0.3125F, 0.3125F)
 	);
 	public static final EntityType<SnowGolemEntity> field_6047 = register(
-		"snow_golem", EntityType.Builder.create(SnowGolemEntity::new, EntityCategory.field_6294).setSize(0.7F, 1.9F)
+		"snow_golem", EntityType.Builder.create(SnowGolemEntity::new, EntityCategory.field_17715).setSize(0.7F, 1.9F)
 	);
 	public static final EntityType<SnowballEntity> field_6068 = register(
 		"snowball", EntityType.Builder.<SnowballEntity>create(SnowballEntity::new, EntityCategory.field_17715).setSize(0.25F, 0.25F)
@@ -387,10 +387,10 @@ public class EntityType<T extends Entity> {
 		"vex", EntityType.Builder.create(VexEntity::new, EntityCategory.field_6302).makeFireImmune().setSize(0.4F, 0.8F)
 	);
 	public static final EntityType<VillagerEntity> field_6077 = register(
-		"villager", EntityType.Builder.<VillagerEntity>create(VillagerEntity::new, EntityCategory.field_6294).setSize(0.6F, 1.95F)
+		"villager", EntityType.Builder.<VillagerEntity>create(VillagerEntity::new, EntityCategory.field_17715).setSize(0.6F, 1.95F)
 	);
 	public static final EntityType<IronGolemEntity> field_6147 = register(
-		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, EntityCategory.field_6294).setSize(1.4F, 2.7F)
+		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, EntityCategory.field_17715).setSize(1.4F, 2.7F)
 	);
 	public static final EntityType<VindicatorEntity> field_6117 = register(
 		"vindicator", EntityType.Builder.create(VindicatorEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.95F)
@@ -464,7 +464,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	public static Optional<EntityType<?>> get(String string) {
-		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
+		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.ofNullable(string));
 	}
 
 	public EntityType(

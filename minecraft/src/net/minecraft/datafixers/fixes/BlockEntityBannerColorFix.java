@@ -12,7 +12,7 @@ public class BlockEntityBannerColorFix extends ChoiceFix {
 		super(schema, bl, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
 	}
 
-	public Dynamic<?> method_15546(Dynamic<?> dynamic) {
+	public Dynamic<?> fixBannerColor(Dynamic<?> dynamic) {
 		dynamic = dynamic.update("Base", dynamicx -> dynamicx.createInt(15 - dynamicx.asInt(0)));
 		return dynamic.update(
 			"Patterns",
@@ -27,6 +27,6 @@ public class BlockEntityBannerColorFix extends ChoiceFix {
 
 	@Override
 	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_15546);
+		return typed.update(DSL.remainderFinder(), this::fixBannerColor);
 	}
 }

@@ -13,12 +13,12 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
-public class ItemOminousBannerRenameFix extends DataFix {
-	public ItemOminousBannerRenameFix(Schema schema, boolean bl) {
+public class OminousBannerItemRenameFix extends DataFix {
+	public OminousBannerItemRenameFix(Schema schema, boolean bl) {
 		super(schema, bl);
 	}
 
-	private Dynamic<?> method_20445(Dynamic<?> dynamic) {
+	private Dynamic<?> fixBannerName(Dynamic<?> dynamic) {
 		Optional<? extends Dynamic<?>> optional = dynamic.get("display").get();
 		if (optional.isPresent()) {
 			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
@@ -47,7 +47,7 @@ public class ItemOminousBannerRenameFix extends DataFix {
 				if (optional2.isPresent()) {
 					Typed<?> typed2 = (Typed<?>)optional2.get();
 					Dynamic<?> dynamic = typed2.get(DSL.remainderFinder());
-					return typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), this.method_20445(dynamic)));
+					return typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), this.fixBannerName(dynamic)));
 				}
 			}
 

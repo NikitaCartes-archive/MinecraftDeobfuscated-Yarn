@@ -9,14 +9,14 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
-public class EntityPaintingFix extends DataFix {
+public class HangingEntityFix extends DataFix {
 	private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
-	public EntityPaintingFix(Schema schema, boolean bl) {
+	public HangingEntityFix(Schema schema, boolean bl) {
 		super(schema, bl);
 	}
 
-	private Dynamic<?> method_15719(Dynamic<?> dynamic, boolean bl, boolean bl2) {
+	private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean bl, boolean bl2) {
 		if ((bl || bl2) && !dynamic.get("Facing").asNumber().isPresent()) {
 			int i;
 			if (dynamic.get("Direction").asNumber().isPresent()) {
@@ -50,12 +50,12 @@ public class EntityPaintingFix extends DataFix {
 		TypeRewriteRule typeRewriteRule = this.fixTypeEverywhereTyped(
 			"EntityPaintingFix",
 			type3,
-			typed -> typed.updateTyped(opticFinder, type, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.method_15719(dynamic, true, false)))
+			typed -> typed.updateTyped(opticFinder, type, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition(dynamic, true, false)))
 		);
 		TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped(
 			"EntityItemFrameFix",
 			type3,
-			typed -> typed.updateTyped(opticFinder2, type2, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.method_15719(dynamic, false, true)))
+			typed -> typed.updateTyped(opticFinder2, type2, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition(dynamic, false, true)))
 		);
 		return TypeRewriteRule.seq(typeRewriteRule, typeRewriteRule2);
 	}

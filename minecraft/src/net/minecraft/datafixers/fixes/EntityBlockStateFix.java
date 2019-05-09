@@ -288,32 +288,32 @@ public class EntityBlockStateFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		Schema schema = this.getInputSchema();
 		Schema schema2 = this.getOutputSchema();
-		Function<Typed<?>, Typed<?>> function = typed -> this.method_15687(typed, "DisplayTile", "DisplayData", "DisplayState");
-		Function<Typed<?>, Typed<?>> function2 = typed -> this.method_15687(typed, "inTile", "inData", "inBlockState");
+		Function<Typed<?>, Typed<?>> function = typed -> this.mergeIdAndData(typed, "DisplayTile", "DisplayData", "DisplayState");
+		Function<Typed<?>, Typed<?>> function2 = typed -> this.mergeIdAndData(typed, "inTile", "inData", "inBlockState");
 		Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(
 			DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), DSL.namespacedString())))), DSL.remainderType()
 		);
 		Function<Typed<?>, Typed<?>> function3 = typed -> typed.update(type.finder(), DSL.remainderType(), Pair::getSecond);
 		return this.fixTypeEverywhereTyped("EntityBlockStateFix", schema.getType(TypeReferences.ENTITY), schema2.getType(TypeReferences.ENTITY), typed -> {
-			typed = this.method_15682(typed, "minecraft:falling_block", this::method_15695);
-			typed = this.method_15682(typed, "minecraft:enderman", typedx -> this.method_15687(typedx, "carried", "carriedData", "carriedBlockState"));
-			typed = this.method_15682(typed, "minecraft:arrow", function2);
-			typed = this.method_15682(typed, "minecraft:spectral_arrow", function2);
-			typed = this.method_15682(typed, "minecraft:egg", function3);
-			typed = this.method_15682(typed, "minecraft:ender_pearl", function3);
-			typed = this.method_15682(typed, "minecraft:fireball", function3);
-			typed = this.method_15682(typed, "minecraft:potion", function3);
-			typed = this.method_15682(typed, "minecraft:small_fireball", function3);
-			typed = this.method_15682(typed, "minecraft:snowball", function3);
-			typed = this.method_15682(typed, "minecraft:wither_skull", function3);
-			typed = this.method_15682(typed, "minecraft:xp_bottle", function3);
-			typed = this.method_15682(typed, "minecraft:commandblock_minecart", function);
-			typed = this.method_15682(typed, "minecraft:minecart", function);
-			typed = this.method_15682(typed, "minecraft:chest_minecart", function);
-			typed = this.method_15682(typed, "minecraft:furnace_minecart", function);
-			typed = this.method_15682(typed, "minecraft:tnt_minecart", function);
-			typed = this.method_15682(typed, "minecraft:hopper_minecart", function);
-			return this.method_15682(typed, "minecraft:spawner_minecart", function);
+			typed = this.useFunction(typed, "minecraft:falling_block", this::method_15695);
+			typed = this.useFunction(typed, "minecraft:enderman", typedx -> this.mergeIdAndData(typedx, "carried", "carriedData", "carriedBlockState"));
+			typed = this.useFunction(typed, "minecraft:arrow", function2);
+			typed = this.useFunction(typed, "minecraft:spectral_arrow", function2);
+			typed = this.useFunction(typed, "minecraft:egg", function3);
+			typed = this.useFunction(typed, "minecraft:ender_pearl", function3);
+			typed = this.useFunction(typed, "minecraft:fireball", function3);
+			typed = this.useFunction(typed, "minecraft:potion", function3);
+			typed = this.useFunction(typed, "minecraft:small_fireball", function3);
+			typed = this.useFunction(typed, "minecraft:snowball", function3);
+			typed = this.useFunction(typed, "minecraft:wither_skull", function3);
+			typed = this.useFunction(typed, "minecraft:xp_bottle", function3);
+			typed = this.useFunction(typed, "minecraft:commandblock_minecart", function);
+			typed = this.useFunction(typed, "minecraft:minecart", function);
+			typed = this.useFunction(typed, "minecraft:chest_minecart", function);
+			typed = this.useFunction(typed, "minecraft:furnace_minecart", function);
+			typed = this.useFunction(typed, "minecraft:tnt_minecart", function);
+			typed = this.useFunction(typed, "minecraft:hopper_minecart", function);
+			return this.useFunction(typed, "minecraft:spawner_minecart", function);
 		});
 	}
 
@@ -335,7 +335,7 @@ public class EntityBlockStateFix extends DataFix {
 		}).set(DSL.remainderFinder(), dynamic.remove("Data").remove("TileID").remove("Tile"));
 	}
 
-	private Typed<?> method_15687(Typed<?> typed, String string, String string2, String string3) {
+	private Typed<?> mergeIdAndData(Typed<?> typed, String string, String string2, String string3) {
 		Type<Pair<String, Either<Integer, String>>> type = DSL.field(
 			string, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), DSL.namespacedString()))
 		);
@@ -348,7 +348,7 @@ public class EntityBlockStateFix extends DataFix {
 		}).set(DSL.remainderFinder(), dynamic.remove(string2));
 	}
 
-	private Typed<?> method_15682(Typed<?> typed, String string, Function<Typed<?>, Typed<?>> function) {
+	private Typed<?> useFunction(Typed<?> typed, String string, Function<Typed<?>, Typed<?>> function) {
 		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, string);
 		Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, string);
 		return typed.updateTyped(DSL.namedChoice(string, type), type2, function);

@@ -38,6 +38,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -314,13 +315,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
-				crashReportSection.method_577("Source block type", () -> {
+				crashReportSection.add("Source block type", (CrashCallable<String>)(() -> {
 					try {
 						return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(block), block.getTranslationKey(), block.getClass().getCanonicalName());
 					} catch (Throwable var2) {
 						return "ID #" + Registry.BLOCK.getId(block);
 					}
-				});
+				}));
 				CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
 				throw new CrashException(crashReport);
 			}
@@ -1175,8 +1176,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
 		crashReportSection.add("Level name", this.properties == null ? "????" : this.properties.getLevelName());
-		crashReportSection.method_577("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
-		crashReportSection.method_577("Chunk stats", this.chunkManager::getStatus);
+		crashReportSection.add("All players", (CrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
+		crashReportSection.add("Chunk stats", this.chunkManager::getStatus);
 
 		try {
 			this.properties.populateCrashReport(crashReportSection);

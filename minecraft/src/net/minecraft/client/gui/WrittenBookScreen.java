@@ -58,7 +58,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	private WrittenBookScreen(WrittenBookScreen.Contents contents, boolean bl) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.contents = contents;
 		this.pageTurnSound = bl;
 	}

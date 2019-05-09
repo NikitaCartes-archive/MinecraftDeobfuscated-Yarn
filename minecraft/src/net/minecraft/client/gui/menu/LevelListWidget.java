@@ -115,7 +115,7 @@ public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidg
 		if (levelItem != null) {
 			LevelSummary levelSummary = levelItem.level;
 			NarratorManager.INSTANCE
-				.method_19788(
+				.narrate(
 					new TranslatableComponent(
 							"narrator.select",
 							new TranslatableComponent(

@@ -56,7 +56,7 @@ public class ChatScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public ChatScreen(String string) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.field_18973 = string;
 	}
 

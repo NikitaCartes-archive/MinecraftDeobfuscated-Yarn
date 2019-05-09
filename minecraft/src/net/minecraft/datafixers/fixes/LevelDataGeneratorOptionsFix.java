@@ -116,7 +116,7 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 			Dynamic<?> dynamic2;
 			if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
 				String string = (String)optional.orElse("");
-				dynamic2 = dynamic.set("generatorOptions", method_5100(string, dynamic.getOps()));
+				dynamic2 = dynamic.set("generatorOptions", fixGeneratorOptions(string, dynamic.getOps()));
 			} else if ("buffet".equalsIgnoreCase(dynamic.get("generatorName").asString("")) && optional.isPresent()) {
 				Dynamic<JsonElement> dynamic3 = new Dynamic<>(JsonOps.INSTANCE, JsonHelper.deserialize((String)optional.get(), true));
 				dynamic2 = dynamic.set("generatorOptions", dynamic3.convert(dynamic.getOps()));
@@ -128,13 +128,13 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 		});
 	}
 
-	private static <T> Dynamic<T> method_5100(String string, DynamicOps<T> dynamicOps) {
+	private static <T> Dynamic<T> fixGeneratorOptions(String string, DynamicOps<T> dynamicOps) {
 		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
 		String string2 = "minecraft:plains";
 		Map<String, Map<String, String>> map = Maps.<String, Map<String, String>>newHashMap();
 		List<Pair<Integer, String>> list;
 		if (!string.isEmpty() && iterator.hasNext()) {
-			list = method_5103((String)iterator.next());
+			list = parseFlatLayers((String)iterator.next());
 			if (!list.isEmpty()) {
 				if (iterator.hasNext()) {
 					string2 = (String)NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
@@ -217,7 +217,7 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 	}
 
 	@Nullable
-	private static Pair<Integer, String> method_5099(String string) {
+	private static Pair<Integer, String> parseFlatLayer(String string) {
 		String[] strings = string.split("\\*", 2);
 		int i;
 		if (strings.length == 2) {
@@ -234,12 +234,12 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 		return Pair.of(i, string2);
 	}
 
-	private static List<Pair<Integer, String>> method_5103(String string) {
+	private static List<Pair<Integer, String>> parseFlatLayers(String string) {
 		List<Pair<Integer, String>> list = Lists.<Pair<Integer, String>>newArrayList();
 		String[] strings = string.split(",");
 
 		for (String string2 : strings) {
-			Pair<Integer, String> pair = method_5099(string2);
+			Pair<Integer, String> pair = parseFlatLayer(string2);
 			if (pair == null) {
 				return Collections.emptyList();
 			}

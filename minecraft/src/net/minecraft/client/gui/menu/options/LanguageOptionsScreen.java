@@ -104,7 +104,7 @@ public class LanguageOptionsScreen extends Screen {
 		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem) {
 			super.setSelected(languageItem);
 			if (languageItem != null) {
-				NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", languageItem.languageDefinition).getString());
+				NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", languageItem.languageDefinition).getString());
 			}
 		}
 

@@ -82,8 +82,8 @@ public class ScoreboardCriterion {
 			return i < 0
 				? Optional.empty()
 				: Registry.STAT_TYPE
-					.getOrEmpty(Identifier.createSplit(string.substring(0, i), '.'))
-					.flatMap(statType -> createStatCriterion(statType, Identifier.createSplit(string.substring(i + 1), '.')));
+					.getOrEmpty(Identifier.splitOn(string.substring(0, i), '.'))
+					.flatMap(statType -> createStatCriterion(statType, Identifier.splitOn(string.substring(i + 1), '.')));
 		}
 	}
 

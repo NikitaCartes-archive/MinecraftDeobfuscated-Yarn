@@ -20,13 +20,16 @@ public class OptionsAddTextBackgroundFix extends DataFix {
 			typed -> typed.update(
 					DSL.remainderFinder(),
 					dynamic -> DataFixUtils.orElse(
-							dynamic.get("chatOpacity").asString().map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.method_18853(string)))), dynamic
+							dynamic.get("chatOpacity")
+								.asString()
+								.map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity(string)))),
+							dynamic
 						)
 				)
 		);
 	}
 
-	private double method_18853(String string) {
+	private double convertToTextBackgroundOpacity(String string) {
 		try {
 			double d = 0.9 * Double.parseDouble(string) + 0.1;
 			return d / 2.0;

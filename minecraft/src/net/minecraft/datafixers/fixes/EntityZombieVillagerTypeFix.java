@@ -14,7 +14,7 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 		super(schema, bl, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
-	public Dynamic<?> method_4990(Dynamic<?> dynamic) {
+	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {
 		if (dynamic.get("IsVillager").asBoolean(false)) {
 			if (!dynamic.get("ZombieType").get().isPresent()) {
 				int i = this.clampType(dynamic.get("VillagerProfession").asInt(-1));
@@ -37,6 +37,6 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 
 	@Override
 	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_4990);
+		return typed.update(DSL.remainderFinder(), this::fixZombieType);
 	}
 }

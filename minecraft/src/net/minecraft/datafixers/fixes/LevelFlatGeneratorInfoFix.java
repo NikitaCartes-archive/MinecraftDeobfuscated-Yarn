@@ -29,18 +29,20 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::method_5090)
+			"LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::fixGeneratorOptions)
 		);
 	}
 
-	private Dynamic<?> method_5090(Dynamic<?> dynamic) {
+	private Dynamic<?> fixGeneratorOptions(Dynamic<?> dynamic) {
 		return dynamic.get("generatorName").asString("").equalsIgnoreCase("flat")
-			? dynamic.update("generatorOptions", dynamicx -> DataFixUtils.orElse(dynamicx.asString().map(this::transform).map(dynamicx::createString), dynamicx))
+			? dynamic.update(
+				"generatorOptions", dynamicx -> DataFixUtils.orElse(dynamicx.asString().map(this::fixFlatGeneratorOptions).map(dynamicx::createString), dynamicx)
+			)
 			: dynamic;
 	}
 
 	@VisibleForTesting
-	String transform(String string) {
+	String fixFlatGeneratorOptions(String string) {
 		if (string.isEmpty()) {
 			return "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
 		} else {

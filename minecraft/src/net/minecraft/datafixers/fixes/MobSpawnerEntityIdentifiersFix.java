@@ -18,7 +18,7 @@ public class MobSpawnerEntityIdentifiersFix extends DataFix {
 		super(schema, bl);
 	}
 
-	private Dynamic<?> method_5106(Dynamic<?> dynamic) {
+	private Dynamic<?> fixSpawner(Dynamic<?> dynamic) {
 		if (!"MobSpawner".equals(dynamic.get("id").asString(""))) {
 			return dynamic;
 		} else {
@@ -62,7 +62,7 @@ public class MobSpawnerEntityIdentifiersFix extends DataFix {
 		return this.fixTypeEverywhereTyped("MobSpawnerEntityIdentifiersFix", this.getInputSchema().getType(TypeReferences.UNTAGGED_SPAWNER), type, typed -> {
 			Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 			dynamic = dynamic.set("id", dynamic.createString("MobSpawner"));
-			Pair<?, ? extends Optional<? extends Typed<?>>> pair = type.readTyped(this.method_5106(dynamic));
+			Pair<?, ? extends Optional<? extends Typed<?>>> pair = type.readTyped(this.fixSpawner(dynamic));
 			return !pair.getSecond().isPresent() ? typed : (Typed)pair.getSecond().get();
 		});
 	}

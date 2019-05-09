@@ -84,7 +84,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, Element, 
 		this.searchField.setMaxLength(50);
 		this.searchField.setHasBorder(false);
 		this.searchField.setVisible(true);
-		this.searchField.method_1868(16777215);
+		this.searchField.setEditableColor(16777215);
 		this.searchField.setText(string);
 		this.recipesArea.initialize(this.client, i, j);
 		this.recipesArea.setGui(this);

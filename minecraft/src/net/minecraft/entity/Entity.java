@@ -74,6 +74,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.LoopingStream;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -2131,17 +2132,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.method_577("Entity Type", () -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")");
+		crashReportSection.add("Entity Type", (CrashCallable<String>)(() -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")"));
 		crashReportSection.add("Entity ID", this.entityId);
-		crashReportSection.method_577("Entity Name", () -> this.getName().getString());
+		crashReportSection.add("Entity Name", (CrashCallable<String>)(() -> this.getName().getString()));
 		crashReportSection.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.x, this.y, this.z));
 		crashReportSection.add(
 			"Entity's Block location", CrashReportSection.createPositionString(MathHelper.floor(this.x), MathHelper.floor(this.y), MathHelper.floor(this.z))
 		);
 		Vec3d vec3d = this.getVelocity();
 		crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
-		crashReportSection.method_577("Entity's Passengers", () -> this.getPassengerList().toString());
-		crashReportSection.method_577("Entity's Vehicle", () -> this.getVehicle().toString());
+		crashReportSection.add("Entity's Passengers", (CrashCallable<String>)(() -> this.getPassengerList().toString()));
+		crashReportSection.add("Entity's Vehicle", (CrashCallable<String>)(() -> this.getVehicle().toString()));
 	}
 
 	@Environment(EnvType.CLIENT)

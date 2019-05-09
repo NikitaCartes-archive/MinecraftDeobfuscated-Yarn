@@ -60,11 +60,11 @@ public class ItemStackEnchantmentFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
 		return this.fixTypeEverywhereTyped(
-			"ItemStackEnchantmentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::method_5035))
+			"ItemStackEnchantmentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::fixEnchantments))
 		);
 	}
 
-	private Dynamic<?> method_5035(Dynamic<?> dynamic) {
+	private Dynamic<?> fixEnchantments(Dynamic<?> dynamic) {
 		Optional<Dynamic<?>> optional = dynamic.get("ench")
 			.asStreamOpt()
 			.map(stream -> stream.map(dynamicx -> dynamicx.set("id", dynamicx.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamicx.get("id").asInt(0), "null")))))

@@ -35,6 +35,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -431,7 +432,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, string);
 			CrashReportSection crashReportSection = crashReport.addElement("Affected screen");
-			crashReportSection.method_577("Screen name", () -> string2);
+			crashReportSection.add("Screen name", (CrashCallable<String>)(() -> string2));
 			throw new CrashException(crashReport);
 		}
 	}

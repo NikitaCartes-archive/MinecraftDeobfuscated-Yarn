@@ -87,6 +87,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -1004,13 +1005,17 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		if (this.playerManager != null) {
 			crashReport.getSystemDetailsSection()
-				.method_577(
+				.add(
 					"Player Count",
-					() -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList()
+					(CrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
+							+ " / "
+							+ this.playerManager.getMaxPlayerCount()
+							+ "; "
+							+ this.playerManager.getPlayerList())
 				);
 		}
 
-		crashReport.getSystemDetailsSection().method_577("Data Packs", () -> {
+		crashReport.getSystemDetailsSection().add("Data Packs", (CrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
@@ -1025,9 +1030,9 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			}
 
 			return stringBuilder.toString();
-		});
+		}));
 		if (this.serverId != null) {
-			crashReport.getSystemDetailsSection().method_577("Server Id", () -> this.serverId);
+			crashReport.getSystemDetailsSection().add("Server Id", (CrashCallable<String>)(() -> this.serverId));
 		}
 
 		return crashReport;

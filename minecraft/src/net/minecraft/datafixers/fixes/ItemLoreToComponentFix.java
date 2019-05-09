@@ -32,7 +32,7 @@ public class ItemLoreToComponentFix extends DataFix {
 							dynamic -> dynamic.update(
 									"display",
 									dynamicx -> dynamicx.update(
-											"Lore", dynamicxx -> DataFixUtils.orElse(dynamicxx.asStreamOpt().map(ItemLoreToComponentFix::method_5005).map(dynamicxx::createList), dynamicxx)
+											"Lore", dynamicxx -> DataFixUtils.orElse(dynamicxx.asStreamOpt().map(ItemLoreToComponentFix::fixLoreTags).map(dynamicxx::createList), dynamicxx)
 										)
 								)
 						)
@@ -40,11 +40,11 @@ public class ItemLoreToComponentFix extends DataFix {
 		);
 	}
 
-	private static <T> Stream<Dynamic<T>> method_5005(Stream<Dynamic<T>> stream) {
-		return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::method_5012).map(dynamic::createString), dynamic));
+	private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> stream) {
+		return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
 	}
 
-	private static String method_5012(String string) {
+	private static String componentize(String string) {
 		return Component.Serializer.toJsonString(new TextComponent(string));
 	}
 }

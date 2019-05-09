@@ -50,7 +50,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public AbstractCommandBlockScreen() {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 	}
 
 	@Override

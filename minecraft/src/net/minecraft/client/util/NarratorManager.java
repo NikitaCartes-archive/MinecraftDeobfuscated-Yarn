@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class NarratorManager implements ClientChatListener {
-	public static final Component field_18967 = new TextComponent("");
-	private static final Logger field_18210 = LogManager.getLogger();
+	public static final Component EMPTY = new TextComponent("");
+	private static final Logger LOGGER = LogManager.getLogger();
 	public static final NarratorManager INSTANCE = new NarratorManager();
 	private final Narrator narrator = Narrator.getNarrator();
 
@@ -42,7 +42,7 @@ public class NarratorManager implements ClientChatListener {
 		}
 	}
 
-	public void method_19788(String string) {
+	public void narrate(String string) {
 		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
 		if (this.narrator.active() && narratorOption != NarratorOption.OFF && narratorOption != NarratorOption.CHAT && !string.isEmpty()) {
 			this.narrator.clear();
@@ -52,7 +52,7 @@ public class NarratorManager implements ClientChatListener {
 
 	private void narrate(boolean bl, String string) {
 		if (SharedConstants.isDevelopment) {
-			field_18210.debug("Narrating: {}", string);
+			LOGGER.debug("Narrating: {}", string);
 		}
 
 		this.narrator.say(string, bl);
@@ -89,7 +89,7 @@ public class NarratorManager implements ClientChatListener {
 		this.narrator.clear();
 	}
 
-	public void method_20371() {
+	public void destroy() {
 		this.narrator.destroy();
 	}
 }

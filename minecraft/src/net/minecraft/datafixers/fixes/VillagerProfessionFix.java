@@ -28,7 +28,7 @@ public class VillagerProfessionFix extends ChoiceFix {
 							dynamic.createString("type"),
 							dynamic.createString("minecraft:plains"),
 							dynamic.createString("profession"),
-							dynamic.createString(method_16897(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))),
+							dynamic.createString(convertProfessionId(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))),
 							dynamic.createString("level"),
 							DataFixUtils.orElse(dynamic.get("CareerLevel").get(), dynamic.createInt(1))
 						)
@@ -37,7 +37,7 @@ public class VillagerProfessionFix extends ChoiceFix {
 		);
 	}
 
-	private static String method_16897(int i, int j) {
+	private static String convertProfessionId(int i, int j) {
 		if (i == 0) {
 			if (j == 2) {
 				return "minecraft:fisherman";

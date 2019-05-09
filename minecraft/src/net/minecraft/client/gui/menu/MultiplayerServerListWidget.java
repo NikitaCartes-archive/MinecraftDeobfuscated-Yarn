@@ -60,7 +60,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		super.setSelected(entry);
 		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerItem) {
 			NarratorManager.INSTANCE
-				.method_19788(new TranslatableComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelected()).server.name).getString());
+				.narrate(new TranslatableComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelected()).server.name).getString());
 		}
 	}
 

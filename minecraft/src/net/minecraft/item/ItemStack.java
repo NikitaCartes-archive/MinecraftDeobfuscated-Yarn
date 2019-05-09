@@ -656,7 +656,7 @@ public final class ItemStack {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT
-				.getOrEmpty(Identifier.create(compoundTag.getString("id")))
+				.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id")))
 				.ifPresent(enchantment -> list.add(enchantment.getTextComponent(compoundTag.getInt("lvl"))));
 		}
 	}

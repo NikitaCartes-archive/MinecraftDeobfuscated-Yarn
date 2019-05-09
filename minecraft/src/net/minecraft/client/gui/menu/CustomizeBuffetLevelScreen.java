@@ -172,7 +172,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				NarratorManager.INSTANCE
-					.method_19788(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
+					.narrate(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
 			}
 		}
 

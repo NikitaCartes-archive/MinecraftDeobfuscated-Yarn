@@ -52,7 +52,7 @@ public class EntityHealthFix extends DataFix {
 		super(schema, bl);
 	}
 
-	public Dynamic<?> method_15704(Dynamic<?> dynamic) {
+	public Dynamic<?> fixHealth(Dynamic<?> dynamic) {
 		Optional<Number> optional = dynamic.get("HealF").asNumber();
 		Optional<Number> optional2 = dynamic.get("Health").asNumber();
 		float f;
@@ -73,7 +73,7 @@ public class EntityHealthFix extends DataFix {
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"EntityHealthFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), this::method_15704)
+			"EntityHealthFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), this::fixHealth)
 		);
 	}
 }

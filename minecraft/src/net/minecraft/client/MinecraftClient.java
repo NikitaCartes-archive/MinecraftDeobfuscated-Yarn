@@ -173,6 +173,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -759,7 +760,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			KeyBinding.unpressAll();
 			screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 			this.skipGameRender = false;
-			NarratorManager.INSTANCE.method_19788(screen.getNarrationMessage());
+			NarratorManager.INSTANCE.narrate(screen.getNarrationMessage());
 		} else {
 			this.soundManager.resumeAll();
 			this.mouse.lockCursor();
@@ -773,7 +774,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public void stop() {
 		try {
 			LOGGER.info("Stopping!");
-			NarratorManager.INSTANCE.method_20371();
+			NarratorManager.INSTANCE.destroy();
 
 			try {
 				if (this.world != null) {
@@ -1770,14 +1771,14 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.getSystemDetailsSection();
-		crashReportSection.method_577("Launched Version", () -> this.gameVersion);
-		crashReportSection.method_577("LWJGL", GLX::getLWJGLVersion);
-		crashReportSection.method_577("OpenGL", GLX::getOpenGLVersionString);
-		crashReportSection.method_577("GL Caps", GLX::getCapsString);
-		crashReportSection.method_577("Using VBOs", () -> "Yes");
-		crashReportSection.method_577(
+		crashReportSection.add("Launched Version", (CrashCallable<String>)(() -> this.gameVersion));
+		crashReportSection.add("LWJGL", GLX::getLWJGLVersion);
+		crashReportSection.add("OpenGL", GLX::getOpenGLVersionString);
+		crashReportSection.add("GL Caps", GLX::getCapsString);
+		crashReportSection.add("Using VBOs", (CrashCallable<String>)(() -> "Yes"));
+		crashReportSection.add(
 			"Is Modded",
-			() -> {
+			(CrashCallable<String>)(() -> {
 				String string = ClientBrandRetriever.getClientModName();
 				if (!"vanilla".equals(string)) {
 					return "Definitely; Client brand changed to '" + string + "'";
@@ -1786,10 +1787,10 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 						? "Very likely; Jar signature invalidated"
 						: "Probably not. Jar signature remains and client brand is untouched.";
 				}
-			}
+			})
 		);
 		crashReportSection.add("Type", "Client (map_client.txt)");
-		crashReportSection.method_577("Resource Packs", () -> {
+		crashReportSection.add("Resource Packs", (CrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (String string : this.options.resourcePacks) {
@@ -1804,9 +1805,9 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			}
 
 			return stringBuilder.toString();
-		});
-		crashReportSection.method_577("Current Language", () -> this.languageManager.getLanguage().toString());
-		crashReportSection.method_577("CPU", GLX::getCpuInfo);
+		}));
+		crashReportSection.add("Current Language", (CrashCallable<String>)(() -> this.languageManager.getLanguage().toString()));
+		crashReportSection.add("CPU", GLX::getCpuInfo);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(crashReport);
 		}

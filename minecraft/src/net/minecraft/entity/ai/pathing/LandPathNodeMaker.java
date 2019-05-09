@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ViewableWorld;
 
@@ -104,42 +105,42 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 
 		double d = method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-		PathNode pathNode2 = this.method_20534(pathNode.x, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
-		if (pathNode2 != null && !pathNode2.field_42) {
+		PathNode pathNode2 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
+		if (pathNode2 != null && !pathNode2.field_42 && pathNode2.field_43 >= 0.0F) {
 			pathNodes[i++] = pathNode2;
 		}
 
-		PathNode pathNode3 = this.method_20534(pathNode.x - 1, pathNode.y, pathNode.z, j, d, Direction.field_11039);
-		if (pathNode3 != null && !pathNode3.field_42) {
+		PathNode pathNode3 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z, j, d, Direction.field_11039);
+		if (pathNode3 != null && !pathNode3.field_42 && pathNode3.field_43 >= 0.0F) {
 			pathNodes[i++] = pathNode3;
 		}
 
-		PathNode pathNode4 = this.method_20534(pathNode.x + 1, pathNode.y, pathNode.z, j, d, Direction.field_11034);
-		if (pathNode4 != null && !pathNode4.field_42) {
+		PathNode pathNode4 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z, j, d, Direction.field_11034);
+		if (pathNode4 != null && !pathNode4.field_42 && pathNode4.field_43 >= 0.0F) {
 			pathNodes[i++] = pathNode4;
 		}
 
-		PathNode pathNode5 = this.method_20534(pathNode.x, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
-		if (pathNode5 != null && !pathNode5.field_42) {
+		PathNode pathNode5 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
+		if (pathNode5 != null && !pathNode5.field_42 && pathNode5.field_43 >= 0.0F) {
 			pathNodes[i++] = pathNode5;
 		}
 
-		PathNode pathNode6 = this.method_20534(pathNode.x - 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
+		PathNode pathNode6 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
 		if (this.method_20536(pathNode, pathNode3, pathNode5, pathNode6)) {
 			pathNodes[i++] = pathNode6;
 		}
 
-		PathNode pathNode7 = this.method_20534(pathNode.x + 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
+		PathNode pathNode7 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z - 1, j, d, Direction.field_11043);
 		if (this.method_20536(pathNode, pathNode4, pathNode5, pathNode7)) {
 			pathNodes[i++] = pathNode7;
 		}
 
-		PathNode pathNode8 = this.method_20534(pathNode.x - 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
+		PathNode pathNode8 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
 		if (this.method_20536(pathNode, pathNode3, pathNode2, pathNode8)) {
 			pathNodes[i++] = pathNode8;
 		}
 
-		PathNode pathNode9 = this.method_20534(pathNode.x + 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
+		PathNode pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z + 1, j, d, Direction.field_11035);
 		if (this.method_20536(pathNode, pathNode4, pathNode2, pathNode9)) {
 			pathNodes[i++] = pathNode9;
 		}
@@ -148,59 +149,20 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean method_20536(PathNode pathNode, @Nullable PathNode pathNode2, @Nullable PathNode pathNode3, @Nullable PathNode pathNode4) {
-		return pathNode4 != null && !pathNode4.field_42 && pathNode3 != null && pathNode3.y <= pathNode.y && pathNode2 != null && pathNode2.y <= pathNode.y;
-	}
-
-	@Nullable
-	private PathNode method_20534(int i, int j, int k, int l, double d, Direction direction) {
-		PathNode pathNode = this.getPathNode(i, j, k, l, d, direction);
-		return this.method_20535(i, j, k, direction, pathNode) ? pathNode : null;
-	}
-
-	private boolean method_20535(int i, int j, int k, Direction direction, @Nullable PathNode pathNode) {
-		if (pathNode == null) {
-			return false;
-		} else {
-			int l = i + direction.getOpposite().getOffsetX();
-			int m = k + direction.getOpposite().getOffsetZ();
-			double d = method_60(this.blockView, new BlockPos(l, j + direction.getOpposite().getOffsetY(), m)) + 2.0E-7;
-			double e = method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) + 2.0E-7;
-			double f = Math.max(d, e);
-			double g = f + (double)this.entity.getHeight();
-			double h = method_20537(this.blockView, new BlockPos((double)pathNode.x, g, (double)pathNode.z));
-			double n = method_20537(this.blockView, new BlockPos((double)l, g, (double)m));
-			double o = Math.min(h, n);
-			if (g > o - 1.0E-7) {
-				return false;
-			} else {
-				for (int p = MathHelper.ceil(f); p < MathHelper.floor(g); p++) {
-					BlockPos blockPos = new BlockPos(l, p, m);
-					BlockPos blockPos2 = new BlockPos(pathNode.x, p, pathNode.z);
-					if (!this.blockView.getBlockState(blockPos).getCollisionShape(this.blockView, blockPos).isEmpty()
-						|| !this.blockView.getBlockState(blockPos2).getCollisionShape(this.blockView, blockPos2).isEmpty()) {
-						return false;
-					}
-				}
-
-				return true;
-			}
-		}
+		return pathNode4 != null
+			&& !pathNode4.field_42
+			&& pathNode3 != null
+			&& pathNode3.field_43 >= 0.0F
+			&& pathNode3.y <= pathNode.y
+			&& pathNode2 != null
+			&& pathNode2.field_43 >= 0.0F
+			&& pathNode2.y <= pathNode.y;
 	}
 
 	public static double method_60(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		double d = blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).getMaximum(Direction.Axis.Y) + (double)blockPos.getY();
-		double e = Math.max(
-			blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).getMaximum(Direction.Axis.Y) + (double)blockPos2.getY(), (double)blockPos2.getY()
-		);
-		return MathHelper.clamp(Math.max(d, e), e, (double)(blockPos.getY() + 1));
-	}
-
-	public static double method_20537(BlockView blockView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.up();
-		double d = blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).getMinimum(Direction.Axis.Y) + (double)blockPos.getY();
-		double e = blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).getMinimum(Direction.Axis.Y) + (double)blockPos2.getY();
-		return MathHelper.clamp(Math.min(d, e), (double)blockPos.getY(), (double)(blockPos.getY() + 1));
+		VoxelShape voxelShape = blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2);
+		return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 	}
 
 	@Nullable
@@ -223,21 +185,21 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			if (pathNodeType == PathNodeType.field_12) {
 				return pathNode;
 			} else {
-				if (pathNode == null && l > 0 && pathNodeType != PathNodeType.field_10 && pathNodeType != PathNodeType.field_19) {
-					pathNode = this.method_20534(i, j + 1, k, l - 1, d, direction);
+				if ((pathNode == null || pathNode.field_43 < 0.0F) && l > 0 && pathNodeType != PathNodeType.field_10 && pathNodeType != PathNodeType.field_19) {
+					pathNode = this.getPathNode(i, j + 1, k, l - 1, d, direction);
 					if (pathNode != null && (pathNode.type == PathNodeType.field_7 || pathNode.type == PathNodeType.field_12) && this.entity.getWidth() < 1.0F) {
-						double h = (double)this.entity.getHeight() + method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-						double m = method_20537(this.blockView, new BlockPos((double)i, h, (double)k));
-						if (h > m - 1.0E-7) {
+						double h = (double)(i - direction.getOffsetX()) + 0.5;
+						double m = (double)(k - direction.getOffsetZ()) + 0.5;
+						BoundingBox boundingBox = new BoundingBox(
+							h - g,
+							method_60(this.blockView, new BlockPos(h, (double)(j + 1), m)) + 0.001,
+							m - g,
+							h + g,
+							(double)this.entity.getHeight() + method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002,
+							m + g
+						);
+						if (!this.blockView.doesNotCollide(this.entity, boundingBox)) {
 							pathNode = null;
-						} else {
-							for (int n = MathHelper.ceil(d); n < MathHelper.floor(h); n++) {
-								BlockPos blockPos2 = new BlockPos(i + direction.getOpposite().getOffsetX(), n, k + direction.getOpposite().getOffsetZ());
-								if (!this.blockView.getBlockState(blockPos2).getCollisionShape(this.blockView, blockPos2).isEmpty()) {
-									pathNode = null;
-									break;
-								}
-							}
 						}
 					}
 				}
@@ -260,10 +222,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				}
 
 				if (pathNodeType == PathNodeType.field_7) {
-					BoundingBox boundingBox = new BoundingBox(
+					BoundingBox boundingBox2 = new BoundingBox(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.blockView.doesNotCollide(this.entity, boundingBox)) {
+					if (!this.blockView.doesNotCollide(this.entity, boundingBox2)) {
 						return null;
 					}
 
@@ -277,11 +239,19 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						}
 					}
 
-					int o = 0;
+					int n = 0;
+					int o = j;
 
-					while (j > 0 && pathNodeType == PathNodeType.field_7) {
-						PathNode pathNode2 = this.getPathNode(i, --j, k);
-						if (o++ >= this.entity.getSafeFallDistance()) {
+					while (pathNodeType == PathNodeType.field_7) {
+						if (--j < 0) {
+							PathNode pathNode2 = this.getPathNode(i, o, k);
+							pathNode2.type = PathNodeType.field_22;
+							pathNode2.field_43 = -1.0F;
+							return pathNode2;
+						}
+
+						PathNode pathNode2 = this.getPathNode(i, j, k);
+						if (n++ >= this.entity.getSafeFallDistance()) {
 							pathNode2.type = PathNodeType.field_22;
 							pathNode2.field_43 = -1.0F;
 							return pathNode2;

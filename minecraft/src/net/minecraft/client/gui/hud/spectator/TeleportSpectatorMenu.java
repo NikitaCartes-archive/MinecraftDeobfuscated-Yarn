@@ -17,17 +17,17 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Ordering<PlayerListEntry> field_3267 = Ordering.from(
+	private static final Ordering<PlayerListEntry> ORDERING = Ordering.from(
 		(playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result()
 	);
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
-		this(field_3267.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
+		this(ORDERING.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
 	}
 
 	public TeleportSpectatorMenu(Collection<PlayerListEntry> collection) {
-		for (PlayerListEntry playerListEntry : field_3267.sortedCopy(collection)) {
+		for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(collection)) {
 			if (playerListEntry.getGameMode() != GameMode.field_9219) {
 				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
 			}

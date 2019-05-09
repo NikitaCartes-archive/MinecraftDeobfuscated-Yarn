@@ -29,8 +29,8 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/beacon.png");
-	private BeaconScreen.WidgetButtonIconDone doneButton;
-	private boolean canConsumeGem;
+	private BeaconScreen.DoneButtonWidget doneButton;
+	private boolean consumeGem;
 	private StatusEffect primaryEffect;
 	private StatusEffect secondaryEffect;
 
@@ -51,7 +51,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 			public void onContainerPropertyUpdate(Container container, int i, int j) {
 				BeaconScreen.this.primaryEffect = beaconContainer.getPrimaryEffect();
 				BeaconScreen.this.secondaryEffect = beaconContainer.getSecondaryEffect();
-				BeaconScreen.this.canConsumeGem = true;
+				BeaconScreen.this.consumeGem = true;
 			}
 		});
 	}
@@ -59,9 +59,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	@Override
 	protected void init() {
 		super.init();
-		this.doneButton = this.addButton(new BeaconScreen.WidgetButtonIconDone(this.left + 164, this.top + 107));
-		this.addButton(new BeaconScreen.WidgetButtonIconCancel(this.left + 190, this.top + 107));
-		this.canConsumeGem = true;
+		this.doneButton = this.addButton(new BeaconScreen.DoneButtonWidget(this.left + 164, this.top + 107));
+		this.addButton(new BeaconScreen.CancelButtonWidget(this.left + 190, this.top + 107));
+		this.consumeGem = true;
 		this.doneButton.active = false;
 	}
 
@@ -69,8 +69,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	public void tick() {
 		super.tick();
 		int i = this.container.getProperties();
-		if (this.canConsumeGem && i >= 0) {
-			this.canConsumeGem = false;
+		if (this.consumeGem && i >= 0) {
+			this.consumeGem = false;
 
 			for (int j = 0; j <= 2; j++) {
 				int k = BeaconBlockEntity.EFFECTS_BY_LEVEL[j].length;
@@ -78,14 +78,14 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 				for (int m = 0; m < k; m++) {
 					StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[j][m];
-					BeaconScreen.WidgetButtonIconEffect widgetButtonIconEffect = new BeaconScreen.WidgetButtonIconEffect(
+					BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
 						this.left + 76 + m * 24 - l / 2, this.top + 22 + j * 25, statusEffect, true
 					);
-					this.addButton(widgetButtonIconEffect);
+					this.addButton(effectButtonWidget);
 					if (j >= i) {
-						widgetButtonIconEffect.active = false;
+						effectButtonWidget.active = false;
 					} else if (statusEffect == this.primaryEffect) {
-						widgetButtonIconEffect.setDisabled(true);
+						effectButtonWidget.setDisabled(true);
 					}
 				}
 			}
@@ -96,26 +96,26 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 			for (int mx = 0; mx < k - 1; mx++) {
 				StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][mx];
-				BeaconScreen.WidgetButtonIconEffect widgetButtonIconEffect = new BeaconScreen.WidgetButtonIconEffect(
+				BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
 					this.left + 167 + mx * 24 - l / 2, this.top + 47, statusEffect, false
 				);
-				this.addButton(widgetButtonIconEffect);
+				this.addButton(effectButtonWidget);
 				if (3 >= i) {
-					widgetButtonIconEffect.active = false;
+					effectButtonWidget.active = false;
 				} else if (statusEffect == this.secondaryEffect) {
-					widgetButtonIconEffect.setDisabled(true);
+					effectButtonWidget.setDisabled(true);
 				}
 			}
 
 			if (this.primaryEffect != null) {
-				BeaconScreen.WidgetButtonIconEffect widgetButtonIconEffect2 = new BeaconScreen.WidgetButtonIconEffect(
+				BeaconScreen.EffectButtonWidget effectButtonWidget2 = new BeaconScreen.EffectButtonWidget(
 					this.left + 167 + (k - 1) * 24 - l / 2, this.top + 47, this.primaryEffect, false
 				);
-				this.addButton(widgetButtonIconEffect2);
+				this.addButton(effectButtonWidget2);
 				if (3 >= i) {
-					widgetButtonIconEffect2.active = false;
+					effectButtonWidget2.active = false;
 				} else if (this.primaryEffect == this.secondaryEffect) {
-					widgetButtonIconEffect2.setDisabled(true);
+					effectButtonWidget2.setDisabled(true);
 				}
 			}
 		}
@@ -162,10 +162,10 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class WidgetButtonIcon extends AbstractPressableButtonWidget {
+	abstract static class BaseButtonWidget extends AbstractPressableButtonWidget {
 		private boolean disabled;
 
-		protected WidgetButtonIcon(int i, int j) {
+		protected BaseButtonWidget(int i, int j) {
 			super(i, j, 22, 22, "");
 		}
 
@@ -184,10 +184,10 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 			}
 
 			this.blit(this.x, this.y, l, 219, this.width, this.height);
-			this.method_18641();
+			this.renderExtra();
 		}
 
-		protected abstract void method_18641();
+		protected abstract void renderExtra();
 
 		public boolean isDisabled() {
 			return this.disabled;
@@ -199,8 +199,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WidgetButtonIconCancel extends BeaconScreen.class_4072 {
-		public WidgetButtonIconCancel(int i, int j) {
+	class CancelButtonWidget extends BeaconScreen.IconButtonWidget {
+		public CancelButtonWidget(int i, int j) {
 			super(i, j, 112, 220);
 		}
 
@@ -217,8 +217,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WidgetButtonIconDone extends BeaconScreen.class_4072 {
-		public WidgetButtonIconDone(int i, int j) {
+	class DoneButtonWidget extends BeaconScreen.IconButtonWidget {
+		public DoneButtonWidget(int i, int j) {
 			super(i, j, 90, 220);
 		}
 
@@ -238,15 +238,15 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WidgetButtonIconEffect extends BeaconScreen.WidgetButtonIcon {
+	class EffectButtonWidget extends BeaconScreen.BaseButtonWidget {
 		private final StatusEffect effect;
-		private final Sprite field_18223;
+		private final Sprite sprite;
 		private final boolean primary;
 
-		public WidgetButtonIconEffect(int i, int j, StatusEffect statusEffect, boolean bl) {
+		public EffectButtonWidget(int i, int j, StatusEffect statusEffect, boolean bl) {
 			super(i, j);
 			this.effect = statusEffect;
-			this.field_18223 = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
+			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
 			this.primary = bl;
 		}
 
@@ -277,26 +277,26 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		protected void method_18641() {
+		protected void renderExtra() {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
-			blit(this.x + 2, this.y + 2, this.blitOffset, 18, 18, this.field_18223);
+			blit(this.x + 2, this.y + 2, this.blitOffset, 18, 18, this.sprite);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class class_4072 extends BeaconScreen.WidgetButtonIcon {
-		private final int field_18224;
-		private final int field_18225;
+	abstract static class IconButtonWidget extends BeaconScreen.BaseButtonWidget {
+		private final int u;
+		private final int v;
 
-		protected class_4072(int i, int j, int k, int l) {
+		protected IconButtonWidget(int i, int j, int k, int l) {
 			super(i, j);
-			this.field_18224 = k;
-			this.field_18225 = l;
+			this.u = k;
+			this.v = l;
 		}
 
 		@Override
-		protected void method_18641() {
-			this.blit(this.x + 2, this.y + 2, this.field_18224, this.field_18225, 18, 18);
+		protected void renderExtra() {
+			this.blit(this.x + 2, this.y + 2, this.u, this.v, 18, 18);
 		}
 	}
 }

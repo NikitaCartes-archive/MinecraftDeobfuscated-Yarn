@@ -44,6 +44,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -414,8 +415,10 @@ public class ClientWorld extends World {
 	@Override
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = super.addDetailsToCrashReport(crashReport);
-		crashReportSection.method_577("Server brand", () -> this.client.player.getServerBrand());
-		crashReportSection.method_577("Server type", () -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server");
+		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.player.getServerBrand()));
+		crashReportSection.add(
+			"Server type", (CrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
+		);
 		return crashReportSection;
 	}
 

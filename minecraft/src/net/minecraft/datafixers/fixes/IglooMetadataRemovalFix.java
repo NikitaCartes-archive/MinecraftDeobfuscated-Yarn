@@ -16,10 +16,10 @@ public class IglooMetadataRemovalFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
 		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
-		return this.writeFixAndRead("IglooMetadataRemovalFix", type, type2, IglooMetadataRemovalFix::method_4993);
+		return this.writeFixAndRead("IglooMetadataRemovalFix", type, type2, IglooMetadataRemovalFix::removeMetadata);
 	}
 
-	private static <T> Dynamic<T> method_4993(Dynamic<T> dynamic) {
+	private static <T> Dynamic<T> removeMetadata(Dynamic<T> dynamic) {
 		boolean bl = (Boolean)dynamic.get("Children").asStreamOpt().map(stream -> stream.allMatch(IglooMetadataRemovalFix::isIgloo)).orElse(false);
 		return bl ? dynamic.set("id", dynamic.createString("Igloo")).remove("Children") : dynamic.update("Children", IglooMetadataRemovalFix::removeIgloos);
 	}

@@ -100,7 +100,9 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	protected Path findPathTo(BlockPos blockPos, double d, double e, double f, int i, boolean bl) {
-		if (!this.isAtValidPosition()) {
+		if (this.entity.y < 0.0) {
+			return null;
+		} else if (!this.isAtValidPosition()) {
 			return null;
 		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
 			return this.currentPath;

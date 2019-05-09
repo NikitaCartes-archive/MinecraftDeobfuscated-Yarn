@@ -99,8 +99,7 @@ public class CrossbowItem extends BaseBowItem {
 	public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 		int j = this.getMaxUseTime(itemStack) - i;
 		float f = method_7770(j, itemStack);
-		if (f >= 1.0F && !isCharged(itemStack)) {
-			method_7767(livingEntity, itemStack);
+		if (f >= 1.0F && !isCharged(itemStack) && method_7767(livingEntity, itemStack)) {
 			setCharged(itemStack, true);
 			SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.field_15251;
 			world.playSound(
@@ -109,7 +108,7 @@ public class CrossbowItem extends BaseBowItem {
 		}
 	}
 
-	private static void method_7767(LivingEntity livingEntity, ItemStack itemStack) {
+	private static boolean method_7767(LivingEntity livingEntity, ItemStack itemStack) {
 		int i = EnchantmentHelper.getLevel(Enchantments.field_9108, itemStack);
 		int j = i == 0 ? 1 : 3;
 		boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode;
@@ -126,23 +125,32 @@ public class CrossbowItem extends BaseBowItem {
 				itemStack3 = itemStack2.copy();
 			}
 
-			method_7765(livingEntity, itemStack, itemStack2, k > 0, bl);
+			if (!method_7765(livingEntity, itemStack, itemStack2, k > 0, bl)) {
+				return false;
+			}
 		}
+
+		return true;
 	}
 
-	private static void method_7765(LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2, boolean bl, boolean bl2) {
-		boolean bl3 = bl2 && itemStack2.getItem() instanceof ArrowItem;
-		ItemStack itemStack3;
-		if (!bl3 && !bl2 && !bl) {
-			itemStack3 = itemStack2.split(1);
-			if (itemStack2.isEmpty() && livingEntity instanceof PlayerEntity) {
-				((PlayerEntity)livingEntity).inventory.removeOne(itemStack2);
-			}
+	private static boolean method_7765(LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2, boolean bl, boolean bl2) {
+		if (itemStack2.isEmpty()) {
+			return false;
 		} else {
-			itemStack3 = itemStack2.copy();
-		}
+			boolean bl3 = bl2 && itemStack2.getItem() instanceof ArrowItem;
+			ItemStack itemStack3;
+			if (!bl3 && !bl2 && !bl) {
+				itemStack3 = itemStack2.split(1);
+				if (itemStack2.isEmpty() && livingEntity instanceof PlayerEntity) {
+					((PlayerEntity)livingEntity).inventory.removeOne(itemStack2);
+				}
+			} else {
+				itemStack3 = itemStack2.copy();
+			}
 
-		storeChargedProjectile(itemStack, itemStack3);
+			storeChargedProjectile(itemStack, itemStack3);
+			return true;
+		}
 	}
 
 	public static boolean isCharged(ItemStack itemStack) {

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -343,8 +344,8 @@ public class CompoundTag implements Tag {
 	private CrashReport createCrashReport(String string, int i, ClassCastException classCastException) {
 		CrashReport crashReport = CrashReport.create(classCastException, "Reading NBT data");
 		CrashReportSection crashReportSection = crashReport.addElement("Corrupt NBT tag", 1);
-		crashReportSection.method_577("Tag type found", () -> TYPES[((Tag)this.tags.get(string)).getType()]);
-		crashReportSection.method_577("Tag type expected", () -> TYPES[i]);
+		crashReportSection.add("Tag type found", (CrashCallable<String>)(() -> TYPES[((Tag)this.tags.get(string)).getType()]));
+		crashReportSection.add("Tag type expected", (CrashCallable<String>)(() -> TYPES[i]));
 		crashReportSection.add("Tag name", string);
 		return crashReport;
 	}

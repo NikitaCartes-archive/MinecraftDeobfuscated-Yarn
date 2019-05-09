@@ -14,6 +14,7 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -121,8 +122,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 				} catch (Throwable var6) {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
 					CrashReportSection crashReportSection = crashReport.addElement("Command to be executed");
-					crashReportSection.method_577("Command", this::getCommand);
-					crashReportSection.method_577("Name", () -> this.getCustomName().getString());
+					crashReportSection.add("Command", this::getCommand);
+					crashReportSection.add("Name", (CrashCallable<String>)(() -> this.getCustomName().getString()));
 					throw new CrashException(crashReport);
 				}
 			}

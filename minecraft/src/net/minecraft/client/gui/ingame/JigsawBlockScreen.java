@@ -21,7 +21,7 @@ public class JigsawBlockScreen extends Screen {
 	private ButtonWidget field_19103;
 
 	public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.jigsaw = jigsawBlockEntity;
 	}
 
@@ -80,7 +80,7 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	protected void method_20118() {
-		this.field_19103.active = Identifier.isValidIdentifier(this.attachmentTypeField.getText()) & Identifier.isValidIdentifier(this.targetPoolField.getText());
+		this.field_19103.active = Identifier.isValid(this.attachmentTypeField.getText()) & Identifier.isValid(this.targetPoolField.getText());
 	}
 
 	@Override

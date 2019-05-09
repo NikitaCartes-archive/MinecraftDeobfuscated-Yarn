@@ -12,7 +12,7 @@ public class Potion {
 	private final ImmutableList<StatusEffectInstance> effectList;
 
 	public static Potion byId(String string) {
-		return Registry.POTION.get(Identifier.create(string));
+		return Registry.POTION.get(Identifier.ofNullable(string));
 	}
 
 	public Potion(StatusEffectInstance... statusEffectInstances) {

@@ -20,11 +20,11 @@ public class HeightmapRenamingFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
 		OpticFinder<?> opticFinder = type.findField("Level");
 		return this.fixTypeEverywhereTyped(
-			"HeightmapRenamingFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::method_4998))
+			"HeightmapRenamingFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::renameHeightmapTags))
 		);
 	}
 
-	private Dynamic<?> method_4998(Dynamic<?> dynamic) {
+	private Dynamic<?> renameHeightmapTags(Dynamic<?> dynamic) {
 		Optional<? extends Dynamic<?>> optional = dynamic.get("Heightmaps").get();
 		if (!optional.isPresent()) {
 			return dynamic;

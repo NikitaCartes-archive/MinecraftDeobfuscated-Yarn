@@ -39,15 +39,19 @@ public class CrashReport {
 	}
 
 	private void fillSystemDetails() {
-		this.systemDetailsSection.method_577("Minecraft Version", () -> SharedConstants.getGameVersion().getName());
+		this.systemDetailsSection.add("Minecraft Version", (CrashCallable<String>)(() -> SharedConstants.getGameVersion().getName()));
 		this.systemDetailsSection
-			.method_577("Operating System", () -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
-		this.systemDetailsSection.method_577("Java Version", () -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor"));
-		this.systemDetailsSection
-			.method_577(
-				"Java VM Version", () -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor")
+			.add(
+				"Operating System",
+				(CrashCallable<String>)(() -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"))
 			);
-		this.systemDetailsSection.method_577("Memory", () -> {
+		this.systemDetailsSection.add("Java Version", (CrashCallable<String>)(() -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor")));
+		this.systemDetailsSection
+			.add(
+				"Java VM Version",
+				(CrashCallable<String>)(() -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor"))
+			);
+		this.systemDetailsSection.add("Memory", (CrashCallable<String>)(() -> {
 			Runtime runtime = Runtime.getRuntime();
 			long l = runtime.maxMemory();
 			long m = runtime.totalMemory();
@@ -56,11 +60,11 @@ public class CrashReport {
 			long p = m / 1024L / 1024L;
 			long q = n / 1024L / 1024L;
 			return n + " bytes (" + q + " MB) / " + m + " bytes (" + p + " MB) up to " + l + " bytes (" + o + " MB)";
-		});
-		this.systemDetailsSection.method_577("JVM Flags", () -> {
+		}));
+		this.systemDetailsSection.add("JVM Flags", (CrashCallable<String>)(() -> {
 			List<String> list = (List<String>)SystemUtil.getJVMFlags().collect(Collectors.toList());
 			return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
-		});
+		}));
 	}
 
 	public String getMessage() {

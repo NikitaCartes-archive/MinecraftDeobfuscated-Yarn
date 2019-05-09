@@ -81,6 +81,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -1872,7 +1873,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
 			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()));
 			crashReportSection.add("Parameters", particleEffect.asString());
-			crashReportSection.method_577("Position", () -> CrashReportSection.createPositionString(d, e, f));
+			crashReportSection.add("Position", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(d, e, f)));
 			throw new CrashException(crashReport);
 		}
 	}

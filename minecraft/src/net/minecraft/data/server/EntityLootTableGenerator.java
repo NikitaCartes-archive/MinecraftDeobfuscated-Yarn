@@ -1,5 +1,6 @@
 package net.minecraft.data.server;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
@@ -42,6 +43,9 @@ import net.minecraft.world.loot.function.SetNbtLootFunction;
 
 public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
 	private static final EntityPredicate.Builder field_11344 = EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
+	private static final Set<EntityType<?>> field_19339 = ImmutableSet.of(
+		EntityType.field_6097, EntityType.field_6131, EntityType.field_6147, EntityType.field_6047, EntityType.field_6077
+	);
 	private final Map<Identifier, LootSupplier.Builder> field_16543 = Maps.<Identifier, LootSupplier.Builder>newHashMap();
 
 	private static LootSupplier.Builder method_10401(ItemConvertible itemConvertible) {
@@ -1004,7 +1008,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 
 		for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
 			Identifier identifier = entityType.getLootTableId();
-			if (entityType != EntityType.field_6097 && entityType != EntityType.field_6131 && entityType.getCategory() == EntityCategory.field_17715) {
+			if (!field_19339.contains(entityType) && entityType.getCategory() == EntityCategory.field_17715) {
 				if (identifier != LootTables.EMPTY && this.field_16543.remove(identifier) != null) {
 					throw new IllegalStateException(
 						String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType))

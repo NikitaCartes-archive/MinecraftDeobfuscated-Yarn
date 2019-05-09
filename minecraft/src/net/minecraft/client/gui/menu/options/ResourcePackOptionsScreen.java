@@ -21,7 +21,7 @@ public class ResourcePackOptionsScreen extends Screen {
 	private final Screen parent;
 	private AvailableResourcePackListWidget availableList;
 	private SelectedResourcePackListWidget selectedList;
-	private boolean field_3155;
+	private boolean edited;
 
 	public ResourcePackOptionsScreen(Screen screen) {
 		super(new TranslatableComponent("resourcePack.title"));
@@ -41,11 +41,11 @@ public class ResourcePackOptionsScreen extends Screen {
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			if (this.field_3155) {
+			if (this.edited) {
 				List<ClientResourcePackContainer> listx = Lists.<ClientResourcePackContainer>newArrayList();
 
-				for (ResourcePackListWidget.ResourcePackItem resourcePackItem : this.selectedList.children()) {
-					listx.add(resourcePackItem.getPackContainer());
+				for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.selectedList.children()) {
+					listx.add(resourcePackEntry.getPackContainer());
 				}
 
 				Collections.reverse(listx);
@@ -85,7 +85,7 @@ public class ResourcePackOptionsScreen extends Screen {
 		}
 
 		this.children.add(this.selectedList);
-		if (!this.field_3155) {
+		if (!this.edited) {
 			this.availableList.children().clear();
 			this.selectedList.children().clear();
 			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.minecraft.getResourcePackContainerManager();
@@ -94,29 +94,29 @@ public class ResourcePackOptionsScreen extends Screen {
 			list.removeAll(resourcePackContainerManager.getEnabledContainers());
 
 			for (ClientResourcePackContainer clientResourcePackContainer : list) {
-				this.availableList.addEntry(new ResourcePackListWidget.ResourcePackItem(this.availableList, this, clientResourcePackContainer));
+				this.availableList.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.availableList, this, clientResourcePackContainer));
 			}
 
 			for (ClientResourcePackContainer clientResourcePackContainer : Lists.reverse(Lists.newArrayList(resourcePackContainerManager.getEnabledContainers()))) {
-				this.selectedList.addEntry(new ResourcePackListWidget.ResourcePackItem(this.selectedList, this, clientResourcePackContainer));
+				this.selectedList.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.selectedList, this, clientResourcePackContainer));
 			}
 		}
 	}
 
-	public void select(ResourcePackListWidget.ResourcePackItem resourcePackItem) {
-		this.availableList.children().remove(resourcePackItem);
-		resourcePackItem.method_20145(this.selectedList);
-		this.method_2660();
+	public void select(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+		this.availableList.children().remove(resourcePackEntry);
+		resourcePackEntry.method_20145(this.selectedList);
+		this.setEdited();
 	}
 
-	public void remove(ResourcePackListWidget.ResourcePackItem resourcePackItem) {
-		this.selectedList.children().remove(resourcePackItem);
-		this.availableList.addEntry(resourcePackItem);
-		this.method_2660();
+	public void remove(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+		this.selectedList.children().remove(resourcePackEntry);
+		this.availableList.addEntry(resourcePackEntry);
+		this.setEdited();
 	}
 
-	public boolean method_2669(ResourcePackListWidget.ResourcePackItem resourcePackItem) {
-		return this.selectedList.children().contains(resourcePackItem);
+	public boolean method_2669(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+		return this.selectedList.children().contains(resourcePackEntry);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class ResourcePackOptionsScreen extends Screen {
 		super.render(i, j, f);
 	}
 
-	public void method_2660() {
-		this.field_3155 = true;
+	public void setEdited() {
+		this.edited = true;
 	}
 }

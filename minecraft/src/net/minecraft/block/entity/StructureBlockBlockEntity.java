@@ -165,7 +165,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public void setStructureName(@Nullable String string) {
-		this.setStructureName(ChatUtil.isEmpty(string) ? null : Identifier.create(string));
+		this.setStructureName(ChatUtil.isEmpty(string) ? null : Identifier.ofNullable(string));
 	}
 
 	public void setStructureName(@Nullable Identifier identifier) {

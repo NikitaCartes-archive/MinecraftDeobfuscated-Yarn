@@ -31,7 +31,7 @@ public class VillagerTradeFix extends ChoiceFix {
 			OpticFinder<?> opticFinder5 = type2.findField("buyB");
 			OpticFinder<?> opticFinder6 = type2.findField("sell");
 			OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
-			Function<Typed<?>, Typed<?>> function = typedx -> this.method_5187(opticFinder7, typedx);
+			Function<Typed<?>, Typed<?>> function = typedx -> this.fixPumpkinTrade(opticFinder7, typedx);
 			return typed.updateTyped(
 				opticFinder,
 				typedx -> typedx.updateTyped(
@@ -44,7 +44,7 @@ public class VillagerTradeFix extends ChoiceFix {
 		}
 	}
 
-	private Typed<?> method_5187(OpticFinder<Pair<String, String>> opticFinder, Typed<?> typed) {
+	private Typed<?> fixPumpkinTrade(OpticFinder<Pair<String, String>> opticFinder, Typed<?> typed) {
 		return typed.update(opticFinder, pair -> pair.mapSecond(string -> Objects.equals(string, "minecraft:carved_pumpkin") ? "minecraft:pumpkin" : string));
 	}
 }
