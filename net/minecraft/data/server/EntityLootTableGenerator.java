@@ -3,10 +3,12 @@
  */
 package net.minecraft.data.server;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.block.Blocks;
@@ -49,6 +51,7 @@ import net.minecraft.world.loot.function.SetNbtLootFunction;
 public class EntityLootTableGenerator
 implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
     private static final EntityPredicate.Builder field_11344 = EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
+    private static final Set<EntityType<?>> field_19339 = ImmutableSet.of(EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER);
     private final Map<Identifier, LootSupplier.Builder> field_16543 = Maps.newHashMap();
 
     private static LootSupplier.Builder method_10401(ItemConvertible itemConvertible) {
@@ -141,7 +144,7 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         HashSet<Identifier> set = Sets.newHashSet();
         for (EntityType entityType : Registry.ENTITY_TYPE) {
             Identifier identifier = entityType.getLootTableId();
-            if (entityType == EntityType.PLAYER || entityType == EntityType.ARMOR_STAND || entityType.getCategory() != EntityCategory.MISC) {
+            if (field_19339.contains(entityType) || entityType.getCategory() != EntityCategory.MISC) {
                 if (identifier == LootTables.EMPTY || !set.add(identifier)) continue;
                 LootSupplier.Builder builder = this.field_16543.remove(identifier);
                 if (builder == null) {

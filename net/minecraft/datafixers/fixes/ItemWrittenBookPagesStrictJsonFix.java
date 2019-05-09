@@ -25,7 +25,7 @@ extends DataFix {
         super(schema, bl);
     }
 
-    public Dynamic<?> method_5085(Dynamic<?> dynamic) {
+    public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {
         return dynamic.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
             if (!dynamic.asString().isPresent()) {
                 return dynamic;
@@ -71,7 +71,7 @@ extends DataFix {
     public TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder = type.findField("tag");
-        return this.fixTypeEverywhereTyped("ItemWrittenBookPagesStrictJsonFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::method_5085)));
+        return this.fixTypeEverywhereTyped("ItemWrittenBookPagesStrictJsonFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::fixBookPages)));
     }
 }
 

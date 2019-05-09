@@ -16,16 +16,16 @@ extends ChoiceFix {
         super(schema, bl, "EntityItemFrameDirectionFix", TypeReferences.ENTITY, "minecraft:item_frame");
     }
 
-    public Dynamic<?> method_15711(Dynamic<?> dynamic) {
-        return dynamic.set("Facing", dynamic.createByte(EntityItemFrameDirectionFix.method_15712(dynamic.get("Facing").asByte((byte)0))));
+    public Dynamic<?> fixDirection(Dynamic<?> dynamic) {
+        return dynamic.set("Facing", dynamic.createByte(EntityItemFrameDirectionFix.updateDirection(dynamic.get("Facing").asByte((byte)0))));
     }
 
     @Override
     protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), this::method_15711);
+        return typed.update(DSL.remainderFinder(), this::fixDirection);
     }
 
-    private static byte method_15712(byte b) {
+    private static byte updateDirection(byte b) {
         switch (b) {
             default: {
                 return 2;

@@ -40,7 +40,7 @@ extends Screen {
     private long field_19097 = -1L;
 
     public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
-        super(NarratorManager.field_18967);
+        super(NarratorManager.EMPTY);
         this.minecraft = minecraftClient;
         this.parent = screen;
         ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
@@ -50,7 +50,7 @@ extends Screen {
     }
 
     public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
-        super(NarratorManager.field_18967);
+        super(NarratorManager.EMPTY);
         this.minecraft = minecraftClient;
         this.parent = screen;
         minecraftClient.disconnect();
@@ -130,7 +130,7 @@ extends Screen {
         long l = SystemUtil.getMeasuringTimeMs();
         if (l - this.field_19097 > 2000L) {
             this.field_19097 = l;
-            NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.joining", new Object[0]).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.joining", new Object[0]).getString());
         }
         this.drawCenteredString(this.font, this.status.getFormattedText(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(i, j, f);

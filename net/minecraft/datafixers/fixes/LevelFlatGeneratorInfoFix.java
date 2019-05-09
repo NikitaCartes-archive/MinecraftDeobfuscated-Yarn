@@ -34,18 +34,18 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        return this.fixTypeEverywhereTyped("LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::method_5090));
+        return this.fixTypeEverywhereTyped("LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::fixGeneratorOptions));
     }
 
-    private Dynamic<?> method_5090(Dynamic<?> dynamic2) {
+    private Dynamic<?> fixGeneratorOptions(Dynamic<?> dynamic2) {
         if (dynamic2.get("generatorName").asString("").equalsIgnoreCase("flat")) {
-            return dynamic2.update("generatorOptions", dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::transform).map(dynamic::createString), dynamic));
+            return dynamic2.update("generatorOptions", dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::fixFlatGeneratorOptions).map(dynamic::createString), dynamic));
         }
         return dynamic2;
     }
 
     @VisibleForTesting
-    String transform(String string2) {
+    String fixFlatGeneratorOptions(String string2) {
         String string3;
         int i;
         if (string2.isEmpty()) {

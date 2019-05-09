@@ -24,17 +24,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class Identifier
 implements Comparable<Identifier> {
-    private static final SimpleCommandExceptionType EXCEPTION_INVALID = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid", new Object[0]));
     protected final String namespace;
     protected final String path;
 
     protected Identifier(String[] strings) {
         this.namespace = StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0];
         this.path = strings[1];
-        if (!Identifier.isValidNamespace(this.namespace)) {
+        if (!Identifier.isNamespaceValid(this.namespace)) {
             throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
         }
-        if (!Identifier.isValidPath(this.path)) {
+        if (!Identifier.isPathValid(this.path)) {
             throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
         }
     }
@@ -47,12 +47,12 @@ implements Comparable<Identifier> {
         this(new String[]{string, string2});
     }
 
-    public static Identifier createSplit(String string, char c) {
+    public static Identifier splitOn(String string, char c) {
         return new Identifier(Identifier.split(string, c));
     }
 
     @Nullable
-    public static Identifier create(String string) {
+    public static Identifier ofNullable(String string) {
         try {
             return new Identifier(string);
         } catch (InvalidIdentifierException invalidIdentifierException) {
@@ -107,9 +107,9 @@ implements Comparable<Identifier> {
         return i;
     }
 
-    public static Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+    public static Identifier fromCommandInput(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
-        while (stringReader.canRead() && Identifier.isValidChar(stringReader.peek())) {
+        while (stringReader.canRead() && Identifier.isCharValid(stringReader.peek())) {
             stringReader.skip();
         }
         String string = stringReader.getString().substring(i, stringReader.getCursor());
@@ -117,26 +117,26 @@ implements Comparable<Identifier> {
             return new Identifier(string);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             stringReader.setCursor(i);
-            throw EXCEPTION_INVALID.createWithContext(stringReader);
+            throw COMMAND_EXCEPTION.createWithContext(stringReader);
         }
     }
 
-    public static boolean isValidChar(char c) {
+    public static boolean isCharValid(char c) {
         return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
     }
 
-    private static boolean isValidPath(String string) {
+    private static boolean isPathValid(String string) {
         return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 47 || i == 46);
     }
 
-    private static boolean isValidNamespace(String string) {
+    private static boolean isNamespaceValid(String string) {
         return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 46);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean isValidIdentifier(String string) {
+    public static boolean isValid(String string) {
         String[] strings = Identifier.split(string, ':');
-        return Identifier.isValidNamespace(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && Identifier.isValidPath(strings[1]);
+        return Identifier.isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && Identifier.isPathValid(strings[1]);
     }
 
     @Override

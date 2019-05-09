@@ -75,7 +75,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.motive = Registry.MOTIVE.get(Identifier.create(compoundTag.getString("Motive")));
+        this.motive = Registry.MOTIVE.get(Identifier.ofNullable(compoundTag.getString("Motive")));
         super.readCustomDataFromTag(compoundTag);
     }
 

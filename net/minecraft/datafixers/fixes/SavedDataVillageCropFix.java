@@ -27,35 +27,35 @@ extends DataFix {
     }
 
     private static <T> Dynamic<T> method_5157(Dynamic<T> dynamic) {
-        return dynamic.asStreamOpt().map(SavedDataVillageCropFix::method_5151).map(dynamic::createList).orElse(dynamic);
+        return dynamic.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(dynamic::createList).orElse(dynamic);
     }
 
-    private static Stream<? extends Dynamic<?>> method_5151(Stream<? extends Dynamic<?>> stream) {
+    private static Stream<? extends Dynamic<?>> fixVillageChildren(Stream<? extends Dynamic<?>> stream) {
         return stream.map(dynamic -> {
             String string = dynamic.get("id").asString("");
             if ("ViF".equals(string)) {
-                return SavedDataVillageCropFix.method_5154(dynamic);
+                return SavedDataVillageCropFix.fixSmallPlotCropIds(dynamic);
             }
             if ("ViDF".equals(string)) {
-                return SavedDataVillageCropFix.method_5155(dynamic);
+                return SavedDataVillageCropFix.fixLargePlotCropIds(dynamic);
             }
             return dynamic;
         });
     }
 
-    private static <T> Dynamic<T> method_5154(Dynamic<T> dynamic) {
-        dynamic = SavedDataVillageCropFix.method_5156(dynamic, "CA");
-        return SavedDataVillageCropFix.method_5156(dynamic, "CB");
+    private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> dynamic) {
+        dynamic = SavedDataVillageCropFix.fixCropId(dynamic, "CA");
+        return SavedDataVillageCropFix.fixCropId(dynamic, "CB");
     }
 
-    private static <T> Dynamic<T> method_5155(Dynamic<T> dynamic) {
-        dynamic = SavedDataVillageCropFix.method_5156(dynamic, "CA");
-        dynamic = SavedDataVillageCropFix.method_5156(dynamic, "CB");
-        dynamic = SavedDataVillageCropFix.method_5156(dynamic, "CC");
-        return SavedDataVillageCropFix.method_5156(dynamic, "CD");
+    private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> dynamic) {
+        dynamic = SavedDataVillageCropFix.fixCropId(dynamic, "CA");
+        dynamic = SavedDataVillageCropFix.fixCropId(dynamic, "CB");
+        dynamic = SavedDataVillageCropFix.fixCropId(dynamic, "CC");
+        return SavedDataVillageCropFix.fixCropId(dynamic, "CD");
     }
 
-    private static <T> Dynamic<T> method_5156(Dynamic<T> dynamic, String string) {
+    private static <T> Dynamic<T> fixCropId(Dynamic<T> dynamic, String string) {
         if (dynamic.get(string).asNumber().isPresent()) {
             return dynamic.set(string, BlockStateFlattening.lookupState(dynamic.get(string).asInt(0) << 4));
         }

@@ -22,7 +22,7 @@ extends DataFix {
         super(schema, bl);
     }
 
-    private Dynamic<?> method_5106(Dynamic<?> dynamic2) {
+    private Dynamic<?> fixSpawner(Dynamic<?> dynamic2) {
         Optional<Stream<Dynamic<?>>> optional2;
         if (!"MobSpawner".equals(dynamic2.get("id").asString(""))) {
             return dynamic2;
@@ -52,7 +52,7 @@ extends DataFix {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.UNTAGGED_SPAWNER);
         return this.fixTypeEverywhereTyped("MobSpawnerEntityIdentifiersFix", this.getInputSchema().getType(TypeReferences.UNTAGGED_SPAWNER), type, (Typed<?> typed) -> {
             Dynamic dynamic = typed.get(DSL.remainderFinder());
-            Pair pair = type.readTyped(this.method_5106(dynamic = dynamic.set("id", dynamic.createString("MobSpawner"))));
+            Pair pair = type.readTyped(this.fixSpawner(dynamic = dynamic.set("id", dynamic.createString("MobSpawner"))));
             if (!pair.getSecond().isPresent()) {
                 return typed;
             }

@@ -36,6 +36,7 @@ implements TickScheduler<T> {
     private final Set<ScheduledTick<T>> ticksScheduled = Sets.newHashSet();
     private final Set<ScheduledTick<T>> field_19310 = Sets.newTreeSet();
     private final List<ScheduledTick<T>> field_19311 = Lists.newArrayList();
+    private final List<ScheduledTick<T>> field_19338 = Lists.newArrayList();
     private final ServerWorld world;
     private final List<ScheduledTick<T>> ticksCurrent = Lists.newArrayList();
     private final Consumer<ScheduledTick<T>> tickConsumer;
@@ -69,23 +70,23 @@ implements TickScheduler<T> {
         while (iterator.hasNext()) {
             ScheduledTick<T> scheduledTick;
             scheduledTick = iterator.next();
-            if (this.world.method_14178().method_20529(scheduledTick.pos)) {
-                try {
-                    this.tickConsumer.accept(scheduledTick);
-                    continue;
-                } catch (Throwable throwable) {
-                    CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
-                    CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
-                    CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
-                    throw new CrashException(crashReport);
-                }
-            }
+            if (!this.world.method_14178().method_20529(scheduledTick.pos)) continue;
             iterator.remove();
+            this.field_19338.add(scheduledTick);
+            try {
+                this.tickConsumer.accept(scheduledTick);
+            } catch (Throwable throwable) {
+                CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
+                CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
+                CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
+                throw new CrashException(crashReport);
+            }
         }
         this.world.getProfiler().swap("cleaning");
-        this.field_19310.removeAll(this.ticksCurrent);
-        this.ticksScheduled.removeAll(this.ticksCurrent);
+        this.field_19310.removeAll(this.field_19338);
+        this.ticksScheduled.removeAll(this.field_19338);
         this.ticksCurrent.clear();
+        this.field_19338.clear();
         this.world.getProfiler().pop();
     }
 

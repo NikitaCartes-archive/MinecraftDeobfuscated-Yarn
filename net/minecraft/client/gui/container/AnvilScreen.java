@@ -41,8 +41,8 @@ implements ContainerListener {
         this.nameField = new TextFieldWidget(this.font, i + 62, j + 24, 103, 12, I18n.translate("container.repair", new Object[0]));
         this.nameField.method_1856(false);
         this.nameField.changeFocus(true);
-        this.nameField.method_1868(-1);
-        this.nameField.method_1860(-1);
+        this.nameField.setEditableColor(-1);
+        this.nameField.setUneditableColor(-1);
         this.nameField.setHasBorder(false);
         this.nameField.setMaxLength(35);
         this.nameField.setChangedListener(this::onRenamed);

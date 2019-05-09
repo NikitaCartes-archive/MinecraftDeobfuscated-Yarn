@@ -13,7 +13,7 @@ import net.minecraft.client.util.NarratorManager;
 public class DownloadingTerrainScreen
 extends Screen {
     public DownloadingTerrainScreen() {
-        super(NarratorManager.field_18967);
+        super(NarratorManager.EMPTY);
     }
 
     @Override

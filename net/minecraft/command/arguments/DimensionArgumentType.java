@@ -28,7 +28,7 @@ implements ArgumentType<DimensionType> {
     public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("argument.dimension.invalid", object));
 
     public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
-        Identifier identifier = Identifier.parse(stringReader);
+        Identifier identifier = Identifier.fromCommandInput(stringReader);
         return Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
     }
 

@@ -56,7 +56,7 @@ extends ChoiceFix {
         super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
     }
 
-    private Dynamic<?> method_15582(Dynamic<?> dynamic, String string) {
+    private Dynamic<?> fix(Dynamic<?> dynamic, String string) {
         String string2 = dynamic.get(string).asString("");
         Component component = null;
         if ("null".equals(string2) || StringUtils.isEmpty(string2)) {
@@ -96,10 +96,10 @@ extends ChoiceFix {
     @Override
     protected Typed<?> transform(Typed<?> typed) {
         return typed.update(DSL.remainderFinder(), dynamic -> {
-            dynamic = this.method_15582((Dynamic<?>)dynamic, "Text1");
-            dynamic = this.method_15582((Dynamic<?>)dynamic, "Text2");
-            dynamic = this.method_15582((Dynamic<?>)dynamic, "Text3");
-            dynamic = this.method_15582((Dynamic<?>)dynamic, "Text4");
+            dynamic = this.fix((Dynamic<?>)dynamic, "Text1");
+            dynamic = this.fix((Dynamic<?>)dynamic, "Text2");
+            dynamic = this.fix((Dynamic<?>)dynamic, "Text3");
+            dynamic = this.fix((Dynamic<?>)dynamic, "Text4");
             return dynamic;
         });
     }

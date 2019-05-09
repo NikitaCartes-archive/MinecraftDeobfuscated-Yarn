@@ -64,7 +64,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     public void method_20122(Entry entry) {
         super.setSelected(entry);
         if (this.getSelected() instanceof ServerItem) {
-            NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", ((ServerItem)((ServerItem)this.getSelected())).server.name).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", ((ServerItem)((ServerItem)this.getSelected())).server.name).getString());
         }
     }
 

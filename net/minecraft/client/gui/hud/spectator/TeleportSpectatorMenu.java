@@ -26,15 +26,15 @@ import net.minecraft.world.GameMode;
 public class TeleportSpectatorMenu
 implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
-    private static final Ordering<PlayerListEntry> field_3267 = Ordering.from((playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result());
+    private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result());
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public TeleportSpectatorMenu() {
-        this(field_3267.sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
+        this(ORDERING.sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
     }
 
     public TeleportSpectatorMenu(Collection<PlayerListEntry> collection) {
-        for (PlayerListEntry playerListEntry : field_3267.sortedCopy(collection)) {
+        for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(collection)) {
             if (playerListEntry.getGameMode() == GameMode.SPECTATOR) continue;
             this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
         }

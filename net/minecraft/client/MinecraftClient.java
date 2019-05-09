@@ -692,7 +692,7 @@ AutoCloseable {
             KeyBinding.unpressAll();
             screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
             this.skipGameRender = false;
-            NarratorManager.INSTANCE.method_19788(screen.getNarrationMessage());
+            NarratorManager.INSTANCE.narrate(screen.getNarrationMessage());
         } else {
             this.soundManager.resumeAll();
             this.mouse.lockCursor();
@@ -706,7 +706,7 @@ AutoCloseable {
     public void stop() {
         try {
             LOGGER.info("Stopping!");
-            NarratorManager.INSTANCE.method_20371();
+            NarratorManager.INSTANCE.destroy();
             try {
                 if (this.world != null) {
                     this.world.disconnect();

@@ -16,13 +16,13 @@ extends ChoiceFix {
         super(schema, bl, "EntityWolfColorFix", TypeReferences.ENTITY, "minecraft:wolf");
     }
 
-    public Dynamic<?> method_4988(Dynamic<?> dynamic2) {
+    public Dynamic<?> fixCollarColor(Dynamic<?> dynamic2) {
         return dynamic2.update("CollarColor", dynamic -> dynamic.createByte((byte)(15 - dynamic.asInt(0))));
     }
 
     @Override
     protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), this::method_4988);
+        return typed.update(DSL.remainderFinder(), this::fixCollarColor);
     }
 }
 

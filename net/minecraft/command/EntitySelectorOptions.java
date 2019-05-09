@@ -255,7 +255,7 @@ public class EntitySelectorOptions {
                 entitySelectorReader.method_9860();
             }
             if (entitySelectorReader.readTagCharacter()) {
-                Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
+                Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
                 Tag<EntityType<?>> tag = EntityTypeTags.getContainer().get(identifier);
                 if (tag == null) {
                     entitySelectorReader.getReader().setCursor(i);
@@ -263,7 +263,7 @@ public class EntitySelectorOptions {
                 }
                 entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
             } else {
-                Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
+                Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
                 EntityType entityType = (EntityType)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
                     entitySelectorReader.getReader().setCursor(i);
                     return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
@@ -346,7 +346,7 @@ public class EntitySelectorOptions {
             stringReader.skipWhitespace();
             while (stringReader.canRead() && stringReader.peek() != '}') {
                 stringReader.skipWhitespace();
-                Identifier identifier = Identifier.parse(stringReader);
+                Identifier identifier = Identifier.fromCommandInput(stringReader);
                 stringReader.skipWhitespace();
                 stringReader.expect('=');
                 stringReader.skipWhitespace();

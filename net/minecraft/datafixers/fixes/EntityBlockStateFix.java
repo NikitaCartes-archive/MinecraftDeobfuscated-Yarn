@@ -294,30 +294,30 @@ extends DataFix {
     public TypeRewriteRule makeRule() {
         Schema schema = this.getInputSchema();
         Schema schema2 = this.getOutputSchema();
-        Function<Typed, Typed> function = typed -> this.method_15687((Typed<?>)typed, "DisplayTile", "DisplayData", "DisplayState");
-        Function<Typed, Typed> function2 = typed -> this.method_15687((Typed<?>)typed, "inTile", "inData", "inBlockState");
+        Function<Typed, Typed> function = typed -> this.mergeIdAndData((Typed<?>)typed, "DisplayTile", "DisplayData", "DisplayState");
+        Function<Typed, Typed> function2 = typed -> this.mergeIdAndData((Typed<?>)typed, "inTile", "inData", "inBlockState");
         Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), DSL.namespacedString())))), DSL.remainderType());
         Function<Typed, Typed> function3 = typed -> typed.update(type.finder(), DSL.remainderType(), Pair::getSecond);
         return this.fixTypeEverywhereTyped("EntityBlockStateFix", schema.getType(TypeReferences.ENTITY), schema2.getType(TypeReferences.ENTITY), (Typed<?> typed2) -> {
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:falling_block", this::method_15695);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:enderman", typed -> this.method_15687((Typed<?>)typed, "carried", "carriedData", "carriedBlockState"));
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:arrow", (Function<Typed<?>, Typed<?>>)function2);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:spectral_arrow", (Function<Typed<?>, Typed<?>>)function2);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:egg", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:ender_pearl", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:fireball", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:potion", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:small_fireball", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:snowball", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:wither_skull", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:xp_bottle", (Function<Typed<?>, Typed<?>>)function3);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:commandblock_minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:chest_minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:furnace_minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:tnt_minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:hopper_minecart", (Function<Typed<?>, Typed<?>>)function);
-            typed2 = this.method_15682((Typed<?>)typed2, "minecraft:spawner_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:falling_block", this::method_15695);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:enderman", typed -> this.mergeIdAndData((Typed<?>)typed, "carried", "carriedData", "carriedBlockState"));
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:arrow", (Function<Typed<?>, Typed<?>>)function2);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:spectral_arrow", (Function<Typed<?>, Typed<?>>)function2);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:egg", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:ender_pearl", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:fireball", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:potion", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:small_fireball", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:snowball", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:wither_skull", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:xp_bottle", (Function<Typed<?>, Typed<?>>)function3);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:commandblock_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:chest_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:furnace_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:tnt_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:hopper_minecart", (Function<Typed<?>, Typed<?>>)function);
+            typed2 = this.useFunction((Typed<?>)typed2, "minecraft:spawner_minecart", (Function<Typed<?>, Typed<?>>)function);
             return typed2;
         });
     }
@@ -336,7 +336,7 @@ extends DataFix {
         }).set(DSL.remainderFinder(), dynamic.remove("Data").remove("TileID").remove("Tile"));
     }
 
-    private Typed<?> method_15687(Typed<?> typed, String string, String string2, String string3) {
+    private Typed<?> mergeIdAndData(Typed<?> typed, String string, String string2, String string3) {
         Tag.TagType<Pair<String, Either<Integer, String>>> type = DSL.field(string, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), DSL.namespacedString())));
         Tag.TagType<Pair<String, Dynamic<?>>> type2 = DSL.field(string3, DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()));
         Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
@@ -347,7 +347,7 @@ extends DataFix {
         }).set(DSL.remainderFinder(), dynamic.remove(string2));
     }
 
-    private Typed<?> method_15682(Typed<?> typed, String string, Function<Typed<?>, Typed<?>> function) {
+    private Typed<?> useFunction(Typed<?> typed, String string, Function<Typed<?>, Typed<?>> function) {
         Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, string);
         Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, string);
         return typed.updateTyped(DSL.namedChoice(string, type), type2, function);

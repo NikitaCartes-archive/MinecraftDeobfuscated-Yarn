@@ -216,7 +216,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<SkeletonHorseEntity> SKELETON_HORSE = EntityType.register("skeleton_horse", Builder.create(SkeletonHorseEntity::new, EntityCategory.CREATURE).setSize(1.3964844f, 1.6f));
     public static final EntityType<SlimeEntity> SLIME = EntityType.register("slime", Builder.create(SlimeEntity::new, EntityCategory.MONSTER).setSize(2.04f, 2.04f));
     public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = EntityType.register("small_fireball", Builder.create(SmallFireballEntity::new, EntityCategory.MISC).setSize(0.3125f, 0.3125f));
-    public static final EntityType<SnowGolemEntity> SNOW_GOLEM = EntityType.register("snow_golem", Builder.create(SnowGolemEntity::new, EntityCategory.CREATURE).setSize(0.7f, 1.9f));
+    public static final EntityType<SnowGolemEntity> SNOW_GOLEM = EntityType.register("snow_golem", Builder.create(SnowGolemEntity::new, EntityCategory.MISC).setSize(0.7f, 1.9f));
     public static final EntityType<SnowballEntity> SNOWBALL = EntityType.register("snowball", Builder.create(SnowballEntity::new, EntityCategory.MISC).setSize(0.25f, 0.25f));
     public static final EntityType<SpectralArrowEntity> SPECTRAL_ARROW = EntityType.register("spectral_arrow", Builder.create(SpectralArrowEntity::new, EntityCategory.MISC).setSize(0.5f, 0.5f));
     public static final EntityType<SpiderEntity> SPIDER = EntityType.register("spider", Builder.create(SpiderEntity::new, EntityCategory.MONSTER).setSize(1.4f, 0.9f));
@@ -231,8 +231,8 @@ public class EntityType<T extends Entity> {
     public static final EntityType<ThrownPotionEntity> POTION = EntityType.register("potion", Builder.create(ThrownPotionEntity::new, EntityCategory.MISC).setSize(0.25f, 0.25f));
     public static final EntityType<TridentEntity> TRIDENT = EntityType.register("trident", Builder.create(TridentEntity::new, EntityCategory.MISC).setSize(0.5f, 0.5f));
     public static final EntityType<VexEntity> VEX = EntityType.register("vex", Builder.create(VexEntity::new, EntityCategory.MONSTER).makeFireImmune().setSize(0.4f, 0.8f));
-    public static final EntityType<VillagerEntity> VILLAGER = EntityType.register("villager", Builder.create(VillagerEntity::new, EntityCategory.CREATURE).setSize(0.6f, 1.95f));
-    public static final EntityType<IronGolemEntity> IRON_GOLEM = EntityType.register("iron_golem", Builder.create(IronGolemEntity::new, EntityCategory.CREATURE).setSize(1.4f, 2.7f));
+    public static final EntityType<VillagerEntity> VILLAGER = EntityType.register("villager", Builder.create(VillagerEntity::new, EntityCategory.MISC).setSize(0.6f, 1.95f));
+    public static final EntityType<IronGolemEntity> IRON_GOLEM = EntityType.register("iron_golem", Builder.create(IronGolemEntity::new, EntityCategory.MISC).setSize(1.4f, 2.7f));
     public static final EntityType<VindicatorEntity> VINDICATOR = EntityType.register("vindicator", Builder.create(VindicatorEntity::new, EntityCategory.MONSTER).setSize(0.6f, 1.95f));
     public static final EntityType<PillagerEntity> PILLAGER = EntityType.register("pillager", Builder.create(PillagerEntity::new, EntityCategory.MONSTER).setSize(0.6f, 1.95f));
     public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = EntityType.register("wandering_trader", Builder.create(WanderingTraderEntity::new, EntityCategory.CREATURE).setSize(0.6f, 1.95f));
@@ -273,7 +273,7 @@ public class EntityType<T extends Entity> {
     }
 
     public static Optional<EntityType<?>> get(String string) {
-        return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
+        return Registry.ENTITY_TYPE.getOrEmpty(Identifier.ofNullable(string));
     }
 
     public EntityType(EntityFactory<T> entityFactory, EntityCategory entityCategory, boolean bl, boolean bl2, boolean bl3, @Nullable Type<?> type, EntitySize entitySize) {

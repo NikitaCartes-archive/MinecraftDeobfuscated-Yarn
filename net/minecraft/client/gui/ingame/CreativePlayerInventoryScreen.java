@@ -235,7 +235,7 @@ extends AbstractPlayerInventoryScreen<CreativeContainer> {
             this.searchBox.setMaxLength(50);
             this.searchBox.setHasBorder(false);
             this.searchBox.setVisible(false);
-            this.searchBox.method_1868(0xFFFFFF);
+            this.searchBox.setEditableColor(0xFFFFFF);
             this.children.add(this.searchBox);
             int i = selectedTab;
             selectedTab = -1;

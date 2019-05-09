@@ -31,7 +31,7 @@ implements ArgumentType<FunctionArgument> {
     public FunctionArgument method_9764(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '#') {
             stringReader.skip();
-            final Identifier identifier = Identifier.parse(stringReader);
+            final Identifier identifier = Identifier.fromCommandInput(stringReader);
             return new FunctionArgument(){
 
                 @Override
@@ -46,7 +46,7 @@ implements ArgumentType<FunctionArgument> {
                 }
             };
         }
-        final Identifier identifier = Identifier.parse(stringReader);
+        final Identifier identifier = Identifier.fromCommandInput(stringReader);
         return new FunctionArgument(){
 
             @Override

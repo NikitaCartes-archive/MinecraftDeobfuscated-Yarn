@@ -50,7 +50,7 @@ public class ScoreboardCriterion {
         if (i < 0) {
             return Optional.empty();
         }
-        return Registry.STAT_TYPE.getOrEmpty(Identifier.createSplit(string.substring(0, i), '.')).flatMap(statType -> ScoreboardCriterion.createStatCriterion(statType, Identifier.createSplit(string.substring(i + 1), '.')));
+        return Registry.STAT_TYPE.getOrEmpty(Identifier.splitOn(string.substring(0, i), '.')).flatMap(statType -> ScoreboardCriterion.createStatCriterion(statType, Identifier.splitOn(string.substring(i + 1), '.')));
     }
 
     private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier identifier) {

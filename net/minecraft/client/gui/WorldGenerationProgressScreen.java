@@ -39,7 +39,7 @@ extends Screen {
     });
 
     public WorldGenerationProgressScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {
-        super(NarratorManager.field_18967);
+        super(NarratorManager.EMPTY);
         this.progressProvider = worldGenerationProgressTracker;
     }
 
@@ -50,7 +50,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        NarratorManager.INSTANCE.method_19788(I18n.translate("narrator.loading.done", new Object[0]));
+        NarratorManager.INSTANCE.narrate(I18n.translate("narrator.loading.done", new Object[0]));
     }
 
     @Override
@@ -60,7 +60,7 @@ extends Screen {
         long l = SystemUtil.getMeasuringTimeMs();
         if (l - this.field_19101 > 2000L) {
             this.field_19101 = l;
-            NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.loading", string).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.loading", string).getString());
         }
         int k = this.width / 2;
         int m = this.height / 2;

@@ -23,6 +23,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -181,6 +182,15 @@ implements Waterloggable {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+        ProjectileEntity projectileEntity;
+        if (!world.isClient && entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire() && !blockState.get(LIT).booleanValue()) {
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
+        }
     }
 
     public static void spawnSmokeParticle(World world, BlockPos blockPos, boolean bl, boolean bl2) {

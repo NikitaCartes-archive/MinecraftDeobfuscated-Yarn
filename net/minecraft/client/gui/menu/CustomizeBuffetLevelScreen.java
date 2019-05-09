@@ -134,7 +134,7 @@ extends Screen {
         public void method_20089(@Nullable BuffetBiomeItem buffetBiomeItem) {
             super.setSelected(buffetBiomeItem);
             if (buffetBiomeItem != null) {
-                NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
             }
         }
 

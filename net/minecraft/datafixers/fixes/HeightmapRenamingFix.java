@@ -23,10 +23,10 @@ extends DataFix {
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
         OpticFinder<?> opticFinder = type.findField("Level");
-        return this.fixTypeEverywhereTyped("HeightmapRenamingFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::method_4998)));
+        return this.fixTypeEverywhereTyped("HeightmapRenamingFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::renameHeightmapTags)));
     }
 
-    private Dynamic<?> method_4998(Dynamic<?> dynamic) {
+    private Dynamic<?> renameHeightmapTags(Dynamic<?> dynamic) {
         Optional<Dynamic<?>> optional5;
         Optional<Dynamic<?>> optional4;
         Optional<Dynamic<?>> optional3;

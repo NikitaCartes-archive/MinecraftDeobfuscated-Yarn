@@ -26,14 +26,14 @@ extends DataFix {
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder = type.findField("tag");
-        return this.fixTypeEverywhereTyped("Item Lore componentize", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("display", dynamic2 -> dynamic2.update("Lore", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(ItemLoreToComponentFix::method_5005).map(dynamic::createList), dynamic))))));
+        return this.fixTypeEverywhereTyped("Item Lore componentize", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("display", dynamic2 -> dynamic2.update("Lore", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(ItemLoreToComponentFix::fixLoreTags).map(dynamic::createList), dynamic))))));
     }
 
-    private static <T> Stream<Dynamic<T>> method_5005(Stream<Dynamic<T>> stream) {
-        return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::method_5012).map(dynamic::createString), dynamic));
+    private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> stream) {
+        return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
     }
 
-    private static String method_5012(String string) {
+    private static String componentize(String string) {
         return Component.Serializer.toJsonString(new TextComponent(string));
     }
 }

@@ -17,7 +17,7 @@ extends ChoiceFix {
         super(schema, bl, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
     }
 
-    public Dynamic<?> method_15546(Dynamic<?> dynamic2) {
+    public Dynamic<?> fixBannerColor(Dynamic<?> dynamic2) {
         dynamic2 = dynamic2.update("Base", dynamic -> dynamic.createInt(15 - dynamic.asInt(0)));
         dynamic2 = dynamic2.update("Patterns", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic2 -> dynamic2.update("Color", dynamic -> dynamic.createInt(15 - dynamic.asInt(0))))).map(dynamic::createList), dynamic));
         return dynamic2;
@@ -25,7 +25,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), this::method_15546);
+        return typed.update(DSL.remainderFinder(), this::fixBannerColor);
     }
 }
 

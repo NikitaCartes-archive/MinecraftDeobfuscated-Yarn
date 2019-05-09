@@ -93,7 +93,7 @@ RecipeGridAligner<Ingredient> {
         this.searchField.setMaxLength(50);
         this.searchField.setHasBorder(false);
         this.searchField.setVisible(true);
-        this.searchField.method_1868(0xFFFFFF);
+        this.searchField.setEditableColor(0xFFFFFF);
         this.searchField.setText(string);
         this.recipesArea.initialize(this.client, i, j);
         this.recipesArea.setGui(this);

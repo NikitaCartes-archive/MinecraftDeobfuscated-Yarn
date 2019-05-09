@@ -42,8 +42,8 @@ Element {
     private int field_2103;
     private int cursorMax;
     private int cursorMin;
-    private int field_2100 = 0xE0E0E0;
-    private int field_2098 = 0x707070;
+    private int editableColor = 0xE0E0E0;
+    private int uneditableColor = 0x707070;
     private String suggestion;
     private Consumer<String> changedListener;
     private Predicate<String> textPredicate = Predicates.alwaysTrue();
@@ -317,7 +317,7 @@ Element {
     }
 
     public boolean method_20315() {
-        return this.isVisible() && this.isFocused() && this.method_20316();
+        return this.isVisible() && this.isFocused() && this.isEditable();
     }
 
     @Override
@@ -369,7 +369,7 @@ Element {
             TextFieldWidget.fill(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
             TextFieldWidget.fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
         }
-        int k = this.editable ? this.field_2100 : this.field_2098;
+        int k = this.editable ? this.editableColor : this.uneditableColor;
         int l = this.cursorMax - this.field_2103;
         int m = this.cursorMin - this.field_2103;
         String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
@@ -470,12 +470,12 @@ Element {
         this.focused = bl;
     }
 
-    public void method_1868(int i) {
-        this.field_2100 = i;
+    public void setEditableColor(int i) {
+        this.editableColor = i;
     }
 
-    public void method_1860(int i) {
-        this.field_2098 = i;
+    public void setUneditableColor(int i) {
+        this.uneditableColor = i;
     }
 
     @Override
@@ -498,7 +498,7 @@ Element {
         }
     }
 
-    private boolean method_20316() {
+    private boolean isEditable() {
         return this.editable;
     }
 

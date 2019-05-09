@@ -22,7 +22,7 @@ implements ProgressListener {
     private boolean done;
 
     public WorkingScreen() {
-        super(NarratorManager.field_18967);
+        super(NarratorManager.EMPTY);
     }
 
     @Override

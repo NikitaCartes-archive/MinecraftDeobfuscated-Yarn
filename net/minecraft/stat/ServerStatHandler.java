@@ -116,7 +116,7 @@ extends StatHandler {
     }
 
     private <T> Optional<Stat<T>> createStat(StatType<T> statType, String string) {
-        return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
+        return Optional.ofNullable(Identifier.ofNullable(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
     }
 
     private static CompoundTag jsonToCompound(JsonObject jsonObject) {

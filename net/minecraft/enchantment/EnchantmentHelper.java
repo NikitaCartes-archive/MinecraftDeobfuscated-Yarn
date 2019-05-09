@@ -45,7 +45,7 @@ public class EnchantmentHelper {
         ListTag listTag = itemStack.getEnchantmentList();
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompoundTag(i);
-            Identifier identifier2 = Identifier.create(compoundTag.getString("id"));
+            Identifier identifier2 = Identifier.ofNullable(compoundTag.getString("id"));
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
             return compoundTag.getInt("lvl");
         }
@@ -57,7 +57,7 @@ public class EnchantmentHelper {
         ListTag listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantmentList();
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompoundTag(i);
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, compoundTag.getInt("lvl")));
+            Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, compoundTag.getInt("lvl")));
         }
         return map;
     }
@@ -90,7 +90,7 @@ public class EnchantmentHelper {
         for (int i = 0; i < listTag.size(); ++i) {
             String string = listTag.getCompoundTag(i).getString("id");
             int j = listTag.getCompoundTag(i).getInt("lvl");
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.create(string)).ifPresent(enchantment -> consumer.accept((Enchantment)enchantment, j));
+            Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(string)).ifPresent(enchantment -> consumer.accept((Enchantment)enchantment, j));
         }
     }
 

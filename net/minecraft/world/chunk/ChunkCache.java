@@ -70,7 +70,8 @@ implements ViewableWorld {
         if (k < 0 || k >= this.chunks.length || l < 0 || l >= this.chunks[k].length) {
             return new EmptyChunk(this.world, new ChunkPos(i, j));
         }
-        return this.chunks[k][l];
+        Chunk chunk = this.chunks[k][l];
+        return chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(i, j));
     }
 
     @Override

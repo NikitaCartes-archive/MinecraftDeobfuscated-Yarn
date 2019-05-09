@@ -21,7 +21,7 @@ extends DataFix {
         super(schema, bl);
     }
 
-    private static ScoreboardCriterion.RenderType method_5112(String string) {
+    private static ScoreboardCriterion.RenderType parseLegacyRenderType(String string) {
         return string.equals("health") ? ScoreboardCriterion.RenderType.HEARTS : ScoreboardCriterion.RenderType.INTEGER;
     }
 
@@ -35,7 +35,7 @@ extends DataFix {
             Optional<String> optional = dynamic.get("RenderType").asString();
             if (!optional.isPresent()) {
                 String string = dynamic.get("CriteriaName").asString("");
-                ScoreboardCriterion.RenderType renderType = ObjectiveRenderTypeFix.method_5112(string);
+                ScoreboardCriterion.RenderType renderType = ObjectiveRenderTypeFix.parseLegacyRenderType(string);
                 return dynamic.set("RenderType", dynamic.createString(renderType.getName()));
             }
             return dynamic;

@@ -17,23 +17,23 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ButtonListWidget
-extends ElementListWidget<ButtonItem> {
+extends ElementListWidget<ButtonEntry> {
     public ButtonListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
         this.centerListVertically = false;
     }
 
-    public int method_20406(Option option) {
-        return this.addEntry(ButtonItem.method_20409(this.minecraft.options, this.width, option));
+    public int addSingleOptionEntry(Option option) {
+        return this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option));
     }
 
-    public void method_20407(Option option, @Nullable Option option2) {
-        this.addEntry(ButtonItem.method_20410(this.minecraft.options, this.width, option, option2));
+    public void addOptionEntry(Option option, @Nullable Option option2) {
+        this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option, option2));
     }
 
     public void addAll(Option[] options) {
         for (int i = 0; i < options.length; i += 2) {
-            this.method_20407(options[i], i < options.length - 1 ? options[i + 1] : null);
+            this.addOptionEntry(options[i], i < options.length - 1 ? options[i + 1] : null);
         }
     }
 
@@ -48,24 +48,24 @@ extends ElementListWidget<ButtonItem> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class ButtonItem
-    extends ElementListWidget.Entry<ButtonItem> {
+    public static class ButtonEntry
+    extends ElementListWidget.Entry<ButtonEntry> {
         private final List<AbstractButtonWidget> buttons;
 
-        private ButtonItem(List<AbstractButtonWidget> list) {
+        private ButtonEntry(List<AbstractButtonWidget> list) {
             this.buttons = list;
         }
 
-        public static ButtonItem method_20409(GameOptions gameOptions, int i, Option option) {
-            return new ButtonItem(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
+        public static ButtonEntry create(GameOptions gameOptions, int i, Option option) {
+            return new ButtonEntry(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
         }
 
-        public static ButtonItem method_20410(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
+        public static ButtonEntry create(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
             AbstractButtonWidget abstractButtonWidget = option.createButton(gameOptions, i / 2 - 155, 0, 150);
             if (option2 == null) {
-                return new ButtonItem(ImmutableList.of(abstractButtonWidget));
+                return new ButtonEntry(ImmutableList.of(abstractButtonWidget));
             }
-            return new ButtonItem(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
+            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
         }
 
         @Override

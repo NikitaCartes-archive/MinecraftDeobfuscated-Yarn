@@ -122,7 +122,7 @@ extends DataFix {
             Optional<String> optional = dynamic.get("generatorOptions").asString();
             if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
                 String string = optional.orElse("");
-                dynamic2 = dynamic.set("generatorOptions", LevelDataGeneratorOptionsFix.method_5100(string, dynamic.getOps()));
+                dynamic2 = dynamic.set("generatorOptions", LevelDataGeneratorOptionsFix.fixGeneratorOptions(string, dynamic.getOps()));
             } else if ("buffet".equalsIgnoreCase(dynamic.get("generatorName").asString("")) && optional.isPresent()) {
                 Dynamic<JsonObject> dynamic3 = new Dynamic<JsonObject>(JsonOps.INSTANCE, JsonHelper.deserialize(optional.get(), true));
                 dynamic2 = dynamic.set("generatorOptions", dynamic3.convert(dynamic.getOps()));
@@ -133,13 +133,13 @@ extends DataFix {
         });
     }
 
-    private static <T> Dynamic<T> method_5100(String string, DynamicOps<T> dynamicOps) {
+    private static <T> Dynamic<T> fixGeneratorOptions(String string, DynamicOps<T> dynamicOps) {
         List<Object> list;
         Iterator<String> iterator = Splitter.on(';').split(string).iterator();
         String string2 = "minecraft:plains";
         HashMap map = Maps.newHashMap();
         if (!string.isEmpty() && iterator.hasNext()) {
-            list = LevelDataGeneratorOptionsFix.method_5103(iterator.next());
+            list = LevelDataGeneratorOptionsFix.parseFlatLayers(iterator.next());
             if (!list.isEmpty()) {
                 if (iterator.hasNext()) {
                     string2 = NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
@@ -175,7 +175,7 @@ extends DataFix {
     }
 
     @Nullable
-    private static Pair<Integer, String> method_5099(String string) {
+    private static Pair<Integer, String> parseFlatLayer(String string) {
         int i;
         String[] strings = string.split("\\*", 2);
         if (strings.length == 2) {
@@ -191,11 +191,11 @@ extends DataFix {
         return Pair.of(i, string2);
     }
 
-    private static List<Pair<Integer, String>> method_5103(String string) {
+    private static List<Pair<Integer, String>> parseFlatLayers(String string) {
         String[] strings;
         ArrayList<Pair<Integer, String>> list = Lists.newArrayList();
         for (String string2 : strings = string.split(",")) {
-            Pair<Integer, String> pair = LevelDataGeneratorOptionsFix.method_5099(string2);
+            Pair<Integer, String> pair = LevelDataGeneratorOptionsFix.parseFlatLayer(string2);
             if (pair == null) {
                 return Collections.emptyList();
             }

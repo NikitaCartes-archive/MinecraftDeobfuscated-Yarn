@@ -111,7 +111,7 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
         super.setSelected(levelItem);
         if (levelItem != null) {
             LevelSummary levelSummary = levelItem.level;
-            NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", new TranslatableComponent("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore", new Object[0]) : I18n.translate("gameMode." + levelSummary.getGameMode().getName(), new Object[0]), levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats", new Object[0]) : "", levelSummary.getVersionTextComponent())).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", new TranslatableComponent("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore", new Object[0]) : I18n.translate("gameMode." + levelSummary.getGameMode().getName(), new Object[0]), levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats", new Object[0]) : "", levelSummary.getVersionTextComponent())).getString());
         }
     }
 

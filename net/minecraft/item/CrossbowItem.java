@@ -102,15 +102,14 @@ extends BaseBowItem {
     public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
         int j = this.getMaxUseTime(itemStack) - i;
         float f = CrossbowItem.method_7770(j, itemStack);
-        if (f >= 1.0f && !CrossbowItem.isCharged(itemStack)) {
-            CrossbowItem.method_7767(livingEntity, itemStack);
+        if (f >= 1.0f && !CrossbowItem.isCharged(itemStack) && CrossbowItem.method_7767(livingEntity, itemStack)) {
             CrossbowItem.setCharged(itemStack, true);
             SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
             world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0f, 1.0f / (random.nextFloat() * 0.5f + 1.0f) + 0.2f);
         }
     }
 
-    private static void method_7767(LivingEntity livingEntity, ItemStack itemStack) {
+    private static boolean method_7767(LivingEntity livingEntity, ItemStack itemStack) {
         int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, itemStack);
         int j = i == 0 ? 1 : 3;
         boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode;
@@ -124,13 +123,18 @@ extends BaseBowItem {
                 itemStack2 = new ItemStack(Items.ARROW);
                 itemStack3 = itemStack2.copy();
             }
-            CrossbowItem.method_7765(livingEntity, itemStack, itemStack2, k > 0, bl);
+            if (CrossbowItem.method_7765(livingEntity, itemStack, itemStack2, k > 0, bl)) continue;
+            return false;
         }
+        return true;
     }
 
-    private static void method_7765(LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2, boolean bl, boolean bl2) {
+    private static boolean method_7765(LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2, boolean bl, boolean bl2) {
         ItemStack itemStack3;
         boolean bl3;
+        if (itemStack2.isEmpty()) {
+            return false;
+        }
         boolean bl4 = bl3 = bl2 && itemStack2.getItem() instanceof ArrowItem;
         if (!(bl3 || bl2 || bl)) {
             itemStack3 = itemStack2.split(1);
@@ -141,6 +145,7 @@ extends BaseBowItem {
             itemStack3 = itemStack2.copy();
         }
         CrossbowItem.storeChargedProjectile(itemStack, itemStack3);
+        return true;
     }
 
     public static boolean isCharged(ItemStack itemStack) {

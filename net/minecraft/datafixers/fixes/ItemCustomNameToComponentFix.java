@@ -22,7 +22,7 @@ extends DataFix {
         super(schema, bl);
     }
 
-    private Dynamic<?> method_5001(Dynamic<?> dynamic) {
+    private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
         Optional<Dynamic<?>> optional = dynamic.get("display").get();
         if (optional.isPresent()) {
             Dynamic dynamic2 = optional.get();
@@ -45,7 +45,7 @@ extends DataFix {
     public TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder = type.findField("tag");
-        return this.fixTypeEverywhereTyped("ItemCustomNameToComponentFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::method_5001)));
+        return this.fixTypeEverywhereTyped("ItemCustomNameToComponentFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::fixCustomName)));
     }
 }
 

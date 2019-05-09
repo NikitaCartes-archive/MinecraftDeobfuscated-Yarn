@@ -12,15 +12,15 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
-public class EntityPaintingFix
+public class HangingEntityFix
 extends DataFix {
     private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
-    public EntityPaintingFix(Schema schema, boolean bl) {
+    public HangingEntityFix(Schema schema, boolean bl) {
         super(schema, bl);
     }
 
-    private Dynamic<?> method_15719(Dynamic<?> dynamic, boolean bl, boolean bl2) {
+    private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean bl, boolean bl2) {
         if ((bl || bl2) && !dynamic.get("Facing").asNumber().isPresent()) {
             int i;
             if (dynamic.get("Direction").asNumber().isPresent()) {
@@ -49,8 +49,8 @@ extends DataFix {
         Type<?> type2 = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, "ItemFrame");
         OpticFinder<?> opticFinder2 = DSL.namedChoice("ItemFrame", type2);
         Type<?> type3 = this.getInputSchema().getType(TypeReferences.ENTITY);
-        TypeRewriteRule typeRewriteRule = this.fixTypeEverywhereTyped("EntityPaintingFix", type3, typed2 -> typed2.updateTyped(opticFinder, type, typed -> typed.update(DSL.remainderFinder(), dynamic -> this.method_15719((Dynamic<?>)dynamic, true, false))));
-        TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped("EntityItemFrameFix", type3, typed2 -> typed2.updateTyped(opticFinder2, type2, typed -> typed.update(DSL.remainderFinder(), dynamic -> this.method_15719((Dynamic<?>)dynamic, false, true))));
+        TypeRewriteRule typeRewriteRule = this.fixTypeEverywhereTyped("EntityPaintingFix", type3, typed2 -> typed2.updateTyped(opticFinder, type, typed -> typed.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition((Dynamic<?>)dynamic, true, false))));
+        TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped("EntityItemFrameFix", type3, typed2 -> typed2.updateTyped(opticFinder2, type2, typed -> typed.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition((Dynamic<?>)dynamic, false, true))));
         return TypeRewriteRule.seq(typeRewriteRule, typeRewriteRule2);
     }
 }

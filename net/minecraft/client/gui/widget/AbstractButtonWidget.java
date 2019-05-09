@@ -83,7 +83,7 @@ Element {
     protected void narrate() {
         String string;
         if (this.active && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarration && !(string = this.getNarrationMessage()).isEmpty()) {
-            NarratorManager.INSTANCE.method_19788(string);
+            NarratorManager.INSTANCE.narrate(string);
             this.nextNarration = Long.MAX_VALUE;
         }
     }

@@ -162,7 +162,7 @@ public class ChunkStatus {
     }
 
     public static ChunkStatus get(String string) {
-        return Registry.CHUNK_STATUS.get(Identifier.create(string));
+        return Registry.CHUNK_STATUS.get(Identifier.ofNullable(string));
     }
 
     public EnumSet<Heightmap.Type> isSurfaceGenerated() {

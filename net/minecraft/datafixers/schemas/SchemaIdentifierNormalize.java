@@ -15,7 +15,7 @@ extends Schema {
     }
 
     public static String normalize(String string) {
-        Identifier identifier = Identifier.create(string);
+        Identifier identifier = Identifier.ofNullable(string);
         if (identifier != null) {
             return identifier.toString();
         }

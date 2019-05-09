@@ -136,7 +136,7 @@ extends Screen {
             Item item;
             super.setSelected(superflatLayerItem);
             if (superflatLayerItem != null && (item = (flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1)).getBlockState().getBlock().asItem()) != Items.AIR) {
-                NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
             }
         }
 

@@ -48,7 +48,7 @@ implements ArgumentType<Identifier> {
     }
 
     public Identifier method_9446(StringReader stringReader) throws CommandSyntaxException {
-        return Identifier.parse(stringReader);
+        return Identifier.fromCommandInput(stringReader);
     }
 
     @Override

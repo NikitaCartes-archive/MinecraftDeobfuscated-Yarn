@@ -19,10 +19,10 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), this::convertOutdatedTranslationKey);
+        return typed.update(DSL.remainderFinder(), this::fixBannerName);
     }
 
-    private Dynamic<?> convertOutdatedTranslationKey(Dynamic<?> dynamic) {
+    private Dynamic<?> fixBannerName(Dynamic<?> dynamic) {
         Optional<String> optional = dynamic.get("CustomName").asString();
         if (optional.isPresent()) {
             String string = optional.get();

@@ -159,7 +159,7 @@ extends Screen {
         public void method_20103(@Nullable SuperflatPresetItem superflatPresetItem) {
             super.setSelected(superflatPresetItem);
             if (superflatPresetItem != null) {
-                NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetItem))).field_2528).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetItem))).field_2528).getString());
             }
         }
 

@@ -63,10 +63,10 @@ extends DataFix {
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder = type.findField("tag");
-        return this.fixTypeEverywhereTyped("ItemStackEnchantmentFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::method_5035)));
+        return this.fixTypeEverywhereTyped("ItemStackEnchantmentFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::fixEnchantments)));
     }
 
-    private Dynamic<?> method_5035(Dynamic<?> dynamic2) {
+    private Dynamic<?> fixEnchantments(Dynamic<?> dynamic2) {
         Optional<Dynamic> optional = dynamic2.get("ench").asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.set("id", dynamic.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamic.get("id").asInt(0), "null"))))).map(dynamic2::createList);
         if (optional.isPresent()) {
             dynamic2 = dynamic2.remove("ench").set("Enchantments", optional.get());
