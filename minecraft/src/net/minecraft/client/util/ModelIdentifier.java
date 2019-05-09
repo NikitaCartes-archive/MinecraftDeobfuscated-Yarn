@@ -15,7 +15,7 @@ public class ModelIdentifier extends Identifier {
 	}
 
 	public ModelIdentifier(String string) {
-		this(splitWithVariant(string));
+		this(split(string));
 	}
 
 	public ModelIdentifier(Identifier identifier, String string) {
@@ -23,10 +23,10 @@ public class ModelIdentifier extends Identifier {
 	}
 
 	public ModelIdentifier(String string, String string2) {
-		this(splitWithVariant(string + '#' + string2));
+		this(split(string + '#' + string2));
 	}
 
-	protected static String[] splitWithVariant(String string) {
+	protected static String[] split(String string) {
 		String[] strings = new String[]{null, string, ""};
 		int i = string.indexOf(35);
 		String string2 = string;

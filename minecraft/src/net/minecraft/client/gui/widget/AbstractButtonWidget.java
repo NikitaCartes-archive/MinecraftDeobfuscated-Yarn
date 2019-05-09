@@ -88,7 +88,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		if (this.active && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarration) {
 			String string = this.getNarrationMessage();
 			if (!string.isEmpty()) {
-				NarratorManager.INSTANCE.method_19788(string);
+				NarratorManager.INSTANCE.narrate(string);
 				this.nextNarration = Long.MAX_VALUE;
 			}
 		}

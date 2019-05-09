@@ -237,7 +237,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setHasBorder(false);
 			this.searchBox.setVisible(false);
-			this.searchBox.method_1868(16777215);
+			this.searchBox.setEditableColor(16777215);
 			this.children.add(this.searchBox);
 			int i = selectedTab;
 			selectedTab = -1;

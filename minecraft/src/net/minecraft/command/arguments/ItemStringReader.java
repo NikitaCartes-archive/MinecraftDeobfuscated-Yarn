@@ -59,7 +59,7 @@ public class ItemStringReader {
 
 	public void readItem() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
-		Identifier identifier = Identifier.parse(this.reader);
+		Identifier identifier = Identifier.fromCommandInput(this.reader);
 		this.item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return ID_INVALID_EXCEPTION.createWithContext(this.reader, identifier.toString());
@@ -73,7 +73,7 @@ public class ItemStringReader {
 			this.suggestions = this::suggestTag;
 			this.reader.expect('#');
 			this.cursor = this.reader.getCursor();
-			this.id = Identifier.parse(this.reader);
+			this.id = Identifier.fromCommandInput(this.reader);
 		}
 	}
 

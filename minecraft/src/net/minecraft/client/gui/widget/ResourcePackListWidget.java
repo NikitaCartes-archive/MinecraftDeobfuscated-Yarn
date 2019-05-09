@@ -19,7 +19,7 @@ import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackItem> {
+public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackEntry> {
 	private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
 	private static final Component INCOMPATIBLE = new TranslatableComponent("resourcePack.incompatible");
 	private static final Component INCOMPATIBLE_CONFIRM = new TranslatableComponent("resourcePack.incompatible.confirm.title");
@@ -57,19 +57,19 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		return this.right - 6;
 	}
 
-	public void addEntry(ResourcePackListWidget.ResourcePackItem resourcePackItem) {
-		this.addEntry(resourcePackItem);
-		resourcePackItem.widget = this;
+	public void addEntry(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+		this.addEntry(resourcePackEntry);
+		resourcePackEntry.widget = this;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ResourcePackItem extends AlwaysSelectedEntryListWidget.Entry<ResourcePackListWidget.ResourcePackItem> {
+	public static class ResourcePackEntry extends AlwaysSelectedEntryListWidget.Entry<ResourcePackListWidget.ResourcePackEntry> {
 		private ResourcePackListWidget widget;
 		protected final MinecraftClient client;
 		protected final ResourcePackOptionsScreen screen;
 		private final ClientResourcePackContainer packContainer;
 
-		public ResourcePackItem(
+		public ResourcePackEntry(
 			ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackContainer clientResourcePackContainer
 		) {
 			this.screen = resourcePackOptionsScreen;
@@ -81,7 +81,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		public void method_20145(SelectedResourcePackListWidget selectedResourcePackListWidget) {
 			this.getPackContainer()
 				.getInitialPosition()
-				.insert(selectedResourcePackListWidget.children(), this, ResourcePackListWidget.ResourcePackItem::getPackContainer, true);
+				.insert(selectedResourcePackListWidget.children(), this, ResourcePackListWidget.ResourcePackEntry::getPackContainer, true);
 			this.widget = selectedResourcePackListWidget;
 		}
 
@@ -188,15 +188,15 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		}
 
 		protected boolean canSortUp() {
-			List<ResourcePackListWidget.ResourcePackItem> list = this.widget.children();
+			List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 			int i = list.indexOf(this);
-			return i > 0 && !((ResourcePackListWidget.ResourcePackItem)list.get(i - 1)).packContainer.isPositionFixed();
+			return i > 0 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i - 1)).packContainer.isPositionFixed();
 		}
 
 		protected boolean canSortDown() {
-			List<ResourcePackListWidget.ResourcePackItem> list = this.widget.children();
+			List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 			int i = list.indexOf(this);
-			return i >= 0 && i < list.size() - 1 && !((ResourcePackListWidget.ResourcePackItem)list.get(i + 1)).packContainer.isPositionFixed();
+			return i >= 0 && i < list.size() - 1 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i + 1)).packContainer.isPositionFixed();
 		}
 
 		@Override
@@ -205,7 +205,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 			double g = e - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
 			if (this.method_20151() && f <= 32.0) {
 				if (this.method_20152()) {
-					this.getScreen().method_2660();
+					this.getScreen().setEdited();
 					ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
 					if (resourcePackCompatibility.isCompatible()) {
 						this.getScreen().select(this);
@@ -228,20 +228,20 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				}
 
 				if (f > 16.0 && g < 16.0 && this.canSortUp()) {
-					List<ResourcePackListWidget.ResourcePackItem> list = this.widget.children();
+					List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 					int j = list.indexOf(this);
 					list.remove(this);
 					list.add(j - 1, this);
-					this.getScreen().method_2660();
+					this.getScreen().setEdited();
 					return true;
 				}
 
 				if (f > 16.0 && g > 16.0 && this.canSortDown()) {
-					List<ResourcePackListWidget.ResourcePackItem> list = this.widget.children();
+					List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 					int j = list.indexOf(this);
 					list.remove(this);
 					list.add(j + 1, this);
-					this.getScreen().method_2660();
+					this.getScreen().setEdited();
 					return true;
 				}
 			}

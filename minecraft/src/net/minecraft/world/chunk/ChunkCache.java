@@ -61,7 +61,12 @@ public class ChunkCache implements ViewableWorld {
 	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
 		int k = i - this.minX;
 		int l = j - this.minZ;
-		return (Chunk)(k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length ? this.chunks[k][l] : new EmptyChunk(this.world, new ChunkPos(i, j)));
+		if (k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length) {
+			Chunk chunk = this.chunks[k][l];
+			return (Chunk)(chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(i, j)));
+		} else {
+			return new EmptyChunk(this.world, new ChunkPos(i, j));
+		}
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -323,7 +324,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				CrashReportSection crashReportSection = crashReport.addElement("Item being added");
 				crashReportSection.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
 				crashReportSection.add("Item data", itemStack.getDamage());
-				crashReportSection.method_577("Item name", () -> itemStack.getDisplayName().getString());
+				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.getDisplayName().getString()));
 				throw new CrashException(crashReport);
 			}
 		}

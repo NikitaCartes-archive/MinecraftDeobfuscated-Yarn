@@ -47,7 +47,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
 	}
 
-	private Dynamic<?> method_15582(Dynamic<?> dynamic, String string) {
+	private Dynamic<?> fix(Dynamic<?> dynamic, String string) {
 		String string2 = dynamic.get(string).asString("");
 		Component component = null;
 		if (!"null".equals(string2) && !StringUtils.isEmpty(string2)) {
@@ -90,10 +90,10 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	@Override
 	protected Typed<?> transform(Typed<?> typed) {
 		return typed.update(DSL.remainderFinder(), dynamic -> {
-			dynamic = this.method_15582(dynamic, "Text1");
-			dynamic = this.method_15582(dynamic, "Text2");
-			dynamic = this.method_15582(dynamic, "Text3");
-			return this.method_15582(dynamic, "Text4");
+			dynamic = this.fix(dynamic, "Text1");
+			dynamic = this.fix(dynamic, "Text2");
+			dynamic = this.fix(dynamic, "Text3");
+			return this.fix(dynamic, "Text4");
 		});
 	}
 }

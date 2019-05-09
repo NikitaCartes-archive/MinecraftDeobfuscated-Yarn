@@ -51,7 +51,7 @@ public class EditBookScreen extends Screen {
 	private final Hand hand;
 
 	public EditBookScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.player = playerEntity;
 		this.itemStack = itemStack;
 		this.hand = hand;

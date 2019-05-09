@@ -27,33 +27,33 @@ public class SavedDataVillageCropFix extends DataFix {
 	}
 
 	private static <T> Dynamic<T> method_5157(Dynamic<T> dynamic) {
-		return (Dynamic<T>)dynamic.asStreamOpt().map(SavedDataVillageCropFix::method_5151).map(dynamic::createList).orElse(dynamic);
+		return (Dynamic<T>)dynamic.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(dynamic::createList).orElse(dynamic);
 	}
 
-	private static Stream<? extends Dynamic<?>> method_5151(Stream<? extends Dynamic<?>> stream) {
+	private static Stream<? extends Dynamic<?>> fixVillageChildren(Stream<? extends Dynamic<?>> stream) {
 		return stream.map(dynamic -> {
 			String string = dynamic.get("id").asString("");
 			if ("ViF".equals(string)) {
-				return method_5154(dynamic);
+				return fixSmallPlotCropIds(dynamic);
 			} else {
-				return "ViDF".equals(string) ? method_5155(dynamic) : dynamic;
+				return "ViDF".equals(string) ? fixLargePlotCropIds(dynamic) : dynamic;
 			}
 		});
 	}
 
-	private static <T> Dynamic<T> method_5154(Dynamic<T> dynamic) {
-		dynamic = method_5156(dynamic, "CA");
-		return method_5156(dynamic, "CB");
+	private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> dynamic) {
+		dynamic = fixCropId(dynamic, "CA");
+		return fixCropId(dynamic, "CB");
 	}
 
-	private static <T> Dynamic<T> method_5155(Dynamic<T> dynamic) {
-		dynamic = method_5156(dynamic, "CA");
-		dynamic = method_5156(dynamic, "CB");
-		dynamic = method_5156(dynamic, "CC");
-		return method_5156(dynamic, "CD");
+	private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> dynamic) {
+		dynamic = fixCropId(dynamic, "CA");
+		dynamic = fixCropId(dynamic, "CB");
+		dynamic = fixCropId(dynamic, "CC");
+		return fixCropId(dynamic, "CD");
 	}
 
-	private static <T> Dynamic<T> method_5156(Dynamic<T> dynamic, String string) {
+	private static <T> Dynamic<T> fixCropId(Dynamic<T> dynamic, String string) {
 		return dynamic.get(string).asNumber().isPresent() ? dynamic.set(string, BlockStateFlattening.lookupState(dynamic.get(string).asInt(0) << 4)) : dynamic;
 	}
 }

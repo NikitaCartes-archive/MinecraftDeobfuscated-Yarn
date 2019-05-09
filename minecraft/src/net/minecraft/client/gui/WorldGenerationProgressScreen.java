@@ -33,7 +33,7 @@ public class WorldGenerationProgressScreen extends Screen {
 	});
 
 	public WorldGenerationProgressScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.progressProvider = worldGenerationProgressTracker;
 	}
 
@@ -44,7 +44,7 @@ public class WorldGenerationProgressScreen extends Screen {
 
 	@Override
 	public void removed() {
-		NarratorManager.INSTANCE.method_19788(I18n.translate("narrator.loading.done"));
+		NarratorManager.INSTANCE.narrate(I18n.translate("narrator.loading.done"));
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class WorldGenerationProgressScreen extends Screen {
 		long l = SystemUtil.getMeasuringTimeMs();
 		if (l - this.field_19101 > 2000L) {
 			this.field_19101 = l;
-			NarratorManager.INSTANCE.method_19788(new TranslatableComponent("narrator.loading", string).getString());
+			NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.loading", string).getString());
 		}
 
 		int k = this.width / 2;

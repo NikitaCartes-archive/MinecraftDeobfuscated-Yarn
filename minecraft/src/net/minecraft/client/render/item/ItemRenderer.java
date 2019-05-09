@@ -31,6 +31,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -294,10 +295,10 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Rendering item");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
-				crashReportSection.method_577("Item Type", () -> String.valueOf(itemStack.getItem()));
-				crashReportSection.method_577("Item Damage", () -> String.valueOf(itemStack.getDamage()));
-				crashReportSection.method_577("Item NBT", () -> String.valueOf(itemStack.getTag()));
-				crashReportSection.method_577("Item Foil", () -> String.valueOf(itemStack.hasEnchantmentGlint()));
+				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
+				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
+				crashReportSection.add("Item NBT", (CrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
+				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlint())));
 				throw new CrashException(crashReport);
 			}
 

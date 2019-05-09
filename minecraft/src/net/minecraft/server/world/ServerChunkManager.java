@@ -261,6 +261,11 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
+	public boolean method_20591(ChunkPos chunkPos) {
+		return this.method_20585(chunkPos.toLong(), ChunkHolder::getEntityTickingFuture);
+	}
+
+	@Override
 	public boolean method_20529(BlockPos blockPos) {
 		long l = ChunkPos.toLong(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 		return this.method_20585(l, ChunkHolder::getTickingFuture);

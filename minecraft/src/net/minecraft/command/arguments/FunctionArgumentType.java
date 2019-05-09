@@ -31,7 +31,7 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 	public FunctionArgumentType.FunctionArgument method_9764(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '#') {
 			stringReader.skip();
-			final Identifier identifier = Identifier.parse(stringReader);
+			final Identifier identifier = Identifier.fromCommandInput(stringReader);
 			return new FunctionArgumentType.FunctionArgument() {
 				@Override
 				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
@@ -45,7 +45,7 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 				}
 			};
 		} else {
-			final Identifier identifier = Identifier.parse(stringReader);
+			final Identifier identifier = Identifier.fromCommandInput(stringReader);
 			return new FunctionArgumentType.FunctionArgument() {
 				@Override
 				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {

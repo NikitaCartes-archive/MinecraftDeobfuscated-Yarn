@@ -28,7 +28,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 	);
 
 	public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
-		Identifier identifier = Identifier.parse(stringReader);
+		Identifier identifier = Identifier.fromCommandInput(stringReader);
 		return (DimensionType)Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
 	}
 
