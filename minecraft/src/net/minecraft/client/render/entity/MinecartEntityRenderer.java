@@ -64,18 +64,18 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		GlStateManager.translatef((float)d, (float)e + 0.375F, (float)f);
 		GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(-q, 0.0F, 0.0F, 1.0F);
-		float r = (float)abstractMinecartEntity.method_7507() - h;
-		float s = abstractMinecartEntity.method_7521() - h;
+		float r = (float)abstractMinecartEntity.getDamageWobbleTicks() - h;
+		float s = abstractMinecartEntity.getDamageWobbleStrength() - h;
 		if (s < 0.0F) {
 			s = 0.0F;
 		}
 
 		if (r > 0.0F) {
-			GlStateManager.rotatef(MathHelper.sin(r) * r * s / 10.0F * (float)abstractMinecartEntity.method_7522(), 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(MathHelper.sin(r) * r * s / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide(), 1.0F, 0.0F, 0.0F);
 		}
 
 		int t = abstractMinecartEntity.getBlockOffset();
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
 		}
@@ -96,7 +96,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		this.model.render(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

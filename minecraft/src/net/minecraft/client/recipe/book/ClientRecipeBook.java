@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.container.BlastFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.CraftingTableContainer;
@@ -44,11 +45,11 @@ public class ClientRecipeBook extends RecipeBook {
 				String string = recipe.getGroup();
 				RecipeResultCollection recipeResultCollection;
 				if (string.isEmpty()) {
-					recipeResultCollection = this.addGroup(recipeBookGroup);
+					recipeResultCollection = this.method_1394(recipeBookGroup);
 				} else {
 					recipeResultCollection = table.get(recipeBookGroup, string);
 					if (recipeResultCollection == null) {
-						recipeResultCollection = this.addGroup(recipeBookGroup);
+						recipeResultCollection = this.method_1394(recipeBookGroup);
 						table.put(recipeBookGroup, string, recipeResultCollection);
 					}
 				}
@@ -58,28 +59,28 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup) {
+	private RecipeResultCollection method_1394(RecipeBookGroup recipeBookGroup) {
 		RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 		if (recipeBookGroup == RecipeBookGroup.field_1811 || recipeBookGroup == RecipeBookGroup.field_1808 || recipeBookGroup == RecipeBookGroup.field_1812) {
-			this.addGroupResults(RecipeBookGroup.field_1804, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1804, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17111 || recipeBookGroup == RecipeBookGroup.field_17112) {
-			this.addGroupResults(RecipeBookGroup.field_17110, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17110, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17114) {
-			this.addGroupResults(RecipeBookGroup.field_17113, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17113, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17764) {
-			this.addGroupResults(RecipeBookGroup.field_17764, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17764, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17765) {
-			this.addGroupResults(RecipeBookGroup.field_17765, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17765, recipeResultCollection);
 		} else {
-			this.addGroupResults(RecipeBookGroup.field_1809, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1809, recipeResultCollection);
 		}
 
 		return recipeResultCollection;
 	}
 
-	private void addGroupResults(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
+	private void method_18092(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 

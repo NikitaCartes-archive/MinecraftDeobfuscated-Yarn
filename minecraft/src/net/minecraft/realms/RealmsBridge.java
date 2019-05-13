@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.NoticeScreen;
+import net.minecraft.client.gui.screen.NoticeScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.pluginapi.LoadedRealmsPlugin;
@@ -64,14 +64,14 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openScreen(this.previousScreen);
+		MinecraftClient.getInstance().method_1507(this.previousScreen);
 	}
 
 	private void showMissingRealmsErrorScreen() {
 		MinecraftClient.getInstance()
-			.openScreen(
+			.method_1507(
 				new NoticeScreen(
-					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
+					() -> MinecraftClient.getInstance().method_1507(this.previousScreen),
 					new TextComponent(""),
 					new TranslatableComponent(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)

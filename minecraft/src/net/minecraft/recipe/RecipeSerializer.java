@@ -1,25 +1,6 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
-import net.minecraft.recipe.cooking.BlastingRecipe;
-import net.minecraft.recipe.cooking.CampfireCookingRecipe;
-import net.minecraft.recipe.cooking.CookingRecipeSerializer;
-import net.minecraft.recipe.cooking.SmeltingRecipe;
-import net.minecraft.recipe.cooking.SmokingRecipe;
-import net.minecraft.recipe.crafting.ArmorDyeRecipe;
-import net.minecraft.recipe.crafting.BannerDuplicateRecipe;
-import net.minecraft.recipe.crafting.BookCloningRecipe;
-import net.minecraft.recipe.crafting.FireworkRocketRecipe;
-import net.minecraft.recipe.crafting.FireworkStarFadeRecipe;
-import net.minecraft.recipe.crafting.FireworkStarRecipe;
-import net.minecraft.recipe.crafting.MapCloningRecipe;
-import net.minecraft.recipe.crafting.MapExtendingRecipe;
-import net.minecraft.recipe.crafting.ShapedRecipe;
-import net.minecraft.recipe.crafting.ShapelessRecipe;
-import net.minecraft.recipe.crafting.ShieldDecorationRecipe;
-import net.minecraft.recipe.crafting.ShulkerBoxColoringRecipe;
-import net.minecraft.recipe.crafting.SuspiciousStewRecipe;
-import net.minecraft.recipe.crafting.TippedArrowRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
@@ -51,10 +32,10 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	SpecialRecipeSerializer<SuspiciousStewRecipe> SUSPICIOUS_STEW = register(
 		"crafting_special_suspiciousstew", new SpecialRecipeSerializer<>(SuspiciousStewRecipe::new)
 	);
-	CookingRecipeSerializer<SmeltingRecipe> SMELTING = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));
-	CookingRecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
-	CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
-	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
+	CookingRecipeSerializer<SmeltingRecipe> field_9042 = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));
+	CookingRecipeSerializer<BlastingRecipe> field_17084 = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
+	CookingRecipeSerializer<SmokingRecipe> field_17085 = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
+	CookingRecipeSerializer<CampfireCookingRecipe> field_17347 = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> field_17640 = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
 	T read(Identifier identifier, JsonObject jsonObject);

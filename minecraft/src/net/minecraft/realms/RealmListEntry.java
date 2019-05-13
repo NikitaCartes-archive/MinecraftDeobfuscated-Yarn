@@ -2,7 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.menu.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmListEntry> {

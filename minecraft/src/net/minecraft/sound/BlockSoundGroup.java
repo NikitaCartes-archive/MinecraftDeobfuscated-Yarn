@@ -61,7 +61,7 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup CROP = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17610, SoundEvents.field_14573, SoundEvents.field_17611, SoundEvents.field_14720, SoundEvents.field_14965
 	);
-	public static final BlockSoundGroup field_18852 = new BlockSoundGroup(
+	public static final BlockSoundGroup STEM = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_15215, SoundEvents.field_15053, SoundEvents.field_17611, SoundEvents.field_14808, SoundEvents.field_14607
 	);
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(

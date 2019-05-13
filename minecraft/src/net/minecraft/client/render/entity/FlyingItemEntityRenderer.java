@@ -35,13 +35,13 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
 		this.item.renderItem(entity.getStack(), ModelTransformation.Type.field_4318);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

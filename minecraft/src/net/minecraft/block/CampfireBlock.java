@@ -20,7 +20,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.cooking.CampfireCookingRecipe;
+import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;

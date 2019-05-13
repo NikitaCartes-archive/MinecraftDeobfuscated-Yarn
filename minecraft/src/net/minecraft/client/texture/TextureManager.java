@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
@@ -134,7 +134,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		Executor executor,
 		Executor executor2
 	) {
-		return CompletableFuture.allOf(MainMenuScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
+		return CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();

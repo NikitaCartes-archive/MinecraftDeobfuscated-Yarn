@@ -95,7 +95,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			GlStateManager.translatef(n, o, p);
 		}
 
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemEntity));
 		}
@@ -128,7 +128,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 		}
 
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

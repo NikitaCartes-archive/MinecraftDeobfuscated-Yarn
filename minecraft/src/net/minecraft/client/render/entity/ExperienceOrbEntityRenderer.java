@@ -24,7 +24,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
-		if (!this.field_4674 && MinecraftClient.getInstance().getEntityRenderManager().gameOptions != null) {
+		if (!this.renderOutlines && MinecraftClient.getInstance().getEntityRenderManager().gameOptions != null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
 			this.bindEntityTexture(experienceOrbEntity);

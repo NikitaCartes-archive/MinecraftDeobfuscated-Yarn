@@ -362,7 +362,7 @@ public class EntityRenderDispatcher {
 			entityRenderer = this.getRenderer(entity);
 			if (entityRenderer != null && this.textureManager != null) {
 				try {
-					entityRenderer.method_3927(this.renderOutlines);
+					entityRenderer.setRenderOutlines(this.renderOutlines);
 					entityRenderer.render(entity, d, e, f, g, h);
 				} catch (Throwable var17) {
 					throw new CrashException(CrashReport.create(var17, "Rendering entity in world"));

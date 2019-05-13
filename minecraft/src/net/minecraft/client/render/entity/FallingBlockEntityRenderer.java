@@ -34,7 +34,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 				GlStateManager.disableLighting();
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				if (this.field_4674) {
+				if (this.renderOutlines) {
 					GlStateManager.enableColorMaterial();
 					GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
 				}
@@ -55,7 +55,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos())
 					);
 				tessellator.draw();
-				if (this.field_4674) {
+				if (this.renderOutlines) {
 					GlStateManager.tearDownSolidRenderingTextureCombine();
 					GlStateManager.disableColorMaterial();
 				}

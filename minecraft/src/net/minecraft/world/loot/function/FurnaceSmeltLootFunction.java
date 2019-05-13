@@ -6,7 +6,7 @@ import java.util.Optional;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.cooking.SmeltingRecipe;
+import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
