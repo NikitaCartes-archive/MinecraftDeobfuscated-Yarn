@@ -13,13 +13,13 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.CommandBlockMinecartScreen;
-import net.minecraft.client.gui.CommandBlockScreen;
-import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.ingame.EditBookScreen;
-import net.minecraft.client.gui.ingame.EditSignScreen;
-import net.minecraft.client.gui.ingame.JigsawBlockScreen;
-import net.minecraft.client.gui.ingame.StructureBlockScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.BookEditScreen;
+import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.JigsawBlockScreen;
+import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.SignEditScreen;
+import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.sound.AmbientSoundLoops;
@@ -295,7 +295,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void closeScreen() {
 		this.inventory.setCursorStack(ItemStack.EMPTY);
 		super.closeContainer();
-		this.client.openScreen(null);
+		this.client.method_1507(null);
 	}
 
 	public void updateHealth(float f) {
@@ -536,34 +536,34 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-		this.client.openScreen(new EditSignScreen(signBlockEntity));
+		this.client.method_1507(new SignEditScreen(signBlockEntity));
 	}
 
 	@Override
 	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
-		this.client.openScreen(new CommandBlockMinecartScreen(commandBlockExecutor));
+		this.client.method_1507(new MinecartCommandBlockScreen(commandBlockExecutor));
 	}
 
 	@Override
 	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
+		this.client.method_1507(new CommandBlockScreen(commandBlockBlockEntity));
 	}
 
 	@Override
 	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-		this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
+		this.client.method_1507(new StructureBlockScreen(structureBlockBlockEntity));
 	}
 
 	@Override
 	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
-		this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
+		this.client.method_1507(new JigsawBlockScreen(jigsawBlockEntity));
 	}
 
 	@Override
 	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8674) {
-			this.client.openScreen(new EditBookScreen(this, itemStack, hand));
+			this.client.method_1507(new BookEditScreen(this, itemStack, hand));
 		}
 	}
 
@@ -777,12 +777,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
 		if (this.inPortal) {
-			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
-				if (this.client.currentScreen instanceof ContainerScreen) {
+			if (this.client.field_1755 != null && !this.client.field_1755.isPauseScreen()) {
+				if (this.client.field_1755 instanceof AbstractContainerScreen) {
 					this.closeContainer();
 				}
 
-				this.client.openScreen(null);
+				this.client.method_1507(null);
 			}
 
 			if (this.nextNauseaStrength == 0.0F) {
@@ -819,7 +819,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.riding = false;
 		if (this.getVehicle() instanceof BoatEntity) {
 			BoatEntity boatEntity = (BoatEntity)this.getVehicle();
-			boatEntity.method_7535(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
+			boatEntity.setInputs(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
 			this.riding = this.riding | (this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack);
 		}
 	}

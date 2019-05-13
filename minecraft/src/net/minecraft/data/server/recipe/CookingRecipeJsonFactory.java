@@ -10,10 +10,10 @@ import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.cooking.CookingRecipe;
-import net.minecraft.recipe.cooking.CookingRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -41,11 +41,11 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.BLASTING);
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.field_17084);
 	}
 
 	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.SMELTING);
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.field_9042);
 	}
 
 	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
@@ -84,7 +84,7 @@ public class CookingRecipeJsonFactory {
 				this.time,
 				this.builder,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath()),
-				(RecipeSerializer<? extends CookingRecipe>)this.serializer
+				(RecipeSerializer<? extends AbstractCookingRecipe>)this.serializer
 			)
 		);
 	}
@@ -104,7 +104,7 @@ public class CookingRecipeJsonFactory {
 		private final int cookingTime;
 		private final Advancement.Task builder;
 		private final Identifier advancementId;
-		private final RecipeSerializer<? extends CookingRecipe> cookingRecipeSerializer;
+		private final RecipeSerializer<? extends AbstractCookingRecipe> cookingRecipeSerializer;
 
 		public CookingRecipeJsonProvider(
 			Identifier identifier,
@@ -115,7 +115,7 @@ public class CookingRecipeJsonFactory {
 			int i,
 			Advancement.Task task,
 			Identifier identifier2,
-			RecipeSerializer<? extends CookingRecipe> recipeSerializer
+			RecipeSerializer<? extends AbstractCookingRecipe> recipeSerializer
 		) {
 			this.recipeId = identifier;
 			this.group = string;

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 
 @Environment(EnvType.CLIENT)
 public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends AlwaysSelectedEntryListWidget<E> {

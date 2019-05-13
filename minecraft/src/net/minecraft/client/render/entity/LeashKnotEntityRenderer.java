@@ -25,13 +25,13 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.bindEntityTexture(leadKnotEntity);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
 		}
 
 		this.model.render(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

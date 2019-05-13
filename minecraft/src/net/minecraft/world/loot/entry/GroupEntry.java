@@ -1,6 +1,5 @@
 package net.minecraft.world.loot.entry;
 
-import net.minecraft.world.loot.LootChoiceProvider;
 import net.minecraft.world.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
@@ -9,24 +8,24 @@ public class GroupEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected LootChoiceProvider combine(LootChoiceProvider[] lootChoiceProviders) {
-		switch (lootChoiceProviders.length) {
+	protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
+		switch (entryCombiners.length) {
 			case 0:
 				return ALWAYS_TRUE;
 			case 1:
-				return lootChoiceProviders[0];
+				return entryCombiners[0];
 			case 2:
-				LootChoiceProvider lootChoiceProvider = lootChoiceProviders[0];
-				LootChoiceProvider lootChoiceProvider2 = lootChoiceProviders[1];
+				EntryCombiner entryCombiner = entryCombiners[0];
+				EntryCombiner entryCombiner2 = entryCombiners[1];
 				return (lootContext, consumer) -> {
-					lootChoiceProvider.expand(lootContext, consumer);
-					lootChoiceProvider2.expand(lootContext, consumer);
+					entryCombiner.expand(lootContext, consumer);
+					entryCombiner2.expand(lootContext, consumer);
 					return true;
 				};
 			default:
 				return (lootContext, consumer) -> {
-					for (LootChoiceProvider lootChoiceProviderx : lootChoiceProviders) {
-						lootChoiceProviderx.expand(lootContext, consumer);
+					for (EntryCombiner entryCombinerx : entryCombiners) {
+						entryCombinerx.expand(lootContext, consumer);
 					}
 
 					return true;

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.LootChoiceProvider;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -18,18 +17,18 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected LootChoiceProvider combine(LootChoiceProvider[] lootChoiceProviders) {
-		switch (lootChoiceProviders.length) {
+	protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
+		switch (entryCombiners.length) {
 			case 0:
 				return ALWAYS_FALSE;
 			case 1:
-				return lootChoiceProviders[0];
+				return entryCombiners[0];
 			case 2:
-				return lootChoiceProviders[0].or(lootChoiceProviders[1]);
+				return entryCombiners[0].or(entryCombiners[1]);
 			default:
 				return (lootContext, consumer) -> {
-					for (LootChoiceProvider lootChoiceProvider : lootChoiceProviders) {
-						if (lootChoiceProvider.expand(lootContext, consumer)) {
+					for (EntryCombiner entryCombiner : entryCombiners) {
+						if (entryCombiner.expand(lootContext, consumer)) {
 							return true;
 						}
 					}

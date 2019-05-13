@@ -8,7 +8,7 @@ import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)

@@ -3,7 +3,7 @@ package net.minecraft.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -67,8 +67,8 @@ public class Mouse {
 			}
 
 			boolean[] bls = new boolean[]{false};
-			if (this.client.overlay == null) {
-				if (this.client.currentScreen == null) {
+			if (this.client.field_18175 == null) {
+				if (this.client.field_1755 == null) {
 					if (!this.isCursorLocked && bl) {
 						this.lockCursor();
 					}
@@ -77,17 +77,17 @@ public class Mouse {
 					double e = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 					if (bl) {
 						Screen.wrapScreenError(
-							() -> bls[0] = this.client.currentScreen.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName()
+							() -> bls[0] = this.client.field_1755.mouseClicked(d, e, m), "mouseClicked event handler", this.client.field_1755.getClass().getCanonicalName()
 						);
 					} else {
 						Screen.wrapScreenError(
-							() -> bls[0] = this.client.currentScreen.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName()
+							() -> bls[0] = this.client.field_1755.mouseReleased(d, e, m), "mouseReleased event handler", this.client.field_1755.getClass().getCanonicalName()
 						);
 					}
 				}
 			}
 
-			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.overlay == null) {
+			if (!bls[0] && (this.client.field_1755 == null || this.client.field_1755.passEvents) && this.client.field_18175 == null) {
 				if (m == 0) {
 					this.leftButtonClicked = bl;
 				} else if (m == 2) {
@@ -111,11 +111,11 @@ public class Mouse {
 	private void onMouseScroll(long l, double d, double e) {
 		if (l == MinecraftClient.getInstance().window.getHandle()) {
 			double f = (this.client.options.discreteMouseScroll ? Math.signum(e) : e) * this.client.options.mouseWheelSensitivity;
-			if (this.client.overlay == null) {
-				if (this.client.currentScreen != null) {
+			if (this.client.field_18175 == null) {
+				if (this.client.field_1755 != null) {
 					double g = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double h = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-					this.client.currentScreen.mouseScrolled(g, h, f);
+					this.client.field_1755.mouseScrolled(g, h, f);
 				} else if (this.client.player != null) {
 					if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
 						this.eventDeltaWheel = 0.0;
@@ -155,8 +155,8 @@ public class Mouse {
 				this.hasResolutionChanged = false;
 			}
 
-			Element element = this.client.currentScreen;
-			if (element != null && this.client.overlay == null) {
+			Element element = this.client.field_1755;
+			if (element != null && this.client.field_18175 == null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 				Screen.wrapScreenError(() -> element.mouseMoved(f, g), "mouseMoved event handler", element.getClass().getCanonicalName());
@@ -253,7 +253,7 @@ public class Mouse {
 				this.x = (double)(this.client.window.getWidth() / 2);
 				this.y = (double)(this.client.window.getHeight() / 2);
 				InputUtil.setCursorParameters(this.client.window.getHandle(), 212995, this.x, this.y);
-				this.client.openScreen(null);
+				this.client.method_1507(null);
 				this.client.attackCooldown = 10000;
 			}
 		}

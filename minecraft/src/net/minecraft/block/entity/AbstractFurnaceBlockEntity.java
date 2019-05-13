@@ -18,12 +18,12 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
-import net.minecraft.recipe.cooking.CookingRecipe;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DefaultedList;
@@ -81,9 +81,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	};
 	private final Map<Identifier, Integer> recipesUsed = Maps.<Identifier, Integer>newHashMap();
-	protected final RecipeType<? extends CookingRecipe> recipeType;
+	protected final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
-	protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends CookingRecipe> recipeType) {
+	protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends AbstractCookingRecipe> recipeType) {
 		super(blockEntityType);
 		this.recipeType = recipeType;
 	}
@@ -313,7 +313,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	protected int getCookTime() {
-		return (Integer)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(CookingRecipe::getCookTime).orElse(200);
+		return (Integer)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack itemStack) {
@@ -440,7 +440,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
 			playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
 				list.add(recipe);
-				dropExperience(playerEntity, (Integer)entry.getValue(), ((CookingRecipe)recipe).getExperience());
+				dropExperience(playerEntity, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
 			});
 		}
 

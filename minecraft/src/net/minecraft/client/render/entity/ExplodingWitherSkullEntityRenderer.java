@@ -43,13 +43,13 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.bindEntityTexture(explodingWitherSkullEntity);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(explodingWitherSkullEntity));
 		}
 
 		this.model.setRotationAngles(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

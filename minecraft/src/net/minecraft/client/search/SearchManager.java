@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.recipe.book.RecipeResultCollection;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;

@@ -44,37 +44,37 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public class BoatEntity extends Entity {
-	private static final TrackedData<Integer> field_7688 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> field_7707 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Float> field_7705 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.FLOAT);
+	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> BOAT_TYPE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Integer> field_7691 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private final float[] field_7704 = new float[2];
-	private float field_7692;
-	private float field_7706;
-	private float field_7690;
+	private static final TrackedData<Integer> BUBBLE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private final float[] paddlePhases = new float[2];
+	private float velocityDecay;
+	private float ticksUnderwater;
+	private float yawVelocity;
 	private int field_7708;
 	private double field_7686;
 	private double field_7700;
 	private double field_7685;
 	private double field_7699;
 	private double field_7684;
-	private boolean field_7710;
-	private boolean field_7695;
-	private boolean field_7709;
-	private boolean field_7693;
-	private double field_7697;
+	private boolean pressingLeft;
+	private boolean pressingRight;
+	private boolean pressingForward;
+	private boolean pressingBack;
+	private double waterLevel;
 	private float field_7714;
 	private BoatEntity.Location location;
 	private BoatEntity.Location lastLocation;
-	private double field_7696;
-	private boolean field_7689;
-	private boolean field_7703;
-	private float field_7712;
-	private float field_7694;
-	private float field_7711;
+	private double fallVelocity;
+	private boolean onBubbleColumnSurface;
+	private boolean bubbleColumnIsDrag;
+	private float bubbleWobbleStrength;
+	private float bubbleWobble;
+	private float lastBubbleWobble;
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
@@ -97,13 +97,13 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(field_7688, 0);
-		this.dataTracker.startTracking(field_7707, 1);
-		this.dataTracker.startTracking(field_7705, 0.0F);
+		this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
+		this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
+		this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, 0.0F);
 		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.field_7727.ordinal());
 		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
-		this.dataTracker.startTracking(field_7691, 0);
+		this.dataTracker.startTracking(BUBBLE_WOBBLE_TICKS, 0);
 	}
 
 	@Nullable
@@ -137,12 +137,12 @@ public class BoatEntity extends Entity {
 		} else if (damageSource instanceof ProjectileDamageSource && damageSource.getAttacker() != null && this.hasPassenger(damageSource.getAttacker())) {
 			return false;
 		} else {
-			this.method_7540(-this.method_7543());
-			this.method_7553(10);
-			this.method_7542(this.method_7554() + f * 10.0F);
+			this.setDamageWobbleSide(-this.getDamageWobbleSide());
+			this.setDamageWobbleTicks(10);
+			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + f * 10.0F);
 			this.scheduleVelocityUpdate();
 			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
-			if (bl || this.method_7554() > 40.0F) {
+			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				if (!bl && this.world.getGameRules().getBoolean("doEntityDrops")) {
 					this.dropItem(this.asItem());
 				}
@@ -157,10 +157,10 @@ public class BoatEntity extends Entity {
 	@Override
 	public void onBubbleColumnSurfaceCollision(boolean bl) {
 		if (!this.world.isClient) {
-			this.field_7689 = true;
-			this.field_7703 = bl;
-			if (this.method_7539() == 0) {
-				this.method_7531(60);
+			this.onBubbleColumnSurface = true;
+			this.bubbleColumnIsDrag = bl;
+			if (this.getBubbleWobbleTicks() == 0) {
+				this.setBubbleWobbleTicks(60);
 			}
 		}
 
@@ -202,10 +202,10 @@ public class BoatEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5879() {
-		this.method_7540(-this.method_7543());
-		this.method_7553(10);
-		this.method_7542(this.method_7554() * 11.0F);
+	public void animateDamage() {
+		this.setDamageWobbleSide(-this.getDamageWobbleSide());
+		this.setDamageWobbleTicks(10);
+		this.setDamageWobbleStrength(this.getDamageWobbleStrength() * 11.0F);
 	}
 
 	@Override
@@ -234,21 +234,21 @@ public class BoatEntity extends Entity {
 		this.lastLocation = this.location;
 		this.location = this.checkLocation();
 		if (this.location != BoatEntity.Location.field_7717 && this.location != BoatEntity.Location.field_7716) {
-			this.field_7706 = 0.0F;
+			this.ticksUnderwater = 0.0F;
 		} else {
-			this.field_7706++;
+			this.ticksUnderwater++;
 		}
 
-		if (!this.world.isClient && this.field_7706 >= 60.0F) {
+		if (!this.world.isClient && this.ticksUnderwater >= 60.0F) {
 			this.removeAllPassengers();
 		}
 
-		if (this.method_7533() > 0) {
-			this.method_7553(this.method_7533() - 1);
+		if (this.getDamageWobbleTicks() > 0) {
+			this.setDamageWobbleTicks(this.getDamageWobbleTicks() - 1);
 		}
 
-		if (this.method_7554() > 0.0F) {
-			this.method_7542(this.method_7554() - 1.0F);
+		if (this.getDamageWobbleStrength() > 0.0F) {
+			this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0F);
 		}
 
 		this.prevX = this.x;
@@ -258,13 +258,13 @@ public class BoatEntity extends Entity {
 		this.method_7555();
 		if (this.isLogicalSideForUpdatingMovement()) {
 			if (this.getPassengerList().isEmpty() || !(this.getPassengerList().get(0) instanceof PlayerEntity)) {
-				this.setPaddleState(false, false);
+				this.setPaddleMovings(false, false);
 			}
 
-			this.method_7534();
+			this.updateVelocity();
 			if (this.world.isClient) {
-				this.method_7549();
-				this.world.sendPacket(new BoatPaddleStateC2SPacket(this.getPaddleState(0), this.getPaddleState(1)));
+				this.updatePaddles();
+				this.world.sendPacket(new BoatPaddleStateC2SPacket(this.isPaddleMoving(0), this.isPaddleMoving(1)));
 			}
 
 			this.move(MovementType.field_6308, this.getVelocity());
@@ -272,13 +272,13 @@ public class BoatEntity extends Entity {
 			this.setVelocity(Vec3d.ZERO);
 		}
 
-		this.method_7550();
+		this.handleBubbleColumn();
 
 		for (int i = 0; i <= 1; i++) {
-			if (this.getPaddleState(i)) {
+			if (this.isPaddleMoving(i)) {
 				if (!this.isSilent()
-					&& (double)(this.field_7704[i] % (float) (Math.PI * 2)) <= (float) (Math.PI / 4)
-					&& ((double)this.field_7704[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
+					&& (double)(this.paddlePhases[i] % (float) (Math.PI * 2)) <= (float) (Math.PI / 4)
+					&& ((double)this.paddlePhases[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
 					SoundEvent soundEvent = this.getPaddleSoundEvent();
 					if (soundEvent != null) {
 						Vec3d vec3d = this.getRotationVec(1.0F);
@@ -288,9 +288,9 @@ public class BoatEntity extends Entity {
 					}
 				}
 
-				this.field_7704[i] = (float)((double)this.field_7704[i] + (float) (Math.PI / 8));
+				this.paddlePhases[i] = (float)((double)this.paddlePhases[i] + (float) (Math.PI / 8));
 			} else {
-				this.field_7704[i] = 0.0F;
+				this.paddlePhases[i] = 0.0F;
 			}
 		}
 
@@ -318,31 +318,31 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	private void method_7550() {
+	private void handleBubbleColumn() {
 		if (this.world.isClient) {
-			int i = this.method_7539();
+			int i = this.getBubbleWobbleTicks();
 			if (i > 0) {
-				this.field_7712 += 0.05F;
+				this.bubbleWobbleStrength += 0.05F;
 			} else {
-				this.field_7712 -= 0.1F;
+				this.bubbleWobbleStrength -= 0.1F;
 			}
 
-			this.field_7712 = MathHelper.clamp(this.field_7712, 0.0F, 1.0F);
-			this.field_7711 = this.field_7694;
-			this.field_7694 = 10.0F * (float)Math.sin((double)(0.5F * (float)this.world.getTime())) * this.field_7712;
+			this.bubbleWobbleStrength = MathHelper.clamp(this.bubbleWobbleStrength, 0.0F, 1.0F);
+			this.lastBubbleWobble = this.bubbleWobble;
+			this.bubbleWobble = 10.0F * (float)Math.sin((double)(0.5F * (float)this.world.getTime())) * this.bubbleWobbleStrength;
 		} else {
-			if (!this.field_7689) {
-				this.method_7531(0);
+			if (!this.onBubbleColumnSurface) {
+				this.setBubbleWobbleTicks(0);
 			}
 
-			int i = this.method_7539();
+			int i = this.getBubbleWobbleTicks();
 			if (i > 0) {
-				this.method_7531(--i);
+				this.setBubbleWobbleTicks(--i);
 				int j = 60 - i - 1;
 				if (j > 0 && i == 0) {
-					this.method_7531(0);
+					this.setBubbleWobbleTicks(0);
 					Vec3d vec3d = this.getVelocity();
-					if (this.field_7703) {
+					if (this.bubbleColumnIsDrag) {
 						this.setVelocity(vec3d.add(0.0, -0.7, 0.0));
 						this.removeAllPassengers();
 					} else {
@@ -350,7 +350,7 @@ public class BoatEntity extends Entity {
 					}
 				}
 
-				this.field_7689 = false;
+				this.onBubbleColumnSurface = false;
 			}
 		}
 	}
@@ -384,22 +384,22 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	public void setPaddleState(boolean bl, boolean bl2) {
+	public void setPaddleMovings(boolean bl, boolean bl2) {
 		this.dataTracker.set(LEFT_PADDLE_MOVING, bl);
 		this.dataTracker.set(RIGHT_PADDLE_MOVING, bl2);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7551(int i, float f) {
-		return this.getPaddleState(i)
-			? (float)MathHelper.clampedLerp((double)this.field_7704[i] - (float) (Math.PI / 8), (double)this.field_7704[i], (double)f)
+	public float interpolatePaddlePhase(int i, float f) {
+		return this.isPaddleMoving(i)
+			? (float)MathHelper.clampedLerp((double)this.paddlePhases[i] - (float) (Math.PI / 8), (double)this.paddlePhases[i], (double)f)
 			: 0.0F;
 	}
 
 	private BoatEntity.Location checkLocation() {
 		BoatEntity.Location location = this.getUnderWaterLocation();
 		if (location != null) {
-			this.field_7697 = this.getBoundingBox().maxY;
+			this.waterLevel = this.getBoundingBox().maxY;
 			return location;
 		} else if (this.checKBoatInWater()) {
 			return BoatEntity.Location.field_7718;
@@ -419,7 +419,7 @@ public class BoatEntity extends Entity {
 		int i = MathHelper.floor(boundingBox.minX);
 		int j = MathHelper.ceil(boundingBox.maxX);
 		int k = MathHelper.floor(boundingBox.maxY);
-		int l = MathHelper.ceil(boundingBox.maxY - this.field_7696);
+		int l = MathHelper.ceil(boundingBox.maxY - this.fallVelocity);
 		int m = MathHelper.floor(boundingBox.minZ);
 		int n = MathHelper.ceil(boundingBox.maxZ);
 
@@ -505,7 +505,7 @@ public class BoatEntity extends Entity {
 		int m = MathHelper.floor(boundingBox.minZ);
 		int n = MathHelper.ceil(boundingBox.maxZ);
 		boolean bl = false;
-		this.field_7697 = Double.MIN_VALUE;
+		this.waterLevel = Double.MIN_VALUE;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (int o = i; o < j; o++) {
@@ -515,7 +515,7 @@ public class BoatEntity extends Entity {
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517)) {
 							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
-							this.field_7697 = Math.max((double)f, this.field_7697);
+							this.waterLevel = Math.max((double)f, this.waterLevel);
 							bl |= boundingBox.minY < (double)f;
 						}
 					}
@@ -559,41 +559,41 @@ public class BoatEntity extends Entity {
 		return bl ? BoatEntity.Location.field_7717 : null;
 	}
 
-	private void method_7534() {
+	private void updateVelocity() {
 		double d = -0.04F;
 		double e = this.hasNoGravity() ? 0.0 : -0.04F;
 		double f = 0.0;
-		this.field_7692 = 0.05F;
+		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7719
 			)
 		 {
-			this.field_7697 = this.getBoundingBox().minY + (double)this.getHeight();
+			this.waterLevel = this.getBoundingBox().minY + (double)this.getHeight();
 			this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
-			this.field_7696 = 0.0;
+			this.fallVelocity = 0.0;
 			this.location = BoatEntity.Location.field_7718;
 		} else {
 			if (this.location == BoatEntity.Location.field_7718) {
-				f = (this.field_7697 - this.getBoundingBox().minY) / (double)this.getHeight();
-				this.field_7692 = 0.9F;
+				f = (this.waterLevel - this.getBoundingBox().minY) / (double)this.getHeight();
+				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.field_7716) {
 				e = -7.0E-4;
-				this.field_7692 = 0.9F;
+				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.field_7717) {
 				f = 0.01F;
-				this.field_7692 = 0.45F;
+				this.velocityDecay = 0.45F;
 			} else if (this.location == BoatEntity.Location.field_7720) {
-				this.field_7692 = 0.9F;
+				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.field_7719) {
-				this.field_7692 = this.field_7714;
+				this.velocityDecay = this.field_7714;
 				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
 					this.field_7714 /= 2.0F;
 				}
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			this.setVelocity(vec3d.x * (double)this.field_7692, vec3d.y + e, vec3d.z * (double)this.field_7692);
-			this.field_7690 = this.field_7690 * this.field_7692;
+			this.setVelocity(vec3d.x * (double)this.velocityDecay, vec3d.y + e, vec3d.z * (double)this.velocityDecay);
+			this.yawVelocity = this.yawVelocity * this.velocityDecay;
 			if (f > 0.0) {
 				Vec3d vec3d2 = this.getVelocity();
 				this.setVelocity(vec3d2.x, (vec3d2.y + f * 0.06153846016296973) * 0.75, vec3d2.z);
@@ -601,27 +601,27 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	private void method_7549() {
+	private void updatePaddles() {
 		if (this.hasPassengers()) {
 			float f = 0.0F;
-			if (this.field_7710) {
-				this.field_7690--;
+			if (this.pressingLeft) {
+				this.yawVelocity--;
 			}
 
-			if (this.field_7695) {
-				this.field_7690++;
+			if (this.pressingRight) {
+				this.yawVelocity++;
 			}
 
-			if (this.field_7695 != this.field_7710 && !this.field_7709 && !this.field_7693) {
+			if (this.pressingRight != this.pressingLeft && !this.pressingForward && !this.pressingBack) {
 				f += 0.005F;
 			}
 
-			this.yaw = this.yaw + this.field_7690;
-			if (this.field_7709) {
+			this.yaw = this.yaw + this.yawVelocity;
+			if (this.pressingForward) {
 				f += 0.04F;
 			}
 
-			if (this.field_7693) {
+			if (this.pressingBack) {
 				f -= 0.005F;
 			}
 
@@ -629,7 +629,7 @@ public class BoatEntity extends Entity {
 				this.getVelocity()
 					.add((double)(MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0)) * f), 0.0, (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * f))
 			);
-			this.setPaddleState(this.field_7695 && !this.field_7710 || this.field_7709, this.field_7710 && !this.field_7695 || this.field_7709);
+			this.setPaddleMovings(this.pressingRight && !this.pressingLeft || this.pressingForward, this.pressingLeft && !this.pressingRight || this.pressingForward);
 		}
 	}
 
@@ -653,8 +653,8 @@ public class BoatEntity extends Entity {
 
 			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.yaw * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
 			entity.setPosition(this.x + vec3d.x, this.y + (double)g, this.z + vec3d.z);
-			entity.yaw = entity.yaw + this.field_7690;
-			entity.setHeadYaw(entity.getHeadYaw() + this.field_7690);
+			entity.yaw = entity.yaw + this.yawVelocity;
+			entity.setHeadYaw(entity.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(entity);
 			if (entity instanceof AnimalEntity && this.getPassengerList().size() > 1) {
 				int j = entity.getEntityId() % 2 == 0 ? 90 : 270;
@@ -696,7 +696,7 @@ public class BoatEntity extends Entity {
 		if (playerEntity.isSneaking()) {
 			return false;
 		} else {
-			if (!this.world.isClient && this.field_7706 < 60.0F) {
+			if (!this.world.isClient && this.ticksUnderwater < 60.0F) {
 				playerEntity.startRiding(this);
 			}
 
@@ -706,7 +706,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
-		this.field_7696 = this.getVelocity().y;
+		this.fallVelocity = this.getVelocity().y;
 		if (!this.hasVehicle()) {
 			if (bl) {
 				if (this.fallDistance > 3.0F) {
@@ -737,45 +737,45 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	public boolean getPaddleState(int i) {
+	public boolean isPaddleMoving(int i) {
 		return this.dataTracker.get(i == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getPrimaryPassenger() != null;
 	}
 
-	public void method_7542(float f) {
-		this.dataTracker.set(field_7705, f);
+	public void setDamageWobbleStrength(float f) {
+		this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, f);
 	}
 
-	public float method_7554() {
-		return this.dataTracker.get(field_7705);
+	public float getDamageWobbleStrength() {
+		return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH);
 	}
 
-	public void method_7553(int i) {
-		this.dataTracker.set(field_7688, i);
+	public void setDamageWobbleTicks(int i) {
+		this.dataTracker.set(DAMAGE_WOBBLE_TICKS, i);
 	}
 
-	public int method_7533() {
-		return this.dataTracker.get(field_7688);
+	public int getDamageWobbleTicks() {
+		return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
 	}
 
-	private void method_7531(int i) {
-		this.dataTracker.set(field_7691, i);
+	private void setBubbleWobbleTicks(int i) {
+		this.dataTracker.set(BUBBLE_WOBBLE_TICKS, i);
 	}
 
-	private int method_7539() {
-		return this.dataTracker.get(field_7691);
+	private int getBubbleWobbleTicks() {
+		return this.dataTracker.get(BUBBLE_WOBBLE_TICKS);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7547(float f) {
-		return MathHelper.lerp(f, this.field_7711, this.field_7694);
+	public float interpolateBubbleWobble(float f) {
+		return MathHelper.lerp(f, this.lastBubbleWobble, this.bubbleWobble);
 	}
 
-	public void method_7540(int i) {
-		this.dataTracker.set(field_7707, i);
+	public void setDamageWobbleSide(int i) {
+		this.dataTracker.set(DAMAGE_WOBBLE_SIDE, i);
 	}
 
-	public int method_7543() {
-		return this.dataTracker.get(field_7707);
+	public int getDamageWobbleSide() {
+		return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
 	}
 
 	public void setBoatType(BoatEntity.Type type) {
@@ -799,11 +799,11 @@ public class BoatEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7535(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-		this.field_7710 = bl;
-		this.field_7695 = bl2;
-		this.field_7709 = bl3;
-		this.field_7693 = bl4;
+	public void setInputs(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+		this.pressingLeft = bl;
+		this.pressingRight = bl2;
+		this.pressingForward = bl3;
+		this.pressingBack = bl4;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public final class GlobalPos implements DynamicSerializable {
 
 	public static GlobalPos deserialize(Dynamic<?> dynamic) {
 		return (GlobalPos)dynamic.get("dimension")
-			.map(DimensionType::method_19298)
+			.map(DimensionType::deserialize)
 			.flatMap(dimensionType -> dynamic.get("pos").map(BlockPos::deserialize).map(blockPos -> new GlobalPos(dimensionType, blockPos)))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse GlobalPos"));
 	}

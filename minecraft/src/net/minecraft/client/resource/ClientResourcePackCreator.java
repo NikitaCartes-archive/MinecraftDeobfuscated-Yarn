@@ -18,7 +18,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.WorkingScreen;
+import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -109,11 +109,11 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			if (file.exists()) {
 				completableFuture = CompletableFuture.completedFuture("");
 			} else {
-				WorkingScreen workingScreen = new WorkingScreen();
+				ProgressScreen progressScreen = new ProgressScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.executeSync(() -> minecraftClient.openScreen(workingScreen));
-				completableFuture = NetworkUtils.download(file, string, map, 52428800, workingScreen, minecraftClient.getNetworkProxy());
+				minecraftClient.executeSync(() -> minecraftClient.method_1507(progressScreen));
+				completableFuture = NetworkUtils.download(file, string, map, 52428800, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(

@@ -115,7 +115,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.enableAlphaTest();
 			this.model.animateModel(livingEntity, p, o, h);
 			this.model.setAngles(livingEntity, p, o, lx, k, m, n);
-			if (this.field_4674) {
+			if (this.renderOutlines) {
 				boolean bl = this.beforeOutlineRender(livingEntity);
 				GlStateManager.enableColorMaterial();
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
@@ -202,7 +202,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected boolean method_4056(T livingEntity) {
-		return !livingEntity.isInvisible() || this.field_4674;
+		return !livingEntity.isInvisible() || this.renderOutlines;
 	}
 
 	protected boolean applyOverlayColor(T livingEntity, float f) {

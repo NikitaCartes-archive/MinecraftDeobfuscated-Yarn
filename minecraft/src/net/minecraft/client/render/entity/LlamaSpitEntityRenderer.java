@@ -23,13 +23,13 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), 0.0F, 0.0F, 1.0F);
 		this.bindEntityTexture(llamaSpitEntity);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(llamaSpitEntity));
 		}
 
 		this.model.render(llamaSpitEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

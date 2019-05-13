@@ -48,13 +48,13 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
 		}
 
 		blockRenderManager.getModelRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

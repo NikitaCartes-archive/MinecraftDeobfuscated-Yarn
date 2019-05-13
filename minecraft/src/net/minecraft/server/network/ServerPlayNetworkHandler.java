@@ -963,7 +963,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(boatPaddleStateC2SPacket, this, this.player.getServerWorld());
 		Entity entity = this.player.getVehicle();
 		if (entity instanceof BoatEntity) {
-			((BoatEntity)entity).setPaddleState(boatPaddleStateC2SPacket.isLeftPaddling(), boatPaddleStateC2SPacket.isRightPaddling());
+			((BoatEntity)entity).setPaddleMovings(boatPaddleStateC2SPacket.isLeftPaddling(), boatPaddleStateC2SPacket.isRightPaddling());
 		}
 	}
 

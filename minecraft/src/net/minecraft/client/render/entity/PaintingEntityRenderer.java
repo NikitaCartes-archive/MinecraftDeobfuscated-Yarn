@@ -33,7 +33,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float i = 0.0625F;
 		GlStateManager.scalef(0.0625F, 0.0625F, 0.0625F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(paintingEntity));
 		}
@@ -42,7 +42,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		this.method_4074(
 			paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite()
 		);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

@@ -13,8 +13,8 @@ import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.DisconnectedScreen;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
 import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
 import net.minecraft.client.network.packet.LoginHelloS2CPacket;
@@ -103,9 +103,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onDisconnected(Component component) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
-			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", component).getProxy());
+			this.client.method_1507(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", component).getProxy());
 		} else {
-			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", component));
+			this.client.method_1507(new DisconnectedScreen(this.parentGui, "connect.failed", component));
 		}
 	}
 

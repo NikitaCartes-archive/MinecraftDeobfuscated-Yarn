@@ -694,11 +694,11 @@ public class Blocks {
 	);
 	public static final Block field_9984 = register(
 		"pumpkin_stem",
-		new StemBlock((GourdBlock)field_10261, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_18852))
+		new StemBlock((GourdBlock)field_10261, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM))
 	);
 	public static final Block field_10168 = register(
 		"melon_stem",
-		new StemBlock((GourdBlock)field_10545, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_18852))
+		new StemBlock((GourdBlock)field_10545, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM))
 	);
 	public static final Block field_10597 = register(
 		"vine", new VineBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2F).sounds(BlockSoundGroup.GRASS))
@@ -739,7 +739,7 @@ public class Blocks {
 	);
 	public static final Block field_10471 = register("end_stone", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0F, 9.0F)));
 	public static final Block field_10081 = register(
-		"dragon_egg", new DragonEggBlock(Block.Settings.of(Material.DRAGON_EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).lightLevel(1))
+		"dragon_egg", new DragonEggBlock(Block.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).lightLevel(1))
 	);
 	public static final Block field_10524 = register(
 		"redstone_lamp", new RedstoneLampBlock(Block.Settings.of(Material.REDSTONE_LAMP).lightLevel(15).strength(0.3F).sounds(BlockSoundGroup.GLASS))
@@ -1544,7 +1544,7 @@ public class Blocks {
 		"dried_kelp_block", new Block(Block.Settings.of(Material.ORGANIC, MaterialColor.GREEN).strength(0.5F, 2.5F).sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10195 = register(
-		"turtle_egg", new TurtleEggBlock(Block.Settings.of(Material.DRAGON_EGG, MaterialColor.SAND).strength(0.5F).sounds(BlockSoundGroup.METAL).ticksRandomly())
+		"turtle_egg", new TurtleEggBlock(Block.Settings.of(Material.EGG, MaterialColor.SAND).strength(0.5F).sounds(BlockSoundGroup.METAL).ticksRandomly())
 	);
 	public static final Block field_10614 = register(
 		"dead_tube_coral_block", new Block(Block.Settings.of(Material.STONE, MaterialColor.GRAY).strength(1.5F, 6.0F))
@@ -1636,31 +1636,31 @@ public class Blocks {
 	);
 	public static final Block field_10053 = register(
 		"tube_coral_fan",
-		new CoralTubeFanBlock(
+		new CoralFanBlock(
 			field_10448, Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.BLUE).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)
 		)
 	);
 	public static final Block field_10079 = register(
 		"brain_coral_fan",
-		new CoralTubeFanBlock(
+		new CoralFanBlock(
 			field_10097, Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.PINK).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)
 		)
 	);
 	public static final Block field_10427 = register(
 		"bubble_coral_fan",
-		new CoralTubeFanBlock(
+		new CoralFanBlock(
 			field_10047, Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.PURPLE).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)
 		)
 	);
 	public static final Block field_10551 = register(
 		"fire_coral_fan",
-		new CoralTubeFanBlock(
+		new CoralFanBlock(
 			field_10568, Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.RED).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)
 		)
 	);
 	public static final Block field_10005 = register(
 		"horn_coral_fan",
-		new CoralTubeFanBlock(
+		new CoralFanBlock(
 			field_10221, Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.YELLOW).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)
 		)
 	);

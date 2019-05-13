@@ -34,7 +34,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 	public void method_4072(T mobEntity, double d, double e, double f, float g, float h) {
 		super.method_4054(mobEntity, d, e, f, g, h);
-		if (!this.field_4674) {
+		if (!this.renderOutlines) {
 			this.method_4073(mobEntity, d, e, f, g, h);
 		}
 	}

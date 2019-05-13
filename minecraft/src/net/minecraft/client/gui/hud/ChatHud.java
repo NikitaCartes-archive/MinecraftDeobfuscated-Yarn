@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.network.chat.Component;
@@ -227,7 +227,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public boolean isChatFocused() {
-		return this.client.currentScreen instanceof ChatScreen;
+		return this.client.field_1755 instanceof ChatScreen;
 	}
 
 	public void removeMessage(int i) {

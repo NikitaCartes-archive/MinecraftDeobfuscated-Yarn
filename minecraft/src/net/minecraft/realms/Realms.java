@@ -14,7 +14,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
@@ -84,7 +84,7 @@ public class Realms {
 	}
 
 	public static void setScreenDirect(RealmsScreen realmsScreen) {
-		MinecraftClient.getInstance().openScreen(realmsScreen.getProxy());
+		MinecraftClient.getInstance().method_1507(realmsScreen.getProxy());
 	}
 
 	public static String getGameDirectoryPath() {
@@ -124,7 +124,7 @@ public class Realms {
 	}
 
 	public static boolean inTitleScreen() {
-		return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof MainMenuScreen;
+		return MinecraftClient.getInstance().field_1755 != null && MinecraftClient.getInstance().field_1755 instanceof TitleScreen;
 	}
 
 	public static void deletePlayerTag(File file) {

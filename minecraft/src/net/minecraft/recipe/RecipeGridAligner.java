@@ -1,7 +1,6 @@
 package net.minecraft.recipe;
 
 import java.util.Iterator;
-import net.minecraft.recipe.crafting.ShapedRecipe;
 import net.minecraft.util.math.MathHelper;
 
 public interface RecipeGridAligner<T> {

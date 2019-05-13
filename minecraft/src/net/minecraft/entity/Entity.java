@@ -1737,7 +1737,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_5879() {
+	public void animateDamage() {
 	}
 
 	public Iterable<ItemStack> getItemsHand() {

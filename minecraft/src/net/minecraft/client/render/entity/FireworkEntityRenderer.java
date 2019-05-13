@@ -31,13 +31,13 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		}
 
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
 		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.field_4318);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}

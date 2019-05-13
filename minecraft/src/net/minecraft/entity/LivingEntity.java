@@ -1262,7 +1262,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5879() {
+	public void animateDamage() {
 		this.field_6254 = 10;
 		this.hurtTime = this.field_6254;
 		this.field_6271 = 0.0F;
