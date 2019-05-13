@@ -12,18 +12,18 @@ import java.util.function.Function;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootChoice;
-import net.minecraft.world.loot.LootChoiceProvider;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
+import net.minecraft.world.loot.entry.EntryCombiner;
 import net.minecraft.world.loot.entry.LootEntry;
 
 public abstract class CombinedEntry
 extends LootEntry {
     protected final LootEntry[] children;
-    private final LootChoiceProvider predicate;
+    private final EntryCombiner predicate;
 
     protected CombinedEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
         super(lootConditions);
@@ -42,7 +42,7 @@ extends LootEntry {
         }
     }
 
-    protected abstract LootChoiceProvider combine(LootChoiceProvider[] var1);
+    protected abstract EntryCombiner combine(EntryCombiner[] var1);
 
     @Override
     public final boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {

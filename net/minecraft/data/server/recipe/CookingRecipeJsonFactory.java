@@ -13,10 +13,10 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.cooking.CookingRecipe;
-import net.minecraft.recipe.cooking.CookingRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -90,9 +90,9 @@ public class CookingRecipeJsonFactory {
         private final int cookingTime;
         private final Advancement.Task builder;
         private final Identifier advancementId;
-        private final RecipeSerializer<? extends CookingRecipe> cookingRecipeSerializer;
+        private final RecipeSerializer<? extends AbstractCookingRecipe> cookingRecipeSerializer;
 
-        public CookingRecipeJsonProvider(Identifier identifier, String string, Ingredient ingredient, Item item, float f, int i, Advancement.Task task, Identifier identifier2, RecipeSerializer<? extends CookingRecipe> recipeSerializer) {
+        public CookingRecipeJsonProvider(Identifier identifier, String string, Ingredient ingredient, Item item, float f, int i, Advancement.Task task, Identifier identifier2, RecipeSerializer<? extends AbstractCookingRecipe> recipeSerializer) {
             this.recipeId = identifier;
             this.group = string;
             this.ingredient = ingredient;

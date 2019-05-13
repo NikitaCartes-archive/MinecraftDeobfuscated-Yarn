@@ -22,7 +22,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
-import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.hud.BossBarHud;
@@ -32,6 +31,7 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -387,7 +387,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;

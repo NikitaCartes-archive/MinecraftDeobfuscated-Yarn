@@ -46,9 +46,9 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractMinecartEntity
 extends Entity {
-    private static final TrackedData<Integer> field_7663 = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Integer> field_7668 = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Float> field_7667 = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -110,9 +110,9 @@ extends Entity {
 
     @Override
     protected void initDataTracker() {
-        this.dataTracker.startTracking(field_7663, 0);
-        this.dataTracker.startTracking(field_7668, 1);
-        this.dataTracker.startTracking(field_7667, Float.valueOf(0.0f));
+        this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
+        this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
+        this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(0.0f));
         this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
         this.dataTracker.startTracking(CUSTOM_BLOCK_OFFSET, 6);
         this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
@@ -146,12 +146,12 @@ extends Entity {
         if (this.isInvulnerableTo(damageSource)) {
             return false;
         }
-        this.method_7524(-this.method_7522());
-        this.method_7509(10);
+        this.setDamageWobbleSide(-this.getDamageWobbleSide());
+        this.setDamageWobbleTicks(10);
         this.scheduleVelocityUpdate();
-        this.method_7520(this.method_7521() + f * 10.0f);
+        this.setDamageWobbleStrength(this.getDamageWobbleStrength() + f * 10.0f);
         boolean bl2 = bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
-        if (bl || this.method_7521() > 40.0f) {
+        if (bl || this.getDamageWobbleStrength() > 40.0f) {
             this.removeAllPassengers();
             if (!bl || this.hasCustomName()) {
                 this.dropItems(damageSource);
@@ -175,10 +175,10 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void method_5879() {
-        this.method_7524(-this.method_7522());
-        this.method_7509(10);
-        this.method_7520(this.method_7521() + this.method_7521() * 10.0f);
+    public void animateDamage() {
+        this.setDamageWobbleSide(-this.getDamageWobbleSide());
+        this.setDamageWobbleTicks(10);
+        this.setDamageWobbleStrength(this.getDamageWobbleStrength() + this.getDamageWobbleStrength() * 10.0f);
     }
 
     @Override
@@ -199,11 +199,11 @@ extends Entity {
         int k;
         int j;
         int i;
-        if (this.method_7507() > 0) {
-            this.method_7509(this.method_7507() - 1);
+        if (this.getDamageWobbleTicks() > 0) {
+            this.setDamageWobbleTicks(this.getDamageWobbleTicks() - 1);
         }
-        if (this.method_7521() > 0.0f) {
-            this.method_7520(this.method_7521() - 1.0f);
+        if (this.getDamageWobbleStrength() > 0.0f) {
+            this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
         if (this.y < -64.0) {
             this.destroy();
@@ -644,28 +644,28 @@ extends Entity {
         this.setVelocity(this.field_7658, this.field_7655, this.field_7656);
     }
 
-    public void method_7520(float f) {
-        this.dataTracker.set(field_7667, Float.valueOf(f));
+    public void setDamageWobbleStrength(float f) {
+        this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(f));
     }
 
-    public float method_7521() {
-        return this.dataTracker.get(field_7667).floatValue();
+    public float getDamageWobbleStrength() {
+        return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH).floatValue();
     }
 
-    public void method_7509(int i) {
-        this.dataTracker.set(field_7663, i);
+    public void setDamageWobbleTicks(int i) {
+        this.dataTracker.set(DAMAGE_WOBBLE_TICKS, i);
     }
 
-    public int method_7507() {
-        return this.dataTracker.get(field_7663);
+    public int getDamageWobbleTicks() {
+        return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
     }
 
-    public void method_7524(int i) {
-        this.dataTracker.set(field_7668, i);
+    public void setDamageWobbleSide(int i) {
+        this.dataTracker.set(DAMAGE_WOBBLE_SIDE, i);
     }
 
-    public int method_7522() {
-        return this.dataTracker.get(field_7668);
+    public int getDamageWobbleSide() {
+        return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
     }
 
     public abstract Type getMinecartType();

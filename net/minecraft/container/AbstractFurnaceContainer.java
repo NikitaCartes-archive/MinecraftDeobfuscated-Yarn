@@ -18,12 +18,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.FurnaceInputSlotFiller;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.cooking.CookingRecipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
@@ -32,13 +32,13 @@ extends CraftingContainer<Inventory> {
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
     protected final World world;
-    private final RecipeType<? extends CookingRecipe> recipeType;
+    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
-    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends CookingRecipe> recipeType, int i, PlayerInventory playerInventory) {
+    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory) {
         this(containerType, recipeType, i, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
     }
 
-    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends CookingRecipe> recipeType, int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
         super(containerType, i);
         int j;
         this.recipeType = recipeType;

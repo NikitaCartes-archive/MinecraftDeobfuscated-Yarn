@@ -54,12 +54,12 @@ extends EntityRenderer<ItemFrameEntity> {
         ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
         GlStateManager.pushMatrix();
         GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
         }
         blockRenderManager.getModelRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, 1.0f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

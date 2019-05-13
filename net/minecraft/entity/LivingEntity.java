@@ -1113,7 +1113,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void method_5879() {
+    public void animateDamage() {
         this.hurtTime = this.field_6254 = 10;
         this.field_6271 = 0.0f;
     }

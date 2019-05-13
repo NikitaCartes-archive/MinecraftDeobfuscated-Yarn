@@ -37,7 +37,7 @@ extends EntityRenderer<FishHookEntity> {
         double u;
         double t;
         PlayerEntity playerEntity = fishHookEntity.getOwner();
-        if (playerEntity == null || this.field_4674) {
+        if (playerEntity == null || this.renderOutlines) {
             return;
         }
         GlStateManager.pushMatrix();
@@ -52,7 +52,7 @@ extends EntityRenderer<FishHookEntity> {
         float k = 0.5f;
         GlStateManager.rotatef(180.0f - this.renderManager.cameraYaw, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0f, 0.0f, 0.0f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
         }
@@ -62,7 +62,7 @@ extends EntityRenderer<FishHookEntity> {
         bufferBuilder.vertex(0.5, 0.5, 0.0).texture(1.0, 0.0).normal(0.0f, 1.0f, 0.0f).next();
         bufferBuilder.vertex(-0.5, 0.5, 0.0).texture(0.0, 0.0).normal(0.0f, 1.0f, 0.0f).next();
         tessellator.draw();
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

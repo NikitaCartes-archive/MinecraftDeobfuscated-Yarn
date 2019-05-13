@@ -29,12 +29,12 @@ extends EntityRenderer<LlamaSpitEntity> {
         GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), 0.0f, 0.0f, 1.0f);
         this.bindEntityTexture(llamaSpitEntity);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(llamaSpitEntity));
         }
         this.model.render(llamaSpitEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

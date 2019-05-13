@@ -96,7 +96,7 @@ extends EntityRenderer<ItemEntity> {
             p = -0.09375f * (float)(j - 1) * 0.5f * m;
             GlStateManager.translatef(n, o, p);
         }
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemEntity));
         }
@@ -125,7 +125,7 @@ extends EntityRenderer<ItemEntity> {
             GlStateManager.popMatrix();
             GlStateManager.translatef(0.0f * k, 0.0f * l, 0.09375f * m);
         }
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

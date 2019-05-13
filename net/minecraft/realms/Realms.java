@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
@@ -135,7 +135,7 @@ public class Realms {
     }
 
     public static boolean inTitleScreen() {
-        return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof MainMenuScreen;
+        return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof TitleScreen;
     }
 
     public static void deletePlayerTag(File file) {

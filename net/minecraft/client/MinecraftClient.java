@@ -55,27 +55,28 @@ import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlFramebuffer;
-import net.minecraft.client.gui.CloseWorldScreen;
-import net.minecraft.client.gui.ContainerScreenRegistry;
-import net.minecraft.client.gui.MainMenuScreen;
-import net.minecraft.client.gui.Overlay;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.SplashScreen;
-import net.minecraft.client.gui.WorldGenerationProgressScreen;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.ingame.ChatScreen;
-import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
-import net.minecraft.client.gui.ingame.DeathScreen;
-import net.minecraft.client.gui.ingame.PlayerInventoryScreen;
-import net.minecraft.client.gui.ingame.SleepingChatScreen;
-import net.minecraft.client.gui.menu.AdvancementsScreen;
-import net.minecraft.client.gui.menu.EndCreditsScreen;
-import net.minecraft.client.gui.menu.MultiplayerScreen;
-import net.minecraft.client.gui.menu.OutOfMemoryScreen;
-import net.minecraft.client.gui.menu.PauseMenuScreen;
-import net.minecraft.client.gui.menu.ServerConnectingScreen;
-import net.minecraft.client.gui.menu.WorkingScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ConnectScreen;
+import net.minecraft.client.gui.screen.ContainerScreenRegistry;
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.EndCreditsScreen;
+import net.minecraft.client.gui.screen.LevelLoadingScreen;
+import net.minecraft.client.gui.screen.OutOfMemoryScreen;
+import net.minecraft.client.gui.screen.Overlay;
+import net.minecraft.client.gui.screen.PauseScreen;
+import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.SleepingChatScreen;
+import net.minecraft.client.gui.screen.SplashScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -90,7 +91,6 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -513,9 +513,9 @@ AutoCloseable {
         this.window.setVsync(this.options.enableVsync);
         this.window.logOnGlError();
         if (this.autoConnectServerIp != null) {
-            this.openScreen(new ServerConnectingScreen(new MainMenuScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
+            this.openScreen(new ConnectScreen(new TitleScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
         } else {
-            this.openScreen(new MainMenuScreen(true));
+            this.openScreen(new TitleScreen(true));
         }
         SplashScreen.method_18819(this);
         this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, CompletableFuture.completedFuture(Unit.INSTANCE)), () -> {
@@ -678,11 +678,11 @@ AutoCloseable {
             this.currentScreen.removed();
         }
         if (screen == null && this.world == null) {
-            screen = new MainMenuScreen();
+            screen = new TitleScreen();
         } else if (screen == null && this.player.getHealth() <= 0.0f) {
             screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
         }
-        if (screen instanceof MainMenuScreen || screen instanceof MultiplayerScreen) {
+        if (screen instanceof TitleScreen || screen instanceof MultiplayerScreen) {
             this.options.debugEnabled = false;
             this.inGameHud.getChatHud().clear(true);
         }
@@ -903,7 +903,7 @@ AutoCloseable {
             if (this.isIntegratedServerRunning()) {
                 this.server.stop(true);
             }
-            this.disconnect(new CloseWorldScreen(new TranslatableComponent("menu.savingLevel", new Object[0])));
+            this.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel", new Object[0])));
         } catch (Throwable throwable) {
             // empty catch block
         }
@@ -1033,10 +1033,10 @@ AutoCloseable {
         }
         boolean bl3 = bl2 = this.isIntegratedServerRunning() && !this.server.isRemote();
         if (bl2) {
-            this.openScreen(new PauseMenuScreen(!bl));
+            this.openScreen(new PauseScreen(!bl));
             this.soundManager.pauseAll();
         } else {
-            this.openScreen(new PauseMenuScreen(true));
+            this.openScreen(new PauseScreen(true));
         }
     }
 
@@ -1275,7 +1275,7 @@ AutoCloseable {
                 continue;
             }
             if (this.player.isCreative() && this.currentScreen == null && (bl2 || bl)) {
-                CreativePlayerInventoryScreen.onHotbarKeyPress(this, i, bl2, bl);
+                CreativeInventoryScreen.onHotbarKeyPress(this, i, bl2, bl);
                 continue;
             }
             this.player.inventory.selectedSlot = i;
@@ -1286,7 +1286,7 @@ AutoCloseable {
                 continue;
             }
             this.tutorialManager.onInventoryOpened();
-            this.openScreen(new PlayerInventoryScreen(this.player));
+            this.openScreen(new InventoryScreen(this.player));
         }
         while (this.options.keyAdvancements.wasPressed()) {
             this.openScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
@@ -1373,10 +1373,10 @@ AutoCloseable {
         while (this.worldGenProgressTracker.get() == null) {
             Thread.yield();
         }
-        WorldGenerationProgressScreen worldGenerationProgressScreen = new WorldGenerationProgressScreen(this.worldGenProgressTracker.get());
-        this.openScreen(worldGenerationProgressScreen);
+        LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen(this.worldGenProgressTracker.get());
+        this.openScreen(levelLoadingScreen);
         while (!this.server.isLoading()) {
-            worldGenerationProgressScreen.tick();
+            levelLoadingScreen.tick();
             this.render(false);
             try {
                 Thread.sleep(16L);
@@ -1396,9 +1396,9 @@ AutoCloseable {
     }
 
     public void joinWorld(ClientWorld clientWorld) {
-        WorkingScreen workingScreen = new WorkingScreen();
-        workingScreen.method_15412(new TranslatableComponent("connect.joining", new Object[0]));
-        this.reset(workingScreen);
+        ProgressScreen progressScreen = new ProgressScreen();
+        progressScreen.method_15412(new TranslatableComponent("connect.joining", new Object[0]));
+        this.reset(progressScreen);
         this.world = clientWorld;
         this.setWorld(clientWorld);
         if (!this.isIntegratedServerRunning) {
@@ -1413,7 +1413,7 @@ AutoCloseable {
     }
 
     public void disconnect() {
-        this.disconnect(new WorkingScreen());
+        this.disconnect(new ProgressScreen());
     }
 
     public void disconnect(Screen screen) {

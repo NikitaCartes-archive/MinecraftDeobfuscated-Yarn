@@ -69,16 +69,16 @@ extends EntityRenderer<T> {
         GlStateManager.translatef((float)d, (float)e + 0.375f, (float)f);
         GlStateManager.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(-q, 0.0f, 0.0f, 1.0f);
-        float r = (float)((AbstractMinecartEntity)abstractMinecartEntity).method_7507() - h;
-        float s = ((AbstractMinecartEntity)abstractMinecartEntity).method_7521() - h;
+        float r = (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleTicks() - h;
+        float s = ((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleStrength() - h;
         if (s < 0.0f) {
             s = 0.0f;
         }
         if (r > 0.0f) {
-            GlStateManager.rotatef(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).method_7522(), 1.0f, 0.0f, 0.0f);
+            GlStateManager.rotatef(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
         }
         int t = ((AbstractMinecartEntity)abstractMinecartEntity).getBlockOffset();
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
         }
@@ -96,7 +96,7 @@ extends EntityRenderer<T> {
         GlStateManager.scalef(-1.0f, -1.0f, 1.0f);
         this.model.render(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
         GlStateManager.popMatrix();
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

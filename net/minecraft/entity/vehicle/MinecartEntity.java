@@ -39,10 +39,10 @@ extends AbstractMinecartEntity {
             if (this.hasPassengers()) {
                 this.removeAllPassengers();
             }
-            if (this.method_7507() == 0) {
-                this.method_7524(-this.method_7522());
-                this.method_7509(10);
-                this.method_7520(50.0f);
+            if (this.getDamageWobbleTicks() == 0) {
+                this.setDamageWobbleSide(-this.getDamageWobbleSide());
+                this.setDamageWobbleTicks(10);
+                this.setDamageWobbleStrength(50.0f);
                 this.scheduleVelocityUpdate();
             }
         }

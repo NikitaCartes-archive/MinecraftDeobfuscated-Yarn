@@ -44,7 +44,7 @@ extends EntityRenderer<FallingBlockEntity> {
         GlStateManager.disableLighting();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
         }
@@ -54,7 +54,7 @@ extends EntityRenderer<FallingBlockEntity> {
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         blockRenderManager.getModelRenderer().tesselate(world, blockRenderManager.getModel(blockState), blockState, blockPos, bufferBuilder, false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()));
         tessellator.draw();
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

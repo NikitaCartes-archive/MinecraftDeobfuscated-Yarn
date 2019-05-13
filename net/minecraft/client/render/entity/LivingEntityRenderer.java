@@ -114,7 +114,7 @@ implements FeatureRendererContext<T, M> {
             GlStateManager.enableAlphaTest();
             ((EntityModel)this.model).animateModel(livingEntity, p, o, h);
             ((EntityModel)this.model).setAngles(livingEntity, p, o, l, k, m, n);
-            if (this.field_4674) {
+            if (this.renderOutlines) {
                 boolean bl = this.beforeOutlineRender(livingEntity);
                 GlStateManager.enableColorMaterial();
                 GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
@@ -195,7 +195,7 @@ implements FeatureRendererContext<T, M> {
     }
 
     protected boolean method_4056(T livingEntity) {
-        return !((Entity)livingEntity).isInvisible() || this.field_4674;
+        return !((Entity)livingEntity).isInvisible() || this.renderOutlines;
     }
 
     protected boolean applyOverlayColor(T livingEntity, float f) {

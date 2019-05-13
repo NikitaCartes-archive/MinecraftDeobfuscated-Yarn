@@ -43,7 +43,7 @@ extends EntityRenderer<PrimedTntEntity> {
         GlStateManager.translatef(-0.5f, -0.5f, 0.5f);
         blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), primedTntEntity.getBrightnessAtEyes());
         GlStateManager.translatef(0.0f, 0.0f, 1.0f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(primedTntEntity));
             blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), 1.0f);

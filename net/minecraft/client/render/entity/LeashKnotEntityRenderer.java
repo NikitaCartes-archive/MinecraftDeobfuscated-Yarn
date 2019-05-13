@@ -31,12 +31,12 @@ extends EntityRenderer<LeadKnotEntity> {
         GlStateManager.scalef(-1.0f, -1.0f, 1.0f);
         GlStateManager.enableAlphaTest();
         this.bindEntityTexture(leadKnotEntity);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
         }
         this.model.render(leadKnotEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

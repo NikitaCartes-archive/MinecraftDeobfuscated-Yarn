@@ -26,7 +26,7 @@ implements DynamicSerializable {
     }
 
     public static GlobalPos deserialize(Dynamic<?> dynamic) {
-        return (GlobalPos)dynamic.get("dimension").map(DimensionType::method_19298).flatMap(dimensionType -> dynamic.get("pos").map(BlockPos::deserialize).map(blockPos -> new GlobalPos((DimensionType)dimensionType, (BlockPos)blockPos))).orElseThrow(() -> new IllegalArgumentException("Could not parse GlobalPos"));
+        return (GlobalPos)dynamic.get("dimension").map(DimensionType::deserialize).flatMap(dimensionType -> dynamic.get("pos").map(BlockPos::deserialize).map(blockPos -> new GlobalPos((DimensionType)dimensionType, (BlockPos)blockPos))).orElseThrow(() -> new IllegalArgumentException("Could not parse GlobalPos"));
     }
 
     public DimensionType getDimension() {

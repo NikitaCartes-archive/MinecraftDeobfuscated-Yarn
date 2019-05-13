@@ -40,7 +40,7 @@ implements DynamicSerializable {
         this.hasSkyLight = bl;
     }
 
-    public static DimensionType method_19298(Dynamic<?> dynamic) {
+    public static DimensionType deserialize(Dynamic<?> dynamic) {
         return Registry.DIMENSION.get(new Identifier(dynamic.asString("")));
     }
 

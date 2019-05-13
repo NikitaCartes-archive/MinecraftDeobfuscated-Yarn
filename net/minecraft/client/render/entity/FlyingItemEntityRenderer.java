@@ -41,12 +41,12 @@ extends EntityRenderer<T> {
         GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
         }
         this.item.renderItem(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

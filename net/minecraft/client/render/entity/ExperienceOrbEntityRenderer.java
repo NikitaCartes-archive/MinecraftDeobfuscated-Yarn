@@ -30,7 +30,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
     }
 
     public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
-        if (this.field_4674 || MinecraftClient.getInstance().getEntityRenderManager().gameOptions == null) {
+        if (this.renderOutlines || MinecraftClient.getInstance().getEntityRenderManager().gameOptions == null) {
             return;
         }
         GlStateManager.pushMatrix();

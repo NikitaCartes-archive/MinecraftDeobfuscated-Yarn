@@ -13,7 +13,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.ConditionConsumerBuilder;
-import net.minecraft.world.loot.LootChoiceProvider;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -21,9 +20,10 @@ import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.entry.AlternativeEntry;
+import net.minecraft.world.loot.entry.EntryCombiner;
 
 public abstract class LootEntry
-implements LootChoiceProvider {
+implements EntryCombiner {
     protected final LootCondition[] conditions;
     private final Predicate<LootContext> conditionPredicate;
 

@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.network.chat.Component;

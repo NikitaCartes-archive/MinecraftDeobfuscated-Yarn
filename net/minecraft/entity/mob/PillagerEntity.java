@@ -81,7 +81,7 @@ RangedAttackMob {
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(2, new RaiderEntity.PatrolApproachGoal(this, this, 10.0f));
+        this.goalSelector.add(2, new RaiderEntity.PatrolApproachGoal(this, 10.0f));
         this.goalSelector.add(3, new CrossbowAttackGoal<PillagerEntity>(this, 1.0, 8.0f));
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 15.0f, 1.0f));

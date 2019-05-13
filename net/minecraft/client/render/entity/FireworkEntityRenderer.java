@@ -36,12 +36,12 @@ extends EntityRenderer<FireworkEntity> {
             GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         }
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
         }
         this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.GROUND);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

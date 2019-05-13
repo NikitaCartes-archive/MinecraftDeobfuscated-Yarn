@@ -50,7 +50,7 @@ extends EntityRenderer<T> {
         GlStateManager.rotatef(45.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.scalef(0.05625f, 0.05625f, 0.05625f);
         GlStateManager.translatef(-4.0f, 0.0f, 0.0f);
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(projectileEntity));
         }
@@ -78,7 +78,7 @@ extends EntityRenderer<T> {
             bufferBuilder.vertex(-8.0, 2.0, 0.0).texture(0.0, 0.15625).next();
             tessellator.draw();
         }
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

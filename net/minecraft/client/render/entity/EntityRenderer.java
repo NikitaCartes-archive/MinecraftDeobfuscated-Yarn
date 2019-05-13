@@ -38,14 +38,14 @@ public abstract class EntityRenderer<T extends Entity> {
     protected final EntityRenderDispatcher renderManager;
     protected float field_4673;
     protected float field_4672 = 1.0f;
-    protected boolean field_4674;
+    protected boolean renderOutlines;
 
     protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         this.renderManager = entityRenderDispatcher;
     }
 
-    public void method_3927(boolean bl) {
-        this.field_4674 = bl;
+    public void setRenderOutlines(boolean bl) {
+        this.renderOutlines = bl;
     }
 
     public boolean isVisible(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
@@ -63,7 +63,7 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     public void render(T entity, double d, double e, double f, float g, float h) {
-        if (!this.field_4674) {
+        if (!this.renderOutlines) {
             this.renderLabelIfPresent(entity, d, e, f);
         }
     }

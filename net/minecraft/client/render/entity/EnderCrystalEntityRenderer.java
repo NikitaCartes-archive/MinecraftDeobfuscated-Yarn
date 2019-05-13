@@ -36,7 +36,7 @@ extends EntityRenderer<EnderCrystalEntity> {
         this.bindTexture(SKIN);
         float j = MathHelper.sin(i * 0.2f) / 2.0f + 0.5f;
         j = j * j + j;
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
         }
@@ -45,7 +45,7 @@ extends EntityRenderer<EnderCrystalEntity> {
         } else {
             this.field_4664.render(enderCrystalEntity, 0.0f, i * 3.0f, j * 0.2f, 0.0f, 0.0f, 0.0625f);
         }
-        if (this.field_4674) {
+        if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }

@@ -41,24 +41,25 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.CommandBlockScreen;
-import net.minecraft.client.gui.ContainerScreenRegistry;
-import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.MapRenderer;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.StatsListener;
-import net.minecraft.client.gui.WrittenBookScreen;
-import net.minecraft.client.gui.container.HorseScreen;
-import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
-import net.minecraft.client.gui.ingame.DeathScreen;
-import net.minecraft.client.gui.ingame.RecipeBookProvider;
-import net.minecraft.client.gui.menu.DemoScreen;
-import net.minecraft.client.gui.menu.DisconnectedScreen;
-import net.minecraft.client.gui.menu.DownloadingTerrainScreen;
-import net.minecraft.client.gui.menu.EndCreditsScreen;
-import net.minecraft.client.gui.menu.MultiplayerScreen;
-import net.minecraft.client.gui.menu.YesNoScreen;
-import net.minecraft.client.gui.recipebook.RecipeBookGui;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.ContainerScreenRegistry;
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.DemoScreen;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
+import net.minecraft.client.gui.screen.EndCreditsScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.StatsListener;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.HorseScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientCommandSource;
@@ -161,7 +162,6 @@ import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
-import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.PointOfInterestDebugRenderer;
@@ -702,7 +702,7 @@ implements ClientPlayPacketListener {
                 this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", component));
             }
         } else {
-            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new MainMenuScreen()), "disconnect.lost", component));
+            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", component));
         }
     }
 
@@ -752,7 +752,7 @@ implements ClientPlayPacketListener {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.swingHand(Hand.OFF_HAND);
         } else if (entityAnimationS2CPacket.getAnimationId() == 1) {
-            entity.method_5879();
+            entity.animateDamage();
         } else if (entityAnimationS2CPacket.getAnimationId() == 2) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             playerEntity.wakeUp(false, false, false);
@@ -954,16 +954,16 @@ implements ClientPlayPacketListener {
         int i = guiSlotUpdateS2CPacket.getSlot();
         this.client.getTutorialManager().onSlotUpdate(itemStack);
         if (guiSlotUpdateS2CPacket.getId() == -1) {
-            if (!(this.client.currentScreen instanceof CreativePlayerInventoryScreen)) {
+            if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
                 playerEntity.inventory.setCursorStack(itemStack);
             }
         } else if (guiSlotUpdateS2CPacket.getId() == -2) {
             playerEntity.inventory.setInvStack(i, itemStack);
         } else {
             boolean bl = false;
-            if (this.client.currentScreen instanceof CreativePlayerInventoryScreen) {
-                CreativePlayerInventoryScreen creativePlayerInventoryScreen = (CreativePlayerInventoryScreen)this.client.currentScreen;
-                boolean bl2 = bl = creativePlayerInventoryScreen.method_2469() != ItemGroup.INVENTORY.getIndex();
+            if (this.client.currentScreen instanceof CreativeInventoryScreen) {
+                CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
+                boolean bl2 = bl = creativeInventoryScreen.method_2469() != ItemGroup.INVENTORY.getIndex();
             }
             if (guiSlotUpdateS2CPacket.getId() == 0 && guiSlotUpdateS2CPacket.getSlot() >= 36 && i < 45) {
                 ItemStack itemStack2;
@@ -1479,7 +1479,7 @@ implements ClientPlayPacketListener {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
             this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
         } else if (serverEntry == null || serverEntry.getResourcePack() == ServerEntry.ResourcePackState.PROMPT) {
-            this.client.execute(() -> this.client.openScreen(new YesNoScreen(bl -> {
+            this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl -> {
                 this.client = MinecraftClient.getInstance();
                 ServerEntry serverEntry = this.client.getCurrentServerEntry();
                 if (bl) {
@@ -1562,7 +1562,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(openWrittenBookS2CPacket, this, this.client);
         ItemStack itemStack = this.client.player.getStackInHand(openWrittenBookS2CPacket.getHand());
         if (itemStack.getItem() == Items.WRITTEN_BOOK) {
-            this.client.openScreen(new WrittenBookScreen(new WrittenBookScreen.WrittenBookContents(itemStack)));
+            this.client.openScreen(new BookScreen(new BookScreen.WrittenBookContents(itemStack)));
         }
     }
 
@@ -1844,8 +1844,8 @@ implements ClientPlayPacketListener {
         }
         this.recipeManager.get(craftResponseS2CPacket.getRecipeId()).ifPresent(recipe -> {
             if (this.client.currentScreen instanceof RecipeBookProvider) {
-                RecipeBookGui recipeBookGui = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookGui();
-                recipeBookGui.showGhostRecipe((Recipe<?>)recipe, container.slotList);
+                RecipeBookScreen recipeBookScreen = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookGui();
+                recipeBookScreen.showGhostRecipe((Recipe<?>)recipe, container.slotList);
             }
         });
     }

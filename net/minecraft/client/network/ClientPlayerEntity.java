@@ -15,13 +15,13 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.CommandBlockMinecartScreen;
-import net.minecraft.client.gui.CommandBlockScreen;
-import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.ingame.EditBookScreen;
-import net.minecraft.client.gui.ingame.EditSignScreen;
-import net.minecraft.client.gui.ingame.JigsawBlockScreen;
-import net.minecraft.client.gui.ingame.StructureBlockScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.BookEditScreen;
+import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.JigsawBlockScreen;
+import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.SignEditScreen;
+import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -529,12 +529,12 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-        this.client.openScreen(new EditSignScreen(signBlockEntity));
+        this.client.openScreen(new SignEditScreen(signBlockEntity));
     }
 
     @Override
     public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
-        this.client.openScreen(new CommandBlockMinecartScreen(commandBlockExecutor));
+        this.client.openScreen(new MinecartCommandBlockScreen(commandBlockExecutor));
     }
 
     @Override
@@ -556,7 +556,7 @@ extends AbstractClientPlayerEntity {
     public void openEditBookScreen(ItemStack itemStack, Hand hand) {
         Item item = itemStack.getItem();
         if (item == Items.WRITABLE_BOOK) {
-            this.client.openScreen(new EditBookScreen(this, itemStack, hand));
+            this.client.openScreen(new BookEditScreen(this, itemStack, hand));
         }
     }
 
@@ -740,7 +740,7 @@ extends AbstractClientPlayerEntity {
         this.lastNauseaStrength = this.nextNauseaStrength;
         if (this.inPortal) {
             if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
-                if (this.client.currentScreen instanceof ContainerScreen) {
+                if (this.client.currentScreen instanceof AbstractContainerScreen) {
                     this.closeContainer();
                 }
                 this.client.openScreen(null);
@@ -775,7 +775,7 @@ extends AbstractClientPlayerEntity {
         this.riding = false;
         if (this.getVehicle() instanceof BoatEntity) {
             BoatEntity boatEntity = (BoatEntity)this.getVehicle();
-            boatEntity.method_7535(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
+            boatEntity.setInputs(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
             this.riding |= this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack;
         }
     }

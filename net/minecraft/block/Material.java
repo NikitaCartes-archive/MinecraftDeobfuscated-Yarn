@@ -47,7 +47,7 @@ public final class Material {
     public static final Material PISTON = new Builder(MaterialColor.STONE).blocksPistons().build();
     public static final Material UNUSED_PLANT = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
     public static final Material PUMPKIN = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
-    public static final Material DRAGON_EGG = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
+    public static final Material EGG = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
     public static final Material CAKE = new Builder(MaterialColor.AIR).destroyedByPiston().build();
     private final MaterialColor color;
     private final PistonBehavior pistonBehavior;

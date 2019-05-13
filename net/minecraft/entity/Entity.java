@@ -1627,7 +1627,7 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_5879() {
+    public void animateDamage() {
     }
 
     public Iterable<ItemStack> getItemsHand() {

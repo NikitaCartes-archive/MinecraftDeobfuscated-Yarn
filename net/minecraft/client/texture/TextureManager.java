@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.texture.AsyncTexture;
 import net.minecraft.client.texture.MissingSprite;
@@ -132,7 +132,7 @@ ResourceReloadListener {
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2) {
-        return ((CompletableFuture)CompletableFuture.allOf(MainMenuScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
+        return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
             Iterator<Map.Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();
             while (iterator.hasNext()) {
