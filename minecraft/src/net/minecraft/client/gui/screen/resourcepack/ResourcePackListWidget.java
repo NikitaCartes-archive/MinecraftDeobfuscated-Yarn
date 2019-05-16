@@ -207,13 +207,13 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 					this.getScreen().setEdited();
 					ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
 					if (resourcePackCompatibility.isCompatible()) {
-						this.getScreen().method_2674(this);
+						this.getScreen().select(this);
 					} else {
 						Component component = resourcePackCompatibility.getConfirmMessage();
-						this.client.method_1507(new ConfirmScreen(bl -> {
-							this.client.method_1507(this.getScreen());
+						this.client.openScreen(new ConfirmScreen(bl -> {
+							this.client.openScreen(this.getScreen());
 							if (bl) {
-								this.getScreen().method_2674(this);
+								this.getScreen().select(this);
 							}
 						}, ResourcePackListWidget.INCOMPATIBLE_CONFIRM, component));
 					}
@@ -222,7 +222,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				}
 
 				if (f < 16.0 && this.method_20153()) {
-					this.getScreen().method_2663(this);
+					this.getScreen().remove(this);
 					return true;
 				}
 

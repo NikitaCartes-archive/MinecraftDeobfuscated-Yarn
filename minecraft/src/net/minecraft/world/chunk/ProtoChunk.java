@@ -437,6 +437,13 @@ public class ProtoChunk implements Chunk {
 		return (CompoundTag)this.blockEntityTags.get(blockPos);
 	}
 
+	@Nullable
+	@Override
+	public CompoundTag method_20598(BlockPos blockPos) {
+		BlockEntity blockEntity = this.getBlockEntity(blockPos);
+		return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(blockPos);
+	}
+
 	@Override
 	public void removeBlockEntity(BlockPos blockPos) {
 		this.blockEntities.remove(blockPos);

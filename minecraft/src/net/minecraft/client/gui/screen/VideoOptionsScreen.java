@@ -50,7 +50,7 @@ public class VideoOptionsScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();
 			this.minecraft.window.method_4475();
-			this.minecraft.method_1507(this.parent);
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 

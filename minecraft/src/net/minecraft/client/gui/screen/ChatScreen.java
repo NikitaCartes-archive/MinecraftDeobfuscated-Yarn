@@ -112,7 +112,7 @@ public class ChatScreen extends Screen {
 			if (super.keyPressed(i, j, k)) {
 				return true;
 			} else if (i == 256) {
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 				return true;
 			} else if (i == 257 || i == 335) {
 				String string = this.chatField.getText().trim();
@@ -120,7 +120,7 @@ public class ChatScreen extends Screen {
 					this.sendMessage(string);
 				}
 
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 				return true;
 			} else if (i == 265) {
 				this.method_2114(-1);

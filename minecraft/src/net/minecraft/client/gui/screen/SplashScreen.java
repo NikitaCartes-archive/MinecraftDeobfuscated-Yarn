@@ -43,7 +43,7 @@ public class SplashScreen extends Overlay {
 		int k = this.client.window.getScaledWidth();
 		int l = this.client.window.getScaledHeight();
 		long m = SystemUtil.getMeasuringTimeMs();
-		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.field_1755 != null) && this.field_18220 == -1L) {
+		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
 			this.field_18220 = m;
 		}
 
@@ -51,16 +51,16 @@ public class SplashScreen extends Overlay {
 		float h = this.field_18220 > -1L ? (float)(m - this.field_18220) / 500.0F : -1.0F;
 		float o;
 		if (g >= 1.0F) {
-			if (this.client.field_1755 != null) {
-				this.client.field_1755.render(0, 0, f);
+			if (this.client.currentScreen != null) {
+				this.client.currentScreen.render(0, 0, f);
 			}
 
 			int n = MathHelper.ceil((1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)) * 255.0F);
 			fill(0, 0, k, l, 16777215 | n << 24);
 			o = 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F);
 		} else if (this.field_18219) {
-			if (this.client.field_1755 != null && h < 1.0F) {
-				this.client.field_1755.render(i, j, f);
+			if (this.client.currentScreen != null && h < 1.0F) {
+				this.client.currentScreen.render(i, j, f);
 			}
 
 			int n = MathHelper.ceil(MathHelper.clamp((double)h, 0.15, 1.0) * 255.0);
@@ -84,15 +84,15 @@ public class SplashScreen extends Overlay {
 		}
 
 		if (g >= 2.0F) {
-			this.client.method_18502(null);
+			this.client.setOverlay(null);
 		}
 
 		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
 			this.reloadMonitor.throwExceptions();
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
-			if (this.client.field_1755 != null) {
-				this.client.field_1755.init(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
+			if (this.client.currentScreen != null) {
+				this.client.currentScreen.init(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
 			}
 		}
 	}

@@ -18,7 +18,7 @@ import net.minecraft.world.Difficulty;
 @Environment(EnvType.CLIENT)
 public class SettingsScreen extends Screen {
 	private static final Option[] OPTIONS = new Option[]{Option.FOV};
-	private final Screen field_2501;
+	private final Screen parent;
 	private final GameOptions settings;
 	private ButtonWidget difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
@@ -26,7 +26,7 @@ public class SettingsScreen extends Screen {
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableComponent("options.title"));
-		this.field_2501 = screen;
+		this.parent = screen;
 		this.settings = gameOptions;
 	}
 
@@ -59,7 +59,7 @@ public class SettingsScreen extends Screen {
 						this.difficultyButton.x + this.difficultyButton.getWidth(),
 						this.difficultyButton.y,
 						buttonWidget -> this.minecraft
-								.method_1507(
+								.openScreen(
 									new ConfirmScreen(
 										this::lockDifficulty,
 										new TranslatableComponent("difficulty.lock.title"),
@@ -102,7 +102,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.skinCustomisation"),
-				buttonWidget -> this.minecraft.method_1507(new SkinOptionsScreen(this))
+				buttonWidget -> this.minecraft.openScreen(new SkinOptionsScreen(this))
 			)
 		);
 		this.addButton(
@@ -112,7 +112,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.sounds"),
-				buttonWidget -> this.minecraft.method_1507(new SoundOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.openScreen(new SoundOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -122,7 +122,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.video"),
-				buttonWidget -> this.minecraft.method_1507(new VideoOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.openScreen(new VideoOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -132,7 +132,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.controls"),
-				buttonWidget -> this.minecraft.method_1507(new ControlsOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.openScreen(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -142,7 +142,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.language"),
-				buttonWidget -> this.minecraft.method_1507(new LanguageOptionsScreen(this, this.settings, this.minecraft.getLanguageManager()))
+				buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen(this, this.settings, this.minecraft.getLanguageManager()))
 			)
 		);
 		this.addButton(
@@ -152,7 +152,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.chat.title"),
-				buttonWidget -> this.minecraft.method_1507(new ChatOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.openScreen(new ChatOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -162,7 +162,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.resourcepack"),
-				buttonWidget -> this.minecraft.method_1507(new ResourcePackOptionsScreen(this))
+				buttonWidget -> this.minecraft.openScreen(new ResourcePackOptionsScreen(this))
 			)
 		);
 		this.addButton(
@@ -172,13 +172,11 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.accessibility.title"),
-				buttonWidget -> this.minecraft.method_1507(new AccessibilityScreen(this, this.settings))
+				buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.settings))
 			)
 		);
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.field_2501)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 
@@ -187,7 +185,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	private void lockDifficulty(boolean bl) {
-		this.minecraft.method_1507(this);
+		this.minecraft.openScreen(this);
 		if (bl && this.minecraft.world != null) {
 			this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);

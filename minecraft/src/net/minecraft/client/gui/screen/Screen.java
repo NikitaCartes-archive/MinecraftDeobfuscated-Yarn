@@ -101,7 +101,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public void onClose() {
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	protected <T extends AbstractButtonWidget> T addButton(T abstractButtonWidget) {
@@ -274,7 +274,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 						if (this.minecraft.options.chatLinksPrompt) {
 							this.clickedLink = uRI;
-							this.minecraft.method_1507(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+							this.minecraft.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {
 							this.openLink(uRI);
 						}
@@ -383,7 +383,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 
 		this.clickedLink = null;
-		this.minecraft.method_1507(this);
+		this.minecraft.openScreen(this);
 	}
 
 	private void openLink(URI uRI) {

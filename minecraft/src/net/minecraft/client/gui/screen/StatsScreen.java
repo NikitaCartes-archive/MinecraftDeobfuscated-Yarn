@@ -76,7 +76,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.mobsButton))
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.openScreen(this.parent))
 		);
 		if (this.itemsButton.children().isEmpty()) {
 			buttonWidget.active = false;

@@ -538,6 +538,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
+	public int method_20594(PlayerEntity playerEntity) {
+		return this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> villageGossipType != VillageGossipType.field_18429);
+	}
+
 	public void depleteFood(int i) {
 		this.foodLevel = (byte)(this.foodLevel - i);
 	}
@@ -657,6 +661,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				}
 			}
 
+			this.sendPickup(itemEntity, itemStack.getAmount());
 			ItemStack itemStack3 = this.getInventory().add(itemStack);
 			if (itemStack3.isEmpty()) {
 				itemEntity.remove();

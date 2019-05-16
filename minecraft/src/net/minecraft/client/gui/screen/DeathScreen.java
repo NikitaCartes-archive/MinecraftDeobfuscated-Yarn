@@ -41,7 +41,7 @@ public class DeathScreen extends Screen {
 
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, string, buttonWidgetx -> {
 			this.minecraft.player.requestRespawn();
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 		}));
 		ButtonWidget buttonWidget = this.addButton(
 			new ButtonWidget(
@@ -52,7 +52,7 @@ public class DeathScreen extends Screen {
 				string2,
 				buttonWidgetx -> {
 					if (this.field_18974) {
-						this.minecraft.method_1507(new TitleScreen());
+						this.minecraft.openScreen(new TitleScreen());
 					} else {
 						ConfirmScreen confirmScreen = new ConfirmScreen(
 							this::method_20373,
@@ -61,7 +61,7 @@ public class DeathScreen extends Screen {
 							I18n.translate("deathScreen.titleScreen"),
 							I18n.translate("deathScreen.respawn")
 						);
-						this.minecraft.method_1507(confirmScreen);
+						this.minecraft.openScreen(confirmScreen);
 						confirmScreen.disableButtons(20);
 					}
 				}
@@ -87,11 +87,11 @@ public class DeathScreen extends Screen {
 				this.minecraft.world.disconnect();
 			}
 
-			this.minecraft.method_18096(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
-			this.minecraft.method_1507(new TitleScreen());
+			this.minecraft.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
+			this.minecraft.openScreen(new TitleScreen());
 		} else {
 			this.minecraft.player.requestRespawn();
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 		}
 	}
 

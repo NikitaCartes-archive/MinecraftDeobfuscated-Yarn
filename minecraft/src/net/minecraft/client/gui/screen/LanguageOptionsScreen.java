@@ -17,7 +17,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends Screen {
-	protected final Screen field_2490;
+	protected final Screen parent;
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
 	private final GameOptions options;
 	private final LanguageManager languageManager;
@@ -26,7 +26,7 @@ public class LanguageOptionsScreen extends Screen {
 
 	public LanguageOptionsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
 		super(new TranslatableComponent("options.language"));
-		this.field_2490 = screen;
+		this.parent = screen;
 		this.options = gameOptions;
 		this.languageManager = languageManager;
 	}
@@ -57,7 +57,7 @@ public class LanguageOptionsScreen extends Screen {
 				this.options.write();
 			}
 
-			this.minecraft.method_1507(this.field_2490);
+			this.minecraft.openScreen(this.parent);
 		}));
 		super.init();
 	}

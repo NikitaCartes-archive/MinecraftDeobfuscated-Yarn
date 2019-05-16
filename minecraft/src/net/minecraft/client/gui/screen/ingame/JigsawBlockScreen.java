@@ -34,11 +34,11 @@ public class JigsawBlockScreen extends Screen {
 
 	private void onDone() {
 		this.updateServer();
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void onCancel() {
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void updateServer() {

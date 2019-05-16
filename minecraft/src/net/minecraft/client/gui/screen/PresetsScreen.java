@@ -58,11 +58,11 @@ public class PresetsScreen extends Screen {
 		this.field_2525 = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select"), buttonWidget -> {
 				this.parent.method_2139(this.customPresetField.getText());
-				this.minecraft.method_1507(this.parent);
+				this.minecraft.openScreen(this.parent);
 			})
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.method_20102(this.field_2521.getSelected() != null);
 	}

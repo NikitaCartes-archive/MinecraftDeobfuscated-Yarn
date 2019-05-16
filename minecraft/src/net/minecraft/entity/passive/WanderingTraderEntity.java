@@ -205,7 +205,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected SoundEvent getYesSound() {
+	public SoundEvent method_18010() {
 		return SoundEvents.field_17752;
 	}
 

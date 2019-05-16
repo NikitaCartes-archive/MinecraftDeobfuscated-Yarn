@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 public class AdvancementTreeWidget extends DrawableHelper {
 	private final MinecraftClient client;
 	private final AdvancementsScreen field_2687;
-	private final AdvancementTabType field_2684;
+	private final AdvancementTabType tabType;
 	private final int field_2681;
 	private final Advancement rootAdvancement;
 	private final AdvancementDisplay field_2695;
@@ -47,7 +47,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	) {
 		this.client = minecraftClient;
 		this.field_2687 = advancementsScreen;
-		this.field_2684 = advancementTabType;
+		this.tabType = advancementTabType;
 		this.field_2681 = i;
 		this.rootAdvancement = advancement;
 		this.field_2695 = advancementDisplay;
@@ -66,11 +66,11 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public void drawBackground(int i, int j, boolean bl) {
-		this.field_2684.drawBackground(this, i, j, bl, this.field_2681);
+		this.tabType.drawBackground(this, i, j, bl, this.field_2681);
 	}
 
 	public void drawIcon(int i, int j, ItemRenderer itemRenderer) {
-		this.field_2684.drawIcon(i, j, this.field_2681, itemRenderer, this.field_2697);
+		this.tabType.drawIcon(i, j, this.field_2681, itemRenderer, this.field_2697);
 	}
 
 	public void method_2310() {
@@ -133,11 +133,11 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public boolean method_2316(int i, int j, double d, double e) {
-		return this.field_2684.method_2303(i, j, this.field_2681, d, e);
+		return this.tabType.method_2303(i, j, this.field_2681, d, e);
 	}
 
 	@Nullable
-	public static AdvancementTreeWidget method_2317(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, Advancement advancement) {
+	public static AdvancementTreeWidget create(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, Advancement advancement) {
 		if (advancement.getDisplay() == null) {
 			return null;
 		} else {
@@ -187,7 +187,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	public AdvancementWidget method_2308(Advancement advancement) {
+	public AdvancementWidget getWidgetForAdvancement(Advancement advancement) {
 		return (AdvancementWidget)this.widgets.get(advancement);
 	}
 

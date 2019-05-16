@@ -19,6 +19,6 @@ public class SmokingRecipe extends AbstractCookingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.field_17085;
+		return RecipeSerializer.SMOKING;
 	}
 }

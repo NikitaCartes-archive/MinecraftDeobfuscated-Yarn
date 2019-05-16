@@ -245,9 +245,9 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private float pausedTickDelta;
 	public TextRenderer textRenderer;
 	@Nullable
-	public Screen field_1755;
+	public Screen currentScreen;
 	@Nullable
-	public Overlay field_18175;
+	public Overlay overlay;
 	public GameRenderer gameRenderer;
 	public DebugRenderer debugRenderer;
 	protected int attackCooldown;
@@ -385,7 +385,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 						}
 
 						this.cleanUpAfterCrash();
-						this.method_1507(new OutOfMemoryScreen());
+						this.openScreen(new OutOfMemoryScreen());
 						System.gc();
 						LOGGER.fatal("Out of memory", var10);
 						bl = true;
@@ -534,13 +534,13 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.window.setVsync(this.options.enableVsync);
 		this.window.logOnGlError();
 		if (this.autoConnectServerIp != null) {
-			this.method_1507(new ConnectScreen(new TitleScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
+			this.openScreen(new ConnectScreen(new TitleScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
 		} else {
-			this.method_1507(new TitleScreen(true));
+			this.openScreen(new TitleScreen(true));
 		}
 
 		SplashScreen.method_18819(this);
-		this.method_18502(
+		this.setOverlay(
 			new SplashScreen(
 				this,
 				this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, CompletableFuture.completedFuture(Unit.field_17274)),
@@ -664,7 +664,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			return this.resourceReloadFuture;
 		} else {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
-			if (this.field_18175 instanceof SplashScreen) {
+			if (this.overlay instanceof SplashScreen) {
 				this.resourceReloadFuture = completableFuture;
 				return completableFuture;
 			} else {
@@ -674,7 +674,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 					.stream()
 					.map(ResourcePackContainer::createResourcePack)
 					.collect(Collectors.toList());
-				this.method_18502(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
+				this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
 					this.languageManager.reloadResources(list);
 					if (this.worldRenderer != null) {
 						this.worldRenderer.reload();
@@ -741,9 +741,9 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return this.levelStorage;
 	}
 
-	public void method_1507(@Nullable Screen screen) {
-		if (this.field_1755 != null) {
-			this.field_1755.removed();
+	public void openScreen(@Nullable Screen screen) {
+		if (this.currentScreen != null) {
+			this.currentScreen.removed();
 		}
 
 		if (screen == null && this.world == null) {
@@ -757,7 +757,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.inGameHud.getChatHud().clear(true);
 		}
 
-		this.field_1755 = screen;
+		this.currentScreen = screen;
 		if (screen != null) {
 			this.mouse.unlockCursor();
 			KeyBinding.unpressAll();
@@ -770,8 +770,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		}
 	}
 
-	public void method_18502(@Nullable Overlay overlay) {
-		this.field_18175 = overlay;
+	public void setOverlay(@Nullable Overlay overlay) {
+		this.overlay = overlay;
 	}
 
 	public void stop() {
@@ -788,8 +788,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			} catch (Throwable var5) {
 			}
 
-			if (this.field_1755 != null) {
-				this.field_1755.removed();
+			if (this.currentScreen != null) {
+				this.currentScreen.removed();
 			}
 
 			this.close();
@@ -829,7 +829,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.scheduleStop();
 		}
 
-		if (this.resourceReloadFuture != null && !(this.field_18175 instanceof SplashScreen)) {
+		if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashScreen)) {
 			CompletableFuture<Void> completableFuture = this.resourceReloadFuture;
 			this.resourceReloadFuture = null;
 			this.reloadResources().thenRun(() -> completableFuture.complete(null));
@@ -896,7 +896,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.window.setPhase("Post render");
 		++this.fpsCounter;
 		boolean bl2 = this.isIntegratedServerRunning()
-			&& (this.field_1755 != null && this.field_1755.isPauseScreen() || this.field_18175 != null && this.field_18175.pausesGame())
+			&& (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame())
 			&& !this.server.isRemote();
 		if (this.paused != bl2) {
 			if (this.paused) {
@@ -953,8 +953,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public void onResolutionChanged() {
 		int i = this.window.calculateScaleFactor(this.options.guiScale, this.forcesUnicodeFont());
 		this.window.setScaleFactor((double)i);
-		if (this.field_1755 != null) {
-			this.field_1755.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+		if (this.currentScreen != null) {
+			this.currentScreen.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 		}
 
 		GlFramebuffer glFramebuffer = this.getFramebuffer();
@@ -972,7 +972,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	private int getFramerateLimit() {
-		return this.world != null || this.field_1755 == null && this.field_18175 == null ? this.window.getFramerateLimit() : 60;
+		return this.world != null || this.currentScreen == null && this.overlay == null ? this.window.getFramerateLimit() : 60;
 	}
 
 	private boolean isFramerateLimited() {
@@ -992,7 +992,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				this.server.stop(true);
 			}
 
-			this.method_18096(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
+			this.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1131,13 +1131,13 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public void openPauseMenu(boolean bl) {
-		if (this.field_1755 == null) {
+		if (this.currentScreen == null) {
 			boolean bl2 = this.isIntegratedServerRunning() && !this.server.isRemote();
 			if (bl2) {
-				this.method_1507(new PauseScreen(!bl));
+				this.openScreen(new PauseScreen(!bl));
 				this.soundManager.pauseAll();
 			} else {
-				this.method_1507(new PauseScreen(true));
+				this.openScreen(new PauseScreen(true));
 			}
 		}
 	}
@@ -1274,29 +1274,29 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.textureManager.tick();
 		}
 
-		if (this.field_1755 == null && this.player != null) {
-			if (this.player.getHealth() <= 0.0F && !(this.field_1755 instanceof DeathScreen)) {
-				this.method_1507(null);
+		if (this.currentScreen == null && this.player != null) {
+			if (this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof DeathScreen)) {
+				this.openScreen(null);
 			} else if (this.player.isSleeping() && this.world != null) {
-				this.method_1507(new SleepingChatScreen());
+				this.openScreen(new SleepingChatScreen());
 			}
-		} else if (this.field_1755 != null && this.field_1755 instanceof SleepingChatScreen && !this.player.isSleeping()) {
-			this.method_1507(null);
+		} else if (this.currentScreen != null && this.currentScreen instanceof SleepingChatScreen && !this.player.isSleeping()) {
+			this.openScreen(null);
 		}
 
-		if (this.field_1755 != null) {
+		if (this.currentScreen != null) {
 			this.attackCooldown = 10000;
 		}
 
-		if (this.field_1755 != null) {
-			Screen.wrapScreenError(() -> this.field_1755.tick(), "Ticking screen", this.field_1755.getClass().getCanonicalName());
+		if (this.currentScreen != null) {
+			Screen.wrapScreenError(() -> this.currentScreen.tick(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
 		}
 
 		if (!this.options.debugEnabled) {
 			this.inGameHud.resetDebugHudChunk();
 		}
 
-		if (this.field_18175 == null && (this.field_1755 == null || this.field_1755.passEvents)) {
+		if (this.overlay == null && (this.currentScreen == null || this.currentScreen.passEvents)) {
 			this.profiler.swap("GLFW events");
 			GLX.pollEvents();
 			this.handleInputEvents();
@@ -1396,7 +1396,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			if (this.options.keysHotbar[i].wasPressed()) {
 				if (this.player.isSpectator()) {
 					this.inGameHud.getSpectatorWidget().onHotbarKeyPress(i);
-				} else if (!this.player.isCreative() || this.field_1755 != null || !bl2 && !bl) {
+				} else if (!this.player.isCreative() || this.currentScreen != null || !bl2 && !bl) {
 					this.player.inventory.selectedSlot = i;
 				} else {
 					CreativeInventoryScreen.onHotbarKeyPress(this, i, bl2, bl);
@@ -1409,12 +1409,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				this.player.openRidingInventory();
 			} else {
 				this.tutorialManager.onInventoryOpened();
-				this.method_1507(new InventoryScreen(this.player));
+				this.openScreen(new InventoryScreen(this.player));
 			}
 		}
 
 		while(this.options.keyAdvancements.wasPressed()) {
-			this.method_1507(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
+			this.openScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
 		}
 
 		while(this.options.keySwapHands.wasPressed()) {
@@ -1432,11 +1432,11 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		boolean bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
 		if (bl3) {
 			while(this.options.keyChat.wasPressed()) {
-				this.method_1507(new ChatScreen(""));
+				this.openScreen(new ChatScreen(""));
 			}
 
-			if (this.field_1755 == null && this.field_18175 == null && this.options.keyCommand.wasPressed()) {
-				this.method_1507(new ChatScreen("/"));
+			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
+				this.openScreen(new ChatScreen("/"));
 			}
 		}
 
@@ -1471,7 +1471,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.doItemUse();
 		}
 
-		this.method_1590(this.field_1755 == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
+		this.method_1590(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
 	}
 
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
@@ -1520,7 +1520,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		}
 
 		LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen((WorldGenerationProgressTracker)this.worldGenProgressTracker.get());
-		this.method_1507(levelLoadingScreen);
+		this.openScreen(levelLoadingScreen);
 
 		while(!this.server.isLoading()) {
 			levelLoadingScreen.tick();
@@ -1549,7 +1549,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public void joinWorld(ClientWorld clientWorld) {
 		ProgressScreen progressScreen = new ProgressScreen();
 		progressScreen.method_15412(new TranslatableComponent("connect.joining"));
-		this.method_18098(progressScreen);
+		this.reset(progressScreen);
 		this.world = clientWorld;
 		this.setWorld(clientWorld);
 		if (!this.isIntegratedServerRunning) {
@@ -1564,10 +1564,10 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public void disconnect() {
-		this.method_18096(new ProgressScreen());
+		this.disconnect(new ProgressScreen());
 	}
 
-	public void method_18096(Screen screen) {
+	public void disconnect(Screen screen) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			this.clear();
@@ -1579,7 +1579,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.gameRenderer.reset();
 		this.interactionManager = null;
 		NarratorManager.INSTANCE.clear();
-		this.method_18098(screen);
+		this.reset(screen);
 		if (this.world != null) {
 			if (integratedServer != null) {
 				while(!integratedServer.isServerThreadAlive()) {
@@ -1599,12 +1599,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.player = null;
 	}
 
-	private void method_18098(Screen screen) {
+	private void reset(Screen screen) {
 		this.musicTracker.stop();
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.clientConnection = null;
-		this.method_1507(screen);
+		this.openScreen(screen);
 		this.render(false);
 	}
 
@@ -1959,7 +1959,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public MusicTracker.MusicType getMusicType() {
-		if (this.field_1755 instanceof EndCreditsScreen) {
+		if (this.currentScreen instanceof EndCreditsScreen) {
 			return MusicTracker.MusicType.field_5578;
 		} else if (this.player == null) {
 			return MusicTracker.MusicType.field_5585;
@@ -2121,7 +2121,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	@Nullable
-	public Overlay method_18506() {
-		return this.field_18175;
+	public Overlay getOverlay() {
+		return this.overlay;
 	}
 }

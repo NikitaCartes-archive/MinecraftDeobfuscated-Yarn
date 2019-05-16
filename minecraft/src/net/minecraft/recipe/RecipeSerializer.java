@@ -32,10 +32,10 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	SpecialRecipeSerializer<SuspiciousStewRecipe> SUSPICIOUS_STEW = register(
 		"crafting_special_suspiciousstew", new SpecialRecipeSerializer<>(SuspiciousStewRecipe::new)
 	);
-	CookingRecipeSerializer<SmeltingRecipe> field_9042 = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));
-	CookingRecipeSerializer<BlastingRecipe> field_17084 = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
-	CookingRecipeSerializer<SmokingRecipe> field_17085 = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
-	CookingRecipeSerializer<CampfireCookingRecipe> field_17347 = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
+	CookingRecipeSerializer<SmeltingRecipe> SMELTING = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));
+	CookingRecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
+	CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
+	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> field_17640 = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
 	T read(Identifier identifier, JsonObject jsonObject);

@@ -16,7 +16,7 @@ public class OutOfMemoryScreen extends Screen {
 	protected void init() {
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.toTitle"), buttonWidget -> this.minecraft.method_1507(new TitleScreen())
+				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.toTitle"), buttonWidget -> this.minecraft.openScreen(new TitleScreen())
 			)
 		);
 		this.addButton(

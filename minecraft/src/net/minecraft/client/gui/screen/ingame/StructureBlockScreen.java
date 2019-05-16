@@ -76,7 +76,7 @@ public class StructureBlockScreen extends Screen {
 
 	private void done() {
 		if (this.method_2516(StructureBlockBlockEntity.Action.field_12108)) {
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class StructureBlockScreen extends Screen {
 		this.structureBlock.setIgnoreEntities(this.ignoreEntities);
 		this.structureBlock.setShowAir(this.showAir);
 		this.structureBlock.setShowBoundingBox(this.showBoundingBox);
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -98,13 +98,13 @@ public class StructureBlockScreen extends Screen {
 		this.buttonSave = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.save"), buttonWidget -> {
 			if (this.structureBlock.getMode() == StructureBlockMode.field_12695) {
 				this.method_2516(StructureBlockBlockEntity.Action.field_12110);
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 			}
 		}));
 		this.buttonLoad = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.load"), buttonWidget -> {
 			if (this.structureBlock.getMode() == StructureBlockMode.field_12697) {
 				this.method_2516(StructureBlockBlockEntity.Action.field_12109);
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 			}
 		}));
 		this.buttonMode = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 185, 50, 20, "MODE", buttonWidget -> {
@@ -115,7 +115,7 @@ public class StructureBlockScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, I18n.translate("structure_block.button.detect_size"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.field_12695) {
 					this.method_2516(StructureBlockBlockEntity.Action.field_12106);
-					this.minecraft.method_1507(null);
+					this.minecraft.openScreen(null);
 				}
 			})
 		);

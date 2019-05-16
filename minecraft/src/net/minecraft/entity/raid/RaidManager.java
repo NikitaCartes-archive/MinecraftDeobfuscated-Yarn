@@ -87,7 +87,7 @@ public class RaidManager extends PersistentState {
 						pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518,
 						Objects::nonNull,
 						blockPos,
-						48,
+						64,
 						PointOfInterestStorage.OccupationStatus.field_18489
 					);
 				if (!optional.isPresent()) {

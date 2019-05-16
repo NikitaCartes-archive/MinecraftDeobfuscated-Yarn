@@ -118,7 +118,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void onClose() {
 		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void onCommandChanged(String string) {

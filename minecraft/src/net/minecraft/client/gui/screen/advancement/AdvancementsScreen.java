@@ -72,7 +72,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (this.minecraft.options.keyAdvancements.matchesKey(i, j)) {
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 			this.minecraft.mouse.lockCursor();
 			return true;
 		} else {
@@ -176,7 +176,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.method_2317(this.minecraft, this, this.widgetMap.size(), advancement);
+		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), advancement);
 		if (advancementTreeWidget != null) {
 			this.widgetMap.put(advancement, advancementTreeWidget);
 		}
@@ -220,7 +220,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Nullable
 	public AdvancementWidget getAdvancementWidget(Advancement advancement) {
 		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
-		return advancementTreeWidget == null ? null : advancementTreeWidget.method_2308(advancement);
+		return advancementTreeWidget == null ? null : advancementTreeWidget.getWidgetForAdvancement(advancement);
 	}
 
 	@Nullable

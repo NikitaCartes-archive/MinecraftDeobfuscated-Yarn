@@ -15,13 +15,13 @@ public class AccessibilityScreen extends Screen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.AUTO_JUMP
 	};
-	private final Screen field_18731;
+	private final Screen parent;
 	private final GameOptions gameOptions;
 	private AbstractButtonWidget narratorButton;
 
 	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableComponent("options.accessibility.title"));
-		this.field_18731 = screen;
+		this.parent = screen;
 		this.gameOptions = gameOptions;
 	}
 
@@ -42,9 +42,7 @@ public class AccessibilityScreen extends Screen {
 		}
 
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.field_18731)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 

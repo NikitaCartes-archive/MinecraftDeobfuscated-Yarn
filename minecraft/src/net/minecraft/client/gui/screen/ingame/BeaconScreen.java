@@ -206,7 +206,7 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 		@Override
 		public void onPress() {
 			BeaconScreen.this.minecraft.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.minecraft.player.container.syncId));
-			BeaconScreen.this.minecraft.method_1507(null);
+			BeaconScreen.this.minecraft.openScreen(null);
 		}
 
 		@Override
@@ -227,7 +227,7 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 				.getNetworkHandler()
 				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
 			BeaconScreen.this.minecraft.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.minecraft.player.container.syncId));
-			BeaconScreen.this.minecraft.method_1507(null);
+			BeaconScreen.this.minecraft.openScreen(null);
 		}
 
 		@Override

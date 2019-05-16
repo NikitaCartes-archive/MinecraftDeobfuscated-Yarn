@@ -102,7 +102,6 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	public void trade(TradeOffer tradeOffer) {
 		tradeOffer.use();
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-		this.playSound(this.getYesSound(), this.getSoundVolume(), this.getSoundPitch());
 		this.afterUsing(tradeOffer);
 		if (this.customer instanceof ServerPlayerEntity) {
 			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, tradeOffer.getMutableSellItem());
@@ -124,7 +123,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		}
 	}
 
-	protected SoundEvent getYesSound() {
+	@Override
+	public SoundEvent method_18010() {
 		return SoundEvents.field_14815;
 	}
 
