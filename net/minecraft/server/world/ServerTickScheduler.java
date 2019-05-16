@@ -4,18 +4,22 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
@@ -27,6 +31,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickScheduler;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerTickScheduler<T>
 implements TickScheduler<T> {
@@ -34,11 +39,10 @@ implements TickScheduler<T> {
     private final Function<T, Identifier> idToName;
     private final Function<Identifier, T> field_19309;
     private final Set<ScheduledTick<T>> ticksScheduled = Sets.newHashSet();
-    private final Set<ScheduledTick<T>> field_19310 = Sets.newTreeSet();
-    private final List<ScheduledTick<T>> field_19311 = Lists.newArrayList();
-    private final List<ScheduledTick<T>> field_19338 = Lists.newArrayList();
+    private final TreeSet<ScheduledTick<T>> field_19341 = Sets.newTreeSet(ScheduledTick.method_20597());
     private final ServerWorld world;
-    private final List<ScheduledTick<T>> ticksCurrent = Lists.newArrayList();
+    private final Queue<ScheduledTick<T>> ticksCurrent = Queues.newArrayDeque();
+    private final List<ScheduledTick<T>> field_19338 = Lists.newArrayList();
     private final Consumer<ScheduledTick<T>> tickConsumer;
 
     public ServerTickScheduler(ServerWorld serverWorld, Predicate<T> predicate, Function<T, Identifier> function, Function<Identifier, T> function2, Consumer<ScheduledTick<T>> consumer) {
@@ -50,44 +54,45 @@ implements TickScheduler<T> {
     }
 
     public void tick() {
-        this.method_20514();
-        int i = this.field_19310.size();
+        ScheduledTick<T> scheduledTick;
+        int i = this.field_19341.size();
         if (i != this.ticksScheduled.size()) {
             throw new IllegalStateException("TickNextTick list out of synch");
         }
         if (i > 65536) {
             i = 65536;
         }
-        this.world.getProfiler().push("selecting");
-        for (ScheduledTick<T> scheduledTick : this.field_19310) {
-            if (i < 0 || scheduledTick.time > this.world.getTime()) break;
-            if (!this.world.method_14178().method_20529(scheduledTick.pos)) continue;
+        ServerChunkManager serverChunkManager = this.world.method_14178();
+        Iterator<ScheduledTick<T>> iterator = this.field_19341.iterator();
+        this.world.getProfiler().push("cleaning");
+        while (i > 0 && iterator.hasNext()) {
+            scheduledTick = iterator.next();
+            if (scheduledTick.time > this.world.getTime()) break;
+            if (!serverChunkManager.method_20529(scheduledTick.pos)) continue;
+            iterator.remove();
+            this.ticksScheduled.remove(scheduledTick);
             this.ticksCurrent.add(scheduledTick);
             --i;
         }
         this.world.getProfiler().swap("ticking");
-        Iterator<ScheduledTick<T>> iterator = this.ticksCurrent.iterator();
-        while (iterator.hasNext()) {
-            ScheduledTick<T> scheduledTick;
-            scheduledTick = iterator.next();
-            if (!this.world.method_14178().method_20529(scheduledTick.pos)) continue;
-            iterator.remove();
-            this.field_19338.add(scheduledTick);
-            try {
-                this.tickConsumer.accept(scheduledTick);
-            } catch (Throwable throwable) {
-                CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
-                CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
-                CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
-                throw new CrashException(crashReport);
+        while ((scheduledTick = this.ticksCurrent.poll()) != null) {
+            if (serverChunkManager.method_20529(scheduledTick.pos)) {
+                try {
+                    this.field_19338.add(scheduledTick);
+                    this.tickConsumer.accept(scheduledTick);
+                    continue;
+                } catch (Throwable throwable) {
+                    CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
+                    CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
+                    CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
+                    throw new CrashException(crashReport);
+                }
             }
+            this.schedule(scheduledTick.pos, scheduledTick.getObject(), 0);
         }
-        this.world.getProfiler().swap("cleaning");
-        this.field_19310.removeAll(this.field_19338);
-        this.ticksScheduled.removeAll(this.field_19338);
-        this.ticksCurrent.clear();
-        this.field_19338.clear();
         this.world.getProfiler().pop();
+        this.field_19338.clear();
+        this.ticksCurrent.clear();
     }
 
     @Override
@@ -97,27 +102,37 @@ implements TickScheduler<T> {
 
     @Override
     public void method_20470(Stream<ScheduledTick<T>> stream) {
-        stream.forEach(this::method_20513);
+        stream.forEach(this::method_20514);
     }
 
-    public List<ScheduledTick<T>> getScheduledTicksInChunk(boolean bl, ChunkPos chunkPos) {
+    public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos chunkPos, boolean bl, boolean bl2) {
         int i = (chunkPos.x << 4) - 2;
         int j = i + 16 + 2;
         int k = (chunkPos.z << 4) - 2;
         int l = k + 16 + 2;
-        return this.getScheduledTicks(new MutableIntBoundingBox(i, 0, k, j, 256, l), bl);
+        return this.getScheduledTicks(new MutableIntBoundingBox(i, 0, k, j, 256, l), bl, bl2);
     }
 
-    public List<ScheduledTick<T>> getScheduledTicks(MutableIntBoundingBox mutableIntBoundingBox, boolean bl) {
-        this.method_20514();
-        ArrayList<ScheduledTick<T>> list = null;
-        Iterator<ScheduledTick<T>> iterator = this.field_19310.iterator();
+    public List<ScheduledTick<T>> getScheduledTicks(MutableIntBoundingBox mutableIntBoundingBox, boolean bl, boolean bl2) {
+        List<ScheduledTick<T>> list = this.method_20596(null, this.field_19341, mutableIntBoundingBox, bl);
+        if (bl && list != null) {
+            this.ticksScheduled.removeAll(list);
+        }
+        list = this.method_20596(list, this.ticksCurrent, mutableIntBoundingBox, bl);
+        if (!bl2) {
+            list = this.method_20596(list, this.field_19338, mutableIntBoundingBox, bl);
+        }
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    @Nullable
+    private List<ScheduledTick<T>> method_20596(@Nullable List<ScheduledTick<T>> list, Collection<ScheduledTick<T>> collection, MutableIntBoundingBox mutableIntBoundingBox, boolean bl) {
+        Iterator<ScheduledTick<T>> iterator = collection.iterator();
         while (iterator.hasNext()) {
             ScheduledTick<T> scheduledTick = iterator.next();
             BlockPos blockPos = scheduledTick.pos;
             if (blockPos.getX() < mutableIntBoundingBox.minX || blockPos.getX() >= mutableIntBoundingBox.maxX || blockPos.getZ() < mutableIntBoundingBox.minZ || blockPos.getZ() >= mutableIntBoundingBox.maxZ) continue;
             if (bl) {
-                this.ticksScheduled.remove(scheduledTick);
                 iterator.remove();
             }
             if (list == null) {
@@ -125,20 +140,21 @@ implements TickScheduler<T> {
             }
             list.add(scheduledTick);
         }
-        return list == null ? Collections.emptyList() : list;
+        return list;
     }
 
     public void copyScheduledTicks(MutableIntBoundingBox mutableIntBoundingBox, BlockPos blockPos) {
-        List<ScheduledTick<T>> list = this.getScheduledTicks(mutableIntBoundingBox, false);
+        List<ScheduledTick<T>> list = this.getScheduledTicks(mutableIntBoundingBox, false, false);
         for (ScheduledTick<T> scheduledTick : list) {
             if (!mutableIntBoundingBox.contains(scheduledTick.pos)) continue;
             BlockPos blockPos2 = scheduledTick.pos.add(blockPos);
-            this.schedule(blockPos2, scheduledTick.getObject(), (int)(scheduledTick.time - this.world.getLevelProperties().getTime()), scheduledTick.priority);
+            T object = scheduledTick.getObject();
+            this.method_20514(new ScheduledTick<T>(blockPos2, object, scheduledTick.time, scheduledTick.priority));
         }
     }
 
     public ListTag toTag(ChunkPos chunkPos) {
-        List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(false, chunkPos);
+        List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(chunkPos, false, true);
         return ServerTickScheduler.serializeScheduledTicks(this.idToName, list, this.world.getTime());
     }
 
@@ -165,22 +181,15 @@ implements TickScheduler<T> {
     @Override
     public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
         if (!this.invalidObjPredicate.test(object)) {
-            this.method_20513(new ScheduledTick<T>(blockPos, object, (long)i + this.world.getTime(), taskPriority));
+            this.method_20514(new ScheduledTick<T>(blockPos, object, (long)i + this.world.getTime(), taskPriority));
         }
     }
 
-    private void method_20513(ScheduledTick<T> scheduledTick) {
-        this.field_19311.add(scheduledTick);
-    }
-
-    private void method_20514() {
-        this.field_19311.forEach(scheduledTick -> {
-            if (!this.ticksScheduled.contains(scheduledTick)) {
-                this.ticksScheduled.add((ScheduledTick<T>)scheduledTick);
-                this.field_19310.add((ScheduledTick<T>)scheduledTick);
-            }
-        });
-        this.field_19311.clear();
+    private void method_20514(ScheduledTick<T> scheduledTick) {
+        if (!this.ticksScheduled.contains(scheduledTick)) {
+            this.ticksScheduled.add(scheduledTick);
+            this.field_19341.add(scheduledTick);
+        }
     }
 }
 

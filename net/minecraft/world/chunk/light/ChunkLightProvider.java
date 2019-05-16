@@ -172,7 +172,7 @@ implements ChunkLightingView {
         return i;
     }
 
-    protected void setSection(long l, ChunkNibbleArray chunkNibbleArray) {
+    protected void setSection(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
         ((LightStorage)this.lightStorage).scheduleToUpdate(l, chunkNibbleArray);
     }
 
@@ -212,6 +212,11 @@ implements ChunkLightingView {
         long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
         ((LightStorage)this.lightStorage).updateAll();
         ((LightStorage)this.lightStorage).method_15535(l, bl);
+    }
+
+    public void method_20599(ChunkPos chunkPos, boolean bl) {
+        long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
+        ((LightStorage)this.lightStorage).method_20600(l, bl);
     }
 }
 

@@ -111,7 +111,6 @@ Trader {
     public void trade(TradeOffer tradeOffer) {
         tradeOffer.use();
         this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-        this.playSound(this.getYesSound(), this.getSoundVolume(), this.getSoundPitch());
         this.afterUsing(tradeOffer);
         if (this.customer instanceof ServerPlayerEntity) {
             Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, tradeOffer.getMutableSellItem());
@@ -133,7 +132,8 @@ Trader {
         }
     }
 
-    protected SoundEvent getYesSound() {
+    @Override
+    public SoundEvent method_18010() {
         return SoundEvents.ENTITY_VILLAGER_YES;
     }
 

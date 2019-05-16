@@ -3,11 +3,11 @@
  */
 package net.minecraft.world;
 
+import java.util.Comparator;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 
-public class ScheduledTick<T>
-implements Comparable<ScheduledTick<?>> {
+public class ScheduledTick<T> {
     private static long idCounter;
     private final T object;
     public final BlockPos pos;
@@ -38,16 +38,18 @@ implements Comparable<ScheduledTick<?>> {
         return this.pos.hashCode();
     }
 
-    public int method_8682(ScheduledTick<?> scheduledTick) {
-        int i = Long.compare(this.time, scheduledTick.time);
-        if (i != 0) {
-            return i;
-        }
-        i = Integer.compare(this.priority.ordinal(), scheduledTick.priority.ordinal());
-        if (i != 0) {
-            return i;
-        }
-        return Long.compare(this.id, scheduledTick.id);
+    public static <T> Comparator<ScheduledTick<T>> method_20597() {
+        return (scheduledTick, scheduledTick2) -> {
+            int i = Long.compare(scheduledTick.time, scheduledTick2.time);
+            if (i != 0) {
+                return i;
+            }
+            i = scheduledTick.priority.compareTo(scheduledTick2.priority);
+            if (i != 0) {
+                return i;
+            }
+            return Long.compare(scheduledTick.id, scheduledTick2.id);
+        };
     }
 
     public String toString() {
@@ -56,11 +58,6 @@ implements Comparable<ScheduledTick<?>> {
 
     public T getObject() {
         return this.object;
-    }
-
-    @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.method_8682((ScheduledTick)object);
     }
 }
 

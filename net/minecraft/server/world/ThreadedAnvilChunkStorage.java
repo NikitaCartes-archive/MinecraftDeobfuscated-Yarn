@@ -5,6 +5,7 @@ package net.minecraft.server.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -119,6 +121,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final File saveDir;
     private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
+    private final Queue<Runnable> field_19343 = Queues.newConcurrentLinkedQueue();
     private int watchDistance;
     private int viewDistance;
 
@@ -315,6 +318,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     return completableFuture.join();
                 }).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
             } while (mutableBoolean.isTrue());
+            this.method_20605(() -> true);
             LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)this.saveDir.getName());
         } else {
             this.chunkHolders.values().stream().filter(ChunkHolder::method_20384).forEach(chunkHolder -> {
@@ -333,43 +337,57 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.pointOfInterestStorage.tick(booleanSupplier);
         profiler.swap("chunk_unload");
         if (!this.world.isSavingDisabled()) {
-            LongIterator longIterator = this.unloadedChunks.iterator();
-            int i = 0;
-            while (longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000)) {
-                long l = longIterator.nextLong();
-                ChunkHolder chunkHolder = this.currentChunkHolders.remove(l);
-                if (chunkHolder != null) {
-                    this.field_18807.put(l, chunkHolder);
-                    this.chunkHolderListDirty = true;
-                    ++i;
-                    this.method_20458(l, chunkHolder);
-                }
-                longIterator.remove();
-            }
+            this.method_20605(booleanSupplier);
         }
         profiler.pop();
     }
 
+    private void method_20605(BooleanSupplier booleanSupplier) {
+        Runnable runnable;
+        LongIterator longIterator = this.unloadedChunks.iterator();
+        int i = 0;
+        while (longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000)) {
+            long l = longIterator.nextLong();
+            ChunkHolder chunkHolder = this.currentChunkHolders.remove(l);
+            if (chunkHolder != null) {
+                this.field_18807.put(l, chunkHolder);
+                this.chunkHolderListDirty = true;
+                ++i;
+                this.method_20458(l, chunkHolder);
+            }
+            longIterator.remove();
+        }
+        while (booleanSupplier.getAsBoolean() && (runnable = this.field_19343.poll()) != null) {
+            runnable.run();
+        }
+    }
+
     private void method_20458(long l, ChunkHolder chunkHolder) {
         CompletableFuture<Chunk> completableFuture = chunkHolder.getFuture();
-        completableFuture.thenAcceptAsync(chunk -> {
+        ((CompletableFuture)completableFuture.thenAcceptAsync(chunk -> {
             CompletableFuture<Chunk> completableFuture2 = chunkHolder.getFuture();
             if (completableFuture2 != completableFuture) {
                 this.method_20458(l, chunkHolder);
                 return;
             }
             if (this.field_18807.remove(l, (Object)chunkHolder) && chunk != null) {
+                if (chunk instanceof WorldChunk) {
+                    ((WorldChunk)chunk).setLoadedToWorld(false);
+                }
                 this.save((Chunk)chunk);
                 if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
                     WorldChunk worldChunk = (WorldChunk)chunk;
-                    worldChunk.setLoadedToWorld(false);
                     this.world.unloadEntities(worldChunk);
                 }
                 this.serverLightingProvider.method_20386(chunk.getPos());
                 this.serverLightingProvider.tick();
                 this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
             }
-        }, (Executor)this.mainThreadExecutor);
+        }, this.field_19343::add)).whenComplete((void_, throwable) -> {
+            if (throwable != null) {
+                LOGGER.error("Failed to save chunk " + chunkHolder.getPos(), (Throwable)throwable);
+            }
+        });
     }
 
     protected void updateHolderMap() {

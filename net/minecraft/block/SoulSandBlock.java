@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BubbleColumnBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -62,6 +63,11 @@ extends Block {
     @Override
     public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
         return false;
+    }
+
+    @Override
+    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+        return true;
     }
 }
 

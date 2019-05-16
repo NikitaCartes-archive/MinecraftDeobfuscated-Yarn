@@ -93,7 +93,7 @@ public class ChunkBatcher {
         if (this.workerThreads.isEmpty()) {
             return String.format("pC: %03d, single-threaded", this.pendingChunks.size());
         }
-        return String.format("pC: %03d, pU: %1d, aB: %1d", this.pendingChunks.size(), this.pendingUploads.size(), this.availableBuffers.size());
+        return String.format("pC: %03d, pU: %02d, aB: %02d", this.pendingChunks.size(), this.pendingUploads.size(), this.availableBuffers.size());
     }
 
     public void setCameraPosition(Vec3d vec3d) {

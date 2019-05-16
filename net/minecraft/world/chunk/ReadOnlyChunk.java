@@ -194,6 +194,12 @@ extends ProtoChunk {
     }
 
     @Override
+    @Nullable
+    public CompoundTag method_20598(BlockPos blockPos) {
+        return this.wrapped.method_20598(blockPos);
+    }
+
+    @Override
     public void setBiomeArray(Biome[] biomes) {
     }
 

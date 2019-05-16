@@ -200,7 +200,9 @@ extends Container {
         itemStack2.setRepairCost(0);
         if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
             itemStack2 = new ItemStack(Items.BOOK);
-            itemStack2.setDisplayName(itemStack.getDisplayName());
+            if (itemStack.hasDisplayName()) {
+                itemStack2.setDisplayName(itemStack.getDisplayName());
+            }
         }
         for (int k = 0; k < map.size(); ++k) {
             itemStack2.setRepairCost(AnvilContainer.getNextCost(itemStack2.getRepairCost()));

@@ -137,9 +137,10 @@ extends BlockViewWithStructures {
     }
 
     @Nullable
-    default public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
-        throw new UnsupportedOperationException();
-    }
+    public CompoundTag getBlockEntityTagAt(BlockPos var1);
+
+    @Nullable
+    public CompoundTag method_20598(BlockPos var1);
 
     default public void setBiomeArray(Biome[] biomes) {
         throw new UnsupportedOperationException();

@@ -116,6 +116,9 @@ public class ChunkSerializer {
             if (!bl2 || !compoundTag3.containsKey("SkyLight", 7)) continue;
             lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
         }
+        if (bl) {
+            lightingProvider.method_20601(chunkPos, true);
+        }
         long n = compoundTag2.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
@@ -244,22 +247,9 @@ public class ChunkSerializer {
         compoundTag2.putIntArray("Biomes", is);
         ListTag listTag2 = new ListTag();
         for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-            BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
-            if (blockEntity != null) {
-                CompoundTag compoundTag4 = new CompoundTag();
-                blockEntity.toTag(compoundTag4);
-                if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-                    compoundTag4.putBoolean("keepPacked", false);
-                }
-                listTag2.add(compoundTag4);
-                continue;
-            }
-            CompoundTag compoundTag5 = chunk.getBlockEntityTagAt(blockPos);
-            if (compoundTag5 == null) continue;
-            if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-                compoundTag5.putBoolean("keepPacked", true);
-            }
-            listTag2.add(compoundTag5);
+            compoundTag3 = chunk.method_20598(blockPos);
+            if (compoundTag3 == null) continue;
+            listTag2.add(compoundTag3);
         }
         compoundTag2.put("TileEntities", listTag2);
         ListTag listTag3 = new ListTag();
@@ -268,25 +258,15 @@ public class ChunkSerializer {
             worldChunk.method_12232(false);
             for (int l = 0; l < worldChunk.getEntitySectionArray().length; ++l) {
                 for (Entity entity : worldChunk.getEntitySectionArray()[l]) {
-                    CompoundTag compoundTag5;
-                    if (!entity.saveToTag(compoundTag5 = new CompoundTag())) continue;
+                    CompoundTag compoundTag4;
+                    if (!entity.saveToTag(compoundTag4 = new CompoundTag())) continue;
                     worldChunk.method_12232(true);
-                    listTag3.add(compoundTag5);
+                    listTag3.add(compoundTag4);
                 }
             }
         } else {
             ProtoChunk protoChunk = (ProtoChunk)chunk;
             listTag3.addAll(protoChunk.getEntities());
-            for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-                BlockEntity blockEntity2 = chunk.getBlockEntity(blockPos);
-                if (blockEntity2 != null) {
-                    CompoundTag compoundTag5 = new CompoundTag();
-                    blockEntity2.toTag(compoundTag5);
-                    listTag2.add(compoundTag5);
-                    continue;
-                }
-                listTag2.add(chunk.getBlockEntityTagAt(blockPos));
-            }
             compoundTag2.put("Lights", ChunkSerializer.toNbt(protoChunk.getLightSourcesBySection()));
             compoundTag3 = new CompoundTag();
             for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
@@ -312,12 +292,12 @@ public class ChunkSerializer {
             compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
         }
         compoundTag2.put("PostProcessing", ChunkSerializer.toNbt(chunk.getPostProcessingLists()));
-        CompoundTag compoundTag6 = new CompoundTag();
+        CompoundTag compoundTag5 = new CompoundTag();
         for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
             if (!chunk.getStatus().isSurfaceGenerated().contains((Object)entry.getKey())) continue;
-            compoundTag6.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
+            compoundTag5.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
-        compoundTag2.put("Heightmaps", compoundTag6);
+        compoundTag2.put("Heightmaps", compoundTag5);
         compoundTag2.put("Structures", ChunkSerializer.writeStructures(chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences()));
         return compoundTag;
     }

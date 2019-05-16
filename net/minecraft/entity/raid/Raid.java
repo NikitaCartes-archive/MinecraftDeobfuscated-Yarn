@@ -46,6 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -204,6 +205,7 @@ public class Raid {
             return;
         }
         if (this.status == Status.ONGOING) {
+            boolean bl2;
             boolean bl = this.active;
             this.active = this.world.isBlockLoaded(this.center);
             if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
@@ -234,7 +236,13 @@ public class Raid {
             int i = this.getRaiderCount();
             if (i == 0 && this.shouldSpawnMoreGroups()) {
                 if (this.preRaidTicks > 0) {
-                    if (!this.preCalculatedRavagerSpawnLocation.isPresent() && this.preRaidTicks % 5 == 0) {
+                    boolean bl3;
+                    bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
+                    boolean bl4 = bl3 = !bl2 && this.preRaidTicks % 5 == 0;
+                    if (bl2 && !this.world.method_14178().method_20591(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
+                        bl3 = true;
+                    }
+                    if (bl3) {
                         int j = 0;
                         if (this.preRaidTicks < 100) {
                             j = 1;
@@ -267,7 +275,7 @@ public class Raid {
                     this.bar.setName(EVENT_TEXT);
                 }
             }
-            boolean bl2 = false;
+            bl2 = false;
             int k = 0;
             while (this.canSpawnRaiders()) {
                 BlockPos blockPos;
@@ -372,6 +380,9 @@ public class Raid {
                     continue;
                 }
                 if (raiderEntity.age <= 600) continue;
+                if (this.world.getEntity(raiderEntity.getUuid()) == null) {
+                    set.add(raiderEntity);
+                }
                 if (!this.world.isNearOccupiedPointOfInterest(blockPos) && raiderEntity.getDespawnCounter() > 2400) {
                     raiderEntity.setOutOfRaidCounter(raiderEntity.getOutOfRaidCounter() + 1);
                 }
@@ -515,7 +526,7 @@ public class Raid {
             int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int o = this.world.getTop(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
-            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
+            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().method_20591(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

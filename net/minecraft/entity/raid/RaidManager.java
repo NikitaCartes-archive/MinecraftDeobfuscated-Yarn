@@ -80,7 +80,7 @@ extends PersistentState {
             return null;
         }
         BlockPos blockPos = new BlockPos(serverPlayerEntity);
-        Optional<BlockPos> optional = this.world.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.MEETING, Objects::nonNull, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.world.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.MEETING, Objects::nonNull, blockPos, 64, PointOfInterestStorage.OccupationStatus.ANY);
         if (!optional.isPresent()) {
             optional = Optional.of(blockPos);
         }

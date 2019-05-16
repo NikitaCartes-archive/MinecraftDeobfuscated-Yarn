@@ -55,19 +55,21 @@ extends AbstractPhase {
             j += 12;
         }
         this.field_7054 = this.dragon.method_6833(i, j, null);
-        if (this.field_7054 != null) {
-            this.field_7054.next();
-            this.method_6859();
-        }
+        this.method_6859();
     }
 
     private void method_6859() {
-        double d;
-        Vec3d vec3d = this.field_7054.getCurrentPosition();
-        this.field_7054.next();
-        while ((d = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0f)) < vec3d.y) {
+        if (this.field_7054 != null) {
+            this.field_7054.next();
+            if (!this.field_7054.isFinished()) {
+                double d;
+                Vec3d vec3d = this.field_7054.getCurrentPosition();
+                this.field_7054.next();
+                while ((d = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0f)) < vec3d.y) {
+                }
+                this.field_7055 = new Vec3d(vec3d.x, d, vec3d.z);
+            }
         }
-        this.field_7055 = new Vec3d(vec3d.x, d, vec3d.z);
     }
 
     @Override

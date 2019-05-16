@@ -187,7 +187,7 @@ implements Waterloggable {
     @Override
     public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
         ProjectileEntity projectileEntity;
-        if (!world.isClient && entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire() && !blockState.get(LIT).booleanValue()) {
+        if (!world.isClient && entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire() && !blockState.get(LIT).booleanValue() && !blockState.get(WATERLOGGED).booleanValue()) {
             BlockPos blockPos = blockHitResult.getBlockPos();
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
         }

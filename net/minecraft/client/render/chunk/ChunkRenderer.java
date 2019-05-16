@@ -76,15 +76,10 @@ public class ChunkRenderer {
     }
 
     public boolean shouldBuild() {
-        BlockPos blockPos = new BlockPos(MinecraftClient.getInstance().player);
-        BlockPos blockPos2 = this.getOrigin();
-        int i = 16;
-        int j = 8;
-        int k = 24;
-        if (blockPos2.add(8, 8, 8).getSquaredDistance(blockPos) > 576.0) {
+        int i = 24;
+        if (this.getSquaredCameraDistance() > 576.0) {
             World world = this.getWorld();
-            BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos2);
-            return ChunkRenderer.isChunkNonEmpty(mutable.set(blockPos2).setOffset(Direction.WEST, 16), world) && ChunkRenderer.isChunkNonEmpty(mutable.set(blockPos2).setOffset(Direction.NORTH, 16), world) && ChunkRenderer.isChunkNonEmpty(mutable.set(blockPos2).setOffset(Direction.EAST, 16), world) && ChunkRenderer.isChunkNonEmpty(mutable.set(blockPos2).setOffset(Direction.SOUTH, 16), world);
+            return ChunkRenderer.isChunkNonEmpty(this.neighborPositions[Direction.WEST.ordinal()], world) && ChunkRenderer.isChunkNonEmpty(this.neighborPositions[Direction.NORTH.ordinal()], world) && ChunkRenderer.isChunkNonEmpty(this.neighborPositions[Direction.EAST.ordinal()], world) && ChunkRenderer.isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()], world);
         }
         return true;
     }

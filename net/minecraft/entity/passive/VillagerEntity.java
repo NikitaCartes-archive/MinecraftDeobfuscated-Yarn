@@ -474,6 +474,10 @@ VillagerDataContainer {
         }
     }
 
+    public int method_20594(PlayerEntity playerEntity) {
+        return this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> villageGossipType != VillageGossipType.GOLEM);
+    }
+
     public void depleteFood(int i) {
         this.foodLevel = (byte)(this.foodLevel - i);
     }
@@ -563,7 +567,6 @@ VillagerDataContainer {
         Item item = itemStack.getItem();
         VillagerProfession villagerProfession = this.getVillagerData().getProfession();
         if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
-            ItemStack itemStack3;
             int i;
             if (villagerProfession == VillagerProfession.FARMER && item == Items.WHEAT && (i = itemStack.getAmount() / 3) > 0) {
                 ItemStack itemStack2 = this.getInventory().add(new ItemStack(Items.BREAD, i));
@@ -572,7 +575,9 @@ VillagerDataContainer {
                     this.dropStack(itemStack2, 0.5f);
                 }
             }
-            if ((itemStack3 = this.getInventory().add(itemStack)).isEmpty()) {
+            this.sendPickup(itemEntity, itemStack.getAmount());
+            ItemStack itemStack3 = this.getInventory().add(itemStack);
+            if (itemStack3.isEmpty()) {
                 itemEntity.remove();
             } else {
                 itemStack.setAmount(itemStack3.getAmount());

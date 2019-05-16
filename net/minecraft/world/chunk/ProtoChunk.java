@@ -415,6 +415,16 @@ implements Chunk {
     }
 
     @Override
+    @Nullable
+    public CompoundTag method_20598(BlockPos blockPos) {
+        BlockEntity blockEntity = this.getBlockEntity(blockPos);
+        if (blockEntity != null) {
+            return blockEntity.toTag(new CompoundTag());
+        }
+        return this.blockEntityTags.get(blockPos);
+    }
+
+    @Override
     public void removeBlockEntity(BlockPos blockPos) {
         this.blockEntities.remove(blockPos);
         this.blockEntityTags.remove(blockPos);

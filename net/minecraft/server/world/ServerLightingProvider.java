@@ -26,6 +26,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerLightingProvider
 extends LightingProvider
@@ -67,7 +68,13 @@ implements AutoCloseable {
 
     protected void method_20386(ChunkPos chunkPos) {
         this.enqueue(chunkPos.x, chunkPos.z, () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
-            for (int i = 0; i < 16; ++i) {
+            int i;
+            super.method_20601(chunkPos, false);
+            for (i = -1; i < 17; ++i) {
+                super.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, i), null);
+                super.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, i), null);
+            }
+            for (i = 0; i < 16; ++i) {
                 super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
             }
         }, () -> "updateChunkStatus " + chunkPos + " " + true));
@@ -84,8 +91,8 @@ implements AutoCloseable {
     }
 
     @Override
-    public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
-        this.enqueue(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ(), class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
+    public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
+        this.enqueue(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ(), () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
     }
 
     private void enqueue(int i, int j, class_3901 arg, Runnable runnable) {
@@ -119,6 +126,7 @@ implements AutoCloseable {
         }, () -> "lightChunk " + chunkPos + " " + bl));
         return CompletableFuture.supplyAsync(() -> {
             chunk.setLightOn(true);
+            super.method_20601(chunkPos, false);
             return chunk;
         }, runnable -> this.enqueue(chunkPos.x, chunkPos.z, class_3901.POST_UPDATE, runnable));
     }

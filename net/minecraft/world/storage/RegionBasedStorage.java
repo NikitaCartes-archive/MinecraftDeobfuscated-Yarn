@@ -31,7 +31,7 @@ implements AutoCloseable {
             return regionFile;
         }
         if (this.cachedRegionFiles.size() >= 256) {
-            this.cachedRegionFiles.removeLast();
+            this.cachedRegionFiles.removeLast().close();
         }
         if (!this.directory.exists()) {
             this.directory.mkdirs();

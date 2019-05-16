@@ -9,11 +9,13 @@ import net.minecraft.container.Container;
 import net.minecraft.container.ContainerType;
 import net.minecraft.container.Slot;
 import net.minecraft.container.TradeOutputSlot;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.village.SimpleTrader;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.Trader;
@@ -113,6 +115,7 @@ extends Container {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
+                this.method_20595();
             } else if (i == 0 || i == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (i >= 3 && i < 30 ? !this.insertItem(itemStack2, 30, 39, false) : i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false))) {
                 return ItemStack.EMPTY;
             }
@@ -127,6 +130,13 @@ extends Container {
             slot.onTakeItem(playerEntity, itemStack2);
         }
         return itemStack;
+    }
+
+    private void method_20595() {
+        if (!this.trader.getTraderWorld().isClient) {
+            Entity entity = (Entity)((Object)this.trader);
+            this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
+        }
     }
 
     @Override
@@ -183,13 +193,13 @@ extends Container {
                 if (itemStack2.isEmpty() || !this.equals(itemStack, itemStack2)) continue;
                 ItemStack itemStack3 = this.traderInventory.getInvStack(i);
                 int k = itemStack3.isEmpty() ? 0 : itemStack3.getAmount();
-                int l = Math.min(64 - k, itemStack2.getAmount());
+                int l = Math.min(itemStack.getMaxAmount() - k, itemStack2.getAmount());
                 ItemStack itemStack4 = itemStack2.copy();
                 int m = k + l;
                 itemStack2.subtractAmount(l);
                 itemStack4.setAmount(m);
                 this.traderInventory.setInvStack(i, itemStack4);
-                if (m >= 64) break;
+                if (m >= itemStack.getMaxAmount()) break;
             }
         }
     }

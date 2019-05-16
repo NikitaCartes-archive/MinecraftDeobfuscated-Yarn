@@ -26,7 +26,7 @@ extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        if (this.guardian.removed || !this.guardian.hasBeamTarget()) {
+        if (this.guardian.removed || this.guardian.getTarget() != null) {
             this.done = true;
             return;
         }

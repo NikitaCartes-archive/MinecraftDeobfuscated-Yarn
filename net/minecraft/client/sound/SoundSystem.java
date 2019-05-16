@@ -137,8 +137,7 @@ public class SoundSystem {
 
     public void stop(SoundInstance soundInstance) {
         Channel.SourceManager sourceManager;
-        if (this.started && (sourceManager = this.sources.remove(soundInstance)) != null) {
-            this.soundEndTicks.remove(soundInstance);
+        if (this.started && (sourceManager = this.sources.get(soundInstance)) != null) {
             sourceManager.run(Source::stop);
         }
     }
@@ -211,7 +210,7 @@ public class SoundSystem {
             LOGGER.debug(MARKER, "Removed channel {} because it's not playing anymore", (Object)sourceManager2);
             this.soundEndTicks.remove(soundInstance);
             try {
-                this.sounds.remove((Object)soundInstance.getCategory(), sourceManager2);
+                this.sounds.remove((Object)soundInstance.getCategory(), soundInstance);
             } catch (RuntimeException runtimeException) {
                 // empty catch block
             }

@@ -64,10 +64,6 @@ extends LlamaEntity {
         this.targetSelector.add(1, new DefendTraderGoal(this));
     }
 
-    public void setDespawnDelay(int i) {
-        this.despawnDelay = i;
-    }
-
     @Override
     protected void putPlayerOnBack(PlayerEntity playerEntity) {
         Entity entity = this.getHoldingEntity();
@@ -115,6 +111,7 @@ extends LlamaEntity {
         if (spawnType == SpawnType.EVENT) {
             this.setBreedingAge(0);
         }
+        this.despawnDelay = 47999;
         return entityData2;
     }
 

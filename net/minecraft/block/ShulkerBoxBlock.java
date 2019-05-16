@@ -129,11 +129,14 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-            if (!world.isClient && playerEntity.isCreative()) {
+            if (!world.isClient && playerEntity.isCreative() && !shulkerBoxBlockEntity.isInvEmpty()) {
                 ItemStack itemStack = ShulkerBoxBlock.getItemStack(this.getColor());
                 CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
                 if (!compoundTag.isEmpty()) {
                     itemStack.setChildTag("BlockEntityTag", compoundTag);
+                }
+                if (shulkerBoxBlockEntity.hasCustomName()) {
+                    itemStack.setDisplayName(shulkerBoxBlockEntity.getCustomName());
                 }
                 ItemEntity itemEntity = new ItemEntity(world, blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack);
                 itemEntity.setToDefaultPickupDelay();

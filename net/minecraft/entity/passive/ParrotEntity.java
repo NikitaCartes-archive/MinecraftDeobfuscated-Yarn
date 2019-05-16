@@ -278,7 +278,7 @@ implements Bird {
         int i = MathHelper.floor(this.x);
         BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.getBoundingBox().minY), k = MathHelper.floor(this.z));
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        return block.matches(BlockTags.LEAVES) || block == Blocks.GRASS || block instanceof LogBlock || block == Blocks.AIR && super.canSpawn(iWorld, spawnType);
+        return block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR && super.canSpawn(iWorld, spawnType);
     }
 
     @Override

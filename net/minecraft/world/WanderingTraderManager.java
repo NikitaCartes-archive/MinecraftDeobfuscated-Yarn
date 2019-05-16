@@ -112,7 +112,6 @@ public class WanderingTraderManager {
             return;
         }
         traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
-        traderLlamaEntity.setDespawnDelay(47999);
     }
 
     @Nullable

@@ -9,7 +9,6 @@ import com.google.common.cache.LoadingCache;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -918,7 +917,10 @@ implements ItemConvertible {
         }
 
         public int hashCode() {
-            return Objects.hash(this.self, this.other, this.facing);
+            int i = this.self.hashCode();
+            i = 31 * i + this.other.hashCode();
+            i = 31 * i + this.facing.hashCode();
+            return i;
         }
     }
 }

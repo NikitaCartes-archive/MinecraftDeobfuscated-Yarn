@@ -23,6 +23,8 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
@@ -107,6 +109,7 @@ extends Task<VillagerEntity> {
                         }
                     }
                     if (!bl) continue;
+                    serverWorld.playSound(null, (double)this.field_18858.getX(), (double)this.field_18858.getY(), this.field_18858.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     itemStack.subtractAmount(1);
                     if (!itemStack.isEmpty()) break;
                     basicInventory.setInvStack(i, ItemStack.EMPTY);

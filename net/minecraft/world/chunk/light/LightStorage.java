@@ -34,6 +34,7 @@ extends SectionRelativeLevelPropagator {
     protected final LongSet field_15802 = new LongOpenHashSet();
     protected final LongSet toNotify = new LongOpenHashSet();
     protected final Long2ObjectMap<ChunkNibbleArray> toUpdate = new Long2ObjectOpenHashMap<ChunkNibbleArray>();
+    private final LongSet field_19342 = new LongOpenHashSet();
     private final LongSet toRemove = new LongOpenHashSet();
     protected volatile boolean hasLightUpdates;
 
@@ -179,6 +180,7 @@ extends SectionRelativeLevelPropagator {
 
     protected void processUpdates(ChunkLightProvider<M, ?> chunkLightProvider, boolean bl, boolean bl2) {
         long m;
+        ChunkNibbleArray chunkNibbleArray2;
         long l;
         if (!this.hasLightUpdates() && this.toUpdate.isEmpty()) {
             return;
@@ -186,9 +188,16 @@ extends SectionRelativeLevelPropagator {
         Iterator<Long> iterator = this.toRemove.iterator();
         while (iterator.hasNext()) {
             l = (Long)iterator.next();
-            this.toUpdate.remove(l);
             this.removeChunkData(chunkLightProvider, l);
-            ((WorldNibbleStorage)this.dataStorage).removeChunk(l);
+            ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.toUpdate.remove(l);
+            chunkNibbleArray2 = ((WorldNibbleStorage)this.dataStorage).removeChunk(l);
+            if (!this.field_19342.contains(ChunkSectionPos.toLightStorageIndex(l))) continue;
+            if (chunkNibbleArray != null) {
+                this.toUpdate.put(l, chunkNibbleArray);
+                continue;
+            }
+            if (chunkNibbleArray2 == null) continue;
+            this.toUpdate.put(l, chunkNibbleArray2);
         }
         ((WorldNibbleStorage)this.dataStorage).clearCache();
         iterator = this.toRemove.iterator();
@@ -201,10 +210,10 @@ extends SectionRelativeLevelPropagator {
         for (Long2ObjectMap.Entry entry : this.toUpdate.long2ObjectEntrySet()) {
             m = entry.getLongKey();
             if (!this.hasChunk(m)) continue;
-            ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)entry.getValue();
-            if (((WorldNibbleStorage)this.dataStorage).getDataForChunk(m) == chunkNibbleArray) continue;
+            chunkNibbleArray2 = (ChunkNibbleArray)entry.getValue();
+            if (((WorldNibbleStorage)this.dataStorage).getDataForChunk(m) == chunkNibbleArray2) continue;
             this.removeChunkData(chunkLightProvider, m);
-            ((WorldNibbleStorage)this.dataStorage).addForChunk(m, chunkNibbleArray);
+            ((WorldNibbleStorage)this.dataStorage).addForChunk(m, chunkNibbleArray2);
             this.field_15802.add(m);
         }
         ((WorldNibbleStorage)this.dataStorage).clearCache();
@@ -277,8 +286,20 @@ extends SectionRelativeLevelPropagator {
     protected void method_15535(long l, boolean bl) {
     }
 
-    protected void scheduleToUpdate(long l, ChunkNibbleArray chunkNibbleArray) {
-        this.toUpdate.put(l, chunkNibbleArray);
+    public void method_20600(long l, boolean bl) {
+        if (bl) {
+            this.field_19342.add(l);
+        } else {
+            this.field_19342.remove(l);
+        }
+    }
+
+    protected void scheduleToUpdate(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
+        if (chunkNibbleArray != null) {
+            this.toUpdate.put(l, chunkNibbleArray);
+        } else {
+            this.toUpdate.remove(l);
+        }
     }
 
     protected void scheduleChunkLightUpdate(long l, boolean bl) {

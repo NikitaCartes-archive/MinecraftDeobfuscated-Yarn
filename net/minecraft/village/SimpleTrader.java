@@ -7,6 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.Trader;
 import net.minecraft.village.TraderInventory;
@@ -74,6 +76,11 @@ implements Trader {
     @Override
     public boolean isLevelledTrader() {
         return true;
+    }
+
+    @Override
+    public SoundEvent method_18010() {
+        return SoundEvents.ENTITY_VILLAGER_YES;
     }
 }
 

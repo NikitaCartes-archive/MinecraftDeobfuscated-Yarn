@@ -272,6 +272,9 @@ extends Entity {
     public void baseTick() {
         boolean bl2;
         this.lastHandSwingProgress = this.handSwingProgress;
+        if (this.field_5953) {
+            this.getSleepingPosition().ifPresent(this::setPositionInBed);
+        }
         super.baseTick();
         this.world.getProfiler().push("livingEntityBaseTick");
         boolean bl = this instanceof PlayerEntity;
@@ -542,8 +545,10 @@ extends Entity {
         if (compoundTag.containsKey("SleepingX", 99) && compoundTag.containsKey("SleepingY", 99) && compoundTag.containsKey("SleepingZ", 99)) {
             BlockPos blockPos = new BlockPos(compoundTag.getInt("SleepingX"), compoundTag.getInt("SleepingY"), compoundTag.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
-            this.setPositionInBed(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
+            if (!this.field_5953) {
+                this.setPositionInBed(blockPos);
+            }
         }
         if (compoundTag.containsKey("Brain", 10)) {
             this.brain = this.deserializeBrain(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.getTag("Brain")));

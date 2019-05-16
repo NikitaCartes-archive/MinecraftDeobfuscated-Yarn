@@ -199,7 +199,7 @@ extends AbstractTraderEntity {
     }
 
     @Override
-    protected SoundEvent getYesSound() {
+    public SoundEvent method_18010() {
         return SoundEvents.ENTITY_WANDERING_TRADER_YES;
     }
 
