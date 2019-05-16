@@ -54,8 +54,9 @@ public abstract class WorldNibbleStorage<M extends WorldNibbleStorage<M>> {
 		}
 	}
 
-	public void removeChunk(long l) {
-		this.arraysByChunk.remove(l);
+	@Nullable
+	public ChunkNibbleArray removeChunk(long l) {
+		return this.arraysByChunk.remove(l);
 	}
 
 	public void addForChunk(long l, ChunkNibbleArray chunkNibbleArray) {

@@ -27,13 +27,13 @@ public class ChatOptionsScreen extends Screen {
 		Option.AUTO_SUGGESTIONS,
 		Option.NARRATOR
 	};
-	private final Screen field_2354;
+	private final Screen parent;
 	private final GameOptions options;
 	private AbstractButtonWidget narratorOptionButton;
 
 	public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableComponent("options.chat.title"));
-		this.field_2354 = screen;
+		this.parent = screen;
 		this.options = gameOptions;
 	}
 
@@ -55,7 +55,7 @@ public class ChatOptionsScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.field_2354)
+				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
 			)
 		);
 	}

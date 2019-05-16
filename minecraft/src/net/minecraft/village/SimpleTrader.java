@@ -5,6 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class SimpleTrader implements Trader {
@@ -66,5 +68,10 @@ public class SimpleTrader implements Trader {
 	@Override
 	public boolean isLevelledTrader() {
 		return true;
+	}
+
+	@Override
+	public SoundEvent method_18010() {
+		return SoundEvents.field_14815;
 	}
 }

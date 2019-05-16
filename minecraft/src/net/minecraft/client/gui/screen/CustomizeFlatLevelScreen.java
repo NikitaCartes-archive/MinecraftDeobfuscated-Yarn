@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private final CreateWorldScreen field_2422;
+	private final CreateWorldScreen parent;
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String tileText;
 	private String heightText;
@@ -36,7 +36,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	public CustomizeFlatLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
 		super(new TranslatableComponent("createWorld.customize.flat.title"));
-		this.field_2422 = createWorldScreen;
+		this.parent = createWorldScreen;
 		this.method_2144(compoundTag);
 	}
 
@@ -86,18 +86,18 @@ public class CustomizeFlatLevelScreen extends Screen {
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets"), buttonWidget -> {
-			this.minecraft.method_1507(new PresetsScreen(this));
+			this.minecraft.openScreen(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.field_2422.generatorOptionsTag = this.method_2140();
-			this.minecraft.method_1507(this.field_2422);
+			this.parent.generatorOptionsTag = this.method_2140();
+			this.minecraft.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> {
-			this.minecraft.method_1507(this.field_2422);
+			this.minecraft.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));

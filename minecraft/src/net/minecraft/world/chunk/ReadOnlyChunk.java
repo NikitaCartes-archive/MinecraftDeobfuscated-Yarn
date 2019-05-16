@@ -181,6 +181,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 		return this.wrapped.getBlockEntityTagAt(blockPos);
 	}
 
+	@Nullable
+	@Override
+	public CompoundTag method_20598(BlockPos blockPos) {
+		return this.wrapped.method_20598(blockPos);
+	}
+
 	@Override
 	public void setBiomeArray(Biome[] biomes) {
 	}

@@ -25,7 +25,7 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 			return regionFile;
 		} else {
 			if (this.cachedRegionFiles.size() >= 256) {
-				this.cachedRegionFiles.removeLast();
+				this.cachedRegionFiles.removeLast().close();
 			}
 
 			if (!this.directory.exists()) {

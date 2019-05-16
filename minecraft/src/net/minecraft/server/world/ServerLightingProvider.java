@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntSupplier;
+import javax.annotation.Nullable;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.SystemUtil;
@@ -70,6 +71,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	protected void method_20386(ChunkPos chunkPos) {
 		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
+			super.method_20601(chunkPos, false);
+
+			for (int i = -1; i < 17; i++) {
+				super.queueData(LightType.field_9282, ChunkSectionPos.from(chunkPos, i), null);
+				super.queueData(LightType.field_9284, ChunkSectionPos.from(chunkPos, i), null);
+			}
+
 			for (int i = 0; i < 16; i++) {
 				super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
 			}
@@ -98,10 +106,11 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
 		this.enqueue(
 			chunkSectionPos.getChunkX(),
 			chunkSectionPos.getChunkZ(),
+			() -> 0,
 			ServerLightingProvider.class_3901.field_17261,
 			SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
@@ -142,6 +151,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		}, () -> "lightChunk " + chunkPos + " " + bl));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
+			super.method_20601(chunkPos, false);
 			return chunk;
 		}, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17262, runnable));
 	}

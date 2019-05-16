@@ -63,7 +63,7 @@ public class SignEditScreen extends Screen {
 
 	private void finishEditing() {
 		this.sign.markDirty();
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override

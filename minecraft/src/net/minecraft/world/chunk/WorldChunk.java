@@ -443,6 +443,25 @@ public class WorldChunk implements Chunk {
 		this.pendingBlockEntityTags.put(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), compoundTag);
 	}
 
+	@Nullable
+	@Override
+	public CompoundTag method_20598(BlockPos blockPos) {
+		BlockEntity blockEntity = this.getBlockEntity(blockPos);
+		if (blockEntity != null && !blockEntity.isInvalid()) {
+			CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+			compoundTag.putBoolean("keepPacked", false);
+			return compoundTag;
+		} else {
+			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.get(blockPos);
+			if (compoundTag != null) {
+				compoundTag = compoundTag.method_10553();
+				compoundTag.putBoolean("keepPacked", true);
+			}
+
+			return compoundTag;
+		}
+	}
+
 	@Override
 	public void removeBlockEntity(BlockPos blockPos) {
 		if (this.loadedToWorld || this.world.isClient()) {
@@ -769,12 +788,12 @@ public class WorldChunk implements Chunk {
 
 	public void method_20471(ServerWorld serverWorld) {
 		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
+			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(this.pos, true, false));
 			this.setShouldSave(true);
 		}
 
 		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
+			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(this.pos, true, false));
 			this.setShouldSave(true);
 		}
 	}

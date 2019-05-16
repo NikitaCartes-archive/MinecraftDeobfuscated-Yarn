@@ -292,7 +292,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				}
 
 				if (this.minecraft.options.touchscreen && bl2 && this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-					this.minecraft.method_1507(null);
+					this.minecraft.openScreen(null);
 					return true;
 				}
 

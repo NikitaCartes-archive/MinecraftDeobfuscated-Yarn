@@ -362,7 +362,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.interactionManager.copyAbilities(this.client.player);
 		this.client.cameraEntity = this.client.player;
 		this.client.player.dimension = gameJoinS2CPacket.getDimension();
-		this.client.method_1507(new DownloadingTerrainScreen());
+		this.client.openScreen(new DownloadingTerrainScreen());
 		this.client.player.setEntityId(i);
 		this.client.player.setReducedDebugInfo(gameJoinS2CPacket.hasReducedDebugInfo());
 		this.client.interactionManager.setGameMode(gameJoinS2CPacket.getGameMode());
@@ -710,7 +710,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.player.prevY = this.client.player.y;
 			this.client.player.prevZ = this.client.player.z;
 			this.field_3698 = true;
-			this.client.method_1507(null);
+			this.client.openScreen(null);
 		}
 	}
 
@@ -739,7 +739,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				chunkDataS2CPacket.getVerticalStripBitmask(),
 				chunkDataS2CPacket.isFullChunk()
 			);
-		if (worldChunk != null) {
+		if (worldChunk != null && chunkDataS2CPacket.isFullChunk()) {
 			this.world.addEntitiesToChunk(worldChunk);
 		}
 
@@ -784,12 +784,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.disconnect();
 		if (this.loginScreen != null) {
 			if (this.loginScreen instanceof RealmsScreenProxy) {
-				this.client.method_1507(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.loginScreen).getScreen(), "disconnect.lost", component).getProxy());
+				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.loginScreen).getScreen(), "disconnect.lost", component).getProxy());
 			} else {
-				this.client.method_1507(new DisconnectedScreen(this.loginScreen, "disconnect.lost", component));
+				this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", component));
 			}
 		} else {
-			this.client.method_1507(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", component));
+			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", component));
 		}
 	}
 
@@ -1024,7 +1024,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			);
 			this.world.setScoreboard(scoreboard);
 			this.client.joinWorld(this.world);
-			this.client.method_1507(new DownloadingTerrainScreen());
+			this.client.openScreen(new DownloadingTerrainScreen());
 		}
 
 		this.world.setDefaultSpawnClient();
@@ -1046,8 +1046,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
-		if (this.client.field_1755 instanceof DeathScreen) {
-			this.client.method_1507(null);
+		if (this.client.currentScreen instanceof DeathScreen) {
+			this.client.openScreen(null);
 		}
 
 		this.client.interactionManager.setGameMode(playerRespawnS2CPacket.getGameMode());
@@ -1086,7 +1086,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			BasicInventory basicInventory = new BasicInventory(guiOpenS2CPacket.getSlotCount());
 			HorseContainer horseContainer = new HorseContainer(guiOpenS2CPacket.getId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
 			clientPlayerEntity.container = horseContainer;
-			this.client.method_1507(new HorseScreen(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
+			this.client.openScreen(new HorseScreen(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
 		}
 	}
 
@@ -1104,15 +1104,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = guiSlotUpdateS2CPacket.getSlot();
 		this.client.getTutorialManager().onSlotUpdate(itemStack);
 		if (guiSlotUpdateS2CPacket.getId() == -1) {
-			if (!(this.client.field_1755 instanceof CreativeInventoryScreen)) {
+			if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
 				playerEntity.inventory.setCursorStack(itemStack);
 			}
 		} else if (guiSlotUpdateS2CPacket.getId() == -2) {
 			playerEntity.inventory.setInvStack(i, itemStack);
 		} else {
 			boolean bl = false;
-			if (this.client.field_1755 instanceof CreativeInventoryScreen) {
-				CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.field_1755;
+			if (this.client.currentScreen instanceof CreativeInventoryScreen) {
+				CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
 				bl = creativeInventoryScreen.method_2469() != ItemGroup.INVENTORY.getIndex();
 			}
 
@@ -1193,8 +1193,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				blockEntity.fromTag(blockEntityUpdateS2CPacket.getCompoundTag());
 			}
 
-			if (bl && this.client.field_1755 instanceof CommandBlockScreen) {
-				((CommandBlockScreen)this.client.field_1755).method_2457();
+			if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
+				((CommandBlockScreen)this.client.currentScreen).method_2457();
 			}
 		}
 	}
@@ -1263,17 +1263,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (i == 4) {
 			if (j == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12774));
-				this.client.method_1507(new DownloadingTerrainScreen());
+				this.client.openScreen(new DownloadingTerrainScreen());
 			} else if (j == 1) {
 				this.client
-					.method_1507(
+					.openScreen(
 						new EndCreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12774)))
 					);
 			}
 		} else if (i == 5) {
 			GameOptions gameOptions = this.client.options;
 			if (f == 0.0F) {
-				this.client.method_1507(new DemoScreen());
+				this.client.openScreen(new DemoScreen());
 			} else if (f == 101.0F) {
 				this.client
 					.inGameHud
@@ -1430,8 +1430,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.player.getStats().setStat(this.client.player, stat, i);
 		}
 
-		if (this.client.field_1755 instanceof StatsListener) {
-			((StatsListener)this.client.field_1755).onStatsReady();
+		if (this.client.currentScreen instanceof StatsListener) {
+			((StatsListener)this.client.currentScreen).onStatsReady();
 		}
 	}
 
@@ -1470,8 +1470,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		clientRecipeBook.getOrderedResults().forEach(recipeResultCollection -> recipeResultCollection.initialize(clientRecipeBook));
-		if (this.client.field_1755 instanceof RecipeBookProvider) {
-			((RecipeBookProvider)this.client.field_1755).refreshRecipeBook();
+		if (this.client.currentScreen instanceof RecipeBookProvider) {
+			((RecipeBookProvider)this.client.currentScreen).refreshRecipeBook();
 		}
 	}
 
@@ -1516,7 +1516,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (combatEventS2CPacket.type == CombatEventS2CPacket.Type.field_12350) {
 			Entity entity = this.world.getEntityById(combatEventS2CPacket.entityId);
 			if (entity == this.client.player) {
-				this.client.method_1507(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
+				this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
 			}
 		}
 	}
@@ -1727,7 +1727,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				} else if (serverEntry != null && serverEntry.getResourcePack() != ServerEntry.ResourcePackState.field_3767) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13018);
 				} else {
-					this.client.execute(() -> this.client.method_1507(new ConfirmScreen(bl -> {
+					this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl -> {
 							this.client = MinecraftClient.getInstance();
 							ServerEntry serverEntryx = this.client.getCurrentServerEntry();
 							if (bl) {
@@ -1746,7 +1746,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							}
 
 							ServerList.updateServerListEntry(serverEntryx);
-							this.client.method_1507(null);
+							this.client.openScreen(null);
 						}, new TranslatableComponent("multiplayer.texturePrompt.line1"), new TranslatableComponent("multiplayer.texturePrompt.line2"))));
 				}
 			}
@@ -1815,7 +1815,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(openWrittenBookS2CPacket, this, this.client);
 		ItemStack itemStack = this.client.player.getStackInHand(openWrittenBookS2CPacket.getHand());
 		if (itemStack.getItem() == Items.field_8360) {
-			this.client.method_1507(new BookScreen(new BookScreen.WrittenBookContents(itemStack)));
+			this.client.openScreen(new BookScreen(new BookScreen.WrittenBookContents(itemStack)));
 		}
 	}
 
@@ -2164,8 +2164,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Container container = this.client.player.container;
 		if (container.syncId == craftResponseS2CPacket.getSyncId() && container.isRestricted(this.client.player)) {
 			this.recipeManager.get(craftResponseS2CPacket.getRecipeId()).ifPresent(recipe -> {
-				if (this.client.field_1755 instanceof RecipeBookProvider) {
-					RecipeBookScreen recipeBookScreen = ((RecipeBookProvider)this.client.field_1755).getRecipeBookGui();
+				if (this.client.currentScreen instanceof RecipeBookProvider) {
+					RecipeBookScreen recipeBookScreen = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookGui();
 					recipeBookScreen.showGhostRecipe(recipe, container.slotList);
 				}
 			});

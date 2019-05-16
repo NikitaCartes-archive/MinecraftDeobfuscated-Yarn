@@ -10,7 +10,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
 public class MouseOptionsScreen extends Screen {
-	private final Screen field_19245;
+	private final Screen parent;
 	private ButtonListWidget buttonList;
 	private static final Option[] OPTIONS = new Option[]{
 		Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN
@@ -18,7 +18,7 @@ public class MouseOptionsScreen extends Screen {
 
 	public MouseOptionsScreen(Screen screen) {
 		super(new TranslatableComponent("options.mouse_settings.title"));
-		this.field_19245 = screen;
+		this.parent = screen;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class MouseOptionsScreen extends Screen {
 		this.children.add(this.buttonList);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();
-			this.minecraft.method_1507(this.field_19245);
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 

@@ -25,7 +25,7 @@ public class NarratorManager implements ClientChatListener {
 
 	@Override
 	public void onChatMessage(ChatMessageType chatMessageType, Component component) {
-		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
+		NarratorOption narratorOption = method_20602();
 		if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
 			if (narratorOption == NarratorOption.ALL
 				|| narratorOption == NarratorOption.CHAT && chatMessageType == ChatMessageType.field_11737
@@ -43,11 +43,15 @@ public class NarratorManager implements ClientChatListener {
 	}
 
 	public void narrate(String string) {
-		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
+		NarratorOption narratorOption = method_20602();
 		if (this.narrator.active() && narratorOption != NarratorOption.OFF && narratorOption != NarratorOption.CHAT && !string.isEmpty()) {
 			this.narrator.clear();
 			this.narrate(true, string);
 		}
+	}
+
+	private static NarratorOption method_20602() {
+		return MinecraftClient.getInstance().options.narrator;
 	}
 
 	private void narrate(boolean bl, String string) {
@@ -59,7 +63,7 @@ public class NarratorManager implements ClientChatListener {
 	}
 
 	public void addToast(NarratorOption narratorOption) {
-		this.narrator.clear();
+		this.clear();
 		this.narrator
 			.say(new TranslatableComponent("options.narrator").getString() + " : " + new TranslatableComponent(narratorOption.getTranslationKey()).getString(), true);
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
@@ -86,7 +90,9 @@ public class NarratorManager implements ClientChatListener {
 	}
 
 	public void clear() {
-		this.narrator.clear();
+		if (method_20602() != NarratorOption.OFF && this.narrator.active()) {
+			this.narrator.clear();
+		}
 	}
 
 	public void destroy() {

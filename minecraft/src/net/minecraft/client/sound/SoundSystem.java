@@ -119,9 +119,8 @@ public class SoundSystem {
 
 	public void stop(SoundInstance soundInstance) {
 		if (this.started) {
-			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.remove(soundInstance);
+			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(soundInstance);
 			if (sourceManager != null) {
-				this.soundEndTicks.remove(soundInstance);
 				sourceManager.run(Source::stop);
 			}
 		}
@@ -201,7 +200,7 @@ public class SoundSystem {
 					this.soundEndTicks.remove(soundInstance);
 
 					try {
-						this.sounds.remove(soundInstance.getCategory(), sourceManager2);
+						this.sounds.remove(soundInstance.getCategory(), soundInstance);
 					} catch (RuntimeException var9) {
 					}
 

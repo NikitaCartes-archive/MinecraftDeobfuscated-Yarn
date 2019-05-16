@@ -28,7 +28,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		.stream()
 		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.get(identifier).isBuffetScreenOption())
 		.collect(Collectors.toList());
-	private final CreateWorldScreen field_2437;
+	private final CreateWorldScreen parent;
 	private final CompoundTag generatorOptionsTag;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
 	private int biomeListLength;
@@ -36,7 +36,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	public CustomizeBuffetLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
 		super(new TranslatableComponent("createWorld.customize.buffet.title"));
-		this.field_2437 = createWorldScreen;
+		this.parent = createWorldScreen;
 		this.generatorOptionsTag = compoundTag;
 	}
 
@@ -69,11 +69,11 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.field_2437.generatorOptionsTag = this.getGeneratorTag();
-			this.minecraft.method_1507(this.field_2437);
+			this.parent.generatorOptionsTag = this.getGeneratorTag();
+			this.minecraft.openScreen(this.parent);
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.field_2437))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.initListSelectLogic();
 		this.refreshConfirmButton();

@@ -2,11 +2,13 @@ package net.minecraft.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.village.SimpleTrader;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.Trader;
@@ -107,6 +109,7 @@ public class MerchantContainer extends Container {
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
+				this.method_20595();
 			} else if (i != 0 && i != 1) {
 				if (i >= 3 && i < 30) {
 					if (!this.insertItem(itemStack2, 30, 39, false)) {
@@ -133,6 +136,13 @@ public class MerchantContainer extends Container {
 		}
 
 		return itemStack;
+	}
+
+	private void method_20595() {
+		if (!this.trader.getTraderWorld().isClient) {
+			Entity entity = (Entity)this.trader;
+			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.field_15254, 1.0F, 1.0F, false);
+		}
 	}
 
 	@Override
@@ -193,13 +203,13 @@ public class MerchantContainer extends Container {
 				if (!itemStack2.isEmpty() && this.equals(itemStack, itemStack2)) {
 					ItemStack itemStack3 = this.traderInventory.getInvStack(i);
 					int k = itemStack3.isEmpty() ? 0 : itemStack3.getAmount();
-					int l = Math.min(64 - k, itemStack2.getAmount());
+					int l = Math.min(itemStack.getMaxAmount() - k, itemStack2.getAmount());
 					ItemStack itemStack4 = itemStack2.copy();
 					int m = k + l;
 					itemStack2.subtractAmount(l);
 					itemStack4.setAmount(m);
 					this.traderInventory.setInvStack(i, itemStack4);
-					if (m >= 64) {
+					if (m >= itemStack.getMaxAmount()) {
 						break;
 					}
 				}

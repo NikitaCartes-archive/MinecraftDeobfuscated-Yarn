@@ -207,7 +207,9 @@ public class GrindstoneContainer extends Container {
 		itemStack2.setRepairCost(0);
 		if (itemStack2.getItem() == Items.field_8598 && map.size() == 0) {
 			itemStack2 = new ItemStack(Items.field_8529);
-			itemStack2.setDisplayName(itemStack.getDisplayName());
+			if (itemStack.hasDisplayName()) {
+				itemStack2.setDisplayName(itemStack.getDisplayName());
+			}
 		}
 
 		for (int k = 0; k < map.size(); k++) {

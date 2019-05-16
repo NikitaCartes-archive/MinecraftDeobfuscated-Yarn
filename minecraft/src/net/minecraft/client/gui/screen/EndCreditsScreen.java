@@ -61,7 +61,7 @@ public class EndCreditsScreen extends Screen {
 
 	private void respawn() {
 		this.respawn.run();
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override

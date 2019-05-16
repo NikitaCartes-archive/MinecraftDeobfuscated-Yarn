@@ -2,6 +2,7 @@ package net.minecraft.server.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -104,6 +106,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final File saveDir;
 	private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
+	private final Queue<Runnable> field_19343 = Queues.<Runnable>newConcurrentLinkedQueue();
 	private int watchDistance;
 	private int viewDistance;
 
@@ -336,6 +339,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
 			} while (mutableBoolean.isTrue());
 
+			this.method_20605(() -> true);
 			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.saveDir.getName());
 		} else {
 			this.chunkHolders.values().stream().filter(ChunkHolder::method_20384).forEach(chunkHolder -> {
@@ -354,21 +358,30 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.pointOfInterestStorage.tick(booleanSupplier);
 		profiler.swap("chunk_unload");
 		if (!this.world.isSavingDisabled()) {
-			LongIterator longIterator = this.unloadedChunks.iterator();
-
-			for (int i = 0; longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000); longIterator.remove()) {
-				long l = longIterator.nextLong();
-				ChunkHolder chunkHolder = this.currentChunkHolders.remove(l);
-				if (chunkHolder != null) {
-					this.field_18807.put(l, chunkHolder);
-					this.chunkHolderListDirty = true;
-					i++;
-					this.method_20458(l, chunkHolder);
-				}
-			}
+			this.method_20605(booleanSupplier);
 		}
 
 		profiler.pop();
+	}
+
+	private void method_20605(BooleanSupplier booleanSupplier) {
+		LongIterator longIterator = this.unloadedChunks.iterator();
+
+		for (int i = 0; longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000); longIterator.remove()) {
+			long l = longIterator.nextLong();
+			ChunkHolder chunkHolder = this.currentChunkHolders.remove(l);
+			if (chunkHolder != null) {
+				this.field_18807.put(l, chunkHolder);
+				this.chunkHolderListDirty = true;
+				i++;
+				this.method_20458(l, chunkHolder);
+			}
+		}
+
+		Runnable runnable;
+		while (booleanSupplier.getAsBoolean() && (runnable = (Runnable)this.field_19343.poll()) != null) {
+			runnable.run();
+		}
 	}
 
 	private void method_20458(long l, ChunkHolder chunkHolder) {
@@ -379,10 +392,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.method_20458(l, chunkHolder);
 			} else {
 				if (this.field_18807.remove(l, chunkHolder) && chunk != null) {
+					if (chunk instanceof WorldChunk) {
+						((WorldChunk)chunk).setLoadedToWorld(false);
+					}
+
 					this.save(chunk);
 					if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
 						WorldChunk worldChunk = (WorldChunk)chunk;
-						worldChunk.setLoadedToWorld(false);
 						this.world.unloadEntities(worldChunk);
 					}
 
@@ -391,7 +407,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
 				}
 			}
-		}, this.mainThreadExecutor);
+		}, this.field_19343::add).whenComplete((void_, throwable) -> {
+			if (throwable != null) {
+				LOGGER.error("Failed to save chunk " + chunkHolder.getPos(), throwable);
+			}
+		});
 	}
 
 	protected void updateHolderMap() {

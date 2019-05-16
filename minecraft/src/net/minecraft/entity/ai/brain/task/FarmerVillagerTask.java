@@ -19,6 +19,8 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
@@ -122,6 +124,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					}
 
 					if (bl) {
+						serverWorld.playSound(
+							null,
+							(double)this.field_18858.getX(),
+							(double)this.field_18858.getY(),
+							(double)this.field_18858.getZ(),
+							SoundEvents.field_17611,
+							SoundCategory.field_15245,
+							1.0F,
+							1.0F
+						);
 						itemStack.subtractAmount(1);
 						if (itemStack.isEmpty()) {
 							basicInventory.setInvStack(i, ItemStack.EMPTY);

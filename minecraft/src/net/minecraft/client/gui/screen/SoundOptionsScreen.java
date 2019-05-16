@@ -47,7 +47,7 @@ public class SoundOptionsScreen extends Screen {
 			)
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 

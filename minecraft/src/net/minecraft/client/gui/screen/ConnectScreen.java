@@ -29,14 +29,14 @@ public class ConnectScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ClientConnection connection;
 	private boolean field_2409;
-	private final Screen field_2412;
+	private final Screen parent;
 	private Component status = new TranslatableComponent("connect.connecting");
 	private long field_19097 = -1L;
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
 		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
-		this.field_2412 = screen;
+		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
 		minecraftClient.disconnect();
 		minecraftClient.setCurrentServerEntry(serverEntry);
@@ -46,7 +46,7 @@ public class ConnectScreen extends Screen {
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
 		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
-		this.field_2412 = screen;
+		this.parent = screen;
 		minecraftClient.disconnect();
 		this.method_2130(string, i);
 	}
@@ -67,7 +67,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.field_2412, component -> ConnectScreen.this.setStatus(component)
+								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, component -> ConnectScreen.this.setStatus(component)
 							)
 						);
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
@@ -81,9 +81,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.method_1507(
-										new DisconnectedScreen(ConnectScreen.this.field_2412, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host"))
-									)
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host")))
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.field_2409) {
@@ -95,7 +93,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.method_1507(new DisconnectedScreen(ConnectScreen.this.field_2412, "connect.failed", new TranslatableComponent("disconnect.genericReason", string)))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", string)))
 						);
 				}
 			}
@@ -132,7 +130,7 @@ public class ConnectScreen extends Screen {
 				this.connection.disconnect(new TranslatableComponent("connect.aborted"));
 			}
 
-			this.minecraft.method_1507(this.field_2412);
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 

@@ -180,7 +180,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		return i;
 	}
 
-	protected void setSection(long l, ChunkNibbleArray chunkNibbleArray) {
+	protected void setSection(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
 		this.lightStorage.scheduleToUpdate(l, chunkNibbleArray);
 	}
 
@@ -221,5 +221,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
 		this.lightStorage.updateAll();
 		this.lightStorage.method_15535(l, bl);
+	}
+
+	public void method_20599(ChunkPos chunkPos, boolean bl) {
+		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
+		this.lightStorage.method_20600(l, bl);
 	}
 }

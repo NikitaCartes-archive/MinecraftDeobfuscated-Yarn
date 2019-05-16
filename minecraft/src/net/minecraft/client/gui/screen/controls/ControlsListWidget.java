@@ -17,12 +17,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
-	private final ControlsOptionsScreen field_2735;
+	private final ControlsOptionsScreen gui;
 	private int field_2733;
 
 	public ControlsListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
 		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
-		this.field_2735 = controlsOptionsScreen;
+		this.gui = controlsOptionsScreen;
 		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
@@ -67,7 +67,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 			ControlsListWidget.this.minecraft
 				.textRenderer
-				.draw(this.name, (float)(ControlsListWidget.this.minecraft.field_1755.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
+				.draw(this.name, (float)(ControlsListWidget.this.minecraft.currentScreen.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
 		}
 
 		@Override
@@ -95,7 +95,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private KeyBindingEntry(KeyBinding keyBinding) {
 			this.binding = keyBinding;
 			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.field_2735.focusedBinding = keyBinding) {
+			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.gui.focusedBinding = keyBinding) {
 				@Override
 				protected String getNarrationMessage() {
 					return keyBinding.isNotBound()
@@ -116,7 +116,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-			boolean bl2 = ControlsListWidget.this.field_2735.focusedBinding == this.binding;
+			boolean bl2 = ControlsListWidget.this.gui.focusedBinding == this.binding;
 			ControlsListWidget.this.minecraft
 				.textRenderer
 				.draw(this.bindingName, (float)(k + 90 - ControlsListWidget.this.field_2733), (float)(j + m / 2 - 9 / 2), 16777215);

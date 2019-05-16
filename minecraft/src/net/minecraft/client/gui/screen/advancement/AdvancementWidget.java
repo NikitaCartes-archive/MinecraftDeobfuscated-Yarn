@@ -97,7 +97,7 @@ public class AdvancementWidget extends DrawableHelper {
 			advancement = advancement.getParent();
 		} while (advancement != null && advancement.getDisplay() == null);
 
-		return advancement != null && advancement.getDisplay() != null ? this.tree.method_2308(advancement) : null;
+		return advancement != null && advancement.getDisplay() != null ? this.tree.getWidgetForAdvancement(advancement) : null;
 	}
 
 	public void method_2323(int i, int j, boolean bl) {

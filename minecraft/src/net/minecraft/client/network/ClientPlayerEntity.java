@@ -295,7 +295,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void closeScreen() {
 		this.inventory.setCursorStack(ItemStack.EMPTY);
 		super.closeContainer();
-		this.client.method_1507(null);
+		this.client.openScreen(null);
 	}
 
 	public void updateHealth(float f) {
@@ -536,34 +536,34 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-		this.client.method_1507(new SignEditScreen(signBlockEntity));
+		this.client.openScreen(new SignEditScreen(signBlockEntity));
 	}
 
 	@Override
 	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
-		this.client.method_1507(new MinecartCommandBlockScreen(commandBlockExecutor));
+		this.client.openScreen(new MinecartCommandBlockScreen(commandBlockExecutor));
 	}
 
 	@Override
 	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		this.client.method_1507(new CommandBlockScreen(commandBlockBlockEntity));
+		this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
 	}
 
 	@Override
 	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-		this.client.method_1507(new StructureBlockScreen(structureBlockBlockEntity));
+		this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
 	}
 
 	@Override
 	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
-		this.client.method_1507(new JigsawBlockScreen(jigsawBlockEntity));
+		this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
 	}
 
 	@Override
 	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8674) {
-			this.client.method_1507(new BookEditScreen(this, itemStack, hand));
+			this.client.openScreen(new BookEditScreen(this, itemStack, hand));
 		}
 	}
 
@@ -777,12 +777,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
 		if (this.inPortal) {
-			if (this.client.field_1755 != null && !this.client.field_1755.isPauseScreen()) {
-				if (this.client.field_1755 instanceof AbstractContainerScreen) {
+			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
+				if (this.client.currentScreen instanceof AbstractContainerScreen) {
 					this.closeContainer();
 				}
 
-				this.client.method_1507(null);
+				this.client.openScreen(null);
 			}
 
 			if (this.nextNauseaStrength == 0.0F) {

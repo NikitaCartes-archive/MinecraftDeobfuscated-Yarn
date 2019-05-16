@@ -139,9 +139,10 @@ public interface Chunk extends BlockViewWithStructures {
 	}
 
 	@Nullable
-	default CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
-		throw new UnsupportedOperationException();
-	}
+	CompoundTag getBlockEntityTagAt(BlockPos blockPos);
+
+	@Nullable
+	CompoundTag method_20598(BlockPos blockPos);
 
 	default void setBiomeArray(Biome[] biomes) {
 		throw new UnsupportedOperationException();

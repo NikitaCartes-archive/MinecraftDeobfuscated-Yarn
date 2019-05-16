@@ -124,16 +124,18 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			Block block = blockState.getBlock();
 			if (block instanceof ColoredBlock) {
 				float[] fs = ((ColoredBlock)block).getColor().getColorComponents();
-				if (blockPos.getY() <= j + 1) {
+				if (this.field_19178.size() <= 1) {
 					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
 					this.field_19178.add(beamSegment);
-				} else if (Arrays.equals(fs, beamSegment.color)) {
-					beamSegment.increaseHeight();
-				} else {
-					beamSegment = new BeaconBlockEntity.BeamSegment(
-						new float[]{(beamSegment.color[0] + fs[0]) / 2.0F, (beamSegment.color[1] + fs[1]) / 2.0F, (beamSegment.color[2] + fs[2]) / 2.0F}
-					);
-					this.field_19178.add(beamSegment);
+				} else if (beamSegment != null) {
+					if (Arrays.equals(fs, beamSegment.color)) {
+						beamSegment.increaseHeight();
+					} else {
+						beamSegment = new BeaconBlockEntity.BeamSegment(
+							new float[]{(beamSegment.color[0] + fs[0]) / 2.0F, (beamSegment.color[1] + fs[1]) / 2.0F, (beamSegment.color[2] + fs[2]) / 2.0F}
+						);
+						this.field_19178.add(beamSegment);
+					}
 				}
 			} else {
 				if (beamSegment == null || blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.field_9987) {
@@ -149,26 +151,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			this.field_19179++;
 		}
 
-		if (this.field_19179 >= l) {
-			this.field_19179 = -1;
-			int m = this.level;
-			boolean bl = this.level > 0 && !this.beamSegments.isEmpty();
-			this.beamSegments = this.field_19178;
-			if (!this.world.isClient) {
-				if (m < this.level) {
-					for (ServerPlayerEntity serverPlayerEntity : this.world
-						.getEntities(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
-						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
-					}
-				}
-
-				boolean bl2 = this.level > 0 && !this.beamSegments.isEmpty();
-				if (bl != bl2) {
-					this.playSound(bl2 ? SoundEvents.field_14703 : SoundEvents.field_15176);
-				}
-			}
-		}
-
+		int m = this.level;
 		if (this.world.getTime() % 80L == 0L) {
 			if (!this.beamSegments.isEmpty()) {
 				this.updateLevel(i, j, k);
@@ -177,6 +160,23 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			if (this.level > 0 && !this.beamSegments.isEmpty()) {
 				this.applyPlayerEffects();
 				this.playSound(SoundEvents.field_15045);
+			}
+		}
+
+		if (this.field_19179 >= l) {
+			this.field_19179 = -1;
+			boolean bl = m > 0;
+			this.beamSegments = this.field_19178;
+			if (!this.world.isClient) {
+				boolean bl2 = this.level > 0;
+				if (!bl && bl2) {
+					this.playSound(SoundEvents.field_14703);
+
+					for (ServerPlayerEntity serverPlayerEntity : this.world
+						.getEntities(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
+						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+					}
+				}
 			}
 		}
 	}
@@ -206,6 +206,12 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void invalidate() {
+		this.playSound(SoundEvents.field_19344);
+		super.invalidate();
 	}
 
 	private void applyPlayerEffects() {

@@ -266,6 +266,10 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public void baseTick() {
 		this.lastHandSwingProgress = this.handSwingProgress;
+		if (this.field_5953) {
+			this.getSleepingPosition().ifPresent(this::setPositionInBed);
+		}
+
 		super.baseTick();
 		this.world.getProfiler().push("livingEntityBaseTick");
 		boolean bl = this instanceof PlayerEntity;
@@ -586,8 +590,10 @@ public abstract class LivingEntity extends Entity {
 		if (compoundTag.containsKey("SleepingX", 99) && compoundTag.containsKey("SleepingY", 99) && compoundTag.containsKey("SleepingZ", 99)) {
 			BlockPos blockPos = new BlockPos(compoundTag.getInt("SleepingX"), compoundTag.getInt("SleepingY"), compoundTag.getInt("SleepingZ"));
 			this.setSleepingPosition(blockPos);
-			this.setPositionInBed(blockPos);
 			this.dataTracker.set(POSE, EntityPose.field_18078);
+			if (!this.field_5953) {
+				this.setPositionInBed(blockPos);
+			}
 		}
 
 		if (compoundTag.containsKey("Brain", 10)) {

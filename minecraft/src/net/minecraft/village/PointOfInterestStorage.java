@@ -133,7 +133,13 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	private boolean isOccupied(long l) {
-		return this.get(PointOfInterestType.ALWAYS_TRUE, l, PointOfInterestStorage.OccupationStatus.field_18488).count() > 0L;
+		Optional<PointOfInterestSet> optional = this.getIfLoaded(l);
+		return optional == null
+			? false
+			: (Boolean)optional.map(
+					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.field_18488).count() > 0L
+				)
+				.orElse(false);
 	}
 
 	@Override

@@ -286,9 +286,9 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			ParentElement parentElement = this.client.field_1755;
+			ParentElement parentElement = this.client.currentScreen;
 			if (k == 1
-				&& (!(this.client.field_1755 instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= SystemUtil.getMeasuringTimeMs() - 20L)) {
+				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= SystemUtil.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(i, j)) {
 					this.client.window.toggleFullscreen();
 					this.client.options.fullscreen = this.client.window.isFullscreen();
@@ -340,7 +340,7 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.field_1755 == null || this.client.field_1755.passEvents) {
+			if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
 				InputUtil.KeyCode keyCode = InputUtil.getKeyCode(i, j);
 				if (k == 0) {
 					KeyBinding.setKeyPressed(keyCode, false);
@@ -359,7 +359,7 @@ public class Keyboard {
 					}
 
 					boolean bl2 = false;
-					if (this.client.field_1755 == null) {
+					if (this.client.currentScreen == null) {
 						if (i == 256) {
 							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292);
 							this.client.openPauseMenu(bl3);
@@ -397,8 +397,8 @@ public class Keyboard {
 
 	private void onChar(long l, int i, int j) {
 		if (l == this.client.window.getHandle()) {
-			Element element = this.client.field_1755;
-			if (element != null && this.client.method_18506() == null) {
+			Element element = this.client.currentScreen;
+			if (element != null && this.client.getOverlay() == null) {
 				if (Character.charCount(i) == 1) {
 					Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
 				} else {

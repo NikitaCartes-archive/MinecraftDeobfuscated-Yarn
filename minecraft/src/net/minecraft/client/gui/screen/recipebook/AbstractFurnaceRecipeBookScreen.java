@@ -48,7 +48,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookScreen {
 	protected void setOpen(boolean bl) {
 		this.setGuiOpen(bl);
 		if (!bl) {
-			this.field_3086.hideAlternates();
+			this.recipesArea.hideAlternates();
 		}
 
 		this.sendBookDataPacket();

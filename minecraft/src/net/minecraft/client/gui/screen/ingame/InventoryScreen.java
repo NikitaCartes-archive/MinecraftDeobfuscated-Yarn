@@ -23,7 +23,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
 	private float mouseX;
 	private float mouseY;
-	private final RecipeBookScreen field_2929 = new RecipeBookScreen();
+	private final RecipeBookScreen recipeBook = new RecipeBookScreen();
 	private boolean isOpen;
 	private boolean isNarrow;
 	private boolean isMouseDown;
@@ -36,28 +36,28 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	@Override
 	public void tick() {
 		if (this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.method_1507(new CreativeInventoryScreen(this.minecraft.player));
+			this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
 		} else {
-			this.field_2929.update();
+			this.recipeBook.update();
 		}
 	}
 
 	@Override
 	protected void init() {
 		if (this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.method_1507(new CreativeInventoryScreen(this.minecraft.player));
+			this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
 		} else {
 			super.init();
 			this.isNarrow = this.width < 379;
-			this.field_2929.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
+			this.recipeBook.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
 			this.isOpen = true;
-			this.left = this.field_2929.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
-			this.children.add(this.field_2929);
-			this.setInitialFocus(this.field_2929);
+			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			this.children.add(this.recipeBook);
+			this.setInitialFocus(this.recipeBook);
 			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
-				this.field_2929.reset(this.isNarrow);
-				this.field_2929.toggleOpen();
-				this.left = this.field_2929.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+				this.recipeBook.reset(this.isNarrow);
+				this.recipeBook.toggleOpen();
+				this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 				((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 104, this.height / 2 - 22);
 				this.isMouseDown = true;
 			}));
@@ -72,21 +72,21 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.offsetGuiForEffects = !this.field_2929.isOpen();
-		if (this.field_2929.isOpen() && this.isNarrow) {
+		this.offsetGuiForEffects = !this.recipeBook.isOpen();
+		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.field_2929.render(i, j, f);
+			this.recipeBook.render(i, j, f);
 		} else {
-			this.field_2929.render(i, j, f);
+			this.recipeBook.render(i, j, f);
 			super.render(i, j, f);
-			this.field_2929.drawGhostSlots(this.left, this.top, false, f);
+			this.recipeBook.drawGhostSlots(this.left, this.top, false, f);
 		}
 
 		this.drawMouseoverTooltip(i, j);
-		this.field_2929.drawTooltip(this.left, this.top, i, j);
+		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
-		this.focusOn(this.field_2929);
+		this.focusOn(this.recipeBook);
 	}
 
 	@Override
@@ -140,15 +140,15 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	@Override
 	protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-		return (!this.isNarrow || !this.field_2929.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
+		return (!this.isNarrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.field_2929.mouseClicked(d, e, i)) {
+		if (this.recipeBook.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			return this.isNarrow && this.field_2929.isOpen() ? false : super.mouseClicked(d, e, i);
+			return this.isNarrow && this.recipeBook.isOpen() ? false : super.mouseClicked(d, e, i);
 		}
 	}
 
@@ -165,24 +165,24 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
 		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.field_2929.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
 	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
 		super.onMouseClick(slot, i, j, slotActionType);
-		this.field_2929.slotClicked(slot);
+		this.recipeBook.slotClicked(slot);
 	}
 
 	@Override
 	public void refreshRecipeBook() {
-		this.field_2929.refresh();
+		this.recipeBook.refresh();
 	}
 
 	@Override
 	public void removed() {
 		if (this.isOpen) {
-			this.field_2929.close();
+			this.recipeBook.close();
 		}
 
 		super.removed();
@@ -190,6 +190,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	@Override
 	public RecipeBookScreen getRecipeBookGui() {
-		return this.field_2929;
+		return this.recipeBook;
 	}
 }

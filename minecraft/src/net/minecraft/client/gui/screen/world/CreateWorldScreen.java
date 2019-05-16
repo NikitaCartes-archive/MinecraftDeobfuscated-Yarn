@@ -143,11 +143,11 @@ public class CreateWorldScreen extends Screen {
 		this.buttonMapTypeSwitch.visible = false;
 		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
-				this.minecraft.method_1507(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
+				this.minecraft.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
 			}
 
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
-				this.minecraft.method_1507(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
+				this.minecraft.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
 			}
 		}));
 		this.buttonCustomizeType.visible = false;
@@ -171,7 +171,7 @@ public class CreateWorldScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.method_2710(this.field_3202);
 		this.setInitialFocus(this.textFieldLevelName);
@@ -217,7 +217,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void createLevel() {
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 		if (!this.isCreatingLevel) {
 			this.isCreatingLevel = true;
 			long l = new Random().nextLong();

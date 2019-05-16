@@ -540,7 +540,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				}
 
 				this.client.getProfiler().swap("gui");
-				if (!this.client.options.hudHidden || this.client.field_1755 != null) {
+				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					GlStateManager.alphaFunc(516, 0.1F);
 					this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 					this.renderFloatingItem(this.client.window.getScaledWidth(), this.client.window.getScaledHeight(), f);
@@ -557,26 +557,26 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
-			if (this.client.field_18175 != null) {
+			if (this.client.overlay != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.field_18175.render(i, j, this.client.getLastFrameDuration());
+					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
-					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.field_18175.getClass().getCanonicalName()));
+					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
-			} else if (this.client.field_1755 != null) {
+			} else if (this.client.currentScreen != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.field_1755.render(i, j, this.client.getLastFrameDuration());
+					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
-					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.field_1755.getClass().getCanonicalName()));
+					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
 						"Mouse location",
 						(CrashCallable<String>)(() -> String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.client.mouse.getX(), this.client.mouse.getY()))

@@ -9,6 +9,7 @@ import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 
 public interface Trader {
@@ -33,6 +34,8 @@ public interface Trader {
 	void setExperienceFromServer(int i);
 
 	boolean isLevelledTrader();
+
+	SoundEvent method_18010();
 
 	default void sendOffers(PlayerEntity playerEntity, Component component, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(

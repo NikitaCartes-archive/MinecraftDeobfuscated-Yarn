@@ -85,7 +85,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.minecraft.method_1507(new FatalErrorScreen(new TranslatableComponent("selectWorld.unable_to_load"), var7.getMessage()));
+				this.minecraft.openScreen(new FatalErrorScreen(new TranslatableComponent("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -290,7 +290,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					component2 = new TranslatableComponent("selectWorld.backupWarning.customized");
 				}
 
-				this.client.method_1507(new BackupPromptScreen(this.screen, (bl, bl2) -> {
+				this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
 					if (bl) {
 						String string = this.level.getName();
 						EditWorldScreen.backupLevel(this.client.getLevelStorage(), string);
@@ -300,7 +300,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				}, component, component2, false));
 			} else if (this.level.isFutureLevel()) {
 				this.client
-					.method_1507(
+					.openScreen(
 						new ConfirmScreen(
 							bl -> {
 								if (bl) {
@@ -309,16 +309,16 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 									} catch (Exception var3) {
 										WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
 										this.client
-											.method_1507(
+											.openScreen(
 												new NoticeScreen(
-													() -> this.client.method_1507(this.screen),
+													() -> this.client.openScreen(this.screen),
 													new TranslatableComponent("selectWorld.futureworld.error.title"),
 													new TranslatableComponent("selectWorld.futureworld.error.text")
 												)
 											);
 									}
 								} else {
-									this.client.method_1507(this.screen);
+									this.client.openScreen(this.screen);
 								}
 							},
 							new TranslatableComponent("selectWorld.versionQuestion"),
@@ -334,17 +334,17 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		public void delete() {
 			this.client
-				.method_1507(
+				.openScreen(
 					new ConfirmScreen(
 						bl -> {
 							if (bl) {
-								this.client.method_1507(new ProgressScreen());
+								this.client.openScreen(new ProgressScreen());
 								LevelStorage levelStorage = this.client.getLevelStorage();
 								levelStorage.deleteLevel(this.level.getName());
 								WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 							}
 
-							this.client.method_1507(this.screen);
+							this.client.openScreen(this.screen);
 						},
 						new TranslatableComponent("selectWorld.deleteQuestion"),
 						new TranslatableComponent("selectWorld.deleteWarning", this.level.getDisplayName()),
@@ -355,18 +355,18 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void edit() {
-			this.client.method_1507(new EditWorldScreen(bl -> {
+			this.client.openScreen(new EditWorldScreen(bl -> {
 				if (bl) {
 					WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 				}
 
-				this.client.method_1507(this.screen);
+				this.client.openScreen(this.screen);
 			}, this.level.getName()));
 		}
 
 		public void recreate() {
 			try {
-				this.client.method_1507(new ProgressScreen());
+				this.client.openScreen(new ProgressScreen());
 				CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
 				WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().createSaveHandler(this.level.getName(), null);
 				LevelProperties levelProperties = worldSaveHandler.readProperties();
@@ -374,9 +374,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					createWorldScreen.recreateLevel(levelProperties);
 					if (this.level.isLegacyCustomizedWorld()) {
 						this.client
-							.method_1507(
+							.openScreen(
 								new ConfirmScreen(
-									bl -> this.client.method_1507((Screen)(bl ? createWorldScreen : this.screen)),
+									bl -> this.client.openScreen((Screen)(bl ? createWorldScreen : this.screen)),
 									new TranslatableComponent("selectWorld.recreate.customized.title"),
 									new TranslatableComponent("selectWorld.recreate.customized.text"),
 									I18n.translate("gui.proceed"),
@@ -384,15 +384,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								)
 							);
 					} else {
-						this.client.method_1507(createWorldScreen);
+						this.client.openScreen(createWorldScreen);
 					}
 				}
 			} catch (Exception var4) {
 				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var4);
 				this.client
-					.method_1507(
+					.openScreen(
 						new NoticeScreen(
-							() -> this.client.method_1507(this.screen),
+							() -> this.client.openScreen(this.screen),
 							new TranslatableComponent("selectWorld.recreate.error.title"),
 							new TranslatableComponent("selectWorld.recreate.error.text")
 						)

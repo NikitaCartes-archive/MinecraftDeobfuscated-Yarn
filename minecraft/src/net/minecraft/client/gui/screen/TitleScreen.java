@@ -134,7 +134,7 @@ public class TitleScreen extends Screen {
 				ButtonWidget.WIDGETS_LOCATION,
 				256,
 				256,
-				buttonWidget -> this.minecraft.method_1507(new LanguageOptionsScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())),
+				buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())),
 				I18n.translate("narrator.button.language")
 			)
 		);
@@ -145,7 +145,7 @@ public class TitleScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.options"),
-				buttonWidget -> this.minecraft.method_1507(new SettingsScreen(this, this.minecraft.options))
+				buttonWidget -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit"), buttonWidget -> this.minecraft.scheduleStop()));
@@ -161,7 +161,7 @@ public class TitleScreen extends Screen {
 				field_19102,
 				32,
 				64,
-				buttonWidget -> this.minecraft.method_1507(new AccessibilityScreen(this, this.minecraft.options)),
+				buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.minecraft.options)),
 				I18n.translate("narrator.button.accessibility")
 			)
 		);
@@ -190,12 +190,12 @@ public class TitleScreen extends Screen {
 	private void initWidgetsNormal(int i, int j) {
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, i, 200, 20, I18n.translate("menu.singleplayer"), buttonWidget -> this.minecraft.method_1507(new SelectWorldScreen(this))
+				this.width / 2 - 100, i, 200, 20, I18n.translate("menu.singleplayer"), buttonWidget -> this.minecraft.openScreen(new SelectWorldScreen(this))
 			)
 		);
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, i + j * 1, 200, 20, I18n.translate("menu.multiplayer"), buttonWidget -> this.minecraft.method_1507(new MultiplayerScreen(this))
+				this.width / 2 - 100, i + j * 1, 200, 20, I18n.translate("menu.multiplayer"), buttonWidget -> this.minecraft.openScreen(new MultiplayerScreen(this))
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, i + j * 2, 200, 20, I18n.translate("menu.online"), buttonWidget -> this.switchToRealms()));
@@ -224,7 +224,7 @@ public class TitleScreen extends Screen {
 					LevelProperties levelPropertiesx = levelStoragex.getLevelProperties("Demo_World");
 					if (levelPropertiesx != null) {
 						this.minecraft
-							.method_1507(
+							.openScreen(
 								new ConfirmScreen(
 									this::method_20375,
 									new TranslatableComponent("selectWorld.deleteQuestion"),
@@ -342,9 +342,9 @@ public class TitleScreen extends Screen {
 							SystemUtil.getOperatingSystem().open(this.warningLink);
 						}
 
-						this.minecraft.method_1507(this);
+						this.minecraft.openScreen(this);
 					}, this.warningLink, true);
-					this.minecraft.method_1507(confirmChatLinkScreen);
+					this.minecraft.openScreen(confirmChatLinkScreen);
 					return true;
 				}
 			}
@@ -356,7 +356,7 @@ public class TitleScreen extends Screen {
 					&& d < (double)(this.copyrightTextX + this.copyrightTextWidth)
 					&& e > (double)(this.height - 10)
 					&& e < (double)this.height) {
-					this.minecraft.method_1507(new EndCreditsScreen(false, Runnables.doNothing()));
+					this.minecraft.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
 				}
 
 				return false;
@@ -377,6 +377,6 @@ public class TitleScreen extends Screen {
 			levelStorage.deleteLevel("Demo_World");
 		}
 
-		this.minecraft.method_1507(this);
+		this.minecraft.openScreen(this);
 	}
 }

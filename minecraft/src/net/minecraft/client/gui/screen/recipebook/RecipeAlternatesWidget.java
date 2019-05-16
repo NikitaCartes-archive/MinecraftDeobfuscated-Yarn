@@ -30,14 +30,14 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 	private int buttonX;
 	private int buttonY;
 	private MinecraftClient client;
-	private RecipeResultCollection field_3111;
+	private RecipeResultCollection resultCollection;
 	private Recipe<?> lastClickedRecipe;
 	private float time;
 	private boolean furnace;
 
-	public void method_2617(MinecraftClient minecraftClient, RecipeResultCollection recipeResultCollection, int i, int j, int k, int l, float f) {
+	public void showAlternatesForResult(MinecraftClient minecraftClient, RecipeResultCollection recipeResultCollection, int i, int j, int k, int l, float f) {
 		this.client = minecraftClient;
-		this.field_3111 = recipeResultCollection;
+		this.resultCollection = recipeResultCollection;
 		if (minecraftClient.player.container instanceof AbstractFurnaceContainer) {
 			this.furnace = true;
 		}
@@ -93,8 +93,8 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		return false;
 	}
 
-	public RecipeResultCollection method_2614() {
-		return this.field_3111;
+	public RecipeResultCollection getResults() {
+		return this.resultCollection;
 	}
 
 	public Recipe<?> getLastClickedRecipe() {

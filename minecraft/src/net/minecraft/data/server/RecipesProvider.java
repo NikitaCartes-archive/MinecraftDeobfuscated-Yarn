@@ -4514,8 +4514,8 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_leggings", this.method_10426(Items.field_8218))
 			.criterion("has_chainmail_boots", this.method_10426(Items.field_8313))
 			.offerTo(consumer, "iron_nugget_from_blasting");
-		this.method_17585(consumer, "smoking", RecipeSerializer.field_17085, 100);
-		this.method_17585(consumer, "campfire_cooking", RecipeSerializer.field_17347, 600);
+		this.method_17585(consumer, "smoking", RecipeSerializer.SMOKING, 100);
+		this.method_17585(consumer, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10454, 2)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_slab_from_stone_stonecutting");

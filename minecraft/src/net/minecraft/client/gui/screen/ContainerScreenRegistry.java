@@ -109,7 +109,7 @@ public class ContainerScreenRegistry {
 		default void openScreen(Component component, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
 			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, component);
 			minecraftClient.player.container = screen.getContainer();
-			minecraftClient.method_1507(screen);
+			minecraftClient.openScreen(screen);
 		}
 
 		U create(T container, PlayerInventory playerInventory, Component component);

@@ -40,8 +40,8 @@ public class BookEditScreen extends Screen {
 	private int highlightTo;
 	private long lastClickTime;
 	private int lastClickIndex = -1;
-	private PageTurnWidget field_2843;
-	private PageTurnWidget field_2839;
+	private PageTurnWidget buttonPreviousPage;
+	private PageTurnWidget buttonNextPage;
 	private ButtonWidget buttonDone;
 	private ButtonWidget buttonSign;
 	private ButtonWidget buttonFinalize;
@@ -85,13 +85,13 @@ public class BookEditScreen extends Screen {
 			this.updateButtons();
 		}));
 		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 			this.finalizeBook(false);
 		}));
 		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
 			if (this.signing) {
 				this.finalizeBook(true);
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 			}
 		}));
 		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
@@ -103,8 +103,8 @@ public class BookEditScreen extends Screen {
 		}));
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.field_2843 = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
-		this.field_2839 = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
+		this.buttonPreviousPage = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
+		this.buttonNextPage = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
 		this.updateButtons();
 	}
 
@@ -154,8 +154,8 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void updateButtons() {
-		this.field_2839.visible = !this.signing && this.currentPage > 0;
-		this.field_2843.visible = !this.signing;
+		this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
+		this.buttonPreviousPage.visible = !this.signing;
 		this.buttonDone.visible = !this.signing;
 		this.buttonSign.visible = !this.signing;
 		this.buttonCancel.visible = this.signing;
@@ -268,10 +268,10 @@ public class BookEditScreen extends Screen {
 					this.applyUpArrowKey(string);
 					return true;
 				case 266:
-					this.field_2839.onPress();
+					this.buttonNextPage.onPress();
 					return true;
 				case 267:
-					this.field_2843.onPress();
+					this.buttonPreviousPage.onPress();
 					return true;
 				case 268:
 					this.moveCursorToTop(string);
@@ -416,7 +416,7 @@ public class BookEditScreen extends Screen {
 			case 335:
 				if (!this.title.isEmpty()) {
 					this.finalizeBook(true);
-					this.minecraft.method_1507(null);
+					this.minecraft.openScreen(null);
 				}
 
 				return true;

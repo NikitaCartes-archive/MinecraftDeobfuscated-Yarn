@@ -148,7 +148,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		@Override
 		public boolean mouseClicked(double d, double e, int i) {
-			this.screen.method_2531(this);
+			this.screen.selectEntry(this);
 			if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
 				this.screen.connect();
 			}
@@ -353,20 +353,20 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			double g = e - (double)MultiplayerServerListWidget.this.getRowTop(MultiplayerServerListWidget.this.children().indexOf(this));
 			if (f <= 32.0) {
 				if (f < 32.0 && f > 16.0 && this.method_20136()) {
-					this.screen.method_2531(this);
+					this.screen.selectEntry(this);
 					this.screen.connect();
 					return true;
 				}
 
-				int j = this.screen.field_3043.children().indexOf(this);
+				int j = this.screen.serverListWidget.children().indexOf(this);
 				if (f < 16.0 && g < 16.0 && j > 0) {
 					int k = Screen.hasShiftDown() ? 0 : j - 1;
 					this.screen.getServerList().swapEntries(j, k);
-					if (this.screen.field_3043.getSelected() == this) {
-						this.screen.method_2531(this);
+					if (this.screen.serverListWidget.getSelected() == this) {
+						this.screen.selectEntry(this);
 					}
 
-					this.screen.field_3043.method_20125(this.screen.getServerList());
+					this.screen.serverListWidget.method_20125(this.screen.getServerList());
 					return true;
 				}
 
@@ -374,16 +374,16 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					ServerList serverList = this.screen.getServerList();
 					int l = Screen.hasShiftDown() ? serverList.size() - 1 : j + 1;
 					serverList.swapEntries(j, l);
-					if (this.screen.field_3043.getSelected() == this) {
-						this.screen.method_2531(this);
+					if (this.screen.serverListWidget.getSelected() == this) {
+						this.screen.selectEntry(this);
 					}
 
-					this.screen.field_3043.method_20125(serverList);
+					this.screen.serverListWidget.method_20125(serverList);
 					return true;
 				}
 			}
 
-			this.screen.method_2531(this);
+			this.screen.selectEntry(this);
 			if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
 				this.screen.connect();
 			}
@@ -408,7 +408,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				.textRenderer
 				.draw(
 					I18n.translate("lanServer.scanning"),
-					(float)(this.field_19112.field_1755.width / 2 - this.field_19112.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
+					(float)(this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
 					(float)p,
 					16777215
 				);
@@ -428,7 +428,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 			this.field_19112
 				.textRenderer
-				.draw(string, (float)(this.field_19112.field_1755.width / 2 - this.field_19112.textRenderer.getStringWidth(string) / 2), (float)(p + 9), 8421504);
+				.draw(string, (float)(this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(string) / 2), (float)(p + 9), 8421504);
 		}
 	}
 }

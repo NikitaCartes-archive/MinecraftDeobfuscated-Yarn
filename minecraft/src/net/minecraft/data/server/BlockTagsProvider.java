@@ -256,7 +256,9 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.field_10016,
 				Blocks.field_10478,
 				Blocks.field_10322,
-				Blocks.field_10507
+				Blocks.field_10507,
+				Blocks.field_18890,
+				Blocks.field_18891
 			);
 		this.method_10512(BlockTags.field_15504)
 			.add(

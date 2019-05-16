@@ -18,7 +18,7 @@ public class FatalErrorScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(null)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(null)));
 	}
 
 	@Override

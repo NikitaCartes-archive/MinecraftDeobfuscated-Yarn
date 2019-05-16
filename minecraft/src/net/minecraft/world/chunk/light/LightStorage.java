@@ -30,6 +30,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 	protected final LongSet field_15802 = new LongOpenHashSet();
 	protected final LongSet toNotify = new LongOpenHashSet();
 	protected final Long2ObjectMap<ChunkNibbleArray> toUpdate = new Long2ObjectOpenHashMap<>();
+	private final LongSet field_19342 = new LongOpenHashSet();
 	private final LongSet toRemove = new LongOpenHashSet();
 	protected volatile boolean hasLightUpdates;
 
@@ -185,9 +186,16 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 
 			while (objectIterator.hasNext()) {
 				long l = (Long)objectIterator.next();
-				this.toUpdate.remove(l);
 				this.removeChunkData(chunkLightProvider, l);
-				this.dataStorage.removeChunk(l);
+				ChunkNibbleArray chunkNibbleArray = this.toUpdate.remove(l);
+				ChunkNibbleArray chunkNibbleArray2 = this.dataStorage.removeChunk(l);
+				if (this.field_19342.contains(ChunkSectionPos.toLightStorageIndex(l))) {
+					if (chunkNibbleArray != null) {
+						this.toUpdate.put(l, chunkNibbleArray);
+					} else if (chunkNibbleArray2 != null) {
+						this.toUpdate.put(l, chunkNibbleArray2);
+					}
+				}
 			}
 
 			this.dataStorage.clearCache();
@@ -204,10 +212,10 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 			for (Entry<ChunkNibbleArray> entry : this.toUpdate.long2ObjectEntrySet()) {
 				long m = entry.getLongKey();
 				if (this.hasChunk(m)) {
-					ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)entry.getValue();
-					if (this.dataStorage.getDataForChunk(m) != chunkNibbleArray) {
+					ChunkNibbleArray chunkNibbleArray2 = (ChunkNibbleArray)entry.getValue();
+					if (this.dataStorage.getDataForChunk(m) != chunkNibbleArray2) {
 						this.removeChunkData(chunkLightProvider, m);
-						this.dataStorage.addForChunk(m, chunkNibbleArray);
+						this.dataStorage.addForChunk(m, chunkNibbleArray2);
 						this.field_15802.add(m);
 					}
 				}
@@ -288,8 +296,20 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 	protected void method_15535(long l, boolean bl) {
 	}
 
-	protected void scheduleToUpdate(long l, ChunkNibbleArray chunkNibbleArray) {
-		this.toUpdate.put(l, chunkNibbleArray);
+	public void method_20600(long l, boolean bl) {
+		if (bl) {
+			this.field_19342.add(l);
+		} else {
+			this.field_19342.remove(l);
+		}
+	}
+
+	protected void scheduleToUpdate(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
+		if (chunkNibbleArray != null) {
+			this.toUpdate.put(l, chunkNibbleArray);
+		} else {
+			this.toUpdate.remove(l);
+		}
 	}
 
 	protected void scheduleChunkLightUpdate(long l, boolean bl) {

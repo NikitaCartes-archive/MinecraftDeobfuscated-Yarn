@@ -21,7 +21,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
 	private CraftingContainer<?> craftingContainer;
 	private RecipeBook recipeBook;
-	private RecipeResultCollection field_3142;
+	private RecipeResultCollection results;
 	private float time;
 	private float bounce;
 	private int currentResultIndex;
@@ -30,8 +30,8 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		super(0, 0, 25, 25, "");
 	}
 
-	public void method_2640(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
-		this.field_3142 = recipeResultCollection;
+	public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
+		this.results = recipeResultCollection;
 		this.craftingContainer = (CraftingContainer<?>)recipeBookResults.getMinecraftClient().player.container;
 		this.recipeBook = recipeBookResults.getRecipeBook();
 		List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer));
@@ -45,8 +45,8 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		}
 	}
 
-	public RecipeResultCollection method_2645() {
-		return this.field_3142;
+	public RecipeResultCollection getResultCollection() {
+		return this.results;
 	}
 
 	public void setPos(int i, int j) {
@@ -65,12 +65,12 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		minecraftClient.getTextureManager().bindTexture(BG_TEX);
 		GlStateManager.disableLighting();
 		int k = 29;
-		if (!this.field_3142.hasCraftableResults()) {
+		if (!this.results.hasCraftableResults()) {
 			k += 25;
 		}
 
 		int l = 206;
-		if (this.field_3142.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
+		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
 			l += 25;
 		}
 
@@ -89,7 +89,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
 		int m = 4;
-		if (this.field_3142.method_2656() && this.getResults().size() > 1) {
+		if (this.results.method_2656() && this.getResults().size() > 1) {
 			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
 			m--;
 		}
@@ -104,9 +104,9 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	}
 
 	private List<Recipe<?>> getResults() {
-		List<Recipe<?>> list = this.field_3142.getResultsExclusive(true);
+		List<Recipe<?>> list = this.results.getResultsExclusive(true);
 		if (!this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-			list.addAll(this.field_3142.getResultsExclusive(false));
+			list.addAll(this.results.getResultsExclusive(false));
 		}
 
 		return list;
@@ -124,7 +124,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	public List<String> method_2644(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
 		List<String> list = screen.getTooltipFromItem(itemStack);
-		if (this.field_3142.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
+		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
 			list.add(I18n.translate("gui.recipebook.moreRecipes"));
 		}
 

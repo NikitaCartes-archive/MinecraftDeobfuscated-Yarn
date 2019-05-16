@@ -80,12 +80,12 @@ public class EditWorldScreen extends Screen {
 				200,
 				20,
 				I18n.translate("selectWorld.edit.optimize"),
-				buttonWidgetx -> this.minecraft.method_1507(new BackupPromptScreen(this, (bl, bl2) -> {
+				buttonWidgetx -> this.minecraft.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
 						if (bl) {
 							backupLevel(this.minecraft.getLevelStorage(), this.levelName);
 						}
 
-						this.minecraft.method_1507(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
+						this.minecraft.openScreen(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
 					}, new TranslatableComponent("optimizeWorld.confirm.title"), new TranslatableComponent("optimizeWorld.confirm.description"), true))
 			)
 		);

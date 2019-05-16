@@ -227,7 +227,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public boolean isChatFocused() {
-		return this.client.field_1755 instanceof ChatScreen;
+		return this.client.currentScreen instanceof ChatScreen;
 	}
 
 	public void removeMessage(int i) {

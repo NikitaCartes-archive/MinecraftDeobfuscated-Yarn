@@ -26,7 +26,7 @@ public class DemoScreen extends Screen {
 			SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later"), buttonWidget -> {
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 			this.minecraft.mouse.lockCursor();
 		}));
 	}

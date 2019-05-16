@@ -104,7 +104,6 @@ public class WanderingTraderManager {
 			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
-				traderLlamaEntity.setDespawnDelay(47999);
 			}
 		}
 	}

@@ -52,7 +52,7 @@ public class SoundEvents {
 	public static final SoundEvent field_14610 = register("entity.bat.takeoff");
 	public static final SoundEvent field_14703 = register("block.beacon.activate");
 	public static final SoundEvent field_15045 = register("block.beacon.ambient");
-	public static final SoundEvent field_15176 = register("block.beacon.deactivate");
+	public static final SoundEvent field_19344 = register("block.beacon.deactivate");
 	public static final SoundEvent field_14891 = register("block.beacon.power_select");
 	public static final SoundEvent field_17265 = register("block.bell.use");
 	public static final SoundEvent field_19167 = register("block.bell.resonate");

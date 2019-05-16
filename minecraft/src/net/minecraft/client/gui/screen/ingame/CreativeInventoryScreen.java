@@ -73,7 +73,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public void tick() {
 		if (!this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.method_1507(new InventoryScreen(this.minecraft.player));
+			this.minecraft.openScreen(new InventoryScreen(this.minecraft.player));
 		} else if (this.searchBox != null) {
 			this.searchBox.tick();
 		}
@@ -246,7 +246,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.field_2891 = new CreativeInventoryListener(this.minecraft);
 			this.minecraft.player.playerContainer.addListener(this.field_2891);
 		} else {
-			this.minecraft.method_1507(new InventoryScreen(this.minecraft.player));
+			this.minecraft.openScreen(new InventoryScreen(this.minecraft.player));
 		}
 	}
 

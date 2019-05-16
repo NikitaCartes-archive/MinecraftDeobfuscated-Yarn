@@ -84,7 +84,7 @@ public class Realms {
 	}
 
 	public static void setScreenDirect(RealmsScreen realmsScreen) {
-		MinecraftClient.getInstance().method_1507(realmsScreen.getProxy());
+		MinecraftClient.getInstance().openScreen(realmsScreen.getProxy());
 	}
 
 	public static String getGameDirectoryPath() {
@@ -124,7 +124,7 @@ public class Realms {
 	}
 
 	public static boolean inTitleScreen() {
-		return MinecraftClient.getInstance().field_1755 != null && MinecraftClient.getInstance().field_1755 instanceof TitleScreen;
+		return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof TitleScreen;
 	}
 
 	public static void deletePlayerTag(File file) {

@@ -103,9 +103,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onDisconnected(Component component) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
-			this.client.method_1507(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", component).getProxy());
+			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", component).getProxy());
 		} else {
-			this.client.method_1507(new DisconnectedScreen(this.parentGui, "connect.failed", component));
+			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", component));
 		}
 	}
 

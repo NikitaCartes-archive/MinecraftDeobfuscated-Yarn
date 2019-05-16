@@ -212,17 +212,26 @@ public class DebugHud extends DrawableHelper {
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
-				this.client.world.getChunkProviderStatus(),
-				DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()),
-				"",
+				this.client.world.getChunkProviderStatus()
+			);
+			String string3 = this.method_20603();
+			if (string3 != null) {
+				list.add(string3);
+			}
+
+			list.add(DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()));
+			list.add("");
+			list.add(
 				String.format(
 					Locale.ROOT,
 					"XYZ: %.3f / %.5f / %.3f",
 					this.client.getCameraEntity().x,
 					this.client.getCameraEntity().getBoundingBox().minY,
 					this.client.getCameraEntity().z
-				),
-				String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()),
+				)
+			);
+			list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+			list.add(
 				String.format(
 					"Chunk: %d %d %d in %d %d %d",
 					blockPos.getX() & 15,
@@ -231,7 +240,9 @@ public class DebugHud extends DrawableHelper {
 					blockPos.getX() >> 4,
 					blockPos.getY() >> 4,
 					blockPos.getZ() >> 4
-				),
+				)
+			);
+			list.add(
 				String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.yaw), MathHelper.wrapDegrees(entity.pitch))
 			);
 			if (this.client.world != null) {
@@ -334,6 +345,19 @@ public class DebugHud extends DrawableHelper {
 			list.add(this.client.getSoundManager().getDebugString());
 			return list;
 		}
+	}
+
+	@Nullable
+	private String method_20603() {
+		IntegratedServer integratedServer = this.client.getServer();
+		if (integratedServer != null) {
+			ServerWorld serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType());
+			if (serverWorld != null) {
+				return serverWorld.getChunkProviderStatus();
+			}
+		}
+
+		return null;
 	}
 
 	private World getWorld() {

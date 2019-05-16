@@ -112,7 +112,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				ProgressScreen progressScreen = new ProgressScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.executeSync(() -> minecraftClient.method_1507(progressScreen));
+				minecraftClient.executeSync(() -> minecraftClient.openScreen(progressScreen));
 				completableFuture = NetworkUtils.download(file, string, map, 52428800, progressScreen, minecraftClient.getNetworkProxy());
 			}
 

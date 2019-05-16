@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
-	private final Screen field_2360;
+	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
 	private final Component subtitle;
 	private final boolean showEraseCacheCheckbox;
@@ -24,7 +24,7 @@ public class BackupPromptScreen extends Screen {
 
 	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, Component component, Component component2, boolean bl) {
 		super(component);
-		this.field_2360 = screen;
+		this.parent = screen;
 		this.callback = callback;
 		this.subtitle = component2;
 		this.showEraseCacheCheckbox = bl;
@@ -48,7 +48,7 @@ public class BackupPromptScreen extends Screen {
 				this.width / 2 - 155 + 160, 100 + i, 150, 20, this.skipText, buttonWidget -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, buttonWidget -> this.minecraft.method_1507(this.field_2360)));
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, buttonWidget -> this.minecraft.openScreen(this.parent)));
 		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, this.eraseCacheText, false);
 		if (this.showEraseCacheCheckbox) {
 			this.addButton(this.eraseCacheCheckbox);
@@ -77,7 +77,7 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.minecraft.method_1507(this.field_2360);
+			this.minecraft.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);

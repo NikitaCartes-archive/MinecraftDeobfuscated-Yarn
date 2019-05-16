@@ -33,7 +33,7 @@ public class ControlsOptionsScreen extends Screen {
 	protected void init() {
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.method_1507(new MouseOptionsScreen(this))
+				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this))
 			)
 		);
 		this.addButton(Option.AUTO_JUMP.createButton(this.minecraft.options, this.width / 2 - 155 + 160, 18, 150));
@@ -47,7 +47,7 @@ public class ControlsOptionsScreen extends Screen {
 			KeyBinding.updateKeysByCode();
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 
