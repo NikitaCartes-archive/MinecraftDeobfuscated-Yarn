@@ -179,7 +179,7 @@ import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTntEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -466,7 +466,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.field_6121) {
 			entity = new BoatEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.field_6063) {
-			entity = new PrimedTntEntity(this.world, d, e, f, null);
+			entity = new TntEntity(this.world, d, e, f, null);
 		} else if (entityType == EntityType.field_6131) {
 			entity = new ArmorStandEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.field_6110) {

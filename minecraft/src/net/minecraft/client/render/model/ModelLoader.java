@@ -342,7 +342,7 @@ public class ModelLoader {
 						Map<BlockState, UnbakedModel> map3 = Maps.<BlockState, UnbakedModel>newIdentityHashMap();
 						UnbakedModel unbakedModel2;
 						if (modelVariantMap.hasMultipartModel()) {
-							unbakedModel2 = modelVariantMap.getMultipartMdoel();
+							unbakedModel2 = modelVariantMap.getMultipartModel();
 							immutableList.forEach(blockState -> {
 								UnbakedModel var10000 = (UnbakedModel)map3.put(blockState, unbakedModel2);
 							});

@@ -59,9 +59,9 @@ public class ServerChunkManager extends ChunkManager {
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
 	private boolean spawnAnimals = true;
-	private final long[] field_19335 = new long[4];
-	private final ChunkStatus[] field_19336 = new ChunkStatus[4];
-	private final Chunk[] field_19337 = new Chunk[4];
+	private final long[] chunkPosCache = new long[4];
+	private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
+	private final Chunk[] chunkCache = new Chunk[4];
 
 	public ServerChunkManager(
 		ServerWorld serverWorld,
@@ -99,7 +99,7 @@ public class ServerChunkManager extends ChunkManager {
 		);
 		this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
-		this.method_20587();
+		this.initChunkCaches();
 	}
 
 	public ServerLightingProvider method_17293() {
@@ -124,8 +124,8 @@ public class ServerChunkManager extends ChunkManager {
 			long l = ChunkPos.toLong(i, j);
 
 			for (int k = 0; k < 4; k++) {
-				if (l == this.field_19335[k] && chunkStatus == this.field_19336[k]) {
-					Chunk chunk = this.field_19337[k];
+				if (l == this.chunkPosCache[k] && chunkStatus == this.chunkStatusCache[k]) {
+					Chunk chunk = this.chunkCache[k];
 					if (chunk != null || !bl) {
 						return chunk;
 					}
@@ -143,22 +143,22 @@ public class ServerChunkManager extends ChunkManager {
 			});
 
 			for (int m = 3; m > 0; m--) {
-				this.field_19335[m] = this.field_19335[m - 1];
-				this.field_19336[m] = this.field_19336[m - 1];
-				this.field_19337[m] = this.field_19337[m - 1];
+				this.chunkPosCache[m] = this.chunkPosCache[m - 1];
+				this.chunkStatusCache[m] = this.chunkStatusCache[m - 1];
+				this.chunkCache[m] = this.chunkCache[m - 1];
 			}
 
-			this.field_19335[0] = l;
-			this.field_19336[0] = chunkStatus;
-			this.field_19337[0] = chunk;
+			this.chunkPosCache[0] = l;
+			this.chunkStatusCache[0] = chunkStatus;
+			this.chunkCache[0] = chunk;
 			return chunk;
 		}
 	}
 
-	private void method_20587() {
-		Arrays.fill(this.field_19335, ChunkPos.INVALID);
-		Arrays.fill(this.field_19336, null);
-		Arrays.fill(this.field_19337, null);
+	private void initChunkCaches() {
+		Arrays.fill(this.chunkPosCache, ChunkPos.INVALID);
+		Arrays.fill(this.chunkStatusCache, null);
+		Arrays.fill(this.chunkCache, null);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -195,7 +195,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 		}
 
-		return this.isMissingForLevel(chunkHolder, k) ? ChunkHolder.UNLOADED_CHUNK_FUTURE : chunkHolder.getFutureChecked(chunkStatus);
+		return this.isMissingForLevel(chunkHolder, k) ? ChunkHolder.UNLOADED_CHUNK_FUTURE : chunkHolder.createFuture(chunkStatus, this.threadedAnvilChunkStorage);
 	}
 
 	private boolean isMissingForLevel(@Nullable ChunkHolder chunkHolder, int i) {
@@ -206,9 +206,7 @@ public class ServerChunkManager extends ChunkManager {
 	public boolean isChunkLoaded(int i, int j) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(i, j).toLong());
 		int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12803);
-		return chunkHolder != null && chunkHolder.getLevel() <= k
-			? ((Either)chunkHolder.getFutureChecked(ChunkStatus.field_12803).getNow(ChunkHolder.UNLOADED_CHUNK)).left().isPresent()
-			: false;
+		return !this.isMissingForLevel(chunkHolder, k);
 	}
 
 	@Override
@@ -247,7 +245,7 @@ public class ServerChunkManager extends ChunkManager {
 	private boolean tick() {
 		if (this.ticketManager.tick(this.threadedAnvilChunkStorage)) {
 			this.threadedAnvilChunkStorage.updateHolderMap();
-			this.method_20587();
+			this.initChunkCaches();
 			return true;
 		} else {
 			return false;
@@ -261,12 +259,12 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public boolean method_20591(ChunkPos chunkPos) {
+	public boolean shouldTickChunk(ChunkPos chunkPos) {
 		return this.method_20585(chunkPos.toLong(), ChunkHolder::getEntityTickingFuture);
 	}
 
 	@Override
-	public boolean method_20529(BlockPos blockPos) {
+	public boolean shouldTickBlock(BlockPos blockPos) {
 		long l = ChunkPos.toLong(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 		return this.method_20585(l, ChunkHolder::getTickingFuture);
 	}
@@ -302,7 +300,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.world.getProfiler().swap("unload");
 		this.threadedAnvilChunkStorage.tick(booleanSupplier);
 		this.world.getProfiler().pop();
-		this.method_20587();
+		this.initChunkCaches();
 	}
 
 	private void tickChunks() {

@@ -65,12 +65,12 @@ public abstract class NbtComponent extends BaseComponent implements ComponentWit
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		if (serverCommandSource != null && this.parsedPath != null) {
 			Stream<String> stream = this.resolve(serverCommandSource).flatMap(compoundTag -> {
 				try {
 					return this.parsedPath.get(compoundTag).stream();
-				} catch (CommandSyntaxException var3x) {
+				} catch (CommandSyntaxException var3) {
 					return Stream.empty();
 				}
 			}).map(Tag::asString);
@@ -78,9 +78,9 @@ public abstract class NbtComponent extends BaseComponent implements ComponentWit
 				? (Component)stream.flatMap(string -> {
 					try {
 						Component component = Component.Serializer.fromJsonString(string);
-						return Stream.of(Components.resolveAndStyle(serverCommandSource, component, entity));
-					} catch (Exception var4) {
-						LOGGER.warn("Failed to parse component: " + string, (Throwable)var4);
+						return Stream.of(Components.resolveAndStyle(serverCommandSource, component, entity, i));
+					} catch (Exception var5) {
+						LOGGER.warn("Failed to parse component: " + string, (Throwable)var5);
 						return Stream.of();
 					}
 				}).reduce((component, component2) -> component.append(", ").append(component2)).orElse(new TextComponent(""))

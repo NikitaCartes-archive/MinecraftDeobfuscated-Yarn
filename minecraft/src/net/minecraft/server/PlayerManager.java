@@ -450,7 +450,7 @@ public abstract class PlayerManager {
 			);
 		this.sendWorldInfo(serverPlayerEntity2, serverWorld);
 		this.sendCommandTree(serverPlayerEntity2);
-		serverWorld.method_18215(serverPlayerEntity2);
+		serverWorld.respawnPlayer(serverPlayerEntity2);
 		this.players.add(serverPlayerEntity2);
 		this.playerMap.put(serverPlayerEntity2.getUuid(), serverPlayerEntity2);
 		serverPlayerEntity2.method_14235();

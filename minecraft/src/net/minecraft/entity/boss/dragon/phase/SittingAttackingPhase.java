@@ -4,14 +4,14 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.sound.SoundEvents;
 
 public class SittingAttackingPhase extends AbstractSittingPhase {
-	private int field_7049;
+	private int ticks;
 
 	public SittingAttackingPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
 	}
 
 	@Override
-	public void method_6853() {
+	public void clientTick() {
 		this.dragon
 			.world
 			.playSound(
@@ -27,15 +27,15 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public void method_6855() {
-		if (this.field_7049++ >= 40) {
+	public void serverTick() {
+		if (this.ticks++ >= 40) {
 			this.dragon.getPhaseManager().setPhase(PhaseType.field_7072);
 		}
 	}
 
 	@Override
 	public void beginPhase() {
-		this.field_7049 = 0;
+		this.ticks = 0;
 	}
 
 	@Override

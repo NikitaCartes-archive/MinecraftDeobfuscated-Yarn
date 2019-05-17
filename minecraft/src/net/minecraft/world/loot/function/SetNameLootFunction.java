@@ -45,7 +45,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
 				return component -> {
 					try {
-						return Components.resolveAndStyle(serverCommandSource, component, entity);
+						return Components.resolveAndStyle(serverCommandSource, component, entity, 0);
 					} catch (CommandSyntaxException var4) {
 						LOGGER.warn("Failed to resolve text component", (Throwable)var4);
 						return component;

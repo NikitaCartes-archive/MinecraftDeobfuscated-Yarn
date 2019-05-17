@@ -307,8 +307,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<PolarBearEntity> field_6042 = register(
 		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, EntityCategory.field_6294).setSize(1.4F, 1.4F)
 	);
-	public static final EntityType<PrimedTntEntity> field_6063 = register(
-		"tnt", EntityType.Builder.<PrimedTntEntity>create(PrimedTntEntity::new, EntityCategory.field_17715).makeFireImmune().setSize(0.98F, 0.98F)
+	public static final EntityType<TntEntity> field_6063 = register(
+		"tnt", EntityType.Builder.<TntEntity>create(TntEntity::new, EntityCategory.field_17715).makeFireImmune().setSize(0.98F, 0.98F)
 	);
 	public static final EntityType<RabbitEntity> field_6140 = register(
 		"rabbit", EntityType.Builder.create(RabbitEntity::new, EntityCategory.field_6294).setSize(0.4F, 0.5F)

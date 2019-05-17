@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class IllagerBeastEntityModel extends EntityModel<RavagerEntity> {
+public class RavagerEntityModel extends EntityModel<RavagerEntity> {
 	private final Cuboid field_3386;
 	private final Cuboid field_3388;
 	private final Cuboid field_3387;
@@ -17,7 +17,7 @@ public class IllagerBeastEntityModel extends EntityModel<RavagerEntity> {
 	private final Cuboid field_3382;
 	private final Cuboid field_3384;
 
-	public IllagerBeastEntityModel() {
+	public RavagerEntityModel() {
 		this.textureWidth = 128;
 		this.textureHeight = 128;
 		int i = 16;

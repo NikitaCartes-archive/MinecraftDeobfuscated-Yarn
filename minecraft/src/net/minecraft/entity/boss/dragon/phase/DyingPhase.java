@@ -10,15 +10,15 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class DyingPhase extends AbstractPhase {
 	private Vec3d field_7041;
-	private int field_7040;
+	private int ticks;
 
 	public DyingPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
 	}
 
 	@Override
-	public void method_6853() {
-		if (this.field_7040++ % 10 == 0) {
+	public void clientTick() {
+		if (this.ticks++ % 10 == 0) {
 			float f = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
 			float g = (this.dragon.getRand().nextFloat() - 0.5F) * 4.0F;
 			float h = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
@@ -29,8 +29,8 @@ public class DyingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6855() {
-		this.field_7040++;
+	public void serverTick() {
+		this.ticks++;
 		if (this.field_7041 == null) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13197, EndPortalFeature.ORIGIN);
 			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
@@ -47,7 +47,7 @@ public class DyingPhase extends AbstractPhase {
 	@Override
 	public void beginPhase() {
 		this.field_7041 = null;
-		this.field_7040 = 0;
+		this.ticks = 0;
 	}
 
 	@Override

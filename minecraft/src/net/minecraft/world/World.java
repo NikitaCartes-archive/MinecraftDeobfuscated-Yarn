@@ -572,7 +572,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
 			if (!blockEntity.isInvalid() && blockEntity.hasWorld()) {
 				BlockPos blockPos = blockEntity.getPos();
-				if (this.chunkManager.method_20529(blockPos) && this.getWorldBorder().contains(blockPos)) {
+				if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
 					try {
 						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
 						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {

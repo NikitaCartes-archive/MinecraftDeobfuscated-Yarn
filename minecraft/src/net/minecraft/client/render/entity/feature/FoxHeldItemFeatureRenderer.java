@@ -4,15 +4,15 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.model.FoxModel;
+import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxModel<FoxEntity>> {
-	public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxModel<FoxEntity>> featureRendererContext) {
+public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
+	public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxEntityModel<FoxEntity>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 

@@ -70,7 +70,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
-		return blockState2.getFluidState().getFluid().matchesType(this.fluid) ? true : super.isFullBoundsCubeForCulling(blockState);
+		return blockState2.getFluidState().getFluid().matchesType(this.fluid) ? true : super.isOpaque(blockState);
 	}
 
 	@Override

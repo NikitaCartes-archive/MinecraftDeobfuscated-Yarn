@@ -588,7 +588,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean isInSneakingPose() {
-		return !this.abilities.flying && this.wouldPoseNotCollide(EntityPose.field_18081)
+		return !this.abilities.flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.field_18081)
 			? this.isHoldingSneakKey() || !this.wouldPoseNotCollide(EntityPose.field_18076)
 			: false;
 	}

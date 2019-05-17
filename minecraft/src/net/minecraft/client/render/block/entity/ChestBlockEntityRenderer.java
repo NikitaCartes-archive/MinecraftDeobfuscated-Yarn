@@ -12,8 +12,8 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.client.render.entity.model.ChestDoubleEntityModel;
 import net.minecraft.client.render.entity.model.ChestEntityModel;
+import net.minecraft.client.render.entity.model.LargeChestEntityModel;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -28,7 +28,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	private static final Identifier NORMAL_TEX = new Identifier("textures/entity/chest/normal.png");
 	private static final Identifier ENDER_TEX = new Identifier("textures/entity/chest/ender.png");
 	private final ChestEntityModel modelSingleChest = new ChestEntityModel();
-	private final ChestEntityModel modelDoubleChest = new ChestDoubleEntityModel();
+	private final ChestEntityModel modelDoubleChest = new LargeChestEntityModel();
 	private boolean isChristmas;
 
 	public ChestBlockEntityRenderer() {

@@ -200,13 +200,13 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 						this.setRotation(this.yaw, this.pitch);
 					}
 
-					this.phaseManager.getCurrent().method_6853();
+					this.phaseManager.getCurrent().clientTick();
 				} else {
 					Phase phase = this.phaseManager.getCurrent();
-					phase.method_6855();
+					phase.serverTick();
 					if (this.phaseManager.getCurrent() != phase) {
 						phase = this.phaseManager.getCurrent();
-						phase.method_6855();
+						phase.serverTick();
 					}
 
 					Vec3d vec3d2 = phase.getTarget();

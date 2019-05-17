@@ -25,7 +25,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6855() {
+	public void serverTick() {
 		if (this.field_7062 == null) {
 			LOGGER.warn("Skipping player strafe phase because no player was found");
 			this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);

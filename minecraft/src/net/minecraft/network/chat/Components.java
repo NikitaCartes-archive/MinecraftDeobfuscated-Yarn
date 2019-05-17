@@ -21,16 +21,21 @@ public class Components {
 		}
 	}
 
-	public static Component resolveAndStyle(@Nullable ServerCommandSource serverCommandSource, Component component, @Nullable Entity entity) throws CommandSyntaxException {
-		Component component2 = component instanceof ComponentWithSelectors
-			? ((ComponentWithSelectors)component).resolve(serverCommandSource, entity)
-			: component.copyShallow();
+	public static Component resolveAndStyle(@Nullable ServerCommandSource serverCommandSource, Component component, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		if (i > 100) {
+			return component;
+		} else {
+			i++;
+			Component component2 = component instanceof ComponentWithSelectors
+				? ((ComponentWithSelectors)component).resolve(serverCommandSource, entity, i)
+				: component.copyShallow();
 
-		for (Component component3 : component.getSiblings()) {
-			component2.append(resolveAndStyle(serverCommandSource, component3, entity));
+			for (Component component3 : component.getSiblings()) {
+				component2.append(resolveAndStyle(serverCommandSource, component3, entity, i));
+			}
+
+			return style(component2, component.getStyle());
 		}
-
-		return style(component2, component.getStyle());
 	}
 
 	public static Component profile(GameProfile gameProfile) {

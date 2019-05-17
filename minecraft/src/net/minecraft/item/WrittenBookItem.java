@@ -113,7 +113,7 @@ public class WrittenBookItem extends Item {
 					Component component;
 					try {
 						component = Component.Serializer.fromLenientJsonString(string);
-						component = Components.resolveAndStyle(serverCommandSource, component, playerEntity);
+						component = Components.resolveAndStyle(serverCommandSource, component, playerEntity, 0);
 					} catch (Exception var9) {
 						component = new TextComponent(string);
 					}

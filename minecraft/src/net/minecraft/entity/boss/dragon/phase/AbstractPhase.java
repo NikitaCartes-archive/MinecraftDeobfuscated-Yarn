@@ -23,11 +23,11 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public void method_6853() {
+	public void clientTick() {
 	}
 
 	@Override
-	public void method_6855() {
+	public void serverTick() {
 	}
 
 	@Override

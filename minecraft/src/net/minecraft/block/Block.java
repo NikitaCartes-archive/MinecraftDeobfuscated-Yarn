@@ -336,7 +336,7 @@ public class Block implements ItemConvertible {
 		BlockState blockState2 = blockView.getBlockState(blockPos2);
 		if (blockState.isSideInvisible(blockState2, direction)) {
 			return false;
-		} else if (blockState2.isFullBoundsCubeForCulling()) {
+		} else if (blockState2.isOpaque()) {
 			Block.NeighborGroup neighborGroup = new Block.NeighborGroup(blockState, blockState2, direction);
 			Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.NeighborGroup>)FACE_CULL_MAP.get();
 			byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
@@ -359,7 +359,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return this.collidable && this.getRenderLayer() == BlockRenderLayer.field_9178;
 	}
 
@@ -420,7 +420,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.isFullBoundsCubeForCulling() ? isShapeFullCube(blockState.method_11615(blockView, blockPos)) : false;
+		return blockState.isOpaque() ? isShapeFullCube(blockState.method_11615(blockView, blockPos)) : false;
 	}
 
 	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {

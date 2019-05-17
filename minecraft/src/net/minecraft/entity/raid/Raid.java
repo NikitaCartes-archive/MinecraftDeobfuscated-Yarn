@@ -249,7 +249,7 @@ public class Raid {
 					} else {
 						boolean bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
 						boolean bl3 = !bl2 && this.preRaidTicks % 5 == 0;
-						if (bl2 && !this.world.method_14178().method_20591(new ChunkPos((BlockPos)this.preCalculatedRavagerSpawnLocation.get()))) {
+						if (bl2 && !this.world.method_14178().shouldTickChunk(new ChunkPos((BlockPos)this.preCalculatedRavagerSpawnLocation.get()))) {
 							bl3 = true;
 						}
 
@@ -356,7 +356,7 @@ public class Raid {
 
 	private void method_20511() {
 		Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
-		stream.filter(this.world::method_20588)
+		stream.filter(this.world::isNearOccupiedPointOfInterest)
 			.map(ChunkSectionPos::getCenterPos)
 			.min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center)))
 			.ifPresent(this::method_20509);
@@ -588,7 +588,7 @@ public class Raid {
 			mutable.set(m, o, n);
 			if ((!this.world.isNearOccupiedPointOfInterest(mutable) || i >= 2)
 				&& this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
-				&& this.world.method_14178().method_20591(new ChunkPos(mutable))
+				&& this.world.method_14178().shouldTickChunk(new ChunkPos(mutable))
 				&& (
 					SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, mutable, EntityType.field_6134)
 						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.field_10477 && this.world.getBlockState(mutable).isAir()

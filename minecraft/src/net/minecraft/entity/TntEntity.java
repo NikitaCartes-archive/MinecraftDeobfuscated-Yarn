@@ -11,18 +11,18 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class PrimedTntEntity extends Entity {
-	private static final TrackedData<Integer> FUSE = DataTracker.registerData(PrimedTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public class TntEntity extends Entity {
+	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private LivingEntity causingEntity;
 	private int fuseTimer = 80;
 
-	public PrimedTntEntity(EntityType<? extends PrimedTntEntity> entityType, World world) {
+	public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
 		super(entityType, world);
 		this.field_6033 = true;
 	}
 
-	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
+	public TntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
 		this(EntityType.field_6063, world);
 		this.setPosition(d, e, f);
 		double g = world.random.nextDouble() * (float) (Math.PI * 2);

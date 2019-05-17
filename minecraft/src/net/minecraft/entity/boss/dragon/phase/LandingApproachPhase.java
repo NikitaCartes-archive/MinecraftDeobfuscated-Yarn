@@ -32,7 +32,7 @@ public class LandingApproachPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6855() {
+	public void serverTick() {
 		double d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6844();

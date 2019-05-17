@@ -182,15 +182,15 @@ public class TranslatableComponent extends BaseComponent implements ComponentWit
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		Object[] objects = new Object[this.params.length];
 
-		for (int i = 0; i < objects.length; i++) {
-			Object object = this.params[i];
+		for (int j = 0; j < objects.length; j++) {
+			Object object = this.params[j];
 			if (object instanceof Component) {
-				objects[i] = Components.resolveAndStyle(serverCommandSource, (Component)object, entity);
+				objects[j] = Components.resolveAndStyle(serverCommandSource, (Component)object, entity, i);
 			} else {
-				objects[i] = object;
+				objects[j] = object;
 			}
 		}
 

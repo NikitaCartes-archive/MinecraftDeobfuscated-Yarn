@@ -53,11 +53,11 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 		return true;
 	}
 
-	public boolean method_20591(ChunkPos chunkPos) {
+	public boolean shouldTickChunk(ChunkPos chunkPos) {
 		return true;
 	}
 
-	public boolean method_20529(BlockPos blockPos) {
+	public boolean shouldTickBlock(BlockPos blockPos) {
 		return true;
 	}
 }
