@@ -18,7 +18,7 @@ public class TakeoffPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6855() {
+	public void serverTick() {
 		if (!this.field_7056 && this.field_7054 != null) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {

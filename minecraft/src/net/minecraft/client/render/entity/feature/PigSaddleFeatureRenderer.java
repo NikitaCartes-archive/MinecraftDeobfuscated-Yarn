@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/pig/pig_saddle.png");
-	private final PigEntityModel<PigEntity> field_4887 = new PigEntityModel<>(0.5F);
+	private final PigEntityModel<PigEntity> model = new PigEntityModel<>(0.5F);
 
 	public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> featureRendererContext) {
 		super(featureRendererContext);
@@ -18,8 +18,8 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 	public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (pigEntity.isSaddled()) {
 			this.bindTexture(SKIN);
-			this.getModel().copyStateTo(this.field_4887);
-			this.field_4887.render(pigEntity, f, g, i, j, k, l);
+			this.getModel().copyStateTo(this.model);
+			this.model.render(pigEntity, f, g, i, j, k, l);
 		}
 	}
 

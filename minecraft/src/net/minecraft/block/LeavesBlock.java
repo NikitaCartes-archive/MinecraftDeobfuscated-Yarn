@@ -93,7 +93,7 @@ public class LeavesBlock extends Block {
 			if (random.nextInt(15) == 1) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState2 = world.getBlockState(blockPos2);
-				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.field_11036)) {
+				if (!blockState2.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.field_11036)) {
 					double d = (double)((float)blockPos.getX() + random.nextFloat());
 					double e = (double)blockPos.getY() - 0.05;
 					double f = (double)((float)blockPos.getZ() + random.nextFloat());
@@ -109,7 +109,7 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 

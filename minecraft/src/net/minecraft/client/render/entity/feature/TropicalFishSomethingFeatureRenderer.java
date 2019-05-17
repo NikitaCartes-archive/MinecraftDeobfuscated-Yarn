@@ -10,8 +10,8 @@ import net.minecraft.entity.passive.TropicalFishEntity;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
-	private final TropicalFishEntityModelA<TropicalFishEntity> field_17157 = new TropicalFishEntityModelA<>(0.008F);
-	private final TropicalFishEntityModelB<TropicalFishEntity> field_4903 = new TropicalFishEntityModelB<>(0.008F);
+	private final TropicalFishEntityModelA<TropicalFishEntity> modelA = new TropicalFishEntityModelA<>(0.008F);
+	private final TropicalFishEntityModelB<TropicalFishEntity> modelB = new TropicalFishEntityModelB<>(0.008F);
 
 	public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> featureRendererContext) {
 		super(featureRendererContext);
@@ -19,7 +19,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 
 	public void method_4205(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!tropicalFishEntity.isInvisible()) {
-			EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.field_17157 : this.field_4903);
+			EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
 			this.bindTexture(tropicalFishEntity.getVarietyId());
 			float[] fs = tropicalFishEntity.getPatternColorComponents();
 			GlStateManager.color3f(fs[0], fs[1], fs[2]);

@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 
 @Environment(EnvType.CLIENT)
 public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
-	private final ParrotEntityModel field_17154 = new ParrotEntityModel();
+	private final ParrotEntityModel model = new ParrotEntityModel();
 
 	public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
 		super(featureRendererContext);
@@ -32,7 +32,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(bl ? 0.4F : -0.4F, playerEntity.isInSneakingPose() ? -1.3F : -1.5F, 0.0F);
 			this.bindTexture(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]);
-			this.field_17154.method_17106(f, g, i, j, k, playerEntity.age);
+			this.model.method_17106(f, g, i, j, k, playerEntity.age);
 			GlStateManager.popMatrix();
 		});
 	}

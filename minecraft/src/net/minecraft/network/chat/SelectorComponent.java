@@ -35,7 +35,7 @@ public class SelectorComponent extends BaseComponent implements ComponentWithSel
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		return (Component)(serverCommandSource != null && this.field_11790 != null
 			? EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource))
 			: new TextComponent(""));

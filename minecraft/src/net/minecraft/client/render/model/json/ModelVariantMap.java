@@ -81,7 +81,7 @@ public class ModelVariantMap {
 		return this.multipartModel != null;
 	}
 
-	public MultipartUnbakedModel getMultipartMdoel() {
+	public MultipartUnbakedModel getMultipartModel() {
 		return this.multipartModel;
 	}
 

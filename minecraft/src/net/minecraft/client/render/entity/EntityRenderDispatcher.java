@@ -28,7 +28,7 @@ import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTntEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -198,7 +198,7 @@ public class EntityRenderDispatcher {
 		this.register(EvokerEntity.class, new EvokerIllagerEntityRenderer(this));
 		this.register(VindicatorEntity.class, new VindicatorEntityRenderer(this));
 		this.register(PillagerEntity.class, new PillagerEntityRenderer(this));
-		this.register(RavagerEntity.class, new IllagerBeastEntityRenderer(this));
+		this.register(RavagerEntity.class, new RavagerEntityRenderer(this));
 		this.register(VexEntity.class, new VexEntityRenderer(this));
 		this.register(IllusionerEntity.class, new IllusionerEntityRenderer(this));
 		this.register(PhantomEntity.class, new PhantomEntityRenderer(this));
@@ -234,7 +234,7 @@ public class EntityRenderDispatcher {
 		this.register(ShulkerBulletEntity.class, new ShulkerBulletEntityRenderer(this));
 		this.register(ItemEntity.class, new ItemEntityRenderer(this, itemRenderer));
 		this.register(ExperienceOrbEntity.class, new ExperienceOrbEntityRenderer(this));
-		this.register(PrimedTntEntity.class, new TNTPrimedEntityRenderer(this));
+		this.register(TntEntity.class, new TntEntityRenderer(this));
 		this.register(FallingBlockEntity.class, new FallingBlockEntityRenderer(this));
 		this.register(ArmorStandEntity.class, new ArmorStandEntityRenderer(this));
 		this.register(EvokerFangsEntity.class, new EvokerFangsEntityRenderer(this));

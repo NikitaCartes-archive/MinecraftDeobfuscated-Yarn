@@ -67,7 +67,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 

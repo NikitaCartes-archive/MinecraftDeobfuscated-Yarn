@@ -54,7 +54,7 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 

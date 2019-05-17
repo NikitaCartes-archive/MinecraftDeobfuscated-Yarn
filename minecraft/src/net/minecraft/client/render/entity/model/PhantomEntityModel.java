@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
-	private final Cuboid field_3475;
+	private final Cuboid head;
 	private final Cuboid field_3477;
 	private final Cuboid field_3476;
 	private final Cuboid field_3474;
@@ -20,12 +20,12 @@ public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
 	public PhantomEntityModel() {
 		this.textureWidth = 64;
 		this.textureHeight = 64;
-		this.field_3475 = new Cuboid(this, 0, 8);
-		this.field_3475.addBox(-3.0F, -2.0F, -8.0F, 5, 3, 9);
+		this.head = new Cuboid(this, 0, 8);
+		this.head.addBox(-3.0F, -2.0F, -8.0F, 5, 3, 9);
 		this.field_3471 = new Cuboid(this, 3, 20);
 		this.field_3471.addBox(-2.0F, 0.0F, 0.0F, 3, 2, 6);
 		this.field_3471.setRotationPoint(0.0F, -2.0F, 1.0F);
-		this.field_3475.addChild(this.field_3471);
+		this.head.addChild(this.field_3471);
 		this.field_3473 = new Cuboid(this, 4, 29);
 		this.field_3473.addBox(-1.0F, 0.0F, 0.0F, 1, 1, 6);
 		this.field_3473.setRotationPoint(0.0F, 0.5F, 6.0F);
@@ -50,19 +50,19 @@ public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3476.roll = 0.1F;
 		this.field_3474.roll = -0.1F;
 		this.field_3472.roll = -0.1F;
-		this.field_3475.pitch = -0.1F;
+		this.head.pitch = -0.1F;
 		this.field_3478 = new Cuboid(this, 0, 0);
 		this.field_3478.addBox(-4.0F, -2.0F, -5.0F, 7, 3, 5);
 		this.field_3478.setRotationPoint(0.0F, 1.0F, -7.0F);
 		this.field_3478.pitch = 0.2F;
-		this.field_3475.addChild(this.field_3478);
-		this.field_3475.addChild(this.field_3477);
-		this.field_3475.addChild(this.field_3474);
+		this.head.addChild(this.field_3478);
+		this.head.addChild(this.field_3477);
+		this.head.addChild(this.field_3474);
 	}
 
 	@Override
 	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3475.render(k);
+		this.head.render(k);
 	}
 
 	@Override

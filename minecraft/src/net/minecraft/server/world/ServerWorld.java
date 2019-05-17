@@ -816,7 +816,7 @@ public class ServerWorld extends World {
 		this.addPlayer(serverPlayerEntity);
 	}
 
-	public void method_18215(ServerPlayerEntity serverPlayerEntity) {
+	public void respawnPlayer(ServerPlayerEntity serverPlayerEntity) {
 		this.addPlayer(serverPlayerEntity);
 	}
 
@@ -1294,7 +1294,7 @@ public class ServerWorld extends World {
 		return this.isNearOccupiedPointOfInterest(blockPos, 1);
 	}
 
-	public boolean method_20588(ChunkSectionPos chunkSectionPos) {
+	public boolean isNearOccupiedPointOfInterest(ChunkSectionPos chunkSectionPos) {
 		return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
 	}
 

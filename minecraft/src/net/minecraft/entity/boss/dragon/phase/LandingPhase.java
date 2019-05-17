@@ -18,7 +18,7 @@ public class LandingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6853() {
+	public void clientTick() {
 		Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
 		vec3d.rotateY((float) (-Math.PI / 4));
 		double d = this.dragon.partHead.x;
@@ -37,7 +37,7 @@ public class LandingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void method_6855() {
+	public void serverTick() {
 		if (this.field_7046 == null) {
 			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN));
 		}

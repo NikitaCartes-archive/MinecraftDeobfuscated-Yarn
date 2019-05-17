@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 
 @Environment(EnvType.CLIENT)
-public class ChestDoubleEntityModel extends ChestEntityModel {
-	public ChestDoubleEntityModel() {
+public class LargeChestEntityModel extends ChestEntityModel {
+	public LargeChestEntityModel() {
 		this.lid = new Cuboid(this, 0, 0).setTextureSize(128, 64);
 		this.lid.addBox(0.0F, -5.0F, -14.0F, 30, 5, 14, 0.0F);
 		this.lid.rotationPointX = 1.0F;

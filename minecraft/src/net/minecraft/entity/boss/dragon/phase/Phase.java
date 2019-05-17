@@ -10,9 +10,9 @@ import net.minecraft.util.math.Vec3d;
 public interface Phase {
 	boolean method_6848();
 
-	void method_6853();
+	void clientTick();
 
-	void method_6855();
+	void serverTick();
 
 	void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity);
 

@@ -68,7 +68,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					break;
 				}
 
-				if (serverChunkManager.method_20529(scheduledTick.pos)) {
+				if (serverChunkManager.shouldTickBlock(scheduledTick.pos)) {
 					iterator.remove();
 					this.ticksScheduled.remove(scheduledTick);
 					this.ticksCurrent.add(scheduledTick);
@@ -80,7 +80,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 			ScheduledTick<T> scheduledTick;
 			while((scheduledTick = (ScheduledTick)this.ticksCurrent.poll()) != null) {
-				if (serverChunkManager.method_20529(scheduledTick.pos)) {
+				if (serverChunkManager.shouldTickBlock(scheduledTick.pos)) {
 					try {
 						this.field_19338.add(scheduledTick);
 						this.tickConsumer.accept(scheduledTick);

@@ -74,7 +74,7 @@ public class ScoreComponent extends BaseComponent implements ComponentWithSelect
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		if (serverCommandSource == null) {
 			return this.method_10929();
 		} else {

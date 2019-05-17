@@ -17,7 +17,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTntEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -293,8 +293,8 @@ public class Explosion {
 	public LivingEntity getCausingEntity() {
 		if (this.entity == null) {
 			return null;
-		} else if (this.entity instanceof PrimedTntEntity) {
-			return ((PrimedTntEntity)this.entity).getCausingEntity();
+		} else if (this.entity instanceof TntEntity) {
+			return ((TntEntity)this.entity).getCausingEntity();
 		} else {
 			return this.entity instanceof LivingEntity ? (LivingEntity)this.entity : null;
 		}

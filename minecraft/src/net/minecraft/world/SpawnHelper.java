@@ -73,7 +73,7 @@ public final class SpawnHelper {
 								}
 
 								ChunkPos chunkPos = new ChunkPos(mutable);
-								if (!Objects.equals(chunkPos, worldChunk.getPos()) && !world.getChunkManager().method_20591(chunkPos)) {
+								if (!Objects.equals(chunkPos, worldChunk.getPos()) && !world.getChunkManager().shouldTickChunk(chunkPos)) {
 									break label108;
 								}
 

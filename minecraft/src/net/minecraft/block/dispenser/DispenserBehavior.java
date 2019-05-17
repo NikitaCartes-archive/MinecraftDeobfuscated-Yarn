@@ -16,8 +16,8 @@ import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FireworkEntity;
-import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.Projectile;
@@ -342,9 +342,9 @@ public interface DispenserBehavior {
 			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-				PrimedTntEntity primedTntEntity = new PrimedTntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
-				world.spawnEntity(primedTntEntity);
-				world.playSound(null, primedTntEntity.x, primedTntEntity.y, primedTntEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+				TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
+				world.spawnEntity(tntEntity);
+				world.playSound(null, tntEntity.x, tntEntity.y, tntEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}
