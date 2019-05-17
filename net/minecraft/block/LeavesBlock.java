@@ -100,7 +100,7 @@ extends Block {
         }
         BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = world.getBlockState(blockPos2);
-        if (blockState2.isFullBoundsCubeForCulling() && Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
+        if (blockState2.isOpaque() && Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
             return;
         }
         double d = (float)blockPos.getX() + random.nextFloat();
@@ -115,7 +115,7 @@ extends Block {
     }
 
     @Override
-    public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+    public boolean isOpaque(BlockState blockState) {
         return false;
     }
 

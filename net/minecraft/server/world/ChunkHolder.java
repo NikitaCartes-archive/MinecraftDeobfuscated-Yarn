@@ -43,8 +43,8 @@ public class ChunkHolder {
     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
     private static final LevelType[] LEVEL_TYPES = LevelType.values();
     private final AtomicReferenceArray<CompletableFuture<Either<Chunk, Unloaded>>> futuresByStatus = new AtomicReferenceArray(CHUNK_STATUSES.size());
+    private volatile CompletableFuture<Either<WorldChunk, Unloaded>> borderFuture = UNLOADED_WORLD_CHUNK_FUTURE;
     private volatile CompletableFuture<Either<WorldChunk, Unloaded>> tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
-    private volatile CompletableFuture<Either<WorldChunk, Unloaded>> field_19333 = UNLOADED_WORLD_CHUNK_FUTURE;
     private volatile CompletableFuture<Either<WorldChunk, Unloaded>> entityTickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
     private CompletableFuture<Chunk> future = CompletableFuture.completedFuture(null);
     private int lastTickLevel;
@@ -77,15 +77,8 @@ public class ChunkHolder {
         return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
     }
 
-    public CompletableFuture<Either<Chunk, Unloaded>> getFutureChecked(ChunkStatus chunkStatus) {
-        if (ChunkHolder.getTargetGenerationStatus(this.level).isAtLeast(chunkStatus)) {
-            return this.getFuture(chunkStatus);
-        }
-        return UNLOADED_CHUNK_FUTURE;
-    }
-
     public CompletableFuture<Either<WorldChunk, Unloaded>> getTickingFuture() {
-        return this.field_19333;
+        return this.tickingFuture;
     }
 
     public CompletableFuture<Either<WorldChunk, Unloaded>> getEntityTickingFuture() {
@@ -272,54 +265,46 @@ public class ChunkHolder {
         boolean bl2 = this.level <= ThreadedAnvilChunkStorage.MAX_LEVEL;
         LevelType levelType = ChunkHolder.getLevelType(this.lastTickLevel);
         LevelType levelType2 = ChunkHolder.getLevelType(this.level);
-        if (bl2) {
-            int i;
-            int n = i = bl ? chunkStatus.getIndex() + 1 : 0;
-            while (i <= chunkStatus2.getIndex()) {
-                this.createFuture(CHUNK_STATUSES.get(i), threadedAnvilChunkStorage);
-                ++i;
-            }
-        }
         if (bl) {
-            int j;
+            int i;
             Either either2 = Either.right(new Unloaded(){
 
                 public String toString() {
                     return "Unloaded ticket level " + ChunkHolder.this.pos.toString();
                 }
             });
-            int n = j = bl2 ? chunkStatus2.getIndex() + 1 : 0;
-            while (j <= chunkStatus.getIndex()) {
-                completableFuture = this.futuresByStatus.get(j);
+            int n = i = bl2 ? chunkStatus2.getIndex() + 1 : 0;
+            while (i <= chunkStatus.getIndex()) {
+                completableFuture = this.futuresByStatus.get(i);
                 if (completableFuture != null) {
                     completableFuture.complete(either2);
                 } else {
-                    this.futuresByStatus.set(j, CompletableFuture.completedFuture(either2));
+                    this.futuresByStatus.set(i, CompletableFuture.completedFuture(either2));
                 }
-                ++j;
+                ++i;
             }
         }
         boolean bl3 = levelType.isAfter(LevelType.BORDER);
         boolean bl4 = levelType2.isAfter(LevelType.BORDER);
         this.field_19238 |= bl4;
         if (!bl3 && bl4) {
-            this.tickingFuture = threadedAnvilChunkStorage.method_20580(this);
-            this.updateFuture(this.tickingFuture);
+            this.borderFuture = threadedAnvilChunkStorage.createBorderFuture(this);
+            this.updateFuture(this.borderFuture);
         }
         if (bl3 && !bl4) {
-            completableFuture = this.tickingFuture;
-            this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
+            completableFuture = this.borderFuture;
+            this.borderFuture = UNLOADED_WORLD_CHUNK_FUTURE;
             this.updateFuture((CompletableFuture<? extends Either<? extends Chunk, Unloaded>>)completableFuture.thenApply(either -> either.ifLeft(threadedAnvilChunkStorage::method_20576)));
         }
         boolean bl5 = levelType.isAfter(LevelType.TICKING);
         boolean bl6 = levelType2.isAfter(LevelType.TICKING);
         if (!bl5 && bl6) {
-            this.field_19333 = threadedAnvilChunkStorage.createTickingFuture(this);
-            this.updateFuture(this.field_19333);
+            this.tickingFuture = threadedAnvilChunkStorage.createTickingFuture(this);
+            this.updateFuture(this.tickingFuture);
         }
         if (bl5 && !bl6) {
-            this.field_19333.complete(UNLOADED_WORLD_CHUNK);
-            this.field_19333 = UNLOADED_WORLD_CHUNK_FUTURE;
+            this.tickingFuture.complete(UNLOADED_WORLD_CHUNK);
+            this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
         }
         boolean bl7 = levelType.isAfter(LevelType.ENTITY_TICKING);
         boolean bl8 = levelType2.isAfter(LevelType.ENTITY_TICKING);

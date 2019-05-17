@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class PhantomEyesFeatureRenderer<T extends Entity>
 extends FeatureRenderer<T, PhantomEntityModel<T>> {
-    private static final Identifier field_4890 = new Identifier("textures/entity/phantom_eyes.png");
+    private static final Identifier SKIN = new Identifier("textures/entity/phantom_eyes.png");
 
     public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
         super(featureRendererContext);
@@ -26,7 +26,7 @@ extends FeatureRenderer<T, PhantomEntityModel<T>> {
 
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k, float l) {
-        this.bindTexture(field_4890);
+        this.bindTexture(SKIN);
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);

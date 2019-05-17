@@ -303,7 +303,7 @@ public class ModelLoader {
                 ModelVariantMap modelVariantMap = (ModelVariantMap)pair.getSecond();
                 IdentityHashMap map3 = Maps.newIdentityHashMap();
                 if (modelVariantMap.hasMultipartModel()) {
-                    unbakedModel2 = modelVariantMap.getMultipartMdoel();
+                    unbakedModel2 = modelVariantMap.getMultipartModel();
                     immutableList.forEach(blockState -> map3.put(blockState, unbakedModel2));
                 } else {
                     unbakedModel2 = null;

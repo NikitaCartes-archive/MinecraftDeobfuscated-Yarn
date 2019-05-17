@@ -10,6 +10,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
 
 public interface ComponentWithSelectors {
-    public Component resolve(@Nullable ServerCommandSource var1, @Nullable Entity var2) throws CommandSyntaxException;
+    public Component resolve(@Nullable ServerCommandSource var1, @Nullable Entity var2, int var3) throws CommandSyntaxException;
 }
 

@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 public class WitherArmorFeatureRenderer
 extends FeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
-    private final WitherEntityModel<WitherEntity> field_4909 = new WitherEntityModel(0.5f);
+    private final WitherEntityModel<WitherEntity> model = new WitherEntityModel(0.5f);
 
     public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext) {
         super(featureRendererContext);
@@ -43,11 +43,11 @@ extends FeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
         GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1.0f);
         GlStateManager.disableLighting();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-        this.field_4909.method_17128(witherEntity, f, g, h);
-        ((WitherEntityModel)this.getModel()).copyStateTo(this.field_4909);
+        this.model.method_17128(witherEntity, f, g, h);
+        ((WitherEntityModel)this.getModel()).copyStateTo(this.model);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        this.field_4909.method_17129(witherEntity, f, g, i, j, k, l);
+        this.model.method_17129(witherEntity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         GlStateManager.matrixMode(5890);
         GlStateManager.loadIdentity();

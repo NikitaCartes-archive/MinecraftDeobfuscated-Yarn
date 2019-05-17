@@ -49,7 +49,7 @@ extends ConditionalLootFunction {
             ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
             return component -> {
                 try {
-                    return Components.resolveAndStyle(serverCommandSource, component, entity);
+                    return Components.resolveAndStyle(serverCommandSource, component, entity, 0);
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.warn("Failed to resolve text component", (Throwable)commandSyntaxException);
                     return component;

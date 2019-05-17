@@ -30,10 +30,13 @@ public class Components {
         return new TextComponent("").append(component).setStyle(style.clone());
     }
 
-    public static Component resolveAndStyle(@Nullable ServerCommandSource serverCommandSource, Component component, @Nullable Entity entity) throws CommandSyntaxException {
-        Component component2 = component instanceof ComponentWithSelectors ? ((ComponentWithSelectors)((Object)component)).resolve(serverCommandSource, entity) : component.copyShallow();
+    public static Component resolveAndStyle(@Nullable ServerCommandSource serverCommandSource, Component component, @Nullable Entity entity, int i) throws CommandSyntaxException {
+        if (i > 100) {
+            return component;
+        }
+        Component component2 = component instanceof ComponentWithSelectors ? ((ComponentWithSelectors)((Object)component)).resolve(serverCommandSource, entity, ++i) : component.copyShallow();
         for (Component component3 : component.getSiblings()) {
-            component2.append(Components.resolveAndStyle(serverCommandSource, component3, entity));
+            component2.append(Components.resolveAndStyle(serverCommandSource, component3, entity, i));
         }
         return Components.style(component2, component.getStyle());
     }

@@ -16,8 +16,8 @@ import net.minecraft.entity.passive.TropicalFishEntity;
 @Environment(value=EnvType.CLIENT)
 public class TropicalFishSomethingFeatureRenderer
 extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
-    private final TropicalFishEntityModelA<TropicalFishEntity> field_17157 = new TropicalFishEntityModelA(0.008f);
-    private final TropicalFishEntityModelB<TropicalFishEntity> field_4903 = new TropicalFishEntityModelB(0.008f);
+    private final TropicalFishEntityModelA<TropicalFishEntity> modelA = new TropicalFishEntityModelA(0.008f);
+    private final TropicalFishEntityModelB<TropicalFishEntity> modelB = new TropicalFishEntityModelB(0.008f);
 
     public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> featureRendererContext) {
         super(featureRendererContext);
@@ -27,7 +27,7 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
         if (tropicalFishEntity.isInvisible()) {
             return;
         }
-        EntityModel entityModel = tropicalFishEntity.getShape() == 0 ? this.field_17157 : this.field_4903;
+        EntityModel entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
         this.bindTexture(tropicalFishEntity.getVarietyId());
         float[] fs = tropicalFishEntity.getPatternColorComponents();
         GlStateManager.color3f(fs[0], fs[1], fs[2]);

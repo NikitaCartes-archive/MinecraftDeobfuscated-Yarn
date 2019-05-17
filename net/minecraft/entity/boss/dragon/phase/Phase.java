@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
 public interface Phase {
     public boolean method_6848();
 
-    public void method_6853();
+    public void clientTick();
 
-    public void method_6855();
+    public void serverTick();
 
     public void crystalDestroyed(EnderCrystalEntity var1, BlockPos var2, DamageSource var3, @Nullable PlayerEntity var4);
 

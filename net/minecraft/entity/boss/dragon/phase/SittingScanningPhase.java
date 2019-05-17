@@ -15,18 +15,18 @@ public class SittingScanningPhase
 extends AbstractSittingPhase {
     private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(150.0);
     private final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.y - enderDragonEntity.y) <= 10.0);
-    private int field_7050;
+    private int ticks;
 
     public SittingScanningPhase(EnderDragonEntity enderDragonEntity) {
         super(enderDragonEntity);
     }
 
     @Override
-    public void method_6855() {
-        ++this.field_7050;
+    public void serverTick() {
+        ++this.ticks;
         PlayerEntity livingEntity = this.dragon.world.getClosestPlayer(this.CLOSE_PLAYER_PREDICATE, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
         if (livingEntity != null) {
-            if (this.field_7050 > 25) {
+            if (this.ticks > 25) {
                 this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_ATTACKING);
             } else {
                 Vec3d vec3d = new Vec3d(livingEntity.x - this.dragon.x, 0.0, livingEntity.z - this.dragon.z).normalize();
@@ -47,7 +47,7 @@ extends AbstractSittingPhase {
                     this.dragon.yaw += this.dragon.field_6267;
                 }
             }
-        } else if (this.field_7050 >= 100) {
+        } else if (this.ticks >= 100) {
             livingEntity = this.dragon.world.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
             this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
             if (livingEntity != null) {
@@ -59,7 +59,7 @@ extends AbstractSittingPhase {
 
     @Override
     public void beginPhase() {
-        this.field_7050 = 0;
+        this.ticks = 0;
     }
 
     public PhaseType<SittingScanningPhase> getType() {

@@ -535,7 +535,7 @@ AutoCloseable {
         while (iterator.hasNext()) {
             BlockPos blockPos;
             BlockEntity blockEntity = iterator.next();
-            if (!blockEntity.isInvalid() && blockEntity.hasWorld() && this.chunkManager.method_20529(blockPos = blockEntity.getPos()) && this.getWorldBorder().contains(blockPos)) {
+            if (!blockEntity.isInvalid() && blockEntity.hasWorld() && this.chunkManager.shouldTickBlock(blockPos = blockEntity.getPos()) && this.getWorldBorder().contains(blockPos)) {
                 try {
                     profiler.push(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType())));
                     if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {

@@ -85,7 +85,7 @@ implements ComponentWithSelectors {
      * Lifted jumps to return sites
      */
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         String string;
         if (serverCommandSource == null) {
             return this.method_10929();

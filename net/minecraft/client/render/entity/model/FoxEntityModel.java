@@ -13,7 +13,7 @@ import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class FoxModel<T extends FoxEntity>
+public class FoxEntityModel<T extends FoxEntity>
 extends EntityModel<T> {
     public final Cuboid head;
     private final Cuboid leftEar;
@@ -27,7 +27,7 @@ extends EntityModel<T> {
     private final Cuboid tail;
     private float field_18025;
 
-    public FoxModel() {
+    public FoxEntityModel() {
         this.textureWidth = 48;
         this.textureHeight = 32;
         this.head = new Cuboid(this, 1, 5);

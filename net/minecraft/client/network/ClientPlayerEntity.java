@@ -581,7 +581,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public boolean isInSneakingPose() {
-        if (this.abilities.flying || !this.wouldPoseNotCollide(EntityPose.SNEAKING)) {
+        if (this.abilities.flying || this.isSwimming() || !this.wouldPoseNotCollide(EntityPose.SNEAKING)) {
             return false;
         }
         return this.isHoldingSneakKey() || !this.wouldPoseNotCollide(EntityPose.STANDING);

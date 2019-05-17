@@ -42,7 +42,7 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         if (serverCommandSource == null || this.field_11790 == null) {
             return new TextComponent("");
         }

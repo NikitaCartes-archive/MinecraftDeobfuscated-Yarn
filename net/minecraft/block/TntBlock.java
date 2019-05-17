@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTntEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
@@ -67,9 +67,9 @@ extends Block {
         if (world.isClient) {
             return;
         }
-        PrimedTntEntity primedTntEntity = new PrimedTntEntity(world, (float)blockPos.getX() + 0.5f, blockPos.getY(), (float)blockPos.getZ() + 0.5f, explosion.getCausingEntity());
-        primedTntEntity.setFuse((short)(world.random.nextInt(primedTntEntity.getFuseTimer() / 4) + primedTntEntity.getFuseTimer() / 8));
-        world.spawnEntity(primedTntEntity);
+        TntEntity tntEntity = new TntEntity(world, (float)blockPos.getX() + 0.5f, blockPos.getY(), (float)blockPos.getZ() + 0.5f, explosion.getCausingEntity());
+        tntEntity.setFuse((short)(world.random.nextInt(tntEntity.getFuseTimer() / 4) + tntEntity.getFuseTimer() / 8));
+        world.spawnEntity(tntEntity);
     }
 
     public static void primeTnt(World world, BlockPos blockPos) {
@@ -80,9 +80,9 @@ extends Block {
         if (world.isClient) {
             return;
         }
-        PrimedTntEntity primedTntEntity = new PrimedTntEntity(world, (float)blockPos.getX() + 0.5f, blockPos.getY(), (float)blockPos.getZ() + 0.5f, livingEntity);
-        world.spawnEntity(primedTntEntity);
-        world.playSound(null, primedTntEntity.x, primedTntEntity.y, primedTntEntity.z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        TntEntity tntEntity = new TntEntity(world, (float)blockPos.getX() + 0.5f, blockPos.getY(), (float)blockPos.getZ() + 0.5f, livingEntity);
+        world.spawnEntity(tntEntity);
+        world.playSound(null, tntEntity.x, tntEntity.y, tntEntity.z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 
     @Override

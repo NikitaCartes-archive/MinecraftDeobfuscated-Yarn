@@ -175,11 +175,11 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         Object[] objects = new Object[this.params.length];
-        for (int i = 0; i < objects.length; ++i) {
-            Object object = this.params[i];
-            objects[i] = object instanceof Component ? Components.resolveAndStyle(serverCommandSource, (Component)object, entity) : object;
+        for (int j = 0; j < objects.length; ++j) {
+            Object object = this.params[j];
+            objects[j] = object instanceof Component ? Components.resolveAndStyle(serverCommandSource, (Component)object, entity, i) : object;
         }
         return new TranslatableComponent(this.key, objects);
     }

@@ -68,7 +68,7 @@ implements TickScheduler<T> {
         while (i > 0 && iterator.hasNext()) {
             scheduledTick = iterator.next();
             if (scheduledTick.time > this.world.getTime()) break;
-            if (!serverChunkManager.method_20529(scheduledTick.pos)) continue;
+            if (!serverChunkManager.shouldTickBlock(scheduledTick.pos)) continue;
             iterator.remove();
             this.ticksScheduled.remove(scheduledTick);
             this.ticksCurrent.add(scheduledTick);
@@ -76,7 +76,7 @@ implements TickScheduler<T> {
         }
         this.world.getProfiler().swap("ticking");
         while ((scheduledTick = this.ticksCurrent.poll()) != null) {
-            if (serverChunkManager.method_20529(scheduledTick.pos)) {
+            if (serverChunkManager.shouldTickBlock(scheduledTick.pos)) {
                 try {
                     this.field_19338.add(scheduledTick);
                     this.tickConsumer.accept(scheduledTick);

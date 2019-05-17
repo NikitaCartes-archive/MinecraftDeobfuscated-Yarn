@@ -401,34 +401,56 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createChunkFuture(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
         ChunkPos chunkPos = chunkHolder.getPos();
         if (chunkStatus == ChunkStatus.EMPTY) {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
-                    if (compoundTag != null) {
-                        boolean bl;
-                        boolean bl2 = bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
-                        if (bl) {
-                            ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
-                            chunk.setLastSaveTime(this.world.getTime());
-                            return Either.left(chunk);
-                        }
-                        LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)chunkPos);
+            return this.method_20619(chunkPos);
+        }
+        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.createFuture(chunkStatus.getPrevious(), this);
+        return completableFuture.thenCompose(either -> {
+            Chunk chunk2;
+            Optional optional = either.left();
+            if (!optional.isPresent()) {
+                return CompletableFuture.completedFuture(either);
+            }
+            if (chunkStatus == ChunkStatus.LIGHT) {
+                this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
+            }
+            if ((chunk2 = (Chunk)optional.get()).getStatus().isAtLeast(chunkStatus)) {
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.method_20617(chunkHolder, chunkStatus) : chunkStatus.method_20612(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
+                this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
+                return completableFuture;
+            }
+            return this.method_20617(chunkHolder, chunkStatus);
+        });
+    }
+
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
+                if (compoundTag != null) {
+                    boolean bl;
+                    boolean bl2 = bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
+                    if (bl) {
+                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
+                        chunk.setLastSaveTime(this.world.getTime());
+                        return Either.left(chunk);
                     }
-                } catch (CrashException crashException) {
-                    Throwable throwable = crashException.getCause();
-                    if (throwable instanceof IOException) {
-                        LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable);
-                    }
-                    throw crashException;
-                } catch (Exception exception) {
-                    LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)exception);
+                    LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)chunkPos);
                 }
-                return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
-            }, this.mainThreadExecutor);
-        }
-        if (chunkStatus == ChunkStatus.LIGHT) {
-            this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
-        }
+            } catch (CrashException crashException) {
+                Throwable throwable = crashException.getCause();
+                if (throwable instanceof IOException) {
+                    LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable);
+                }
+                throw crashException;
+            } catch (Exception exception) {
+                LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)exception);
+            }
+            return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
+        }, this.mainThreadExecutor);
+    }
+
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20617(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
+        ChunkPos chunkPos = chunkHolder.getPos();
         CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i));
         return completableFuture.thenComposeAsync(either -> either.map(list -> {
             try {
@@ -450,7 +472,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     protected void method_20441(ChunkPos chunkPos) {
-        this.mainThreadExecutor.method_18858(SystemUtil.debugRunnable(() -> this.ticketManager.method_20444(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
+        this.mainThreadExecutor.method_18858(SystemUtil.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
     }
 
     private ChunkStatus getRequiredStatusForGeneration(ChunkStatus chunkStatus, int i) {
@@ -516,7 +538,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return completableFuture2;
     }
 
-    public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_20580(ChunkHolder chunkHolder) {
+    public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createBorderFuture(ChunkHolder chunkHolder) {
         return chunkHolder.createFuture(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
             WorldChunk worldChunk = (WorldChunk)chunk;
             worldChunk.method_20530();

@@ -75,7 +75,7 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         if (serverCommandSource == null || this.parsedPath == null) {
             return new TextComponent("");
         }
@@ -90,7 +90,7 @@ implements ComponentWithSelectors {
             return stream.flatMap(string -> {
                 try {
                     Component component = Component.Serializer.fromJsonString(string);
-                    return Stream.of(Components.resolveAndStyle(serverCommandSource, component, entity));
+                    return Stream.of(Components.resolveAndStyle(serverCommandSource, component, entity, i));
                 } catch (Exception exception) {
                     LOGGER.warn("Failed to parse component: " + string, (Throwable)exception);
                     return Stream.of(new Component[0]);

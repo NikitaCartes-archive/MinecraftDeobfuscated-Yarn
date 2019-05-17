@@ -93,7 +93,7 @@ implements ChunkLightingView {
         }
         this.field_19284.setFromLong(l);
         BlockState blockState = blockView.getBlockState(this.field_19284);
-        boolean bl2 = bl = blockState.isFullBoundsCubeForCulling() && blockState.hasSidedTransparency();
+        boolean bl2 = bl = blockState.isOpaque() && blockState.hasSidedTransparency();
         if (atomicInteger != null) {
             atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
         }
@@ -103,8 +103,8 @@ implements ChunkLightingView {
     public static int method_20049(BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i) {
         VoxelShape voxelShape2;
         boolean bl2;
-        boolean bl = blockState.isFullBoundsCubeForCulling() && blockState.hasSidedTransparency();
-        boolean bl3 = bl2 = blockState2.isFullBoundsCubeForCulling() && blockState2.hasSidedTransparency();
+        boolean bl = blockState.isOpaque() && blockState.hasSidedTransparency();
+        boolean bl3 = bl2 = blockState2.isOpaque() && blockState2.hasSidedTransparency();
         if (!bl && !bl2) {
             return i;
         }

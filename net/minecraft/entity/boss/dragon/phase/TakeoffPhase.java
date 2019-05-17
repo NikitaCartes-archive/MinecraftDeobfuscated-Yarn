@@ -24,7 +24,7 @@ extends AbstractPhase {
     }
 
     @Override
-    public void method_6855() {
+    public void serverTick() {
         if (this.field_7056 || this.field_7054 == null) {
             this.field_7056 = false;
             this.method_6858();

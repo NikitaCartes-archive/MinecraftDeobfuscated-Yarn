@@ -168,7 +168,7 @@ public abstract class ChunkTicketManager {
         this.addTicket(chunkPos.toLong(), new ChunkTicket<T>(chunkTicketType, i, object, this.location));
     }
 
-    public <T> void method_20444(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
+    public <T> void removeTicketWithLevel(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
         ChunkTicket<T> chunkTicket = new ChunkTicket<T>(chunkTicketType, i, object, this.location);
         this.removeTicket(chunkPos.toLong(), chunkTicket);
     }

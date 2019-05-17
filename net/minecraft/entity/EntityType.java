@@ -26,8 +26,8 @@ import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -205,7 +205,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<PufferfishEntity> PUFFERFISH = EntityType.register("pufferfish", Builder.create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setSize(0.7f, 0.7f));
     public static final EntityType<ZombiePigmanEntity> ZOMBIE_PIGMAN = EntityType.register("zombie_pigman", Builder.create(ZombiePigmanEntity::new, EntityCategory.MONSTER).makeFireImmune().setSize(0.6f, 1.95f));
     public static final EntityType<PolarBearEntity> POLAR_BEAR = EntityType.register("polar_bear", Builder.create(PolarBearEntity::new, EntityCategory.CREATURE).setSize(1.4f, 1.4f));
-    public static final EntityType<PrimedTntEntity> TNT = EntityType.register("tnt", Builder.create(PrimedTntEntity::new, EntityCategory.MISC).makeFireImmune().setSize(0.98f, 0.98f));
+    public static final EntityType<TntEntity> TNT = EntityType.register("tnt", Builder.create(TntEntity::new, EntityCategory.MISC).makeFireImmune().setSize(0.98f, 0.98f));
     public static final EntityType<RabbitEntity> RABBIT = EntityType.register("rabbit", Builder.create(RabbitEntity::new, EntityCategory.CREATURE).setSize(0.4f, 0.5f));
     public static final EntityType<SalmonEntity> SALMON = EntityType.register("salmon", Builder.create(SalmonEntity::new, EntityCategory.WATER_CREATURE).setSize(0.7f, 0.4f));
     public static final EntityType<SheepEntity> SHEEP = EntityType.register("sheep", Builder.create(SheepEntity::new, EntityCategory.CREATURE).setSize(0.9f, 1.3f));

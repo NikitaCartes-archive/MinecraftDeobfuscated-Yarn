@@ -15,8 +15,8 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class CatCollarFeatureRenderer
 extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
-    private static final Identifier field_16260 = new Identifier("textures/entity/cat/cat_collar.png");
-    private final CatEntityModel<CatEntity> field_16261 = new CatEntityModel(0.01f);
+    private static final Identifier SKIN = new Identifier("textures/entity/cat/cat_collar.png");
+    private final CatEntityModel<CatEntity> model = new CatEntityModel(0.01f);
 
     public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> featureRendererContext) {
         super(featureRendererContext);
@@ -26,12 +26,12 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
         if (!catEntity.isTamed() || catEntity.isInvisible()) {
             return;
         }
-        this.bindTexture(field_16260);
+        this.bindTexture(SKIN);
         float[] fs = catEntity.getCollarColor().getColorComponents();
         GlStateManager.color3f(fs[0], fs[1], fs[2]);
-        ((CatEntityModel)this.getModel()).copyStateTo(this.field_16261);
-        this.field_16261.method_17074(catEntity, f, g, h);
-        this.field_16261.render(catEntity, f, g, i, j, k, l);
+        ((CatEntityModel)this.getModel()).copyStateTo(this.model);
+        this.model.method_17074(catEntity, f, g, h);
+        this.model.render(catEntity, f, g, i, j, k, l);
     }
 
     @Override

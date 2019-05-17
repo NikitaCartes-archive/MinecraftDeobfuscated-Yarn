@@ -82,7 +82,7 @@ implements FluidDrainable {
         if (blockState2.getFluidState().getFluid().matchesType(this.fluid)) {
             return true;
         }
-        return super.isFullBoundsCubeForCulling(blockState);
+        return super.isOpaque(blockState);
     }
 
     @Override

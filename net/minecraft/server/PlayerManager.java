@@ -388,7 +388,7 @@ public abstract class PlayerManager {
         serverPlayerEntity2.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity2.experienceProgress, serverPlayerEntity2.totalExperience, serverPlayerEntity2.experienceLevel));
         this.sendWorldInfo(serverPlayerEntity2, serverWorld);
         this.sendCommandTree(serverPlayerEntity2);
-        serverWorld.method_18215(serverPlayerEntity2);
+        serverWorld.respawnPlayer(serverPlayerEntity2);
         this.players.add(serverPlayerEntity2);
         this.playerMap.put(serverPlayerEntity2.getUuid(), serverPlayerEntity2);
         serverPlayerEntity2.method_14235();

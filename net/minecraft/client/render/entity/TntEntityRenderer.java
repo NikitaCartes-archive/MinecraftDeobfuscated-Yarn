@@ -12,44 +12,44 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.entity.PrimedTntEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class TNTPrimedEntityRenderer
-extends EntityRenderer<PrimedTntEntity> {
-    public TNTPrimedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+public class TntEntityRenderer
+extends EntityRenderer<TntEntity> {
+    public TntEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
         this.field_4673 = 0.5f;
     }
 
-    public void method_4135(PrimedTntEntity primedTntEntity, double d, double e, double f, float g, float h) {
+    public void method_4135(TntEntity tntEntity, double d, double e, double f, float g, float h) {
         float i;
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)d, (float)e + 0.5f, (float)f);
-        if ((float)primedTntEntity.getFuseTimer() - h + 1.0f < 10.0f) {
-            i = 1.0f - ((float)primedTntEntity.getFuseTimer() - h + 1.0f) / 10.0f;
+        if ((float)tntEntity.getFuseTimer() - h + 1.0f < 10.0f) {
+            i = 1.0f - ((float)tntEntity.getFuseTimer() - h + 1.0f) / 10.0f;
             i = MathHelper.clamp(i, 0.0f, 1.0f);
             i *= i;
             i *= i;
             float j = 1.0f + i * 0.3f;
             GlStateManager.scalef(j, j, j);
         }
-        i = (1.0f - ((float)primedTntEntity.getFuseTimer() - h + 1.0f) / 100.0f) * 0.8f;
-        this.bindEntityTexture(primedTntEntity);
+        i = (1.0f - ((float)tntEntity.getFuseTimer() - h + 1.0f) / 100.0f) * 0.8f;
+        this.bindEntityTexture(tntEntity);
         GlStateManager.rotatef(-90.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.translatef(-0.5f, -0.5f, 0.5f);
-        blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), primedTntEntity.getBrightnessAtEyes());
+        blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), tntEntity.getBrightnessAtEyes());
         GlStateManager.translatef(0.0f, 0.0f, 1.0f);
         if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(primedTntEntity));
+            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(tntEntity));
             blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), 1.0f);
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
-        } else if (primedTntEntity.getFuseTimer() / 5 % 2 == 0) {
+        } else if (tntEntity.getFuseTimer() / 5 % 2 == 0) {
             GlStateManager.disableTexture();
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
@@ -66,10 +66,10 @@ extends EntityRenderer<PrimedTntEntity> {
             GlStateManager.enableTexture();
         }
         GlStateManager.popMatrix();
-        super.render(primedTntEntity, d, e, f, g, h);
+        super.render(tntEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4136(PrimedTntEntity primedTntEntity) {
+    protected Identifier method_4136(TntEntity tntEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

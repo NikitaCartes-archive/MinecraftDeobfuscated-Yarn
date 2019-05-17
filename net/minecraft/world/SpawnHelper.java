@@ -73,7 +73,7 @@ public final class SpawnHelper {
                 float f = (float)n + 0.5f;
                 float g = (float)o + 0.5f;
                 PlayerEntity playerEntity = world.getClosestPlayer(f, g, -1.0);
-                if (playerEntity == null || playerEntity.squaredDistanceTo(f, k, g) <= 576.0 || blockPos.isWithinDistance(new Vec3d(f, k, g), 24.0) || !Objects.equals(chunkPos = new ChunkPos(mutable), worldChunk.getPos()) && !world.getChunkManager().method_20591(chunkPos)) continue;
+                if (playerEntity == null || playerEntity.squaredDistanceTo(f, k, g) <= 576.0 || blockPos.isWithinDistance(new Vec3d(f, k, g), 24.0) || !Objects.equals(chunkPos = new ChunkPos(mutable), worldChunk.getPos()) && !world.getChunkManager().shouldTickChunk(chunkPos)) continue;
                 if (spawnEntry == null) {
                     spawnEntry = SpawnHelper.method_8664(chunkGenerator, entityCategory, world.random, mutable);
                     if (spawnEntry == null) continue block2;

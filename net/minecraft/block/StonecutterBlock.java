@@ -71,7 +71,7 @@ extends Block {
     }
 
     @Override
-    public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+    public boolean isOpaque(BlockState blockState) {
         return true;
     }
 

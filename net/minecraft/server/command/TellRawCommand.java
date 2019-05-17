@@ -18,7 +18,7 @@ public class TellRawCommand {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("tellraw").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", ComponentArgumentType.create()).executes(commandContext -> {
             int i = 0;
             for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
-                serverPlayerEntity.sendMessage(Components.resolveAndStyle((ServerCommandSource)commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity));
+                serverPlayerEntity.sendMessage(Components.resolveAndStyle((ServerCommandSource)commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity, 0));
                 ++i;
             }
             return i;

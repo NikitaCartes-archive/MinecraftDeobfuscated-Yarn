@@ -22,7 +22,7 @@ extends AbstractPhase {
     }
 
     @Override
-    public void method_6855() {
+    public void serverTick() {
         if (this.target == null) {
             LOGGER.warn("Aborting charge player as no target was set.");
             this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);

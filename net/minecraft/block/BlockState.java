@@ -198,11 +198,11 @@ implements PropertyContainer<BlockState> {
         return this.getBlock().isFullOpaque(this, blockView, blockPos);
     }
 
-    public boolean isFullBoundsCubeForCulling() {
+    public boolean isOpaque() {
         if (this.shapeCache != null) {
-            return this.shapeCache.cull;
+            return this.shapeCache.opaque;
         }
-        return this.getBlock().isFullBoundsCubeForCulling(this);
+        return this.getBlock().isOpaque(this);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -370,7 +370,7 @@ implements PropertyContainer<BlockState> {
 
     static final class ShapeCache {
         private static final Direction[] DIRECTIONS = Direction.values();
-        private final boolean cull;
+        private final boolean opaque;
         private final boolean fullOpaque;
         private final boolean translucent;
         private final int lightSubtracted;
@@ -380,11 +380,11 @@ implements PropertyContainer<BlockState> {
         private ShapeCache(BlockState blockState) {
             VoxelShape voxelShape;
             Block block = blockState.getBlock();
-            this.cull = block.isFullBoundsCubeForCulling(blockState);
+            this.opaque = block.isOpaque(blockState);
             this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-            if (!blockState.isFullBoundsCubeForCulling()) {
+            if (!blockState.isOpaque()) {
                 this.shapes = null;
             } else {
                 this.shapes = new VoxelShape[DIRECTIONS.length];

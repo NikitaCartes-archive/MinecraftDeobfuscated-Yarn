@@ -341,7 +341,7 @@ implements ItemConvertible {
         if (blockState.isSideInvisible(blockState2, direction)) {
             return false;
         }
-        if (blockState2.isFullBoundsCubeForCulling()) {
+        if (blockState2.isOpaque()) {
             NeighborGroup neighborGroup = new NeighborGroup(blockState, blockState2, direction);
             Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = FACE_CULL_MAP.get();
             byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
@@ -361,7 +361,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+    public boolean isOpaque(BlockState blockState) {
         return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
     }
 
@@ -416,7 +416,7 @@ implements ItemConvertible {
 
     @Deprecated
     public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        if (blockState.isFullBoundsCubeForCulling()) {
+        if (blockState.isOpaque()) {
             return Block.isShapeFullCube(blockState.method_11615(blockView, blockPos));
         }
         return false;

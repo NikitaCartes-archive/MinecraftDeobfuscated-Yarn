@@ -239,7 +239,7 @@ public class Raid {
                     boolean bl3;
                     bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
                     boolean bl4 = bl3 = !bl2 && this.preRaidTicks % 5 == 0;
-                    if (bl2 && !this.world.method_14178().method_20591(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
+                    if (bl2 && !this.world.method_14178().shouldTickChunk(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
                         bl3 = true;
                     }
                     if (bl3) {
@@ -333,7 +333,7 @@ public class Raid {
 
     private void method_20511() {
         Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
-        stream.filter(this.world::method_20588).map(ChunkSectionPos::getCenterPos).min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center))).ifPresent(this::method_20509);
+        stream.filter(this.world::isNearOccupiedPointOfInterest).map(ChunkSectionPos::getCenterPos).min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center))).ifPresent(this::method_20509);
     }
 
     private Optional<BlockPos> preCalculateRavagerSpawnLocation(int i) {
@@ -526,7 +526,7 @@ public class Raid {
             int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int o = this.world.getTop(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
-            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().method_20591(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
+            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

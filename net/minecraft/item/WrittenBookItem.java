@@ -119,7 +119,7 @@ extends Item {
             String string = listTag.getString(i);
             try {
                 component = Component.Serializer.fromLenientJsonString(string);
-                component = Components.resolveAndStyle(serverCommandSource, component, playerEntity);
+                component = Components.resolveAndStyle(serverCommandSource, component, playerEntity, 0);
             } catch (Exception exception) {
                 component = new TextComponent(string);
             }

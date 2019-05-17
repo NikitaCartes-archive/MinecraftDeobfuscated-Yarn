@@ -31,7 +31,7 @@ extends AbstractPhase {
     }
 
     @Override
-    public void method_6855() {
+    public void serverTick() {
         double h;
         double e;
         double d;

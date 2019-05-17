@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.FoxModel;
+import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
@@ -17,8 +17,8 @@ import net.minecraft.item.ItemStack;
 
 @Environment(value=EnvType.CLIENT)
 public class FoxHeldItemFeatureRenderer
-extends FeatureRenderer<FoxEntity, FoxModel<FoxEntity>> {
-    public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxModel<FoxEntity>> featureRendererContext) {
+extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
+    public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxEntityModel<FoxEntity>> featureRendererContext) {
         super(featureRendererContext);
     }
 
@@ -36,7 +36,7 @@ extends FeatureRenderer<FoxEntity, FoxModel<FoxEntity>> {
             GlStateManager.scalef(0.75f, 0.75f, 0.75f);
             GlStateManager.translatef(0.0f, 8.0f * l, 3.35f * l);
         }
-        GlStateManager.translatef(((FoxModel)this.getModel()).head.rotationPointX / 16.0f, ((FoxModel)this.getModel()).head.rotationPointY / 16.0f, ((FoxModel)this.getModel()).head.rotationPointZ / 16.0f);
+        GlStateManager.translatef(((FoxEntityModel)this.getModel()).head.rotationPointX / 16.0f, ((FoxEntityModel)this.getModel()).head.rotationPointY / 16.0f, ((FoxEntityModel)this.getModel()).head.rotationPointZ / 16.0f);
         m = foxEntity.getHeadRoll(h) * 57.295776f;
         GlStateManager.rotatef(m, 0.0f, 0.0f, 1.0f);
         GlStateManager.rotatef(j, 0.0f, 1.0f, 0.0f);

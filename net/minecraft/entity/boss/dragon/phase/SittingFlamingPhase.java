@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class SittingFlamingPhase
 extends AbstractSittingPhase {
-    private int field_7053;
+    private int ticks;
     private int field_7052;
     private AreaEffectCloudEntity field_7051;
 
@@ -25,9 +25,9 @@ extends AbstractSittingPhase {
     }
 
     @Override
-    public void method_6853() {
-        ++this.field_7053;
-        if (this.field_7053 % 2 == 0 && this.field_7053 < 10) {
+    public void clientTick() {
+        ++this.ticks;
+        if (this.ticks % 2 == 0 && this.ticks < 10) {
             Vec3d vec3d = this.dragon.method_6834(1.0f).normalize();
             vec3d.rotateY(-0.7853982f);
             double d = this.dragon.partHead.x;
@@ -46,15 +46,15 @@ extends AbstractSittingPhase {
     }
 
     @Override
-    public void method_6855() {
-        ++this.field_7053;
-        if (this.field_7053 >= 200) {
+    public void serverTick() {
+        ++this.ticks;
+        if (this.ticks >= 200) {
             if (this.field_7052 >= 4) {
                 this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
             } else {
                 this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
             }
-        } else if (this.field_7053 == 10) {
+        } else if (this.ticks == 10) {
             Vec3d vec3d = new Vec3d(this.dragon.partHead.x - this.dragon.x, 0.0, this.dragon.partHead.z - this.dragon.z).normalize();
             float f = 5.0f;
             double d = this.dragon.partHead.x + vec3d.x * 5.0 / 2.0;
@@ -77,7 +77,7 @@ extends AbstractSittingPhase {
 
     @Override
     public void beginPhase() {
-        this.field_7053 = 0;
+        this.ticks = 0;
         ++this.field_7052;
     }
 

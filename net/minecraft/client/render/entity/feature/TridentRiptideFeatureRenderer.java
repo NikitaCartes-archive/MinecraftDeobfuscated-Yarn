@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 public class TridentRiptideFeatureRenderer<T extends LivingEntity>
 extends FeatureRenderer<T, PlayerEntityModel<T>> {
     public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
-    private final class_999 field_4897 = new class_999();
+    private final TridentRiptideModel model = new TridentRiptideModel();
 
     public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
         super(featureRendererContext);
@@ -36,7 +36,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
             float n = 0.75f * (float)m;
             GlStateManager.scalef(n, n, n);
             GlStateManager.translatef(0.0f, -0.2f + 0.6f * (float)m, 0.0f);
-            this.field_4897.method_17166(f, g, i, j, k, l);
+            this.model.method_17166(f, g, i, j, k, l);
             GlStateManager.popMatrix();
         }
     }
@@ -47,11 +47,11 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_999
+    static class TridentRiptideModel
     extends Model {
         private final Cuboid field_4900;
 
-        public class_999() {
+        public TridentRiptideModel() {
             this.textureWidth = 64;
             this.textureHeight = 64;
             this.field_4900 = new Cuboid(this, 0, 0);

@@ -9,9 +9,9 @@ import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.model.ChestEntityModel;
 
 @Environment(value=EnvType.CLIENT)
-public class ChestDoubleEntityModel
+public class LargeChestEntityModel
 extends ChestEntityModel {
-    public ChestDoubleEntityModel() {
+    public LargeChestEntityModel() {
         this.lid = new Cuboid(this, 0, 0).setTextureSize(128, 64);
         this.lid.addBox(0.0f, -5.0f, -14.0f, 30, 5, 14, 0.0f);
         this.lid.rotationPointX = 1.0f;

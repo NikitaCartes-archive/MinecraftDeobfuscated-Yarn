@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 public class SheepWoolFeatureRenderer
 extends FeatureRenderer<SheepEntity, SheepWoolEntityModel<SheepEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
-    private final SheepEntityModel<SheepEntity> field_4891 = new SheepEntityModel();
+    private final SheepEntityModel<SheepEntity> model = new SheepEntityModel();
 
     public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepWoolEntityModel<SheepEntity>> featureRendererContext) {
         super(featureRendererContext);
@@ -43,9 +43,9 @@ extends FeatureRenderer<SheepEntity, SheepWoolEntityModel<SheepEntity>> {
             float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
             GlStateManager.color3f(hs[0], hs[1], hs[2]);
         }
-        ((SheepWoolEntityModel)this.getModel()).copyStateTo(this.field_4891);
-        this.field_4891.method_17118(sheepEntity, f, g, h);
-        this.field_4891.render(sheepEntity, f, g, i, j, k, l);
+        ((SheepWoolEntityModel)this.getModel()).copyStateTo(this.model);
+        this.model.method_17118(sheepEntity, f, g, h);
+        this.model.render(sheepEntity, f, g, i, j, k, l);
     }
 
     @Override

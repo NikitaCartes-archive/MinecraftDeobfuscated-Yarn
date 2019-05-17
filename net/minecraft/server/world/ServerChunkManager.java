@@ -71,9 +71,9 @@ extends ChunkManager {
     private long lastMobSpawningTime;
     private boolean spawnMonsters = true;
     private boolean spawnAnimals = true;
-    private final long[] field_19335 = new long[4];
-    private final ChunkStatus[] field_19336 = new ChunkStatus[4];
-    private final Chunk[] field_19337 = new Chunk[4];
+    private final long[] chunkPosCache = new long[4];
+    private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
+    private final Chunk[] chunkCache = new Chunk[4];
 
     public ServerChunkManager(ServerWorld serverWorld, File file, DataFixer dataFixer, StructureManager structureManager, Executor executor, ChunkGenerator<?> chunkGenerator, int i, int j, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
         this.world = serverWorld;
@@ -87,7 +87,7 @@ extends ChunkManager {
         this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, file, dataFixer, structureManager, executor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier, i, j);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
-        this.method_20587();
+        this.initChunkCaches();
     }
 
     public ServerLightingProvider method_17293() {
@@ -112,7 +112,7 @@ extends ChunkManager {
         }
         long l = ChunkPos.toLong(i, j);
         for (int k = 0; k < 4; ++k) {
-            if (l != this.field_19335[k] || chunkStatus != this.field_19336[k] || (chunk2 = this.field_19337[k]) == null && bl) continue;
+            if (l != this.chunkPosCache[k] || chunkStatus != this.chunkStatusCache[k] || (chunk2 = this.chunkCache[k]) == null && bl) continue;
             return chunk2;
         }
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(i, j, chunkStatus, bl);
@@ -124,20 +124,20 @@ extends ChunkManager {
             return null;
         });
         for (int m = 3; m > 0; --m) {
-            this.field_19335[m] = this.field_19335[m - 1];
-            this.field_19336[m] = this.field_19336[m - 1];
-            this.field_19337[m] = this.field_19337[m - 1];
+            this.chunkPosCache[m] = this.chunkPosCache[m - 1];
+            this.chunkStatusCache[m] = this.chunkStatusCache[m - 1];
+            this.chunkCache[m] = this.chunkCache[m - 1];
         }
-        this.field_19335[0] = l;
-        this.field_19336[0] = chunkStatus;
-        this.field_19337[0] = chunk2;
+        this.chunkPosCache[0] = l;
+        this.chunkStatusCache[0] = chunkStatus;
+        this.chunkCache[0] = chunk2;
         return chunk2;
     }
 
-    private void method_20587() {
-        Arrays.fill(this.field_19335, ChunkPos.INVALID);
-        Arrays.fill(this.field_19336, null);
-        Arrays.fill(this.field_19337, null);
+    private void initChunkCaches() {
+        Arrays.fill(this.chunkPosCache, ChunkPos.INVALID);
+        Arrays.fill(this.chunkStatusCache, null);
+        Arrays.fill(this.chunkCache, null);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -175,7 +175,7 @@ extends ChunkManager {
         if (this.isMissingForLevel(chunkHolder, k)) {
             return ChunkHolder.UNLOADED_CHUNK_FUTURE;
         }
-        return chunkHolder.getFutureChecked(chunkStatus);
+        return chunkHolder.createFuture(chunkStatus, this.threadedAnvilChunkStorage);
     }
 
     private boolean isMissingForLevel(@Nullable ChunkHolder chunkHolder, int i) {
@@ -184,12 +184,9 @@ extends ChunkManager {
 
     @Override
     public boolean isChunkLoaded(int i, int j) {
+        int k;
         ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(i, j).toLong());
-        int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL);
-        if (chunkHolder != null && chunkHolder.getLevel() <= k) {
-            return chunkHolder.getFutureChecked(ChunkStatus.FULL).getNow(ChunkHolder.UNLOADED_CHUNK).left().isPresent();
-        }
-        return false;
+        return !this.isMissingForLevel(chunkHolder, k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL));
     }
 
     @Override
@@ -223,7 +220,7 @@ extends ChunkManager {
     private boolean tick() {
         if (this.ticketManager.tick(this.threadedAnvilChunkStorage)) {
             this.threadedAnvilChunkStorage.updateHolderMap();
-            this.method_20587();
+            this.initChunkCaches();
             return true;
         }
         return false;
@@ -236,12 +233,12 @@ extends ChunkManager {
     }
 
     @Override
-    public boolean method_20591(ChunkPos chunkPos) {
+    public boolean shouldTickChunk(ChunkPos chunkPos) {
         return this.method_20585(chunkPos.toLong(), ChunkHolder::getEntityTickingFuture);
     }
 
     @Override
-    public boolean method_20529(BlockPos blockPos) {
+    public boolean shouldTickBlock(BlockPos blockPos) {
         long l = ChunkPos.toLong(blockPos.getX() >> 4, blockPos.getZ() >> 4);
         return this.method_20585(l, ChunkHolder::getTickingFuture);
     }
@@ -275,7 +272,7 @@ extends ChunkManager {
         this.world.getProfiler().swap("unload");
         this.threadedAnvilChunkStorage.tick(booleanSupplier);
         this.world.getProfiler().pop();
-        this.method_20587();
+        this.initChunkCaches();
     }
 
     private void tickChunks() {
