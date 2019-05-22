@@ -6,10 +6,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -166,6 +169,21 @@ public class ClientChunkManager extends ChunkManager {
 	@Override
 	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
 		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
+	}
+
+	@Override
+	public boolean shouldTickBlock(BlockPos blockPos) {
+		return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+	}
+
+	@Override
+	public boolean shouldTickChunk(ChunkPos chunkPos) {
+		return this.isChunkLoaded(chunkPos.x, chunkPos.z);
+	}
+
+	@Override
+	public boolean shouldTickEntity(Entity entity) {
+		return this.isChunkLoaded(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4);
 	}
 
 	@Environment(EnvType.CLIENT)

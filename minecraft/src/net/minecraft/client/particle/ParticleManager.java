@@ -107,7 +107,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.field_11245, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.field_11250, new ElderGuardianAppearanceParticle.Factory());
 		this.registerFactory(ParticleTypes.field_11208, DamageParticle.EnchantedHitFactory::new);
-		this.registerFactory(ParticleTypes.field_11215, EnchantGlyphParticle.EnchantFactory::new);
+		this.registerFactory(ParticleTypes.field_11215, EnchantGlyphParticle.NautilusFactory::new);
 		this.registerFactory(ParticleTypes.field_11207, EndRodParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11226, SpellParticle.EntityFactory::new);
 		this.registerFactory(ParticleTypes.field_11221, new ExplosionEmitterParticle.Factory());
@@ -126,7 +126,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.field_11237, FireSmokeLargeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11239, LavaEmberParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11219, SuspendParticle.MyceliumFactory::new);
-		this.registerFactory(ParticleTypes.field_11229, EnchantGlyphParticle.NautilusFactory::new);
+		this.registerFactory(ParticleTypes.field_11229, EnchantGlyphParticle.EnchantFactory::new);
 		this.registerFactory(ParticleTypes.field_11224, NoteParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11203, ExplosionSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11214, PortalParticle.Factory::new);

@@ -314,7 +314,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	@Override
 	public void close() throws IOException {
-		this.save(true);
 		this.chunkTaskPrioritySystem.close();
 		this.pointOfInterestStorage.close();
 		super.close();
@@ -418,10 +417,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		});
 	}
 
-	protected void updateHolderMap() {
-		if (this.chunkHolderListDirty) {
+	protected boolean updateHolderMap() {
+		if (!this.chunkHolderListDirty) {
+			return false;
+		} else {
 			this.chunkHolders = this.currentChunkHolders.clone();
 			this.chunkHolderListDirty = false;
+			return true;
 		}
 	}
 
@@ -431,7 +433,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return this.method_20619(chunkPos);
 		} else {
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.createFuture(chunkStatus.getPrevious(), this);
-			return completableFuture.thenCompose(
+			return completableFuture.thenComposeAsync(
 				either -> {
 					Optional<Chunk> optional = either.left();
 					if (!optional.isPresent()) {
@@ -459,7 +461,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							return this.method_20617(chunkHolder, chunkStatus);
 						}
 					}
-				}
+				},
+				this.mainThreadExecutor
 			);
 		}
 	}
