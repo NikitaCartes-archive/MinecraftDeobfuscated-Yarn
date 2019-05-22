@@ -96,11 +96,16 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 	}
 
 	private void loadDataAt(ChunkPos chunkPos) {
+		this.method_20368(chunkPos, NbtOps.INSTANCE, this.method_20621(chunkPos));
+	}
+
+	@Nullable
+	private CompoundTag method_20621(ChunkPos chunkPos) {
 		try {
-			CompoundTag compoundTag = this.getTagAt(chunkPos);
-			this.method_20368(chunkPos, NbtOps.INSTANCE, compoundTag);
+			return this.getTagAt(chunkPos);
 		} catch (IOException var3) {
-			LOGGER.error("Error reading data from disk", (Throwable)var3);
+			LOGGER.error("Error reading chunk {} data from disk", chunkPos, var3);
+			return null;
 		}
 	}
 

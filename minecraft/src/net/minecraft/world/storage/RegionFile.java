@@ -66,41 +66,37 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	@Nullable
-	public synchronized DataInputStream getChunkDataInputStream(ChunkPos chunkPos) {
-		try {
-			int i = this.getOffset(chunkPos);
-			if (i == 0) {
+	public synchronized DataInputStream getChunkDataInputStream(ChunkPos chunkPos) throws IOException {
+		int i = this.getOffset(chunkPos);
+		if (i == 0) {
+			return null;
+		} else {
+			int j = i >> 8;
+			int k = i & 0xFF;
+			if (j + k > this.sectorFree.size()) {
 				return null;
 			} else {
-				int j = i >> 8;
-				int k = i & 0xFF;
-				if (j + k > this.sectorFree.size()) {
+				this.file.seek((long)(j * 4096));
+				int l = this.file.readInt();
+				if (l > 4096 * k) {
+					return null;
+				} else if (l <= 0) {
 					return null;
 				} else {
-					this.file.seek((long)(j * 4096));
-					int l = this.file.readInt();
-					if (l > 4096 * k) {
-						return null;
-					} else if (l <= 0) {
-						return null;
+					byte b = this.file.readByte();
+					if (b == 1) {
+						byte[] bs = new byte[l - 1];
+						this.file.read(bs);
+						return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bs))));
+					} else if (b == 2) {
+						byte[] bs = new byte[l - 1];
+						this.file.read(bs);
+						return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bs))));
 					} else {
-						byte b = this.file.readByte();
-						if (b == 1) {
-							byte[] bs = new byte[l - 1];
-							this.file.read(bs);
-							return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bs))));
-						} else if (b == 2) {
-							byte[] bs = new byte[l - 1];
-							this.file.read(bs);
-							return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bs))));
-						} else {
-							return null;
-						}
+						return null;
 					}
 				}
 			}
-		} catch (IOException var8) {
-			return null;
 		}
 	}
 
@@ -129,16 +125,14 @@ public class RegionFile implements AutoCloseable {
 		return new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(chunkPos))));
 	}
 
-	protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) {
-		try {
-			int j = this.getOffset(chunkPos);
-			int k = j >> 8;
-			int l = j & 0xFF;
-			int m = (i + 5) / 4096 + 1;
-			if (m >= 256) {
-				throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
-			}
-
+	protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) throws IOException {
+		int j = this.getOffset(chunkPos);
+		int k = j >> 8;
+		int l = j & 0xFF;
+		int m = (i + 5) / 4096 + 1;
+		if (m >= 256) {
+			throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
+		} else {
 			if (k != 0 && l == m) {
 				this.write(k, bs, i);
 			} else {
@@ -191,8 +185,6 @@ public class RegionFile implements AutoCloseable {
 			}
 
 			this.setTimestamp(chunkPos, (int)(SystemUtil.getEpochTimeMs() / 1000L));
-		} catch (IOException var11) {
-			var11.printStackTrace();
 		}
 	}
 
@@ -241,7 +233,7 @@ public class RegionFile implements AutoCloseable {
 			this.pos = chunkPos;
 		}
 
-		public void close() {
+		public void close() throws IOException {
 			RegionFile.this.write(this.pos, this.buf, this.count);
 		}
 	}

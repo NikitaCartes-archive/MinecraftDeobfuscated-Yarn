@@ -115,84 +115,87 @@ public class AnvilLevelStorage {
 	}
 
 	private static void convertRegion(File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
-		try {
-			String string = file2.getName();
+		String string = file2.getName();
 
-			try (
-				RegionFile regionFile = new RegionFile(file2);
-				RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));
-			) {
-				for (int k = 0; k < 32; k++) {
-					for (int l = 0; l < 32; l++) {
-						ChunkPos chunkPos = new ChunkPos(k, l);
-						if (regionFile.hasChunk(chunkPos) && !regionFile2.hasChunk(chunkPos)) {
+		try (
+			RegionFile regionFile = new RegionFile(file2);
+			RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));
+		) {
+			for (int k = 0; k < 32; k++) {
+				for (int l = 0; l < 32; l++) {
+					ChunkPos chunkPos = new ChunkPos(k, l);
+					if (regionFile.hasChunk(chunkPos) && !regionFile2.hasChunk(chunkPos)) {
+						CompoundTag compoundTag;
+						try {
 							DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
 							Throwable alphaChunk = null;
 
-							CompoundTag compoundTag;
 							try {
 								if (dataInputStream == null) {
-									LOGGER.warn("Failed to fetch input stream");
+									LOGGER.warn("Failed to fetch input stream for chunk {}", chunkPos);
 									continue;
 								}
 
 								compoundTag = NbtIo.read(dataInputStream);
-							} catch (Throwable var100) {
-								alphaChunk = var100;
-								throw var100;
+							} catch (Throwable var104) {
+								alphaChunk = var104;
+								throw var104;
 							} finally {
 								if (dataInputStream != null) {
 									if (alphaChunk != null) {
 										try {
 											dataInputStream.close();
-										} catch (Throwable var97) {
-											alphaChunk.addSuppressed(var97);
+										} catch (Throwable var101) {
+											alphaChunk.addSuppressed(var101);
 										}
 									} else {
 										dataInputStream.close();
 									}
 								}
 							}
+						} catch (IOException var106) {
+							LOGGER.warn("Failed to read data for chunk {}", chunkPos, var106);
+							continue;
+						}
 
-							CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-							AlphaChunkIo.AlphaChunk alphaChunkx = AlphaChunkIo.readAlphaChunk(compoundTag2);
-							CompoundTag compoundTag3 = new CompoundTag();
-							CompoundTag compoundTag4 = new CompoundTag();
-							compoundTag3.put("Level", compoundTag4);
-							AlphaChunkIo.convertAlphaChunk(alphaChunkx, compoundTag4, biomeSource);
-							DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(chunkPos);
-							Throwable var20 = null;
+						CompoundTag compoundTag2 = compoundTag.getCompound("Level");
+						AlphaChunkIo.AlphaChunk alphaChunk = AlphaChunkIo.readAlphaChunk(compoundTag2);
+						CompoundTag compoundTag3 = new CompoundTag();
+						CompoundTag compoundTag4 = new CompoundTag();
+						compoundTag3.put("Level", compoundTag4);
+						AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
+						DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(chunkPos);
+						Throwable var20 = null;
 
-							try {
-								NbtIo.write(compoundTag3, dataOutputStream);
-							} catch (Throwable var98) {
-								var20 = var98;
-								throw var98;
-							} finally {
-								if (dataOutputStream != null) {
-									if (var20 != null) {
-										try {
-											dataOutputStream.close();
-										} catch (Throwable var96) {
-											var20.addSuppressed(var96);
-										}
-									} else {
+						try {
+							NbtIo.write(compoundTag3, dataOutputStream);
+						} catch (Throwable var102) {
+							var20 = var102;
+							throw var102;
+						} finally {
+							if (dataOutputStream != null) {
+								if (var20 != null) {
+									try {
 										dataOutputStream.close();
+									} catch (Throwable var100) {
+										var20.addSuppressed(var100);
 									}
+								} else {
+									dataOutputStream.close();
 								}
 							}
 						}
 					}
+				}
 
-					int lx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
-					int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
-					if (m > lx) {
-						progressListener.progressStagePercentage(m);
-					}
+				int lx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
+				int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
+				if (m > lx) {
+					progressListener.progressStagePercentage(m);
 				}
 			}
-		} catch (IOException var106) {
-			var106.printStackTrace();
+		} catch (IOException var111) {
+			LOGGER.error("Failed to upgrade region file {}", file2, var111);
 		}
 	}
 

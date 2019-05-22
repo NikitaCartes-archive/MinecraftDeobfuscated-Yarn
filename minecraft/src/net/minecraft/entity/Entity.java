@@ -58,6 +58,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -81,6 +82,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -2208,6 +2210,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public boolean isCustomNameVisible() {
 		return this.dataTracker.get(NAME_VISIBLE);
+	}
+
+	public final void method_20620(double d, double e, double f) {
+		if (this.world instanceof ServerWorld) {
+			ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
+			((ServerWorld)this.world).method_14178().addTicket(ChunkTicketType.field_19347, chunkPos, 0, this.getEntityId());
+			this.requestTeleport(d, e, f);
+		}
 	}
 
 	public void requestTeleport(double d, double e, double f) {

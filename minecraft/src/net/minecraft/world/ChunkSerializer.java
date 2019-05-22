@@ -96,6 +96,9 @@ public class ChunkSerializer {
 		boolean bl2 = serverWorld.getDimension().hasSkyLight();
 		ChunkManager chunkManager = serverWorld.method_14178();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
+		if (bl) {
+			lightingProvider.method_20601(chunkPos, true);
+		}
 
 		for (int l = 0; l < listTag.size(); l++) {
 			CompoundTag compoundTag3 = listTag.getCompoundTag(l);
@@ -120,10 +123,6 @@ public class ChunkSerializer {
 					lightingProvider.queueData(LightType.field_9284, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
-		}
-
-		if (bl) {
-			lightingProvider.method_20601(chunkPos, true);
 		}
 
 		long n = compoundTag2.getLong("InhabitedTime");

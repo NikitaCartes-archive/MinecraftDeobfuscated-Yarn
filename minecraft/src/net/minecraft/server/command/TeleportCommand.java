@@ -19,7 +19,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -241,6 +244,8 @@ public class TeleportCommand {
 		@Nullable TeleportCommand.LookTarget lookTarget
 	) {
 		if (entity instanceof ServerPlayerEntity) {
+			ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
+			serverWorld.method_14178().addTicket(ChunkTicketType.field_19347, chunkPos, 1, entity.getEntityId());
 			entity.stopRiding();
 			if (((ServerPlayerEntity)entity).isSleeping()) {
 				((ServerPlayerEntity)entity).wakeUp(true, true, false);

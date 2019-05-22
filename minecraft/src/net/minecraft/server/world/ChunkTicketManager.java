@@ -81,8 +81,7 @@ public abstract class ChunkTicketManager {
 
 		while (objectIterator.hasNext()) {
 			Entry<ObjectSortedSet<ChunkTicket<?>>> entry = (Entry<ObjectSortedSet<ChunkTicket<?>>>)objectIterator.next();
-			if (((ObjectSortedSet)entry.getValue())
-				.removeIf(chunkTicket -> chunkTicket.getType() == ChunkTicketType.field_14032 && chunkTicket.getLocation() != this.location)) {
+			if (((ObjectSortedSet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
 				this.distanceFromTicketTracker.update(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
 			}
 

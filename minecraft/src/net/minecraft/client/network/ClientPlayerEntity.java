@@ -621,8 +621,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.updateNausea();
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
-		float f = 0.8F;
-		boolean bl3 = this.input.movementForward >= 0.8F;
+		boolean bl3 = this.method_20623();
 		boolean bl4 = this.isInSneakingPose() || this.shouldLeaveSwimmingPose();
 		this.input.tick(bl4, this.isSpectator());
 		this.client.getTutorialManager().onMovement(this.input);
@@ -651,7 +650,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if ((this.onGround || this.isInWater())
 			&& !bl2
 			&& !bl3
-			&& this.input.movementForward >= 0.8F
+			&& this.method_20623()
 			&& !this.isSprinting()
 			&& bl6
 			&& !this.isUsingItem()
@@ -665,7 +664,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (!this.isSprinting()
 			&& (!this.isInsideWater() || this.isInWater())
-			&& this.input.movementForward >= 0.8F
+			&& this.method_20623()
 			&& bl6
 			&& !this.isUsingItem()
 			&& !this.hasStatusEffect(StatusEffects.field_5919)
@@ -674,7 +673,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.isSprinting()) {
-			boolean bl7 = this.input.movementForward < 0.8F || !bl6;
+			boolean bl7 = !this.input.method_20622() || !bl6;
 			boolean bl8 = bl7 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl7 || !this.isInsideWater()) {
@@ -952,6 +951,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				}
 			}
 		}
+	}
+
+	private boolean method_20623() {
+		double d = 0.8;
+		return this.isInWater() ? this.input.method_20622() : (double)this.input.movementForward >= 0.8;
 	}
 
 	public float method_3140() {

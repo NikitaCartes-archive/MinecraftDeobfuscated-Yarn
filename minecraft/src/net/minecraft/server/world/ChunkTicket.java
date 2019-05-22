@@ -52,7 +52,8 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		return this.level;
 	}
 
-	public long getLocation() {
-		return this.location;
+	public boolean method_20627(long l) {
+		long m = this.type.method_20629();
+		return m != 0L && l - this.location > m;
 	}
 }
