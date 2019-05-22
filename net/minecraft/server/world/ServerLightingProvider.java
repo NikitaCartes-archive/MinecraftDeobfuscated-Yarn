@@ -108,6 +108,11 @@ implements AutoCloseable {
         }, ChunkPos.toLong(i, j), intSupplier));
     }
 
+    @Override
+    public void method_20601(ChunkPos chunkPos, boolean bl) {
+        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.method_20601(chunkPos, bl), () -> "retainData " + chunkPos));
+    }
+
     public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
         ChunkPos chunkPos = chunk.getPos();
         chunk.setLightOn(false);

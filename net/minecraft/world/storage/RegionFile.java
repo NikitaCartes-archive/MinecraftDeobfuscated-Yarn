@@ -66,40 +66,36 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public synchronized DataInputStream getChunkDataInputStream(ChunkPos chunkPos) {
-        try {
-            int i = this.getOffset(chunkPos);
-            if (i == 0) {
-                return null;
-            }
-            int j = i >> 8;
-            int k = i & 0xFF;
-            if (j + k > this.sectorFree.size()) {
-                return null;
-            }
-            this.file.seek(j * 4096);
-            int l = this.file.readInt();
-            if (l > 4096 * k) {
-                return null;
-            }
-            if (l <= 0) {
-                return null;
-            }
-            byte b = this.file.readByte();
-            if (b == 1) {
-                byte[] bs = new byte[l - 1];
-                this.file.read(bs);
-                return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bs))));
-            }
-            if (b == 2) {
-                byte[] bs = new byte[l - 1];
-                this.file.read(bs);
-                return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bs))));
-            }
-            return null;
-        } catch (IOException iOException) {
+    public synchronized DataInputStream getChunkDataInputStream(ChunkPos chunkPos) throws IOException {
+        int i = this.getOffset(chunkPos);
+        if (i == 0) {
             return null;
         }
+        int j = i >> 8;
+        int k = i & 0xFF;
+        if (j + k > this.sectorFree.size()) {
+            return null;
+        }
+        this.file.seek(j * 4096);
+        int l = this.file.readInt();
+        if (l > 4096 * k) {
+            return null;
+        }
+        if (l <= 0) {
+            return null;
+        }
+        byte b = this.file.readByte();
+        if (b == 1) {
+            byte[] bs = new byte[l - 1];
+            this.file.read(bs);
+            return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bs))));
+        }
+        if (b == 2) {
+            byte[] bs = new byte[l - 1];
+            this.file.read(bs);
+            return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bs))));
+        }
+        return null;
     }
 
     public boolean isChunkPresent(ChunkPos chunkPos) {
@@ -131,58 +127,54 @@ implements AutoCloseable {
         return new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new ChunkBuffer(chunkPos))));
     }
 
-    protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) {
-        try {
-            int j = this.getOffset(chunkPos);
-            int k = j >> 8;
-            int l = j & 0xFF;
-            int m = (i + 5) / 4096 + 1;
-            if (m >= 256) {
-                throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
+    protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) throws IOException {
+        int j = this.getOffset(chunkPos);
+        int k = j >> 8;
+        int l = j & 0xFF;
+        int m = (i + 5) / 4096 + 1;
+        if (m >= 256) {
+            throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
+        }
+        if (k != 0 && l == m) {
+            this.write(k, bs, i);
+        } else {
+            int p;
+            int n;
+            for (n = 0; n < l; ++n) {
+                this.sectorFree.set(k + n, true);
             }
-            if (k != 0 && l == m) {
+            n = this.sectorFree.indexOf(true);
+            int o = 0;
+            if (n != -1) {
+                for (p = n; p < this.sectorFree.size(); ++p) {
+                    if (o != 0) {
+                        o = this.sectorFree.get(p).booleanValue() ? ++o : 0;
+                    } else if (this.sectorFree.get(p).booleanValue()) {
+                        n = p;
+                        o = 1;
+                    }
+                    if (o >= m) break;
+                }
+            }
+            if (o >= m) {
+                k = n;
+                this.setOffset(chunkPos, k << 8 | m);
+                for (p = 0; p < m; ++p) {
+                    this.sectorFree.set(k + p, false);
+                }
                 this.write(k, bs, i);
             } else {
-                int p;
-                int n;
-                for (n = 0; n < l; ++n) {
-                    this.sectorFree.set(k + n, true);
+                this.file.seek(this.file.length());
+                k = this.sectorFree.size();
+                for (p = 0; p < m; ++p) {
+                    this.file.write(EMPTY_SECTOR);
+                    this.sectorFree.add(false);
                 }
-                n = this.sectorFree.indexOf(true);
-                int o = 0;
-                if (n != -1) {
-                    for (p = n; p < this.sectorFree.size(); ++p) {
-                        if (o != 0) {
-                            o = this.sectorFree.get(p).booleanValue() ? ++o : 0;
-                        } else if (this.sectorFree.get(p).booleanValue()) {
-                            n = p;
-                            o = 1;
-                        }
-                        if (o >= m) break;
-                    }
-                }
-                if (o >= m) {
-                    k = n;
-                    this.setOffset(chunkPos, k << 8 | m);
-                    for (p = 0; p < m; ++p) {
-                        this.sectorFree.set(k + p, false);
-                    }
-                    this.write(k, bs, i);
-                } else {
-                    this.file.seek(this.file.length());
-                    k = this.sectorFree.size();
-                    for (p = 0; p < m; ++p) {
-                        this.file.write(EMPTY_SECTOR);
-                        this.sectorFree.add(false);
-                    }
-                    this.write(k, bs, i);
-                    this.setOffset(chunkPos, k << 8 | m);
-                }
+                this.write(k, bs, i);
+                this.setOffset(chunkPos, k << 8 | m);
             }
-            this.setTimestamp(chunkPos, (int)(SystemUtil.getEpochTimeMs() / 1000L));
-        } catch (IOException iOException) {
-            iOException.printStackTrace();
         }
+        this.setTimestamp(chunkPos, (int)(SystemUtil.getEpochTimeMs() / 1000L));
     }
 
     private void write(int i, byte[] bs, int j) throws IOException {
@@ -233,7 +225,7 @@ implements AutoCloseable {
         }
 
         @Override
-        public void close() {
+        public void close() throws IOException {
             RegionFile.this.write(this.pos, this.buf, this.count);
         }
     }

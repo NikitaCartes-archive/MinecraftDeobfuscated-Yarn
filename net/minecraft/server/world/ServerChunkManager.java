@@ -218,8 +218,9 @@ extends ChunkManager {
     }
 
     private boolean tick() {
-        if (this.ticketManager.tick(this.threadedAnvilChunkStorage)) {
-            this.threadedAnvilChunkStorage.updateHolderMap();
+        boolean bl = this.ticketManager.tick(this.threadedAnvilChunkStorage);
+        boolean bl2 = this.threadedAnvilChunkStorage.updateHolderMap();
+        if (bl || bl2) {
             this.initChunkCaches();
             return true;
         }
@@ -253,11 +254,13 @@ extends ChunkManager {
     }
 
     public void save(boolean bl) {
+        this.tick();
         this.threadedAnvilChunkStorage.save(bl);
     }
 
     @Override
     public void close() throws IOException {
+        this.save(true);
         this.lightProvider.close();
         this.threadedAnvilChunkStorage.close();
     }

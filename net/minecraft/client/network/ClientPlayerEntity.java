@@ -617,8 +617,7 @@ extends AbstractClientPlayerEntity {
         this.updateNausea();
         boolean bl = this.input.jumping;
         boolean bl2 = this.input.sneaking;
-        float f = 0.8f;
-        boolean bl3 = this.input.movementForward >= 0.8f;
+        boolean bl3 = this.method_20623();
         boolean bl4 = this.isInSneakingPose() || this.shouldLeaveSwimmingPose();
         this.input.tick(bl4, this.isSpectator());
         this.client.getTutorialManager().onMovement(this.input);
@@ -641,19 +640,19 @@ extends AbstractClientPlayerEntity {
             this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
         }
         boolean bl7 = bl6 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
-        if (!(!this.onGround && !this.isInWater() || bl2 || bl3 || !(this.input.movementForward >= 0.8f) || this.isSprinting() || !bl6 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
+        if (!(!this.onGround && !this.isInWater() || bl2 || bl3 || !this.method_20623() || this.isSprinting() || !bl6 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
             if (this.field_3935 > 0 || this.client.options.keySprint.isPressed()) {
                 this.setSprinting(true);
             } else {
                 this.field_3935 = 7;
             }
         }
-        if (!this.isSprinting() && (!this.isInsideWater() || this.isInWater()) && this.input.movementForward >= 0.8f && bl6 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.keySprint.isPressed()) {
+        if (!this.isSprinting() && (!this.isInsideWater() || this.isInWater()) && this.method_20623() && bl6 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.keySprint.isPressed()) {
             this.setSprinting(true);
         }
         if (this.isSprinting()) {
             boolean bl8;
-            boolean bl72 = this.input.movementForward < 0.8f || !bl6;
+            boolean bl72 = !this.input.method_20622() || !bl6;
             boolean bl9 = bl8 = bl72 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
             if (this.isSwimming()) {
                 if (!this.onGround && !this.input.sneaking && bl72 || !this.isInsideWater()) {
@@ -903,6 +902,11 @@ extends AbstractClientPlayerEntity {
             return;
         }
         this.field_3934 = 1;
+    }
+
+    private boolean method_20623() {
+        double d = 0.8;
+        return this.isInWater() ? this.input.method_20622() : (double)this.input.movementForward >= 0.8;
     }
 
     public float method_3140() {

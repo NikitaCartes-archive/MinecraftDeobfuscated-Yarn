@@ -297,7 +297,6 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     @Override
     public void close() throws IOException {
-        this.save(true);
         this.chunkTaskPrioritySystem.close();
         this.pointOfInterestStorage.close();
         super.close();
@@ -390,12 +389,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         });
     }
 
-    protected void updateHolderMap() {
+    protected boolean updateHolderMap() {
         if (!this.chunkHolderListDirty) {
-            return;
+            return false;
         }
         this.chunkHolders = this.currentChunkHolders.clone();
         this.chunkHolderListDirty = false;
+        return true;
     }
 
     public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createChunkFuture(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
@@ -404,7 +404,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return this.method_20619(chunkPos);
         }
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.createFuture(chunkStatus.getPrevious(), this);
-        return completableFuture.thenCompose(either -> {
+        return completableFuture.thenComposeAsync(either -> {
             Chunk chunk2;
             Optional optional = either.left();
             if (!optional.isPresent()) {
@@ -419,7 +419,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 return completableFuture;
             }
             return this.method_20617(chunkHolder, chunkStatus);
-        });
+        }, (Executor)this.mainThreadExecutor);
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {

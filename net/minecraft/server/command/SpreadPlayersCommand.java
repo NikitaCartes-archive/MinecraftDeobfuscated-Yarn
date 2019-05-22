@@ -136,7 +136,7 @@ public class SpreadPlayersCommand {
             } else {
                 pile = piles[i++];
             }
-            entity.requestTeleport((float)MathHelper.floor(pile.x) + 0.5f, pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
+            entity.method_20620((float)MathHelper.floor(pile.x) + 0.5f, pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
             double e = Double.MAX_VALUE;
             for (Pile pile2 : piles) {
                 if (pile == pile2) continue;

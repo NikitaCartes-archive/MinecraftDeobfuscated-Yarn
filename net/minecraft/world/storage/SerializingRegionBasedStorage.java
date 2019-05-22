@@ -95,11 +95,16 @@ extends RegionBasedStorage {
     }
 
     private void loadDataAt(ChunkPos chunkPos) {
+        this.method_20368(chunkPos, NbtOps.INSTANCE, this.method_20621(chunkPos));
+    }
+
+    @Nullable
+    private CompoundTag method_20621(ChunkPos chunkPos) {
         try {
-            CompoundTag compoundTag = this.getTagAt(chunkPos);
-            this.method_20368(chunkPos, NbtOps.INSTANCE, compoundTag);
+            return this.getTagAt(chunkPos);
         } catch (IOException iOException) {
-            LOGGER.error("Error reading data from disk", (Throwable)iOException);
+            LOGGER.error("Error reading chunk {} data from disk", (Object)chunkPos, (Object)iOException);
+            return null;
         }
     }
 

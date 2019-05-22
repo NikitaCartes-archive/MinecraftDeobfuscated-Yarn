@@ -154,7 +154,7 @@ implements Tickable {
         }
         if (this.exitPortalPos != null) {
             BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
-            entity.requestTeleport((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+            entity.method_20620((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
         }
         this.startTeleportCooldown();
     }

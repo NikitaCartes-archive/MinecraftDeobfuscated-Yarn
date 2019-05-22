@@ -150,7 +150,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.EFFECT, SpellParticle.DefaultFactory::new);
         this.registerFactory(ParticleTypes.ELDER_GUARDIAN, new ElderGuardianAppearanceParticle.Factory());
         this.registerFactory(ParticleTypes.ENCHANTED_HIT, DamageParticle.EnchantedHitFactory::new);
-        this.registerFactory(ParticleTypes.ENCHANT, EnchantGlyphParticle.EnchantFactory::new);
+        this.registerFactory(ParticleTypes.ENCHANT, EnchantGlyphParticle.NautilusFactory::new);
         this.registerFactory(ParticleTypes.END_ROD, EndRodParticle.Factory::new);
         this.registerFactory(ParticleTypes.ENTITY_EFFECT, SpellParticle.EntityFactory::new);
         this.registerFactory(ParticleTypes.EXPLOSION_EMITTER, new ExplosionEmitterParticle.Factory());
@@ -169,7 +169,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.LARGE_SMOKE, FireSmokeLargeParticle.Factory::new);
         this.registerFactory(ParticleTypes.LAVA, LavaEmberParticle.Factory::new);
         this.registerFactory(ParticleTypes.MYCELIUM, SuspendParticle.MyceliumFactory::new);
-        this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.NautilusFactory::new);
+        this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.EnchantFactory::new);
         this.registerFactory(ParticleTypes.NOTE, NoteParticle.Factory::new);
         this.registerFactory(ParticleTypes.POOF, ExplosionSmokeParticle.Factory::new);
         this.registerFactory(ParticleTypes.PORTAL, PortalParticle.Factory::new);

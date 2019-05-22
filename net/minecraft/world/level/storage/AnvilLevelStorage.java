@@ -100,42 +100,43 @@ public class AnvilLevelStorage {
     }
 
     private static void convertRegion(File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
-        try {
-            String string = file2.getName();
-            try (RegionFile regionFile = new RegionFile(file2);
-                 RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));){
-                for (int k = 0; k < 32; ++k) {
-                    int l;
-                    for (l = 0; l < 32; ++l) {
-                        CompoundTag compoundTag;
-                        ChunkPos chunkPos = new ChunkPos(k, l);
-                        if (!regionFile.hasChunk(chunkPos) || regionFile2.hasChunk(chunkPos)) continue;
-                        try (DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);){
-                            if (dataInputStream == null) {
-                                LOGGER.warn("Failed to fetch input stream");
-                                continue;
-                            }
-                            compoundTag = NbtIo.read(dataInputStream);
-                        }
-                        CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-                        AlphaChunkIo.AlphaChunk alphaChunk = AlphaChunkIo.readAlphaChunk(compoundTag2);
-                        CompoundTag compoundTag3 = new CompoundTag();
-                        CompoundTag compoundTag4 = new CompoundTag();
-                        compoundTag3.put("Level", compoundTag4);
-                        AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
-                        try (DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(chunkPos);){
-                            NbtIo.write(compoundTag3, (DataOutput)dataOutputStream);
+        String string = file2.getName();
+        try (RegionFile regionFile = new RegionFile(file2);
+             RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));){
+            for (int k = 0; k < 32; ++k) {
+                int l;
+                for (l = 0; l < 32; ++l) {
+                    CompoundTag compoundTag;
+                    ChunkPos chunkPos = new ChunkPos(k, l);
+                    if (!regionFile.hasChunk(chunkPos) || regionFile2.hasChunk(chunkPos)) continue;
+                    try (DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);){
+                        if (dataInputStream == null) {
+                            LOGGER.warn("Failed to fetch input stream for chunk {}", (Object)chunkPos);
                             continue;
                         }
+                        compoundTag = NbtIo.read(dataInputStream);
+                    } catch (IOException iOException) {
+                        LOGGER.warn("Failed to read data for chunk {}", (Object)chunkPos, (Object)iOException);
+                        continue;
                     }
-                    l = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
-                    int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
-                    if (m <= l) continue;
-                    progressListener.progressStagePercentage(m);
+                    CompoundTag compoundTag2 = compoundTag.getCompound("Level");
+                    AlphaChunkIo.AlphaChunk alphaChunk = AlphaChunkIo.readAlphaChunk(compoundTag2);
+                    CompoundTag compoundTag3 = new CompoundTag();
+                    CompoundTag compoundTag4 = new CompoundTag();
+                    compoundTag3.put("Level", compoundTag4);
+                    AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
+                    try (DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(chunkPos);){
+                        NbtIo.write(compoundTag3, (DataOutput)dataOutputStream);
+                        continue;
+                    }
                 }
+                l = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
+                int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
+                if (m <= l) continue;
+                progressListener.progressStagePercentage(m);
             }
-        } catch (IOException iOException) {
-            iOException.printStackTrace();
+        } catch (IOException iOException2) {
+            LOGGER.error("Failed to upgrade region file {}", (Object)file2, (Object)iOException2);
         }
     }
 
