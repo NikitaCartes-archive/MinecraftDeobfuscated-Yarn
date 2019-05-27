@@ -98,7 +98,7 @@ public class PickaxeItem extends MiningToolItem {
 	@Override
 	public boolean isEffectiveOn(BlockState blockState) {
 		Block block = blockState.getBlock();
-		int i = this.getType().getMiningLevel();
+		int i = this.getMaterial().getMiningLevel();
 		if (block == Blocks.field_10540) {
 			return i == 3;
 		} else if (block == Blocks.field_10201
@@ -118,10 +118,10 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Material material = blockState.getMaterial();
 		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE
-			? super.getBlockBreakingSpeed(itemStack, blockState)
-			: this.blockBreakingSpeed;
+			? super.getMiningSpeed(itemStack, blockState)
+			: this.miningSpeed;
 	}
 }

@@ -115,7 +115,7 @@ public class ShapedRecipeJsonFactory {
 				this.pattern,
 				this.inputs,
 				this.builder,
-				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
+				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}

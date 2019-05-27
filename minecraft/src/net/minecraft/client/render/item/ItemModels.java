@@ -47,7 +47,7 @@ public class ItemModels {
 	}
 
 	private static int getModelId(Item item) {
-		return Item.getRawIdByItem(item);
+		return Item.getRawId(item);
 	}
 
 	public void putModel(Item item, ModelIdentifier modelIdentifier) {

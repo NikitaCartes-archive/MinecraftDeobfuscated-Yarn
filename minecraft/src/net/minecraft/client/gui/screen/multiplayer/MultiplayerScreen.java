@@ -13,10 +13,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.LanServerEntry;
 import net.minecraft.client.network.LanServerQueryManager;
+import net.minecraft.client.network.ServerEntryNetworkPart;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.sortme.ServerEntryNetworkPart;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
@@ -230,7 +230,7 @@ public class MultiplayerScreen extends Screen {
 		this.buttonEdit.active = false;
 		this.buttonDelete.active = false;
 		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
-		if (entry != null && !(entry instanceof MultiplayerServerListWidget.class_4268)) {
+		if (entry != null && !(entry instanceof MultiplayerServerListWidget.ScanningEntry)) {
 			this.buttonJoin.active = true;
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 				this.buttonEdit.active = true;

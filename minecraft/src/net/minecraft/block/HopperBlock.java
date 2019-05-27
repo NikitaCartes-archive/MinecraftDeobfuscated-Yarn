@@ -89,7 +89,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.getFacing().getOpposite();
+		Direction direction = itemPlacementContext.getSide().getOpposite();
 		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.field_11033 : direction).with(ENABLED, Boolean.valueOf(true));
 	}
 
@@ -100,10 +100,10 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				((HopperBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((HopperBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

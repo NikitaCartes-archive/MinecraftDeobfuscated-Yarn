@@ -31,9 +31,9 @@ public class ScaffoldingItem extends BlockItem {
 		} else {
 			Direction direction;
 			if (itemPlacementContext.isPlayerSneaking()) {
-				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getFacing().getOpposite() : itemPlacementContext.getFacing();
+				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide();
 			} else {
-				direction = itemPlacementContext.getFacing() == Direction.field_11036 ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.field_11036;
+				direction = itemPlacementContext.getSide() == Direction.field_11036 ? itemPlacementContext.getPlayerFacing() : Direction.field_11036;
 			}
 
 			int i = 0;
@@ -55,7 +55,7 @@ public class ScaffoldingItem extends BlockItem {
 				blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() != this.getBlock()) {
 					if (blockState.canReplace(itemPlacementContext)) {
-						return ItemPlacementContext.create(itemPlacementContext, mutable, direction);
+						return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
 					}
 					break;
 				}
@@ -71,7 +71,7 @@ public class ScaffoldingItem extends BlockItem {
 	}
 
 	@Override
-	protected boolean shouldCheckIfStateAllowsPlacement() {
+	protected boolean checkStatePlacement() {
 		return false;
 	}
 }

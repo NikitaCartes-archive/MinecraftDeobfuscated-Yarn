@@ -65,7 +65,7 @@ public class BrewingStandContainer extends Container {
 					if (!this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandContainer.SlotPotion.matches(itemStack) && itemStack.getAmount() == 1) {
+				} else if (BrewingStandContainer.SlotPotion.matches(itemStack) && itemStack.getCount() == 1) {
 					if (!this.insertItem(itemStack2, 0, 3, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -98,7 +98,7 @@ public class BrewingStandContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

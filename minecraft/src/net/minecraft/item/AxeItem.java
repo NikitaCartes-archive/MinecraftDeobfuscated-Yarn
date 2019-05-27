@@ -57,7 +57,7 @@ public class AxeItem extends MiningToolItem {
 		Blocks.field_10470,
 		Blocks.field_10397
 	);
-	protected static final Map<Block, Block> BLOCK_TRANSFORMATIONS_MAP = new Builder<Block, Block>()
+	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
 		.put(Blocks.field_10126, Blocks.field_10250)
 		.put(Blocks.field_10431, Blocks.field_10519)
 		.put(Blocks.field_10178, Blocks.field_10374)
@@ -77,11 +77,11 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Material material = blockState.getMaterial();
 		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.getBlockBreakingSpeed(itemStack, blockState)
-			: this.blockBreakingSpeed;
+			? super.getMiningSpeed(itemStack, blockState)
+			: this.miningSpeed;
 	}
 
 	@Override
@@ -89,14 +89,14 @@ public class AxeItem extends MiningToolItem {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		Block block = (Block)BLOCK_TRANSFORMATIONS_MAP.get(blockState.getBlock());
+		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
-					itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 			}
 

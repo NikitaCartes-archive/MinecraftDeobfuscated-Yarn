@@ -223,7 +223,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 
 	public void method_2478() {
 		ItemStack itemStack = this.container.getSlot(0).getStack();
-		if (!ItemStack.areEqual(itemStack, this.field_2913)) {
+		if (!ItemStack.areEqualIgnoreDamage(itemStack, this.field_2913)) {
 			this.field_2913 = itemStack;
 
 			do {

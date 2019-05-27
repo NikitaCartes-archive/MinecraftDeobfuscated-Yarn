@@ -8,7 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -18,23 +18,23 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class LeavesBlock extends Block {
-	public static final IntegerProperty DISTANCE = Properties.DISTANCE_1_7;
+	public static final IntProperty field_11199 = Properties.field_12541;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 	protected static boolean fancy;
 
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11199, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public boolean hasRandomTicks(BlockState blockState) {
-		return blockState.get(DISTANCE) == 7 && !blockState.get(PERSISTENT);
+		return blockState.get(field_11199) == 7 && !blockState.get(PERSISTENT);
 	}
 
 	@Override
 	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.get(PERSISTENT) && blockState.get(DISTANCE) == 7) {
+		if (!blockState.get(PERSISTENT) && blockState.get(field_11199) == 7) {
 			dropStacks(blockState, world, blockPos);
 			world.clearBlockState(blockPos, false);
 		}
@@ -55,7 +55,7 @@ public class LeavesBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		int i = getDistanceFromLog(blockState2) + 1;
-		if (i != 1 || blockState.get(DISTANCE) != i) {
+		if (i != 1 || blockState.get(field_11199) != i) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -75,14 +75,14 @@ public class LeavesBlock extends Block {
 			}
 		}
 
-		return blockState.with(DISTANCE, Integer.valueOf(i));
+		return blockState.with(field_11199, Integer.valueOf(i));
 	}
 
 	private static int getDistanceFromLog(BlockState blockState) {
 		if (BlockTags.field_15475.contains(blockState.getBlock())) {
 			return 0;
 		} else {
-			return blockState.getBlock() instanceof LeavesBlock ? blockState.get(DISTANCE) : 7;
+			return blockState.getBlock() instanceof LeavesBlock ? blockState.get(field_11199) : 7;
 		}
 	}
 
@@ -130,7 +130,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(DISTANCE, PERSISTENT);
+		builder.add(field_11199, PERSISTENT);
 	}
 
 	@Override

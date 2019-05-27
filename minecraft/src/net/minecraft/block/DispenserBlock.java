@@ -121,15 +121,15 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite());
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

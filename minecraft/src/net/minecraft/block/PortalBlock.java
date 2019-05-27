@@ -27,7 +27,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class PortalBlock extends Block {
-	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS_XZ;
+	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 

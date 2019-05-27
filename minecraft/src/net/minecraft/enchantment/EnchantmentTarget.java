@@ -84,7 +84,7 @@ public enum EnchantmentTarget {
 	BREAKABLE {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item.canDamage();
+			return item.isDamageable();
 		}
 	},
 	BOW {

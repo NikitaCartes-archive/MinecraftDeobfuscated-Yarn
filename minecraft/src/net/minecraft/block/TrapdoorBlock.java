@@ -126,12 +126,12 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		Direction direction = itemPlacementContext.getFacing();
-		if (!itemPlacementContext.canReplaceHitBlock() && direction.getAxis().isHorizontal()) {
+		Direction direction = itemPlacementContext.getSide();
+		if (!itemPlacementContext.canReplaceExisting() && direction.getAxis().isHorizontal()) {
 			blockState = blockState.with(FACING, direction)
-				.with(HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617);
+				.with(HALF, itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617);
 		} else {
-			blockState = blockState.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
+			blockState = blockState.with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())
 				.with(HALF, direction == Direction.field_11036 ? BlockHalf.field_12617 : BlockHalf.field_12619);
 		}
 

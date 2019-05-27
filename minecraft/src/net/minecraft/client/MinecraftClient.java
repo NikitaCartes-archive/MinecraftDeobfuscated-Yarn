@@ -556,7 +556,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 	private void initializeSearchableContainers() {
 		TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<>(
-			itemStack -> itemStack.getTooltipText(null, TooltipContext.Default.field_8934)
+			itemStack -> itemStack.getTooltip(null, TooltipContext.Default.field_8934)
 					.stream()
 					.map(component -> ChatFormat.stripFormatting(component.getString()).trim())
 					.filter(string -> !string.isEmpty()),
@@ -568,7 +568,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create();
 
 		for(Item item : Registry.ITEM) {
-			item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
+			item.appendStacks(ItemGroup.SEARCH, defaultedList);
 		}
 
 		defaultedList.forEach(itemStack -> {
@@ -578,7 +578,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<>(
 			recipeResultCollection -> recipeResultCollection.getAllRecipes()
 					.stream()
-					.flatMap(recipe -> recipe.getOutput().getTooltipText(null, TooltipContext.Default.field_8934).stream())
+					.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.field_8934).stream())
 					.map(component -> ChatFormat.stripFormatting(component.getString()).trim())
 					.filter(string -> !string.isEmpty()),
 			recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
@@ -720,7 +720,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 		for(Item item : Registry.ITEM) {
 			defaultedList.clear();
-			item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
+			item.appendStacks(ItemGroup.SEARCH, defaultedList);
 
 			for(ItemStack itemStack : defaultedList) {
 				String string = itemStack.getTranslationKey();
@@ -1221,11 +1221,11 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 								break;
 							case field_1332:
 								BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
-								int i = itemStack.getAmount();
+								int i = itemStack.getCount();
 								ActionResult actionResult = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
 								if (actionResult == ActionResult.field_5812) {
 									this.player.swingHand(hand);
-									if (!itemStack.isEmpty() && (itemStack.getAmount() != i || this.interactionManager.hasCreativeInventory())) {
+									if (!itemStack.isEmpty() && (itemStack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
 										this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
 									}
 
@@ -1758,12 +1758,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			itemStack.getOrCreateTag().put("SkullOwner", compoundTag2);
 			return itemStack;
 		} else {
-			itemStack.setChildTag("BlockEntityTag", compoundTag);
+			itemStack.putSubTag("BlockEntityTag", compoundTag);
 			CompoundTag compoundTag2 = new CompoundTag();
 			ListTag listTag = new ListTag();
 			listTag.add(new StringTag("\"(+NBT)\""));
 			compoundTag2.put("Lore", listTag);
-			itemStack.setChildTag("display", compoundTag2);
+			itemStack.putSubTag("display", compoundTag2);
 			return itemStack;
 		}
 	}

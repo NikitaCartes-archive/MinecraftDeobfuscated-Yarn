@@ -87,9 +87,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 		} else if (type == AbstractMinecartEntity.Type.field_7679) {
 			return new FurnaceMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.field_7675) {
-			return new TNTMinecartEntity(world, d, e, f);
+			return new TntMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.field_7680) {
-			return new MobSpawnerMinecartEntity(world, d, e, f);
+			return new SpawnerMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.field_7677) {
 			return new HopperMinecartEntity(world, d, e, f);
 		} else {
@@ -160,7 +160,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			ItemStack itemStack = new ItemStack(Items.field_8045);
 			if (this.hasCustomName()) {
-				itemStack.setDisplayName(this.getCustomName());
+				itemStack.setCustomName(this.getCustomName());
 			}
 
 			this.dropStack(itemStack);

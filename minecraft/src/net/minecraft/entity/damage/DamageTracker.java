@@ -72,15 +72,15 @@ public class DamageTracker {
 				} else if (component2 != null && (component == null || !component2.equals(component))) {
 					Entity entity2 = damageRecord.getDamageSource().getAttacker();
 					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
-					if (!itemStack.isEmpty() && itemStack.hasDisplayName()) {
-						component3 = new TranslatableComponent("death.fell.assist.item", this.entity.getDisplayName(), component2, itemStack.toTextComponent());
+					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
+						component3 = new TranslatableComponent("death.fell.assist.item", this.entity.getDisplayName(), component2, itemStack.toHoverableText());
 					} else {
 						component3 = new TranslatableComponent("death.fell.assist", this.entity.getDisplayName(), component2);
 					}
 				} else if (component != null) {
 					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
-					if (!itemStack2.isEmpty() && itemStack2.hasDisplayName()) {
-						component3 = new TranslatableComponent("death.fell.finish.item", this.entity.getDisplayName(), component, itemStack2.toTextComponent());
+					if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
+						component3 = new TranslatableComponent("death.fell.finish.item", this.entity.getDisplayName(), component, itemStack2.toHoverableText());
 					} else {
 						component3 = new TranslatableComponent("death.fell.finish", this.entity.getDisplayName(), component);
 					}

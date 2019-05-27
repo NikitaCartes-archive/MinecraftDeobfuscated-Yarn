@@ -6,17 +6,17 @@ import net.minecraft.util.Identifier;
 
 public class HorseArmorItem extends Item {
 	private final int bonus;
-	private final String texture;
+	private final String entityTexture;
 
 	public HorseArmorItem(int i, String string, Item.Settings settings) {
 		super(settings);
 		this.bonus = i;
-		this.texture = "textures/entity/horse/armor/horse_armor_" + string + ".png";
+		this.entityTexture = "textures/entity/horse/armor/horse_armor_" + string + ".png";
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getHorseArmorTexture() {
-		return new Identifier(this.texture);
+	public Identifier getEntityTexture() {
+		return new Identifier(this.entityTexture);
 	}
 
 	public int getBonus() {

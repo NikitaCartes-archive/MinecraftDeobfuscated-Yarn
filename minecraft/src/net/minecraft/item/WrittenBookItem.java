@@ -31,8 +31,8 @@ public class WrittenBookItem extends Item {
 		super(settings);
 	}
 
-	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
-		if (!WritableBookItem.isValidBook(compoundTag)) {
+	public static boolean isValid(@Nullable CompoundTag compoundTag) {
+		if (!WritableBookItem.isValid(compoundTag)) {
 			return false;
 		} else if (!compoundTag.containsKey("title", 8)) {
 			return false;
@@ -42,7 +42,7 @@ public class WrittenBookItem extends Item {
 		}
 	}
 
-	public static int getBookGeneration(ItemStack itemStack) {
+	public static int getGeneration(ItemStack itemStack) {
 		return itemStack.getTag().getInt("generation");
 	}
 
@@ -52,7 +52,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public Component getTranslatedNameTrimmed(ItemStack itemStack) {
+	public Component getName(ItemStack itemStack) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("title");
@@ -61,12 +61,12 @@ public class WrittenBookItem extends Item {
 			}
 		}
 
-		return super.getTranslatedNameTrimmed(itemStack);
+		return super.getName(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
@@ -84,7 +84,7 @@ public class WrittenBookItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
 		} else {
 			return ActionResult.field_5811;
 		}
@@ -102,7 +102,7 @@ public class WrittenBookItem extends Item {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && !compoundTag.getBoolean("resolved")) {
 			compoundTag.putBoolean("resolved", true);
-			if (!isValidBook(compoundTag)) {
+			if (!isValid(compoundTag)) {
 				return false;
 			} else {
 				ListTag listTag = compoundTag.getList("pages", 8);

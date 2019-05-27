@@ -104,8 +104,8 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	public void setInvStack(int i, ItemStack itemStack) {
 		this.checkLootInteraction(null);
 		this.getInvStackList().set(i, itemStack);
-		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 
 		this.markDirty();

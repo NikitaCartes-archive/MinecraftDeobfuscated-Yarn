@@ -19,10 +19,10 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO = Blocks.field_10211
 		.getDefaultState()
-		.with(BambooBlock.AGE, Integer.valueOf(1))
+		.with(BambooBlock.field_9914, Integer.valueOf(1))
 		.with(BambooBlock.LEAVES, BambooLeaves.field_12469)
-		.with(BambooBlock.STAGE, Integer.valueOf(0));
-	private static final BlockState BAMBOO_TOP_1 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468).with(BambooBlock.STAGE, Integer.valueOf(1));
+		.with(BambooBlock.field_9916, Integer.valueOf(0));
+	private static final BlockState BAMBOO_TOP_1 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468).with(BambooBlock.field_9916, Integer.valueOf(1));
 	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468);
 	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12466);
 

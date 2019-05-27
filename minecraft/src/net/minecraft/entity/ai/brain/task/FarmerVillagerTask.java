@@ -134,7 +134,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 							1.0F,
 							1.0F
 						);
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
 							basicInventory.setInvStack(i, ItemStack.EMPTY);
 						}

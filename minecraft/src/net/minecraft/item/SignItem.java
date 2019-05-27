@@ -14,8 +14,8 @@ public class SignItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	protected boolean afterBlockPlaced(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		boolean bl = super.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState);
+	protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
+		boolean bl = super.postPlacement(blockPos, world, playerEntity, itemStack, blockState);
 		if (!world.isClient && !bl && playerEntity != null) {
 			playerEntity.openEditSignScreen((SignBlockEntity)world.getBlockEntity(blockPos));
 		}

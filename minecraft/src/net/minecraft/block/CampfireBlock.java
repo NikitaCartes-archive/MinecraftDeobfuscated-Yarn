@@ -45,7 +45,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	public static final DirectionProperty FACING = Properties.FACING_HORIZONTAL;
+	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
 	public CampfireBlock(Block.Settings settings) {
 		super(settings);
@@ -114,7 +114,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			.with(WATERLOGGED, Boolean.valueOf(bl))
 			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
-			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+			.with(FACING, itemPlacementContext.getPlayerFacing());
 	}
 
 	@Override

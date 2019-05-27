@@ -10,29 +10,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
-public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
+public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(int i) {
-			MobSpawnerMinecartEntity.this.world.sendEntityStatus(MobSpawnerMinecartEntity.this, (byte)i);
+			SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override
 		public World getWorld() {
-			return MobSpawnerMinecartEntity.this.world;
+			return SpawnerMinecartEntity.this.world;
 		}
 
 		@Override
 		public BlockPos getPos() {
-			return new BlockPos(MobSpawnerMinecartEntity.this);
+			return new BlockPos(SpawnerMinecartEntity.this);
 		}
 	};
 
-	public MobSpawnerMinecartEntity(EntityType<? extends MobSpawnerMinecartEntity> entityType, World world) {
+	public SpawnerMinecartEntity(EntityType<? extends SpawnerMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public MobSpawnerMinecartEntity(World world, double d, double e, double f) {
+	public SpawnerMinecartEntity(World world, double d, double e, double f) {
 		super(EntityType.field_6142, world, d, e, f);
 	}
 

@@ -87,8 +87,8 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	public void setInvStack(int i, ItemStack itemStack) {
 		this.method_7563(null);
 		this.inventory.set(i, itemStack);
-		if (!itemStack.isEmpty() && itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 

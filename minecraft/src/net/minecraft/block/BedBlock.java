@@ -181,7 +181,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
+		Direction direction = itemPlacementContext.getPlayerFacing();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(direction);
 		return itemPlacementContext.getWorld().getBlockState(blockPos2).canReplace(itemPlacementContext) ? this.getDefaultState().with(FACING, direction) : null;

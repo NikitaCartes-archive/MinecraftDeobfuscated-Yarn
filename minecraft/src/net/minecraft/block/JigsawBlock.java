@@ -33,7 +33,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getSide());
 	}
 
 	@Nullable

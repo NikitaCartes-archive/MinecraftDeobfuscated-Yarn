@@ -78,7 +78,7 @@ public class CowEntity extends AnimalEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8550 && !playerEntity.abilities.creativeMode && !this.isBaby()) {
 			playerEntity.playSound(SoundEvents.field_14691, 1.0F, 1.0F);
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 			if (itemStack.isEmpty()) {
 				playerEntity.setStackInHand(hand, new ItemStack(Items.field_8103));
 			} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.field_8103))) {

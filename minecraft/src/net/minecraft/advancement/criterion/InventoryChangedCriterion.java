@@ -147,7 +147,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 					++j;
 				} else {
 					++k;
-					if (itemStack.getAmount() >= itemStack.getMaxAmount()) {
+					if (itemStack.getCount() >= itemStack.getMaxCount()) {
 						++i;
 					}
 

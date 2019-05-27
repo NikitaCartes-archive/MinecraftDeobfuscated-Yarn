@@ -225,7 +225,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.field_8399);
 		ItemStack itemStack = this.getStackInHand(hand);
 		if (this.isHolding(Items.field_8399)) {
-			CrossbowItem.shootAllProjectiles(this.world, this, hand, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+			CrossbowItem.shootAll(this.world, this, hand, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		}
 
 		this.despawnCounter = 0;
@@ -275,7 +275,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 				if (itemStack2.isEmpty()) {
 					itemEntity.remove();
 				} else {
-					itemStack.setAmount(itemStack2.getAmount());
+					itemStack.setCount(itemStack2.getCount());
 				}
 			}
 		}

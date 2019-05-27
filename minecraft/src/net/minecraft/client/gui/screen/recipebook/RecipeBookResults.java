@@ -42,14 +42,14 @@ public class RecipeBookResults {
 		}
 
 		this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
-		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookScreen.TEXTURE);
+		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
 		this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
-		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookScreen.TEXTURE);
+		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
 	}
 
-	public void setGui(RecipeBookScreen recipeBookScreen) {
-		this.recipeDisplayListeners.remove(recipeBookScreen);
-		this.recipeDisplayListeners.add(recipeBookScreen);
+	public void setGui(RecipeBookWidget recipeBookWidget) {
+		this.recipeDisplayListeners.remove(recipeBookWidget);
+		this.recipeDisplayListeners.add(recipeBookWidget);
 	}
 
 	public void setResults(List<RecipeResultCollection> list, boolean bl) {

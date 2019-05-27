@@ -91,7 +91,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 		public boolean matches(ItemStack itemStack, int i) {
 			if (!this.item.test(itemStack)) {
 				return false;
-			} else if (!this.durability.test(itemStack.getDurability() - i)) {
+			} else if (!this.durability.test(itemStack.getMaxDamage() - i)) {
 				return false;
 			} else {
 				return this.delta.test(itemStack.getDamage() - i);

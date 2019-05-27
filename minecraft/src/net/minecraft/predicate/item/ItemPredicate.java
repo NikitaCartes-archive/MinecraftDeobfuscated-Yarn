@@ -74,11 +74,11 @@ public class ItemPredicate {
 			return false;
 		} else if (this.item != null && itemStack.getItem() != this.item) {
 			return false;
-		} else if (!this.count.test(itemStack.getAmount())) {
+		} else if (!this.count.test(itemStack.getCount())) {
 			return false;
-		} else if (!this.durability.isDummy() && !itemStack.hasDurability()) {
+		} else if (!this.durability.isDummy() && !itemStack.isDamageable()) {
 			return false;
-		} else if (!this.durability.test(itemStack.getDurability() - itemStack.getDamage())) {
+		} else if (!this.durability.test(itemStack.getMaxDamage() - itemStack.getDamage())) {
 			return false;
 		} else if (!this.nbt.test(itemStack)) {
 			return false;

@@ -158,10 +158,10 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		ChestType chestType = ChestType.field_12569;
-		Direction direction = itemPlacementContext.getPlayerHorizontalFacing().getOpposite();
+		Direction direction = itemPlacementContext.getPlayerFacing().getOpposite();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		boolean bl = itemPlacementContext.isPlayerSneaking();
-		Direction direction2 = itemPlacementContext.getFacing();
+		Direction direction2 = itemPlacementContext.getSide();
 		if (direction2.getAxis().isHorizontal() && bl) {
 			Direction direction3 = this.getNeighborChestDirection(itemPlacementContext, direction2.getOpposite());
 			if (direction3 != null && direction3.getAxis() != direction2.getAxis()) {
@@ -194,10 +194,10 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				((ChestBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((ChestBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

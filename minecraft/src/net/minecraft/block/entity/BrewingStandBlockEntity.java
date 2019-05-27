@@ -93,7 +93,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		ItemStack itemStack = this.inventory.get(4);
 		if (this.fuel <= 0 && itemStack.getItem() == Items.field_8183) {
 			this.fuel = 20;
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 			this.markDirty();
 		}
 
@@ -175,7 +175,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			this.inventory.set(i, BrewingRecipeRegistry.craft(itemStack, this.inventory.get(i)));
 		}
 
-		itemStack.subtractAmount(1);
+		itemStack.decrement(1);
 		BlockPos blockPos = this.getPos();
 		if (itemStack.getItem().hasRecipeRemainder()) {
 			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());

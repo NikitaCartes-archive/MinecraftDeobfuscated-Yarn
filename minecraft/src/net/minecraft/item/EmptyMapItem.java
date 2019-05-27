@@ -8,7 +8,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class EmptyMapItem extends MapItem {
+public class EmptyMapItem extends NetworkSyncedItem {
 	public EmptyMapItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -18,7 +18,7 @@ public class EmptyMapItem extends MapItem {
 		ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
 		ItemStack itemStack2 = playerEntity.getStackInHand(hand);
 		if (!playerEntity.abilities.creativeMode) {
-			itemStack2.subtractAmount(1);
+			itemStack2.decrement(1);
 		}
 
 		if (itemStack2.isEmpty()) {

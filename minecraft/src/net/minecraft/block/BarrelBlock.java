@@ -83,10 +83,10 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BarrelBlockEntity) {
-				((BarrelBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((BarrelBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}
@@ -118,6 +118,6 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite());
 	}
 }

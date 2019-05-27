@@ -206,7 +206,7 @@ public class CreeperEntity extends HostileEntity {
 			playerEntity.swingHand(hand);
 			if (!this.world.isClient) {
 				this.setIgnited();
-				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				return true;
 			}
 		}

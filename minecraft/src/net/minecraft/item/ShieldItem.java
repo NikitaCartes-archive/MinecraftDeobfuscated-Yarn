@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class ShieldItem extends Item {
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(
+		this.addPropertyGetter(
 			new Identifier("blocking"),
 			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
@@ -30,15 +30,13 @@ public class ShieldItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack itemStack) {
-		return itemStack.getSubCompoundTag("BlockEntityTag") != null
-			? this.getTranslationKey() + '.' + getColor(itemStack).getName()
-			: super.getTranslationKey(itemStack);
+		return itemStack.getSubTag("BlockEntityTag") != null ? this.getTranslationKey() + '.' + getColor(itemStack).getName() : super.getTranslationKey(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		BannerItem.buildBannerTooltip(itemStack, list);
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		BannerItem.appendBannerTooltip(itemStack, list);
 	}
 
 	@Override
@@ -64,6 +62,6 @@ public class ShieldItem extends Item {
 	}
 
 	public static DyeColor getColor(ItemStack itemStack) {
-		return DyeColor.byId(itemStack.getOrCreateSubCompoundTag("BlockEntityTag").getInt("Base"));
+		return DyeColor.byId(itemStack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
 	}
 }

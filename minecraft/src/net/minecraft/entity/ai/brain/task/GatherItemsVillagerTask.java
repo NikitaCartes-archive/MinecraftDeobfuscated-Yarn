@@ -69,8 +69,8 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (set.contains(item)) {
-					int j = itemStack2.getAmount() / 2;
-					itemStack2.subtractAmount(j);
+					int j = itemStack2.getCount() / 2;
+					itemStack2.decrement(j);
 					itemStack = new ItemStack(item, j);
 					break;
 				}

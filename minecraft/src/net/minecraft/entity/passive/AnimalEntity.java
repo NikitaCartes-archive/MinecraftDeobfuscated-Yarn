@@ -153,7 +153,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	protected void eat(PlayerEntity playerEntity, ItemStack itemStack) {
 		if (!playerEntity.abilities.creativeMode) {
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 		}
 	}
 

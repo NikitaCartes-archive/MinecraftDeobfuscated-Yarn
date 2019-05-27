@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior {
 	@Override
-	public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+	public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
 		World world = blockPointer.getWorld();
 		Position position = DispenserBlock.getOutputLocation(blockPointer);
 		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
@@ -20,7 +20,7 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 			(double)direction.getOffsetX(), (double)((float)direction.getOffsetY() + 0.1F), (double)direction.getOffsetZ(), this.getForce(), this.getVariation()
 		);
 		world.spawnEntity((Entity)projectile);
-		itemStack.subtractAmount(1);
+		itemStack.decrement(1);
 		return itemStack;
 	}
 

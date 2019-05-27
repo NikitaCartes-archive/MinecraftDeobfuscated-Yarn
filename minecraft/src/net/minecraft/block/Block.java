@@ -303,7 +303,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return this.material.isReplaceable() && (itemPlacementContext.getItemStack().isEmpty() || itemPlacementContext.getItemStack().getItem() != this.asItem());
+		return this.material.isReplaceable() && (itemPlacementContext.getStack().isEmpty() || itemPlacementContext.getStack().getItem() != this.asItem());
 	}
 
 	@Deprecated
@@ -787,7 +787,7 @@ public class Block implements ItemConvertible {
 	@Override
 	public Item asItem() {
 		if (this.cachedItem == null) {
-			this.cachedItem = Item.getItemFromBlock(this);
+			this.cachedItem = Item.fromBlock(this);
 		}
 
 		return this.cachedItem;

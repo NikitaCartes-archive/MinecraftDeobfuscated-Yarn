@@ -106,7 +106,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		World world = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		boolean bl = world.isReceivingRedstonePower(blockPos);
-		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
+		Direction direction = itemPlacementContext.getPlayerFacing();
 		Direction.Axis axis = direction.getAxis();
 		boolean bl2 = axis == Direction.Axis.Z && (this.isWall(world.getBlockState(blockPos.west())) || this.isWall(world.getBlockState(blockPos.east())))
 			|| axis == Direction.Axis.X && (this.isWall(world.getBlockState(blockPos.north())) || this.isWall(world.getBlockState(blockPos.south())));

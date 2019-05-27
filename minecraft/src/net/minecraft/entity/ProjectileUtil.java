@@ -182,7 +182,7 @@ public final class ProjectileUtil {
 
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {
 		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.field_8107);
-		ProjectileEntity projectileEntity = arrowItem.createProjectile(livingEntity.world, itemStack, livingEntity);
+		ProjectileEntity projectileEntity = arrowItem.createArrow(livingEntity.world, itemStack, livingEntity);
 		projectileEntity.method_7435(livingEntity, f);
 		if (itemStack.getItem() == Items.field_8087 && projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).initFromStack(itemStack);

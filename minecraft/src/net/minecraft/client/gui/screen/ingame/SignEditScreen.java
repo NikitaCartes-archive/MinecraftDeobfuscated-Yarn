@@ -105,7 +105,7 @@ public class SignEditScreen extends Screen {
 		BlockState blockState = this.sign.getCachedState();
 		float h;
 		if (blockState.getBlock() instanceof SignBlock) {
-			h = (float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
+			h = (float)(blockState.get(SignBlock.field_11559) * 360) / 16.0F;
 		} else {
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}

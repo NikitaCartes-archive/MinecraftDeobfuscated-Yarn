@@ -102,7 +102,7 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite()).with(EXTENDED, Boolean.valueOf(false));
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite()).with(EXTENDED, Boolean.valueOf(false));
 	}
 
 	private void tryMove(World world, BlockPos blockPos, BlockState blockState) {

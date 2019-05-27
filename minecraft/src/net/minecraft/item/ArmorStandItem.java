@@ -22,7 +22,7 @@ public class ArmorStandItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		Direction direction = itemUsageContext.getFacing();
+		Direction direction = itemUsageContext.getSide();
 		if (direction == Direction.field_11033) {
 			return ActionResult.field_5814;
 		} else {
@@ -38,7 +38,7 @@ public class ArmorStandItem extends Item {
 				if (!list.isEmpty()) {
 					return ActionResult.field_5814;
 				} else {
-					ItemStack itemStack = itemUsageContext.getItemStack();
+					ItemStack itemStack = itemUsageContext.getStack();
 					if (!world.isClient) {
 						world.clearBlockState(blockPos, false);
 						world.clearBlockState(blockPos2, false);
@@ -51,7 +51,7 @@ public class ArmorStandItem extends Item {
 						world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.field_14969, SoundCategory.field_15245, 0.75F, 0.8F);
 					}
 
-					itemStack.subtractAmount(1);
+					itemStack.decrement(1);
 					return ActionResult.field_5812;
 				}
 			} else {

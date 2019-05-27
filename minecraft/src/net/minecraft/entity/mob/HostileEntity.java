@@ -6,9 +6,9 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -119,9 +119,9 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 
 	@Override
 	public ItemStack getArrowType(ItemStack itemStack) {
-		if (itemStack.getItem() instanceof BaseBowItem) {
-			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).getHeldProjectilePredicate();
-			ItemStack itemStack2 = BaseBowItem.getItemHeld(this, predicate);
+		if (itemStack.getItem() instanceof RangedWeaponItem) {
+			Predicate<ItemStack> predicate = ((RangedWeaponItem)itemStack.getItem()).getHeldProjectiles();
+			ItemStack itemStack2 = RangedWeaponItem.getHeldProjectile(this, predicate);
 			return itemStack2.isEmpty() ? new ItemStack(Items.field_8107) : itemStack2;
 		} else {
 			return ItemStack.EMPTY;

@@ -64,7 +64,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 
 		if (!itemStack.isEmpty() && i >= 1) {
 			ItemStack itemStack3 = itemStack.copy();
-			itemStack3.setAmount(i + 1);
+			itemStack3.setCount(i + 1);
 			return itemStack3;
 		} else {
 			return ItemStack.EMPTY;

@@ -83,7 +83,7 @@ public class CookingRecipeJsonFactory {
 				this.exp,
 				this.time,
 				this.builder,
-				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath()),
+				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + identifier.getPath()),
 				this.serializer
 			)
 		);

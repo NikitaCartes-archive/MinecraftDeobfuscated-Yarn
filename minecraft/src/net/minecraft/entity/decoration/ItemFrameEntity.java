@@ -209,7 +209,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			mapState.setDirty(true);
 		}
 
-		itemStack.setHoldingItemFrame(null);
+		itemStack.setFrame(null);
 	}
 
 	public ItemStack getHeldItemStack() {
@@ -223,8 +223,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void setHeldItemStack(ItemStack itemStack, boolean bl) {
 		if (!itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
-			itemStack.setAmount(1);
-			itemStack.setHoldingItemFrame(this);
+			itemStack.setCount(1);
+			itemStack.setFrame(this);
 		}
 
 		this.getDataTracker().set(ITEM_STACK, itemStack);
@@ -251,8 +251,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (trackedData.equals(ITEM_STACK)) {
 			ItemStack itemStack = this.getHeldItemStack();
-			if (!itemStack.isEmpty() && itemStack.getHoldingItemFrame() != this) {
-				itemStack.setHoldingItemFrame(this);
+			if (!itemStack.isEmpty() && itemStack.getFrame() != this) {
+				itemStack.setFrame(this);
 			}
 		}
 	}
@@ -295,7 +295,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			ItemStack itemStack2 = this.getHeldItemStack();
-			if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
+			if (!itemStack2.isEmpty() && !ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
 				this.removeFromFrame(itemStack2);
 			}
 
@@ -317,7 +317,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 				if (!itemStack.isEmpty()) {
 					this.setHeldItemStack(itemStack);
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 				}
 			} else {

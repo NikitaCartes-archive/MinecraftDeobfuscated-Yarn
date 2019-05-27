@@ -182,7 +182,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public BakedModel getModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		BakedModel bakedModel = this.models.getModel(itemStack);
 		Item item = itemStack.getItem();
-		return !item.hasProperties() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
+		return !item.hasPropertyGetters() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
 	public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
@@ -194,7 +194,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			bakedModel = this.models.getModel(itemStack);
 		}
 
-		return !item.hasProperties() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
+		return !item.hasPropertyGetters() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
 	public BakedModel getModel(ItemStack itemStack) {
@@ -312,8 +312,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	public void renderGuiItemOverlay(TextRenderer textRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
 		if (!itemStack.isEmpty()) {
-			if (itemStack.getAmount() != 1 || string != null) {
-				String string2 = string == null ? String.valueOf(itemStack.getAmount()) : string;
+			if (itemStack.getCount() != 1 || string != null) {
+				String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
 				GlStateManager.disableLighting();
 				GlStateManager.disableDepthTest();
 				GlStateManager.disableBlend();
@@ -332,7 +332,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 				float f = (float)itemStack.getDamage();
-				float g = (float)itemStack.getDurability();
+				float g = (float)itemStack.getMaxDamage();
 				float h = Math.max(0.0F, (g - f) / g);
 				int k = Math.round(13.0F - f * 13.0F / g);
 				int l = MathHelper.hsvToRgb(h / 3.0F, 1.0F, 1.0F);

@@ -171,7 +171,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

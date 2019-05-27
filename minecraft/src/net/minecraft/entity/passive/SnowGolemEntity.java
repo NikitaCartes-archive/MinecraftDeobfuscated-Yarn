@@ -133,7 +133,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isClient) {
 			this.setHasPumpkin(false);
-			itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+			itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 		}
 
 		return super.interactMob(playerEntity, hand);

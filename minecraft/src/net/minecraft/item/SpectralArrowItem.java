@@ -11,7 +11,7 @@ public class SpectralArrowItem extends ArrowItem {
 	}
 
 	@Override
-	public ProjectileEntity createProjectile(World world, ItemStack itemStack, LivingEntity livingEntity) {
+	public ProjectileEntity createArrow(World world, ItemStack itemStack, LivingEntity livingEntity) {
 		return new SpectralArrowEntity(world, livingEntity);
 	}
 }

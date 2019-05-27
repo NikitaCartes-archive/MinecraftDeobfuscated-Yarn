@@ -48,7 +48,7 @@ public class EndCrystalItem extends Item {
 						}
 					}
 
-					itemUsageContext.getItemStack().subtractAmount(1);
+					itemUsageContext.getStack().decrement(1);
 					return ActionResult.field_5812;
 				}
 			}

@@ -32,8 +32,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ExplodingWitherSkullEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -419,15 +419,15 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		double k = d - g;
 		double l = e - h;
 		double m = f - j;
-		ExplodingWitherSkullEntity explodingWitherSkullEntity = new ExplodingWitherSkullEntity(this.world, this, k, l, m);
+		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, k, l, m);
 		if (bl) {
-			explodingWitherSkullEntity.setCharged(true);
+			witherSkullEntity.setCharged(true);
 		}
 
-		explodingWitherSkullEntity.y = h;
-		explodingWitherSkullEntity.x = g;
-		explodingWitherSkullEntity.z = j;
-		this.world.spawnEntity(explodingWitherSkullEntity);
+		witherSkullEntity.y = h;
+		witherSkullEntity.x = g;
+		witherSkullEntity.z = j;
+		this.world.spawnEntity(witherSkullEntity);
 	}
 
 	@Override

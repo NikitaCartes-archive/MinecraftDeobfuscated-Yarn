@@ -15,7 +15,7 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public Component getTranslatedNameTrimmed(ItemStack itemStack) {
+	public Component getName(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
 			String string = null;
 			CompoundTag compoundTag = itemStack.getTag();
@@ -33,12 +33,12 @@ public class SkullItem extends WallStandingBlockItem {
 			}
 		}
 
-		return super.getTranslatedNameTrimmed(itemStack);
+		return super.getName(itemStack);
 	}
 
 	@Override
-	public boolean onTagDeserialized(CompoundTag compoundTag) {
-		super.onTagDeserialized(compoundTag);
+	public boolean postProcessTag(CompoundTag compoundTag) {
+		super.postProcessTag(compoundTag);
 		if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
 			GameProfile gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
 			gameProfile = SkullBlockEntity.loadProperties(gameProfile);

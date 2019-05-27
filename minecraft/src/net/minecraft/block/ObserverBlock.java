@@ -109,6 +109,6 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite().getOpposite());
 	}
 }

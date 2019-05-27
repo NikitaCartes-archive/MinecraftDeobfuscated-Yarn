@@ -102,7 +102,7 @@ public class ClientRecipeBook extends RecipeBook {
 			return RecipeBookGroup.field_17765;
 		} else {
 			ItemStack itemStack = recipe.getOutput();
-			ItemGroup itemGroup = itemStack.getItem().getItemGroup();
+			ItemGroup itemGroup = itemStack.getItem().getGroup();
 			if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
 				return RecipeBookGroup.field_1806;
 			} else if (itemGroup == ItemGroup.TOOLS || itemGroup == ItemGroup.COMBAT) {

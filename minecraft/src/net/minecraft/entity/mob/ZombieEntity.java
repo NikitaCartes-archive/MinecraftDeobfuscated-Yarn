@@ -215,9 +215,9 @@ public class ZombieEntity extends HostileEntity {
 			if (bl) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
 				if (!itemStack.isEmpty()) {
-					if (itemStack.hasDurability()) {
+					if (itemStack.isDamageable()) {
 						itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
-						if (itemStack.getDamage() >= itemStack.getDurability()) {
+						if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
 							this.sendEquipmentBreakStatus(EquipmentSlot.field_6169);
 							this.setEquippedStack(EquipmentSlot.field_6169, ItemStack.EMPTY);
 						}

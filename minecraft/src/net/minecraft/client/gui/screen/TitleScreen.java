@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -123,7 +123,7 @@ public class TitleScreen extends Screen {
 		}
 
 		this.addButton(
-			new RecipeBookButtonWidget(
+			new TexturedButtonWidget(
 				this.width / 2 - 124,
 				j + 72 + 12,
 				20,
@@ -150,7 +150,7 @@ public class TitleScreen extends Screen {
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit"), buttonWidget -> this.minecraft.scheduleStop()));
 		this.addButton(
-			new RecipeBookButtonWidget(
+			new TexturedButtonWidget(
 				this.width / 2 + 104,
 				j + 72 + 12,
 				20,

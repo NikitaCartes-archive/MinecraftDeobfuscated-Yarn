@@ -67,7 +67,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		return !itemStack.isEmpty() && !list.isEmpty() ? DyeableItem.applyDyes(itemStack, list) : ItemStack.EMPTY;
+		return !itemStack.isEmpty() && !list.isEmpty() ? DyeableItem.blendAndSetColor(itemStack, list) : ItemStack.EMPTY;
 	}
 
 	@Environment(EnvType.CLIENT)

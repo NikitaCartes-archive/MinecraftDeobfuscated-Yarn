@@ -23,8 +23,8 @@ public class SuspiciousStewItem extends Item {
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		super.onItemFinishedUsing(itemStack, world, livingEntity);
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		super.finishUsing(itemStack, world, livingEntity);
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("Effects", 9)) {
 			ListTag listTag = compoundTag.getList("Effects", 10);

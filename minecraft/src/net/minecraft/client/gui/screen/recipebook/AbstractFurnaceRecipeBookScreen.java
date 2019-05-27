@@ -19,7 +19,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookScreen {
+public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	private Iterator<Item> field_3153;
 	private Set<Item> field_3149;
 	private Slot outputSlot;
@@ -119,7 +119,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookScreen {
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
-			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getDefaultStack(), k, l);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
 			GlStateManager.depthFunc(516);
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
 			GlStateManager.depthFunc(515);

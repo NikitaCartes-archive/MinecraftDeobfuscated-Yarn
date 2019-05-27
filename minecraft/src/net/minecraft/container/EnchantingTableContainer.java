@@ -165,7 +165,7 @@ public class EnchantingTableContainer extends Container {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		ItemStack itemStack2 = this.inventory.getInvStack(1);
 		int j = i + 1;
-		if ((itemStack2.isEmpty() || itemStack2.getAmount() < j) && !playerEntity.abilities.creativeMode) {
+		if ((itemStack2.isEmpty() || itemStack2.getCount() < j) && !playerEntity.abilities.creativeMode) {
 			return false;
 		} else if (this.enchantmentPower[i] <= 0
 			|| itemStack.isEmpty()
@@ -193,7 +193,7 @@ public class EnchantingTableContainer extends Container {
 					}
 
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack2.subtractAmount(j);
+						itemStack2.decrement(j);
 						if (itemStack2.isEmpty()) {
 							this.inventory.setInvStack(1, ItemStack.EMPTY);
 						}
@@ -227,7 +227,7 @@ public class EnchantingTableContainer extends Container {
 	@Environment(EnvType.CLIENT)
 	public int getLapisCount() {
 		ItemStack itemStack = this.inventory.getInvStack(1);
-		return itemStack.isEmpty() ? 0 : itemStack.getAmount();
+		return itemStack.isEmpty() ? 0 : itemStack.getCount();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -270,12 +270,12 @@ public class EnchantingTableContainer extends Container {
 					return ItemStack.EMPTY;
 				}
 
-				if (itemStack2.hasTag() && itemStack2.getAmount() == 1) {
+				if (itemStack2.hasTag() && itemStack2.getCount() == 1) {
 					((Slot)this.slotList.get(0)).setStack(itemStack2.copy());
-					itemStack2.setAmount(0);
+					itemStack2.setCount(0);
 				} else if (!itemStack2.isEmpty()) {
 					((Slot)this.slotList.get(0)).setStack(new ItemStack(itemStack2.getItem()));
-					itemStack2.subtractAmount(1);
+					itemStack2.decrement(1);
 				}
 			}
 
@@ -285,7 +285,7 @@ public class EnchantingTableContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

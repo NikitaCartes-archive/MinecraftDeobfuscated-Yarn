@@ -43,7 +43,7 @@ public class AnvilBlock extends FallingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().rotateYClockwise());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().rotateYClockwise());
 	}
 
 	@Override

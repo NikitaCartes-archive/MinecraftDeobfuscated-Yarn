@@ -96,7 +96,7 @@ public class StonecutterContainer extends Container {
 					StonecutterContainer.this.populateResult();
 				}
 
-				itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
+				itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterContainer.this.lastTakeTime != l) {
@@ -209,7 +209,7 @@ public class StonecutterContainer extends Container {
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
 			if (i == 1) {
-				item.onCrafted(itemStack2, playerEntity.world, playerEntity);
+				item.onCraft(itemStack2, playerEntity.world, playerEntity);
 				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -236,7 +236,7 @@ public class StonecutterContainer extends Container {
 			}
 
 			slot.markDirty();
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
