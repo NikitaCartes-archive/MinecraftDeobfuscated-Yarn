@@ -150,7 +150,7 @@ extends WaterCreatureEntity {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.getItem() == Items.WATER_BUCKET && this.isAlive()) {
             this.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, 1.0f, 1.0f);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             ItemStack itemStack2 = this.getFishBucketItem();
             this.copyDataToStack(itemStack2);
             if (!this.world.isClient) {
@@ -169,7 +169,7 @@ extends WaterCreatureEntity {
 
     protected void copyDataToStack(ItemStack itemStack) {
         if (this.hasCustomName()) {
-            itemStack.setDisplayName(this.getCustomName());
+            itemStack.setCustomName(this.getCustomName());
         }
     }
 

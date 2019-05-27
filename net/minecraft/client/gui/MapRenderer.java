@@ -124,11 +124,11 @@ implements AutoCloseable {
             GlStateManager.disableBlend();
             int k = 0;
             for (MapIcon mapIcon : this.mapState.icons.values()) {
-                if (bl && !mapIcon.renderIfNotHeld()) continue;
+                if (bl && !mapIcon.isAlwaysRendered()) continue;
                 MapRenderer.this.textureManager.bindTexture(MAP_ICONS_TEXTURE);
                 GlStateManager.pushMatrix();
                 GlStateManager.translatef(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                GlStateManager.rotatef((float)(mapIcon.getAngle() * 360) / 16.0f, 0.0f, 0.0f, 1.0f);
+                GlStateManager.rotatef((float)(mapIcon.getRotation() * 360) / 16.0f, 0.0f, 0.0f, 1.0f);
                 GlStateManager.scalef(4.0f, 4.0f, 3.0f);
                 GlStateManager.translatef(-0.125f, 0.125f, 0.0f);
                 byte b = mapIcon.getTypeId();

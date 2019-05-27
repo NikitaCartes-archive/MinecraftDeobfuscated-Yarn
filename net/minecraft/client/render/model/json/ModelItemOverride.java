@@ -40,7 +40,7 @@ public class ModelItemOverride {
     boolean matches(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
         Item item = itemStack.getItem();
         for (Map.Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
-            ItemPropertyGetter itemPropertyGetter = item.getProperty(entry.getKey());
+            ItemPropertyGetter itemPropertyGetter = item.getPropertyGetter(entry.getKey());
             if (itemPropertyGetter != null && !(itemPropertyGetter.call(itemStack, world, livingEntity) < entry.getValue().floatValue())) continue;
             return false;
         }

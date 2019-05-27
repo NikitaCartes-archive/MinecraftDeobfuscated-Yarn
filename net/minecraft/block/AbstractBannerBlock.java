@@ -40,8 +40,8 @@ extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BannerBlockEntity) {
-            ((BannerBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BannerBlockEntity) {
+            ((BannerBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
         }
     }
 

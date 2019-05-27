@@ -259,7 +259,7 @@ extends Block {
         BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
         boolean bl = blockState.getBlock() == this;
         BlockState blockState2 = bl ? blockState : this.getDefaultState();
-        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
             boolean bl2;
             if (direction == Direction.DOWN) continue;
             BooleanProperty booleanProperty = VineBlock.getFacingProperty(direction);

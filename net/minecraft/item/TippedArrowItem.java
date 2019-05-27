@@ -28,13 +28,13 @@ extends ArrowItem {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getDefaultStack() {
-        return PotionUtil.setPotion(super.getDefaultStack(), Potions.POISON);
+    public ItemStack getStackForRender() {
+        return PotionUtil.setPotion(super.getStackForRender(), Potions.POISON);
     }
 
     @Override
-    public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-        if (this.isInItemGroup(itemGroup)) {
+    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+        if (this.isIn(itemGroup)) {
             for (Potion potion : Registry.POTION) {
                 if (potion.getEffects().isEmpty()) continue;
                 defaultedList.add(PotionUtil.setPotion(new ItemStack(this), potion));
@@ -44,7 +44,7 @@ extends ArrowItem {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
         PotionUtil.buildTooltip(itemStack, list, 0.125f);
     }
 

@@ -13,11 +13,11 @@ import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public class PigZombieEntityRenderer
+public class ZombiePigmanEntityRenderer
 extends BipedEntityRenderer<ZombiePigmanEntity, ZombieEntityModel<ZombiePigmanEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/zombie_pigman.png");
 
-    public PigZombieEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+    public ZombiePigmanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ZombieEntityModel(), 0.5f);
         this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieEntityModel(0.5f, true), new ZombieEntityModel(1.0f, true)));
     }

@@ -120,7 +120,7 @@ implements Drawable {
     }
 
     public List<String> getTooltipFromItem(ItemStack itemStack) {
-        List<Component> list = itemStack.getTooltipText(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+        List<Component> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
         ArrayList<String> list2 = Lists.newArrayList();
         for (Component component : list) {
             list2.add(component.getFormattedText());

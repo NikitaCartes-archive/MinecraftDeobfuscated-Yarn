@@ -34,7 +34,7 @@ extends ConditionalLootFunction {
         Optional<SmeltingRecipe> optional = lootContext.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
         if (optional.isPresent() && !(itemStack2 = optional.get().getOutput()).isEmpty()) {
             ItemStack itemStack3 = itemStack2.copy();
-            itemStack3.setAmount(itemStack.getAmount());
+            itemStack3.setCount(itemStack.getCount());
             return itemStack3;
         }
         LOGGER.warn("Couldn't smelt {} because there is no smelting recipe", (Object)itemStack);

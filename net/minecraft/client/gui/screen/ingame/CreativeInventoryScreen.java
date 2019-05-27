@@ -108,7 +108,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (slot == this.deleteItemSlot) {
                     this.minecraft.player.inventory.setCursorStack(ItemStack.EMPTY);
                 } else if (slotActionType == SlotActionType.THROW && slot != null && slot.hasStack()) {
-                    ItemStack itemStack = slot.takeStack(j == 0 ? 1 : slot.getStack().getMaxAmount());
+                    ItemStack itemStack = slot.takeStack(j == 0 ? 1 : slot.getStack().getMaxCount());
                     ItemStack itemStack2 = slot.getStack();
                     this.minecraft.player.dropItem(itemStack, true);
                     this.minecraft.interactionManager.dropCreativeStack(itemStack);
@@ -128,7 +128,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (slotActionType == SlotActionType.SWAP) {
                     if (!itemStack3.isEmpty() && j >= 0 && j < 9) {
                         ItemStack itemStack4 = itemStack3.copy();
-                        itemStack4.setAmount(itemStack4.getMaxAmount());
+                        itemStack4.setCount(itemStack4.getMaxCount());
                         this.minecraft.player.inventory.setInvStack(j, itemStack4);
                         this.minecraft.player.playerContainer.sendContentUpdates();
                     }
@@ -137,7 +137,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (slotActionType == SlotActionType.CLONE) {
                     if (playerInventory.getCursorStack().isEmpty() && slot.hasStack()) {
                         ItemStack itemStack4 = slot.getStack().copy();
-                        itemStack4.setAmount(itemStack4.getMaxAmount());
+                        itemStack4.setCount(itemStack4.getMaxCount());
                         playerInventory.setCursorStack(itemStack4);
                     }
                     return;
@@ -145,33 +145,33 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (slotActionType == SlotActionType.THROW) {
                     if (!itemStack3.isEmpty()) {
                         ItemStack itemStack4 = itemStack3.copy();
-                        itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
+                        itemStack4.setCount(j == 0 ? 1 : itemStack4.getMaxCount());
                         this.minecraft.player.dropItem(itemStack4, true);
                         this.minecraft.interactionManager.dropCreativeStack(itemStack4);
                     }
                     return;
                 }
-                if (!itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack2.isEqualIgnoreTags(itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
+                if (!itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack2.isItemEqualIgnoreDamage(itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
                     if (j == 0) {
                         if (bl) {
-                            itemStack2.setAmount(itemStack2.getMaxAmount());
-                        } else if (itemStack2.getAmount() < itemStack2.getMaxAmount()) {
-                            itemStack2.addAmount(1);
+                            itemStack2.setCount(itemStack2.getMaxCount());
+                        } else if (itemStack2.getCount() < itemStack2.getMaxCount()) {
+                            itemStack2.increment(1);
                         }
                     } else {
-                        itemStack2.subtractAmount(1);
+                        itemStack2.decrement(1);
                     }
                 } else if (itemStack3.isEmpty() || !itemStack2.isEmpty()) {
                     if (j == 0) {
                         playerInventory.setCursorStack(ItemStack.EMPTY);
                     } else {
-                        playerInventory.getCursorStack().subtractAmount(1);
+                        playerInventory.getCursorStack().decrement(1);
                     }
                 } else {
                     playerInventory.setCursorStack(itemStack3.copy());
                     itemStack2 = playerInventory.getCursorStack();
                     if (bl) {
-                        itemStack2.setAmount(itemStack2.getMaxAmount());
+                        itemStack2.setCount(itemStack2.getMaxCount());
                     }
                 }
             } else if (this.container != null) {
@@ -189,7 +189,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                         this.minecraft.interactionManager.clickCreativeStack(itemStack, m - ((CreativeContainer)this.container).slotList.size() + 9 + 36);
                     } else if (slotActionType == SlotActionType.THROW && !itemStack.isEmpty()) {
                         ItemStack itemStack4 = itemStack.copy();
-                        itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
+                        itemStack4.setCount(j == 0 ? 1 : itemStack4.getMaxCount());
                         this.minecraft.player.dropItem(itemStack4, true);
                         this.minecraft.interactionManager.dropCreativeStack(itemStack4);
                     }
@@ -327,7 +327,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         String string = this.searchBox.getText();
         if (string.isEmpty()) {
             for (Item item : Registry.ITEM) {
-                item.appendItemsForGroup(ItemGroup.SEARCH, ((CreativeContainer)this.container).itemList);
+                item.appendStacks(ItemGroup.SEARCH, ((CreativeContainer)this.container).itemList);
             }
         } else {
             SearchableContainer<ItemStack> searchable;
@@ -418,10 +418,10 @@ extends AbstractInventoryScreen<CreativeContainer> {
                     for (k = 0; k < 9; ++k) {
                         if (k == j) {
                             ItemStack itemStack = new ItemStack(Items.PAPER);
-                            itemStack.getOrCreateSubCompoundTag("CustomCreativeLock");
+                            itemStack.getOrCreateSubTag("CustomCreativeLock");
                             String string = this.minecraft.options.keysHotbar[j].getLocalizedName();
                             String string2 = this.minecraft.options.keySaveToolbarActivator.getLocalizedName();
-                            itemStack.setDisplayName(new TranslatableComponent("inventory.hotbarInfo", string2, string));
+                            itemStack.setCustomName(new TranslatableComponent("inventory.hotbarInfo", string2, string));
                             ((CreativeContainer)this.container).itemList.add(itemStack);
                             continue;
                         }
@@ -432,7 +432,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 ((CreativeContainer)this.container).itemList.addAll(hotbarStorageEntry);
             }
         } else if (itemGroup != ItemGroup.SEARCH) {
-            itemGroup.appendItems(((CreativeContainer)this.container).itemList);
+            itemGroup.appendStacks(((CreativeContainer)this.container).itemList);
         }
         if (itemGroup == ItemGroup.INVENTORY) {
             PlayerContainer container = this.minecraft.player.playerContainer;
@@ -558,13 +558,13 @@ extends AbstractInventoryScreen<CreativeContainer> {
     protected void renderTooltip(ItemStack itemStack, int i, int j) {
         if (selectedTab == ItemGroup.SEARCH.getIndex()) {
             Map<Enchantment, Integer> map;
-            List<Component> list = itemStack.getTooltipText(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+            List<Component> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
             ArrayList<String> list2 = Lists.newArrayListWithCapacity(list.size());
             for (Component component : list) {
                 list2.add(component.getFormattedText());
             }
             Item item = itemStack.getItem();
-            ItemGroup itemGroup = item.getItemGroup();
+            ItemGroup itemGroup = item.getGroup();
             if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.getEnchantments(itemStack)).size() == 1) {
                 Enchantment enchantment = map.keySet().iterator().next();
                 for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
@@ -725,7 +725,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         @Override
         public boolean canTakeItems(PlayerEntity playerEntity) {
             if (super.canTakeItems(playerEntity) && this.hasStack()) {
-                return this.getStack().getSubCompoundTag("CustomCreativeLock") == null;
+                return this.getStack().getSubTag("CustomCreativeLock") == null;
             }
             return !this.hasStack();
         }

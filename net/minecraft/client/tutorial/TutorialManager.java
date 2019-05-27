@@ -108,7 +108,7 @@ public class TutorialManager {
 
     public GameMode getGameMode() {
         if (this.client.interactionManager == null) {
-            return GameMode.INVALID;
+            return GameMode.NOT_SET;
         }
         return this.client.interactionManager.getCurrentGameMode();
     }

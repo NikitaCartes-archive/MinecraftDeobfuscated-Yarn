@@ -19,7 +19,7 @@ public interface PropertyContainer<C> {
     public ImmutableMap<Property<?>, Comparable<?>> getEntries();
 
     public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Comparable<?> comparable) {
-        return property.getValueAsString(comparable);
+        return property.getName(comparable);
     }
 
     public static <S extends PropertyContainer<S>, T extends Comparable<T>> S deserialize(S propertyContainer, Property<T> property, String string, String string2, String string3) {

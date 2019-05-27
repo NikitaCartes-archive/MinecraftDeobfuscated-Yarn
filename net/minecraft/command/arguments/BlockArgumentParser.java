@@ -183,7 +183,7 @@ public class BlockArgumentParser {
                 suggestionsBuilder.suggest((Integer)comparable);
                 continue;
             }
-            suggestionsBuilder.suggest(property.getValueAsString(comparable));
+            suggestionsBuilder.suggest(property.getName(comparable));
         }
         return suggestionsBuilder;
     }
@@ -398,7 +398,7 @@ public class BlockArgumentParser {
     private static <T extends Comparable<T>> void stringifyProperty(StringBuilder stringBuilder, Property<T> property, Comparable<?> comparable) {
         stringBuilder.append(property.getName());
         stringBuilder.append('=');
-        stringBuilder.append(property.getValueAsString(comparable));
+        stringBuilder.append(property.getName(comparable));
     }
 
     public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {

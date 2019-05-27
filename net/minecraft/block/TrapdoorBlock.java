@@ -131,8 +131,8 @@ implements Waterloggable {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.getDefaultState();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        Direction direction = itemPlacementContext.getFacing();
-        blockState = itemPlacementContext.canReplaceHitBlock() || !direction.getAxis().isHorizontal() ? (BlockState)((BlockState)blockState.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP) : (BlockState)((BlockState)blockState.with(FACING, direction)).with(HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
+        Direction direction = itemPlacementContext.getSide();
+        blockState = itemPlacementContext.canReplaceExisting() || !direction.getAxis().isHorizontal() ? (BlockState)((BlockState)blockState.with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP) : (BlockState)((BlockState)blockState.with(FACING, direction)).with(HALF, itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
         if (itemPlacementContext.getWorld().isReceivingRedstonePower(itemPlacementContext.getBlockPos())) {
             blockState = (BlockState)((BlockState)blockState.with(OPEN, true)).with(POWERED, true);
         }

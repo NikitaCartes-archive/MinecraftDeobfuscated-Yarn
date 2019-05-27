@@ -73,7 +73,7 @@ extends Container {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (SlotPotion.matches(itemStack) && itemStack.getAmount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (SlotFuel.matches(itemStack) ? !this.insertItem(itemStack2, 4, 5, false) : (i >= 5 && i < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (i >= 32 && i < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
+            } else if (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (SlotPotion.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (SlotFuel.matches(itemStack) ? !this.insertItem(itemStack2, 4, 5, false) : (i >= 5 && i < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (i >= 32 && i < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -81,7 +81,7 @@ extends Container {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(playerEntity, itemStack2);

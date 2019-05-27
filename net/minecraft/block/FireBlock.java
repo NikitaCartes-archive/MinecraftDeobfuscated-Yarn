@@ -23,7 +23,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FireBlock
 extends Block {
-    public static final IntegerProperty AGE = Properties.AGE_15;
+    public static final IntProperty AGE = Properties.AGE_15;
     public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
     public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
     public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;

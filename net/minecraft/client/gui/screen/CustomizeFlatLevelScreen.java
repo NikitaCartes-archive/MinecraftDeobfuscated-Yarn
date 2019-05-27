@@ -136,7 +136,7 @@ extends Screen {
             Item item;
             super.setSelected(superflatLayerItem);
             if (superflatLayerItem != null && (item = (flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1)).getBlockState().getBlock().asItem()) != Items.AIR) {
-                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", item.getName(new ItemStack(item))).getString());
             }
         }
 
@@ -193,7 +193,7 @@ extends Screen {
                     }
                 }
                 ItemStack itemStack = new ItemStack(item);
-                String string = item.getTranslatedNameTrimmed(itemStack).getFormattedText();
+                String string = item.getName(itemStack).getFormattedText();
                 this.method_19375(k, j, itemStack);
                 CustomizeFlatLevelScreen.this.font.draw(string, k + 18 + 5, j + 3, 0xFFFFFF);
                 String string2 = i == 0 ? I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (i == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));

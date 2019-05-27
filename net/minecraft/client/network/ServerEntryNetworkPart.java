@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.sortme;
+package net.minecraft.client.network;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;

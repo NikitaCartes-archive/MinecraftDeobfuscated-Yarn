@@ -18,7 +18,7 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -68,10 +68,10 @@ implements Criterion<Conditions> {
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
         Handler handler = this.field_9618.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
-            handler.handle(serverPlayerEntity, itemStack, fishHookEntity, collection);
+            handler.handle(serverPlayerEntity, itemStack, fishingBobberEntity, collection);
         }
     }
 
@@ -100,10 +100,10 @@ implements Criterion<Conditions> {
             this.conditions.remove(conditionsContainer);
         }
 
-        public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+        public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
             ArrayList<Criterion.ConditionsContainer<Conditions>> list = null;
             for (Criterion.ConditionsContainer<Conditions> conditionsContainer : this.conditions) {
-                if (!conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishHookEntity, collection)) continue;
+                if (!conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection)) continue;
                 if (list == null) {
                     list = Lists.newArrayList();
                 }
@@ -134,17 +134,17 @@ implements Criterion<Conditions> {
             return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+        public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
             if (!this.rod.test(itemStack)) {
                 return false;
             }
-            if (!this.entity.test(serverPlayerEntity, fishHookEntity.hookedEntity)) {
+            if (!this.entity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
                 return false;
             }
             if (this.item != ItemPredicate.ANY) {
                 ItemEntity itemEntity;
                 boolean bl = false;
-                if (fishHookEntity.hookedEntity instanceof ItemEntity && this.item.test((itemEntity = (ItemEntity)fishHookEntity.hookedEntity).getStack())) {
+                if (fishingBobberEntity.hookedEntity instanceof ItemEntity && this.item.test((itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity).getStack())) {
                     bl = true;
                 }
                 for (ItemStack itemStack2 : collection) {

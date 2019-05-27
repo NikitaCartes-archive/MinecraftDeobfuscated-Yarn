@@ -283,7 +283,7 @@ extends Screen {
 
         private static List<String> getLines(ItemStack itemStack) {
             CompoundTag compoundTag = itemStack.getTag();
-            if (compoundTag != null && WrittenBookItem.isValidBook(compoundTag)) {
+            if (compoundTag != null && WrittenBookItem.isValid(compoundTag)) {
                 return BookScreen.getLines(compoundTag);
             }
             return ImmutableList.of(new TranslatableComponent("book.invalid.tag", new Object[0]).applyFormat(ChatFormat.DARK_RED).getFormattedText());

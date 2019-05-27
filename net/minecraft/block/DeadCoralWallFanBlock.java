@@ -83,7 +83,7 @@ extends DeadCoralFanBlock {
         BlockState blockState = super.getPlacementState(itemPlacementContext);
         World viewableWorld = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : directions = itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
             return blockState;
         }

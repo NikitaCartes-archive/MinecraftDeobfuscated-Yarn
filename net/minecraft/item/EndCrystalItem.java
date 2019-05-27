@@ -54,7 +54,7 @@ extends Item {
                 enderDragonFight.respawnDragon();
             }
         }
-        itemUsageContext.getItemStack().subtractAmount(1);
+        itemUsageContext.getStack().decrement(1);
         return ActionResult.SUCCESS;
     }
 

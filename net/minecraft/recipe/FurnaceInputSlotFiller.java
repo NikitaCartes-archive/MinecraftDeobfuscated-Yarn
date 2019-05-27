@@ -27,7 +27,7 @@ extends InputSlotFiller<C> {
         ItemStack itemStack;
         this.slotMatchesRecipe = this.craftingContainer.matches(recipe);
         int i = this.recipeFinder.countRecipeCrafts(recipe, null);
-        if (this.slotMatchesRecipe && ((itemStack = this.craftingContainer.getSlot(0).getStack()).isEmpty() || i <= itemStack.getAmount())) {
+        if (this.slotMatchesRecipe && ((itemStack = this.craftingContainer.getSlot(0).getStack()).isEmpty() || i <= itemStack.getCount())) {
             return;
         }
         IntArrayList intList = new IntArrayList();
@@ -55,9 +55,9 @@ extends InputSlotFiller<C> {
         if (itemStack.isEmpty()) {
             return;
         }
-        int j = Math.min(itemStack.getMaxAmount(), i);
+        int j = Math.min(itemStack.getMaxCount(), i);
         if (this.slotMatchesRecipe) {
-            j -= slot.getStack().getAmount();
+            j -= slot.getStack().getCount();
         }
         for (int k = 0; k < j; ++k) {
             this.fillInputSlot(slot, itemStack);

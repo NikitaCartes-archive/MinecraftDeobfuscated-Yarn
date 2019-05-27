@@ -18,7 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 
 public class FarmlandBlock
 extends Block {
-    public static final IntegerProperty MOISTURE = Properties.MOISTURE;
+    public static final IntProperty MOISTURE = Properties.MOISTURE;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
     protected FarmlandBlock(Block.Settings settings) {

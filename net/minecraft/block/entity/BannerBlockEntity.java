@@ -47,7 +47,7 @@ implements Nameable {
     @Environment(value=EnvType.CLIENT)
     public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
         this.patternListTag = null;
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
             this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
         }
@@ -56,7 +56,7 @@ implements Nameable {
         this.patternColors = null;
         this.patternCacheKey = "";
         this.patternListTagRead = true;
-        this.customName = itemStack.hasDisplayName() ? itemStack.getDisplayName() : null;
+        this.customName = itemStack.hasCustomName() ? itemStack.getCustomName() : null;
     }
 
     @Override
@@ -115,7 +115,7 @@ implements Nameable {
     }
 
     public static int getPatternCount(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null && compoundTag.containsKey("Patterns")) {
             return compoundTag.getList("Patterns", 10).size();
         }
@@ -173,7 +173,7 @@ implements Nameable {
     }
 
     public static void loadFromItemStack(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag == null || !compoundTag.containsKey("Patterns", 9)) {
             return;
         }
@@ -191,10 +191,10 @@ implements Nameable {
     public ItemStack getPickStack(BlockState blockState) {
         ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-            itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
+            itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
         }
         if (this.customName != null) {
-            itemStack.setDisplayName(this.customName);
+            itemStack.setCustomName(this.customName);
         }
         return itemStack;
     }

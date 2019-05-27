@@ -39,8 +39,8 @@ implements Predicate<ItemStack> {
         if (this.tag != null) {
             itemStack.setTag(this.tag);
         }
-        if (bl && i > itemStack.getMaxAmount()) {
-            throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxAmount());
+        if (bl && i > itemStack.getMaxCount()) {
+            throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxCount());
         }
         return itemStack;
     }

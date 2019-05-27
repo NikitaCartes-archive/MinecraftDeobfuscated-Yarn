@@ -51,7 +51,7 @@ public class EnchantCommand {
                         continue;
                     }
                     if (collection.size() != 1) continue;
-                    throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getTranslatedNameTrimmed(itemStack).getString());
+                    throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());
                 }
                 if (collection.size() != 1) continue;
                 throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.getName().getString());

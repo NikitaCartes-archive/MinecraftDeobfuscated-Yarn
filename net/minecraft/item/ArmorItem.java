@@ -34,9 +34,9 @@ extends Item {
     public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior(){
 
         @Override
-        protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+        protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
             ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-            return itemStack2.isEmpty() ? super.dispenseStack(blockPointer, itemStack) : itemStack2;
+            return itemStack2.isEmpty() ? super.dispenseSilently(blockPointer, itemStack) : itemStack2;
         }
     };
     protected final EquipmentSlot slot;
@@ -62,7 +62,7 @@ extends Item {
     }
 
     public ArmorItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Item.Settings settings) {
-        super(settings.durabilityIfNotSet(armorMaterial.getDurability(equipmentSlot)));
+        super(settings.maxDamageIfAbsent(armorMaterial.getDurability(equipmentSlot)));
         this.type = armorMaterial;
         this.slot = equipmentSlot;
         this.protection = armorMaterial.getProtectionAmount(equipmentSlot);
@@ -95,15 +95,15 @@ extends Item {
         ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
             playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
-            itemStack.setAmount(0);
+            itemStack.setCount(0);
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
         }
         return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
     }
 
     @Override
-    public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-        Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
+    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
         if (equipmentSlot == this.slot) {
             multimap.put(EntityAttributes.ARMOR.getId(), new EntityAttributeModifier(MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION));
             multimap.put(EntityAttributes.ARMOR_TOUGHNESS.getId(), new EntityAttributeModifier(MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION));

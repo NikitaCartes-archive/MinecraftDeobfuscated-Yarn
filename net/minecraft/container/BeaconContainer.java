@@ -99,7 +99,7 @@ extends Container {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getAmount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (i >= 1 && i < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (i >= 28 && i < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
+            } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getCount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (i >= 1 && i < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (i >= 28 && i < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -107,7 +107,7 @@ extends Container {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(playerEntity, itemStack2);

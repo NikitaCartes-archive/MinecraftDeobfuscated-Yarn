@@ -52,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class RaiderEntity
 extends PatrolEntity {
     protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && ItemStack.areEqual(itemEntity.getStack(), Raid.OMINOUS_BANNER);
+    private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.OMINOUS_BANNER);
     @Nullable
     protected Raid raid;
     private int wave;
@@ -140,7 +140,7 @@ extends PatrolEntity {
                         playerEntity = (PlayerEntity)livingEntity;
                     }
                 }
-                if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
+                if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
                     StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
                     int i = 1;
                     if (statusEffectInstance != null) {
@@ -226,7 +226,7 @@ extends PatrolEntity {
         boolean bl;
         ItemStack itemStack = itemEntity.getStack();
         boolean bl2 = bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-        if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER)) {
+        if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER)) {
             EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
             ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
             double d = this.getDropChance(equipmentSlot);
@@ -234,7 +234,7 @@ extends PatrolEntity {
                 this.dropStack(itemStack2);
             }
             this.setEquippedStack(equipmentSlot, itemStack);
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
             this.getRaid().setWaveCaptain(this.getWave(), this);
             this.setPatrolLeader(true);
@@ -488,7 +488,7 @@ extends PatrolEntity {
         public boolean canStart() {
             List<ItemEntity> list;
             Raid raid = ((RaiderEntity)this.actor).getRaid();
-            if (!((RaiderEntity)this.actor).hasActiveRaid() || ((RaiderEntity)this.actor).getRaid().isFinished() || !((PatrolEntity)this.actor).canLead() || ItemStack.areEqual(((MobEntity)this.actor).getEquippedStack(EquipmentSlot.HEAD), Raid.OMINOUS_BANNER)) {
+            if (!((RaiderEntity)this.actor).hasActiveRaid() || ((RaiderEntity)this.actor).getRaid().isFinished() || !((PatrolEntity)this.actor).canLead() || ItemStack.areEqualIgnoreDamage(((MobEntity)this.actor).getEquippedStack(EquipmentSlot.HEAD), Raid.OMINOUS_BANNER)) {
                 return false;
             }
             RaiderEntity raiderEntity = raid.getCaptain(((RaiderEntity)this.actor).getWave());

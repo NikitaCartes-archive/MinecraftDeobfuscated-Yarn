@@ -14,7 +14,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 
 public class LeavesBlock
 extends Block {
-    public static final IntegerProperty DISTANCE = Properties.DISTANCE_1_7;
+    public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
     protected static boolean fancy;
 

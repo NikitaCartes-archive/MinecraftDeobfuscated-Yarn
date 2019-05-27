@@ -34,16 +34,16 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
         World world = itemUsageContext.getWorld();
         BlockPos blockPos = itemUsageContext.getBlockPos();
-        BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
-        if (BoneMealItem.useOnFertilizable(itemUsageContext.getItemStack(), world, blockPos)) {
+        BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
+        if (BoneMealItem.useOnFertilizable(itemUsageContext.getStack(), world, blockPos)) {
             if (!world.isClient) {
                 world.playLevelEvent(2005, blockPos, 0);
             }
             return ActionResult.SUCCESS;
         }
         BlockState blockState = world.getBlockState(blockPos);
-        boolean bl = Block.isSolidFullSquare(blockState, world, blockPos, itemUsageContext.getFacing());
-        if (bl && BoneMealItem.useOnGround(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.getFacing())) {
+        boolean bl = Block.isSolidFullSquare(blockState, world, blockPos, itemUsageContext.getSide());
+        if (bl && BoneMealItem.useOnGround(itemUsageContext.getStack(), world, blockPos2, itemUsageContext.getSide())) {
             if (!world.isClient) {
                 world.playLevelEvent(2005, blockPos2, 0);
             }
@@ -60,7 +60,7 @@ extends Item {
                 if (fertilizable.canGrow(world, world.random, blockPos, blockState)) {
                     fertilizable.grow(world, world.random, blockPos, blockState);
                 }
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return true;
         }
@@ -76,20 +76,20 @@ extends Item {
                     Biome biome = world.getBiome(blockPos2);
                     BlockState blockState = Blocks.SEAGRASS.getDefaultState();
                     for (j = 0; j < i / 16; ++j) {
-                        blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
+                        blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
                         biome = world.getBiome(blockPos2);
                         if (Block.isShapeFullCube(world.getBlockState(blockPos2).getCollisionShape(world, blockPos2))) continue block0;
                     }
                     if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
                         if (i == 0 && direction != null && direction.getAxis().isHorizontal()) {
                             blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
-                        } else if (random.nextInt(4) == 0) {
-                            blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(random).getDefaultState();
+                        } else if (RANDOM.nextInt(4) == 0) {
+                            blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
                         }
                     }
                     if (blockState.getBlock().matches(BlockTags.WALL_CORALS)) {
                         for (j = 0; !blockState.canPlaceAt(world, blockPos2) && j < 4; ++j) {
-                            blockState = (BlockState)blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
+                            blockState = (BlockState)blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
                         }
                     }
                     if (!blockState.canPlaceAt(world, blockPos2)) continue;
@@ -98,10 +98,10 @@ extends Item {
                         world.setBlockState(blockPos2, blockState, 3);
                         continue;
                     }
-                    if (blockState2.getBlock() != Blocks.SEAGRASS || random.nextInt(10) != 0) continue;
-                    ((Fertilizable)((Object)Blocks.SEAGRASS)).grow(world, random, blockPos2, blockState2);
+                    if (blockState2.getBlock() != Blocks.SEAGRASS || RANDOM.nextInt(10) != 0) continue;
+                    ((Fertilizable)((Object)Blocks.SEAGRASS)).grow(world, RANDOM, blockPos2, blockState2);
                 }
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return true;
         }
@@ -109,7 +109,7 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void playEffects(IWorld iWorld, BlockPos blockPos, int i) {
+    public static void createParticles(IWorld iWorld, BlockPos blockPos, int i) {
         BlockState blockState;
         if (i == 0) {
             i = 15;
@@ -118,10 +118,10 @@ extends Item {
             return;
         }
         for (int j = 0; j < i; ++j) {
-            double d = random.nextGaussian() * 0.02;
-            double e = random.nextGaussian() * 0.02;
-            double f = random.nextGaussian() * 0.02;
-            iWorld.addParticle(ParticleTypes.HAPPY_VILLAGER, (float)blockPos.getX() + random.nextFloat(), (double)blockPos.getY() + (double)random.nextFloat() * blockState.getOutlineShape(iWorld, blockPos).getMaximum(Direction.Axis.Y), (float)blockPos.getZ() + random.nextFloat(), d, e, f);
+            double d = RANDOM.nextGaussian() * 0.02;
+            double e = RANDOM.nextGaussian() * 0.02;
+            double f = RANDOM.nextGaussian() * 0.02;
+            iWorld.addParticle(ParticleTypes.HAPPY_VILLAGER, (float)blockPos.getX() + RANDOM.nextFloat(), (double)blockPos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(iWorld, blockPos).getMaximum(Direction.Axis.Y), (float)blockPos.getZ() + RANDOM.nextFloat(), d, e, f);
         }
     }
 }

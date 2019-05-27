@@ -11,7 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.IceBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class FrostedIceBlock
 extends IceBlock {
-    public static final IntegerProperty AGE = Properties.AGE_3;
+    public static final IntProperty AGE = Properties.AGE_3;
 
     public FrostedIceBlock(Block.Settings settings) {
         super(settings);

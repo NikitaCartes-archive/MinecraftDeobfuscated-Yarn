@@ -17,7 +17,7 @@ import net.minecraft.util.math.Direction;
 public class BlockPlacementDispenserBehavior
 extends FallibleItemDispenserBehavior {
     @Override
-    protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+    protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
         this.success = false;
         Item item = itemStack.getItem();
         if (item instanceof BlockItem) {
@@ -26,7 +26,7 @@ extends FallibleItemDispenserBehavior {
             Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
             boolean bl = this.success = ((BlockItem)item).place(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2)) == ActionResult.SUCCESS;
             if (this.success) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
         }
         return itemStack;

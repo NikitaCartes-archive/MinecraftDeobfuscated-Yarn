@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
-import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.Slot;
@@ -24,7 +24,7 @@ extends AbstractContainerScreen<CraftingTableContainer>
 implements RecipeBookProvider {
     private static final Identifier BG_TEX = new Identifier("textures/gui/container/crafting_table.png");
     private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
-    private final RecipeBookScreen recipeBookGui = new RecipeBookScreen();
+    private final RecipeBookWidget recipeBookGui = new RecipeBookWidget();
     private boolean isNarrow;
 
     public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Component component) {
@@ -39,11 +39,11 @@ implements RecipeBookProvider {
         this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
         this.children.add(this.recipeBookGui);
         this.setInitialFocus(this.recipeBookGui);
-        this.addButton(new RecipeBookButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+        this.addButton(new TexturedButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
             this.recipeBookGui.reset(this.isNarrow);
             this.recipeBookGui.toggleOpen();
             this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
-            ((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 5, this.height / 2 - 49);
+            ((TexturedButtonWidget)buttonWidget).setPos(this.left + 5, this.height / 2 - 49);
         }));
     }
 
@@ -124,7 +124,7 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public RecipeBookScreen getRecipeBookGui() {
+    public RecipeBookWidget getRecipeBookGui() {
         return this.recipeBookGui;
     }
 }

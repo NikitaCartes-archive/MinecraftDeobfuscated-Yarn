@@ -96,7 +96,7 @@ extends AbstractTraderEntity {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         boolean bl2 = bl = itemStack.getItem() == Items.NAME_TAG;
         if (bl) {
-            itemStack.interactWithEntity(playerEntity, this, hand);
+            itemStack.useOnEntity(playerEntity, this, hand);
             return true;
         }
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {

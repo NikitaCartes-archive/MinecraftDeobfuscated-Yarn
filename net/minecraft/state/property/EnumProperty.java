@@ -19,17 +19,17 @@ import net.minecraft.util.StringIdentifiable;
 public class EnumProperty<T extends Enum<T>>
 extends AbstractProperty<T> {
     private final ImmutableSet<T> values;
-    private final Map<String, T> valuesByName = Maps.newHashMap();
+    private final Map<String, T> byName = Maps.newHashMap();
 
     protected EnumProperty(String string, Class<T> class_, Collection<T> collection) {
         super(string, class_);
         this.values = ImmutableSet.copyOf(collection);
         for (Enum enum_ : collection) {
             String string2 = ((StringIdentifiable)((Object)enum_)).asString();
-            if (this.valuesByName.containsKey(string2)) {
+            if (this.byName.containsKey(string2)) {
                 throw new IllegalArgumentException("Multiple values have the same name '" + string2 + "'");
             }
-            this.valuesByName.put(string2, enum_);
+            this.byName.put(string2, enum_);
         }
     }
 
@@ -40,7 +40,7 @@ extends AbstractProperty<T> {
 
     @Override
     public Optional<T> getValue(String string) {
-        return Optional.ofNullable(this.valuesByName.get(string));
+        return Optional.ofNullable(this.byName.get(string));
     }
 
     public String method_11846(T enum_) {
@@ -54,7 +54,7 @@ extends AbstractProperty<T> {
         }
         if (object instanceof EnumProperty && super.equals(object)) {
             EnumProperty enumProperty = (EnumProperty)object;
-            return this.values.equals(enumProperty.values) && this.valuesByName.equals(enumProperty.valuesByName);
+            return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
         }
         return false;
     }
@@ -63,23 +63,23 @@ extends AbstractProperty<T> {
     public int computeHashCode() {
         int i = super.computeHashCode();
         i = 31 * i + this.values.hashCode();
-        i = 31 * i + this.valuesByName.hashCode();
+        i = 31 * i + this.byName.hashCode();
         return i;
     }
 
-    public static <T extends Enum<T>> EnumProperty<T> create(String string, Class<T> class_) {
-        return EnumProperty.create(string, class_, Predicates.alwaysTrue());
+    public static <T extends Enum<T>> EnumProperty<T> of(String string, Class<T> class_) {
+        return EnumProperty.of(string, class_, Predicates.alwaysTrue());
     }
 
-    public static <T extends Enum<T>> EnumProperty<T> create(String string, Class<T> class_, Predicate<T> predicate) {
-        return EnumProperty.create(string, class_, Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
+    public static <T extends Enum<T>> EnumProperty<T> of(String string, Class<T> class_, Predicate<T> predicate) {
+        return EnumProperty.of(string, class_, Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
     }
 
-    public static <T extends Enum<T>> EnumProperty<T> create(String string, Class<T> class_, T ... enums) {
-        return EnumProperty.create(string, class_, Lists.newArrayList(enums));
+    public static <T extends Enum<T>> EnumProperty<T> of(String string, Class<T> class_, T ... enums) {
+        return EnumProperty.of(string, class_, Lists.newArrayList(enums));
     }
 
-    public static <T extends Enum<T>> EnumProperty<T> create(String string, Class<T> class_, Collection<T> collection) {
+    public static <T extends Enum<T>> EnumProperty<T> of(String string, Class<T> class_, Collection<T> collection) {
         return new EnumProperty<T>(string, class_, collection);
     }
 }

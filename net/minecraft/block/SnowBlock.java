@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SnowBlock
 extends Block {
-    public static final IntegerProperty LAYERS = Properties.LAYERS;
+    public static final IntProperty LAYERS = Properties.LAYERS;
     protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[]{VoxelShapes.empty(), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 10.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)};
 
     protected SnowBlock(Block.Settings settings) {
@@ -94,9 +94,9 @@ extends Block {
     @Override
     public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
         int i = blockState.get(LAYERS);
-        if (itemPlacementContext.getItemStack().getItem() == this.asItem() && i < 8) {
-            if (itemPlacementContext.canReplaceHitBlock()) {
-                return itemPlacementContext.getFacing() == Direction.UP;
+        if (itemPlacementContext.getStack().getItem() == this.asItem() && i < 8) {
+            if (itemPlacementContext.canReplaceExisting()) {
+                return itemPlacementContext.getSide() == Direction.UP;
             }
             return true;
         }

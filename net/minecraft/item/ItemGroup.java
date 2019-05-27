@@ -109,7 +109,7 @@ public abstract class ItemGroup {
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void appendItems(DefaultedList<ItemStack> defaultedList) {
+        public void appendStacks(DefaultedList<ItemStack> defaultedList) {
             throw new RuntimeException("Implement exception client-side.");
         }
 
@@ -243,9 +243,9 @@ public abstract class ItemGroup {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void appendItems(DefaultedList<ItemStack> defaultedList) {
+    public void appendStacks(DefaultedList<ItemStack> defaultedList) {
         for (Item item : Registry.ITEM) {
-            item.appendItemsForGroup(this, defaultedList);
+            item.appendStacks(this, defaultedList);
         }
     }
 }

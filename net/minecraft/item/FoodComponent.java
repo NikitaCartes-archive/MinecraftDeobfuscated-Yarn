@@ -8,21 +8,21 @@ import java.util.List;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class FoodItemSetting {
+public class FoodComponent {
     private final int hunger;
     private final float saturationModifier;
     private final boolean wolfFood;
     private final boolean alwaysEdible;
-    private final boolean eatenFast;
-    private final List<Pair<StatusEffectInstance, Float>> statusEffectChances;
+    private final boolean snack;
+    private final List<Pair<StatusEffectInstance, Float>> statusEffects;
 
-    private FoodItemSetting(int i, float f, boolean bl, boolean bl2, boolean bl3, List<Pair<StatusEffectInstance, Float>> list) {
+    private FoodComponent(int i, float f, boolean bl, boolean bl2, boolean bl3, List<Pair<StatusEffectInstance, Float>> list) {
         this.hunger = i;
         this.saturationModifier = f;
         this.wolfFood = bl;
         this.alwaysEdible = bl2;
-        this.eatenFast = bl3;
-        this.statusEffectChances = list;
+        this.snack = bl3;
+        this.statusEffects = list;
     }
 
     public int getHunger() {
@@ -41,12 +41,12 @@ public class FoodItemSetting {
         return this.alwaysEdible;
     }
 
-    public boolean isEatenFast() {
-        return this.eatenFast;
+    public boolean isSnack() {
+        return this.snack;
     }
 
-    public List<Pair<StatusEffectInstance, Float>> getStatusEffectChances() {
-        return this.statusEffectChances;
+    public List<Pair<StatusEffectInstance, Float>> getStatusEffects() {
+        return this.statusEffects;
     }
 
     public static class Builder {
@@ -54,8 +54,8 @@ public class FoodItemSetting {
         private float saturationModifier;
         private boolean wolfFood;
         private boolean alwaysEdible;
-        private boolean eatenFast;
-        private final List<Pair<StatusEffectInstance, Float>> statusEffectChances = Lists.newArrayList();
+        private boolean snack;
+        private final List<Pair<StatusEffectInstance, Float>> statusEffects = Lists.newArrayList();
 
         public Builder hunger(int i) {
             this.hunger = i;
@@ -77,18 +77,18 @@ public class FoodItemSetting {
             return this;
         }
 
-        public Builder eatenFast() {
-            this.eatenFast = true;
+        public Builder snack() {
+            this.snack = true;
             return this;
         }
 
         public Builder statusEffect(StatusEffectInstance statusEffectInstance, float f) {
-            this.statusEffectChances.add(Pair.of(statusEffectInstance, Float.valueOf(f)));
+            this.statusEffects.add(Pair.of(statusEffectInstance, Float.valueOf(f)));
             return this;
         }
 
-        public FoodItemSetting build() {
-            return new FoodItemSetting(this.hunger, this.saturationModifier, this.wolfFood, this.alwaysEdible, this.eatenFast, this.statusEffectChances);
+        public FoodComponent build() {
+            return new FoodComponent(this.hunger, this.saturationModifier, this.wolfFood, this.alwaysEdible, this.snack, this.statusEffects);
         }
     }
 }

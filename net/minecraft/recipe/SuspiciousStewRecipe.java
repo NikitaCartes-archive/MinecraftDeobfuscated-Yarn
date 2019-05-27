@@ -41,7 +41,7 @@ extends SpecialCraftingRecipe {
                 bl2 = true;
                 continue;
             }
-            if (itemStack.getItem().matches(ItemTags.SMALL_FLOWERS) && !bl) {
+            if (itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS) && !bl) {
                 bl = true;
                 continue;
             }
@@ -58,7 +58,7 @@ extends SpecialCraftingRecipe {
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
             ItemStack itemStack2 = craftingInventory.getInvStack(i);
-            if (itemStack2.isEmpty() || !itemStack2.getItem().matches(ItemTags.SMALL_FLOWERS)) continue;
+            if (itemStack2.isEmpty() || !itemStack2.getItem().isIn(ItemTags.SMALL_FLOWERS)) continue;
             itemStack = itemStack2;
             break;
         }

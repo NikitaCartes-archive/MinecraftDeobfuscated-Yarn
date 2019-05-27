@@ -19,20 +19,20 @@ public class ClockItem
 extends Item {
     public ClockItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("time"), new ItemPropertyGetter(){
+        this.addPropertyGetter(new Identifier("time"), new ItemPropertyGetter(){
             @Environment(value=EnvType.CLIENT)
-            private double lastClockTime;
+            private double time;
             @Environment(value=EnvType.CLIENT)
-            private double clockTimeChangeSpeed;
+            private double step;
             @Environment(value=EnvType.CLIENT)
-            private long lastWorldTime;
+            private long lastTick;
 
             @Override
             @Environment(value=EnvType.CLIENT)
             public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
                 Entity entity;
                 boolean bl = livingEntity != null;
-                Entity entity2 = entity = bl ? livingEntity : itemStack.getHoldingItemFrame();
+                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
                 if (world == null && entity != null) {
                     world = entity.world;
                 }
@@ -40,21 +40,21 @@ extends Item {
                     return 0.0f;
                 }
                 double d = world.dimension.hasVisibleSky() ? (double)world.getSkyAngle(1.0f) : Math.random();
-                d = this.getClockTime(world, d);
+                d = this.getTime(world, d);
                 return (float)d;
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double getClockTime(World world, double d) {
-                if (world.getTime() != this.lastWorldTime) {
-                    this.lastWorldTime = world.getTime();
-                    double e = d - this.lastClockTime;
+            private double getTime(World world, double d) {
+                if (world.getTime() != this.lastTick) {
+                    this.lastTick = world.getTime();
+                    double e = d - this.time;
                     e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-                    this.clockTimeChangeSpeed += e * 0.1;
-                    this.clockTimeChangeSpeed *= 0.9;
-                    this.lastClockTime = MathHelper.floorMod(this.lastClockTime + this.clockTimeChangeSpeed, 1.0);
+                    this.step += e * 0.1;
+                    this.step *= 0.9;
+                    this.time = MathHelper.floorMod(this.time + this.step, 1.0);
                 }
-                return this.lastClockTime;
+                return this.time;
             }
         });
     }

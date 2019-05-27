@@ -63,14 +63,14 @@ extends Task<VillagerEntity> {
     private ItemStack createFirework(DyeColor dyeColor, int i) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
         ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
-        CompoundTag compoundTag = itemStack2.getOrCreateSubCompoundTag("Explosion");
+        CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
         ArrayList<Integer> list = Lists.newArrayList();
         list.add(dyeColor.getFireworkColor());
         compoundTag.putIntArray("Colors", list);
         compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
-        CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("Fireworks");
+        CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
         ListTag listTag = new ListTag();
-        CompoundTag compoundTag3 = itemStack2.getSubCompoundTag("Explosion");
+        CompoundTag compoundTag3 = itemStack2.getSubTag("Explosion");
         if (compoundTag3 != null) {
             listTag.add(compoundTag3);
         }

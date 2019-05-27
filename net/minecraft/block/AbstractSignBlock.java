@@ -78,7 +78,7 @@ implements Waterloggable {
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld && (bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor())) && !playerEntity.isCreative()) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return signBlockEntity.onActivate(playerEntity);
         }

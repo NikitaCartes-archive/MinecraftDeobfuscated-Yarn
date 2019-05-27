@@ -21,7 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -33,8 +33,8 @@ public class TurtleEggBlock
 extends Block {
     private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
     private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
-    public static final IntegerProperty HATCH = Properties.HATCH;
-    public static final IntegerProperty EGGS = Properties.EGGS;
+    public static final IntProperty HATCH = Properties.HATCH;
+    public static final IntProperty EGGS = Properties.EGGS;
 
     public TurtleEggBlock(Block.Settings settings) {
         super(settings);
@@ -127,7 +127,7 @@ extends Block {
 
     @Override
     public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-        if (itemPlacementContext.getItemStack().getItem() == this.asItem() && blockState.get(EGGS) < 4) {
+        if (itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(EGGS) < 4) {
             return true;
         }
         return super.canReplace(blockState, itemPlacementContext);

@@ -51,7 +51,7 @@ implements Inventory {
     public ItemStack takeInvStack(int i, int j) {
         ItemStack itemStack = this.inventory.get(i);
         if (i == 2 && !itemStack.isEmpty()) {
-            return Inventories.splitStack(this.inventory, i, itemStack.getAmount());
+            return Inventories.splitStack(this.inventory, i, itemStack.getCount());
         }
         ItemStack itemStack2 = Inventories.splitStack(this.inventory, i, j);
         if (!itemStack2.isEmpty() && this.needRecipeUpdate(i)) {
@@ -72,8 +72,8 @@ implements Inventory {
     @Override
     public void setInvStack(int i, ItemStack itemStack) {
         this.inventory.set(i, itemStack);
-        if (!itemStack.isEmpty() && itemStack.getAmount() > this.getInvMaxStackAmount()) {
-            itemStack.setAmount(this.getInvMaxStackAmount());
+        if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
+            itemStack.setCount(this.getInvMaxStackAmount());
         }
         if (this.needRecipeUpdate(i)) {
             this.updateRecipes();

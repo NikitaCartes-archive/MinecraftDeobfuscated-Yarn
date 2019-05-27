@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 
 public class WeightedPressurePlateBlock
 extends AbstractPressurePlateBlock {
-    public static final IntegerProperty POWER = Properties.POWER;
+    public static final IntProperty POWER = Properties.POWER;
     private final int weight;
 
     protected WeightedPressurePlateBlock(int i, Block.Settings settings) {

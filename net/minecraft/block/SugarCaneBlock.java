@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class SugarCaneBlock
 extends Block {
-    public static final IntegerProperty AGE = Properties.AGE_15;
+    public static final IntProperty AGE = Properties.AGE_15;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
     protected SugarCaneBlock(Block.Settings settings) {

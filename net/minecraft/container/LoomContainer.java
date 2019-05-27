@@ -143,7 +143,7 @@ extends Container {
             this.selectedPattern.set(0);
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
-            CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
+            CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
             boolean bl2 = bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
@@ -180,7 +180,7 @@ extends Container {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(playerEntity, itemStack2);
@@ -202,10 +202,10 @@ extends Container {
             if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
                 ListTag listTag;
                 itemStack3 = itemStack.copy();
-                itemStack3.setAmount(1);
+                itemStack3.setCount(1);
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-                CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
+                CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
                 if (compoundTag.containsKey("Patterns", 9)) {
                     listTag = compoundTag.getList("Patterns", 10);
                 } else {
@@ -217,7 +217,7 @@ extends Container {
                 compoundTag2.putInt("Color", dyeColor.getId());
                 listTag.add(compoundTag2);
             }
-            if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+            if (!ItemStack.areEqualIgnoreDamage(itemStack3, this.outputSlot.getStack())) {
                 this.outputSlot.setStack(itemStack3);
             }
         }

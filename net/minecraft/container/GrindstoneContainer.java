@@ -50,14 +50,14 @@ extends Container {
 
             @Override
             public boolean canInsert(ItemStack itemStack) {
-                return itemStack.hasDurability() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
+                return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
             }
         });
         this.addSlot(new Slot(this.craftingInventory, 1, 49, 40){
 
             @Override
             public boolean canInsert(ItemStack itemStack) {
-                return itemStack.hasDurability() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
+                return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
             }
         });
         this.addSlot(new Slot(this.resultInventory, 2, 129, 34){
@@ -136,7 +136,7 @@ extends Container {
             int m;
             boolean bl32;
             boolean bl4 = bl32 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments() || !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
-            if (itemStack.getAmount() > 1 || itemStack2.getAmount() > 1 || !bl2 && bl32) {
+            if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl32) {
                 this.resultInventory.setInvStack(0, ItemStack.EMPTY);
                 this.sendContentUpdates();
                 return;
@@ -149,13 +149,13 @@ extends Container {
                     return;
                 }
                 Item item = itemStack.getItem();
-                int j = item.getDurability() - itemStack.getDamage();
-                int k = item.getDurability() - itemStack2.getDamage();
-                int l = j + k + item.getDurability() * 5 / 100;
-                m = Math.max(item.getDurability() - l, 0);
+                int j = item.getMaxDamage() - itemStack.getDamage();
+                int k = item.getMaxDamage() - itemStack2.getDamage();
+                int l = j + k + item.getMaxDamage() * 5 / 100;
+                m = Math.max(item.getMaxDamage() - l, 0);
                 itemStack3 = this.transferEnchantments(itemStack, itemStack2);
-                if (!itemStack3.hasDurability()) {
-                    if (!ItemStack.areEqual(itemStack, itemStack2)) {
+                if (!itemStack3.isDamageable()) {
+                    if (!ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
                         this.resultInventory.setInvStack(0, ItemStack.EMPTY);
                         this.sendContentUpdates();
                         return;
@@ -194,14 +194,14 @@ extends Container {
         } else {
             itemStack2.removeSubTag("Damage");
         }
-        itemStack2.setAmount(j);
+        itemStack2.setCount(j);
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack).entrySet().stream().filter(entry -> ((Enchantment)entry.getKey()).isCursed()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         EnchantmentHelper.set(map, itemStack2);
         itemStack2.setRepairCost(0);
         if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
             itemStack2 = new ItemStack(Items.BOOK);
-            if (itemStack.hasDisplayName()) {
-                itemStack2.setDisplayName(itemStack.getDisplayName());
+            if (itemStack.hasCustomName()) {
+                itemStack2.setCustomName(itemStack.getCustomName());
             }
         }
         for (int k = 0; k < map.size(); ++k) {
@@ -243,7 +243,7 @@ extends Container {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(playerEntity, itemStack2);

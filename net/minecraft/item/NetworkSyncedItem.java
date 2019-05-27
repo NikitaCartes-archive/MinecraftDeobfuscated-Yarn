@@ -10,19 +10,19 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class MapItem
+public class NetworkSyncedItem
 extends Item {
-    public MapItem(Item.Settings settings) {
+    public NetworkSyncedItem(Item.Settings settings) {
         super(settings);
     }
 
     @Override
-    public boolean isMap() {
+    public boolean isNetworkSynced() {
         return true;
     }
 
     @Nullable
-    public Packet<?> createMapPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+    public Packet<?> createSyncPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
         return null;
     }
 }

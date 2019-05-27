@@ -92,7 +92,7 @@ public class RecipeResultCollection {
         if (this.field_3148) {
             ItemStack itemStack2;
             ItemStack itemStack = this.allRecipes.get(0).getOutput();
-            this.field_3148 = ItemStack.areEqualIgnoreTags(itemStack, itemStack2 = recipe.getOutput()) && ItemStack.areTagsEqual(itemStack, itemStack2);
+            this.field_3148 = ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2 = recipe.getOutput()) && ItemStack.areTagsEqual(itemStack, itemStack2);
         }
     }
 

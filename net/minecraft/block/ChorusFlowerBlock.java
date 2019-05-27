@@ -12,7 +12,7 @@ import net.minecraft.block.ChorusPlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChorusFlowerBlock
 extends Block {
-    public static final IntegerProperty AGE = Properties.AGE_5;
+    public static final IntProperty AGE = Properties.AGE_5;
     private final ChorusPlantBlock plantBlock;
 
     protected ChorusFlowerBlock(ChorusPlantBlock chorusPlantBlock, Block.Settings settings) {

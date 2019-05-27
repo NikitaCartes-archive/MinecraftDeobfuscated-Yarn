@@ -34,16 +34,16 @@ extends Item {
                 this.playUseSound(world, blockPos);
                 world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));
             }
-        } else if (world.getBlockState(blockPos = blockPos.offset(itemUsageContext.getFacing())).isAir()) {
+        } else if (world.getBlockState(blockPos = blockPos.offset(itemUsageContext.getSide())).isAir()) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, ((FireBlock)Blocks.FIRE).getStateForPosition(world, blockPos));
         }
-        itemUsageContext.getItemStack().subtractAmount(1);
+        itemUsageContext.getStack().decrement(1);
         return ActionResult.SUCCESS;
     }
 
     private void playUseSound(World world, BlockPos blockPos) {
-        world.playSound(null, blockPos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f);
+        world.playSound(null, blockPos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0f, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2f + 1.0f);
     }
 }
 

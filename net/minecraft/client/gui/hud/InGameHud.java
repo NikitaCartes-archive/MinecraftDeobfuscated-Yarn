@@ -536,8 +536,8 @@ extends DrawableHelper {
         this.client.getProfiler().push("selectedItemName");
         if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
             int k;
-            Component component = new TextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
-            if (this.currentStack.hasDisplayName()) {
+            Component component = new TextComponent("").append(this.currentStack.getCustomName()).applyFormat(this.currentStack.getRarity().formatting);
+            if (this.currentStack.hasCustomName()) {
                 component.applyFormat(ChatFormat.ITALIC);
             }
             String string = component.getFormattedText();
@@ -927,7 +927,7 @@ extends DrawableHelper {
         if (itemStack.isEmpty()) {
             return;
         }
-        float g = (float)itemStack.getUpdateCooldown() - f;
+        float g = (float)itemStack.getCooldown() - f;
         if (g > 0.0f) {
             GlStateManager.pushMatrix();
             float h = 1.0f + g / 5.0f;
@@ -962,7 +962,7 @@ extends DrawableHelper {
             ItemStack itemStack = this.client.player.inventory.getMainHandStack();
             if (itemStack.isEmpty()) {
                 this.heldItemTooltipFade = 0;
-            } else if (this.currentStack.isEmpty() || itemStack.getItem() != this.currentStack.getItem() || !itemStack.getDisplayName().equals(this.currentStack.getDisplayName())) {
+            } else if (this.currentStack.isEmpty() || itemStack.getItem() != this.currentStack.getItem() || !itemStack.getCustomName().equals(this.currentStack.getCustomName())) {
                 this.heldItemTooltipFade = 40;
             } else if (this.heldItemTooltipFade > 0) {
                 --this.heldItemTooltipFade;

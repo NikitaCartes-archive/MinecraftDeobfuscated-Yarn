@@ -238,7 +238,7 @@ Tickable {
                         bl2 = true;
                         if (!itemStack.isEmpty()) {
                             Item item = itemStack.getItem();
-                            itemStack.subtractAmount(1);
+                            itemStack.decrement(1);
                             if (itemStack.isEmpty()) {
                                 Item item2 = item.getRecipeRemainder();
                                 this.inventory.set(1, item2 == null ? ItemStack.EMPTY : new ItemStack(item2));
@@ -282,13 +282,13 @@ Tickable {
         if (itemStack2.isEmpty()) {
             return true;
         }
-        if (!itemStack2.isEqualIgnoreTags(itemStack)) {
+        if (!itemStack2.isItemEqualIgnoreDamage(itemStack)) {
             return false;
         }
-        if (itemStack2.getAmount() < this.getInvMaxStackAmount() && itemStack2.getAmount() < itemStack2.getMaxAmount()) {
+        if (itemStack2.getCount() < this.getInvMaxStackAmount() && itemStack2.getCount() < itemStack2.getMaxCount()) {
             return true;
         }
-        return itemStack2.getAmount() < itemStack.getMaxAmount();
+        return itemStack2.getCount() < itemStack.getMaxCount();
     }
 
     private void craftRecipe(@Nullable Recipe<?> recipe) {
@@ -301,7 +301,7 @@ Tickable {
         if (itemStack3.isEmpty()) {
             this.inventory.set(2, itemStack2.copy());
         } else if (itemStack3.getItem() == itemStack2.getItem()) {
-            itemStack3.addAmount(1);
+            itemStack3.increment(1);
         }
         if (!this.world.isClient) {
             this.setLastRecipe(recipe);
@@ -309,7 +309,7 @@ Tickable {
         if (itemStack.getItem() == Blocks.WET_SPONGE.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.BUCKET) {
             this.inventory.set(1, new ItemStack(Items.WATER_BUCKET));
         }
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
     }
 
     protected int getFuelTime(ItemStack itemStack) {
@@ -382,10 +382,10 @@ Tickable {
     @Override
     public void setInvStack(int i, ItemStack itemStack) {
         ItemStack itemStack2 = this.inventory.get(i);
-        boolean bl = !itemStack.isEmpty() && itemStack.isEqualIgnoreTags(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
+        boolean bl = !itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
         this.inventory.set(i, itemStack);
-        if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-            itemStack.setAmount(this.getInvMaxStackAmount());
+        if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+            itemStack.setCount(this.getInvMaxStackAmount());
         }
         if (i == 0 && !bl) {
             this.cookTimeTotal = this.getCookTime();

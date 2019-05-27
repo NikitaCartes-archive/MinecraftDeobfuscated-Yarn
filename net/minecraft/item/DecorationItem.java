@@ -30,10 +30,10 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
         AbstractDecorationEntity abstractDecorationEntity;
         BlockPos blockPos = itemUsageContext.getBlockPos();
-        Direction direction = itemUsageContext.getFacing();
+        Direction direction = itemUsageContext.getSide();
         BlockPos blockPos2 = blockPos.offset(direction);
         PlayerEntity playerEntity = itemUsageContext.getPlayer();
-        ItemStack itemStack = itemUsageContext.getItemStack();
+        ItemStack itemStack = itemUsageContext.getStack();
         if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
             return ActionResult.FAIL;
         }
@@ -54,7 +54,7 @@ extends Item {
                 abstractDecorationEntity.onPlace();
                 world.spawnEntity(abstractDecorationEntity);
             }
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
         }
         return ActionResult.SUCCESS;
     }

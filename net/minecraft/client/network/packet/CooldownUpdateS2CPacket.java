@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(Item.getRawIdByItem(this.item));
+        packetByteBuf.writeVarInt(Item.getRawId(this.item));
         packetByteBuf.writeVarInt(this.cooldown);
     }
 

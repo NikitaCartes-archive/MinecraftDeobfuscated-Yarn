@@ -14,7 +14,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class RepeaterBlock
 extends AbstractRedstoneGateBlock {
     public static final BooleanProperty LOCKED = Properties.LOCKED;
-    public static final IntegerProperty DELAY = Properties.DELAY;
+    public static final IntProperty DELAY = Properties.DELAY;
 
     protected RepeaterBlock(Block.Settings settings) {
         super(settings);

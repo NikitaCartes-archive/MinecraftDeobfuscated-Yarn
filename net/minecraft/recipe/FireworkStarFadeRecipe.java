@@ -60,12 +60,12 @@ extends SpecialCraftingRecipe {
             }
             if (!field_9015.method_8093(itemStack2)) continue;
             itemStack = itemStack2.copy();
-            itemStack.setAmount(1);
+            itemStack.setCount(1);
         }
         if (itemStack == null || list.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        itemStack.getOrCreateSubCompoundTag("Explosion").putIntArray("FadeColors", list);
+        itemStack.getOrCreateSubTag("Explosion").putIntArray("FadeColors", list);
         return itemStack;
     }
 

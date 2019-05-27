@@ -30,8 +30,8 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        super.buildTooltip(itemStack, world, list, tooltipContext);
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        super.appendTooltip(itemStack, world, list, tooltipContext);
         this.block.buildTooltip(itemStack, world, list, tooltipContext);
     }
 }

@@ -41,7 +41,7 @@ extends Item {
             world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
         }
-        HitResult hitResult = GlassBottleItem.getHitResult(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        HitResult hitResult = GlassBottleItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
@@ -59,7 +59,7 @@ extends Item {
     }
 
     protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         if (itemStack.isEmpty()) {
             return itemStack2;

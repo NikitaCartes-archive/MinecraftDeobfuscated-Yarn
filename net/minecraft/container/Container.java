@@ -124,7 +124,7 @@ public abstract class Container {
         for (i = 0; i < this.slotList.size(); ++i) {
             ItemStack itemStack = this.slotList.get(i).getStack();
             ItemStack itemStack2 = this.stackList.get(i);
-            if (ItemStack.areEqual(itemStack2, itemStack)) continue;
+            if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
             itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
             this.stackList.set(i, itemStack2);
             for (ContainerListener containerListener : this.listeners) {
@@ -177,27 +177,27 @@ public abstract class Container {
             } else if (this.quickCraftButton == 1) {
                 Slot slot = this.slotList.get(i);
                 ItemStack itemStack2 = playerInventory.getCursorStack();
-                if (slot != null && Container.canInsertItemIntoSlot(slot, itemStack2, true) && slot.canInsert(itemStack2) && (this.quickCraftStage == 2 || itemStack2.getAmount() > this.quickCraftSlots.size()) && this.canInsertIntoSlot(slot)) {
+                if (slot != null && Container.canInsertItemIntoSlot(slot, itemStack2, true) && slot.canInsert(itemStack2) && (this.quickCraftStage == 2 || itemStack2.getCount() > this.quickCraftSlots.size()) && this.canInsertIntoSlot(slot)) {
                     this.quickCraftSlots.add(slot);
                 }
             } else if (this.quickCraftButton == 2) {
                 if (!this.quickCraftSlots.isEmpty()) {
                     ItemStack itemStack3 = playerInventory.getCursorStack().copy();
-                    int l = playerInventory.getCursorStack().getAmount();
+                    int l = playerInventory.getCursorStack().getCount();
                     for (Slot slot2 : this.quickCraftSlots) {
                         ItemStack itemStack4 = playerInventory.getCursorStack();
-                        if (slot2 == null || !Container.canInsertItemIntoSlot(slot2, itemStack4, true) || !slot2.canInsert(itemStack4) || this.quickCraftStage != 2 && itemStack4.getAmount() < this.quickCraftSlots.size() || !this.canInsertIntoSlot(slot2)) continue;
+                        if (slot2 == null || !Container.canInsertItemIntoSlot(slot2, itemStack4, true) || !slot2.canInsert(itemStack4) || this.quickCraftStage != 2 && itemStack4.getCount() < this.quickCraftSlots.size() || !this.canInsertIntoSlot(slot2)) continue;
                         ItemStack itemStack5 = itemStack3.copy();
-                        int m = slot2.hasStack() ? slot2.getStack().getAmount() : 0;
+                        int m = slot2.hasStack() ? slot2.getStack().getCount() : 0;
                         Container.calculateStackSize(this.quickCraftSlots, this.quickCraftStage, itemStack5, m);
-                        int n = Math.min(itemStack5.getMaxAmount(), slot2.getMaxStackAmount(itemStack5));
-                        if (itemStack5.getAmount() > n) {
-                            itemStack5.setAmount(n);
+                        int n = Math.min(itemStack5.getMaxCount(), slot2.getMaxStackAmount(itemStack5));
+                        if (itemStack5.getCount() > n) {
+                            itemStack5.setCount(n);
                         }
-                        l -= itemStack5.getAmount() - m;
+                        l -= itemStack5.getCount() - m;
                         slot2.setStack(itemStack5);
                     }
-                    itemStack3.setAmount(l);
+                    itemStack3.setCount(l);
                     playerInventory.setCursorStack(itemStack3);
                 }
                 this.endQuickCraft();
@@ -226,7 +226,7 @@ public abstract class Container {
                     return ItemStack.EMPTY;
                 }
                 ItemStack itemStack3 = this.transferSlot(playerEntity, i);
-                while (!itemStack3.isEmpty() && ItemStack.areEqualIgnoreTags(slot3.getStack(), itemStack3)) {
+                while (!itemStack3.isEmpty() && ItemStack.areItemsEqualIgnoreDamage(slot3.getStack(), itemStack3)) {
                     itemStack = itemStack3.copy();
                     itemStack3 = this.transferSlot(playerEntity, i);
                 }
@@ -244,7 +244,7 @@ public abstract class Container {
                     if (itemStack3.isEmpty()) {
                         if (!itemStack2.isEmpty() && slot3.canInsert(itemStack2)) {
                             int o;
-                            int n = o = j == 0 ? itemStack2.getAmount() : 1;
+                            int n = o = j == 0 ? itemStack2.getCount() : 1;
                             if (o > slot3.getMaxStackAmount(itemStack2)) {
                                 o = slot3.getMaxStackAmount(itemStack2);
                             }
@@ -257,7 +257,7 @@ public abstract class Container {
                                 slot3.setStack(ItemStack.EMPTY);
                                 playerInventory.setCursorStack(ItemStack.EMPTY);
                             } else {
-                                int o2 = j == 0 ? itemStack3.getAmount() : (itemStack3.getAmount() + 1) / 2;
+                                int o2 = j == 0 ? itemStack3.getCount() : (itemStack3.getCount() + 1) / 2;
                                 playerInventory.setCursorStack(slot3.takeStack(o2));
                                 if (itemStack3.isEmpty()) {
                                     slot3.setStack(ItemStack.EMPTY);
@@ -267,21 +267,21 @@ public abstract class Container {
                         } else if (slot3.canInsert(itemStack2)) {
                             if (Container.canStacksCombine(itemStack3, itemStack2)) {
                                 int o3;
-                                int n = o3 = j == 0 ? itemStack2.getAmount() : 1;
-                                if (o3 > slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount()) {
-                                    o3 = slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount();
+                                int n = o3 = j == 0 ? itemStack2.getCount() : 1;
+                                if (o3 > slot3.getMaxStackAmount(itemStack2) - itemStack3.getCount()) {
+                                    o3 = slot3.getMaxStackAmount(itemStack2) - itemStack3.getCount();
                                 }
-                                if (o3 > itemStack2.getMaxAmount() - itemStack3.getAmount()) {
-                                    o3 = itemStack2.getMaxAmount() - itemStack3.getAmount();
+                                if (o3 > itemStack2.getMaxCount() - itemStack3.getCount()) {
+                                    o3 = itemStack2.getMaxCount() - itemStack3.getCount();
                                 }
-                                itemStack2.subtractAmount(o3);
-                                itemStack3.addAmount(o3);
-                            } else if (itemStack2.getAmount() <= slot3.getMaxStackAmount(itemStack2)) {
+                                itemStack2.decrement(o3);
+                                itemStack3.increment(o3);
+                            } else if (itemStack2.getCount() <= slot3.getMaxStackAmount(itemStack2)) {
                                 slot3.setStack(itemStack2);
                                 playerInventory.setCursorStack(itemStack3);
                             }
-                        } else if (itemStack2.getMaxAmount() > 1 && Container.canStacksCombine(itemStack3, itemStack2) && !itemStack3.isEmpty() && (o = itemStack3.getAmount()) + itemStack2.getAmount() <= itemStack2.getMaxAmount()) {
-                            itemStack2.addAmount(o);
+                        } else if (itemStack2.getMaxCount() > 1 && Container.canStacksCombine(itemStack3, itemStack2) && !itemStack3.isEmpty() && (o = itemStack3.getCount()) + itemStack2.getCount() <= itemStack2.getMaxCount()) {
+                            itemStack2.increment(o);
                             itemStack3 = slot3.takeStack(o);
                             if (itemStack3.isEmpty()) {
                                 slot3.setStack(ItemStack.EMPTY);
@@ -300,14 +300,14 @@ public abstract class Container {
                 if (itemStack3.isEmpty()) {
                     if (slot3.canTakeItems(playerEntity)) {
                         playerInventory.setInvStack(j, itemStack2);
-                        slot3.onTake(itemStack2.getAmount());
+                        slot3.onTake(itemStack2.getCount());
                         slot3.setStack(ItemStack.EMPTY);
                         slot3.onTakeItem(playerEntity, itemStack2);
                     }
                 } else if (itemStack2.isEmpty()) {
                     if (slot3.canInsert(itemStack3)) {
                         int o = slot3.getMaxStackAmount(itemStack3);
-                        if (itemStack3.getAmount() > o) {
+                        if (itemStack3.getCount() > o) {
                             slot3.setStack(itemStack3.split(o));
                         } else {
                             slot3.setStack(itemStack3);
@@ -316,7 +316,7 @@ public abstract class Container {
                     }
                 } else if (slot3.canTakeItems(playerEntity) && slot3.canInsert(itemStack3)) {
                     int o = slot3.getMaxStackAmount(itemStack3);
-                    if (itemStack3.getAmount() > o) {
+                    if (itemStack3.getCount() > o) {
                         slot3.setStack(itemStack3.split(o));
                         slot3.onTakeItem(playerEntity, itemStack2);
                         if (!playerInventory.insertStack(itemStack2)) {
@@ -333,13 +333,13 @@ public abstract class Container {
             Slot slot3 = this.slotList.get(i);
             if (slot3 != null && slot3.hasStack()) {
                 ItemStack itemStack3 = slot3.getStack().copy();
-                itemStack3.setAmount(itemStack3.getMaxAmount());
+                itemStack3.setCount(itemStack3.getMaxCount());
                 playerInventory.setCursorStack(itemStack3);
             }
         } else if (slotActionType == SlotActionType.THROW && playerInventory.getCursorStack().isEmpty() && i >= 0) {
             Slot slot3 = this.slotList.get(i);
             if (slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity)) {
-                ItemStack itemStack3 = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getAmount());
+                ItemStack itemStack3 = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getCount());
                 slot3.onTakeItem(playerEntity, itemStack3);
                 playerEntity.dropItem(itemStack3, true);
             }
@@ -350,14 +350,14 @@ public abstract class Container {
                 int l = j == 0 ? 0 : this.slotList.size() - 1;
                 int o = j == 0 ? 1 : -1;
                 for (int p = 0; p < 2; ++p) {
-                    for (int q = l; q >= 0 && q < this.slotList.size() && itemStack3.getAmount() < itemStack3.getMaxAmount(); q += o) {
+                    for (int q = l; q >= 0 && q < this.slotList.size() && itemStack3.getCount() < itemStack3.getMaxCount(); q += o) {
                         Slot slot4 = this.slotList.get(q);
                         if (!slot4.hasStack() || !Container.canInsertItemIntoSlot(slot4, itemStack3, true) || !slot4.canTakeItems(playerEntity) || !this.canInsertIntoSlot(itemStack3, slot4)) continue;
                         ItemStack itemStack6 = slot4.getStack();
-                        if (p == 0 && itemStack6.getAmount() == itemStack6.getMaxAmount()) continue;
-                        int n = Math.min(itemStack3.getMaxAmount() - itemStack3.getAmount(), itemStack6.getAmount());
+                        if (p == 0 && itemStack6.getCount() == itemStack6.getMaxCount()) continue;
+                        int n = Math.min(itemStack3.getMaxCount() - itemStack3.getCount(), itemStack6.getCount());
                         ItemStack itemStack7 = slot4.takeStack(n);
-                        itemStack3.addAmount(n);
+                        itemStack3.increment(n);
                         if (itemStack7.isEmpty()) {
                             slot4.setStack(ItemStack.EMPTY);
                         }
@@ -445,20 +445,20 @@ public abstract class Container {
         if (bl) {
             k = j - 1;
         }
-        if (itemStack.canStack()) {
+        if (itemStack.isStackable()) {
             while (!itemStack.isEmpty() && (bl ? k >= i : k < j)) {
                 slot = this.slotList.get(k);
                 itemStack2 = slot.getStack();
                 if (!itemStack2.isEmpty() && Container.canStacksCombine(itemStack, itemStack2)) {
-                    int l = itemStack2.getAmount() + itemStack.getAmount();
-                    if (l <= itemStack.getMaxAmount()) {
-                        itemStack.setAmount(0);
-                        itemStack2.setAmount(l);
+                    int l = itemStack2.getCount() + itemStack.getCount();
+                    if (l <= itemStack.getMaxCount()) {
+                        itemStack.setCount(0);
+                        itemStack2.setCount(l);
                         slot.markDirty();
                         bl2 = true;
-                    } else if (itemStack2.getAmount() < itemStack.getMaxAmount()) {
-                        itemStack.subtractAmount(itemStack.getMaxAmount() - itemStack2.getAmount());
-                        itemStack2.setAmount(itemStack.getMaxAmount());
+                    } else if (itemStack2.getCount() < itemStack.getMaxCount()) {
+                        itemStack.decrement(itemStack.getMaxCount() - itemStack2.getCount());
+                        itemStack2.setCount(itemStack.getMaxCount());
                         slot.markDirty();
                         bl2 = true;
                     }
@@ -476,10 +476,10 @@ public abstract class Container {
                 slot = this.slotList.get(k);
                 itemStack2 = slot.getStack();
                 if (itemStack2.isEmpty() && slot.canInsert(itemStack)) {
-                    if (itemStack.getAmount() > slot.getMaxStackAmount()) {
+                    if (itemStack.getCount() > slot.getMaxStackAmount()) {
                         slot.setStack(itemStack.split(slot.getMaxStackAmount()));
                     } else {
-                        slot.setStack(itemStack.split(itemStack.getAmount()));
+                        slot.setStack(itemStack.split(itemStack.getCount()));
                     }
                     slot.markDirty();
                     bl2 = true;
@@ -526,8 +526,8 @@ public abstract class Container {
     public static boolean canInsertItemIntoSlot(@Nullable Slot slot, ItemStack itemStack, boolean bl) {
         boolean bl2;
         boolean bl3 = bl2 = slot == null || !slot.hasStack();
-        if (!bl2 && itemStack.isEqualIgnoreTags(slot.getStack()) && ItemStack.areTagsEqual(slot.getStack(), itemStack)) {
-            return slot.getStack().getAmount() + (bl ? 0 : itemStack.getAmount()) <= itemStack.getMaxAmount();
+        if (!bl2 && itemStack.isItemEqualIgnoreDamage(slot.getStack()) && ItemStack.areTagsEqual(slot.getStack(), itemStack)) {
+            return slot.getStack().getCount() + (bl ? 0 : itemStack.getCount()) <= itemStack.getMaxCount();
         }
         return bl2;
     }
@@ -535,18 +535,18 @@ public abstract class Container {
     public static void calculateStackSize(Set<Slot> set, int i, ItemStack itemStack, int j) {
         switch (i) {
             case 0: {
-                itemStack.setAmount(MathHelper.floor((float)itemStack.getAmount() / (float)set.size()));
+                itemStack.setCount(MathHelper.floor((float)itemStack.getCount() / (float)set.size()));
                 break;
             }
             case 1: {
-                itemStack.setAmount(1);
+                itemStack.setCount(1);
                 break;
             }
             case 2: {
-                itemStack.setAmount(itemStack.getItem().getMaxAmount());
+                itemStack.setCount(itemStack.getItem().getMaxCount());
             }
         }
-        itemStack.addAmount(j);
+        itemStack.increment(j);
     }
 
     public boolean canInsertIntoSlot(Slot slot) {
@@ -569,7 +569,7 @@ public abstract class Container {
         for (int j = 0; j < inventory.getInvSize(); ++j) {
             ItemStack itemStack = inventory.getInvStack(j);
             if (itemStack.isEmpty()) continue;
-            f += (float)itemStack.getAmount() / (float)Math.min(inventory.getInvMaxStackAmount(), itemStack.getMaxAmount());
+            f += (float)itemStack.getCount() / (float)Math.min(inventory.getInvMaxStackAmount(), itemStack.getMaxCount());
             ++i;
         }
         return MathHelper.floor((f /= (float)inventory.getInvSize()) * 14.0f) + (i > 0 ? 1 : 0);

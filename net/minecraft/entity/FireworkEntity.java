@@ -79,7 +79,7 @@ Projectile {
         int i = 1;
         if (!itemStack.isEmpty() && itemStack.hasTag()) {
             this.dataTracker.set(ITEM, itemStack.copy());
-            i += itemStack.getOrCreateSubCompoundTag("Fireworks").getByte("Flight");
+            i += itemStack.getOrCreateSubTag("Fireworks").getByte("Flight");
         }
         this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
@@ -197,7 +197,7 @@ Projectile {
 
     private boolean hasExplosionEffects() {
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
+        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
         ListTag listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
         return listTag != null && !listTag.isEmpty();
     }
@@ -206,7 +206,7 @@ Projectile {
         ListTag listTag;
         float f = 0.0f;
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
+        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
         ListTag listTag2 = listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
         if (listTag != null && !listTag.isEmpty()) {
             f = 5.0f + (float)(listTag.size() * 2);
@@ -253,7 +253,7 @@ Projectile {
                 }
             } else {
                 ItemStack itemStack = this.dataTracker.get(ITEM);
-                CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
+                CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
                 Vec3d vec3d = this.getVelocity();
                 this.world.addFireworkParticle(this.x, this.y, this.z, vec3d.x, vec3d.y, vec3d.z, compoundTag);
             }

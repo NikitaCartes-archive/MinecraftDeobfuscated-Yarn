@@ -10,11 +10,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import net.minecraft.state.property.AbstractProperty;
 
-public class IntegerProperty
+public class IntProperty
 extends AbstractProperty<Integer> {
-    private final ImmutableSet<Integer> validValues;
+    private final ImmutableSet<Integer> values;
 
-    protected IntegerProperty(String string, int i, int j) {
+    protected IntProperty(String string, int i, int j) {
         super(string, Integer.class);
         if (i < 0) {
             throw new IllegalArgumentException("Min value of " + string + " must be 0 or greater");
@@ -26,12 +26,12 @@ extends AbstractProperty<Integer> {
         for (int k = i; k <= j; ++k) {
             set.add(k);
         }
-        this.validValues = ImmutableSet.copyOf(set);
+        this.values = ImmutableSet.copyOf(set);
     }
 
     @Override
     public Collection<Integer> getValues() {
-        return this.validValues;
+        return this.values;
     }
 
     @Override
@@ -39,27 +39,27 @@ extends AbstractProperty<Integer> {
         if (this == object) {
             return true;
         }
-        if (object instanceof IntegerProperty && super.equals(object)) {
-            IntegerProperty integerProperty = (IntegerProperty)object;
-            return this.validValues.equals(integerProperty.validValues);
+        if (object instanceof IntProperty && super.equals(object)) {
+            IntProperty intProperty = (IntProperty)object;
+            return this.values.equals(intProperty.values);
         }
         return false;
     }
 
     @Override
     public int computeHashCode() {
-        return 31 * super.computeHashCode() + this.validValues.hashCode();
+        return 31 * super.computeHashCode() + this.values.hashCode();
     }
 
-    public static IntegerProperty create(String string, int i, int j) {
-        return new IntegerProperty(string, i, j);
+    public static IntProperty of(String string, int i, int j) {
+        return new IntProperty(string, i, j);
     }
 
     @Override
     public Optional<Integer> getValue(String string) {
         try {
             Integer integer = Integer.valueOf(string);
-            return this.validValues.contains(integer) ? Optional.of(integer) : Optional.empty();
+            return this.values.contains(integer) ? Optional.of(integer) : Optional.empty();
         } catch (NumberFormatException numberFormatException) {
             return Optional.empty();
         }

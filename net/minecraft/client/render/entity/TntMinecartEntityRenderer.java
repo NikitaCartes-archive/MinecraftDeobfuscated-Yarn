@@ -12,18 +12,18 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MinecartEntityRenderer;
-import net.minecraft.entity.vehicle.TNTMinecartEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class MinecartTNTEntityRenderer
-extends MinecartEntityRenderer<TNTMinecartEntity> {
-    public MinecartTNTEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+public class TntMinecartEntityRenderer
+extends MinecartEntityRenderer<TntMinecartEntity> {
+    public TntMinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
-    protected void method_4137(TNTMinecartEntity tNTMinecartEntity, float f, BlockState blockState) {
-        int i = tNTMinecartEntity.getFuseTicks();
+    protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
+        int i = tntMinecartEntity.getFuseTicks();
         if (i > -1 && (float)i - f + 1.0f < 10.0f) {
             float g = 1.0f - ((float)i - f + 1.0f) / 10.0f;
             g = MathHelper.clamp(g, 0.0f, 1.0f);
@@ -32,7 +32,7 @@ extends MinecartEntityRenderer<TNTMinecartEntity> {
             float h = 1.0f + g * 0.3f;
             GlStateManager.scalef(h, h, h);
         }
-        super.renderBlock(tNTMinecartEntity, f, blockState);
+        super.renderBlock(tntMinecartEntity, f, blockState);
         if (i > -1 && i / 5 % 2 == 0) {
             BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
             GlStateManager.disableTexture();

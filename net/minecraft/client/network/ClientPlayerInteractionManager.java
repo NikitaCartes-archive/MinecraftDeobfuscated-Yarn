@@ -98,14 +98,14 @@ public class ClientPlayerInteractionManager {
                     return false;
                 }
                 CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
-                if (!itemStack.getCustomCanHarvest(this.client.world.getTagManager(), cachedBlockPosition)) {
+                if (!itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition)) {
                     return false;
                 }
             }
         }
         ClientWorld world = this.client.world;
         BlockState blockState = world.getBlockState(blockPos);
-        if (!this.client.player.getMainHandStack().getItem().beforeBlockBreak(blockState, world, blockPos, this.client.player)) {
+        if (!this.client.player.getMainHandStack().getItem().canMine(blockState, world, blockPos, this.client.player)) {
             return false;
         }
         Block block = blockState.getBlock();
@@ -136,7 +136,7 @@ public class ClientPlayerInteractionManager {
                     return false;
                 }
                 CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
-                if (!itemStack.getCustomCanHarvest(this.client.world.getTagManager(), cachedBlockPosition)) {
+                if (!itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition)) {
                     return false;
                 }
             }
@@ -248,7 +248,7 @@ public class ClientPlayerInteractionManager {
         ItemStack itemStack = this.client.player.getMainHandStack();
         boolean bl2 = bl = this.selectedStack.isEmpty() && itemStack.isEmpty();
         if (!this.selectedStack.isEmpty() && !itemStack.isEmpty()) {
-            bl = itemStack.getItem() == this.selectedStack.getItem() && ItemStack.areTagsEqual(itemStack, this.selectedStack) && (itemStack.hasDurability() || itemStack.getDamage() == this.selectedStack.getDamage());
+            bl = itemStack.getItem() == this.selectedStack.getItem() && ItemStack.areTagsEqual(itemStack, this.selectedStack) && (itemStack.isDamageable() || itemStack.getDamage() == this.selectedStack.getDamage());
         }
         return blockPos.equals(this.currentBreakingPos) && bl;
     }
@@ -287,9 +287,9 @@ public class ClientPlayerInteractionManager {
         }
         ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, hand, blockHitResult);
         if (this.gameMode.isCreative()) {
-            int i = itemStack.getAmount();
+            int i = itemStack.getCount();
             actionResult = itemStack.useOnBlock(itemUsageContext);
-            itemStack.setAmount(i);
+            itemStack.setCount(i);
         } else {
             actionResult = itemStack.useOnBlock(itemUsageContext);
         }
@@ -306,10 +306,10 @@ public class ClientPlayerInteractionManager {
         if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
             return ActionResult.PASS;
         }
-        int i = itemStack.getAmount();
+        int i = itemStack.getCount();
         TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
         ItemStack itemStack2 = typedActionResult.getValue();
-        if (itemStack2 != itemStack || itemStack2.getAmount() != i) {
+        if (itemStack2 != itemStack || itemStack2.getCount() != i) {
             playerEntity.setStackInHand(hand, itemStack2);
         }
         return typedActionResult.getResult();

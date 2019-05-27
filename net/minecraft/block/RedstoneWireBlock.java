@@ -27,7 +27,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -43,11 +43,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class RedstoneWireBlock
 extends Block {
-    public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = Properties.WIRE_CONNECTION_NORTH;
-    public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.WIRE_CONNECTION_EAST;
-    public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.WIRE_CONNECTION_SOUTH;
-    public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WIRE_CONNECTION_WEST;
-    public static final IntegerProperty POWER = Properties.POWER;
+    public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = Properties.NORTH_WIRE_CONNECTION;
+    public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.EAST_WIRE_CONNECTION;
+    public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.SOUTH_WIRE_CONNECTION;
+    public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WEST_WIRE_CONNECTION;
+    public static final IntProperty POWER = Properties.POWER;
     public static final Map<Direction, EnumProperty<WireConnection>> DIRECTION_TO_WIRE_CONNECTION_PROPERTY = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, WIRE_CONNECTION_NORTH, Direction.EAST, WIRE_CONNECTION_EAST, Direction.SOUTH, WIRE_CONNECTION_SOUTH, Direction.WEST, WIRE_CONNECTION_WEST));
     protected static final VoxelShape[] WIRE_CONNECTIONS_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0), Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 16.0), Block.createCuboidShape(0.0, 0.0, 3.0, 13.0, 1.0, 13.0), Block.createCuboidShape(0.0, 0.0, 3.0, 13.0, 1.0, 16.0), Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 1.0, 13.0), Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 1.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 13.0, 1.0, 13.0), Block.createCuboidShape(0.0, 0.0, 0.0, 13.0, 1.0, 16.0), Block.createCuboidShape(3.0, 0.0, 3.0, 16.0, 1.0, 13.0), Block.createCuboidShape(3.0, 0.0, 3.0, 16.0, 1.0, 16.0), Block.createCuboidShape(0.0, 0.0, 3.0, 16.0, 1.0, 13.0), Block.createCuboidShape(0.0, 0.0, 3.0, 16.0, 1.0, 16.0), Block.createCuboidShape(3.0, 0.0, 0.0, 16.0, 1.0, 13.0), Block.createCuboidShape(3.0, 0.0, 0.0, 16.0, 1.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 13.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0)};
     private boolean wiresGivePower = true;

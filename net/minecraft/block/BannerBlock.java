@@ -14,7 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -29,7 +29,7 @@ import net.minecraft.world.ViewableWorld;
 
 public class BannerBlock
 extends AbstractBannerBlock {
-    public static final IntegerProperty ROTATION = Properties.ROTATION_16;
+    public static final IntProperty ROTATION = Properties.ROTATION;
     private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.newHashMap();
     private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 

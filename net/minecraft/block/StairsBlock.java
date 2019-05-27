@@ -177,10 +177,10 @@ implements Waterloggable {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        Direction direction = itemPlacementContext.getFacing();
+        Direction direction = itemPlacementContext.getSide();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
-        BlockState blockState = (BlockState)((BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing())).with(HALF, direction == Direction.DOWN || direction != Direction.UP && itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        BlockState blockState = (BlockState)((BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing())).with(HALF, direction == Direction.DOWN || direction != Direction.UP && itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
         return (BlockState)blockState.with(SHAPE, StairsBlock.method_10675(blockState, itemPlacementContext.getWorld(), blockPos));
     }
 

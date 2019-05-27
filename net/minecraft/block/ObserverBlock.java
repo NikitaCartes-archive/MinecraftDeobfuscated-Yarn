@@ -117,7 +117,7 @@ extends FacingBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite().getOpposite());
+        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite().getOpposite());
     }
 }
 

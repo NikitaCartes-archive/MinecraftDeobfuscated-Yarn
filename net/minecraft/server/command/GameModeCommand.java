@@ -19,7 +19,7 @@ public class GameModeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamemode").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
         for (GameMode gameMode : GameMode.values()) {
-            if (gameMode == GameMode.INVALID) continue;
+            if (gameMode == GameMode.NOT_SET) continue;
             literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(gameMode.getName()).executes(commandContext -> GameModeCommand.execute(commandContext, Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayer()), gameMode))).then(CommandManager.argument("target", EntityArgumentType.players()).executes(commandContext -> GameModeCommand.execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))));
         }
         commandDispatcher.register(literalArgumentBuilder);

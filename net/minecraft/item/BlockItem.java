@@ -61,22 +61,22 @@ extends Item {
         if (itemPlacementContext2 == null) {
             return ActionResult.FAIL;
         }
-        BlockState blockState = this.getBlockState(itemPlacementContext2);
+        BlockState blockState = this.getPlacementState(itemPlacementContext2);
         if (blockState == null) {
             return ActionResult.FAIL;
         }
-        if (!this.setBlockState(itemPlacementContext2, blockState)) {
+        if (!this.place(itemPlacementContext2, blockState)) {
             return ActionResult.FAIL;
         }
         BlockPos blockPos = itemPlacementContext2.getBlockPos();
         World world = itemPlacementContext2.getWorld();
         PlayerEntity playerEntity = itemPlacementContext2.getPlayer();
-        ItemStack itemStack = itemPlacementContext2.getItemStack();
+        ItemStack itemStack = itemPlacementContext2.getStack();
         BlockState blockState2 = world.getBlockState(blockPos);
         Block block = blockState2.getBlock();
         if (block == blockState.getBlock()) {
-            blockState2 = this.place(blockPos, world, itemStack, blockState2);
-            this.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState2);
+            blockState2 = this.placeFromTag(blockPos, world, itemStack, blockState2);
+            this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
             block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
@@ -84,7 +84,7 @@ extends Item {
         }
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         return ActionResult.SUCCESS;
     }
 
@@ -97,17 +97,17 @@ extends Item {
         return itemPlacementContext;
     }
 
-    protected boolean afterBlockPlaced(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-        return BlockItem.copyItemTagToBlockEntity(world, playerEntity, blockPos, itemStack);
+    protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
+        return BlockItem.writeTagToBlockEntity(world, playerEntity, blockPos, itemStack);
     }
 
     @Nullable
-    protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
+    protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.getBlock().getPlacementState(itemPlacementContext);
         return blockState != null && this.canPlace(itemPlacementContext, blockState) ? blockState : null;
     }
 
-    private BlockState place(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
+    private BlockState placeFromTag(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
         BlockState blockState2 = blockState;
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
@@ -117,7 +117,7 @@ extends Item {
                 Property<?> property = stateFactory.getProperty(string);
                 if (property == null) continue;
                 String string2 = compoundTag2.getTag(string).asString();
-                blockState2 = BlockItem.addProperty(blockState2, property, string2);
+                blockState2 = BlockItem.with(blockState2, property, string2);
             }
         }
         if (blockState2 != blockState) {
@@ -126,31 +126,31 @@ extends Item {
         return blockState2;
     }
 
-    private static <T extends Comparable<T>> BlockState addProperty(BlockState blockState, Property<T> property, String string) {
+    private static <T extends Comparable<T>> BlockState with(BlockState blockState, Property<T> property, String string) {
         return property.getValue(string).map(comparable -> (BlockState)blockState.with(property, comparable)).orElse(blockState);
     }
 
     protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
         PlayerEntity playerEntity = itemPlacementContext.getPlayer();
         EntityContext entityContext = playerEntity == null ? EntityContext.absent() : EntityContext.of(playerEntity);
-        return (!this.shouldCheckIfStateAllowsPlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) && itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), entityContext);
+        return (!this.checkStatePlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) && itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), entityContext);
     }
 
-    protected boolean shouldCheckIfStateAllowsPlacement() {
+    protected boolean checkStatePlacement() {
         return true;
     }
 
-    protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+    protected boolean place(ItemPlacementContext itemPlacementContext, BlockState blockState) {
         return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 11);
     }
 
-    public static boolean copyItemTagToBlockEntity(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
+    public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
         BlockEntity blockEntity;
         MinecraftServer minecraftServer = world.getServer();
         if (minecraftServer == null) {
             return false;
         }
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null && (blockEntity = world.getBlockEntity(blockPos)) != null) {
             if (!(world.isClient || !blockEntity.shouldNotCopyTagFromItem() || playerEntity != null && playerEntity.isCreativeLevelTwoOp())) {
                 return false;
@@ -176,16 +176,16 @@ extends Item {
     }
 
     @Override
-    public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-        if (this.isInItemGroup(itemGroup)) {
+    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+        if (this.isIn(itemGroup)) {
             this.getBlock().addStacksForDisplay(itemGroup, defaultedList);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        super.buildTooltip(itemStack, world, list, tooltipContext);
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        super.appendTooltip(itemStack, world, list, tooltipContext);
         this.getBlock().buildTooltip(itemStack, world, list, tooltipContext);
     }
 
@@ -193,7 +193,7 @@ extends Item {
         return this.block;
     }
 
-    public void registerBlockItemMap(Map<Block, Item> map, Item item) {
+    public void appendBlocks(Map<Block, Item> map, Item item) {
         map.put(this.getBlock(), item);
     }
 }

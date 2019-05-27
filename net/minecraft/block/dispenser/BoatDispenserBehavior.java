@@ -23,7 +23,7 @@ extends ItemDispenserBehavior {
     }
 
     @Override
-    public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+    public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
         double g;
         Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
         World world = blockPointer.getWorld();
@@ -42,7 +42,7 @@ extends ItemDispenserBehavior {
         boatEntity.setBoatType(this.boatType);
         boatEntity.yaw = direction.asRotation();
         world.spawnEntity(boatEntity);
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         return itemStack;
     }
 

@@ -28,8 +28,8 @@ extends Item {
         }
         if (playerEntity2.hasVehicle() && playerEntity2.getVehicle() instanceof PigEntity) {
             PigEntity pigEntity = (PigEntity)playerEntity2.getVehicle();
-            if (itemStack.getDurability() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
-                itemStack.applyDamage(7, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+            if (itemStack.getMaxDamage() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
+                itemStack.damage(7, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
                 if (itemStack.isEmpty()) {
                     ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
                     itemStack2.setTag(itemStack.getTag());

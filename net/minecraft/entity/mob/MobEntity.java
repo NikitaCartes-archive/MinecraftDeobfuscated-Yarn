@@ -478,7 +478,7 @@ extends LivingEntity {
                 }
             }
             this.persistent = true;
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
         }
     }
@@ -492,7 +492,7 @@ extends LivingEntity {
                 } else if (itemStack.getItem() instanceof SwordItem && itemStack2.getItem() instanceof SwordItem) {
                     SwordItem swordItem = (SwordItem)itemStack.getItem();
                     SwordItem swordItem2 = (SwordItem)itemStack2.getItem();
-                    bl = swordItem.getWeaponDamage() == swordItem2.getWeaponDamage() ? itemStack.getDamage() < itemStack2.getDamage() || itemStack.hasTag() && !itemStack2.hasTag() : swordItem.getWeaponDamage() > swordItem2.getWeaponDamage();
+                    bl = swordItem.getAttackDamage() == swordItem2.getAttackDamage() ? itemStack.getDamage() < itemStack2.getDamage() || itemStack.hasTag() && !itemStack2.hasTag() : swordItem.getAttackDamage() > swordItem2.getAttackDamage();
                 } else {
                     bl = itemStack.getItem() instanceof BowItem && itemStack2.getItem() instanceof BowItem ? itemStack.hasTag() && !itemStack2.hasTag() : false;
                 }
@@ -698,8 +698,8 @@ extends LivingEntity {
             float f = this.getDropChance(equipmentSlot);
             boolean bl3 = bl2 = f > 1.0f;
             if (itemStack.isEmpty() || EnchantmentHelper.hasVanishingCurse(itemStack) || !bl && !bl2 || !(this.random.nextFloat() - (float)i * 0.01f < f)) continue;
-            if (!bl2 && itemStack.hasDurability()) {
-                itemStack.setDamage(itemStack.getDurability() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getDurability() - 3, 1))));
+            if (!bl2 && itemStack.isDamageable()) {
+                itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
             }
             this.dropStack(itemStack);
         }
@@ -914,7 +914,7 @@ extends LivingEntity {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.getItem() == Items.LEAD && this.canBeLeashedBy(playerEntity)) {
             this.attachLeash(playerEntity, true);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             return true;
         }
         if (this.interactMob(playerEntity, hand)) {

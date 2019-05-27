@@ -32,7 +32,7 @@ implements PropertyContainer<S> {
         }
 
         private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
-            return property.getValueAsString(comparable);
+            return property.getName(comparable);
         }
 
         @Override
@@ -92,7 +92,7 @@ implements PropertyContainer<S> {
         if (comparable == null) {
             throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
         }
-        return (T)((Comparable)property.getValueClass().cast(comparable));
+        return (T)((Comparable)property.getValueType().cast(comparable));
     }
 
     @Override

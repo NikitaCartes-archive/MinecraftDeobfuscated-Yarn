@@ -64,7 +64,7 @@ extends SpecialCraftingRecipe {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = itemStack.copy();
-        itemStack3.setAmount(i + 1);
+        itemStack3.setCount(i + 1);
         return itemStack3;
     }
 

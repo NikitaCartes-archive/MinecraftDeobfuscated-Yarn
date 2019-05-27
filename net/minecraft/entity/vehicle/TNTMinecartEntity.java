@@ -23,15 +23,15 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class TNTMinecartEntity
+public class TntMinecartEntity
 extends AbstractMinecartEntity {
     private int fuseTicks = -1;
 
-    public TNTMinecartEntity(EntityType<? extends TNTMinecartEntity> entityType, World world) {
+    public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public TNTMinecartEntity(World world, double d, double e, double f) {
+    public TntMinecartEntity(World world, double d, double e, double f) {
         super(EntityType.TNT_MINECART, world, d, e, f);
     }
 
@@ -53,9 +53,9 @@ extends AbstractMinecartEntity {
             --this.fuseTicks;
             this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
         } else if (this.fuseTicks == 0) {
-            this.explode(TNTMinecartEntity.squaredHorizontalLength(this.getVelocity()));
+            this.explode(TntMinecartEntity.squaredHorizontalLength(this.getVelocity()));
         }
-        if (this.horizontalCollision && (d = TNTMinecartEntity.squaredHorizontalLength(this.getVelocity())) >= (double)0.01f) {
+        if (this.horizontalCollision && (d = TntMinecartEntity.squaredHorizontalLength(this.getVelocity())) >= (double)0.01f) {
             this.explode(d);
         }
     }
@@ -72,7 +72,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public void dropItems(DamageSource damageSource) {
-        double d = TNTMinecartEntity.squaredHorizontalLength(this.getVelocity());
+        double d = TntMinecartEntity.squaredHorizontalLength(this.getVelocity());
         if (damageSource.isFire() || damageSource.isExplosive() || d >= (double)0.01f) {
             if (this.fuseTicks < 0) {
                 this.prime();

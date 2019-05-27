@@ -231,7 +231,7 @@ implements DedicatedServer {
             thread2.setDaemon(true);
             thread2.start();
         }
-        Items.AIR.appendItemsForGroup(ItemGroup.SEARCH, DefaultedList.create());
+        Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.create());
         return true;
     }
 

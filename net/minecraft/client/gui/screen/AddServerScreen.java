@@ -65,7 +65,7 @@ extends Screen {
         this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
         this.addressField.setMaxLength(128);
         this.addressField.setText(this.serverEntry.address);
-        this.addressField.method_1890(this.field_2475);
+        this.addressField.setTextPredicate(this.field_2475);
         this.addressField.setChangedListener(this::onClose);
         this.children.add(this.addressField);
         this.resourcePackOptionButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, I18n.translate("addServer.resourcePack", new Object[0]) + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText(), buttonWidget -> {

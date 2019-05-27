@@ -145,7 +145,7 @@ extends AnimalEntity {
         if (!super.interactMob(playerEntity, hand)) {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             if (itemStack.getItem() == Items.NAME_TAG) {
-                itemStack.interactWithEntity(playerEntity, this, hand);
+                itemStack.useOnEntity(playerEntity, this, hand);
                 return true;
             }
             if (this.isSaddled() && !this.hasPassengers()) {
@@ -155,7 +155,7 @@ extends AnimalEntity {
                 return true;
             }
             if (itemStack.getItem() == Items.SADDLE) {
-                itemStack.interactWithEntity(playerEntity, this, hand);
+                itemStack.useOnEntity(playerEntity, this, hand);
                 return true;
             }
             return false;

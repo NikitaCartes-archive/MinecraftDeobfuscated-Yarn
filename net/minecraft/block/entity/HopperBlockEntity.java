@@ -87,8 +87,8 @@ Tickable {
     public void setInvStack(int i, ItemStack itemStack) {
         this.checkLootInteraction(null);
         this.getInvStackList().set(i, itemStack);
-        if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-            itemStack.setAmount(this.getInvMaxStackAmount());
+        if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+            itemStack.setCount(this.getInvMaxStackAmount());
         }
     }
 
@@ -146,7 +146,7 @@ Tickable {
 
     private boolean isFull() {
         for (ItemStack itemStack : this.inventory) {
-            if (!itemStack.isEmpty() && itemStack.getAmount() == itemStack.getMaxAmount()) continue;
+            if (!itemStack.isEmpty() && itemStack.getCount() == itemStack.getMaxCount()) continue;
             return false;
         }
         return true;
@@ -184,7 +184,7 @@ Tickable {
     private boolean isInventoryFull(Inventory inventory, Direction direction) {
         return HopperBlockEntity.getAvailableSlots(inventory, direction).allMatch(i -> {
             ItemStack itemStack = inventory.getInvStack(i);
-            return itemStack.getAmount() >= itemStack.getMaxAmount();
+            return itemStack.getCount() >= itemStack.getMaxCount();
         });
     }
 
@@ -273,10 +273,10 @@ Tickable {
                 itemStack = ItemStack.EMPTY;
                 bl = true;
             } else if (HopperBlockEntity.canMergeItems(itemStack2, itemStack)) {
-                int j = itemStack.getMaxAmount() - itemStack2.getAmount();
-                k = Math.min(itemStack.getAmount(), j);
-                itemStack.subtractAmount(k);
-                itemStack2.addAmount(k);
+                int j = itemStack.getMaxCount() - itemStack2.getCount();
+                k = Math.min(itemStack.getCount(), j);
+                itemStack.decrement(k);
+                itemStack2.increment(k);
                 boolean bl3 = bl = k > 0;
             }
             if (bl) {
@@ -343,7 +343,7 @@ Tickable {
         if (itemStack.getDamage() != itemStack2.getDamage()) {
             return false;
         }
-        if (itemStack.getAmount() > itemStack.getMaxAmount()) {
+        if (itemStack.getCount() > itemStack.getMaxCount()) {
             return false;
         }
         return ItemStack.areTagsEqual(itemStack, itemStack2);

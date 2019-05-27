@@ -117,7 +117,7 @@ extends Goal {
                 ((LivingEntity)this.actor).clearActiveItem();
             } else if (bl && (i = ((LivingEntity)this.actor).getItemUseTime()) >= 20) {
                 ((LivingEntity)this.actor).clearActiveItem();
-                ((RangedAttackMob)this.actor).attack(livingEntity, BowItem.method_7722(i));
+                ((RangedAttackMob)this.actor).attack(livingEntity, BowItem.getPullProgress(i));
                 this.cooldown = this.attackInterval;
             }
         } else if (--this.cooldown <= 0 && this.field_6572 >= -60) {

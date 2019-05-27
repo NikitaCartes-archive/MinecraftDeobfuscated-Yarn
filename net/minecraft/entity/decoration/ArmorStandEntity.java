@@ -377,18 +377,18 @@ extends LivingEntity {
         }
         if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
             ItemStack itemStack3 = itemStack.copy();
-            itemStack3.setAmount(1);
+            itemStack3.setCount(1);
             this.setEquippedStack(equipmentSlot, itemStack3);
             return;
         }
-        if (!itemStack.isEmpty() && itemStack.getAmount() > 1) {
+        if (!itemStack.isEmpty() && itemStack.getCount() > 1) {
             if (!itemStack2.isEmpty()) {
                 return;
             }
             ItemStack itemStack3 = itemStack.copy();
-            itemStack3.setAmount(1);
+            itemStack3.setCount(1);
             this.setEquippedStack(equipmentSlot, itemStack3);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             return;
         }
         this.setEquippedStack(equipmentSlot, itemStack);

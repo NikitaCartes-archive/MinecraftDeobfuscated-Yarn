@@ -74,8 +74,8 @@ implements Waterloggable {
         }
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
         BlockState blockState2 = (BlockState)((BlockState)this.getDefaultState().with(TYPE, SlabType.BOTTOM)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
-        Direction direction = itemPlacementContext.getFacing();
-        if (direction == Direction.DOWN || direction != Direction.UP && itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5) {
+        Direction direction = itemPlacementContext.getSide();
+        if (direction == Direction.DOWN || direction != Direction.UP && itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5) {
             return (BlockState)blockState2.with(TYPE, SlabType.TOP);
         }
         return blockState2;
@@ -83,14 +83,14 @@ implements Waterloggable {
 
     @Override
     public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-        ItemStack itemStack = itemPlacementContext.getItemStack();
+        ItemStack itemStack = itemPlacementContext.getStack();
         SlabType slabType = blockState.get(TYPE);
         if (slabType == SlabType.DOUBLE || itemStack.getItem() != this.asItem()) {
             return false;
         }
-        if (itemPlacementContext.canReplaceHitBlock()) {
-            boolean bl = itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
-            Direction direction = itemPlacementContext.getFacing();
+        if (itemPlacementContext.canReplaceExisting()) {
+            boolean bl = itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
+            Direction direction = itemPlacementContext.getSide();
             if (slabType == SlabType.BOTTOM) {
                 return direction == Direction.UP || bl && direction.getAxis().isHorizontal();
             }

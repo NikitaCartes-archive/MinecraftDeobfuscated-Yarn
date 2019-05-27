@@ -29,9 +29,9 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        if (itemStack.hasDurability()) {
+        if (itemStack.isDamageable()) {
             float f = 1.0f - this.durabilityRange.nextFloat(lootContext.getRandom());
-            itemStack.setDamage(MathHelper.floor(f * (float)itemStack.getDurability()));
+            itemStack.setDamage(MathHelper.floor(f * (float)itemStack.getMaxDamage()));
         } else {
             LOGGER.warn("Couldn't set damage of loot item {}", (Object)itemStack);
         }

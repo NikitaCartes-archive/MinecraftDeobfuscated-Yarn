@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MusicDiscItem
 extends Item {
-    private static final Map<SoundEvent, MusicDiscItem> SOUND_ITEM_MAP = Maps.newHashMap();
+    private static final Map<SoundEvent, MusicDiscItem> MUSIC_DISCS = Maps.newHashMap();
     private final int comparatorOutput;
     private final SoundEvent sound;
 
@@ -36,7 +36,7 @@ extends Item {
         super(settings);
         this.comparatorOutput = i;
         this.sound = soundEvent;
-        SOUND_ITEM_MAP.put(this.sound, this);
+        MUSIC_DISCS.put(this.sound, this);
     }
 
     @Override
@@ -47,11 +47,11 @@ extends Item {
         if (blockState.getBlock() != Blocks.JUKEBOX || blockState.get(JukeboxBlock.HAS_RECORD).booleanValue()) {
             return ActionResult.PASS;
         }
-        ItemStack itemStack = itemUsageContext.getItemStack();
+        ItemStack itemStack = itemUsageContext.getStack();
         if (!world.isClient) {
             ((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
-            world.playLevelEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
-            itemStack.subtractAmount(1);
+            world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
+            itemStack.decrement(1);
             PlayerEntity playerEntity = itemUsageContext.getPlayer();
             if (playerEntity != null) {
                 playerEntity.incrementStat(Stats.PLAY_RECORD);
@@ -66,7 +66,7 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
         list.add(this.getDescription().applyFormat(ChatFormat.GRAY));
     }
 
@@ -78,7 +78,7 @@ extends Item {
     @Nullable
     @Environment(value=EnvType.CLIENT)
     public static MusicDiscItem bySound(SoundEvent soundEvent) {
-        return SOUND_ITEM_MAP.get(soundEvent);
+        return MUSIC_DISCS.get(soundEvent);
     }
 
     @Environment(value=EnvType.CLIENT)

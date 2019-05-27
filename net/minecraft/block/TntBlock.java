@@ -93,9 +93,9 @@ extends Block {
             TntBlock.primeTnt(world, blockPos, playerEntity2);
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
             if (item == Items.FLINT_AND_STEEL) {
-                itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             } else {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return true;
         }

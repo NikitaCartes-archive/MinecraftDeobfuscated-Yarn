@@ -11,7 +11,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -23,7 +23,7 @@ import net.minecraft.world.ViewableWorld;
 
 public class SignBlock
 extends AbstractSignBlock {
-    public static final IntegerProperty ROTATION = Properties.ROTATION_16;
+    public static final IntProperty ROTATION = Properties.ROTATION;
 
     public SignBlock(Block.Settings settings) {
         super(settings);

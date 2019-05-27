@@ -58,7 +58,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.ClientAdvancementManager;
@@ -212,15 +212,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.entity.projectile.ExplodingWitherSkullEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.thrown.SnowballEntity;
 import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
@@ -233,8 +233,8 @@ import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.entity.vehicle.MobSpawnerMinecartEntity;
-import net.minecraft.entity.vehicle.TNTMinecartEntity;
+import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemGroup;
@@ -388,9 +388,9 @@ implements ClientPlayPacketListener {
         } else if (entityType == EntityType.FURNACE_MINECART) {
             entity = new FurnaceMinecartEntity(this.world, d, e, f);
         } else if (entityType == EntityType.TNT_MINECART) {
-            entity = new TNTMinecartEntity(this.world, d, e, f);
+            entity = new TntMinecartEntity(this.world, d, e, f);
         } else if (entityType == EntityType.SPAWNER_MINECART) {
-            entity = new MobSpawnerMinecartEntity(this.world, d, e, f);
+            entity = new SpawnerMinecartEntity(this.world, d, e, f);
         } else if (entityType == EntityType.HOPPER_MINECART) {
             entity = new HopperMinecartEntity(this.world, d, e, f);
         } else if (entityType == EntityType.COMMAND_BLOCK_MINECART) {
@@ -399,7 +399,7 @@ implements ClientPlayPacketListener {
             entity = new MinecartEntity(this.world, d, e, f);
         } else if (entityType == EntityType.FISHING_BOBBER) {
             entity2 = this.world.getEntityById(entitySpawnS2CPacket.getEntityData());
-            entity = entity2 instanceof PlayerEntity ? new FishHookEntity(this.world, (PlayerEntity)entity2, d, e, f) : null;
+            entity = entity2 instanceof PlayerEntity ? new FishingBobberEntity(this.world, (PlayerEntity)entity2, d, e, f) : null;
         } else if (entityType == EntityType.ARROW) {
             entity = new ArrowEntity(this.world, d, e, f);
             entity2 = this.world.getEntityById(entitySpawnS2CPacket.getEntityData());
@@ -419,7 +419,7 @@ implements ClientPlayPacketListener {
                 ((ProjectileEntity)entity).setOwner(entity2);
             }
         } else {
-            entity = entityType == EntityType.SNOWBALL ? new SnowballEntity(this.world, d, e, f) : (entityType == EntityType.LLAMA_SPIT ? new LlamaSpitEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.ITEM_FRAME ? new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(entitySpawnS2CPacket.getEntityData())) : (entityType == EntityType.LEASH_KNOT ? new LeadKnotEntity(this.world, new BlockPos(d, e, f)) : (entityType == EntityType.ENDER_PEARL ? new ThrownEnderpearlEntity(this.world, d, e, f) : (entityType == EntityType.EYE_OF_ENDER ? new EnderEyeEntity(this.world, d, e, f) : (entityType == EntityType.FIREWORK_ROCKET ? new FireworkEntity(this.world, d, e, f, ItemStack.EMPTY) : (entityType == EntityType.FIREBALL ? new FireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.DRAGON_FIREBALL ? new DragonFireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.SMALL_FIREBALL ? new SmallFireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.WITHER_SKULL ? new ExplodingWitherSkullEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.SHULKER_BULLET ? new ShulkerBulletEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.EGG ? new ThrownEggEntity(this.world, d, e, f) : (entityType == EntityType.EVOKER_FANGS ? new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null) : (entityType == EntityType.POTION ? new ThrownPotionEntity(this.world, d, e, f) : (entityType == EntityType.EXPERIENCE_BOTTLE ? new ThrownExperienceBottleEntity(this.world, d, e, f) : (entityType == EntityType.BOAT ? new BoatEntity(this.world, d, e, f) : (entityType == EntityType.TNT ? new TntEntity(this.world, d, e, f, null) : (entityType == EntityType.ARMOR_STAND ? new ArmorStandEntity(this.world, d, e, f) : (entityType == EntityType.END_CRYSTAL ? new EnderCrystalEntity(this.world, d, e, f) : (entityType == EntityType.ITEM ? new ItemEntity(this.world, d, e, f) : (entityType == EntityType.FALLING_BLOCK ? new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(entitySpawnS2CPacket.getEntityData())) : (entityType == EntityType.AREA_EFFECT_CLOUD ? new AreaEffectCloudEntity(this.world, d, e, f) : null))))))))))))))))))))));
+            entity = entityType == EntityType.SNOWBALL ? new SnowballEntity(this.world, d, e, f) : (entityType == EntityType.LLAMA_SPIT ? new LlamaSpitEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.ITEM_FRAME ? new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(entitySpawnS2CPacket.getEntityData())) : (entityType == EntityType.LEASH_KNOT ? new LeadKnotEntity(this.world, new BlockPos(d, e, f)) : (entityType == EntityType.ENDER_PEARL ? new ThrownEnderpearlEntity(this.world, d, e, f) : (entityType == EntityType.EYE_OF_ENDER ? new EnderEyeEntity(this.world, d, e, f) : (entityType == EntityType.FIREWORK_ROCKET ? new FireworkEntity(this.world, d, e, f, ItemStack.EMPTY) : (entityType == EntityType.FIREBALL ? new FireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.DRAGON_FIREBALL ? new DragonFireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.SMALL_FIREBALL ? new SmallFireballEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.WITHER_SKULL ? new WitherSkullEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.SHULKER_BULLET ? new ShulkerBulletEntity(this.world, d, e, f, entitySpawnS2CPacket.getVelocityX(), entitySpawnS2CPacket.getVelocityY(), entitySpawnS2CPacket.getVelocityz()) : (entityType == EntityType.EGG ? new ThrownEggEntity(this.world, d, e, f) : (entityType == EntityType.EVOKER_FANGS ? new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null) : (entityType == EntityType.POTION ? new ThrownPotionEntity(this.world, d, e, f) : (entityType == EntityType.EXPERIENCE_BOTTLE ? new ThrownExperienceBottleEntity(this.world, d, e, f) : (entityType == EntityType.BOAT ? new BoatEntity(this.world, d, e, f) : (entityType == EntityType.TNT ? new TntEntity(this.world, d, e, f, null) : (entityType == EntityType.ARMOR_STAND ? new ArmorStandEntity(this.world, d, e, f) : (entityType == EntityType.END_CRYSTAL ? new EnderCrystalEntity(this.world, d, e, f) : (entityType == EntityType.ITEM ? new ItemEntity(this.world, d, e, f) : (entityType == EntityType.FALLING_BLOCK ? new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(entitySpawnS2CPacket.getEntityData())) : (entityType == EntityType.AREA_EFFECT_CLOUD ? new AreaEffectCloudEntity(this.world, d, e, f) : null))))))))))))))))))))));
         }
         if (entity != null) {
             int i = entitySpawnS2CPacket.getId();
@@ -725,7 +725,7 @@ implements ClientPlayPacketListener {
                 this.world.playSound(entity.x, entity.y, entity.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 1.4f + 2.0f, false);
             }
             if (entity instanceof ItemEntity) {
-                ((ItemEntity)entity).getStack().setAmount(itemPickupAnimationS2CPacket.getStackAmount());
+                ((ItemEntity)entity).getStack().setCount(itemPickupAnimationS2CPacket.getStackAmount());
             }
             this.client.particleManager.addParticle(new ItemPickupParticle((World)this.world, entity, livingEntity, 0.5f));
             this.world.removeEntity(itemPickupAnimationS2CPacket.getEntityId());
@@ -967,8 +967,8 @@ implements ClientPlayPacketListener {
             }
             if (guiSlotUpdateS2CPacket.getId() == 0 && guiSlotUpdateS2CPacket.getSlot() >= 36 && i < 45) {
                 ItemStack itemStack2;
-                if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerContainer.getSlot(i).getStack()).isEmpty() || itemStack2.getAmount() < itemStack.getAmount())) {
-                    itemStack.setUpdateCooldown(5);
+                if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerContainer.getSlot(i).getStack()).isEmpty() || itemStack2.getCount() < itemStack.getCount())) {
+                    itemStack.setCooldown(5);
                 }
                 playerEntity.playerContainer.setStackInSlot(i, itemStack);
             } else if (!(guiSlotUpdateS2CPacket.getId() != playerEntity.container.syncId || guiSlotUpdateS2CPacket.getId() == 0 && bl)) {
@@ -1124,7 +1124,7 @@ implements ClientPlayPacketListener {
     public void onMapUpdate(MapUpdateS2CPacket mapUpdateS2CPacket) {
         NetworkThreadUtils.forceMainThread(mapUpdateS2CPacket, this, this.client);
         MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
-        String string = FilledMapItem.getMapStorageName(mapUpdateS2CPacket.getId());
+        String string = FilledMapItem.getMapName(mapUpdateS2CPacket.getId());
         MapState mapState = this.client.world.getMapState(string);
         if (mapState == null) {
             MapState mapState2;
@@ -1844,8 +1844,8 @@ implements ClientPlayPacketListener {
         }
         this.recipeManager.get(craftResponseS2CPacket.getRecipeId()).ifPresent(recipe -> {
             if (this.client.currentScreen instanceof RecipeBookProvider) {
-                RecipeBookScreen recipeBookScreen = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookGui();
-                recipeBookScreen.showGhostRecipe((Recipe<?>)recipe, container.slotList);
+                RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookGui();
+                recipeBookWidget.showGhostRecipe((Recipe<?>)recipe, container.slotList);
             }
         });
     }

@@ -21,7 +21,7 @@ extends AbstractProperty<Boolean> {
         return this.values;
     }
 
-    public static BooleanProperty create(String string) {
+    public static BooleanProperty of(String string) {
         return new BooleanProperty(string);
     }
 

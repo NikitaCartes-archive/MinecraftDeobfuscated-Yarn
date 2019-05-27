@@ -36,7 +36,7 @@ public class ItemColors {
             if (i != 1) {
                 return -1;
             }
-            CompoundTag compoundTag = itemStack.getSubCompoundTag("Explosion");
+            CompoundTag compoundTag = itemStack.getSubTag("Explosion");
             int[] nArray = is = compoundTag != null && compoundTag.containsKey("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
             if (is == null) {
                 return 0x8A8A8A;
@@ -55,7 +55,7 @@ public class ItemColors {
             return (j /= is.length) << 16 | (k /= is.length) << 8 | (l /= is.length);
         }, Items.FIREWORK_STAR);
         itemColors.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
-        for (SpawnEggItem spawnEggItem : SpawnEggItem.iterator()) {
+        for (SpawnEggItem spawnEggItem : SpawnEggItem.getAll()) {
             itemColors.register((itemStack, i) -> spawnEggItem.getColor(i), spawnEggItem);
         }
         itemColors.register((itemStack, i) -> {
@@ -63,7 +63,7 @@ public class ItemColors {
             return blockColors.getColorMultiplier(blockState, null, null, i);
         }, Blocks.GRASS_BLOCK, Blocks.GRASS, Blocks.FERN, Blocks.VINE, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.LILY_PAD);
         itemColors.register((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.TIPPED_ARROW);
-        itemColors.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.method_7999(itemStack), Items.FILLED_MAP);
+        itemColors.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.getMapColor(itemStack), Items.FILLED_MAP);
         return itemColors;
     }
 
@@ -74,7 +74,7 @@ public class ItemColors {
 
     public void register(ItemColorProvider itemColorProvider, ItemConvertible ... itemConvertibles) {
         for (ItemConvertible itemConvertible : itemConvertibles) {
-            this.providers.set(itemColorProvider, Item.getRawIdByItem(itemConvertible.asItem()));
+            this.providers.set(itemColorProvider, Item.getRawId(itemConvertible.asItem()));
         }
     }
 }

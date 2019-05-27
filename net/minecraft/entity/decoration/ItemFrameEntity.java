@@ -209,7 +209,7 @@ extends AbstractDecorationEntity {
             mapState.removeFrame(this.blockPos, this.getEntityId());
             mapState.setDirty(true);
         }
-        itemStack.setHoldingItemFrame(null);
+        itemStack.setFrame(null);
     }
 
     public ItemStack getHeldItemStack() {
@@ -223,8 +223,8 @@ extends AbstractDecorationEntity {
     public void setHeldItemStack(ItemStack itemStack, boolean bl) {
         if (!itemStack.isEmpty()) {
             itemStack = itemStack.copy();
-            itemStack.setAmount(1);
-            itemStack.setHoldingItemFrame(this);
+            itemStack.setCount(1);
+            itemStack.setFrame(this);
         }
         this.getDataTracker().set(ITEM_STACK, itemStack);
         if (!itemStack.isEmpty()) {
@@ -247,8 +247,8 @@ extends AbstractDecorationEntity {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         ItemStack itemStack;
-        if (trackedData.equals(ITEM_STACK) && !(itemStack = this.getHeldItemStack()).isEmpty() && itemStack.getHoldingItemFrame() != this) {
-            itemStack.setHoldingItemFrame(this);
+        if (trackedData.equals(ITEM_STACK) && !(itemStack = this.getHeldItemStack()).isEmpty() && itemStack.getFrame() != this) {
+            itemStack.setFrame(this);
         }
     }
 
@@ -288,7 +288,7 @@ extends AbstractDecorationEntity {
             if (itemStack.isEmpty()) {
                 field_7131.warn("Unable to load item from: {}", (Object)compoundTag2);
             }
-            if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
+            if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
                 this.removeFromFrame(itemStack2);
             }
             this.setHeldItemStack(itemStack, false);
@@ -308,7 +308,7 @@ extends AbstractDecorationEntity {
                 if (!itemStack.isEmpty()) {
                     this.setHeldItemStack(itemStack);
                     if (!playerEntity.abilities.creativeMode) {
-                        itemStack.subtractAmount(1);
+                        itemStack.decrement(1);
                     }
                 }
             } else {

@@ -222,11 +222,11 @@ extends HorseBaseEntity {
             boolean bl22;
             if (this.receiveFood(playerEntity, itemStack)) {
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
                 return true;
             }
-            if (itemStack.interactWithEntity(playerEntity, this, hand)) {
+            if (itemStack.useOnEntity(playerEntity, this, hand)) {
                 return true;
             }
             if (!this.isTame()) {

@@ -17,7 +17,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.SwordItem;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -36,9 +36,9 @@ implements Fertilizable {
     protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
     protected static final VoxelShape LARGE_LEAVES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
     protected static final VoxelShape NO_LEAVES_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
-    public static final IntegerProperty AGE = Properties.AGE_1;
+    public static final IntProperty AGE = Properties.AGE_1;
     public static final EnumProperty<BambooLeaves> LEAVES = Properties.BAMBOO_LEAVES;
-    public static final IntegerProperty STAGE = Properties.SAPLING_STAGE;
+    public static final IntProperty STAGE = Properties.STAGE;
 
     public BambooBlock(Block.Settings settings) {
         super(settings);

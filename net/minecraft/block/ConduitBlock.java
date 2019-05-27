@@ -81,8 +81,8 @@ implements Waterloggable {
     @Override
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeaconBlockEntity) {
-            ((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeaconBlockEntity) {
+            ((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
         }
     }
 

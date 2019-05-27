@@ -28,13 +28,13 @@ public class ShieldItem
 extends Item {
     public ShieldItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("blocking"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        this.addPropertyGetter(new Identifier("blocking"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
         DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
     }
 
     @Override
     public String getTranslationKey(ItemStack itemStack) {
-        if (itemStack.getSubCompoundTag("BlockEntityTag") != null) {
+        if (itemStack.getSubTag("BlockEntityTag") != null) {
             return this.getTranslationKey() + '.' + ShieldItem.getColor(itemStack).getName();
         }
         return super.getTranslationKey(itemStack);
@@ -42,8 +42,8 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        BannerItem.buildBannerTooltip(itemStack, list);
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        BannerItem.appendBannerTooltip(itemStack, list);
     }
 
     @Override
@@ -69,7 +69,7 @@ extends Item {
     }
 
     public static DyeColor getColor(ItemStack itemStack) {
-        return DyeColor.byId(itemStack.getOrCreateSubCompoundTag("BlockEntityTag").getInt("Base"));
+        return DyeColor.byId(itemStack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
     }
 }
 

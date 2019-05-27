@@ -50,7 +50,7 @@ implements FlyingItemEntity {
 
     public void setItem(ItemStack itemStack2) {
         if (itemStack2.getItem() != Items.ENDER_EYE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack2.copy(), itemStack -> itemStack.setAmount(1)));
+            this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 

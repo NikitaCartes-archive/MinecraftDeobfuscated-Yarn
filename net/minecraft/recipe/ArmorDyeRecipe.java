@@ -68,7 +68,7 @@ extends SpecialCraftingRecipe {
         if (itemStack.isEmpty() || list.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return DyeableItem.applyDyes(itemStack, list);
+        return DyeableItem.blendAndSetColor(itemStack, list);
     }
 
     @Override

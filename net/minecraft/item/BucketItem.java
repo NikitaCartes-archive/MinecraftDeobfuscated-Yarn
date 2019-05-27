@@ -45,7 +45,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        HitResult hitResult = BucketItem.getHitResult(world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
+        HitResult hitResult = BucketItem.rayTrace(world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.MISS) {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
@@ -99,7 +99,7 @@ extends Item {
         if (playerEntity.abilities.creativeMode) {
             return itemStack;
         }
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         if (itemStack.isEmpty()) {
             return new ItemStack(item);
         }

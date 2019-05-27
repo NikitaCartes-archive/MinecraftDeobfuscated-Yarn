@@ -42,7 +42,7 @@ public class EnchantmentHelper {
             return 0;
         }
         Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
-        ListTag listTag = itemStack.getEnchantmentList();
+        ListTag listTag = itemStack.getEnchantments();
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompoundTag(i);
             Identifier identifier2 = Identifier.ofNullable(compoundTag.getString("id"));
@@ -54,7 +54,7 @@ public class EnchantmentHelper {
 
     public static Map<Enchantment, Integer> getEnchantments(ItemStack itemStack) {
         LinkedHashMap<Enchantment, Integer> map = Maps.newLinkedHashMap();
-        ListTag listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantmentList();
+        ListTag listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantments();
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompoundTag(i);
             Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, compoundTag.getInt("lvl")));
@@ -78,7 +78,7 @@ public class EnchantmentHelper {
         if (listTag.isEmpty()) {
             itemStack.removeSubTag("Enchantments");
         } else if (itemStack.getItem() != Items.ENCHANTED_BOOK) {
-            itemStack.setChildTag("Enchantments", listTag);
+            itemStack.putSubTag("Enchantments", listTag);
         }
     }
 
@@ -86,7 +86,7 @@ public class EnchantmentHelper {
         if (itemStack.isEmpty()) {
             return;
         }
-        ListTag listTag = itemStack.getEnchantmentList();
+        ListTag listTag = itemStack.getEnchantments();
         for (int i = 0; i < listTag.size(); ++i) {
             String string = listTag.getCompoundTag(i).getString("id");
             int j = listTag.getCompoundTag(i).getInt("lvl");

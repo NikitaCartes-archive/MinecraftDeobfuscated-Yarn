@@ -16,7 +16,7 @@ public class DefaultGameModeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("defaultgamemode").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
         for (GameMode gameMode : GameMode.values()) {
-            if (gameMode == GameMode.INVALID) continue;
+            if (gameMode == GameMode.NOT_SET) continue;
             literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> DefaultGameModeCommand.execute((ServerCommandSource)commandContext.getSource(), gameMode)));
         }
         commandDispatcher.register(literalArgumentBuilder);

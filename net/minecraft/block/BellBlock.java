@@ -164,12 +164,12 @@ extends BlockWithEntity {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        Direction direction = itemPlacementContext.getFacing();
+        Direction direction = itemPlacementContext.getSide();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         World world = itemPlacementContext.getWorld();
         Direction.Axis axis = direction.getAxis();
         if (axis == Direction.Axis.Y) {
-            BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(ATTACHMENT, direction == Direction.DOWN ? Attachment.CEILING : Attachment.FLOOR)).with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+            BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(ATTACHMENT, direction == Direction.DOWN ? Attachment.CEILING : Attachment.FLOOR)).with(FACING, itemPlacementContext.getPlayerFacing());
             if (blockState.canPlaceAt(itemPlacementContext.getWorld(), blockPos)) {
                 return blockState;
             }

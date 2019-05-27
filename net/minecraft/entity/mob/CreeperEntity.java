@@ -206,7 +206,7 @@ extends HostileEntity {
             playerEntity2.swingHand(hand);
             if (!this.world.isClient) {
                 this.setIgnited();
-                itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
                 return true;
             }
         }

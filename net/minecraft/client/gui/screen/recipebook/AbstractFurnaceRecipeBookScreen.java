@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.Slot;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractFurnaceRecipeBookScreen
-extends RecipeBookScreen {
+extends RecipeBookWidget {
     private Iterator<Item> field_3153;
     private Set<Item> field_3149;
     private Slot outputSlot;
@@ -120,7 +120,7 @@ extends RecipeBookScreen {
         int k = this.outputSlot.xPosition + i;
         int l = this.outputSlot.yPosition + j;
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FF0000);
-        this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getDefaultStack(), k, l);
+        this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
         GlStateManager.depthFunc(516);
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FFFFFF);
         GlStateManager.depthFunc(515);

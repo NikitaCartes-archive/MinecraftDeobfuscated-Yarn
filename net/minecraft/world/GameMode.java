@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public enum GameMode {
-    INVALID(-1, ""),
+    NOT_SET(-1, ""),
     SURVIVAL(0, "survival"),
     CREATIVE(1, "creative"),
     ADVENTURE(2, "adventure"),

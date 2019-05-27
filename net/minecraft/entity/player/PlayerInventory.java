@@ -59,7 +59,7 @@ Nameable {
     }
 
     private boolean canStackAddMore(ItemStack itemStack, ItemStack itemStack2) {
-        return !itemStack.isEmpty() && this.areItemsEqual(itemStack, itemStack2) && itemStack.canStack() && itemStack.getAmount() < itemStack.getMaxAmount() && itemStack.getAmount() < this.getInvMaxStackAmount();
+        return !itemStack.isEmpty() && this.areItemsEqual(itemStack, itemStack2) && itemStack.isStackable() && itemStack.getCount() < itemStack.getMaxCount() && itemStack.getCount() < this.getInvMaxStackAmount();
     }
 
     private boolean areItemsEqual(ItemStack itemStack, ItemStack itemStack2) {
@@ -116,7 +116,7 @@ Nameable {
     public int method_7371(ItemStack itemStack) {
         for (int i = 0; i < this.main.size(); ++i) {
             ItemStack itemStack2 = this.main.get(i);
-            if (this.main.get(i).isEmpty() || !this.areItemsEqual(itemStack, this.main.get(i)) || this.main.get(i).isDamaged() || itemStack2.hasEnchantments() || itemStack2.hasDisplayName()) continue;
+            if (this.main.get(i).isEmpty() || !this.areItemsEqual(itemStack, this.main.get(i)) || this.main.get(i).isDamaged() || itemStack2.hasEnchantments() || itemStack2.hasCustomName()) continue;
             return i;
         }
         return -1;
@@ -161,10 +161,10 @@ Nameable {
         for (k = 0; k < this.getInvSize(); ++k) {
             ItemStack itemStack = this.getInvStack(k);
             if (itemStack.isEmpty() || !predicate.test(itemStack)) continue;
-            int l = i <= 0 ? itemStack.getAmount() : Math.min(i - j, itemStack.getAmount());
+            int l = i <= 0 ? itemStack.getCount() : Math.min(i - j, itemStack.getCount());
             j += l;
             if (i == 0) continue;
-            itemStack.subtractAmount(l);
+            itemStack.decrement(l);
             if (itemStack.isEmpty()) {
                 this.setInvStack(k, ItemStack.EMPTY);
             }
@@ -172,10 +172,10 @@ Nameable {
             return j;
         }
         if (!this.cursorStack.isEmpty() && predicate.test(this.cursorStack)) {
-            k = i <= 0 ? this.cursorStack.getAmount() : Math.min(i - j, this.cursorStack.getAmount());
+            k = i <= 0 ? this.cursorStack.getCount() : Math.min(i - j, this.cursorStack.getCount());
             j += k;
             if (i != 0) {
-                this.cursorStack.subtractAmount(k);
+                this.cursorStack.decrement(k);
                 if (this.cursorStack.isEmpty()) {
                     this.cursorStack = ItemStack.EMPTY;
                 }
@@ -193,7 +193,7 @@ Nameable {
             i = this.getEmptySlot();
         }
         if (i == -1) {
-            return itemStack.getAmount();
+            return itemStack.getCount();
         }
         return this.addStack(i, itemStack);
     }
@@ -201,7 +201,7 @@ Nameable {
     private int addStack(int i, ItemStack itemStack) {
         int k;
         Item item = itemStack.getItem();
-        int j = itemStack.getAmount();
+        int j = itemStack.getCount();
         ItemStack itemStack2 = this.getInvStack(i);
         if (itemStack2.isEmpty()) {
             itemStack2 = new ItemStack(item, 0);
@@ -210,17 +210,17 @@ Nameable {
             }
             this.setInvStack(i, itemStack2);
         }
-        if ((k = j) > itemStack2.getMaxAmount() - itemStack2.getAmount()) {
-            k = itemStack2.getMaxAmount() - itemStack2.getAmount();
+        if ((k = j) > itemStack2.getMaxCount() - itemStack2.getCount()) {
+            k = itemStack2.getMaxCount() - itemStack2.getCount();
         }
-        if (k > this.getInvMaxStackAmount() - itemStack2.getAmount()) {
-            k = this.getInvMaxStackAmount() - itemStack2.getAmount();
+        if (k > this.getInvMaxStackAmount() - itemStack2.getCount()) {
+            k = this.getInvMaxStackAmount() - itemStack2.getCount();
         }
         if (k == 0) {
             return j;
         }
-        itemStack2.addAmount(k);
-        itemStack2.setUpdateCooldown(5);
+        itemStack2.increment(k);
+        itemStack2.setCooldown(5);
         return j -= k;
     }
 
@@ -242,7 +242,7 @@ Nameable {
         for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
             for (int i = 0; i < defaultedList.size(); ++i) {
                 if (defaultedList.get(i).isEmpty()) continue;
-                defaultedList.get(i).update(this.player.world, this.player, i, this.selectedSlot == i);
+                defaultedList.get(i).inventoryTick(this.player.world, this.player, i, this.selectedSlot == i);
             }
         }
     }
@@ -259,39 +259,39 @@ Nameable {
             if (!itemStack.isDamaged()) {
                 int j;
                 do {
-                    j = itemStack.getAmount();
+                    j = itemStack.getCount();
                     if (i == -1) {
-                        itemStack.setAmount(this.addStack(itemStack));
+                        itemStack.setCount(this.addStack(itemStack));
                         continue;
                     }
-                    itemStack.setAmount(this.addStack(i, itemStack));
-                } while (!itemStack.isEmpty() && itemStack.getAmount() < j);
-                if (itemStack.getAmount() == j && this.player.abilities.creativeMode) {
-                    itemStack.setAmount(0);
+                    itemStack.setCount(this.addStack(i, itemStack));
+                } while (!itemStack.isEmpty() && itemStack.getCount() < j);
+                if (itemStack.getCount() == j && this.player.abilities.creativeMode) {
+                    itemStack.setCount(0);
                     return true;
                 }
-                return itemStack.getAmount() < j;
+                return itemStack.getCount() < j;
             }
             if (i == -1) {
                 i = this.getEmptySlot();
             }
             if (i >= 0) {
                 this.main.set(i, itemStack.copy());
-                this.main.get(i).setUpdateCooldown(5);
-                itemStack.setAmount(0);
+                this.main.get(i).setCooldown(5);
+                itemStack.setCount(0);
                 return true;
             }
             if (this.player.abilities.creativeMode) {
-                itemStack.setAmount(0);
+                itemStack.setCount(0);
                 return true;
             }
             return false;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Adding item to inventory");
             CrashReportSection crashReportSection = crashReport.addElement("Item being added");
-            crashReportSection.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
+            crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
             crashReportSection.add("Item data", itemStack.getDamage());
-            crashReportSection.add("Item name", () -> itemStack.getDisplayName().getString());
+            crashReportSection.add("Item name", () -> itemStack.getCustomName().getString());
             throw new CrashException(crashReport);
         }
     }
@@ -309,7 +309,7 @@ Nameable {
                 this.player.dropItem(itemStack, false);
                 break;
             }
-            int j = itemStack.getMaxAmount() - this.getInvStack(i).getAmount();
+            int j = itemStack.getMaxCount() - this.getInvStack(i).getCount();
             if (!this.insertStack(i, itemStack.split(j))) continue;
             ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
         }
@@ -375,7 +375,7 @@ Nameable {
     }
 
     public float getBlockBreakingSpeed(BlockState blockState) {
-        return this.main.get(this.selectedSlot).getBlockBreakingSpeed(blockState);
+        return this.main.get(this.selectedSlot).getMiningSpeed(blockState);
     }
 
     public ListTag serialize(ListTag listTag) {
@@ -487,7 +487,7 @@ Nameable {
             ItemStack itemStack = this.armor.get(i);
             if (!(itemStack.getItem() instanceof ArmorItem)) continue;
             int j = i;
-            itemStack.applyDamage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
+            itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
         }
     }
 
@@ -531,7 +531,7 @@ Nameable {
     public boolean contains(ItemStack itemStack) {
         for (List list : this.combinedInventory) {
             for (ItemStack itemStack2 : list) {
-                if (itemStack2.isEmpty() || !itemStack2.isEqualIgnoreTags(itemStack)) continue;
+                if (itemStack2.isEmpty() || !itemStack2.isItemEqualIgnoreDamage(itemStack)) continue;
                 return true;
             }
         }

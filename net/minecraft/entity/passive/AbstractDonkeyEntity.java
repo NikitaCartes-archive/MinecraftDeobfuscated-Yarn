@@ -153,7 +153,7 @@ extends HorseBaseEntity {
             boolean bl = this.receiveFood(playerEntity, itemStack);
             if (!bl) {
                 if (!this.isTame() || itemStack.getItem() == Items.NAME_TAG) {
-                    if (itemStack.interactWithEntity(playerEntity, this, hand)) {
+                    if (itemStack.useOnEntity(playerEntity, this, hand)) {
                         return true;
                     }
                     this.playAngrySound();
@@ -172,7 +172,7 @@ extends HorseBaseEntity {
             }
             if (bl) {
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
                 return true;
             }

@@ -64,7 +64,7 @@ public class ItemDynamicRenderer {
             this.renderBed.setColor(((BedBlock)((BlockItem)item).getBlock()).getColor());
             BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderBed);
         } else if (item == Items.SHIELD) {
-            if (itemStack.getSubCompoundTag("BlockEntityTag") != null) {
+            if (itemStack.getSubTag("BlockEntityTag") != null) {
                 this.renderBanner.deserialize(itemStack, ShieldItem.getColor(itemStack));
                 MinecraftClient.getInstance().getTextureManager().bindTexture(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
             } else {

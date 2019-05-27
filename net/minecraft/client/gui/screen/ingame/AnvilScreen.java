@@ -110,7 +110,7 @@ implements ContainerListener {
         }
         String string2 = string;
         Slot slot = ((AnvilContainer)this.container).getSlot(0);
-        if (slot != null && slot.hasStack() && !slot.getStack().hasDisplayName() && string2.equals(slot.getStack().getDisplayName().getString())) {
+        if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string2.equals(slot.getStack().getCustomName().getString())) {
             string2 = "";
         }
         ((AnvilContainer)this.container).setNewItemName(string2);
@@ -148,7 +148,7 @@ implements ContainerListener {
     @Override
     public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
         if (i == 0) {
-            this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getDisplayName().getString());
+            this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getCustomName().getString());
             this.nameField.setIsEditable(!itemStack.isEmpty());
         }
     }

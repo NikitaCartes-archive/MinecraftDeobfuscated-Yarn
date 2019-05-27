@@ -27,24 +27,24 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("Explosion");
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        CompoundTag compoundTag = itemStack.getSubTag("Explosion");
         if (compoundTag != null) {
-            FireworkChargeItem.buildTooltip(compoundTag, list);
+            FireworkChargeItem.appendFireworkTooltip(compoundTag, list);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void buildTooltip(CompoundTag compoundTag, List<Component> list) {
+    public static void appendFireworkTooltip(CompoundTag compoundTag, List<Component> list) {
         int[] js;
-        FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag.getByte("Type"));
+        FireworkItem.Type type = FireworkItem.Type.byId(compoundTag.getByte("Type"));
         list.add(new TranslatableComponent("item.minecraft.firework_star.shape." + type.getName(), new Object[0]).applyFormat(ChatFormat.GRAY));
         int[] is = compoundTag.getIntArray("Colors");
         if (is.length > 0) {
-            list.add(FireworkChargeItem.appendColorNames(new TextComponent("").applyFormat(ChatFormat.GRAY), is));
+            list.add(FireworkChargeItem.appendColors(new TextComponent("").applyFormat(ChatFormat.GRAY), is));
         }
         if ((js = compoundTag.getIntArray("FadeColors")).length > 0) {
-            list.add(FireworkChargeItem.appendColorNames(new TranslatableComponent("item.minecraft.firework_star.fade_to", new Object[0]).append(" ").applyFormat(ChatFormat.GRAY), js));
+            list.add(FireworkChargeItem.appendColors(new TranslatableComponent("item.minecraft.firework_star.fade_to", new Object[0]).append(" ").applyFormat(ChatFormat.GRAY), js));
         }
         if (compoundTag.getBoolean("Trail")) {
             list.add(new TranslatableComponent("item.minecraft.firework_star.trail", new Object[0]).applyFormat(ChatFormat.GRAY));
@@ -55,18 +55,18 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static Component appendColorNames(Component component, int[] is) {
+    private static Component appendColors(Component component, int[] is) {
         for (int i = 0; i < is.length; ++i) {
             if (i > 0) {
                 component.append(", ");
             }
-            component.append(FireworkChargeItem.getColorTextComponent(is[i]));
+            component.append(FireworkChargeItem.getColorText(is[i]));
         }
         return component;
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static Component getColorTextComponent(int i) {
+    private static Component getColorText(int i) {
         DyeColor dyeColor = DyeColor.byFireworkColor(i);
         if (dyeColor == null) {
             return new TranslatableComponent("item.minecraft.firework_star.custom_color", new Object[0]);

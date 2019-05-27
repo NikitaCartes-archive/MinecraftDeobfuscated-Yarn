@@ -182,7 +182,7 @@ implements Criterion<Conditions> {
                     continue;
                 }
                 ++k;
-                if (itemStack.getAmount() >= itemStack.getMaxAmount()) {
+                if (itemStack.getCount() >= itemStack.getMaxCount()) {
                     ++i;
                 }
                 Iterator iterator = list.iterator();

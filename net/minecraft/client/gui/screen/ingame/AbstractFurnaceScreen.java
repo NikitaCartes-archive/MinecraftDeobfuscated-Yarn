@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
-import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.Slot;
@@ -40,11 +40,11 @@ implements RecipeBookProvider {
         this.narrow = this.width < 379;
         this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, (CraftingContainer)this.container);
         this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-        this.addButton(new RecipeBookButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+        this.addButton(new TexturedButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
             this.recipeBook.toggleOpen();
             this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-            ((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
+            ((TexturedButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
         }));
     }
 
@@ -137,7 +137,7 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public RecipeBookScreen getRecipeBookGui() {
+    public RecipeBookWidget getRecipeBookGui() {
         return this.recipeBook;
     }
 

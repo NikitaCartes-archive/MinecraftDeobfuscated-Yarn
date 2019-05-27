@@ -63,7 +63,7 @@ extends SpecialCraftingRecipe {
             ItemStack itemStack = craftingInventory.getInvStack(i);
             if (itemStack.isEmpty() || (j = BannerBlockEntity.getPatternCount(itemStack)) <= 0 || j > 6) continue;
             ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setAmount(1);
+            itemStack2.setCount(1);
             return itemStack2;
         }
         return ItemStack.EMPTY;
@@ -80,7 +80,7 @@ extends SpecialCraftingRecipe {
             }
             if (!itemStack.hasTag() || BannerBlockEntity.getPatternCount(itemStack) <= 0) continue;
             ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setAmount(1);
+            itemStack2.setCount(1);
             defaultedList.set(i, itemStack2);
         }
         return defaultedList;

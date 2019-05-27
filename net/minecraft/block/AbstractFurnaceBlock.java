@@ -56,14 +56,14 @@ extends BlockWithEntity {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
     }
 
     @Override
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof AbstractFurnaceBlockEntity) {
-            ((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof AbstractFurnaceBlockEntity) {
+            ((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
         }
     }
 

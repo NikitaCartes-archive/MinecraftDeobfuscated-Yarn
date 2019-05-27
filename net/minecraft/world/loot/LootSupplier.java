@@ -56,13 +56,13 @@ public class LootSupplier {
 
     public static Consumer<ItemStack> limitedConsumer(Consumer<ItemStack> consumer) {
         return itemStack -> {
-            if (itemStack.getAmount() < itemStack.getMaxAmount()) {
+            if (itemStack.getCount() < itemStack.getMaxCount()) {
                 consumer.accept((ItemStack)itemStack);
             } else {
                 ItemStack itemStack2;
-                for (int i = itemStack.getAmount(); i > 0; i -= itemStack2.getAmount()) {
+                for (int i = itemStack.getCount(); i > 0; i -= itemStack2.getCount()) {
                     itemStack2 = itemStack.copy();
-                    itemStack2.setAmount(Math.min(itemStack.getMaxAmount(), i));
+                    itemStack2.setCount(Math.min(itemStack.getMaxCount(), i));
                     consumer.accept(itemStack2);
                 }
             }
@@ -132,20 +132,20 @@ public class LootSupplier {
                 iterator.remove();
                 continue;
             }
-            if (itemStack.getAmount() <= 1) continue;
+            if (itemStack.getCount() <= 1) continue;
             list2.add(itemStack);
             iterator.remove();
         }
         while (i - list.size() - list2.size() > 0 && !list2.isEmpty()) {
             ItemStack itemStack2 = (ItemStack)list2.remove(MathHelper.nextInt(random, 0, list2.size() - 1));
-            int j = MathHelper.nextInt(random, 1, itemStack2.getAmount() / 2);
+            int j = MathHelper.nextInt(random, 1, itemStack2.getCount() / 2);
             ItemStack itemStack3 = itemStack2.split(j);
-            if (itemStack2.getAmount() > 1 && random.nextBoolean()) {
+            if (itemStack2.getCount() > 1 && random.nextBoolean()) {
                 list2.add(itemStack2);
             } else {
                 list.add(itemStack2);
             }
-            if (itemStack3.getAmount() > 1 && random.nextBoolean()) {
+            if (itemStack3.getCount() > 1 && random.nextBoolean()) {
                 list2.add(itemStack3);
                 continue;
             }

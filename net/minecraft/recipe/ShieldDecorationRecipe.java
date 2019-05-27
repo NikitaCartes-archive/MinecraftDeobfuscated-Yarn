@@ -38,7 +38,7 @@ extends SpecialCraftingRecipe {
                 if (!itemStack.isEmpty()) {
                     return false;
                 }
-                if (itemStack3.getSubCompoundTag("BlockEntityTag") != null) {
+                if (itemStack3.getSubTag("BlockEntityTag") != null) {
                     return false;
                 }
                 itemStack = itemStack3;
@@ -65,10 +65,10 @@ extends SpecialCraftingRecipe {
         if (itemStack2.isEmpty()) {
             return itemStack2;
         }
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.method_10553();
         compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-        itemStack2.setChildTag("BlockEntityTag", compoundTag2);
+        itemStack2.putSubTag("BlockEntityTag", compoundTag2);
         return itemStack2;
     }
 

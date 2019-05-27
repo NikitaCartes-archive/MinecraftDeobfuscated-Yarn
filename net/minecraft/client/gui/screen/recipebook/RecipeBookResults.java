@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.AnimatedResultButton;
 import net.minecraft.client.gui.screen.recipebook.RecipeAlternatesWidget;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeDisplayListener;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
@@ -48,14 +48,14 @@ public class RecipeBookResults {
             this.resultButtons.get(k).setPos(i + 11 + 25 * (k % 5), j + 31 + 25 * (k / 5));
         }
         this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
-        this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookScreen.TEXTURE);
+        this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
         this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
-        this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookScreen.TEXTURE);
+        this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
     }
 
-    public void setGui(RecipeBookScreen recipeBookScreen) {
-        this.recipeDisplayListeners.remove(recipeBookScreen);
-        this.recipeDisplayListeners.add(recipeBookScreen);
+    public void setGui(RecipeBookWidget recipeBookWidget) {
+        this.recipeDisplayListeners.remove(recipeBookWidget);
+        this.recipeDisplayListeners.add(recipeBookWidget);
     }
 
     public void setResults(List<RecipeResultCollection> list, boolean bl) {

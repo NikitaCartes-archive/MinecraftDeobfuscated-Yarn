@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityRenderer
 extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
-    public static final Identifier TEX = new Identifier("textures/entity/armorstand/wood.png");
+    public static final Identifier SKIN = new Identifier("textures/entity/armorstand/wood.png");
 
     public ArmorStandEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ArmorStandEntityModel(), 0.0f);
@@ -33,7 +33,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
     }
 
     protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
-        return TEX;
+        return SKIN;
     }
 
     protected void method_3877(ArmorStandEntity armorStandEntity, float f, float g, float h) {

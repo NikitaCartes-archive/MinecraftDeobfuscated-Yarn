@@ -62,10 +62,10 @@ public class TradeOffer {
     }
 
     public ItemStack getAdjustedFirstBuyItem() {
-        int i = this.firstBuyItem.getAmount();
+        int i = this.firstBuyItem.getCount();
         ItemStack itemStack = this.firstBuyItem.copy();
         int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
-        itemStack.setAmount(MathHelper.clamp(i + j + this.specialPrice, 1, this.firstBuyItem.getItem().getMaxAmount()));
+        itemStack.setCount(MathHelper.clamp(i + j + this.specialPrice, 1, this.firstBuyItem.getItem().getMaxCount()));
         return itemStack;
     }
 
@@ -153,7 +153,7 @@ public class TradeOffer {
     }
 
     public boolean matchesBuyItems(ItemStack itemStack, ItemStack itemStack2) {
-        return this.acceptsBuy(itemStack, this.getAdjustedFirstBuyItem()) && itemStack.getAmount() >= this.getAdjustedFirstBuyItem().getAmount() && this.acceptsBuy(itemStack2, this.secondBuyItem) && itemStack2.getAmount() >= this.secondBuyItem.getAmount();
+        return this.acceptsBuy(itemStack, this.getAdjustedFirstBuyItem()) && itemStack.getCount() >= this.getAdjustedFirstBuyItem().getCount() && this.acceptsBuy(itemStack2, this.secondBuyItem) && itemStack2.getCount() >= this.secondBuyItem.getCount();
     }
 
     private boolean acceptsBuy(ItemStack itemStack, ItemStack itemStack2) {
@@ -161,19 +161,19 @@ public class TradeOffer {
             return true;
         }
         ItemStack itemStack3 = itemStack.copy();
-        if (itemStack3.getItem().canDamage()) {
+        if (itemStack3.getItem().isDamageable()) {
             itemStack3.setDamage(itemStack3.getDamage());
         }
-        return ItemStack.areEqualIgnoreTags(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
+        return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
     }
 
     public boolean depleteBuyItems(ItemStack itemStack, ItemStack itemStack2) {
         if (!this.matchesBuyItems(itemStack, itemStack2)) {
             return false;
         }
-        itemStack.subtractAmount(this.getAdjustedFirstBuyItem().getAmount());
+        itemStack.decrement(this.getAdjustedFirstBuyItem().getCount());
         if (!this.getSecondBuyItem().isEmpty()) {
-            itemStack2.subtractAmount(this.getSecondBuyItem().getAmount());
+            itemStack2.decrement(this.getSecondBuyItem().getCount());
         }
         return true;
     }

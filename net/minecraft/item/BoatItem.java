@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 public class BoatItem
 extends Item {
-    private static final Predicate<Entity> field_17497 = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
+    private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
     private final BoatEntity.Type type;
 
     public BoatItem(BoatEntity.Type type, Item.Settings settings) {
@@ -34,13 +34,13 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        HitResult hitResult = BoatItem.getHitResult(world, playerEntity, RayTraceContext.FluidHandling.ANY);
+        HitResult hitResult = BoatItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.ANY);
         if (hitResult.getType() == HitResult.Type.MISS) {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
         Vec3d vec3d = playerEntity.getRotationVec(1.0f);
         double d = 5.0;
-        List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), field_17497);
+        List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
         if (!list.isEmpty()) {
             Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0f);
             for (Entity entity : list) {
@@ -60,7 +60,7 @@ extends Item {
                 world.spawnEntity(boatEntity);
             }
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);

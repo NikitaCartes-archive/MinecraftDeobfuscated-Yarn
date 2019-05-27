@@ -54,7 +54,7 @@ extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())).with(EYE, false);
+        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())).with(EYE, false);
     }
 
     @Override

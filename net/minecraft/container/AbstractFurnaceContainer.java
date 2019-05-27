@@ -129,7 +129,7 @@ extends CraftingContainer<Inventory> {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(playerEntity, itemStack2);

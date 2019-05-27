@@ -73,13 +73,13 @@ public class ItemPredicate {
         if (this.item != null && itemStack.getItem() != this.item) {
             return false;
         }
-        if (!this.count.test(itemStack.getAmount())) {
+        if (!this.count.test(itemStack.getCount())) {
             return false;
         }
-        if (!this.durability.isDummy() && !itemStack.hasDurability()) {
+        if (!this.durability.isDummy() && !itemStack.isDamageable()) {
             return false;
         }
-        if (!this.durability.test(itemStack.getDurability() - itemStack.getDamage())) {
+        if (!this.durability.test(itemStack.getMaxDamage() - itemStack.getDamage())) {
             return false;
         }
         if (!this.nbt.test(itemStack)) {

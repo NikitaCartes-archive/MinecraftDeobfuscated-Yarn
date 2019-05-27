@@ -36,11 +36,11 @@ public class TridentItem
 extends Item {
     public TridentItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("throwing"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        this.addPropertyGetter(new Identifier("throwing"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
     }
 
     @Override
-    public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+    public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
         return !playerEntity.isCreative();
     }
 
@@ -61,7 +61,7 @@ extends Item {
     }
 
     @Override
-    public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+    public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
         if (!(livingEntity instanceof PlayerEntity)) {
             return;
         }
@@ -75,7 +75,7 @@ extends Item {
             return;
         }
         if (!world.isClient) {
-            itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(livingEntity.getActiveHand()));
+            itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(livingEntity.getActiveHand()));
             if (k == 0) {
                 TridentEntity tridentEntity = new TridentEntity(world, (LivingEntity)playerEntity2, itemStack);
                 tridentEntity.method_7474(playerEntity2, playerEntity2.pitch, playerEntity2.yaw, 0.0f, 2.5f + (float)k * 0.5f, 1.0f);
@@ -112,7 +112,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (itemStack.getDamage() >= itemStack.getDurability()) {
+        if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }
         if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
@@ -123,25 +123,25 @@ extends Item {
     }
 
     @Override
-    public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity2, LivingEntity livingEntity22) {
-        itemStack.applyDamage(1, livingEntity22, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+    public boolean postHit(ItemStack itemStack, LivingEntity livingEntity2, LivingEntity livingEntity22) {
+        itemStack.damage(1, livingEntity22, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         return true;
     }
 
     @Override
-    public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity2) {
+    public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity2) {
         if ((double)blockState.getHardness(world, blockPos) != 0.0) {
-            itemStack.applyDamage(2, livingEntity2, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            itemStack.damage(2, livingEntity2, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
         return true;
     }
 
     @Override
-    public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-        Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
+    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
         if (equipmentSlot == EquipmentSlot.MAINHAND) {
-            multimap.put(EntityAttributes.ATTACK_DAMAGE.getId(), new EntityAttributeModifier(MODIFIER_DAMAGE, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION));
-            multimap.put(EntityAttributes.ATTACK_SPEED.getId(), new EntityAttributeModifier(MODIFIER_SWING_SPEED, "Tool modifier", (double)-2.9f, EntityAttributeModifier.Operation.ADDITION));
+            multimap.put(EntityAttributes.ATTACK_DAMAGE.getId(), new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION));
+            multimap.put(EntityAttributes.ATTACK_SPEED.getId(), new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", (double)-2.9f, EntityAttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }

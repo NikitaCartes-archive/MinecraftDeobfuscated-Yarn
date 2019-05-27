@@ -233,7 +233,7 @@ implements Bird {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             if (!this.isSilent()) {
                 this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
@@ -252,7 +252,7 @@ implements Bird {
         }
         if (itemStack.getItem() == COOKIE) {
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             this.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
             if (playerEntity.isCreative() || !this.isInvulnerable()) {

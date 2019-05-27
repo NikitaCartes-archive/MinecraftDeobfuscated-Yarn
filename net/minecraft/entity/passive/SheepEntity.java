@@ -241,7 +241,7 @@ extends AnimalEntity {
         if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
             this.dropItems();
             if (!this.world.isClient) {
-                itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
         }
         return super.interactMob(playerEntity2, hand);
@@ -374,8 +374,8 @@ extends AnimalEntity {
                 return false;
             }
         }, 2, 1);
-        craftingInventory.setInvStack(0, new ItemStack(DyeItem.fromColor(dyeColor)));
-        craftingInventory.setInvStack(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
+        craftingInventory.setInvStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
+        craftingInventory.setInvStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
         return craftingInventory;
     }
 

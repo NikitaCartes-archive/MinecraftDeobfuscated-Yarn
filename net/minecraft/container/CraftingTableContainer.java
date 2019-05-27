@@ -114,7 +114,7 @@ extends CraftingContainer<CraftingInventory> {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             if (i == 0) {
-                this.context.run((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, (World)world, playerEntity));
+                this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, (World)world, playerEntity));
                 if (!this.insertItem(itemStack2, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
@@ -127,7 +127,7 @@ extends CraftingContainer<CraftingInventory> {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             ItemStack itemStack3 = slot.onTakeItem(playerEntity, itemStack2);

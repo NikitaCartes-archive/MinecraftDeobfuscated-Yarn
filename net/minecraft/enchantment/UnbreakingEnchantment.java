@@ -28,7 +28,7 @@ extends Enchantment {
 
     @Override
     public boolean isAcceptableItem(ItemStack itemStack) {
-        if (itemStack.hasDurability()) {
+        if (itemStack.isDamageable()) {
             return true;
         }
         return super.isAcceptableItem(itemStack);

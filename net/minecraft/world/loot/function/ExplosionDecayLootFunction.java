@@ -25,13 +25,13 @@ extends ConditionalLootFunction {
         if (float_ != null) {
             Random random = lootContext.getRandom();
             float f = 1.0f / float_.floatValue();
-            int i = itemStack.getAmount();
+            int i = itemStack.getCount();
             int j = 0;
             for (int k = 0; k < i; ++k) {
                 if (!(random.nextFloat() <= f)) continue;
                 ++j;
             }
-            itemStack.setAmount(j);
+            itemStack.setCount(j);
         }
         return itemStack;
     }

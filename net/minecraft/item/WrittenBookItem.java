@@ -39,8 +39,8 @@ extends Item {
         super(settings);
     }
 
-    public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
-        if (!WritableBookItem.isValidBook(compoundTag)) {
+    public static boolean isValid(@Nullable CompoundTag compoundTag) {
+        if (!WritableBookItem.isValid(compoundTag)) {
             return false;
         }
         if (!compoundTag.containsKey("title", 8)) {
@@ -53,7 +53,7 @@ extends Item {
         return compoundTag.containsKey("author", 8);
     }
 
-    public static int getBookGeneration(ItemStack itemStack) {
+    public static int getGeneration(ItemStack itemStack) {
         return itemStack.getTag().getInt("generation");
     }
 
@@ -63,18 +63,18 @@ extends Item {
     }
 
     @Override
-    public Component getTranslatedNameTrimmed(ItemStack itemStack) {
+    public Component getName(ItemStack itemStack) {
         CompoundTag compoundTag;
         String string;
         if (itemStack.hasTag() && !ChatUtil.isEmpty(string = (compoundTag = itemStack.getTag()).getString("title"))) {
             return new TextComponent(string);
         }
-        return super.getTranslatedNameTrimmed(itemStack);
+        return super.getName(itemStack);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
         if (itemStack.hasTag()) {
             CompoundTag compoundTag = itemStack.getTag();
             String string = compoundTag.getString("author");
@@ -91,7 +91,7 @@ extends Item {
         World world = itemUsageContext.getWorld();
         BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
         if (blockState.getBlock() == Blocks.LECTERN) {
-            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return ActionResult.PASS;
     }
@@ -110,7 +110,7 @@ extends Item {
             return false;
         }
         compoundTag.putBoolean("resolved", true);
-        if (!WrittenBookItem.isValidBook(compoundTag)) {
+        if (!WrittenBookItem.isValid(compoundTag)) {
             return false;
         }
         ListTag listTag = compoundTag.getList("pages", 8);

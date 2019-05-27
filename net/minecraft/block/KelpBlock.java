@@ -15,7 +15,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class KelpBlock
 extends Block
 implements FluidFillable {
-    public static final IntegerProperty AGE = Properties.AGE_25;
+    public static final IntProperty AGE = Properties.AGE_25;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
     protected KelpBlock(Block.Settings settings) {

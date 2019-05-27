@@ -235,7 +235,7 @@ extends WaterCreatureEntity {
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.canPickupItem(itemStack = itemEntity.getStack())) {
             this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
         }
     }
@@ -295,13 +295,13 @@ extends WaterCreatureEntity {
     @Override
     protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (!itemStack.isEmpty() && itemStack.getItem().matches(ItemTags.FISHES)) {
+        if (!itemStack.isEmpty() && itemStack.getItem().isIn(ItemTags.FISHES)) {
             if (!this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_DOLPHIN_EAT, 1.0f, 1.0f);
             }
             this.setHasFish(true);
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return true;
         }

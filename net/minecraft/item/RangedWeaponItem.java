@@ -11,22 +11,22 @@ import net.minecraft.item.Items;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 
-public abstract class BaseBowItem
+public abstract class RangedWeaponItem
 extends Item {
-    public static final Predicate<ItemStack> IS_BOW_PROJECTILE = itemStack -> itemStack.getItem().matches(ItemTags.ARROWS);
-    public static final Predicate<ItemStack> IS_CROSSBOW_PROJECTILE = IS_BOW_PROJECTILE.or(itemStack -> itemStack.getItem() == Items.FIREWORK_ROCKET);
+    public static final Predicate<ItemStack> BOW_PROJECTILES = itemStack -> itemStack.getItem().isIn(ItemTags.ARROWS);
+    public static final Predicate<ItemStack> CROSSBOW_HELD_PROJECTILES = BOW_PROJECTILES.or(itemStack -> itemStack.getItem() == Items.FIREWORK_ROCKET);
 
-    public BaseBowItem(Item.Settings settings) {
+    public RangedWeaponItem(Item.Settings settings) {
         super(settings);
     }
 
-    public Predicate<ItemStack> getHeldProjectilePredicate() {
-        return this.getInventoryProjectilePredicate();
+    public Predicate<ItemStack> getHeldProjectiles() {
+        return this.getProjectiles();
     }
 
-    public abstract Predicate<ItemStack> getInventoryProjectilePredicate();
+    public abstract Predicate<ItemStack> getProjectiles();
 
-    public static ItemStack getItemHeld(LivingEntity livingEntity, Predicate<ItemStack> predicate) {
+    public static ItemStack getHeldProjectile(LivingEntity livingEntity, Predicate<ItemStack> predicate) {
         if (predicate.test(livingEntity.getStackInHand(Hand.OFF_HAND))) {
             return livingEntity.getStackInHand(Hand.OFF_HAND);
         }

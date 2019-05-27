@@ -16,7 +16,7 @@ extends Item {
         super(settings);
     }
 
-    public ProjectileEntity createProjectile(World world, ItemStack itemStack, LivingEntity livingEntity) {
+    public ProjectileEntity createArrow(World world, ItemStack itemStack, LivingEntity livingEntity) {
         ArrowEntity arrowEntity = new ArrowEntity(world, livingEntity);
         arrowEntity.initFromStack(itemStack);
         return arrowEntity;

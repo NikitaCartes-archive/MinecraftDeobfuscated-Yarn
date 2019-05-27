@@ -44,21 +44,21 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final ThreadPoolExecutor field_19105 = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
     private static final Identifier field_19106 = new Identifier("textures/misc/unknown_server.png");
     private static final Identifier field_19107 = new Identifier("textures/gui/server_selection.png");
-    private final MultiplayerScreen field_19108;
-    private final List<ServerItem> field_19109 = Lists.newArrayList();
-    private final Entry field_19110 = new class_4268();
-    private final List<LanServerListEntry> field_19111 = Lists.newArrayList();
+    private final MultiplayerScreen screen;
+    private final List<ServerItem> serverItems = Lists.newArrayList();
+    private final Entry scanningEntry = new ScanningEntry();
+    private final List<LanServerListEntry> serverEntries = Lists.newArrayList();
 
     public MultiplayerServerListWidget(MultiplayerScreen multiplayerScreen, MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
-        this.field_19108 = multiplayerScreen;
+        this.screen = multiplayerScreen;
     }
 
     private void method_20131() {
         this.clearEntries();
-        this.field_19109.forEach(this::addEntry);
-        this.addEntry(this.field_19110);
-        this.field_19111.forEach(this::addEntry);
+        this.serverItems.forEach(this::addEntry);
+        this.addEntry(this.scanningEntry);
+        this.serverEntries.forEach(this::addEntry);
     }
 
     public void method_20122(Entry entry) {
@@ -74,7 +74,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
         Entry entry = (Entry)this.children().get(k);
         super.setSelected(entry);
-        if (entry instanceof class_4268) {
+        if (entry instanceof ScanningEntry) {
             if (i > 0 && k == this.getItemCount() - 1) {
                 return;
             }
@@ -85,21 +85,21 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             return;
         }
         this.ensureVisible(entry);
-        this.field_19108.updateButtonActivationStates();
+        this.screen.updateButtonActivationStates();
     }
 
     public void method_20125(ServerList serverList) {
-        this.field_19109.clear();
+        this.serverItems.clear();
         for (int i = 0; i < serverList.size(); ++i) {
-            this.field_19109.add(new ServerItem(this.field_19108, serverList.get(i)));
+            this.serverItems.add(new ServerItem(this.screen, serverList.get(i)));
         }
         this.method_20131();
     }
 
     public void method_20126(List<LanServerEntry> list) {
-        this.field_19111.clear();
+        this.serverEntries.clear();
         for (LanServerEntry lanServerEntry : list) {
-            this.field_19111.add(new LanServerListEntry(this.field_19108, lanServerEntry));
+            this.serverEntries.add(new LanServerListEntry(this.screen, lanServerEntry));
         }
         this.method_20131();
     }
@@ -116,7 +116,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     protected boolean isFocused() {
-        return this.field_19108.getFocused() == this;
+        return this.screen.getFocused() == this;
     }
 
     @Override
@@ -370,15 +370,15 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_4268
+    public static class ScanningEntry
     extends Entry {
-        private final MinecraftClient field_19112 = MinecraftClient.getInstance();
+        private final MinecraftClient client = MinecraftClient.getInstance();
 
         @Override
         public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
             String string;
-            int p = j + m / 2 - this.field_19112.textRenderer.fontHeight / 2;
-            this.field_19112.textRenderer.draw(I18n.translate("lanServer.scanning", new Object[0]), this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(I18n.translate("lanServer.scanning", new Object[0])) / 2, p, 0xFFFFFF);
+            int p = j + m / 2 - this.client.textRenderer.fontHeight / 2;
+            this.client.textRenderer.draw(I18n.translate("lanServer.scanning", new Object[0]), this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning", new Object[0])) / 2, p, 0xFFFFFF);
             switch ((int)(SystemUtil.getMeasuringTimeMs() / 300L % 4L)) {
                 default: {
                     string = "O o o";
@@ -393,7 +393,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     string = "o o O";
                 }
             }
-            this.field_19112.textRenderer.draw(string, this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(string) / 2, p + this.field_19112.textRenderer.fontHeight, 0x808080);
+            this.client.textRenderer.draw(string, this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(string) / 2, p + this.client.textRenderer.fontHeight, 0x808080);
         }
     }
 

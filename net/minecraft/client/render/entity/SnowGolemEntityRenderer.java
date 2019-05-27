@@ -13,11 +13,11 @@ import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public class SnowmanEntityRenderer
+public class SnowGolemEntityRenderer
 extends MobEntityRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/snow_golem.png");
 
-    public SnowmanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+    public SnowGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SnowmanEntityModel(), 0.5f);
         this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
     }

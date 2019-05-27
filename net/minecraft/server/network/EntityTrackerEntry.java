@@ -85,7 +85,7 @@ public class EntityTrackerEntry {
                 MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.field_18258);
                 for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
                     mapState.update(serverPlayerEntity, itemStack);
-                    Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createMapPacket(itemStack, this.field_18258, serverPlayerEntity);
+                    Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createSyncPacket(itemStack, this.field_18258, serverPlayerEntity);
                     if (packet == null) continue;
                     serverPlayerEntity.networkHandler.sendPacket(packet);
                 }

@@ -26,7 +26,7 @@ extends Item {
         private final ItemDispenserBehavior field_8898 = new ItemDispenserBehavior();
 
         @Override
-        public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+        public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
             double g;
             RailShape railShape;
             Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
@@ -48,11 +48,11 @@ extends Item {
                 return this.field_8898.dispense(blockPointer, itemStack);
             }
             AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)itemStack.getItem()).type);
-            if (itemStack.hasDisplayName()) {
-                abstractMinecartEntity.setCustomName(itemStack.getDisplayName());
+            if (itemStack.hasCustomName()) {
+                abstractMinecartEntity.setCustomName(itemStack.getCustomName());
             }
             world.spawnEntity(abstractMinecartEntity);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             return itemStack;
         }
 
@@ -77,7 +77,7 @@ extends Item {
         if (!blockState.matches(BlockTags.RAILS)) {
             return ActionResult.FAIL;
         }
-        ItemStack itemStack = itemUsageContext.getItemStack();
+        ItemStack itemStack = itemUsageContext.getStack();
         if (!world.isClient) {
             RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
             double d = 0.0;
@@ -85,12 +85,12 @@ extends Item {
                 d = 0.5;
             }
             AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5, this.type);
-            if (itemStack.hasDisplayName()) {
-                abstractMinecartEntity.setCustomName(itemStack.getDisplayName());
+            if (itemStack.hasCustomName()) {
+                abstractMinecartEntity.setCustomName(itemStack.getCustomName());
             }
             world.spawnEntity(abstractMinecartEntity);
         }
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         return ActionResult.SUCCESS;
     }
 }

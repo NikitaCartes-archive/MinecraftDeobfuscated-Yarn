@@ -24,7 +24,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 public class ComposterBlock
 extends Block
 implements InventoryProvider {
-    public static final IntegerProperty LEVEL = Properties.COMPOSTER_LEVEL;
+    public static final IntProperty LEVEL = Properties.LEVEL_8;
     public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<ItemConvertible>();
     public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
     private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = SystemUtil.consume(new VoxelShape[9], voxelShapes -> {
@@ -185,7 +185,7 @@ implements InventoryProvider {
                 boolean bl = ComposterBlock.addToComposter(blockState, world, blockPos, itemStack);
                 world.playLevelEvent(1500, blockPos, bl ? 1 : 0);
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
             }
             return true;

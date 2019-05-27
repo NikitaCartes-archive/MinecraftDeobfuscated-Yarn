@@ -26,20 +26,20 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class ExplodingWitherSkullEntity
+public class WitherSkullEntity
 extends ExplosiveProjectileEntity {
-    private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(ExplodingWitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(WitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    public ExplodingWitherSkullEntity(EntityType<? extends ExplodingWitherSkullEntity> entityType, World world) {
+    public WitherSkullEntity(EntityType<? extends WitherSkullEntity> entityType, World world) {
         super((EntityType<? extends ExplosiveProjectileEntity>)entityType, world);
     }
 
-    public ExplodingWitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
+    public WitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
         super(EntityType.WITHER_SKULL, livingEntity, d, e, f, world);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ExplodingWitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
+    public WitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
         super(EntityType.WITHER_SKULL, d, e, f, g, h, i, world);
     }
 

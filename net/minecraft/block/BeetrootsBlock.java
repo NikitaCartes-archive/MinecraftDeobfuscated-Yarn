@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class BeetrootsBlock
 extends CropBlock {
-    public static final IntegerProperty AGE = Properties.AGE_3;
+    public static final IntProperty AGE = Properties.AGE_3;
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)};
 
     public BeetrootsBlock(Block.Settings settings) {
@@ -30,7 +30,7 @@ extends CropBlock {
     }
 
     @Override
-    public IntegerProperty getAgeProperty() {
+    public IntProperty getAgeProperty() {
         return AGE;
     }
 

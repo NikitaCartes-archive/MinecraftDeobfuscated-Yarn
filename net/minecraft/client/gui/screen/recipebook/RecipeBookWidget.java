@@ -43,7 +43,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class RecipeBookScreen
+public class RecipeBookWidget
 extends DrawableHelper
 implements Drawable,
 Element,

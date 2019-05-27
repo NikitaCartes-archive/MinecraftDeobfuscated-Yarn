@@ -32,7 +32,7 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
         double f;
         double e;
-        Direction direction = itemUsageContext.getFacing();
+        Direction direction = itemUsageContext.getSide();
         if (direction == Direction.DOWN) {
             return ActionResult.FAIL;
         }
@@ -48,7 +48,7 @@ extends Item {
         if (!list.isEmpty()) {
             return ActionResult.FAIL;
         }
-        ItemStack itemStack = itemUsageContext.getItemStack();
+        ItemStack itemStack = itemUsageContext.getStack();
         if (!world.isClient) {
             world.clearBlockState(blockPos, false);
             world.clearBlockState(blockPos2, false);
@@ -60,7 +60,7 @@ extends Item {
             world.spawnEntity(armorStandEntity);
             world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
         }
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         return ActionResult.SUCCESS;
     }
 

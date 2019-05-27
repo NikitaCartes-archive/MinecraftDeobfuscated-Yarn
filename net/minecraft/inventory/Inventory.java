@@ -46,7 +46,7 @@ extends Clearable {
         for (int j = 0; j < this.getInvSize(); ++j) {
             ItemStack itemStack = this.getInvStack(j);
             if (!itemStack.getItem().equals(item)) continue;
-            i += itemStack.getAmount();
+            i += itemStack.getCount();
         }
         return i;
     }
@@ -54,7 +54,7 @@ extends Clearable {
     default public boolean containsAnyInInv(Set<Item> set) {
         for (int i = 0; i < this.getInvSize(); ++i) {
             ItemStack itemStack = this.getInvStack(i);
-            if (!set.contains(itemStack.getItem()) || itemStack.getAmount() <= 0) continue;
+            if (!set.contains(itemStack.getItem()) || itemStack.getCount() <= 0) continue;
             return true;
         }
         return false;

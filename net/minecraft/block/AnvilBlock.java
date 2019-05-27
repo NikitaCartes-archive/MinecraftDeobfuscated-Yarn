@@ -52,7 +52,7 @@ extends FallingBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().rotateYClockwise());
+        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().rotateYClockwise());
     }
 
     @Override

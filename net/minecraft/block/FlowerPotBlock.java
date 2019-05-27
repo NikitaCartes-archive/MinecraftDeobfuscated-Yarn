@@ -62,7 +62,7 @@ extends Block {
                 world.setBlockState(blockPos, block.getDefaultState(), 3);
                 playerEntity.incrementStat(Stats.POT_FLOWER);
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
             } else {
                 ItemStack itemStack2 = new ItemStack(this.content);

@@ -82,11 +82,11 @@ extends PersistentState {
         for (int i = 0; i < listTag.size(); ++i) {
             MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(i));
             this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-            this.addIcon(mapBannerMarker.getType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
+            this.addIcon(mapBannerMarker.getIconType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
         }
         ListTag listTag2 = compoundTag.getList("frames", 10);
         for (int j = 0; j < listTag2.size(); ++j) {
-            MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(listTag2.getCompoundTag(j));
+            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(j));
             this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
             this.addIcon(MapIcon.Type.FRAME, null, "frame-" + mapFrameMarker.getEntityId(), mapFrameMarker.getPos().getX(), mapFrameMarker.getPos().getZ(), mapFrameMarker.getRotation(), null);
         }
@@ -109,7 +109,7 @@ extends PersistentState {
         compoundTag.put("banners", listTag);
         ListTag listTag2 = new ListTag();
         for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-            listTag2.add(mapFrameMarker.getNbt());
+            listTag2.add(mapFrameMarker.toTag());
         }
         compoundTag.put("frames", listTag2);
         return compoundTag;
@@ -138,17 +138,17 @@ extends PersistentState {
         for (int i = 0; i < this.updateTrackers.size(); ++i) {
             PlayerUpdateTracker playerUpdateTracker2 = this.updateTrackers.get(i);
             String string = playerUpdateTracker2.player.getName().getString();
-            if (playerUpdateTracker2.player.removed || !playerUpdateTracker2.player.inventory.contains(itemStack) && !itemStack.isHeldInItemFrame()) {
+            if (playerUpdateTracker2.player.removed || !playerUpdateTracker2.player.inventory.contains(itemStack) && !itemStack.isInFrame()) {
                 this.updateTrackersByPlayer.remove(playerUpdateTracker2.player);
                 this.updateTrackers.remove(playerUpdateTracker2);
                 this.icons.remove(string);
                 continue;
             }
-            if (itemStack.isHeldInItemFrame() || playerUpdateTracker2.player.dimension != this.dimension || !this.showIcons) continue;
+            if (itemStack.isInFrame() || playerUpdateTracker2.player.dimension != this.dimension || !this.showIcons) continue;
             this.addIcon(MapIcon.Type.PLAYER, playerUpdateTracker2.player.world, string, playerUpdateTracker2.player.x, playerUpdateTracker2.player.z, playerUpdateTracker2.player.yaw, null);
         }
-        if (itemStack.isHeldInItemFrame() && this.showIcons) {
-            ItemFrameEntity itemFrameEntity = itemStack.getHoldingItemFrame();
+        if (itemStack.isInFrame() && this.showIcons) {
+            ItemFrameEntity itemFrameEntity = itemStack.getFrame();
             BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
             MapFrameMarker mapFrameMarker = this.frames.get(MapFrameMarker.getKey(blockPos));
             if (mapFrameMarker != null && itemFrameEntity.getEntityId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
@@ -174,7 +174,7 @@ extends PersistentState {
             listTag = itemStack.getTag().getList("Decorations", 10);
         } else {
             listTag = new ListTag();
-            itemStack.setChildTag("Decorations", listTag);
+            itemStack.putSubTag("Decorations", listTag);
         }
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putByte("type", type.getId());
@@ -184,7 +184,7 @@ extends PersistentState {
         compoundTag.putDouble("rot", 180.0);
         listTag.add(compoundTag);
         if (type.hasTintColor()) {
-            CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("display");
+            CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("display");
             compoundTag2.putInt("MapColor", type.getTintColor());
         }
     }
@@ -281,7 +281,7 @@ extends PersistentState {
             }
             if (bl2) {
                 this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-                this.addIcon(mapBannerMarker.getType(), iWorld, mapBannerMarker.getKey(), f, g, 180.0, mapBannerMarker.getName());
+                this.addIcon(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), f, g, 180.0, mapBannerMarker.getName());
                 bl = true;
             }
             if (bl) {

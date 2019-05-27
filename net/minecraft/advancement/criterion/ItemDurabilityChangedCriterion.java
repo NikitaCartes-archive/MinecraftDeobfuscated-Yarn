@@ -135,7 +135,7 @@ implements Criterion<Conditions> {
             if (!this.item.test(itemStack)) {
                 return false;
             }
-            if (!this.durability.test(itemStack.getDurability() - i)) {
+            if (!this.durability.test(itemStack.getMaxDamage() - i)) {
                 return false;
             }
             return this.delta.test(itemStack.getDamage() - i);

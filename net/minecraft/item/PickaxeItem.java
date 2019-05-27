@@ -25,7 +25,7 @@ extends MiningToolItem {
     @Override
     public boolean isEffectiveOn(BlockState blockState) {
         Block block = blockState.getBlock();
-        int i = this.getType().getMiningLevel();
+        int i = this.getMaterial().getMiningLevel();
         if (block == Blocks.OBSIDIAN) {
             return i == 3;
         }
@@ -40,12 +40,12 @@ extends MiningToolItem {
     }
 
     @Override
-    public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+    public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
         Material material = blockState.getMaterial();
         if (material == Material.METAL || material == Material.ANVIL || material == Material.STONE) {
-            return this.blockBreakingSpeed;
+            return this.miningSpeed;
         }
-        return super.getBlockBreakingSpeed(itemStack, blockState);
+        return super.getMiningSpeed(itemStack, blockState);
     }
 }
 

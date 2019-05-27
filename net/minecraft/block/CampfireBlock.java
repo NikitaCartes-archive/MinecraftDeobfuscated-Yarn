@@ -58,7 +58,7 @@ implements Waterloggable {
     public static final BooleanProperty LIT = Properties.LIT;
     public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    public static final DirectionProperty FACING = Properties.FACING_HORIZONTAL;
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     public CampfireBlock(Block.Settings settings) {
         super(settings);
@@ -106,7 +106,7 @@ implements Waterloggable {
         BlockPos blockPos;
         World iWorld = itemPlacementContext.getWorld();
         boolean bl = iWorld.getFluidState(blockPos = itemPlacementContext.getBlockPos()).getFluid() == Fluids.WATER;
-        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerFacing());
     }
 
     @Override

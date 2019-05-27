@@ -43,8 +43,8 @@ extends DamageSource {
     public Component getDeathMessage(LivingEntity livingEntity) {
         ItemStack itemStack = this.source instanceof LivingEntity ? ((LivingEntity)this.source).getMainHandStack() : ItemStack.EMPTY;
         String string = "death.attack." + this.name;
-        if (!itemStack.isEmpty() && itemStack.hasDisplayName()) {
-            return new TranslatableComponent(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toTextComponent());
+        if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
+            return new TranslatableComponent(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText());
         }
         return new TranslatableComponent(string, livingEntity.getDisplayName(), this.source.getDisplayName());
     }

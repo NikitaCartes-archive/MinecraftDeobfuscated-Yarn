@@ -184,7 +184,7 @@ implements SynchronousResourceReloadListener {
     public BakedModel getModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
         BakedModel bakedModel = this.models.getModel(itemStack);
         Item item = itemStack.getItem();
-        if (!item.hasProperties()) {
+        if (!item.hasPropertyGetters()) {
             return bakedModel;
         }
         return this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
@@ -193,7 +193,7 @@ implements SynchronousResourceReloadListener {
     public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
         Item item = itemStack.getItem();
         BakedModel bakedModel = item == Items.TRIDENT ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(itemStack);
-        if (!item.hasProperties()) {
+        if (!item.hasPropertyGetters()) {
             return bakedModel;
         }
         return this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
@@ -316,8 +316,8 @@ implements SynchronousResourceReloadListener {
         if (itemStack.isEmpty()) {
             return;
         }
-        if (itemStack.getAmount() != 1 || string != null) {
-            String string2 = string == null ? String.valueOf(itemStack.getAmount()) : string;
+        if (itemStack.getCount() != 1 || string != null) {
+            String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
             GlStateManager.disableLighting();
             GlStateManager.disableDepthTest();
             GlStateManager.disableBlend();
@@ -335,7 +335,7 @@ implements SynchronousResourceReloadListener {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
             float f = itemStack.getDamage();
-            float g = itemStack.getDurability();
+            float g = itemStack.getMaxDamage();
             float h = Math.max(0.0f, (g - f) / g);
             int k = Math.round(13.0f - f * 13.0f / g);
             int l = MathHelper.hsvToRgb(h / 3.0f, 1.0f, 1.0f);

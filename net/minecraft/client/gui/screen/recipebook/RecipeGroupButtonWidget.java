@@ -8,7 +8,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
@@ -28,7 +28,7 @@ extends ToggleButtonWidget {
     public RecipeGroupButtonWidget(RecipeBookGroup recipeBookGroup) {
         super(0, 0, 35, 27, false);
         this.category = recipeBookGroup;
-        this.setTextureUV(153, 2, 35, 0, RecipeBookScreen.TEXTURE);
+        this.setTextureUV(153, 2, 35, 0, RecipeBookWidget.TEXTURE);
     }
 
     public void checkForNewRecipes(MinecraftClient minecraftClient) {

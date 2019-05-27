@@ -49,7 +49,7 @@ extends AbstractSkullBlock {
         BlockState blockState = this.getDefaultState();
         World blockView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : directions = itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             if (!direction.getAxis().isHorizontal()) continue;
             Direction direction2 = direction.getOpposite();
             blockState = (BlockState)blockState.with(FACING, direction2);

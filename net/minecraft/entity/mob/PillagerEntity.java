@@ -233,7 +233,7 @@ RangedAttackMob {
         Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.CROSSBOW);
         ItemStack itemStack = this.getStackInHand(hand);
         if (this.isHolding(Items.CROSSBOW)) {
-            CrossbowItem.shootAllProjectiles(this.world, this, hand, itemStack, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
+            CrossbowItem.shootAll(this.world, this, hand, itemStack, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         }
         this.despawnCounter = 0;
     }
@@ -281,7 +281,7 @@ RangedAttackMob {
                 if (itemStack2.isEmpty()) {
                     itemEntity.remove();
                 } else {
-                    itemStack.setAmount(itemStack2.getAmount());
+                    itemStack.setCount(itemStack2.getCount());
                 }
             }
         }

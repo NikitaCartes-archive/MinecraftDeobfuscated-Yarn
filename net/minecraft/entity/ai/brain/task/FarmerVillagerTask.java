@@ -110,7 +110,7 @@ extends Task<VillagerEntity> {
                     }
                     if (!bl) continue;
                     serverWorld.playSound(null, (double)this.field_18858.getX(), (double)this.field_18858.getY(), this.field_18858.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                     if (!itemStack.isEmpty()) break;
                     basicInventory.setInvStack(i, ItemStack.EMPTY);
                     break;

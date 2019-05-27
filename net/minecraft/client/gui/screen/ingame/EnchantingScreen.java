@@ -205,7 +205,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
 
     public void method_2478() {
         ItemStack itemStack = ((EnchantingTableContainer)this.container).getSlot(0).getStack();
-        if (!ItemStack.areEqual(itemStack, this.field_2913)) {
+        if (!ItemStack.areEqualIgnoreDamage(itemStack, this.field_2913)) {
             this.field_2913 = itemStack;
             do {
                 this.field_2909 += (float)(this.random.nextInt(4) - this.random.nextInt(4));

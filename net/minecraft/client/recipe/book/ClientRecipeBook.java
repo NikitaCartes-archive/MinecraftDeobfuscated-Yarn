@@ -111,7 +111,7 @@ extends RecipeBook {
             return RecipeBookGroup.CAMPFIRE;
         }
         ItemStack itemStack = recipe.getOutput();
-        ItemGroup itemGroup = itemStack.getItem().getItemGroup();
+        ItemGroup itemGroup = itemStack.getItem().getGroup();
         if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
             return RecipeBookGroup.BUILDING_BLOCKS;
         }

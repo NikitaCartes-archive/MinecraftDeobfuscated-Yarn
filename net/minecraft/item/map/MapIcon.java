@@ -14,14 +14,14 @@ public class MapIcon {
     private final Type type;
     private byte x;
     private byte z;
-    private byte angle;
+    private byte rotation;
     private final Component text;
 
     public MapIcon(Type type, byte b, byte c, byte d, @Nullable Component component) {
         this.type = type;
         this.x = b;
         this.z = c;
-        this.angle = d;
+        this.rotation = d;
         this.text = component;
     }
 
@@ -42,13 +42,13 @@ public class MapIcon {
         return this.z;
     }
 
-    public byte getAngle() {
-        return this.angle;
+    public byte getRotation() {
+        return this.rotation;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean renderIfNotHeld() {
-        return this.type.renderIfNotHeld();
+    public boolean isAlwaysRendered() {
+        return this.type.isAlwaysRendered();
     }
 
     @Nullable
@@ -67,7 +67,7 @@ public class MapIcon {
         if (this.type != mapIcon.type) {
             return false;
         }
-        if (this.angle != mapIcon.angle) {
+        if (this.rotation != mapIcon.rotation) {
             return false;
         }
         if (this.x != mapIcon.x) {
@@ -83,7 +83,7 @@ public class MapIcon {
         int i = this.type.getId();
         i = 31 * i + this.x;
         i = 31 * i + this.z;
-        i = 31 * i + this.angle;
+        i = 31 * i + this.rotation;
         i = 31 * i + Objects.hashCode(this.text);
         return i;
     }
@@ -118,7 +118,7 @@ public class MapIcon {
         RED_X(true);
 
         private final byte id = (byte)this.ordinal();
-        private final boolean renderNotHeld;
+        private final boolean alwaysRender;
         private final int tintColor;
 
         private Type(boolean bl) {
@@ -126,7 +126,7 @@ public class MapIcon {
         }
 
         private Type(boolean bl, int j) {
-            this.renderNotHeld = bl;
+            this.alwaysRender = bl;
             this.tintColor = j;
         }
 
@@ -135,8 +135,8 @@ public class MapIcon {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public boolean renderIfNotHeld() {
-            return this.renderNotHeld;
+        public boolean isAlwaysRendered() {
+            return this.alwaysRender;
         }
 
         public boolean hasTintColor() {

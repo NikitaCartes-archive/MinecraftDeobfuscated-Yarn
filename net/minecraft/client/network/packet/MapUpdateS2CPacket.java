@@ -78,7 +78,7 @@ implements Packet<ClientPlayPacketListener> {
             packetByteBuf.writeEnumConstant(mapIcon.getType());
             packetByteBuf.writeByte(mapIcon.getX());
             packetByteBuf.writeByte(mapIcon.getZ());
-            packetByteBuf.writeByte(mapIcon.getAngle() & 0xF);
+            packetByteBuf.writeByte(mapIcon.getRotation() & 0xF);
             if (mapIcon.getText() != null) {
                 packetByteBuf.writeBoolean(true);
                 packetByteBuf.writeTextComponent(mapIcon.getText());

@@ -118,7 +118,7 @@ extends FacingBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())).with(EXTENDED, false);
+        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite())).with(EXTENDED, false);
     }
 
     private void tryMove(World world, BlockPos blockPos, BlockState blockState) {

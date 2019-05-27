@@ -34,7 +34,7 @@ extends BlockItem {
         BlockState blockState = world.getBlockState(blockPos);
         Block block = this.getBlock();
         if (blockState.getBlock() == block) {
-            Direction direction = itemPlacementContext.isPlayerSneaking() ? (itemPlacementContext.method_17699() ? itemPlacementContext.getFacing().getOpposite() : itemPlacementContext.getFacing()) : (itemPlacementContext.getFacing() == Direction.UP ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.UP);
+            Direction direction = itemPlacementContext.isPlayerSneaking() ? (itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
             int i = 0;
             BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
             while (i < 7) {
@@ -49,7 +49,7 @@ extends BlockItem {
                 blockState = world.getBlockState(mutable);
                 if (blockState.getBlock() != this.getBlock()) {
                     if (!blockState.canReplace(itemPlacementContext)) break;
-                    return ItemPlacementContext.create(itemPlacementContext, mutable, direction);
+                    return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
                 }
                 mutable.setOffset(direction);
                 if (!direction.getAxis().isHorizontal()) continue;
@@ -64,7 +64,7 @@ extends BlockItem {
     }
 
     @Override
-    protected boolean shouldCheckIfStateAllowsPlacement() {
+    protected boolean checkStatePlacement() {
         return false;
     }
 }

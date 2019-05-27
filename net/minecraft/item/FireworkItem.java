@@ -40,11 +40,11 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
         World world = itemUsageContext.getWorld();
         if (!world.isClient) {
-            ItemStack itemStack = itemUsageContext.getItemStack();
-            Vec3d vec3d = itemUsageContext.getPos();
+            ItemStack itemStack = itemUsageContext.getStack();
+            Vec3d vec3d = itemUsageContext.getHitPos();
             FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
             world.spawnEntity(fireworkEntity);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
         }
         return ActionResult.SUCCESS;
     }
@@ -56,7 +56,7 @@ extends Item {
             if (!world.isClient) {
                 world.spawnEntity(new FireworkEntity(world, itemStack, playerEntity));
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
             }
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
@@ -66,9 +66,9 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
         ListTag listTag;
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("Fireworks");
+        CompoundTag compoundTag = itemStack.getSubTag("Fireworks");
         if (compoundTag == null) {
             return;
         }
@@ -79,7 +79,7 @@ extends Item {
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag2 = listTag.getCompoundTag(i);
                 ArrayList<Component> list2 = Lists.newArrayList();
-                FireworkChargeItem.buildTooltip(compoundTag2, list2);
+                FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
                 if (list2.isEmpty()) continue;
                 for (int j = 1; j < list2.size(); ++j) {
                     list2.set(j, new TextComponent("  ").append((Component)list2.get(j)).applyFormat(ChatFormat.GRAY));
@@ -115,7 +115,7 @@ extends Item {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public static Type fromId(int i) {
+        public static Type byId(int i) {
             if (i < 0 || i >= TYPES.length) {
                 return SMALL_BALL;
             }

@@ -62,7 +62,7 @@ extends ConditionalLootFunction {
     @Override
     public ItemStack process(ItemStack itemStack, LootContext lootContext) {
         if (this.name != null) {
-            itemStack.setDisplayName((Component)SetNameLootFunction.applySourceEntity(lootContext, this.entity).apply(this.name));
+            itemStack.setCustomName((Component)SetNameLootFunction.applySourceEntity(lootContext, this.entity).apply(this.name));
         }
         return itemStack;
     }

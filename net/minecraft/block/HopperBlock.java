@@ -108,7 +108,7 @@ extends BlockWithEntity {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        Direction direction = itemPlacementContext.getFacing().getOpposite();
+        Direction direction = itemPlacementContext.getSide().getOpposite();
         return (BlockState)((BlockState)this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction)).with(ENABLED, true);
     }
 
@@ -120,8 +120,8 @@ extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof HopperBlockEntity) {
-            ((HopperBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof HopperBlockEntity) {
+            ((HopperBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
         }
     }
 

@@ -116,7 +116,7 @@ implements VillagerDataContainer {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.getItem() == Items.GOLDEN_APPLE && this.hasStatusEffect(StatusEffects.WEAKNESS)) {
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             if (!this.world.isClient) {
                 this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);

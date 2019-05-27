@@ -220,9 +220,9 @@ extends HostileEntity {
             if (bl) {
                 ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
                 if (!itemStack.isEmpty()) {
-                    if (itemStack.hasDurability()) {
+                    if (itemStack.isDamageable()) {
                         itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
-                        if (itemStack.getDamage() >= itemStack.getDurability()) {
+                        if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
                             this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
                             this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
                         }

@@ -75,7 +75,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MapItem;
+import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
@@ -363,7 +363,7 @@ implements ContainerListener {
             for (int i = 0; i < this.inventory.getInvSize(); ++i) {
                 Packet<?> packet;
                 ItemStack itemStack = this.inventory.getInvStack(i);
-                if (!itemStack.getItem().isMap() || (packet = ((MapItem)itemStack.getItem()).createMapPacket(itemStack, this.world, this)) == null) continue;
+                if (!itemStack.getItem().isNetworkSynced() || (packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this)) == null) continue;
                 this.networkHandler.sendPacket(packet);
             }
             if (this.getHealth() != this.field_13997 || this.field_13979 != this.hungerManager.getFoodLevel() || this.hungerManager.getSaturationLevel() == 0.0f != this.field_13972) {
@@ -1272,7 +1272,7 @@ implements ContainerListener {
         ItemStack itemStack2 = itemEntity.getStack();
         if (bl2) {
             if (!itemStack2.isEmpty()) {
-                this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
+                this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack2.getItem()), itemStack.getCount());
             }
             this.incrementStat(Stats.DROP);
         }

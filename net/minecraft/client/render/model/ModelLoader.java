@@ -91,7 +91,7 @@ public class ModelLoader {
     public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = SystemUtil.consume(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
         jsonUnbakedModel.id = "block entity marker";
     });
-    private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder(Blocks.AIR).add(BooleanProperty.create("map")).build(BlockState::new);
+    private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder(Blocks.AIR).add(BooleanProperty.of("map")).build(BlockState::new);
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     private static final Map<Identifier, StateFactory<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;

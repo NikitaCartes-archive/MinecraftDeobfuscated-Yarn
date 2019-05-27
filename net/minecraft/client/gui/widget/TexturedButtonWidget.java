@@ -11,30 +11,30 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public class RecipeBookButtonWidget
+public class TexturedButtonWidget
 extends ButtonWidget {
     private final Identifier texture;
     private final int u;
     private final int v;
-    private final int field_19079;
-    private final int hoverVOffset;
-    private final int field_19080;
+    private final int hoveredVOffset;
+    private final int textureWidth;
+    private final int textureHeight;
 
-    public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.PressAction pressAction) {
+    public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.PressAction pressAction) {
         this(i, j, k, l, m, n, o, identifier, 256, 256, pressAction);
     }
 
-    public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction) {
+    public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction) {
         this(i, j, k, l, m, n, o, identifier, p, q, pressAction, "");
     }
 
-    public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction, String string) {
+    public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction, String string) {
         super(i, j, k, l, string, pressAction);
-        this.hoverVOffset = p;
-        this.field_19080 = q;
+        this.textureWidth = p;
+        this.textureHeight = q;
         this.u = m;
         this.v = n;
-        this.field_19079 = o;
+        this.hoveredVOffset = o;
         this.texture = identifier;
     }
 
@@ -50,9 +50,9 @@ extends ButtonWidget {
         GlStateManager.disableDepthTest();
         int k = this.v;
         if (this.isHovered()) {
-            k += this.field_19079;
+            k += this.hoveredVOffset;
         }
-        RecipeBookButtonWidget.blit(this.x, this.y, this.u, k, this.width, this.height, this.hoverVOffset, this.field_19080);
+        TexturedButtonWidget.blit(this.x, this.y, this.u, k, this.width, this.height, this.textureWidth, this.textureHeight);
         GlStateManager.enableDepthTest();
     }
 }

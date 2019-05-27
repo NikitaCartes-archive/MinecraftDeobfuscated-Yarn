@@ -73,8 +73,8 @@ extends Task<VillagerEntity> {
             Item item;
             ItemStack itemStack2 = basicInventory.getInvStack(i);
             if (itemStack2.isEmpty() || !set.contains(item = itemStack2.getItem())) continue;
-            int j = itemStack2.getAmount() / 2;
-            itemStack2.subtractAmount(j);
+            int j = itemStack2.getCount() / 2;
+            itemStack2.decrement(j);
             itemStack = new ItemStack(item, j);
             break;
         }

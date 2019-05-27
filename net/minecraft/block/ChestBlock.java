@@ -185,10 +185,10 @@ implements Waterloggable {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         Direction direction3;
         ChestType chestType = ChestType.SINGLE;
-        Direction direction = itemPlacementContext.getPlayerHorizontalFacing().getOpposite();
+        Direction direction = itemPlacementContext.getPlayerFacing().getOpposite();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
         boolean bl = itemPlacementContext.isPlayerSneaking();
-        Direction direction2 = itemPlacementContext.getFacing();
+        Direction direction2 = itemPlacementContext.getSide();
         if (direction2.getAxis().isHorizontal() && bl && (direction3 = this.getNeighborChestDirection(itemPlacementContext, direction2.getOpposite())) != null && direction3.getAxis() != direction2.getAxis()) {
             direction = direction3;
             ChestType chestType2 = chestType = direction.rotateYCounterclockwise() == direction2.getOpposite() ? ChestType.RIGHT : ChestType.LEFT;
@@ -220,8 +220,8 @@ implements Waterloggable {
     @Override
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasDisplayName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof ChestBlockEntity) {
-            ((ChestBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof ChestBlockEntity) {
+            ((ChestBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
         }
     }
 

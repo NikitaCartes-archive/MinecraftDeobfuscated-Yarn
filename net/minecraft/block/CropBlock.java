@@ -19,7 +19,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 public class CropBlock
 extends PlantBlock
 implements Fertilizable {
-    public static final IntegerProperty AGE = Properties.AGE_7;
+    public static final IntProperty AGE = Properties.AGE_7;
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 10.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)};
 
     protected CropBlock(Block.Settings settings) {
@@ -49,7 +49,7 @@ implements Fertilizable {
         return blockState.getBlock() == Blocks.FARMLAND;
     }
 
-    public IntegerProperty getAgeProperty() {
+    public IntProperty getAgeProperty() {
         return AGE;
     }
 

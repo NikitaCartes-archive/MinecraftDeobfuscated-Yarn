@@ -37,7 +37,7 @@ extends ConditionalLootFunction {
         Nameable nameable;
         Object object = lootContext.get(this.source.parameter);
         if (object instanceof Nameable && (nameable = (Nameable)object).hasCustomName()) {
-            itemStack.setDisplayName(nameable.getDisplayName());
+            itemStack.setCustomName(nameable.getDisplayName());
         }
         return itemStack;
     }

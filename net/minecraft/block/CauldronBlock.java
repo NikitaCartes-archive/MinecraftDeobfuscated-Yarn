@@ -25,7 +25,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
@@ -39,7 +39,7 @@ import net.minecraft.world.World;
 
 public class CauldronBlock
 extends Block {
-    public static final IntegerProperty LEVEL = Properties.CAULDRON_LEVEL;
+    public static final IntProperty LEVEL = Properties.LEVEL_3;
     private static final VoxelShape RAY_TRACE_SHAPE = CauldronBlock.createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
     protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), VoxelShapes.union(CauldronBlock.createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), CauldronBlock.createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0), CauldronBlock.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), RAY_TRACE_SHAPE), BooleanBiFunction.ONLY_FIRST);
 
@@ -96,7 +96,7 @@ extends Block {
         if (item == Items.BUCKET) {
             if (i == 3 && !world.isClient) {
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                     if (itemStack.isEmpty()) {
                         playerEntity.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
                     } else if (!playerEntity.inventory.insertStack(new ItemStack(Items.WATER_BUCKET))) {
@@ -114,7 +114,7 @@ extends Block {
                 if (!playerEntity.abilities.creativeMode) {
                     ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
                     playerEntity.incrementStat(Stats.USE_CAULDRON);
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                     if (itemStack.isEmpty()) {
                         playerEntity.setStackInHand(hand, itemStack2);
                     } else if (!playerEntity.inventory.insertStack(itemStack2)) {
@@ -152,11 +152,11 @@ extends Block {
         if (i > 0 && item instanceof BannerItem) {
             if (BannerBlockEntity.getPatternCount(itemStack) > 0 && !world.isClient) {
                 ItemStack itemStack2 = itemStack.copy();
-                itemStack2.setAmount(1);
+                itemStack2.setCount(1);
                 BannerBlockEntity.loadFromItemStack(itemStack2);
                 playerEntity.incrementStat(Stats.CLEAN_BANNER);
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                     this.setLevel(world, blockPos, blockState, i - 1);
                 }
                 if (itemStack.isEmpty()) {

@@ -19,13 +19,13 @@ extends Item {
     }
 
     @Override
-    public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+    public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
         if (livingEntity instanceof PigEntity) {
             PigEntity pigEntity = (PigEntity)livingEntity;
             if (pigEntity.isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
                 pigEntity.setSaddled(true);
                 pigEntity.world.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5f, 1.0f);
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             return true;
         }

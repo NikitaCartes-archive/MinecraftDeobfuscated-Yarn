@@ -11,10 +11,10 @@ public interface Property<T extends Comparable<T>> {
 
     public Collection<T> getValues();
 
-    public Class<T> getValueClass();
+    public Class<T> getValueType();
 
     public Optional<T> getValue(String var1);
 
-    public String getValueAsString(T var1);
+    public String getName(T var1);
 }
 

@@ -21,12 +21,12 @@ public class ElytraItem
 extends Item {
     public ElytraItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("broken"), (itemStack, world, livingEntity) -> ElytraItem.isUsable(itemStack) ? 0.0f : 1.0f);
+        this.addPropertyGetter(new Identifier("broken"), (itemStack, world, livingEntity) -> ElytraItem.isUsable(itemStack) ? 0.0f : 1.0f);
         DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
     }
 
     public static boolean isUsable(ItemStack itemStack) {
-        return itemStack.getDamage() < itemStack.getDurability() - 1;
+        return itemStack.getDamage() < itemStack.getMaxDamage() - 1;
     }
 
     @Override
@@ -41,7 +41,7 @@ extends Item {
         ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
             playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
-            itemStack.setAmount(0);
+            itemStack.setCount(0);
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
         }
         return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);

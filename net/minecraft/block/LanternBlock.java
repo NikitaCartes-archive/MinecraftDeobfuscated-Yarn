@@ -37,7 +37,7 @@ extends Block {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
             BlockState blockState;
             if (direction.getAxis() != Direction.Axis.Y || !(blockState = (BlockState)this.getDefaultState().with(HANGING, direction == Direction.UP)).canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) continue;
             return blockState;

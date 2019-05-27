@@ -22,61 +22,61 @@ public class CompassItem
 extends Item {
     public CompassItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("angle"), new ItemPropertyGetter(){
+        this.addPropertyGetter(new Identifier("angle"), new ItemPropertyGetter(){
             @Environment(value=EnvType.CLIENT)
-            private double field_7907;
+            private double angle;
             @Environment(value=EnvType.CLIENT)
-            private double field_7906;
+            private double step;
             @Environment(value=EnvType.CLIENT)
-            private long field_7908;
+            private long lastTick;
 
             @Override
             @Environment(value=EnvType.CLIENT)
             public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
                 double f;
                 Entity entity;
-                if (livingEntity == null && !itemStack.isHeldInItemFrame()) {
+                if (livingEntity == null && !itemStack.isInFrame()) {
                     return 0.0f;
                 }
                 boolean bl = livingEntity != null;
-                Entity entity2 = entity = bl ? livingEntity : itemStack.getHoldingItemFrame();
+                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
                 if (world == null) {
                     world = entity.world;
                 }
                 if (world.dimension.hasVisibleSky()) {
-                    double d = bl ? (double)entity.yaw : this.method_7733((ItemFrameEntity)entity);
+                    double d = bl ? (double)entity.yaw : this.getYaw((ItemFrameEntity)entity);
                     d = MathHelper.floorMod(d / 360.0, 1.0);
-                    double e = this.method_7734(world, entity) / 6.2831854820251465;
+                    double e = this.getAngleToSpawn(world, entity) / 6.2831854820251465;
                     f = 0.5 - (d - 0.25 - e);
                 } else {
                     f = Math.random();
                 }
                 if (bl) {
-                    f = this.method_7735(world, f);
+                    f = this.getAngle(world, f);
                 }
                 return MathHelper.floorMod((float)f, 1.0f);
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double method_7735(World world, double d) {
-                if (world.getTime() != this.field_7908) {
-                    this.field_7908 = world.getTime();
-                    double e = d - this.field_7907;
+            private double getAngle(World world, double d) {
+                if (world.getTime() != this.lastTick) {
+                    this.lastTick = world.getTime();
+                    double e = d - this.angle;
                     e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-                    this.field_7906 += e * 0.1;
-                    this.field_7906 *= 0.8;
-                    this.field_7907 = MathHelper.floorMod(this.field_7907 + this.field_7906, 1.0);
+                    this.step += e * 0.1;
+                    this.step *= 0.8;
+                    this.angle = MathHelper.floorMod(this.angle + this.step, 1.0);
                 }
-                return this.field_7907;
+                return this.angle;
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double method_7733(ItemFrameEntity itemFrameEntity) {
+            private double getYaw(ItemFrameEntity itemFrameEntity) {
                 return MathHelper.wrapDegrees(180 + itemFrameEntity.facing.getHorizontal() * 90);
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double method_7734(IWorld iWorld, Entity entity) {
+            private double getAngleToSpawn(IWorld iWorld, Entity entity) {
                 BlockPos blockPos = iWorld.getSpawnPos();
                 return Math.atan2((double)blockPos.getZ() - entity.z, (double)blockPos.getX() - entity.x);
             }

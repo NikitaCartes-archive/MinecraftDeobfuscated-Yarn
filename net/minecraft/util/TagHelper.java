@@ -211,7 +211,7 @@ public final class TagHelper {
     }
 
     private static <T extends Comparable<T>> String getPropertyValueAsString(Property<T> property, Comparable<?> comparable) {
-        return property.getValueAsString(comparable);
+        return property.getName(comparable);
     }
 
     public static CompoundTag update(DataFixer dataFixer, DataFixTypes dataFixTypes, CompoundTag compoundTag, int i) {

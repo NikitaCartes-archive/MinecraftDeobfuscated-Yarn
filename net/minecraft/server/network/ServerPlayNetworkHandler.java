@@ -599,7 +599,7 @@ implements ServerPlayPacketListener {
         if (itemStack.isEmpty()) {
             return;
         }
-        if (!WritableBookItem.isValidBook(itemStack.getTag())) {
+        if (!WritableBookItem.isValid(itemStack.getTag())) {
             return;
         }
         ItemStack itemStack2 = this.player.getStackInHand(bookUpdateC2SPacket.getHand());
@@ -610,8 +610,8 @@ implements ServerPlayPacketListener {
                 if (compoundTag != null) {
                     itemStack3.setTag(compoundTag.method_10553());
                 }
-                itemStack3.setChildTag("author", new StringTag(this.player.getName().getString()));
-                itemStack3.setChildTag("title", new StringTag(itemStack.getTag().getString("title")));
+                itemStack3.putSubTag("author", new StringTag(this.player.getName().getString()));
+                itemStack3.putSubTag("title", new StringTag(itemStack.getTag().getString("title")));
                 ListTag listTag = itemStack.getTag().getList("pages", 8);
                 for (int i = 0; i < listTag.size(); ++i) {
                     String string = listTag.getString(i);
@@ -619,10 +619,10 @@ implements ServerPlayPacketListener {
                     string = Component.Serializer.toJsonString(component);
                     listTag.method_10606(i, new StringTag(string));
                 }
-                itemStack3.setChildTag("pages", listTag);
+                itemStack3.putSubTag("pages", listTag);
                 this.player.setStackInHand(bookUpdateC2SPacket.getHand(), itemStack3);
             } else {
-                itemStack2.setChildTag("pages", itemStack.getTag().getList("pages", 8));
+                itemStack2.putSubTag("pages", itemStack.getTag().getList("pages", 8));
             }
         }
     }
@@ -713,7 +713,7 @@ implements ServerPlayPacketListener {
                 return;
             }
         }
-        boolean bl = this.a(serverWorld);
+        boolean bl = this.method_20630(serverWorld);
         m = h - this.updatedX;
         n = i - this.updatedY;
         o = j - this.updatedZ;
@@ -738,7 +738,7 @@ implements ServerPlayPacketListener {
         this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
         this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
         if (!this.player.noClip && !this.player.isSleeping()) {
-            boolean bl3 = this.a(serverWorld);
+            boolean bl3 = this.method_20630(serverWorld);
             if (bl && (bl2 || !bl3)) {
                 this.requestTeleport(d, e, f, k, l);
                 return;
@@ -753,7 +753,7 @@ implements ServerPlayPacketListener {
         this.updatedZ = this.player.z;
     }
 
-    private boolean a(ViewableWorld viewableWorld) {
+    private boolean method_20630(ViewableWorld viewableWorld) {
         return viewableWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5f));
     }
 
@@ -1130,7 +1130,7 @@ implements ServerPlayPacketListener {
                 this.player.onContainerRegistered(this.player.container, defaultedList);
             } else {
                 ItemStack itemStack = this.player.container.onSlotClick(clickWindowC2SPacket.getSlot(), clickWindowC2SPacket.getButton(), clickWindowC2SPacket.getActionType(), this.player);
-                if (ItemStack.areEqual(clickWindowC2SPacket.getStack(), itemStack)) {
+                if (ItemStack.areEqualIgnoreDamage(clickWindowC2SPacket.getStack(), itemStack)) {
                     this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket.getSyncId(), clickWindowC2SPacket.getTransactionId(), true));
                     this.player.field_13991 = true;
                     this.player.container.sendContentUpdates();
@@ -1180,16 +1180,16 @@ implements ServerPlayPacketListener {
             BlockEntity blockEntity;
             boolean bl = creativeInventoryActionC2SPacket.getSlot() < 0;
             ItemStack itemStack = creativeInventoryActionC2SPacket.getItemStack();
-            CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+            CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
             if (!itemStack.isEmpty() && compoundTag != null && compoundTag.containsKey("x") && compoundTag.containsKey("y") && compoundTag.containsKey("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")))) != null) {
                 CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
                 compoundTag2.remove("x");
                 compoundTag2.remove("y");
                 compoundTag2.remove("z");
-                itemStack.setChildTag("BlockEntityTag", compoundTag2);
+                itemStack.putSubTag("BlockEntityTag", compoundTag2);
             }
             boolean bl2 = creativeInventoryActionC2SPacket.getSlot() >= 1 && creativeInventoryActionC2SPacket.getSlot() <= 45;
-            boolean bl4 = bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getAmount() <= 64 && !itemStack.isEmpty();
+            boolean bl4 = bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
             if (bl2 && bl3) {
                 if (itemStack.isEmpty()) {
                     this.player.playerContainer.setStackInSlot(creativeInventoryActionC2SPacket.getSlot(), ItemStack.EMPTY);

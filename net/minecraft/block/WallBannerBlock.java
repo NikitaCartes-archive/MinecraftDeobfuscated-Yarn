@@ -65,7 +65,7 @@ extends AbstractBannerBlock {
         BlockState blockState = this.getDefaultState();
         World viewableWorld = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : directions = itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
             if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
             return blockState;

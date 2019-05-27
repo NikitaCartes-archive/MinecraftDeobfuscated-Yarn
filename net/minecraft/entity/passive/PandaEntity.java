@@ -468,7 +468,7 @@ extends AnimalEntity {
             ItemStack itemStack = itemEntity.getStack();
             this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
         }
     }

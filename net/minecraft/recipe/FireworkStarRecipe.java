@@ -93,7 +93,7 @@ extends SpecialCraftingRecipe {
 
     public ItemStack method_17712(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
-        CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Explosion");
+        CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
         FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
         ArrayList<Integer> list = Lists.newArrayList();
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {

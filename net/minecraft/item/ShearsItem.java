@@ -21,15 +21,15 @@ extends Item {
     }
 
     @Override
-    public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity2) {
+    public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity2) {
         if (!world.isClient) {
-            itemStack.applyDamage(1, livingEntity2, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            itemStack.damage(1, livingEntity2, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
         Block block = blockState.getBlock();
         if (blockState.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.matches(BlockTags.WOOL)) {
             return true;
         }
-        return super.onBlockBroken(itemStack, world, blockState, blockPos, livingEntity2);
+        return super.postMine(itemStack, world, blockState, blockPos, livingEntity2);
     }
 
     @Override
@@ -39,7 +39,7 @@ extends Item {
     }
 
     @Override
-    public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+    public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
         Block block = blockState.getBlock();
         if (block == Blocks.COBWEB || blockState.matches(BlockTags.LEAVES)) {
             return 15.0f;
@@ -47,7 +47,7 @@ extends Item {
         if (block.matches(BlockTags.WOOL)) {
             return 5.0f;
         }
-        return super.getBlockBreakingSpeed(itemStack, blockState);
+        return super.getMiningSpeed(itemStack, blockState);
     }
 }
 

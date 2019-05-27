@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class DaylightDetectorBlock
 extends BlockWithEntity {
-    public static final IntegerProperty POWER = Properties.POWER;
+    public static final IntProperty POWER = Properties.POWER;
     public static final BooleanProperty INVERTED = Properties.INVERTED;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0);
 

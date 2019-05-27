@@ -26,12 +26,12 @@ public class DeathScreen
 extends Screen {
     private int ticksSinceDeath;
     private final Component message;
-    private final boolean field_18974;
+    private final boolean isHardcore;
 
     public DeathScreen(@Nullable Component component, boolean bl) {
         super(new TranslatableComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title", new Object[0]));
         this.message = component;
-        this.field_18974 = bl;
+        this.isHardcore = bl;
     }
 
     @Override
@@ -39,7 +39,7 @@ extends Screen {
         String string2;
         String string;
         this.ticksSinceDeath = 0;
-        if (this.field_18974) {
+        if (this.isHardcore) {
             string = I18n.translate("deathScreen.spectate", new Object[0]);
             string2 = I18n.translate("deathScreen." + (this.minecraft.isInSingleplayer() ? "deleteWorld" : "leaveServer"), new Object[0]);
         } else {
@@ -51,7 +51,7 @@ extends Screen {
             this.minecraft.openScreen(null);
         }));
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, string2, buttonWidget -> {
-            if (this.field_18974) {
+            if (this.isHardcore) {
                 this.minecraft.openScreen(new TitleScreen());
                 return;
             }
@@ -59,7 +59,7 @@ extends Screen {
             this.minecraft.openScreen(confirmScreen);
             confirmScreen.disableButtons(20);
         }));
-        if (!this.field_18974 && this.minecraft.getSession() == null) {
+        if (!this.isHardcore && this.minecraft.getSession() == null) {
             buttonWidget2.active = false;
         }
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {

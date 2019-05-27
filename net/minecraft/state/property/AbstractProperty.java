@@ -8,12 +8,12 @@ import net.minecraft.state.property.Property;
 
 public abstract class AbstractProperty<T extends Comparable<T>>
 implements Property<T> {
-    private final Class<T> valueClass;
+    private final Class<T> type;
     private final String name;
     private Integer computedHashCode;
 
     protected AbstractProperty(String string, Class<T> class_) {
-        this.valueClass = class_;
+        this.type = class_;
         this.name = string;
     }
 
@@ -23,12 +23,12 @@ implements Property<T> {
     }
 
     @Override
-    public Class<T> getValueClass() {
-        return this.valueClass;
+    public Class<T> getValueType() {
+        return this.type;
     }
 
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.valueClass).add("values", this.getValues()).toString();
+        return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.type).add("values", this.getValues()).toString();
     }
 
     public boolean equals(Object object) {
@@ -37,7 +37,7 @@ implements Property<T> {
         }
         if (object instanceof AbstractProperty) {
             AbstractProperty abstractProperty = (AbstractProperty)object;
-            return this.valueClass.equals(abstractProperty.valueClass) && this.name.equals(abstractProperty.name);
+            return this.type.equals(abstractProperty.type) && this.name.equals(abstractProperty.name);
         }
         return false;
     }
@@ -50,7 +50,7 @@ implements Property<T> {
     }
 
     public int computeHashCode() {
-        return 31 * this.valueClass.hashCode() + this.name.hashCode();
+        return 31 * this.type.hashCode() + this.name.hashCode();
     }
 }
 

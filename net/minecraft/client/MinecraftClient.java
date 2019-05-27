@@ -526,17 +526,17 @@ AutoCloseable {
     }
 
     private void initializeSearchableContainers() {
-        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltipText(null, TooltipContext.Default.NORMAL).stream().map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
+        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
         IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getContainer().getTagsFor(itemStack.getItem()).stream());
         DefaultedList<ItemStack> defaultedList = DefaultedList.create();
         for (Item item : Registry.ITEM) {
-            item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
+            item.appendStacks(ItemGroup.SEARCH, defaultedList);
         }
         defaultedList.forEach(itemStack -> {
             textSearchableContainer.add((ItemStack)itemStack);
             identifierSearchableContainer.add((ItemStack)itemStack);
         });
-        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltipText(null, TooltipContext.Default.NORMAL).stream()).map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
+        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
         this.searchManager.put(SearchManager.ITEM_TOOLTIP, textSearchableContainer);
         this.searchManager.put(SearchManager.ITEM_TAG, identifierSearchableContainer);
         this.searchManager.put(SearchManager.RECIPE_OUTPUT, textSearchableContainer2);
@@ -656,7 +656,7 @@ AutoCloseable {
         DefaultedList<ItemStack> defaultedList = DefaultedList.create();
         for (Item item : Registry.ITEM) {
             defaultedList.clear();
-            item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
+            item.appendStacks(ItemGroup.SEARCH, defaultedList);
             for (ItemStack itemStack : defaultedList) {
                 String string = itemStack.getTranslationKey();
                 String string2 = new TranslatableComponent(string, new Object[0]).getString();
@@ -1123,11 +1123,11 @@ AutoCloseable {
                     }
                     case BLOCK: {
                         BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
-                        int i = itemStack.getAmount();
+                        int i = itemStack.getCount();
                         ActionResult actionResult = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
                         if (actionResult == ActionResult.SUCCESS) {
                             this.player.swingHand(hand);
-                            if (!itemStack.isEmpty() && (itemStack.getAmount() != i || this.interactionManager.hasCreativeInventory())) {
+                            if (!itemStack.isEmpty() && (itemStack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
                                 this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
                             }
                             return;
@@ -1596,12 +1596,12 @@ AutoCloseable {
             itemStack.getOrCreateTag().put("SkullOwner", compoundTag2);
             return itemStack;
         }
-        itemStack.setChildTag("BlockEntityTag", compoundTag);
+        itemStack.putSubTag("BlockEntityTag", compoundTag);
         CompoundTag compoundTag2 = new CompoundTag();
         ListTag listTag = new ListTag();
         listTag.add(new StringTag("\"(+NBT)\""));
         compoundTag2.put("Lore", listTag);
-        itemStack.setChildTag("display", compoundTag2);
+        itemStack.putSubTag("display", compoundTag2);
         return itemStack;
     }
 

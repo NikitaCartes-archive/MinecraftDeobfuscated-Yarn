@@ -68,13 +68,13 @@ implements RecipeGridAligner<Integer> {
         if (itemStack.isEmpty()) {
             return;
         }
-        while (itemStack.getAmount() > 0) {
+        while (itemStack.getCount() > 0) {
             int j = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
             if (j == -1) {
                 j = this.inventory.getEmptySlot();
             }
             ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setAmount(1);
+            itemStack2.setCount(1);
             if (!this.inventory.insertStack(j, itemStack2)) {
                 LOGGER.error("Can't find any space for item in the inventory");
             }
@@ -90,7 +90,7 @@ implements RecipeGridAligner<Integer> {
         if (bl2) {
             for (j = 0; j < this.craftingContainer.getCraftingHeight() * this.craftingContainer.getCraftingWidth() + 1; ++j) {
                 ItemStack itemStack;
-                if (j == this.craftingContainer.getCraftingResultSlotIndex() || (itemStack = this.craftingContainer.getSlot(j).getStack()).isEmpty() || Math.min(i, itemStack.getMaxAmount()) >= itemStack.getAmount() + 1) continue;
+                if (j == this.craftingContainer.getCraftingResultSlotIndex() || (itemStack = this.craftingContainer.getSlot(j).getStack()).isEmpty() || Math.min(i, itemStack.getMaxCount()) >= itemStack.getCount() + 1) continue;
                 return;
             }
         }
@@ -99,7 +99,7 @@ implements RecipeGridAligner<Integer> {
             IntListIterator intListIterator = intList.iterator();
             while (intListIterator.hasNext()) {
                 int l = (Integer)intListIterator.next();
-                int m = RecipeFinder.getStackFromId(l).getMaxAmount();
+                int m = RecipeFinder.getStackFromId(l).getMaxCount();
                 if (m >= k) continue;
                 k = m;
             }
@@ -130,8 +130,8 @@ implements RecipeGridAligner<Integer> {
             j = 64;
             for (int k = 0; k < this.craftingContainer.getCraftingWidth() * this.craftingContainer.getCraftingHeight() + 1; ++k) {
                 ItemStack itemStack;
-                if (k == this.craftingContainer.getCraftingResultSlotIndex() || (itemStack = this.craftingContainer.getSlot(k).getStack()).isEmpty() || j <= itemStack.getAmount()) continue;
-                j = itemStack.getAmount();
+                if (k == this.craftingContainer.getCraftingResultSlotIndex() || (itemStack = this.craftingContainer.getSlot(k).getStack()).isEmpty() || j <= itemStack.getCount()) continue;
+                j = itemStack.getCount();
             }
             if (j < 64) {
                 ++j;
@@ -149,16 +149,16 @@ implements RecipeGridAligner<Integer> {
         if (itemStack2.isEmpty()) {
             return;
         }
-        if (itemStack2.getAmount() > 1) {
+        if (itemStack2.getCount() > 1) {
             this.inventory.takeInvStack(i, 1);
         } else {
             this.inventory.removeInvStack(i);
         }
-        itemStack2.setAmount(1);
+        itemStack2.setCount(1);
         if (slot.getStack().isEmpty()) {
             slot.setStack(itemStack2);
         } else {
-            slot.getStack().addAmount(1);
+            slot.getStack().increment(1);
         }
     }
 
@@ -171,9 +171,9 @@ implements RecipeGridAligner<Integer> {
             int k = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
             if (k == -1 && list.size() <= i) {
                 for (ItemStack itemStack2 : list) {
-                    if (!itemStack2.isEqualIgnoreTags(itemStack) || itemStack2.getAmount() == itemStack2.getMaxAmount() || itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) continue;
-                    itemStack2.addAmount(itemStack.getAmount());
-                    itemStack.setAmount(0);
+                    if (!itemStack2.isItemEqualIgnoreDamage(itemStack) || itemStack2.getCount() == itemStack2.getMaxCount() || itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) continue;
+                    itemStack2.increment(itemStack.getCount());
+                    itemStack.setCount(0);
                     break;
                 }
                 if (itemStack.isEmpty()) continue;

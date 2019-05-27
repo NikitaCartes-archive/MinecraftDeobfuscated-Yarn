@@ -32,7 +32,7 @@ extends Item {
         World world = itemUsageContext.getWorld();
         BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
         if (blockState.getBlock() == Blocks.LECTERN) {
-            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return ActionResult.PASS;
     }
@@ -45,7 +45,7 @@ extends Item {
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
     }
 
-    public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
+    public static boolean isValid(@Nullable CompoundTag compoundTag) {
         if (compoundTag == null) {
             return false;
         }

@@ -47,7 +47,7 @@ extends SpecialCraftingRecipe {
 
     public ItemStack method_17708(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
-        CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Fireworks");
+        CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
         ListTag listTag = new ListTag();
         int i = 0;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
@@ -58,7 +58,7 @@ extends SpecialCraftingRecipe {
                 ++i;
                 continue;
             }
-            if (!field_9008.method_8093(itemStack2) || (compoundTag2 = itemStack2.getSubCompoundTag("Explosion")) == null) continue;
+            if (!field_9008.method_8093(itemStack2) || (compoundTag2 = itemStack2.getSubTag("Explosion")) == null) continue;
             listTag.add(compoundTag2);
         }
         compoundTag.putByte("Flight", (byte)i);

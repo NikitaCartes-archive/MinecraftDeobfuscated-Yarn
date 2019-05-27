@@ -11,12 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 
 public interface DyeableItem {
     default public boolean hasColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
+        CompoundTag compoundTag = itemStack.getSubTag("display");
         return compoundTag != null && compoundTag.containsKey("color", 99);
     }
 
     default public int getColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
+        CompoundTag compoundTag = itemStack.getSubTag("display");
         if (compoundTag != null && compoundTag.containsKey("color", 99)) {
             return compoundTag.getInt("color");
         }
@@ -24,17 +24,17 @@ public interface DyeableItem {
     }
 
     default public void removeColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
+        CompoundTag compoundTag = itemStack.getSubTag("display");
         if (compoundTag != null && compoundTag.containsKey("color")) {
             compoundTag.remove("color");
         }
     }
 
     default public void setColor(ItemStack itemStack, int i) {
-        itemStack.getOrCreateSubCompoundTag("display").putInt("color", i);
+        itemStack.getOrCreateSubTag("display").putInt("color", i);
     }
 
-    public static ItemStack applyDyes(ItemStack itemStack, List<DyeItem> list) {
+    public static ItemStack blendAndSetColor(ItemStack itemStack, List<DyeItem> list) {
         int n;
         float h;
         ItemStack itemStack2 = ItemStack.EMPTY;
@@ -46,7 +46,7 @@ public interface DyeableItem {
         if (item instanceof DyeableItem) {
             dyeableItem = (DyeableItem)((Object)item);
             itemStack2 = itemStack.copy();
-            itemStack2.setAmount(1);
+            itemStack2.setCount(1);
             if (dyeableItem.hasColor(itemStack)) {
                 int k = dyeableItem.getColor(itemStack2);
                 float f = (float)(k >> 16 & 0xFF) / 255.0f;

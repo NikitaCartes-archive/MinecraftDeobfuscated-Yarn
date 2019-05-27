@@ -176,7 +176,7 @@ implements BlockEntityProvider {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
+        Direction direction = itemPlacementContext.getPlayerFacing();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         BlockPos blockPos2 = blockPos.offset(direction);
         if (itemPlacementContext.getWorld().getBlockState(blockPos2).canReplace(itemPlacementContext)) {

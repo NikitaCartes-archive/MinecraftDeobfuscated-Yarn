@@ -104,7 +104,7 @@ Tickable {
         ItemStack itemStack = this.inventory.get(4);
         if (this.fuel <= 0 && itemStack.getItem() == Items.BLAZE_POWDER) {
             this.fuel = 20;
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             this.markDirty();
         }
         boolean bl = this.canCraft();
@@ -173,7 +173,7 @@ Tickable {
         for (int i = 0; i < 3; ++i) {
             this.inventory.set(i, BrewingRecipeRegistry.craft(itemStack, this.inventory.get(i)));
         }
-        itemStack.subtractAmount(1);
+        itemStack.decrement(1);
         BlockPos blockPos = this.getPos();
         if (itemStack.getItem().hasRecipeRemainder()) {
             ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());

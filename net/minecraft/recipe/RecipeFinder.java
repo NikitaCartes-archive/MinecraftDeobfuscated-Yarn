@@ -25,7 +25,7 @@ public class RecipeFinder {
     public final Int2IntMap idToAmountMap = new Int2IntOpenHashMap();
 
     public void addNormalItem(ItemStack itemStack) {
-        if (!(itemStack.isDamaged() || itemStack.hasEnchantments() || itemStack.hasDisplayName())) {
+        if (!(itemStack.isDamaged() || itemStack.hasEnchantments() || itemStack.hasCustomName())) {
             this.addItem(itemStack);
         }
     }
@@ -37,7 +37,7 @@ public class RecipeFinder {
     public void method_20478(ItemStack itemStack, int i) {
         if (!itemStack.isEmpty()) {
             int j = RecipeFinder.getItemId(itemStack);
-            int k = Math.min(i, itemStack.getAmount());
+            int k = Math.min(i, itemStack.getCount());
             this.addItem(j, k);
         }
     }

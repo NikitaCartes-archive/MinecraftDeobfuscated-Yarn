@@ -16,7 +16,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -34,7 +34,7 @@ implements Waterloggable {
     private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
     private static final VoxelShape COLLISION_SHAPE;
     private static final VoxelShape OUTLINE_SHAPE;
-    public static final IntegerProperty DISTANCE;
+    public static final IntProperty DISTANCE;
     public static final BooleanProperty WATERLOGGED;
     public static final BooleanProperty BOTTOM;
 
@@ -68,7 +68,7 @@ implements Waterloggable {
 
     @Override
     public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-        return itemPlacementContext.getItemStack().getItem() == this.asItem();
+        return itemPlacementContext.getStack().getItem() == this.asItem();
     }
 
     @Override

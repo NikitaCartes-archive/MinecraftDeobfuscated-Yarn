@@ -86,7 +86,7 @@ extends HorseBaseEntity {
                 this.openInventory(playerEntity);
                 return true;
             }
-            if (itemStack.interactWithEntity(playerEntity, this, hand)) {
+            if (itemStack.useOnEntity(playerEntity, this, hand)) {
                 return true;
             }
         }

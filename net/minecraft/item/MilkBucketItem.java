@@ -24,14 +24,14 @@ extends Item {
     }
 
     @Override
-    public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+    public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
         if (livingEntity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
             Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
         }
         if (!world.isClient) {
             livingEntity.clearPotionEffects();

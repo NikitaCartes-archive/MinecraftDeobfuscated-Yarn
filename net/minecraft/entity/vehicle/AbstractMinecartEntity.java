@@ -27,8 +27,8 @@ import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.entity.vehicle.MobSpawnerMinecartEntity;
-import net.minecraft.entity.vehicle.TNTMinecartEntity;
+import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -89,10 +89,10 @@ extends Entity {
             return new FurnaceMinecartEntity(world, d, e, f);
         }
         if (type == Type.TNT) {
-            return new TNTMinecartEntity(world, d, e, f);
+            return new TntMinecartEntity(world, d, e, f);
         }
         if (type == Type.SPAWNER) {
-            return new MobSpawnerMinecartEntity(world, d, e, f);
+            return new SpawnerMinecartEntity(world, d, e, f);
         }
         if (type == Type.HOPPER) {
             return new HopperMinecartEntity(world, d, e, f);
@@ -167,7 +167,7 @@ extends Entity {
         if (this.world.getGameRules().getBoolean("doEntityDrops")) {
             ItemStack itemStack = new ItemStack(Items.MINECART);
             if (this.hasCustomName()) {
-                itemStack.setDisplayName(this.getCustomName());
+                itemStack.setCustomName(this.getCustomName());
             }
             this.dropStack(itemStack);
         }

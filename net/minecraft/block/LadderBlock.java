@@ -85,14 +85,14 @@ implements Waterloggable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState;
-        if (!itemPlacementContext.canReplaceHitBlock() && (blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing().getOpposite()))).getBlock() == this && blockState.get(FACING) == itemPlacementContext.getFacing()) {
+        if (!itemPlacementContext.canReplaceExisting() && (blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getSide().getOpposite()))).getBlock() == this && blockState.get(FACING) == itemPlacementContext.getSide()) {
             return null;
         }
         blockState = this.getDefaultState();
         World viewableWorld = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
             if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
             return (BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
         }

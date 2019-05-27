@@ -32,7 +32,7 @@ extends Slot {
     @Override
     public ItemStack takeStack(int i) {
         if (this.hasStack()) {
-            this.amount += Math.min(i, this.getStack().getAmount());
+            this.amount += Math.min(i, this.getStack().getCount());
         }
         return super.takeStack(i);
     }
@@ -51,7 +51,7 @@ extends Slot {
     @Override
     protected void onCrafted(ItemStack itemStack) {
         if (this.amount > 0) {
-            itemStack.onCrafted(this.player.world, this.player, this.amount);
+            itemStack.onCraft(this.player.world, this.player, this.amount);
         }
         if (this.inventory instanceof RecipeUnlocker) {
             ((RecipeUnlocker)((Object)this.inventory)).unlockLastRecipe(this.player);
@@ -75,8 +75,8 @@ extends Slot {
                 this.craftingInv.setInvStack(i, itemStack3);
                 continue;
             }
-            if (ItemStack.areEqualIgnoreTags(itemStack2, itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
-                itemStack3.addAmount(itemStack2.getAmount());
+            if (ItemStack.areItemsEqualIgnoreDamage(itemStack2, itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
+                itemStack3.increment(itemStack2.getCount());
                 this.craftingInv.setInvStack(i, itemStack3);
                 continue;
             }

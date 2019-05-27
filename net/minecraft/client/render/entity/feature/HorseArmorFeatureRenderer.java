@@ -29,7 +29,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
             HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
             ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
             this.model.method_17084(horseEntity, f, g, h);
-            this.bindTexture(horseArmorItem.getHorseArmorTexture());
+            this.bindTexture(horseArmorItem.getEntityTexture());
             if (horseArmorItem instanceof DyeableHorseArmorItem) {
                 int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
                 float n = (float)(m >> 16 & 0xFF) / 255.0f;

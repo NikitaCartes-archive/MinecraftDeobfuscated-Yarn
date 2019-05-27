@@ -42,7 +42,7 @@ implements BlockEntityProvider {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
+        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getSide());
     }
 
     @Override

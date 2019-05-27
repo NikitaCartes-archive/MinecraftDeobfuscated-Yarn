@@ -48,7 +48,7 @@ extends Item {
         Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
         world.setBlockState(blockPos, blockState2, 2);
         world.updateHorizontalAdjacent(blockPos, Blocks.END_PORTAL_FRAME);
-        itemUsageContext.getItemStack().subtractAmount(1);
+        itemUsageContext.getStack().decrement(1);
         world.playLevelEvent(1503, blockPos, 0);
         BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
         if (result != null) {
@@ -67,7 +67,7 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         BlockPos blockPos;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        HitResult hitResult = EnderEyeItem.getHitResult(world, playerEntity, RayTraceContext.FluidHandling.NONE);
+        HitResult hitResult = EnderEyeItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME) {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
@@ -80,10 +80,10 @@ extends Item {
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
             }
-            world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (random.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);

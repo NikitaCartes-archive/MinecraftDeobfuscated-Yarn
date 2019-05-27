@@ -38,8 +38,8 @@ extends HorizontalFacingBlock {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
-            BlockState blockState = direction.getAxis() == Direction.Axis.Y ? (BlockState)((BlockState)this.getDefaultState().with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)).with(FACING, itemPlacementContext.getPlayerHorizontalFacing()) : (BlockState)((BlockState)this.getDefaultState().with(FACE, WallMountLocation.WALL)).with(FACING, direction.getOpposite());
+        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
+            BlockState blockState = direction.getAxis() == Direction.Axis.Y ? (BlockState)((BlockState)this.getDefaultState().with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)).with(FACING, itemPlacementContext.getPlayerFacing()) : (BlockState)((BlockState)this.getDefaultState().with(FACE, WallMountLocation.WALL)).with(FACING, direction.getOpposite());
             if (!blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) continue;
             return blockState;
         }

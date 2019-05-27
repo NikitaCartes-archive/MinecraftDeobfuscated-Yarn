@@ -30,14 +30,14 @@ extends Item {
         if (block.matches(BlockTags.FENCES)) {
             PlayerEntity playerEntity = itemUsageContext.getPlayer();
             if (!world.isClient && playerEntity != null) {
-                LeadItem.attachNearbyEntities(playerEntity, world, blockPos);
+                LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
             }
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
-    public static boolean attachNearbyEntities(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+    public static boolean attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
         LeadKnotEntity leadKnotEntity = null;
         boolean bl = false;
         double d = 7.0;

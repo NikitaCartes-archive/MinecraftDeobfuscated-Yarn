@@ -85,7 +85,7 @@ extends AnimalEntity {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.getItem() == Items.BUCKET && !playerEntity.abilities.creativeMode && !this.isBaby()) {
             playerEntity.playSound(SoundEvents.ENTITY_COW_MILK, 1.0f, 1.0f);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             if (itemStack.isEmpty()) {
                 playerEntity.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
             } else if (!playerEntity.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {

@@ -48,7 +48,7 @@ public class ReplaceItemCommand {
             throw SLOT_INAPPLICABLE_EXCEPTION.create(i);
         }
         inventory.setInvStack(i, itemStack);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toTextComponent()), true);
+        serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toHoverableText()), true);
         return 1;
     }
 
@@ -64,12 +64,12 @@ public class ReplaceItemCommand {
             ((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
         }
         if (list.isEmpty()) {
-            throw ENTITY_FAILED_EXCEPTION.create(itemStack.toTextComponent(), i);
+            throw ENTITY_FAILED_EXCEPTION.create(itemStack.toHoverableText(), i);
         }
         if (list.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toTextComponent()), true);
+            serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toHoverableText()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toTextComponent()), true);
+            serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toHoverableText()), true);
         }
         return list.size();
     }

@@ -17,15 +17,15 @@ extends EnumProperty<Direction> {
         super(string, Direction.class, collection);
     }
 
-    public static DirectionProperty create(String string, Predicate<Direction> predicate) {
-        return DirectionProperty.create(string, Arrays.stream(Direction.values()).filter(predicate).collect(Collectors.toList()));
+    public static DirectionProperty of(String string, Predicate<Direction> predicate) {
+        return DirectionProperty.of(string, Arrays.stream(Direction.values()).filter(predicate).collect(Collectors.toList()));
     }
 
-    public static DirectionProperty create(String string, Direction ... directions) {
-        return DirectionProperty.create(string, Lists.newArrayList(directions));
+    public static DirectionProperty of(String string, Direction ... directions) {
+        return DirectionProperty.of(string, Lists.newArrayList(directions));
     }
 
-    public static DirectionProperty create(String string, Collection<Direction> collection) {
+    public static DirectionProperty of(String string, Collection<Direction> collection) {
         return new DirectionProperty(string, collection);
     }
 }

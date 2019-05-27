@@ -120,7 +120,7 @@ extends AbstractMinecartEntity {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (ACCEPTABLE_FUEL.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             this.fuel += 3600;
         }

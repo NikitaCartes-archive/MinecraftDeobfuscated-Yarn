@@ -106,7 +106,7 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item.canDamage();
+            return item.isDamageable();
         }
     }
     ,

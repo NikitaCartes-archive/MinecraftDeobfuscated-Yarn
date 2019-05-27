@@ -63,12 +63,12 @@ extends SpecialCraftingRecipe {
             }
             return ItemStack.EMPTY;
         }
-        if (itemStack.isEmpty() || !itemStack.hasTag() || i < 1 || WrittenBookItem.getBookGeneration(itemStack) >= 2) {
+        if (itemStack.isEmpty() || !itemStack.hasTag() || i < 1 || WrittenBookItem.getGeneration(itemStack) >= 2) {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
         CompoundTag compoundTag = itemStack.getTag().method_10553();
-        compoundTag.putInt("generation", WrittenBookItem.getBookGeneration(itemStack) + 1);
+        compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
         itemStack3.setTag(compoundTag);
         return itemStack3;
     }
@@ -83,7 +83,7 @@ extends SpecialCraftingRecipe {
             }
             if (!(itemStack.getItem() instanceof WrittenBookItem)) continue;
             ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setAmount(1);
+            itemStack2.setCount(1);
             defaultedList.set(i, itemStack2);
             break;
         }

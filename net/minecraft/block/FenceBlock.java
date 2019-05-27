@@ -60,7 +60,7 @@ extends HorizontalConnectedBlock {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             return itemStack.getItem() == Items.LEAD || itemStack.isEmpty();
         }
-        return LeadItem.attachNearbyEntities(playerEntity, world, blockPos);
+        return LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
     }
 
     @Override

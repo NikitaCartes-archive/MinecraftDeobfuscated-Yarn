@@ -23,7 +23,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ import net.minecraft.world.loot.context.LootContext;
 public class FluidBlock
 extends Block
 implements FluidDrainable {
-    public static final IntegerProperty LEVEL = Properties.FLUID_BLOCK_LEVEL;
+    public static final IntProperty LEVEL = Properties.LEVEL_15;
     protected final BaseFluid fluid;
     private final List<FluidState> statesByLevel;
 

@@ -12,7 +12,7 @@ import net.minecraft.util.BlockRotation;
 
 public abstract class HorizontalFacingBlock
 extends Block {
-    public static final DirectionProperty FACING = Properties.FACING_HORIZONTAL;
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     protected HorizontalFacingBlock(Block.Settings settings) {
         super(settings);

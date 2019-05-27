@@ -50,7 +50,7 @@ public class MapBannerMarker {
         return this.pos;
     }
 
-    public MapIcon.Type getType() {
+    public MapIcon.Type getIconType() {
         switch (this.color) {
             case WHITE: {
                 return MapIcon.Type.BANNER_WHITE;

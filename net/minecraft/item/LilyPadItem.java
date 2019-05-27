@@ -43,7 +43,7 @@ extends BlockItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        HitResult hitResult = LilyPadItem.getHitResult(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        HitResult hitResult = LilyPadItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
@@ -64,7 +64,7 @@ extends BlockItem {
                     Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
                 }
                 if (!playerEntity.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                 world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);

@@ -334,17 +334,17 @@ extends TameableEntity {
             if (!itemStack.isEmpty()) {
                 DyeColor dyeColor;
                 if (item.isFood()) {
-                    if (item.getFoodSetting().isWolfFood() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 20.0f) {
+                    if (item.getFoodComponent().isWolfFood() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 20.0f) {
                         if (!playerEntity.abilities.creativeMode) {
-                            itemStack.subtractAmount(1);
+                            itemStack.decrement(1);
                         }
-                        this.heal(item.getFoodSetting().getHunger());
+                        this.heal(item.getFoodComponent().getHunger());
                         return true;
                     }
                 } else if (item instanceof DyeItem && (dyeColor = ((DyeItem)item).getColor()) != this.getCollarColor()) {
                     this.setCollarColor(dyeColor);
                     if (!playerEntity.abilities.creativeMode) {
-                        itemStack.subtractAmount(1);
+                        itemStack.decrement(1);
                     }
                     return true;
                 }
@@ -357,7 +357,7 @@ extends TameableEntity {
             }
         } else if (item == Items.BONE && !this.isAngry()) {
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.subtractAmount(1);
+                itemStack.decrement(1);
             }
             if (!this.world.isClient) {
                 if (this.random.nextInt(3) == 0) {
@@ -404,7 +404,7 @@ extends TameableEntity {
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
         Item item = itemStack.getItem();
-        return item.isFood() && item.getFoodSetting().isWolfFood();
+        return item.isFood() && item.getFoodComponent().isWolfFood();
     }
 
     @Override

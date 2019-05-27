@@ -115,7 +115,7 @@ extends EntityRenderer<ItemFrameEntity> {
 
     protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
         float h;
-        if (!MinecraftClient.isHudEnabled() || itemFrameEntity.getHeldItemStack().isEmpty() || !itemFrameEntity.getHeldItemStack().hasDisplayName() || this.renderManager.targetedEntity != itemFrameEntity) {
+        if (!MinecraftClient.isHudEnabled() || itemFrameEntity.getHeldItemStack().isEmpty() || !itemFrameEntity.getHeldItemStack().hasCustomName() || this.renderManager.targetedEntity != itemFrameEntity) {
             return;
         }
         double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
@@ -123,7 +123,7 @@ extends EntityRenderer<ItemFrameEntity> {
         if (g >= (double)(h * h)) {
             return;
         }
-        String string = itemFrameEntity.getHeldItemStack().getDisplayName().getFormattedText();
+        String string = itemFrameEntity.getHeldItemStack().getCustomName().getFormattedText();
         this.renderLabel(itemFrameEntity, string, d, e, f, 64);
     }
 }

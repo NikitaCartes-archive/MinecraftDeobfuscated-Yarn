@@ -504,10 +504,10 @@ public class Raid {
 
     private static ItemStack getIllagerBanner() {
         ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-        CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
+        CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
         ListTag listTag = new BannerPattern.Builder().with(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN).with(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).with(BannerPattern.STRIPE_CENTER, DyeColor.GRAY).with(BannerPattern.BORDER, DyeColor.LIGHT_GRAY).with(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK).with(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).with(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).with(BannerPattern.BORDER, DyeColor.BLACK).build();
         compoundTag.put("Patterns", listTag);
-        itemStack.setDisplayName(new TranslatableComponent("block.minecraft.ominous_banner", new Object[0]).applyFormat(ChatFormat.GOLD));
+        itemStack.setCustomName(new TranslatableComponent("block.minecraft.ominous_banner", new Object[0]).applyFormat(ChatFormat.GOLD));
         return itemStack;
     }
 

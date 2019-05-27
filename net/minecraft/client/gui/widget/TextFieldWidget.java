@@ -102,7 +102,7 @@ Element {
         return this.text.substring(i, j);
     }
 
-    public void method_1890(Predicate<String> predicate) {
+    public void setTextPredicate(Predicate<String> predicate) {
         this.textPredicate = predicate;
     }
 

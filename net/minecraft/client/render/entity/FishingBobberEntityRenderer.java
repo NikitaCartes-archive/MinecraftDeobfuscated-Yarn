@@ -13,7 +13,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.AbsoluteHand;
@@ -22,21 +22,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
-public class FishHookEntityRenderer
-extends EntityRenderer<FishHookEntity> {
+public class FishingBobberEntityRenderer
+extends EntityRenderer<FishingBobberEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/fishing_hook.png");
 
-    public FishHookEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+    public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
-    public void method_3974(FishHookEntity fishHookEntity, double d, double e, double f, float g, float h) {
+    public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
         double x;
         double w;
         double v;
         double u;
         double t;
-        PlayerEntity playerEntity = fishHookEntity.getOwner();
+        PlayerEntity playerEntity = fishingBobberEntity.getOwner();
         if (playerEntity == null || this.renderOutlines) {
             return;
         }
@@ -44,7 +44,7 @@ extends EntityRenderer<FishHookEntity> {
         GlStateManager.translatef((float)d, (float)e, (float)f);
         GlStateManager.enableRescaleNormal();
         GlStateManager.scalef(0.5f, 0.5f, 0.5f);
-        this.bindEntityTexture(fishHookEntity);
+        this.bindEntityTexture(fishingBobberEntity);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float i = 1.0f;
@@ -54,7 +54,7 @@ extends EntityRenderer<FishHookEntity> {
         GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0f, 0.0f, 0.0f);
         if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
+            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishingBobberEntity));
         }
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
         bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0f, 1.0f, 0.0f).next();
@@ -97,9 +97,9 @@ extends EntityRenderer<FishHookEntity> {
             v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) + vec3d.z;
             w = playerEntity.getStandingEyeHeight();
         }
-        x = MathHelper.lerp((double)h, fishHookEntity.prevX, fishHookEntity.x);
-        double y = MathHelper.lerp((double)h, fishHookEntity.prevY, fishHookEntity.y) + 0.25;
-        double z = MathHelper.lerp((double)h, fishHookEntity.prevZ, fishHookEntity.z);
+        x = MathHelper.lerp((double)h, fishingBobberEntity.prevX, fishingBobberEntity.x);
+        double y = MathHelper.lerp((double)h, fishingBobberEntity.prevY, fishingBobberEntity.y) + 0.25;
+        double z = MathHelper.lerp((double)h, fishingBobberEntity.prevZ, fishingBobberEntity.z);
         double aa = (float)(t - x);
         double ab = (double)((float)(u - y)) + w;
         double ac = (float)(v - z);
@@ -114,10 +114,10 @@ extends EntityRenderer<FishHookEntity> {
         tessellator.draw();
         GlStateManager.enableLighting();
         GlStateManager.enableTexture();
-        super.render(fishHookEntity, d, e, f, g, h);
+        super.render(fishingBobberEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3975(FishHookEntity fishHookEntity) {
+    protected Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
         return SKIN;
     }
 }

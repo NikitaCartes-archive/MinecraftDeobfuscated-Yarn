@@ -133,7 +133,7 @@ implements RangedAttackMob {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin() && !this.world.isClient) {
             this.setHasPumpkin(false);
-            itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+            itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
         }
         return super.interactMob(playerEntity2, hand);
     }

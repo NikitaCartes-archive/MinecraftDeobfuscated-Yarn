@@ -10,10 +10,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ArrowItem;
-import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -25,10 +25,10 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class BowItem
-extends BaseBowItem {
+extends RangedWeaponItem {
     public BowItem(Item.Settings settings) {
         super(settings);
-        this.addProperty(new Identifier("pull"), (itemStack, world, livingEntity) -> {
+        this.addPropertyGetter(new Identifier("pull"), (itemStack, world, livingEntity) -> {
             if (livingEntity == null) {
                 return 0.0f;
             }
@@ -37,11 +37,11 @@ extends BaseBowItem {
             }
             return (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0f;
         });
-        this.addProperty(new Identifier("pulling"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        this.addPropertyGetter(new Identifier("pulling"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
     }
 
     @Override
-    public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+    public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
         boolean bl2;
         int j;
         float f;
@@ -57,7 +57,7 @@ extends BaseBowItem {
         if (itemStack2.isEmpty()) {
             itemStack2 = new ItemStack(Items.ARROW);
         }
-        if ((double)(f = BowItem.method_7722(j = this.getMaxUseTime(itemStack) - i)) < 0.1) {
+        if ((double)(f = BowItem.getPullProgress(j = this.getMaxUseTime(itemStack) - i)) < 0.1) {
             return;
         }
         boolean bl3 = bl2 = bl && itemStack2.getItem() == Items.ARROW;
@@ -65,7 +65,7 @@ extends BaseBowItem {
             int l;
             int k;
             ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.ARROW);
-            ProjectileEntity projectileEntity = arrowItem.createProjectile(world, itemStack2, playerEntity);
+            ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack2, playerEntity);
             projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
             if (f == 1.0f) {
                 projectileEntity.setCritical(true);
@@ -79,15 +79,15 @@ extends BaseBowItem {
             if (EnchantmentHelper.getLevel(Enchantments.FLAME, itemStack) > 0) {
                 projectileEntity.setOnFireFor(100);
             }
-            itemStack.applyDamage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
+            itemStack.damage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
             if (bl2 || playerEntity.abilities.creativeMode && (itemStack2.getItem() == Items.SPECTRAL_ARROW || itemStack2.getItem() == Items.TIPPED_ARROW)) {
                 projectileEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
             world.spawnEntity(projectileEntity);
         }
-        world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (random.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
+        world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
         if (!bl2 && !playerEntity.abilities.creativeMode) {
-            itemStack2.subtractAmount(1);
+            itemStack2.decrement(1);
             if (itemStack2.isEmpty()) {
                 playerEntity.inventory.removeOne(itemStack2);
             }
@@ -95,7 +95,7 @@ extends BaseBowItem {
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
     }
 
-    public static float method_7722(int i) {
+    public static float getPullProgress(int i) {
         float f = (float)i / 20.0f;
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;
@@ -129,8 +129,8 @@ extends BaseBowItem {
     }
 
     @Override
-    public Predicate<ItemStack> getInventoryProjectilePredicate() {
-        return IS_BOW_PROJECTILE;
+    public Predicate<ItemStack> getProjectiles() {
+        return BOW_PROJECTILES;
     }
 }
 

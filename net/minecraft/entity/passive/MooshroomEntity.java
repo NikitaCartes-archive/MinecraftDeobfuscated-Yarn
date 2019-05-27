@@ -65,7 +65,7 @@ extends CowEntity {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (itemStack.getItem() == Items.BOWL && this.getBreedingAge() >= 0 && !playerEntity2.abilities.creativeMode) {
             ItemStack itemStack2;
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
             boolean bl = false;
             if (this.stewEffect != null) {
                 bl = true;
@@ -100,12 +100,12 @@ extends CowEntity {
                 for (int i = 0; i < 5; ++i) {
                     this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
                 }
-                itemStack.applyDamage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
                 this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0f, 1.0f);
             }
             return true;
         }
-        if (this.getMooshroomType() == Type.BROWN && itemStack.getItem().matches(ItemTags.SMALL_FLOWERS)) {
+        if (this.getMooshroomType() == Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
             if (this.stewEffect != null) {
                 for (int j = 0; j < 2; ++j) {
                     this.world.addParticle(ParticleTypes.SMOKE, this.x + (double)(this.random.nextFloat() / 2.0f), this.y + (double)(this.getHeight() / 2.0f), this.z + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);
@@ -113,7 +113,7 @@ extends CowEntity {
             } else {
                 Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
                 if (!playerEntity2.abilities.creativeMode) {
-                    itemStack.subtractAmount(1);
+                    itemStack.decrement(1);
                 }
                 for (int i = 0; i < 4; ++i) {
                     this.world.addParticle(ParticleTypes.EFFECT, this.x + (double)(this.random.nextFloat() / 2.0f), this.y + (double)(this.getHeight() / 2.0f), this.z + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);

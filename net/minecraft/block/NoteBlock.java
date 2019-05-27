@@ -14,7 +14,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -27,7 +27,7 @@ public class NoteBlock
 extends Block {
     public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
     public static final BooleanProperty POWERED = Properties.POWERED;
-    public static final IntegerProperty NOTE = Properties.NOTE;
+    public static final IntProperty NOTE = Properties.NOTE;
 
     public NoteBlock(Block.Settings settings) {
         super(settings);

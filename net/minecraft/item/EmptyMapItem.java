@@ -7,7 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.MapItem;
+import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EmptyMapItem
-extends MapItem {
+extends NetworkSyncedItem {
     public EmptyMapItem(Item.Settings settings) {
         super(settings);
     }
@@ -26,7 +26,7 @@ extends MapItem {
         ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
         ItemStack itemStack2 = playerEntity.getStackInHand(hand);
         if (!playerEntity.abilities.creativeMode) {
-            itemStack2.subtractAmount(1);
+            itemStack2.decrement(1);
         }
         if (itemStack2.isEmpty()) {
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);

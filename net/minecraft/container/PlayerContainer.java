@@ -150,7 +150,7 @@ extends CraftingContainer<CraftingInventory> {
             } else {
                 slot.markDirty();
             }
-            if (itemStack2.getAmount() == itemStack.getAmount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
             ItemStack itemStack3 = slot.onTakeItem(playerEntity, itemStack2);

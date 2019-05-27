@@ -38,8 +38,8 @@ extends EntityDamageSource {
         ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
         String string = "death.attack." + this.name;
         String string2 = string + ".item";
-        if (!itemStack.isEmpty() && itemStack.hasDisplayName()) {
-            return new TranslatableComponent(string2, livingEntity.getDisplayName(), component, itemStack.toTextComponent());
+        if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
+            return new TranslatableComponent(string2, livingEntity.getDisplayName(), component, itemStack.toHoverableText());
         }
         return new TranslatableComponent(string, livingEntity.getDisplayName(), component);
     }

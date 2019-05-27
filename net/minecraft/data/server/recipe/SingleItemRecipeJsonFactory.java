@@ -58,7 +58,7 @@ public class SingleItemRecipeJsonFactory {
     public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
         this.validate(identifier);
         this.builder.parent(new Identifier("recipes/root")).criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier)).rewards(AdvancementRewards.Builder.recipe(identifier)).criteriaMerger(CriteriaMerger.OR);
-        consumer.accept(new SingleItemRecipeJsonProvider(identifier, this.serializer, this.group == null ? "" : this.group, this.input, this.output, this.count, this.builder, new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())));
+        consumer.accept(new SingleItemRecipeJsonProvider(identifier, this.serializer, this.group == null ? "" : this.group, this.input, this.output, this.count, this.builder, new Identifier(identifier.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + identifier.getPath())));
     }
 
     private void validate(Identifier identifier) {

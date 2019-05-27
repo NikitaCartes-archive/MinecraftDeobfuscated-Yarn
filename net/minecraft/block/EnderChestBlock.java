@@ -73,7 +73,7 @@ implements Waterloggable {
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override

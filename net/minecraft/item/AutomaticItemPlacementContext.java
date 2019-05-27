@@ -14,36 +14,36 @@ import net.minecraft.world.World;
 
 public class AutomaticItemPlacementContext
 extends ItemPlacementContext {
-    private final Direction direction;
+    private final Direction facing;
 
     public AutomaticItemPlacementContext(World world, BlockPos blockPos, Direction direction, ItemStack itemStack, Direction direction2) {
         super(world, null, Hand.MAIN_HAND, itemStack, new BlockHitResult(new Vec3d((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5), direction2, blockPos, false));
-        this.direction = direction;
+        this.facing = direction;
     }
 
     @Override
     public BlockPos getBlockPos() {
-        return this.hitResult.getBlockPos();
+        return this.hit.getBlockPos();
     }
 
     @Override
     public boolean canPlace() {
-        return this.world.getBlockState(this.hitResult.getBlockPos()).canReplace(this);
+        return this.world.getBlockState(this.hit.getBlockPos()).canReplace(this);
     }
 
     @Override
-    public boolean canReplaceHitBlock() {
+    public boolean canReplaceExisting() {
         return this.canPlace();
     }
 
     @Override
-    public Direction getPlayerFacing() {
+    public Direction getPlayerLookDirection() {
         return Direction.DOWN;
     }
 
     @Override
-    public Direction[] getPlacementFacings() {
-        switch (this.direction) {
+    public Direction[] getPlacementDirections() {
+        switch (this.facing) {
             default: {
                 return new Direction[]{Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP};
             }
@@ -65,8 +65,8 @@ extends ItemPlacementContext {
     }
 
     @Override
-    public Direction getPlayerHorizontalFacing() {
-        return this.direction.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.direction;
+    public Direction getPlayerFacing() {
+        return this.facing.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.facing;
     }
 
     @Override
@@ -76,7 +76,7 @@ extends ItemPlacementContext {
 
     @Override
     public float getPlayerYaw() {
-        return this.direction.getHorizontal() * 90;
+        return this.facing.getHorizontal() * 90;
     }
 }
 

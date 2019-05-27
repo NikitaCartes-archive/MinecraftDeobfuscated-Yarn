@@ -153,7 +153,7 @@ extends Entity {
 
     private boolean method_20397() {
         ItemStack itemStack = this.getStack();
-        return this.isAlive() && this.pickupDelay != Short.MAX_VALUE && this.age != Short.MIN_VALUE && this.age < 6000 && itemStack.getAmount() < itemStack.getMaxAmount();
+        return this.isAlive() && this.pickupDelay != Short.MAX_VALUE && this.age != Short.MIN_VALUE && this.age < 6000 && itemStack.getCount() < itemStack.getMaxCount();
     }
 
     private void tryMerge(ItemEntity itemEntity) {
@@ -162,7 +162,7 @@ extends Entity {
         if (itemStack2.getItem() != itemStack.getItem()) {
             return;
         }
-        if (itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) {
+        if (itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) {
             return;
         }
         if (itemStack2.hasTag() ^ itemStack.hasTag()) {
@@ -171,7 +171,7 @@ extends Entity {
         if (itemStack2.hasTag() && !itemStack2.getTag().equals(itemStack.getTag())) {
             return;
         }
-        if (itemStack2.getAmount() < itemStack.getAmount()) {
+        if (itemStack2.getCount() < itemStack.getCount()) {
             ItemEntity.merge(this, itemStack, itemEntity, itemStack2);
         } else {
             ItemEntity.merge(itemEntity, itemStack2, this, itemStack);
@@ -179,11 +179,11 @@ extends Entity {
     }
 
     private static void merge(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
-        int i = Math.min(itemStack.getMaxAmount() - itemStack.getAmount(), itemStack2.getAmount());
+        int i = Math.min(itemStack.getMaxCount() - itemStack.getCount(), itemStack2.getCount());
         ItemStack itemStack3 = itemStack.copy();
-        itemStack3.addAmount(i);
+        itemStack3.increment(i);
         itemEntity.setStack(itemStack3);
-        itemStack2.subtractAmount(i);
+        itemStack2.decrement(i);
         itemEntity2.setStack(itemStack2);
         itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
         itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
@@ -260,12 +260,12 @@ extends Entity {
         }
         ItemStack itemStack = this.getStack();
         Item item = itemStack.getItem();
-        int i = itemStack.getAmount();
+        int i = itemStack.getCount();
         if (this.pickupDelay == 0 && (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(playerEntity.getUuid())) && playerEntity.inventory.insertStack(itemStack)) {
             playerEntity.sendPickup(this, i);
             if (itemStack.isEmpty()) {
                 this.remove();
-                itemStack.setAmount(i);
+                itemStack.setCount(i);
             }
             playerEntity.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
         }

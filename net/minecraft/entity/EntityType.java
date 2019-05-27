@@ -102,14 +102,14 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.entity.projectile.ExplodingWitherSkullEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.thrown.SnowballEntity;
 import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
@@ -121,8 +121,8 @@ import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.entity.vehicle.MobSpawnerMinecartEntity;
-import net.minecraft.entity.vehicle.TNTMinecartEntity;
+import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -193,8 +193,8 @@ public class EntityType<T extends Entity> {
     public static final EntityType<CommandBlockMinecartEntity> COMMAND_BLOCK_MINECART = EntityType.register("command_block_minecart", Builder.create(CommandBlockMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
     public static final EntityType<FurnaceMinecartEntity> FURNACE_MINECART = EntityType.register("furnace_minecart", Builder.create(FurnaceMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
     public static final EntityType<HopperMinecartEntity> HOPPER_MINECART = EntityType.register("hopper_minecart", Builder.create(HopperMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
-    public static final EntityType<MobSpawnerMinecartEntity> SPAWNER_MINECART = EntityType.register("spawner_minecart", Builder.create(MobSpawnerMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
-    public static final EntityType<TNTMinecartEntity> TNT_MINECART = EntityType.register("tnt_minecart", Builder.create(TNTMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
+    public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = EntityType.register("spawner_minecart", Builder.create(SpawnerMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
+    public static final EntityType<TntMinecartEntity> TNT_MINECART = EntityType.register("tnt_minecart", Builder.create(TntMinecartEntity::new, EntityCategory.MISC).setSize(0.98f, 0.7f));
     public static final EntityType<MuleEntity> MULE = EntityType.register("mule", Builder.create(MuleEntity::new, EntityCategory.CREATURE).setSize(1.3964844f, 1.6f));
     public static final EntityType<MooshroomEntity> MOOSHROOM = EntityType.register("mooshroom", Builder.create(MooshroomEntity::new, EntityCategory.CREATURE).setSize(0.9f, 1.4f));
     public static final EntityType<OcelotEntity> OCELOT = EntityType.register("ocelot", Builder.create(OcelotEntity::new, EntityCategory.CREATURE).setSize(0.6f, 0.7f));
@@ -239,7 +239,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<WitchEntity> WITCH = EntityType.register("witch", Builder.create(WitchEntity::new, EntityCategory.MONSTER).setSize(0.6f, 1.95f));
     public static final EntityType<WitherEntity> WITHER = EntityType.register("wither", Builder.create(WitherEntity::new, EntityCategory.MONSTER).makeFireImmune().setSize(0.9f, 3.5f));
     public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = EntityType.register("wither_skeleton", Builder.create(WitherSkeletonEntity::new, EntityCategory.MONSTER).makeFireImmune().setSize(0.7f, 2.4f));
-    public static final EntityType<ExplodingWitherSkullEntity> WITHER_SKULL = EntityType.register("wither_skull", Builder.create(ExplodingWitherSkullEntity::new, EntityCategory.MISC).setSize(0.3125f, 0.3125f));
+    public static final EntityType<WitherSkullEntity> WITHER_SKULL = EntityType.register("wither_skull", Builder.create(WitherSkullEntity::new, EntityCategory.MISC).setSize(0.3125f, 0.3125f));
     public static final EntityType<WolfEntity> WOLF = EntityType.register("wolf", Builder.create(WolfEntity::new, EntityCategory.CREATURE).setSize(0.6f, 0.85f));
     public static final EntityType<ZombieEntity> ZOMBIE = EntityType.register("zombie", Builder.create(ZombieEntity::new, EntityCategory.MONSTER).setSize(0.6f, 1.95f));
     public static final EntityType<ZombieHorseEntity> ZOMBIE_HORSE = EntityType.register("zombie_horse", Builder.create(ZombieHorseEntity::new, EntityCategory.CREATURE).setSize(1.3964844f, 1.6f));
@@ -248,7 +248,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<RavagerEntity> RAVAGER = EntityType.register("ravager", Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setSize(1.95f, 2.2f));
     public static final EntityType<LightningEntity> LIGHTNING_BOLT = EntityType.register("lightning_bolt", Builder.create(EntityCategory.MISC).disableSaving().setSize(0.0f, 0.0f));
     public static final EntityType<PlayerEntity> PLAYER = EntityType.register("player", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setSize(0.6f, 1.8f));
-    public static final EntityType<FishHookEntity> FISHING_BOBBER = EntityType.register("fishing_bobber", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setSize(0.25f, 0.25f));
+    public static final EntityType<FishingBobberEntity> FISHING_BOBBER = EntityType.register("fishing_bobber", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setSize(0.25f, 0.25f));
     private final EntityFactory<T> factory;
     private final EntityCategory category;
     private final boolean saveable;
@@ -288,7 +288,7 @@ public class EntityType<T extends Entity> {
 
     @Nullable
     public Entity spawnFromItemStack(World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
-        return this.spawn(world, itemStack == null ? null : itemStack.getTag(), itemStack != null && itemStack.hasDisplayName() ? itemStack.getDisplayName() : null, playerEntity, blockPos, spawnType, bl, bl2);
+        return this.spawn(world, itemStack == null ? null : itemStack.getTag(), itemStack != null && itemStack.hasCustomName() ? itemStack.getCustomName() : null, playerEntity, blockPos, spawnType, bl, bl2);
     }
 
     @Nullable

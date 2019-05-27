@@ -11,7 +11,7 @@ import net.minecraft.block.PlantBlock;
 import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 public class SaplingBlock
 extends PlantBlock
 implements Fertilizable {
-    public static final IntegerProperty STAGE = Properties.SAPLING_STAGE;
+    public static final IntProperty STAGE = Properties.STAGE;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
     private final SaplingGenerator generator;
 

@@ -17,9 +17,9 @@ extends BlockItem {
     }
 
     @Override
-    protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+    protected boolean place(ItemPlacementContext itemPlacementContext, BlockState blockState) {
         itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos().up(), Blocks.AIR.getDefaultState(), 27);
-        return super.setBlockState(itemPlacementContext, blockState);
+        return super.place(itemPlacementContext, blockState);
     }
 }
 

@@ -65,7 +65,7 @@ extends ConditionalLootFunction {
             ItemStack itemStack2 = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
             FilledMapItem.fillExplorationMap(serverWorld, itemStack2);
             MapState.addDecorationsTag(itemStack2, blockPos2, "+", this.decoration);
-            itemStack2.setDisplayName(new TranslatableComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
+            itemStack2.setCustomName(new TranslatableComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
             return itemStack2;
         }
         return itemStack;

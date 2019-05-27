@@ -26,12 +26,12 @@ extends BlockItem {
 
     @Override
     @Nullable
-    protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
+    protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
         BlockState blockState2 = null;
         World viewableWorld = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
             BlockState blockState3;
             if (direction == Direction.UP) continue;
             BlockState blockState4 = blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
@@ -43,8 +43,8 @@ extends BlockItem {
     }
 
     @Override
-    public void registerBlockItemMap(Map<Block, Item> map, Item item) {
-        super.registerBlockItemMap(map, item);
+    public void appendBlocks(Map<Block, Item> map, Item item) {
+        super.appendBlocks(map, item);
         map.put(this.wallBlock, item);
     }
 }

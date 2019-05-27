@@ -32,7 +32,7 @@ public class GiveCommand {
             int j = i;
             while (j > 0) {
                 ItemEntity itemEntity;
-                int k = Math.min(itemStackArgument.getItem().getMaxAmount(), j);
+                int k = Math.min(itemStackArgument.getItem().getMaxCount(), j);
                 j -= k;
                 ItemStack itemStack = itemStackArgument.createStack(k, false);
                 boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
@@ -43,7 +43,7 @@ public class GiveCommand {
                     itemEntity.setOwner(serverPlayerEntity.getUuid());
                     continue;
                 }
-                itemStack.setAmount(1);
+                itemStack.setCount(1);
                 itemEntity = serverPlayerEntity.dropItem(itemStack, false);
                 if (itemEntity != null) {
                     itemEntity.method_6987();
@@ -53,9 +53,9 @@ public class GiveCommand {
             }
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true);
         }
         return collection.size();
     }

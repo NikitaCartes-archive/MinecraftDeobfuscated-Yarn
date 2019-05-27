@@ -781,7 +781,7 @@ extends Entity {
         this.despawnCounter = 0;
         float g = f;
         if (!(damageSource != DamageSource.ANVIL && damageSource != DamageSource.FALLING_BLOCK || this.getEquippedStack(EquipmentSlot.HEAD).isEmpty())) {
-            this.getEquippedStack(EquipmentSlot.HEAD).applyDamage((int)(f * 4.0f + this.random.nextFloat() * f * 2.0f), this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
+            this.getEquippedStack(EquipmentSlot.HEAD).damage((int)(f * 4.0f + this.random.nextFloat() * f * 2.0f), this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
             f *= 0.75f;
         }
         boolean bl = false;
@@ -897,7 +897,7 @@ extends Entity {
             ItemStack itemStack2 = this.getStackInHand(hand);
             if (itemStack2.getItem() != Items.TOTEM_OF_UNDYING) continue;
             itemStack = itemStack2.copy();
-            itemStack2.subtractAmount(1);
+            itemStack2.decrement(1);
             break;
         }
         if (itemStack != null) {
@@ -1743,7 +1743,7 @@ extends Entity {
                     }
                 }
                 ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-                if (ItemStack.areEqual(itemStack2, itemStack)) continue;
+                if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
                 ((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
                 if (!itemStack.isEmpty()) {
                     this.getAttributeContainer().removeAll(itemStack.getAttributeModifiers(equipmentSlot));
@@ -1939,7 +1939,7 @@ extends Entity {
             if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
                 bl = true;
                 if (!this.world.isClient && (this.field_6239 + 1) % 20 == 0) {
-                    itemStack.applyDamage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                    itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
                 }
             } else {
                 bl = false;
@@ -2151,11 +2151,11 @@ extends Entity {
     protected void method_6076() {
         if (this.isUsingItem()) {
             if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
-                this.activeItemStack.method_7949(this.world, this, this.getItemUseTimeLeft());
+                this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
                 if (this.getItemUseTimeLeft() <= 25 && this.getItemUseTimeLeft() % 4 == 0) {
                     this.spawnConsumptionEffects(this.activeItemStack, 5);
                 }
-                if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.method_7967()) {
+                if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.isUsedOnRelease()) {
                     this.method_6040();
                 }
             } else {
@@ -2245,7 +2245,7 @@ extends Entity {
     protected void method_6040() {
         if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
             this.spawnConsumptionEffects(this.activeItemStack, 16);
-            this.setStackInHand(this.getActiveHand(), this.activeItemStack.onItemFinishedUsing(this.world, this));
+            this.setStackInHand(this.getActiveHand(), this.activeItemStack.finishUsing(this.world, this));
             this.clearActiveItem();
         }
     }
@@ -2267,8 +2267,8 @@ extends Entity {
 
     public void stopUsingItem() {
         if (!this.activeItemStack.isEmpty()) {
-            this.activeItemStack.onItemStopUsing(this.world, this, this.getItemUseTimeLeft());
-            if (this.activeItemStack.method_7967()) {
+            this.activeItemStack.onStoppedUsing(this.world, this, this.getItemUseTimeLeft());
+            if (this.activeItemStack.isUsedOnRelease()) {
                 this.method_6076();
             }
         }
@@ -2460,7 +2460,7 @@ extends Entity {
         if (itemStack.isFood()) {
             world.playSound(null, this.x, this.y, this.z, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(itemStack, world, this);
-            itemStack.subtractAmount(1);
+            itemStack.decrement(1);
         }
         return itemStack;
     }
@@ -2468,7 +2468,7 @@ extends Entity {
     private void applyFoodEffects(ItemStack itemStack, World world, LivingEntity livingEntity) {
         Item item = itemStack.getItem();
         if (item.isFood()) {
-            List<Pair<StatusEffectInstance, Float>> list = item.getFoodSetting().getStatusEffectChances();
+            List<Pair<StatusEffectInstance, Float>> list = item.getFoodComponent().getStatusEffects();
             for (Pair<StatusEffectInstance, Float> pair : list) {
                 if (world.isClient || pair.getLeft() == null || !(world.random.nextFloat() < pair.getRight().floatValue())) continue;
                 livingEntity.addPotionEffect(new StatusEffectInstance(pair.getLeft()));

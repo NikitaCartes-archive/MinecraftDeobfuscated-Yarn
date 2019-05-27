@@ -35,7 +35,7 @@ extends Item {
     }
 
     @Override
-    public boolean isTool(ItemStack itemStack) {
+    public boolean isEnchantable(ItemStack itemStack) {
         return false;
     }
 
@@ -49,9 +49,9 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        super.buildTooltip(itemStack, world, list, tooltipContext);
-        ItemStack.appendEnchantmentComponents(list, EnchantedBookItem.getEnchantmentTag(itemStack));
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        super.appendTooltip(itemStack, world, list, tooltipContext);
+        ItemStack.appendEnchantments(list, EnchantedBookItem.getEnchantmentTag(itemStack));
     }
 
     public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {
@@ -77,21 +77,21 @@ extends Item {
         itemStack.getOrCreateTag().put("StoredEnchantments", listTag);
     }
 
-    public static ItemStack makeStack(InfoEnchantment infoEnchantment) {
+    public static ItemStack forEnchantment(InfoEnchantment infoEnchantment) {
         ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
         EnchantedBookItem.addEnchantment(itemStack, infoEnchantment);
         return itemStack;
     }
 
     @Override
-    public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
         block4: {
             block3: {
                 if (itemGroup != ItemGroup.SEARCH) break block3;
                 for (Enchantment enchantment : Registry.ENCHANTMENT) {
                     if (enchantment.type == null) continue;
                     for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); ++i) {
-                        defaultedList.add(EnchantedBookItem.makeStack(new InfoEnchantment(enchantment, i)));
+                        defaultedList.add(EnchantedBookItem.forEnchantment(new InfoEnchantment(enchantment, i)));
                     }
                 }
                 break block4;
@@ -99,7 +99,7 @@ extends Item {
             if (itemGroup.getEnchantments().length == 0) break block4;
             for (Enchantment enchantment : Registry.ENCHANTMENT) {
                 if (!itemGroup.containsEnchantments(enchantment.type)) continue;
-                defaultedList.add(EnchantedBookItem.makeStack(new InfoEnchantment(enchantment, enchantment.getMaximumLevel())));
+                defaultedList.add(EnchantedBookItem.forEnchantment(new InfoEnchantment(enchantment, enchantment.getMaximumLevel())));
             }
         }
     }

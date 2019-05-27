@@ -230,7 +230,7 @@ VillagerDataContainer {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         boolean bl2 = bl = itemStack.getItem() == Items.NAME_TAG;
         if (bl) {
-            itemStack.interactWithEntity(playerEntity, this, hand);
+            itemStack.useOnEntity(playerEntity, this, hand);
             return true;
         }
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isSleeping()) {
@@ -298,7 +298,7 @@ VillagerDataContainer {
             int j = statusEffectInstance.getAmplifier();
             for (TradeOffer tradeOffer2 : this.getOffers()) {
                 double d = 0.3 + 0.0625 * (double)j;
-                int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getAmount());
+                int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getCount());
                 tradeOffer2.increaseSpecialPrice(-Math.max(k, 1));
             }
         }
@@ -465,7 +465,7 @@ VillagerDataContainer {
             Integer integer;
             ItemStack itemStack = this.getInventory().getInvStack(i);
             if (itemStack.isEmpty() || (integer = ITEM_FOOD_VALUES.get(itemStack.getItem())) == null) continue;
-            for (int k = j = itemStack.getAmount(); k > 0; --k) {
+            for (int k = j = itemStack.getCount(); k > 0; --k) {
                 this.foodLevel = (byte)(this.foodLevel + integer);
                 this.getInventory().takeInvStack(i, 1);
                 if (this.foodLevel < 12) continue;
@@ -568,19 +568,19 @@ VillagerDataContainer {
         VillagerProfession villagerProfession = this.getVillagerData().getProfession();
         if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
             int i;
-            if (villagerProfession == VillagerProfession.FARMER && item == Items.WHEAT && (i = itemStack.getAmount() / 3) > 0) {
+            if (villagerProfession == VillagerProfession.FARMER && item == Items.WHEAT && (i = itemStack.getCount() / 3) > 0) {
                 ItemStack itemStack2 = this.getInventory().add(new ItemStack(Items.BREAD, i));
-                itemStack.subtractAmount(i * 3);
+                itemStack.decrement(i * 3);
                 if (!itemStack2.isEmpty()) {
                     this.dropStack(itemStack2, 0.5f);
                 }
             }
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             ItemStack itemStack3 = this.getInventory().add(itemStack);
             if (itemStack3.isEmpty()) {
                 itemEntity.remove();
             } else {
-                itemStack.setAmount(itemStack3.getAmount());
+                itemStack.setCount(itemStack3.getCount());
             }
         }
     }

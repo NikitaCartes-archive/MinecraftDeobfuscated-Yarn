@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemUsageContext {
     protected final PlayerEntity player;
     protected final Hand hand;
-    protected final BlockHitResult hitResult;
+    protected final BlockHitResult hit;
     protected final World world;
     protected final ItemStack stack;
 
@@ -27,28 +27,28 @@ public class ItemUsageContext {
     protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
         this.player = playerEntity;
         this.hand = hand;
-        this.hitResult = blockHitResult;
+        this.hit = blockHitResult;
         this.stack = itemStack;
         this.world = world;
     }
 
     public BlockPos getBlockPos() {
-        return this.hitResult.getBlockPos();
+        return this.hit.getBlockPos();
     }
 
-    public Direction getFacing() {
-        return this.hitResult.getSide();
+    public Direction getSide() {
+        return this.hit.getSide();
     }
 
-    public Vec3d getPos() {
-        return this.hitResult.getPos();
+    public Vec3d getHitPos() {
+        return this.hit.getPos();
     }
 
     public boolean method_17699() {
-        return this.hitResult.method_17781();
+        return this.hit.method_17781();
     }
 
-    public ItemStack getItemStack() {
+    public ItemStack getStack() {
         return this.stack;
     }
 
@@ -65,7 +65,7 @@ public class ItemUsageContext {
         return this.world;
     }
 
-    public Direction getPlayerHorizontalFacing() {
+    public Direction getPlayerFacing() {
         return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
     }
 

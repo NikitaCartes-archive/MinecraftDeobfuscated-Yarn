@@ -47,9 +47,9 @@ import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
-public class FishHookEntity
+public class FishingBobberEntity
 extends Entity {
-    private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishHookEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private boolean field_7176;
     private int field_7167;
     private final PlayerEntity owner;
@@ -63,7 +63,7 @@ extends Entity {
     private final int lureLevel;
     private final int luckOfTheSeaLevel;
 
-    private FishHookEntity(World world, PlayerEntity playerEntity, int i, int j) {
+    private FishingBobberEntity(World world, PlayerEntity playerEntity, int i, int j) {
         super(EntityType.FISHING_BOBBER, world);
         this.ignoreCameraFrustum = true;
         this.owner = playerEntity;
@@ -73,7 +73,7 @@ extends Entity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public FishHookEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
+    public FishingBobberEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
         this(world, playerEntity, 0, 0);
         this.setPosition(d, e, f);
         this.prevX = this.x;
@@ -81,7 +81,7 @@ extends Entity {
         this.prevZ = this.z;
     }
 
-    public FishHookEntity(PlayerEntity playerEntity, World world, int i, int j) {
+    public FishingBobberEntity(PlayerEntity playerEntity, World world, int i, int j) {
         this(world, playerEntity, i, j);
         float f = this.owner.pitch;
         float g = this.owner.yaw;
@@ -98,7 +98,7 @@ extends Entity {
         vec3d = vec3d.multiply(0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045);
         this.setVelocity(vec3d);
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, MathHelper.sqrt(FishHookEntity.squaredHorizontalLength(vec3d))) * 57.2957763671875);
+        this.pitch = (float)(MathHelper.atan2(vec3d.y, MathHelper.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d))) * 57.2957763671875);
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
     }
@@ -224,7 +224,7 @@ extends Entity {
 
     private void method_6952() {
         Vec3d vec3d = this.getVelocity();
-        float f = MathHelper.sqrt(FishHookEntity.squaredHorizontalLength(vec3d));
+        float f = MathHelper.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
         this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
@@ -369,7 +369,7 @@ extends Entity {
                 itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
                 this.world.spawnEntity(itemEntity);
                 this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
-                if (!itemStack2.getItem().matches(ItemTags.FISHES)) continue;
+                if (!itemStack2.getItem().isIn(ItemTags.FISHES)) continue;
                 this.owner.increaseStat(Stats.FISH_CAUGHT, 1);
             }
             i = 1;

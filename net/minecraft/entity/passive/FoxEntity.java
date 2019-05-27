@@ -173,7 +173,7 @@ extends AnimalEntity {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
             if (this.canEat(itemStack)) {
                 if (this.eatingTime > 600) {
-                    ItemStack itemStack2 = itemStack.onItemFinishedUsing(this.world, this);
+                    ItemStack itemStack2 = itemStack.finishUsing(this.world, this);
                     if (!itemStack2.isEmpty()) {
                         this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack2);
                     }
@@ -437,14 +437,14 @@ extends AnimalEntity {
     protected void loot(ItemEntity itemEntity) {
         ItemStack itemStack = itemEntity.getStack();
         if (this.canPickupItem(itemStack)) {
-            int i = itemStack.getAmount();
+            int i = itemStack.getCount();
             if (i > 1) {
                 this.dropItem(itemStack.split(i - 1));
             }
             this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
             this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack.split(1));
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
-            this.sendPickup(itemEntity, itemStack.getAmount());
+            this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
             this.eatingTime = 0;
         }

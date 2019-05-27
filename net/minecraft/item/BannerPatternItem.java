@@ -31,12 +31,12 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        list.add(this.nameTextComponent().applyFormat(ChatFormat.GRAY));
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+        list.add(this.getDescription().applyFormat(ChatFormat.GRAY));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component nameTextComponent() {
+    public Component getDescription() {
         return new TranslatableComponent(this.getTranslationKey() + ".desc", new Object[0]);
     }
 }
