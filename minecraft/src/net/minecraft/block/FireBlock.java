@@ -14,7 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +29,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 
 public class FireBlock extends Block {
-	public static final IntegerProperty AGE = Properties.AGE_15;
+	public static final IntProperty field_11092 = Properties.field_12498;
 	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
 	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
@@ -48,7 +48,7 @@ public class FireBlock extends Block {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(AGE, Integer.valueOf(0))
+				.with(field_11092, Integer.valueOf(0))
 				.with(NORTH, Boolean.valueOf(false))
 				.with(EAST, Boolean.valueOf(false))
 				.with(SOUTH, Boolean.valueOf(false))
@@ -67,7 +67,7 @@ public class FireBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return this.canPlaceAt(blockState, iWorld, blockPos)
-			? this.getStateForPosition(iWorld, blockPos).with(AGE, blockState.get(AGE))
+			? this.getStateForPosition(iWorld, blockPos).with(field_11092, blockState.get(field_11092))
 			: Blocks.field_10124.getDefaultState();
 	}
 
@@ -117,13 +117,13 @@ public class FireBlock extends Block {
 
 			Block block = world.getBlockState(blockPos.down()).getBlock();
 			boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.field_9987 || block == Blocks.field_10515 || block == Blocks.field_10092;
-			int i = (Integer)blockState.get(AGE);
+			int i = (Integer)blockState.get(field_11092);
 			if (!bl && world.isRaining() && this.isRainingAround(world, blockPos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
 				world.clearBlockState(blockPos, false);
 			} else {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
-					blockState = blockState.with(AGE, Integer.valueOf(j));
+					blockState = blockState.with(field_11092, Integer.valueOf(j));
 					world.setBlockState(blockPos, blockState, 4);
 				}
 
@@ -173,7 +173,7 @@ public class FireBlock extends Block {
 
 									if (q > 0 && random.nextInt(o) <= q && (!world.isRaining() || !this.isRainingAround(world, mutable))) {
 										int r = Math.min(15, i + random.nextInt(5) / 4);
-										world.setBlockState(mutable, this.getStateForPosition(world, mutable).with(AGE, Integer.valueOf(r)), 3);
+										world.setBlockState(mutable, this.getStateForPosition(world, mutable).with(field_11092, Integer.valueOf(r)), 3);
 									}
 								}
 							}
@@ -206,7 +206,7 @@ public class FireBlock extends Block {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (random.nextInt(j + 10) < 5 && !world.hasRain(blockPos)) {
 				int l = Math.min(j + random.nextInt(5) / 4, 15);
-				world.setBlockState(blockPos, this.getStateForPosition(world, blockPos).with(AGE, Integer.valueOf(l)), 3);
+				world.setBlockState(blockPos, this.getStateForPosition(world, blockPos).with(field_11092, Integer.valueOf(l)), 3);
 			} else {
 				world.clearBlockState(blockPos, false);
 			}
@@ -341,7 +341,7 @@ public class FireBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
+		builder.add(field_11092, NORTH, EAST, SOUTH, WEST, UP);
 	}
 
 	public void registerFlammableBlock(Block block, int i, int j) {

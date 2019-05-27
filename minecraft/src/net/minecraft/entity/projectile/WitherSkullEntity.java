@@ -22,19 +22,19 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
-	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(ExplodingWitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class WitherSkullEntity extends ExplosiveProjectileEntity {
+	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(WitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	public ExplodingWitherSkullEntity(EntityType<? extends ExplodingWitherSkullEntity> entityType, World world) {
+	public WitherSkullEntity(EntityType<? extends WitherSkullEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public ExplodingWitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
+	public WitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
 		super(EntityType.field_6130, livingEntity, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ExplodingWitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
+	public WitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
 		super(EntityType.field_6130, d, e, f, g, h, i, world);
 	}
 

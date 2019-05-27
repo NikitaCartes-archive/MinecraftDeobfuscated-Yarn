@@ -116,12 +116,12 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
-			&& itemFrameEntity.getHeldItemStack().hasDisplayName()
+			&& itemFrameEntity.getHeldItemStack().hasCustomName()
 			&& this.renderManager.targetedEntity == itemFrameEntity) {
 			double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
 			float h = itemFrameEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
-				String string = itemFrameEntity.getHeldItemStack().getDisplayName().getFormattedText();
+				String string = itemFrameEntity.getHeldItemStack().getCustomName().getFormattedText();
 				this.renderLabel(itemFrameEntity, string, d, e, f, 64);
 			}
 		}

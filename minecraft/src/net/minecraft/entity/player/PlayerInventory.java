@@ -53,9 +53,9 @@ public class PlayerInventory implements Inventory, Nameable {
 	private boolean canStackAddMore(ItemStack itemStack, ItemStack itemStack2) {
 		return !itemStack.isEmpty()
 			&& this.areItemsEqual(itemStack, itemStack2)
-			&& itemStack.canStack()
-			&& itemStack.getAmount() < itemStack.getMaxAmount()
-			&& itemStack.getAmount() < this.getInvMaxStackAmount();
+			&& itemStack.isStackable()
+			&& itemStack.getCount() < itemStack.getMaxCount()
+			&& itemStack.getCount() < this.getInvMaxStackAmount();
 	}
 
 	private boolean areItemsEqual(ItemStack itemStack, ItemStack itemStack2) {
@@ -123,7 +123,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				&& this.areItemsEqual(itemStack, this.main.get(i))
 				&& !this.main.get(i).isDamaged()
 				&& !itemStack2.hasEnchantments()
-				&& !itemStack2.hasDisplayName()) {
+				&& !itemStack2.hasCustomName()) {
 				return i;
 			}
 		}
@@ -176,10 +176,10 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int k = 0; k < this.getInvSize(); k++) {
 			ItemStack itemStack = this.getInvStack(k);
 			if (!itemStack.isEmpty() && predicate.test(itemStack)) {
-				int l = i <= 0 ? itemStack.getAmount() : Math.min(i - j, itemStack.getAmount());
+				int l = i <= 0 ? itemStack.getCount() : Math.min(i - j, itemStack.getCount());
 				j += l;
 				if (i != 0) {
-					itemStack.subtractAmount(l);
+					itemStack.decrement(l);
 					if (itemStack.isEmpty()) {
 						this.setInvStack(k, ItemStack.EMPTY);
 					}
@@ -192,10 +192,10 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 
 		if (!this.cursorStack.isEmpty() && predicate.test(this.cursorStack)) {
-			int kx = i <= 0 ? this.cursorStack.getAmount() : Math.min(i - j, this.cursorStack.getAmount());
+			int kx = i <= 0 ? this.cursorStack.getCount() : Math.min(i - j, this.cursorStack.getCount());
 			j += kx;
 			if (i != 0) {
-				this.cursorStack.subtractAmount(kx);
+				this.cursorStack.decrement(kx);
 				if (this.cursorStack.isEmpty()) {
 					this.cursorStack = ItemStack.EMPTY;
 				}
@@ -215,12 +215,12 @@ public class PlayerInventory implements Inventory, Nameable {
 			i = this.getEmptySlot();
 		}
 
-		return i == -1 ? itemStack.getAmount() : this.addStack(i, itemStack);
+		return i == -1 ? itemStack.getCount() : this.addStack(i, itemStack);
 	}
 
 	private int addStack(int i, ItemStack itemStack) {
 		Item item = itemStack.getItem();
-		int j = itemStack.getAmount();
+		int j = itemStack.getCount();
 		ItemStack itemStack2 = this.getInvStack(i);
 		if (itemStack2.isEmpty()) {
 			itemStack2 = new ItemStack(item, 0);
@@ -232,20 +232,20 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 
 		int k = j;
-		if (j > itemStack2.getMaxAmount() - itemStack2.getAmount()) {
-			k = itemStack2.getMaxAmount() - itemStack2.getAmount();
+		if (j > itemStack2.getMaxCount() - itemStack2.getCount()) {
+			k = itemStack2.getMaxCount() - itemStack2.getCount();
 		}
 
-		if (k > this.getInvMaxStackAmount() - itemStack2.getAmount()) {
-			k = this.getInvMaxStackAmount() - itemStack2.getAmount();
+		if (k > this.getInvMaxStackAmount() - itemStack2.getCount()) {
+			k = this.getInvMaxStackAmount() - itemStack2.getCount();
 		}
 
 		if (k == 0) {
 			return j;
 		} else {
 			j -= k;
-			itemStack2.addAmount(k);
-			itemStack2.setUpdateCooldown(5);
+			itemStack2.increment(k);
+			itemStack2.setCooldown(5);
 			return j;
 		}
 	}
@@ -270,7 +270,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			for (int i = 0; i < defaultedList.size(); i++) {
 				if (!defaultedList.get(i).isEmpty()) {
-					defaultedList.get(i).update(this.player.world, this.player, i, this.selectedSlot == i);
+					defaultedList.get(i).inventoryTick(this.player.world, this.player, i, this.selectedSlot == i);
 				}
 			}
 		}
@@ -292,11 +292,11 @@ public class PlayerInventory implements Inventory, Nameable {
 
 					if (i >= 0) {
 						this.main.set(i, itemStack.copy());
-						this.main.get(i).setUpdateCooldown(5);
-						itemStack.setAmount(0);
+						this.main.get(i).setCooldown(5);
+						itemStack.setCount(0);
 						return true;
 					} else if (this.player.abilities.creativeMode) {
-						itemStack.setAmount(0);
+						itemStack.setCount(0);
 						return true;
 					} else {
 						return false;
@@ -304,27 +304,27 @@ public class PlayerInventory implements Inventory, Nameable {
 				} else {
 					int j;
 					do {
-						j = itemStack.getAmount();
+						j = itemStack.getCount();
 						if (i == -1) {
-							itemStack.setAmount(this.addStack(itemStack));
+							itemStack.setCount(this.addStack(itemStack));
 						} else {
-							itemStack.setAmount(this.addStack(i, itemStack));
+							itemStack.setCount(this.addStack(i, itemStack));
 						}
-					} while (!itemStack.isEmpty() && itemStack.getAmount() < j);
+					} while (!itemStack.isEmpty() && itemStack.getCount() < j);
 
-					if (itemStack.getAmount() == j && this.player.abilities.creativeMode) {
-						itemStack.setAmount(0);
+					if (itemStack.getCount() == j && this.player.abilities.creativeMode) {
+						itemStack.setCount(0);
 						return true;
 					} else {
-						return itemStack.getAmount() < j;
+						return itemStack.getCount() < j;
 					}
 				}
 			} catch (Throwable var6) {
 				CrashReport crashReport = CrashReport.create(var6, "Adding item to inventory");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being added");
-				crashReportSection.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
+				crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
 				crashReportSection.add("Item data", itemStack.getDamage());
-				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.getDisplayName().getString()));
+				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.getCustomName().getString()));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -343,7 +343,7 @@ public class PlayerInventory implements Inventory, Nameable {
 					break;
 				}
 
-				int j = itemStack.getMaxAmount() - this.getInvStack(i).getAmount();
+				int j = itemStack.getMaxCount() - this.getInvStack(i).getCount();
 				if (this.insertStack(i, itemStack.split(j))) {
 					((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
 				}
@@ -419,7 +419,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public float getBlockBreakingSpeed(BlockState blockState) {
-		return this.main.get(this.selectedSlot).getBlockBreakingSpeed(blockState);
+		return this.main.get(this.selectedSlot).getMiningSpeed(blockState);
 	}
 
 	public ListTag serialize(ListTag listTag) {
@@ -543,9 +543,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				ItemStack itemStack = this.armor.get(i);
 				if (itemStack.getItem() instanceof ArmorItem) {
 					int j = i;
-					itemStack.applyDamage(
-						(int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.field_6178, j))
-					);
+					itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.field_6178, j)));
 				}
 			}
 		}
@@ -589,7 +587,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public boolean contains(ItemStack itemStack) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack2 : list) {
-				if (!itemStack2.isEmpty() && itemStack2.isEqualIgnoreTags(itemStack)) {
+				if (!itemStack2.isEmpty() && itemStack2.isItemEqualIgnoreDamage(itemStack)) {
 					return true;
 				}
 			}

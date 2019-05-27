@@ -72,7 +72,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MapItem;
+import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
@@ -371,8 +371,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			for (int i = 0; i < this.inventory.getInvSize(); i++) {
 				ItemStack itemStack = this.inventory.getInvStack(i);
-				if (itemStack.getItem().isMap()) {
-					Packet<?> packet = ((MapItem)itemStack.getItem()).createMapPacket(itemStack, this.world, this);
+				if (itemStack.getItem().isNetworkSynced()) {
+					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
 					if (packet != null) {
 						this.networkHandler.sendPacket(packet);
 					}
@@ -1341,7 +1341,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			ItemStack itemStack2 = itemEntity.getStack();
 			if (bl2) {
 				if (!itemStack2.isEmpty()) {
-					this.increaseStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
+					this.increaseStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getCount());
 				}
 
 				this.incrementStat(Stats.field_15406);

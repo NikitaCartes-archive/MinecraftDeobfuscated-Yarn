@@ -22,7 +22,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public RecipeGroupButtonWidget(RecipeBookGroup recipeBookGroup) {
 		super(0, 0, 35, 27, false);
 		this.category = recipeBookGroup;
-		this.setTextureUV(153, 2, 35, 0, RecipeBookScreen.TEXTURE);
+		this.setTextureUV(153, 2, 35, 0, RecipeBookWidget.TEXTURE);
 	}
 
 	public void checkForNewRecipes(MinecraftClient minecraftClient) {

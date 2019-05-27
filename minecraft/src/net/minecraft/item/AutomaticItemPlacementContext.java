@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class AutomaticItemPlacementContext extends ItemPlacementContext {
-	private final Direction direction;
+	private final Direction facing;
 
 	public AutomaticItemPlacementContext(World world, BlockPos blockPos, Direction direction, ItemStack itemStack, Direction direction2) {
 		super(
@@ -18,32 +18,32 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 			itemStack,
 			new BlockHitResult(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), direction2, blockPos, false)
 		);
-		this.direction = direction;
+		this.facing = direction;
 	}
 
 	@Override
 	public BlockPos getBlockPos() {
-		return this.hitResult.getBlockPos();
+		return this.hit.getBlockPos();
 	}
 
 	@Override
 	public boolean canPlace() {
-		return this.world.getBlockState(this.hitResult.getBlockPos()).canReplace(this);
+		return this.world.getBlockState(this.hit.getBlockPos()).canReplace(this);
 	}
 
 	@Override
-	public boolean canReplaceHitBlock() {
+	public boolean canReplaceExisting() {
 		return this.canPlace();
 	}
 
 	@Override
-	public Direction getPlayerFacing() {
+	public Direction getPlayerLookDirection() {
 		return Direction.field_11033;
 	}
 
 	@Override
-	public Direction[] getPlacementFacings() {
-		switch (this.direction) {
+	public Direction[] getPlacementDirections() {
+		switch (this.facing) {
 			case field_11033:
 			default:
 				return new Direction[]{
@@ -73,8 +73,8 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	}
 
 	@Override
-	public Direction getPlayerHorizontalFacing() {
-		return this.direction.getAxis() == Direction.Axis.Y ? Direction.field_11043 : this.direction;
+	public Direction getPlayerFacing() {
+		return this.facing.getAxis() == Direction.Axis.Y ? Direction.field_11043 : this.facing;
 	}
 
 	@Override
@@ -84,6 +84,6 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public float getPlayerYaw() {
-		return (float)(this.direction.getHorizontal() * 90);
+		return (float)(this.facing.getHorizontal() * 90);
 	}
 }

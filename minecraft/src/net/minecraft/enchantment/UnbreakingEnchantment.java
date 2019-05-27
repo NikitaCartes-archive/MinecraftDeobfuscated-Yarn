@@ -22,7 +22,7 @@ public class UnbreakingEnchantment extends Enchantment {
 
 	@Override
 	public boolean isAcceptableItem(ItemStack itemStack) {
-		return itemStack.hasDurability() ? true : super.isAcceptableItem(itemStack);
+		return itemStack.isDamageable() ? true : super.isAcceptableItem(itemStack);
 	}
 
 	public static boolean shouldPreventDamage(ItemStack itemStack, int i, Random random) {

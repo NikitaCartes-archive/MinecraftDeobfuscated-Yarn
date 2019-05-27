@@ -25,25 +25,25 @@ public class FlintAndSteelItem extends Item {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		IWorld iWorld = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
-		if (canSetOnFire(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
-			iWorld.playSound(playerEntity, blockPos2, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
+		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
+		if (canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
+			iWorld.playSound(playerEntity, blockPos2, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
 			BlockState blockState = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos2);
 			iWorld.setBlockState(blockPos2, blockState, 11);
-			ItemStack itemStack = itemUsageContext.getItemStack();
+			ItemStack itemStack = itemUsageContext.getStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
-				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 			}
 
 			return ActionResult.field_5812;
 		} else {
 			BlockState blockState = iWorld.getBlockState(blockPos);
-			if (canBeLit(blockState)) {
-				iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
+			if (isIgnitable(blockState)) {
+				iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
 				iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
 				if (playerEntity != null) {
-					itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 
 				return ActionResult.field_5812;
@@ -53,11 +53,11 @@ public class FlintAndSteelItem extends Item {
 		}
 	}
 
-	public static boolean canBeLit(BlockState blockState) {
+	public static boolean isIgnitable(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_17350 && !(Boolean)blockState.get(Properties.WATERLOGGED) && !(Boolean)blockState.get(Properties.LIT);
 	}
 
-	public static boolean canSetOnFire(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+	public static boolean canIgnite(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 		BlockState blockState2 = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos);
 		boolean bl = false;
 

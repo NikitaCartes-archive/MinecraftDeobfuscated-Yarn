@@ -34,7 +34,7 @@ public class StonecutterBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override

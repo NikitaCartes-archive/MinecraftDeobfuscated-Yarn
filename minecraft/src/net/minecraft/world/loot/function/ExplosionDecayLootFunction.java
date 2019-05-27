@@ -20,7 +20,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;
-			int i = itemStack.getAmount();
+			int i = itemStack.getCount();
 			int j = 0;
 
 			for (int k = 0; k < i; k++) {
@@ -29,7 +29,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 				}
 			}
 
-			itemStack.setAmount(j);
+			itemStack.setCount(j);
 		}
 
 		return itemStack;

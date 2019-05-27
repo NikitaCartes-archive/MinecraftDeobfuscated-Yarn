@@ -37,7 +37,7 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 
 	public void setItem(ItemStack itemStack) {
 		if (itemStack.getItem() != this.getDefaultItem() || itemStack.hasTag()) {
-			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setCount(1)));
 		}
 	}
 

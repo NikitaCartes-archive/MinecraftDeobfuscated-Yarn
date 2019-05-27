@@ -51,13 +51,13 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 
 	private int getRenderedAmount(ItemStack itemStack) {
 		int i = 1;
-		if (itemStack.getAmount() > 48) {
+		if (itemStack.getCount() > 48) {
 			i = 5;
-		} else if (itemStack.getAmount() > 32) {
+		} else if (itemStack.getCount() > 32) {
 			i = 4;
-		} else if (itemStack.getAmount() > 16) {
+		} else if (itemStack.getCount() > 16) {
 			i = 3;
-		} else if (itemStack.getAmount() > 1) {
+		} else if (itemStack.getCount() > 1) {
 			i = 2;
 		}
 
@@ -66,7 +66,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 
 	public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h) {
 		ItemStack itemStack = itemEntity.getStack();
-		int i = itemStack.isEmpty() ? 187 : Item.getRawIdByItem(itemStack.getItem()) + itemStack.getDamage();
+		int i = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
 		this.random.setSeed((long)i);
 		boolean bl = false;
 		if (this.bindEntityTexture(itemEntity)) {

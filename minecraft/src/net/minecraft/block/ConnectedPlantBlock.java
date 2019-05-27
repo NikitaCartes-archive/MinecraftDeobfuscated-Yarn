@@ -15,12 +15,12 @@ import net.minecraft.world.BlockView;
 
 public class ConnectedPlantBlock extends Block {
 	private static final Direction[] FACINGS = Direction.values();
-	public static final BooleanProperty NORTH = Properties.NORTH_BOOL;
-	public static final BooleanProperty EAST = Properties.EAST_BOOL;
-	public static final BooleanProperty SOUTH = Properties.SOUTH_BOOL;
-	public static final BooleanProperty WEST = Properties.WEST_BOOL;
-	public static final BooleanProperty UP = Properties.UP_BOOL;
-	public static final BooleanProperty DOWN = Properties.DOWN_BOOL;
+	public static final BooleanProperty NORTH = Properties.NORTH;
+	public static final BooleanProperty EAST = Properties.EAST;
+	public static final BooleanProperty SOUTH = Properties.SOUTH;
+	public static final BooleanProperty WEST = Properties.WEST;
+	public static final BooleanProperty UP = Properties.UP;
+	public static final BooleanProperty DOWN = Properties.DOWN;
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
 		enumMap.put(Direction.field_11043, NORTH);
 		enumMap.put(Direction.field_11034, EAST);

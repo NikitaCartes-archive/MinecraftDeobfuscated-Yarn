@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public enum GameMode {
-	INVALID(-1, ""),
+	field_9218(-1, ""),
 	field_9215(0, "survival"),
 	field_9220(1, "creative"),
 	field_9216(2, "adventure"),

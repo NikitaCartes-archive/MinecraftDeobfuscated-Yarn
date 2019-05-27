@@ -9,7 +9,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -21,12 +21,12 @@ import net.minecraft.world.World;
 public class NoteBlock extends Block {
 	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	public static final IntegerProperty NOTE = Properties.NOTE;
+	public static final IntProperty field_11324 = Properties.field_12524;
 
 	public NoteBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(INSTRUMENT, Instrument.field_12648).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(INSTRUMENT, Instrument.field_12648).with(field_11324, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
@@ -68,7 +68,7 @@ public class NoteBlock extends Block {
 		if (world.isClient) {
 			return true;
 		} else {
-			blockState = blockState.cycle(NOTE);
+			blockState = blockState.cycle(field_11324);
 			world.setBlockState(blockPos, blockState, 3);
 			this.playNote(world, blockPos);
 			playerEntity.incrementStat(Stats.field_15393);
@@ -86,7 +86,7 @@ public class NoteBlock extends Block {
 
 	@Override
 	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-		int k = (Integer)blockState.get(NOTE);
+		int k = (Integer)blockState.get(field_11324);
 		float f = (float)Math.pow(2.0, (double)(k - 12) / 12.0);
 		world.playSound(null, blockPos, ((Instrument)blockState.get(INSTRUMENT)).getSound(), SoundCategory.field_15247, 3.0F, f);
 		world.addParticle(
@@ -97,6 +97,6 @@ public class NoteBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(INSTRUMENT, POWERED, NOTE);
+		builder.add(INSTRUMENT, POWERED, field_11324);
 	}
 }

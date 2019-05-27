@@ -15,9 +15,9 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			itemStack.applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}
 
 		Block block = blockState.getBlock();
@@ -29,7 +29,7 @@ public class ShearsItem extends Item {
 				&& block != Blocks.field_10597
 				&& block != Blocks.field_10589
 				&& !block.matches(BlockTags.field_15481)
-			? super.onBlockBroken(itemStack, world, blockState, blockPos, livingEntity)
+			? super.postMine(itemStack, world, blockState, blockPos, livingEntity)
 			: true;
 	}
 
@@ -40,12 +40,12 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10343 || blockState.matches(BlockTags.field_15503)) {
 			return 15.0F;
 		} else {
-			return block.matches(BlockTags.field_15481) ? 5.0F : super.getBlockBreakingSpeed(itemStack, blockState);
+			return block.matches(BlockTags.field_15481) ? 5.0F : super.getMiningSpeed(itemStack, blockState);
 		}
 	}
 }

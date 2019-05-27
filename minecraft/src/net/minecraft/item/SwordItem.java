@@ -15,26 +15,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SwordItem extends ToolItem {
-	private final float weaponDamage;
-	private final float weaponCooldownSpeed;
+	private final float attackDamage;
+	private final float attackSpeed;
 
 	public SwordItem(ToolMaterial toolMaterial, int i, float f, Item.Settings settings) {
 		super(toolMaterial, settings);
-		this.weaponCooldownSpeed = f;
-		this.weaponDamage = (float)i + toolMaterial.getAttackDamage();
+		this.attackSpeed = f;
+		this.attackDamage = (float)i + toolMaterial.getAttackDamage();
 	}
 
-	public float getWeaponDamage() {
-		return this.weaponDamage;
+	public float getAttackDamage() {
+		return this.attackDamage;
 	}
 
 	@Override
-	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return !playerEntity.isCreative();
 	}
 
 	@Override
-	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10343) {
 			return 15.0F;
@@ -51,15 +51,15 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		return true;
 	}
 
 	@Override
-	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (blockState.getHardness(world, blockPos) != 0.0F) {
-			itemStack.applyDamage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}
 
 		return true;
@@ -71,16 +71,16 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
+	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
 		if (equipmentSlot == EquipmentSlot.field_6173) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(MODIFIER_DAMAGE, "Weapon modifier", (double)this.weaponDamage, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.field_6328)
 			);
 			multimap.put(
 				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(MODIFIER_SWING_SPEED, "Weapon modifier", (double)this.weaponCooldownSpeed, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.field_6328)
 			);
 		}
 

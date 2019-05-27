@@ -115,7 +115,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public List<String> getTooltipFromItem(ItemStack itemStack) {
-		List<Component> list = itemStack.getTooltipText(
+		List<Component> list = itemStack.getTooltip(
 			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 		);
 		List<String> list2 = Lists.<String>newArrayList();

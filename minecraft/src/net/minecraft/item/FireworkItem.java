@@ -31,11 +31,11 @@ public class FireworkItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		if (!world.isClient) {
-			ItemStack itemStack = itemUsageContext.getItemStack();
-			Vec3d vec3d = itemUsageContext.getPos();
+			ItemStack itemStack = itemUsageContext.getStack();
+			Vec3d vec3d = itemUsageContext.getHitPos();
 			FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
 			world.spawnEntity(fireworkEntity);
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 		}
 
 		return ActionResult.field_5812;
@@ -48,7 +48,7 @@ public class FireworkItem extends Item {
 			if (!world.isClient) {
 				world.spawnEntity(new FireworkEntity(world, itemStack, playerEntity));
 				if (!playerEntity.abilities.creativeMode) {
-					itemStack.subtractAmount(1);
+					itemStack.decrement(1);
 				}
 			}
 
@@ -60,8 +60,8 @@ public class FireworkItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("Fireworks");
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		CompoundTag compoundTag = itemStack.getSubTag("Fireworks");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {
 				list.add(
@@ -77,7 +77,7 @@ public class FireworkItem extends Item {
 				for (int i = 0; i < listTag.size(); i++) {
 					CompoundTag compoundTag2 = listTag.getCompoundTag(i);
 					List<Component> list2 = Lists.<Component>newArrayList();
-					FireworkChargeItem.buildTooltip(compoundTag2, list2);
+					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
 					if (!list2.isEmpty()) {
 						for (int j = 1; j < list2.size(); j++) {
 							list2.set(j, new TextComponent("  ").append((Component)list2.get(j)).applyFormat(ChatFormat.field_1080));
@@ -118,7 +118,7 @@ public class FireworkItem extends Item {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public static FireworkItem.Type fromId(int i) {
+		public static FireworkItem.Type byId(int i) {
 			return i >= 0 && i < TYPES.length ? TYPES[i] : field_7976;
 		}
 	}

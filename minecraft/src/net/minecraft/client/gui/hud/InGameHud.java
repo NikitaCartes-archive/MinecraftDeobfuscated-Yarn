@@ -579,8 +579,8 @@ public class InGameHud extends DrawableHelper {
 	public void renderHeldItemTooltip() {
 		this.client.getProfiler().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
-			Component component = new TextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
-			if (this.currentStack.hasDisplayName()) {
+			Component component = new TextComponent("").append(this.currentStack.getCustomName()).applyFormat(this.currentStack.getRarity().formatting);
+			if (this.currentStack.hasCustomName()) {
 				component.applyFormat(ChatFormat.field_1056);
 			}
 
@@ -1034,7 +1034,7 @@ public class InGameHud extends DrawableHelper {
 
 	private void renderHotbarItem(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack) {
 		if (!itemStack.isEmpty()) {
-			float g = (float)itemStack.getUpdateCooldown() - f;
+			float g = (float)itemStack.getCooldown() - f;
 			if (g > 0.0F) {
 				GlStateManager.pushMatrix();
 				float h = 1.0F + g / 5.0F;
@@ -1077,7 +1077,7 @@ public class InGameHud extends DrawableHelper {
 				this.heldItemTooltipFade = 0;
 			} else if (this.currentStack.isEmpty()
 				|| itemStack.getItem() != this.currentStack.getItem()
-				|| !itemStack.getDisplayName().equals(this.currentStack.getDisplayName())) {
+				|| !itemStack.getCustomName().equals(this.currentStack.getCustomName())) {
 				this.heldItemTooltipFade = 40;
 			} else if (this.heldItemTooltipFade > 0) {
 				this.heldItemTooltipFade--;

@@ -13,8 +13,8 @@ public class ChorusFruitItem extends Item {
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		ItemStack itemStack2 = super.onItemFinishedUsing(itemStack, world, livingEntity);
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
 		if (!world.isClient) {
 			double d = livingEntity.x;
 			double e = livingEntity.y;

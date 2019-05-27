@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MusicDiscItem extends Item {
-	private static final Map<SoundEvent, MusicDiscItem> SOUND_ITEM_MAP = Maps.<SoundEvent, MusicDiscItem>newHashMap();
+	private static final Map<SoundEvent, MusicDiscItem> MUSIC_DISCS = Maps.<SoundEvent, MusicDiscItem>newHashMap();
 	private final int comparatorOutput;
 	private final SoundEvent sound;
 
@@ -29,7 +29,7 @@ public class MusicDiscItem extends Item {
 		super(settings);
 		this.comparatorOutput = i;
 		this.sound = soundEvent;
-		SOUND_ITEM_MAP.put(this.sound, this);
+		MUSIC_DISCS.put(this.sound, this);
 	}
 
 	@Override
@@ -38,11 +38,11 @@ public class MusicDiscItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
-			ItemStack itemStack = itemUsageContext.getItemStack();
+			ItemStack itemStack = itemUsageContext.getStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
-				world.playLevelEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
-				itemStack.subtractAmount(1);
+				world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
+				itemStack.decrement(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
 					playerEntity.incrementStat(Stats.field_15375);
@@ -61,7 +61,7 @@ public class MusicDiscItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		list.add(this.getDescription().applyFormat(ChatFormat.field_1080));
 	}
 
@@ -73,7 +73,7 @@ public class MusicDiscItem extends Item {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public static MusicDiscItem bySound(SoundEvent soundEvent) {
-		return (MusicDiscItem)SOUND_ITEM_MAP.get(soundEvent);
+		return (MusicDiscItem)MUSIC_DISCS.get(soundEvent);
 	}
 
 	@Environment(EnvType.CLIENT)

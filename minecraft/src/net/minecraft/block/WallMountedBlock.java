@@ -30,12 +30,12 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			BlockState blockState;
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
 					.with(FACE, direction == Direction.field_11036 ? WallMountLocation.field_12473 : WallMountLocation.field_12475)
-					.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+					.with(FACING, itemPlacementContext.getPlayerFacing());
 			} else {
 				blockState = this.getDefaultState().with(FACE, WallMountLocation.field_12471).with(FACING, direction.getOpposite());
 			}

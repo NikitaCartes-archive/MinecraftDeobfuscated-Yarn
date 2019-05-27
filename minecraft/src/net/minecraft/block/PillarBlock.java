@@ -8,7 +8,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
 public class PillarBlock extends Block {
-	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS_XYZ;
+	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
 
 	public PillarBlock(Block.Settings settings) {
 		super(settings);
@@ -40,6 +40,6 @@ public class PillarBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(AXIS, itemPlacementContext.getFacing().getAxis());
+		return this.getDefaultState().with(AXIS, itemPlacementContext.getSide().getAxis());
 	}
 }

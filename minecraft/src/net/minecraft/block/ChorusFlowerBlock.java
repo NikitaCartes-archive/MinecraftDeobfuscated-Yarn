@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -15,13 +15,13 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ChorusFlowerBlock extends Block {
-	public static final IntegerProperty AGE = Properties.AGE_5;
+	public static final IntProperty field_10762 = Properties.field_12482;
 	private final ChorusPlantBlock plantBlock;
 
 	protected ChorusFlowerBlock(ChorusPlantBlock chorusPlantBlock, Block.Settings settings) {
 		super(settings);
 		this.plantBlock = chorusPlantBlock;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10762, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class ChorusFlowerBlock extends Block {
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			if (world.isAir(blockPos2) && blockPos2.getY() < 256) {
-				int i = (Integer)blockState.get(AGE);
+				int i = (Integer)blockState.get(field_10762);
 				if (i < 5) {
 					boolean bl = false;
 					boolean bl2 = false;
@@ -95,12 +95,12 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	private void grow(World world, BlockPos blockPos, int i) {
-		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(i)), 2);
+		world.setBlockState(blockPos, this.getDefaultState().with(field_10762, Integer.valueOf(i)), 2);
 		world.playLevelEvent(1033, blockPos, 0);
 	}
 
 	private void die(World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
+		world.setBlockState(blockPos, this.getDefaultState().with(field_10762, Integer.valueOf(5)), 2);
 		world.playLevelEvent(1034, blockPos, 0);
 	}
 
@@ -162,7 +162,7 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_10762);
 	}
 
 	public static void generate(IWorld iWorld, BlockPos blockPos, Random random, int i) {
@@ -213,7 +213,7 @@ public class ChorusFlowerBlock extends Block {
 		}
 
 		if (!bl) {
-			iWorld.setBlockState(blockPos.up(k), Blocks.field_10528.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
+			iWorld.setBlockState(blockPos.up(k), Blocks.field_10528.getDefaultState().with(field_10762, Integer.valueOf(5)), 2);
 		}
 	}
 

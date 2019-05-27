@@ -73,7 +73,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 				if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld) {
 					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
 					if (bl && !playerEntity.isCreative()) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 				}
 

@@ -229,7 +229,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
 			if (!playerEntity.abilities.creativeMode) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			if (!this.isSilent()) {
@@ -253,7 +253,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			return true;
 		} else if (itemStack.getItem() == COOKIE) {
 			if (!playerEntity.abilities.creativeMode) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 900));

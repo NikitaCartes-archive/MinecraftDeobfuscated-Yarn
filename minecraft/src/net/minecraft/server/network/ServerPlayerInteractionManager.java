@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 public class ServerPlayerInteractionManager {
 	public ServerWorld world;
 	public ServerPlayerEntity player;
-	private GameMode gameMode = GameMode.INVALID;
+	private GameMode gameMode = GameMode.field_9218;
 	private boolean field_14003;
 	private int field_14002;
 	private BlockPos field_14006 = BlockPos.ORIGIN;
@@ -61,7 +61,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void setGameModeIfNotPresent(GameMode gameMode) {
-		if (this.gameMode == GameMode.INVALID) {
+		if (this.gameMode == GameMode.field_9218) {
 			this.gameMode = gameMode;
 		}
 
@@ -124,7 +124,7 @@ public class ServerPlayerInteractionManager {
 					}
 
 					CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-					if (!itemStack.getCustomCanHarvest(this.world.getTagManager(), cachedBlockPosition)) {
+					if (!itemStack.canDestroy(this.world.getTagManager(), cachedBlockPosition)) {
 						return;
 					}
 				}
@@ -190,7 +190,7 @@ public class ServerPlayerInteractionManager {
 
 	public boolean tryBreakBlock(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		if (!this.player.getMainHandStack().getItem().beforeBlockBreak(blockState, this.world, blockPos, this.player)) {
+		if (!this.player.getMainHandStack().getItem().canMine(blockState, this.world, blockPos, this.player)) {
 			return false;
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
@@ -211,7 +211,7 @@ public class ServerPlayerInteractionManager {
 						}
 
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-						if (!itemStack.getCustomCanHarvest(this.world.getTagManager(), cachedBlockPosition)) {
+						if (!itemStack.canDestroy(this.world.getTagManager(), cachedBlockPosition)) {
 							return false;
 						}
 					}
@@ -221,7 +221,7 @@ public class ServerPlayerInteractionManager {
 				if (!this.isCreative()) {
 					ItemStack itemStack2 = this.player.getMainHandStack();
 					boolean bl2 = this.player.isUsingEffectiveTool(blockState);
-					itemStack2.onBlockBroken(this.world, blockState, blockPos, this.player);
+					itemStack2.postMine(this.world, blockState, blockPos, this.player);
 					if (bl && bl2) {
 						ItemStack itemStack3 = itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy();
 						blockState.getBlock().afterBreak(this.world, this.player, blockPos, blockState, blockEntity, itemStack3);
@@ -239,19 +239,19 @@ public class ServerPlayerInteractionManager {
 		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 			return ActionResult.field_5811;
 		} else {
-			int i = itemStack.getAmount();
+			int i = itemStack.getCount();
 			int j = itemStack.getDamage();
 			TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
 			ItemStack itemStack2 = typedActionResult.getValue();
-			if (itemStack2 == itemStack && itemStack2.getAmount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
+			if (itemStack2 == itemStack && itemStack2.getCount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
 				return typedActionResult.getResult();
 			} else if (typedActionResult.getResult() == ActionResult.field_5814 && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
 				playerEntity.setStackInHand(hand, itemStack2);
 				if (this.isCreative()) {
-					itemStack2.setAmount(i);
-					if (itemStack2.hasDurability()) {
+					itemStack2.setCount(i);
+					if (itemStack2.isDamageable()) {
 						itemStack2.setDamage(j);
 					}
 				}
@@ -288,9 +288,9 @@ public class ServerPlayerInteractionManager {
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
 				if (this.isCreative()) {
-					int i = itemStack.getAmount();
+					int i = itemStack.getCount();
 					ActionResult actionResult = itemStack.useOnBlock(itemUsageContext);
-					itemStack.setAmount(i);
+					itemStack.setCount(i);
 					return actionResult;
 				} else {
 					return itemStack.useOnBlock(itemUsageContext);

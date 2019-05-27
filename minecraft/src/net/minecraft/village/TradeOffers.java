@@ -708,7 +708,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			Enchantment enchantment = Registry.ENCHANTMENT.getRandom(random);
 			int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
-			ItemStack itemStack = EnchantedBookItem.makeStack(new InfoEnchantment(enchantment, i));
+			ItemStack itemStack = EnchantedBookItem.forEnchantment(new InfoEnchantment(enchantment, i));
 			int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
 			if (enchantment.isTreasure()) {
 				j *= 2;
@@ -798,14 +798,14 @@ public class TradeOffers {
 					list.add(getDye(random));
 				}
 
-				itemStack2 = DyeableItem.applyDyes(itemStack2, list);
+				itemStack2 = DyeableItem.blendAndSetColor(itemStack2, list);
 			}
 
 			return new TradeOffer(itemStack, itemStack2, this.maxUses, this.experience, 0.2F);
 		}
 
 		private static DyeItem getDye(Random random) {
-			return DyeItem.fromColor(DyeColor.byId(random.nextInt(16)));
+			return DyeItem.byColor(DyeColor.byId(random.nextInt(16)));
 		}
 	}
 
@@ -903,7 +903,7 @@ public class TradeOffers {
 				ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 				FilledMapItem.fillExplorationMap(world, itemStack);
 				MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-				itemStack.setDisplayName(new TranslatableComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+				itemStack.setCustomName(new TranslatableComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
 				return new TradeOffer(new ItemStack(Items.field_8687, this.price), new ItemStack(Items.field_8251), itemStack, this.maxUses, this.experience, 0.2F);
 			} else {
 				return null;

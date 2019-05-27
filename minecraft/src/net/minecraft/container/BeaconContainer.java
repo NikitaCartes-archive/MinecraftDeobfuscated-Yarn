@@ -92,7 +92,7 @@ public class BeaconContainer extends Container {
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getAmount() == 1) {
+			} else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getCount() == 1) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -114,7 +114,7 @@ public class BeaconContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

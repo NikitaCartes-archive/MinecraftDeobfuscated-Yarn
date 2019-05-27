@@ -4,7 +4,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -15,11 +15,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class SignBlock extends AbstractSignBlock {
-	public static final IntegerProperty ROTATION = Properties.ROTATION_16;
+	public static final IntProperty field_11559 = Properties.field_12532;
 
 	public SignBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11559, Integer.valueOf(0)).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class SignBlock extends AbstractSignBlock {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		return this.getDefaultState()
-			.with(ROTATION, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15))
+			.with(field_11559, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -46,16 +46,16 @@ public class SignBlock extends AbstractSignBlock {
 
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(ROTATION, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(ROTATION), 16)));
+		return blockState.with(field_11559, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(field_11559), 16)));
 	}
 
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.with(ROTATION, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(ROTATION), 16)));
+		return blockState.with(field_11559, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(field_11559), 16)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(ROTATION, WATERLOGGED);
+		builder.add(field_11559, WATERLOGGED);
 	}
 }

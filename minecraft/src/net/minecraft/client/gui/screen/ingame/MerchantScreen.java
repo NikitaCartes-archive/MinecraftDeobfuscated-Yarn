@@ -231,11 +231,11 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 
 	private void method_20222(ItemStack itemStack, ItemStack itemStack2, int i, int j) {
 		this.itemRenderer.renderGuiItem(itemStack, i, j);
-		if (itemStack2.getAmount() == itemStack.getAmount()) {
+		if (itemStack2.getCount() == itemStack.getCount()) {
 			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j);
 		} else {
-			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack2, i, j, itemStack2.getAmount() == 1 ? "1" : null);
-			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getAmount() == 1 ? "1" : null);
+			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack2, i, j, itemStack2.getCount() == 1 ? "1" : null);
+			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
 			this.minecraft.getTextureManager().bindTexture(TEXTURE);
 			this.blitOffset += 300;
 			GuiLighting.disable();

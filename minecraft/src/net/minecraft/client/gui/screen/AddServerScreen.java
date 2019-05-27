@@ -62,7 +62,7 @@ public class AddServerScreen extends Screen {
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.serverEntry.address);
-		this.addressField.method_1890(this.field_2475);
+		this.addressField.setTextPredicate(this.field_2475);
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
 		this.resourcePackOptionButton = this.addButton(

@@ -647,8 +647,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
 						bl = !itemStack.isEmpty()
 							&& (
-								itemStack.getCustomCanHarvest(this.client.world.getTagManager(), cachedBlockPosition)
-									|| itemStack.getCustomCanPlace(this.client.world.getTagManager(), cachedBlockPosition)
+								itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition)
+									|| itemStack.canPlaceOn(this.client.world.getTagManager(), cachedBlockPosition)
 							);
 					}
 				}

@@ -19,14 +19,14 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class TNTMinecartEntity extends AbstractMinecartEntity {
+public class TntMinecartEntity extends AbstractMinecartEntity {
 	private int fuseTicks = -1;
 
-	public TNTMinecartEntity(EntityType<? extends TNTMinecartEntity> entityType, World world) {
+	public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public TNTMinecartEntity(World world, double d, double e, double f) {
+	public TntMinecartEntity(World world, double d, double e, double f) {
 		super(EntityType.field_6053, world, d, e, f);
 	}
 

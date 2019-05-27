@@ -18,7 +18,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
@@ -33,7 +33,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class ComposterBlock extends Block implements InventoryProvider {
-	public static final IntegerProperty LEVEL = Properties.COMPOSTER_LEVEL;
+	public static final IntProperty field_17565 = Properties.field_17586;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
 	public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
 	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = SystemUtil.consume(
@@ -132,7 +132,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	public ComposterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_17565, Integer.valueOf(0)));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -171,7 +171,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return LEVEL_TO_COLLISION_SHAPE[blockState.get(LEVEL)];
+		return LEVEL_TO_COLLISION_SHAPE[blockState.get(field_17565)];
 	}
 
 	@Override
@@ -186,21 +186,21 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if ((Integer)blockState.get(LEVEL) == 7) {
+		if ((Integer)blockState.get(field_17565) == 7) {
 			world.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 20);
 		}
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		int i = (Integer)blockState.get(LEVEL);
+		int i = (Integer)blockState.get(field_17565);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
 				world.playLevelEvent(1500, blockPos, bl ? 1 : 0);
 				if (!playerEntity.abilities.creativeMode) {
-					itemStack.subtractAmount(1);
+					itemStack.decrement(1);
 				}
 			}
 
@@ -227,17 +227,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	private static void emptyComposter(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		iWorld.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(0)), 3);
+		iWorld.setBlockState(blockPos, blockState.with(field_17565, Integer.valueOf(0)), 3);
 	}
 
 	private static boolean addToComposter(BlockState blockState, IWorld iWorld, BlockPos blockPos, ItemStack itemStack) {
-		int i = (Integer)blockState.get(LEVEL);
+		int i = (Integer)blockState.get(field_17565);
 		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(itemStack.getItem());
 		if ((i != 0 || !(f > 0.0F)) && !(iWorld.getRandom().nextDouble() < (double)f)) {
 			return false;
 		} else {
 			int j = i + 1;
-			iWorld.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(j)), 3);
+			iWorld.setBlockState(blockPos, blockState.with(field_17565, Integer.valueOf(j)), 3);
 			if (j == 7) {
 				iWorld.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 20);
 			}
@@ -248,8 +248,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Integer)blockState.get(LEVEL) == 7) {
-			world.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
+		if ((Integer)blockState.get(field_17565) == 7) {
+			world.setBlockState(blockPos, blockState.cycle(field_17565), 3);
 			world.playSound(null, blockPos, SoundEvents.field_17609, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 
@@ -263,12 +263,12 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return (Integer)blockState.get(LEVEL);
+		return (Integer)blockState.get(field_17565);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(LEVEL);
+		builder.add(field_17565);
 	}
 
 	@Override
@@ -278,7 +278,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public SidedInventory getInventory(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		int i = (Integer)blockState.get(LEVEL);
+		int i = (Integer)blockState.get(field_17565);
 		if (i == 8) {
 			return new ComposterBlock.FullComposterInventory(blockState, iWorld, blockPos, new ItemStack(Items.field_8324));
 		} else {

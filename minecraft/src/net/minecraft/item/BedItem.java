@@ -9,7 +9,7 @@ public class BedItem extends BlockItem {
 	}
 
 	@Override
-	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+	protected boolean place(ItemPlacementContext itemPlacementContext, BlockState blockState) {
 		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 26);
 	}
 }

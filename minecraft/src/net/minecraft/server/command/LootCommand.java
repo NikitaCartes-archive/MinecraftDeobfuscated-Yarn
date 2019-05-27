@@ -305,10 +305,10 @@ public class LootCommand {
 				}
 
 				if (itemsMatch(itemStack2, itemStack)) {
-					int j = itemStack.getMaxAmount() - itemStack2.getAmount();
-					int k = Math.min(itemStack.getAmount(), j);
-					itemStack.subtractAmount(k);
-					itemStack2.addAmount(k);
+					int j = itemStack.getMaxCount() - itemStack2.getCount();
+					int k = Math.min(itemStack.getCount(), j);
+					itemStack.decrement(k);
+					itemStack2.increment(k);
 					bl = true;
 				}
 			}
@@ -344,7 +344,7 @@ public class LootCommand {
 	private static boolean itemsMatch(ItemStack itemStack, ItemStack itemStack2) {
 		return itemStack.getItem() == itemStack2.getItem()
 			&& itemStack.getDamage() == itemStack2.getDamage()
-			&& itemStack.getAmount() <= itemStack.getMaxAmount()
+			&& itemStack.getCount() <= itemStack.getMaxCount()
 			&& Objects.equals(itemStack.getTag(), itemStack2.getTag());
 	}
 
@@ -404,7 +404,7 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single", itemStack.getAmount(), itemStack.toTextComponent()), false);
+			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
 		} else {
 			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple", list.size()), false);
 		}
@@ -414,7 +414,7 @@ public class LootCommand {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
 			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.drop.success.single_with_table", itemStack.getAmount(), itemStack.toTextComponent(), identifier), false
+				new TranslatableComponent("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), identifier), false
 			);
 		} else {
 			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple_with_table", list.size(), identifier), false);

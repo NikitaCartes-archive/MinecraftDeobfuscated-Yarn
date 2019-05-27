@@ -97,7 +97,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17712(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8450);
-		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Explosion");
+		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
 		FireworkItem.Type type = FireworkItem.Type.field_7976;
 		List<Integer> list = Lists.<Integer>newArrayList();
 

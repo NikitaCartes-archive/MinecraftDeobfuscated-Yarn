@@ -107,7 +107,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 					throw new IllegalArgumentException(this.baseObject + " attempted use property " + string + " with <= 1 possible values");
 				} else {
 					for (T comparable : collection) {
-						String string2 = property.getValueAsString(comparable);
+						String string2 = property.getName(comparable);
 						if (!StateFactory.NAME_MATCHER.matcher(string2).matches()) {
 							throw new IllegalArgumentException(this.baseObject + " has property: " + string + " with invalidly named value: " + string2);
 						}

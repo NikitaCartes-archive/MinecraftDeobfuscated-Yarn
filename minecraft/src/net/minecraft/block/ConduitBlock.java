@@ -68,10 +68,10 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

@@ -27,7 +27,7 @@ public class EnchantedBookItem extends Item {
 	}
 
 	@Override
-	public boolean isTool(ItemStack itemStack) {
+	public boolean isEnchantable(ItemStack itemStack) {
 		return false;
 	}
 
@@ -38,9 +38,9 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		super.buildTooltip(itemStack, world, list, tooltipContext);
-		ItemStack.appendEnchantmentComponents(list, getEnchantmentTag(itemStack));
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		super.appendTooltip(itemStack, world, list, tooltipContext);
+		ItemStack.appendEnchantments(list, getEnchantmentTag(itemStack));
 	}
 
 	public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {
@@ -71,26 +71,26 @@ public class EnchantedBookItem extends Item {
 		itemStack.getOrCreateTag().put("StoredEnchantments", listTag);
 	}
 
-	public static ItemStack makeStack(InfoEnchantment infoEnchantment) {
+	public static ItemStack forEnchantment(InfoEnchantment infoEnchantment) {
 		ItemStack itemStack = new ItemStack(Items.field_8598);
 		addEnchantment(itemStack, infoEnchantment);
 		return itemStack;
 	}
 
 	@Override
-	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (itemGroup == ItemGroup.SEARCH) {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
 				if (enchantment.type != null) {
 					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
-						defaultedList.add(makeStack(new InfoEnchantment(enchantment, i)));
+						defaultedList.add(forEnchantment(new InfoEnchantment(enchantment, i)));
 					}
 				}
 			}
 		} else if (itemGroup.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
 				if (itemGroup.containsEnchantments(enchantmentx.type)) {
-					defaultedList.add(makeStack(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
+					defaultedList.add(forEnchantment(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}
 		}

@@ -8,7 +8,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
@@ -21,7 +21,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
-	public static final IntegerProperty PICKLES = Properties.PICKLES;
+	public static final IntProperty field_11472 = Properties.field_12543;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape ONE_PICKLE_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 6.0, 10.0);
 	protected static final VoxelShape TWO_PICKLES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 6.0, 13.0);
@@ -30,12 +30,12 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	protected SeaPickleBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(PICKLES, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11472, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override
 	public int getLuminance(BlockState blockState) {
-		return this.isDry(blockState) ? 0 : super.getLuminance(blockState) + 3 * (Integer)blockState.get(PICKLES);
+		return this.isDry(blockState) ? 0 : super.getLuminance(blockState) + 3 * (Integer)blockState.get(field_11472);
 	}
 
 	@Nullable
@@ -43,7 +43,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		if (blockState.getBlock() == this) {
-			return blockState.with(PICKLES, Integer.valueOf(Math.min(4, (Integer)blockState.get(PICKLES) + 1)));
+			return blockState.with(field_11472, Integer.valueOf(Math.min(4, (Integer)blockState.get(field_11472) + 1)));
 		} else {
 			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 			boolean bl = fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8;
@@ -83,14 +83,14 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getItemStack().getItem() == this.asItem() && blockState.get(PICKLES) < 4
+		return itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(field_11472) < 4
 			? true
 			: super.canReplace(blockState, itemPlacementContext);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch (blockState.get(PICKLES)) {
+		switch (blockState.get(field_11472)) {
 			case 1:
 			default:
 				return ONE_PICKLE_SHAPE;
@@ -110,7 +110,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(PICKLES, WATERLOGGED);
+		builder.add(field_11472, WATERLOGGED);
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 						if (blockPos2 != blockPos && random.nextInt(6) == 0 && world.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
 							BlockState blockState2 = world.getBlockState(blockPos2.down());
 							if (blockState2.matches(BlockTags.field_15461)) {
-								world.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+								world.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(field_11472, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}
 						}
 					}
@@ -159,7 +159,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				l++;
 			}
 
-			world.setBlockState(blockPos, blockState.with(PICKLES, Integer.valueOf(4)), 2);
+			world.setBlockState(blockPos, blockState.with(field_11472, Integer.valueOf(4)), 2);
 		}
 	}
 }

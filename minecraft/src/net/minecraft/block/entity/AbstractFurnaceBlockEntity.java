@@ -223,7 +223,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 						bl2 = true;
 						if (!itemStack.isEmpty()) {
 							Item item = itemStack.getItem();
-							itemStack.subtractAmount(1);
+							itemStack.decrement(1);
 							if (itemStack.isEmpty()) {
 								Item item2 = item.getRecipeRemainder();
 								this.inventory.set(1, item2 == null ? ItemStack.EMPTY : new ItemStack(item2));
@@ -267,12 +267,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				ItemStack itemStack2 = this.inventory.get(2);
 				if (itemStack2.isEmpty()) {
 					return true;
-				} else if (!itemStack2.isEqualIgnoreTags(itemStack)) {
+				} else if (!itemStack2.isItemEqualIgnoreDamage(itemStack)) {
 					return false;
 				} else {
-					return itemStack2.getAmount() < this.getInvMaxStackAmount() && itemStack2.getAmount() < itemStack2.getMaxAmount()
+					return itemStack2.getCount() < this.getInvMaxStackAmount() && itemStack2.getCount() < itemStack2.getMaxCount()
 						? true
-						: itemStack2.getAmount() < itemStack.getMaxAmount();
+						: itemStack2.getCount() < itemStack.getMaxCount();
 				}
 			}
 		} else {
@@ -288,7 +288,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			if (itemStack3.isEmpty()) {
 				this.inventory.set(2, itemStack2.copy());
 			} else if (itemStack3.getItem() == itemStack2.getItem()) {
-				itemStack3.addAmount(1);
+				itemStack3.increment(1);
 			}
 
 			if (!this.world.isClient) {
@@ -299,7 +299,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				this.inventory.set(1, new ItemStack(Items.field_8705));
 			}
 
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 		}
 	}
 
@@ -380,10 +380,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void setInvStack(int i, ItemStack itemStack) {
 		ItemStack itemStack2 = this.inventory.get(i);
-		boolean bl = !itemStack.isEmpty() && itemStack.isEqualIgnoreTags(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
+		boolean bl = !itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
 		this.inventory.set(i, itemStack);
-		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 
 		if (i == 0 && !bl) {

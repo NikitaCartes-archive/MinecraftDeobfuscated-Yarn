@@ -13,7 +13,7 @@ public class DefaultGameModeCommand {
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.INVALID) {
+			if (gameMode != GameMode.field_9218) {
 				literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> execute(commandContext.getSource(), gameMode)));
 			}
 		}

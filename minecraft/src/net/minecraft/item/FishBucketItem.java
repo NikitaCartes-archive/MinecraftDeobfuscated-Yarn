@@ -51,7 +51,7 @@ public class FishBucketItem extends BucketItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		if (this.fishType == EntityType.field_6111) {
 			CompoundTag compoundTag = itemStack.getTag();
 			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {

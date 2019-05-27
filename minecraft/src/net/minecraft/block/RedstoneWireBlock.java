@@ -18,7 +18,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.BlockMirror;
@@ -33,11 +33,11 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneWireBlock extends Block {
-	public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = Properties.WIRE_CONNECTION_NORTH;
-	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.WIRE_CONNECTION_EAST;
-	public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.WIRE_CONNECTION_SOUTH;
-	public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WIRE_CONNECTION_WEST;
-	public static final IntegerProperty POWER = Properties.POWER;
+	public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = Properties.NORTH_WIRE_CONNECTION;
+	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.EAST_WIRE_CONNECTION;
+	public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.SOUTH_WIRE_CONNECTION;
+	public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WEST_WIRE_CONNECTION;
+	public static final IntProperty field_11432 = Properties.field_12511;
 	public static final Map<Direction, EnumProperty<WireConnection>> DIRECTION_TO_WIRE_CONNECTION_PROPERTY = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.field_11043,
@@ -80,7 +80,7 @@ public class RedstoneWireBlock extends Block {
 				.with(WIRE_CONNECTION_EAST, WireConnection.field_12687)
 				.with(WIRE_CONNECTION_SOUTH, WireConnection.field_12687)
 				.with(WIRE_CONNECTION_WEST, WireConnection.field_12687)
-				.with(POWER, Integer.valueOf(0))
+				.with(field_11432, Integer.valueOf(0))
 		);
 	}
 
@@ -209,7 +209,7 @@ public class RedstoneWireBlock extends Block {
 
 	private BlockState updateLogic(World world, BlockPos blockPos, BlockState blockState) {
 		BlockState blockState2 = blockState;
-		int i = (Integer)blockState.get(POWER);
+		int i = (Integer)blockState.get(field_11432);
 		this.wiresGivePower = false;
 		int j = world.getReceivedRedstonePower(blockPos);
 		this.wiresGivePower = true;
@@ -234,7 +234,7 @@ public class RedstoneWireBlock extends Block {
 		}
 
 		if (i != l) {
-			blockState = blockState.with(POWER, Integer.valueOf(l));
+			blockState = blockState.with(field_11432, Integer.valueOf(l));
 			if (world.getBlockState(blockPos) == blockState2) {
 				world.setBlockState(blockPos, blockState, 2);
 			}
@@ -314,7 +314,7 @@ public class RedstoneWireBlock extends Block {
 		if (blockState.getBlock() != this) {
 			return i;
 		} else {
-			int j = (Integer)blockState.get(POWER);
+			int j = (Integer)blockState.get(field_11432);
 			return j > i ? j : i;
 		}
 	}
@@ -341,7 +341,7 @@ public class RedstoneWireBlock extends Block {
 		if (!this.wiresGivePower) {
 			return 0;
 		} else {
-			int i = (Integer)blockState.get(POWER);
+			int i = (Integer)blockState.get(field_11432);
 			if (i == 0) {
 				return 0;
 			} else if (direction == Direction.field_11036) {
@@ -437,7 +437,7 @@ public class RedstoneWireBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = (Integer)blockState.get(POWER);
+		int i = (Integer)blockState.get(field_11432);
 		if (i != 0) {
 			double d = (double)blockPos.getX() + 0.5 + ((double)random.nextFloat() - 0.5) * 0.2;
 			double e = (double)((float)blockPos.getY() + 0.0625F);
@@ -492,6 +492,6 @@ public class RedstoneWireBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(WIRE_CONNECTION_NORTH, WIRE_CONNECTION_EAST, WIRE_CONNECTION_SOUTH, WIRE_CONNECTION_WEST, POWER);
+		builder.add(WIRE_CONNECTION_NORTH, WIRE_CONNECTION_EAST, WIRE_CONNECTION_SOUTH, WIRE_CONNECTION_WEST, field_11432);
 	}
 }

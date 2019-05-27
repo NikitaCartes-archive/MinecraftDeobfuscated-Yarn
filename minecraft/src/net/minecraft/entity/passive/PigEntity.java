@@ -137,7 +137,7 @@ public class PigEntity extends AnimalEntity {
 		if (!super.interactMob(playerEntity, hand)) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (itemStack.getItem() == Items.field_8448) {
-				itemStack.interactWithEntity(playerEntity, this, hand);
+				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
 				if (!this.world.isClient) {
@@ -146,7 +146,7 @@ public class PigEntity extends AnimalEntity {
 
 				return true;
 			} else if (itemStack.getItem() == Items.field_8175) {
-				itemStack.interactWithEntity(playerEntity, this, hand);
+				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else {
 				return false;

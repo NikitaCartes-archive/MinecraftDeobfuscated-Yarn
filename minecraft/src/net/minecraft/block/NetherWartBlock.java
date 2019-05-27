@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class NetherWartBlock extends PlantBlock {
-	public static final IntegerProperty AGE = Properties.AGE_3;
+	public static final IntProperty field_11306 = Properties.field_12497;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
@@ -25,12 +25,12 @@ public class NetherWartBlock extends PlantBlock {
 
 	protected NetherWartBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11306, Integer.valueOf(0)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(AGE)];
+		return AGE_TO_SHAPE[blockState.get(field_11306)];
 	}
 
 	@Override
@@ -40,9 +40,9 @@ public class NetherWartBlock extends PlantBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = (Integer)blockState.get(AGE);
+		int i = (Integer)blockState.get(field_11306);
 		if (i < 3 && random.nextInt(10) == 0) {
-			blockState = blockState.with(AGE, Integer.valueOf(i + 1));
+			blockState = blockState.with(field_11306, Integer.valueOf(i + 1));
 			world.setBlockState(blockPos, blockState, 2);
 		}
 
@@ -57,6 +57,6 @@ public class NetherWartBlock extends PlantBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_11306);
 	}
 }

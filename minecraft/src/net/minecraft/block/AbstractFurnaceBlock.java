@@ -46,15 +46,15 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
-				((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

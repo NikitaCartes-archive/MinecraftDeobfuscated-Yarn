@@ -90,9 +90,9 @@ public class TntBlock extends Block {
 			primeTnt(world, blockPos, playerEntity);
 			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 			if (item == Items.field_8884) {
-				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			} else {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			return true;

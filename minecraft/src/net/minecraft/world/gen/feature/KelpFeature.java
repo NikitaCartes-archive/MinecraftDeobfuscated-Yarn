@@ -33,7 +33,7 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 					&& iWorld.getBlockState(blockPos2.up()).getBlock() == Blocks.field_10382
 					&& blockState2.canPlaceAt(iWorld, blockPos2)) {
 					if (l == k) {
-						iWorld.setBlockState(blockPos2, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(23))), 2);
+						iWorld.setBlockState(blockPos2, blockState.with(KelpBlock.field_11194, Integer.valueOf(random.nextInt(23))), 2);
 						i++;
 					} else {
 						iWorld.setBlockState(blockPos2, blockState2, 2);
@@ -41,7 +41,7 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 				} else if (l > 0) {
 					BlockPos blockPos3 = blockPos2.down();
 					if (blockState.canPlaceAt(iWorld, blockPos3) && iWorld.getBlockState(blockPos3.down()).getBlock() != Blocks.field_9993) {
-						iWorld.setBlockState(blockPos3, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(23))), 2);
+						iWorld.setBlockState(blockPos3, blockState.with(KelpBlock.field_11194, Integer.valueOf(random.nextInt(23))), 2);
 						i++;
 					}
 					break;

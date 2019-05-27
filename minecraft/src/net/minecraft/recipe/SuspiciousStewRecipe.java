@@ -32,7 +32,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 					bl3 = true;
 				} else if (itemStack.getItem() == Blocks.field_10559.asItem() && !bl2) {
 					bl2 = true;
-				} else if (itemStack.getItem().matches(ItemTags.field_15543) && !bl) {
+				} else if (itemStack.getItem().isIn(ItemTags.field_15543) && !bl) {
 					bl = true;
 				} else {
 					if (itemStack.getItem() != Items.field_8428 || bl4) {
@@ -52,7 +52,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
-			if (!itemStack2.isEmpty() && itemStack2.getItem().matches(ItemTags.field_15543)) {
+			if (!itemStack2.isEmpty() && itemStack2.getItem().isIn(ItemTags.field_15543)) {
 				itemStack = itemStack2;
 				break;
 			}

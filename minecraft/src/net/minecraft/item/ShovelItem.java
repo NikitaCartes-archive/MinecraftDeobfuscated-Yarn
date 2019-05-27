@@ -49,7 +49,7 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.field_10287,
 		Blocks.field_10506
 	);
-	protected static final Map<Block, BlockState> BLOCK_TRANSFORMATIONS_MAP = Maps.<Block, BlockState>newHashMap(
+	protected static final Map<Block, BlockState> PATH_BLOCKSTATES = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(Blocks.field_10219, Blocks.field_10194.getDefaultState())
 	);
 
@@ -67,15 +67,15 @@ public class ShovelItem extends MiningToolItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getFacing() != Direction.field_11033 && world.getBlockState(blockPos.up()).isAir()) {
-			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
+		if (itemUsageContext.getSide() != Direction.field_11033 && world.getBlockState(blockPos.up()).isAir()) {
+			BlockState blockState = (BlockState)PATH_BLOCKSTATES.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				world.playSound(playerEntity, blockPos, SoundEvents.field_14616, SoundCategory.field_15245, 1.0F, 1.0F);
 				if (!world.isClient) {
 					world.setBlockState(blockPos, blockState, 11);
 					if (playerEntity != null) {
-						itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 					}
 				}
 

@@ -38,7 +38,7 @@ public class GlassBottleItem extends Item {
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
 			return new TypedActionResult<>(ActionResult.field_5812, this.fill(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
-			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() == HitResult.Type.field_1333) {
 				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
@@ -62,7 +62,7 @@ public class GlassBottleItem extends Item {
 	}
 
 	protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
-		itemStack.subtractAmount(1);
+		itemStack.decrement(1);
 		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		if (itemStack.isEmpty()) {
 			return itemStack2;

@@ -120,11 +120,11 @@ public class MapRenderer implements AutoCloseable {
 			int k = 0;
 
 			for (MapIcon mapIcon : this.mapState.icons.values()) {
-				if (!bl || mapIcon.renderIfNotHeld()) {
+				if (!bl || mapIcon.isAlwaysRendered()) {
 					MapRenderer.this.textureManager.bindTexture(MapRenderer.MAP_ICONS_TEXTURE);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
-					GlStateManager.rotatef((float)(mapIcon.getAngle() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotatef((float)(mapIcon.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.scalef(4.0F, 4.0F, 3.0F);
 					GlStateManager.translatef(-0.125F, 0.125F, 0.0F);
 					byte b = mapIcon.getTypeId();

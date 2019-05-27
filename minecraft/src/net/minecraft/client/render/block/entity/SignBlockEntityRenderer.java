@@ -37,7 +37,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.field_11559) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);

@@ -73,10 +73,10 @@ public class BrewingStandBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
-				((BrewingStandBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((BrewingStandBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

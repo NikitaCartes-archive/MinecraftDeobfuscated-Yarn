@@ -46,9 +46,9 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			}
 
 			float f = (float)i * this.countRange.nextFloat(lootContext.getRandom());
-			itemStack.addAmount(Math.round(f));
-			if (this.hasLimit() && itemStack.getAmount() > this.limit) {
-				itemStack.setAmount(this.limit);
+			itemStack.increment(Math.round(f));
+			if (this.hasLimit() && itemStack.getCount() > this.limit) {
+				itemStack.setCount(this.limit);
 			}
 		}
 

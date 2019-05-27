@@ -25,7 +25,7 @@ public class WritableBookItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
 		} else {
 			return ActionResult.field_5811;
 		}
@@ -39,7 +39,7 @@ public class WritableBookItem extends Item {
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
-	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
+	public static boolean isValid(@Nullable CompoundTag compoundTag) {
 		if (compoundTag == null) {
 			return false;
 		} else if (!compoundTag.containsKey("pages", 9)) {

@@ -13,12 +13,12 @@ import net.minecraft.world.World;
 public class ElytraItem extends Item {
 	public ElytraItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(new Identifier("broken"), (itemStack, world, livingEntity) -> isUsable(itemStack) ? 0.0F : 1.0F);
+		this.addPropertyGetter(new Identifier("broken"), (itemStack, world, livingEntity) -> isUsable(itemStack) ? 0.0F : 1.0F);
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 
 	public static boolean isUsable(ItemStack itemStack) {
-		return itemStack.getDamage() < itemStack.getDurability() - 1;
+		return itemStack.getDamage() < itemStack.getMaxDamage() - 1;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ElytraItem extends Item {
 		ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
 		if (itemStack2.isEmpty()) {
 			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
-			itemStack.setAmount(0);
+			itemStack.setCount(0);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
 			return new TypedActionResult<>(ActionResult.field_5814, itemStack);

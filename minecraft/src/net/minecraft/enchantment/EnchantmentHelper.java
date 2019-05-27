@@ -34,7 +34,7 @@ public class EnchantmentHelper {
 			return 0;
 		} else {
 			Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
-			ListTag listTag = itemStack.getEnchantmentList();
+			ListTag listTag = itemStack.getEnchantments();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompoundTag(i);
@@ -50,7 +50,7 @@ public class EnchantmentHelper {
 
 	public static Map<Enchantment, Integer> getEnchantments(ItemStack itemStack) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
-		ListTag listTag = itemStack.getItem() == Items.field_8598 ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantmentList();
+		ListTag listTag = itemStack.getItem() == Items.field_8598 ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantments();
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
@@ -82,13 +82,13 @@ public class EnchantmentHelper {
 		if (listTag.isEmpty()) {
 			itemStack.removeSubTag("Enchantments");
 		} else if (itemStack.getItem() != Items.field_8598) {
-			itemStack.setChildTag("Enchantments", listTag);
+			itemStack.putSubTag("Enchantments", listTag);
 		}
 	}
 
 	private static void accept(EnchantmentHelper.Consumer consumer, ItemStack itemStack) {
 		if (!itemStack.isEmpty()) {
-			ListTag listTag = itemStack.getEnchantmentList();
+			ListTag listTag = itemStack.getEnchantments();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getCompoundTag(i).getString("id");

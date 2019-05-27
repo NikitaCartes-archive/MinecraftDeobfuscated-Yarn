@@ -380,7 +380,7 @@ public class CatEntity extends TameableEntity {
 					if (dyeColor != this.getCollarColor()) {
 						this.setCollarColor(dyeColor);
 						if (!playerEntity.abilities.creativeMode) {
-							itemStack.subtractAmount(1);
+							itemStack.decrement(1);
 						}
 
 						this.setPersistent();
@@ -389,7 +389,7 @@ public class CatEntity extends TameableEntity {
 				} else if (this.isBreedingItem(itemStack)) {
 					if (this.getHealth() < this.getHealthMaximum() && item.isFood()) {
 						this.eat(playerEntity, itemStack);
-						this.heal((float)item.getFoodSetting().getHunger());
+						this.heal((float)item.getFoodComponent().getHunger());
 						return true;
 					}
 				} else if (!this.world.isClient) {

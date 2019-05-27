@@ -6,8 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookScreen;
-import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.container.PlayerContainer;
@@ -23,7 +23,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
 	private float mouseX;
 	private float mouseY;
-	private final RecipeBookScreen recipeBook = new RecipeBookScreen();
+	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 	private boolean isOpen;
 	private boolean isNarrow;
 	private boolean isMouseDown;
@@ -54,11 +54,11 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 			this.children.add(this.recipeBook);
 			this.setInitialFocus(this.recipeBook);
-			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+			this.addButton(new TexturedButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 				this.recipeBook.reset(this.isNarrow);
 				this.recipeBook.toggleOpen();
 				this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
-				((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 104, this.height / 2 - 22);
+				((TexturedButtonWidget)buttonWidget).setPos(this.left + 104, this.height / 2 - 22);
 				this.isMouseDown = true;
 			}));
 		}
@@ -189,7 +189,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	}
 
 	@Override
-	public RecipeBookScreen getRecipeBookGui() {
+	public RecipeBookWidget getRecipeBookGui() {
 		return this.recipeBook;
 	}
 }

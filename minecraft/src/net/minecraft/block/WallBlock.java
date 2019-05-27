@@ -16,7 +16,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class WallBlock extends HorizontalConnectedBlock {
-	public static final BooleanProperty UP = Properties.UP_BOOL;
+	public static final BooleanProperty UP = Properties.UP;
 	private final VoxelShape[] UP_OUTLINE_SHAPES;
 	private final VoxelShape[] UP_COLLISION_SHAPES;
 

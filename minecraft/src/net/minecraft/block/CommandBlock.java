@@ -139,12 +139,12 @@ public class CommandBlock extends BlockWithEntity {
 		if (blockEntity instanceof CommandBlockBlockEntity) {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
-			if (itemStack.hasDisplayName()) {
-				commandBlockExecutor.setCustomName(itemStack.getDisplayName());
+			if (itemStack.hasCustomName()) {
+				commandBlockExecutor.setCustomName(itemStack.getCustomName());
 			}
 
 			if (!world.isClient) {
-				if (itemStack.getSubCompoundTag("BlockEntityTag") == null) {
+				if (itemStack.getSubTag("BlockEntityTag") == null) {
 					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean("sendCommandFeedback"));
 					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
 				}
@@ -179,7 +179,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite());
 	}
 
 	private static void executeCommandChain(World world, BlockPos blockPos, Direction direction) {

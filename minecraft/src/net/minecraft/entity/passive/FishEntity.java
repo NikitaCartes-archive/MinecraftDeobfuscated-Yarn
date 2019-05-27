@@ -148,7 +148,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8705 && this.isAlive()) {
 			this.playSound(SoundEvents.field_14568, 1.0F, 1.0F);
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
 			this.copyDataToStack(itemStack2);
 			if (!this.world.isClient) {
@@ -170,7 +170,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	protected void copyDataToStack(ItemStack itemStack) {
 		if (this.hasCustomName()) {
-			itemStack.setDisplayName(this.getCustomName());
+			itemStack.setCustomName(this.getCustomName());
 		}
 	}
 

@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeetrootsBlock extends CropBlock {
-	public static final IntegerProperty AGE = Properties.AGE_3;
+	public static final IntProperty field_9962 = Properties.field_12497;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
@@ -28,8 +28,8 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public IntegerProperty getAgeProperty() {
-		return AGE;
+	public IntProperty method_9824() {
+		return field_9962;
 	}
 
 	@Override
@@ -57,11 +57,11 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_9962);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
+		return AGE_TO_SHAPE[blockState.get(this.method_9824())];
 	}
 }

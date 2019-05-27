@@ -102,7 +102,7 @@ public class TutorialManager {
 	}
 
 	public GameMode getGameMode() {
-		return this.client.interactionManager == null ? GameMode.INVALID : this.client.interactionManager.getCurrentGameMode();
+		return this.client.interactionManager == null ? GameMode.field_9218 : this.client.interactionManager.getCurrentGameMode();
 	}
 
 	public static Component getKeybindName(String string) {

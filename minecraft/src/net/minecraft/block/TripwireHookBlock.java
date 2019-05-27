@@ -77,7 +77,7 @@ public class TripwireHookBlock extends Block {
 		BlockState blockState = this.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false));
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {

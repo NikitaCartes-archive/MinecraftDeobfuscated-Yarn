@@ -79,7 +79,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private void method_19027(LivingEntity livingEntity, VillagerEntity villagerEntity) {
 		boolean bl = false;
 		ItemStack itemStack = livingEntity.getMainHandStack();
-		if (this.field_18392 == null || !ItemStack.areEqualIgnoreTags(this.field_18392, itemStack)) {
+		if (this.field_18392 == null || !ItemStack.areItemsEqualIgnoreDamage(this.field_18392, itemStack)) {
 			this.field_18392 = itemStack;
 			bl = true;
 			this.offers.clear();
@@ -107,8 +107,8 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_19028(TradeOffer tradeOffer) {
-		return ItemStack.areEqualIgnoreTags(this.field_18392, tradeOffer.getAdjustedFirstBuyItem())
-			|| ItemStack.areEqualIgnoreTags(this.field_18392, tradeOffer.getSecondBuyItem());
+		return ItemStack.areItemsEqualIgnoreDamage(this.field_18392, tradeOffer.getAdjustedFirstBuyItem())
+			|| ItemStack.areItemsEqualIgnoreDamage(this.field_18392, tradeOffer.getSecondBuyItem());
 	}
 
 	private LivingEntity method_19603(VillagerEntity villagerEntity) {

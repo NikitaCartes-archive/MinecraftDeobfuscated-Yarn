@@ -14,7 +14,7 @@ import net.minecraft.util.StringIdentifiable;
 
 public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends AbstractProperty<T> {
 	private final ImmutableSet<T> values;
-	private final Map<String, T> valuesByName = Maps.<String, T>newHashMap();
+	private final Map<String, T> byName = Maps.<String, T>newHashMap();
 
 	protected EnumProperty(String string, Class<T> class_, Collection<T> collection) {
 		super(string, class_);
@@ -22,11 +22,11 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 
 		for (T enum_ : collection) {
 			String string2 = enum_.asString();
-			if (this.valuesByName.containsKey(string2)) {
+			if (this.byName.containsKey(string2)) {
 				throw new IllegalArgumentException("Multiple values have the same name '" + string2 + "'");
 			}
 
-			this.valuesByName.put(string2, enum_);
+			this.byName.put(string2, enum_);
 		}
 	}
 
@@ -37,7 +37,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 
 	@Override
 	public Optional<T> getValue(String string) {
-		return Optional.ofNullable(this.valuesByName.get(string));
+		return Optional.ofNullable(this.byName.get(string));
 	}
 
 	public String method_11846(T enum_) {
@@ -50,7 +50,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 			return true;
 		} else if (object instanceof EnumProperty && super.equals(object)) {
 			EnumProperty<?> enumProperty = (EnumProperty<?>)object;
-			return this.values.equals(enumProperty.values) && this.valuesByName.equals(enumProperty.valuesByName);
+			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
 			return false;
 		}
@@ -60,22 +60,22 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 	public int computeHashCode() {
 		int i = super.computeHashCode();
 		i = 31 * i + this.values.hashCode();
-		return 31 * i + this.valuesByName.hashCode();
+		return 31 * i + this.byName.hashCode();
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> create(String string, Class<T> class_) {
-		return create(string, class_, Predicates.alwaysTrue());
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_) {
+		return of(string, class_, Predicates.alwaysTrue());
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> create(String string, Class<T> class_, Predicate<T> predicate) {
-		return create(string, class_, (Collection<T>)Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, Predicate<T> predicate) {
+		return of(string, class_, (Collection<T>)Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> create(String string, Class<T> class_, T... enums) {
-		return create(string, class_, Lists.<T>newArrayList(enums));
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, T... enums) {
+		return of(string, class_, Lists.<T>newArrayList(enums));
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> create(String string, Class<T> class_, Collection<T> collection) {
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, Collection<T> collection) {
 		return new EnumProperty<>(string, class_, collection);
 	}
 }

@@ -19,13 +19,13 @@ public class WallStandingBlockItem extends BlockItem {
 
 	@Nullable
 	@Override
-	protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
+	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
 		BlockState blockState2 = null;
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction != Direction.field_11036) {
 				BlockState blockState3 = direction == Direction.field_11033 ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
 				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
@@ -39,8 +39,8 @@ public class WallStandingBlockItem extends BlockItem {
 	}
 
 	@Override
-	public void registerBlockItemMap(Map<Block, Item> map, Item item) {
-		super.registerBlockItemMap(map, item);
+	public void appendBlocks(Map<Block, Item> map, Item item) {
+		super.appendBlocks(map, item);
 		map.put(this.wallBlock, item);
 	}
 }

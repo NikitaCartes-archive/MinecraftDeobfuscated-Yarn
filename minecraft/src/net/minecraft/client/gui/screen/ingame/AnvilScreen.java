@@ -102,7 +102,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 		if (!string.isEmpty()) {
 			String string2 = string;
 			Slot slot = this.container.getSlot(0);
-			if (slot != null && slot.hasStack() && !slot.getStack().hasDisplayName() && string.equals(slot.getStack().getDisplayName().getString())) {
+			if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string.equals(slot.getStack().getCustomName().getString())) {
 				string2 = "";
 			}
 
@@ -142,7 +142,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	@Override
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
 		if (i == 0) {
-			this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getDisplayName().getString());
+			this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getCustomName().getString());
 			this.nameField.setIsEditable(!itemStack.isEmpty());
 		}
 	}

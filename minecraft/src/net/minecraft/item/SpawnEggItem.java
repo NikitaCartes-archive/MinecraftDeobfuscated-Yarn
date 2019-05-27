@@ -49,20 +49,20 @@ public class SpawnEggItem extends Item {
 		if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
-			ItemStack itemStack = itemUsageContext.getItemStack();
+			ItemStack itemStack = itemUsageContext.getStack();
 			BlockPos blockPos = itemUsageContext.getBlockPos();
-			Direction direction = itemUsageContext.getFacing();
+			Direction direction = itemUsageContext.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10260) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
-					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
+					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
-					itemStack.subtractAmount(1);
+					itemStack.decrement(1);
 					return ActionResult.field_5812;
 				}
 			}
@@ -74,7 +74,7 @@ public class SpawnEggItem extends Item {
 				blockPos2 = blockPos.offset(direction);
 			}
 
-			EntityType<?> entityType2 = this.entityTypeFromTag(itemStack.getTag());
+			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
 					world,
 					itemStack,
@@ -85,7 +85,7 @@ public class SpawnEggItem extends Item {
 					!Objects.equals(blockPos, blockPos2) && direction == Direction.field_11036
 				)
 				!= null) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			return ActionResult.field_5812;
@@ -98,7 +98,7 @@ public class SpawnEggItem extends Item {
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
-			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.field_1332) {
 				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
@@ -107,12 +107,12 @@ public class SpawnEggItem extends Item {
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
+					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
-							itemStack.subtractAmount(1);
+							itemStack.decrement(1);
 						}
 
 						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
@@ -126,7 +126,7 @@ public class SpawnEggItem extends Item {
 	}
 
 	public boolean isOfSameEntityType(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
-		return Objects.equals(this.entityTypeFromTag(compoundTag), entityType);
+		return Objects.equals(this.getEntityType(compoundTag), entityType);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,11 +139,11 @@ public class SpawnEggItem extends Item {
 		return (SpawnEggItem)SPAWN_EGGS.get(entityType);
 	}
 
-	public static Iterable<SpawnEggItem> iterator() {
+	public static Iterable<SpawnEggItem> getAll() {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> entityTypeFromTag(@Nullable CompoundTag compoundTag) {
+	public EntityType<?> getEntityType(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
 			if (compoundTag2.containsKey("id", 8)) {

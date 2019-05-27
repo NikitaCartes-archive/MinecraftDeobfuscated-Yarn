@@ -40,21 +40,21 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	);
 	private static final Identifier field_19106 = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier field_19107 = new Identifier("textures/gui/server_selection.png");
-	private final MultiplayerScreen field_19108;
-	private final List<MultiplayerServerListWidget.ServerItem> field_19109 = Lists.<MultiplayerServerListWidget.ServerItem>newArrayList();
-	private final MultiplayerServerListWidget.Entry field_19110 = new MultiplayerServerListWidget.class_4268();
-	private final List<MultiplayerServerListWidget.LanServerListEntry> field_19111 = Lists.<MultiplayerServerListWidget.LanServerListEntry>newArrayList();
+	private final MultiplayerScreen screen;
+	private final List<MultiplayerServerListWidget.ServerItem> serverItems = Lists.<MultiplayerServerListWidget.ServerItem>newArrayList();
+	private final MultiplayerServerListWidget.Entry scanningEntry = new MultiplayerServerListWidget.ScanningEntry();
+	private final List<MultiplayerServerListWidget.LanServerListEntry> serverEntries = Lists.<MultiplayerServerListWidget.LanServerListEntry>newArrayList();
 
 	public MultiplayerServerListWidget(MultiplayerScreen multiplayerScreen, MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
-		this.field_19108 = multiplayerScreen;
+		this.screen = multiplayerScreen;
 	}
 
 	private void method_20131() {
 		this.clearEntries();
-		this.field_19109.forEach(this::addEntry);
-		this.addEntry(this.field_19110);
-		this.field_19111.forEach(this::addEntry);
+		this.serverItems.forEach(this::addEntry);
+		this.addEntry(this.scanningEntry);
+		this.serverEntries.forEach(this::addEntry);
 	}
 
 	public void method_20122(MultiplayerServerListWidget.Entry entry) {
@@ -71,7 +71,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
 		MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.children().get(k);
 		super.setSelected(entry);
-		if (entry instanceof MultiplayerServerListWidget.class_4268) {
+		if (entry instanceof MultiplayerServerListWidget.ScanningEntry) {
 			if (i <= 0 || k != this.getItemCount() - 1) {
 				if (i >= 0 || k != 0) {
 					this.moveSelection(i);
@@ -79,25 +79,25 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 		} else {
 			this.ensureVisible(entry);
-			this.field_19108.updateButtonActivationStates();
+			this.screen.updateButtonActivationStates();
 		}
 	}
 
 	public void method_20125(ServerList serverList) {
-		this.field_19109.clear();
+		this.serverItems.clear();
 
 		for (int i = 0; i < serverList.size(); i++) {
-			this.field_19109.add(new MultiplayerServerListWidget.ServerItem(this.field_19108, serverList.get(i)));
+			this.serverItems.add(new MultiplayerServerListWidget.ServerItem(this.screen, serverList.get(i)));
 		}
 
 		this.method_20131();
 	}
 
 	public void method_20126(List<LanServerEntry> list) {
-		this.field_19111.clear();
+		this.serverEntries.clear();
 
 		for (LanServerEntry lanServerEntry : list) {
-			this.field_19111.add(new MultiplayerServerListWidget.LanServerListEntry(this.field_19108, lanServerEntry));
+			this.serverEntries.add(new MultiplayerServerListWidget.LanServerListEntry(this.screen, lanServerEntry));
 		}
 
 		this.method_20131();
@@ -115,7 +115,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	@Override
 	protected boolean isFocused() {
-		return this.field_19108.getFocused() == this;
+		return this.screen.getFocused() == this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -159,6 +159,41 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		public LanServerEntry getLanServerEntry() {
 			return this.server;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class ScanningEntry extends MultiplayerServerListWidget.Entry {
+		private final MinecraftClient client = MinecraftClient.getInstance();
+
+		@Override
+		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+			int p = j + m / 2 - 9 / 2;
+			this.client
+				.textRenderer
+				.draw(
+					I18n.translate("lanServer.scanning"),
+					(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
+					(float)p,
+					16777215
+				);
+			String string;
+			switch ((int)(SystemUtil.getMeasuringTimeMs() / 300L % 4L)) {
+				case 0:
+				default:
+					string = "O o o";
+					break;
+				case 1:
+				case 3:
+					string = "o O o";
+					break;
+				case 2:
+					string = "o o O";
+			}
+
+			this.client
+				.textRenderer
+				.draw(string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(string) / 2), (float)(p + 9), 8421504);
 		}
 	}
 
@@ -394,41 +429,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		public ServerEntry getServer() {
 			return this.server;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_4268 extends MultiplayerServerListWidget.Entry {
-		private final MinecraftClient field_19112 = MinecraftClient.getInstance();
-
-		@Override
-		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-			int p = j + m / 2 - 9 / 2;
-			this.field_19112
-				.textRenderer
-				.draw(
-					I18n.translate("lanServer.scanning"),
-					(float)(this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
-					(float)p,
-					16777215
-				);
-			String string;
-			switch ((int)(SystemUtil.getMeasuringTimeMs() / 300L % 4L)) {
-				case 0:
-				default:
-					string = "O o o";
-					break;
-				case 1:
-				case 3:
-					string = "o O o";
-					break;
-				case 2:
-					string = "o o O";
-			}
-
-			this.field_19112
-				.textRenderer
-				.draw(string, (float)(this.field_19112.currentScreen.width / 2 - this.field_19112.textRenderer.getStringWidth(string) / 2), (float)(p + 9), 8421504);
 		}
 	}
 }

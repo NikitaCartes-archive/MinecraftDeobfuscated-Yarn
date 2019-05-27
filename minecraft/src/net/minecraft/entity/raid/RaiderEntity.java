@@ -47,7 +47,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.OMINOUS_BANNER);
+			&& ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.OMINOUS_BANNER);
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -141,7 +141,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
+				if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.field_16595);
 					int i = 1;
 					if (statusEffectInstance != null) {
@@ -229,7 +229,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER)) {
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER)) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.field_6169;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -238,7 +238,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			}
 
 			this.setEquippedStack(equipmentSlot, itemStack);
-			this.sendPickup(itemEntity, itemStack.getAmount());
+			this.sendPickup(itemEntity, itemStack.getCount());
 			itemEntity.remove();
 			this.getRaid().setWaveCaptain(this.getWave(), this);
 			this.setPatrolLeader(true);
@@ -518,7 +518,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.hasActiveRaid()
 				&& !this.actor.getRaid().isFinished()
 				&& this.actor.canLead()
-				&& !ItemStack.areEqual(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.OMINOUS_BANNER)) {
+				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.OMINOUS_BANNER)) {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor

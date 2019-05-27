@@ -32,7 +32,7 @@ public class LanternBlock extends Block {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction.getAxis() == Direction.Axis.Y) {
 				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.field_11036));
 				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {

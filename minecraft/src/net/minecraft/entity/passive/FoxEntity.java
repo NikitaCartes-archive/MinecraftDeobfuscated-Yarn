@@ -173,7 +173,7 @@ public class FoxEntity extends AnimalEntity {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6173);
 			if (this.canEat(itemStack)) {
 				if (this.eatingTime > 600) {
-					ItemStack itemStack2 = itemStack.onItemFinishedUsing(this.world, this);
+					ItemStack itemStack2 = itemStack.finishUsing(this.world, this);
 					if (!itemStack2.isEmpty()) {
 						this.setEquippedStack(EquipmentSlot.field_6173, itemStack2);
 					}
@@ -470,7 +470,7 @@ public class FoxEntity extends AnimalEntity {
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		if (this.canPickupItem(itemStack)) {
-			int i = itemStack.getAmount();
+			int i = itemStack.getCount();
 			if (i > 1) {
 				this.dropItem(itemStack.split(i - 1));
 			}
@@ -478,7 +478,7 @@ public class FoxEntity extends AnimalEntity {
 			this.spit(this.getEquippedStack(EquipmentSlot.field_6173));
 			this.setEquippedStack(EquipmentSlot.field_6173, itemStack.split(1));
 			this.handDropChances[EquipmentSlot.field_6173.getEntitySlotId()] = 2.0F;
-			this.sendPickup(itemEntity, itemStack.getAmount());
+			this.sendPickup(itemEntity, itemStack.getCount());
 			itemEntity.remove();
 			this.eatingTime = 0;
 		}
@@ -893,7 +893,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 			BlockState blockState = viewableWorld.getBlockState(blockPos);
-			return blockState.getBlock() == Blocks.field_16999 && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
+			return blockState.getBlock() == Blocks.field_16999 && (Integer)blockState.get(SweetBerryBushBlock.field_17000) >= 2;
 		}
 
 		@Override
@@ -915,8 +915,8 @@ public class FoxEntity extends AnimalEntity {
 			if (FoxEntity.this.world.getGameRules().getBoolean("mobGriefing")) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.getBlock() == Blocks.field_16999) {
-					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
-					blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
+					int i = (Integer)blockState.get(SweetBerryBushBlock.field_17000);
+					blockState.with(SweetBerryBushBlock.field_17000, Integer.valueOf(1));
 					int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
 					ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.field_6173);
 					if (itemStack.isEmpty()) {
@@ -929,7 +929,7 @@ public class FoxEntity extends AnimalEntity {
 					}
 
 					FoxEntity.this.playSound(SoundEvents.field_17617, 1.0F, 1.0F);
-					FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
+					FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.field_17000, Integer.valueOf(1)), 2);
 				}
 			}
 		}

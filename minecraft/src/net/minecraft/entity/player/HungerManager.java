@@ -3,7 +3,7 @@ package net.minecraft.entity.player;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.FoodItemSetting;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +27,8 @@ public class HungerManager {
 
 	public void eat(Item item, ItemStack itemStack) {
 		if (item.isFood()) {
-			FoodItemSetting foodItemSetting = item.getFoodSetting();
-			this.add(foodItemSetting.getHunger(), foodItemSetting.getSaturationModifier());
+			FoodComponent foodComponent = item.getFoodComponent();
+			this.add(foodComponent.getHunger(), foodComponent.getSaturationModifier());
 		}
 	}
 

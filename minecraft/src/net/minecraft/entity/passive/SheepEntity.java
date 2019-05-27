@@ -221,7 +221,7 @@ public class SheepEntity extends AnimalEntity {
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isBaby()) {
 			this.dropItems();
 			if (!this.world.isClient) {
-				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 		}
 
@@ -369,8 +369,8 @@ public class SheepEntity extends AnimalEntity {
 				return false;
 			}
 		}, 2, 1);
-		craftingInventory.setInvStack(0, new ItemStack(DyeItem.fromColor(dyeColor)));
-		craftingInventory.setInvStack(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
+		craftingInventory.setInvStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
+		craftingInventory.setInvStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
 		return craftingInventory;
 	}
 

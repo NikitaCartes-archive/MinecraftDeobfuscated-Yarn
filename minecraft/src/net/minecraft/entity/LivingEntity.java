@@ -862,7 +862,7 @@ public abstract class LivingEntity extends Entity {
 			float g = f;
 			if ((damageSource == DamageSource.ANVIL || damageSource == DamageSource.FALLING_BLOCK) && !this.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
 				this.getEquippedStack(EquipmentSlot.field_6169)
-					.applyDamage((int)(f * 4.0F + this.random.nextFloat() * f * 2.0F), this, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6169));
+					.damage((int)(f * 4.0F + this.random.nextFloat() * f * 2.0F), this, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6169));
 				f *= 0.75F;
 			}
 
@@ -1015,7 +1015,7 @@ public abstract class LivingEntity extends Entity {
 				ItemStack itemStack2 = this.getStackInHand(hand);
 				if (itemStack2.getItem() == Items.field_8288) {
 					itemStack = itemStack2.copy();
-					itemStack2.subtractAmount(1);
+					itemStack2.decrement(1);
 					break;
 				}
 			}
@@ -1986,7 +1986,7 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-				if (!ItemStack.areEqual(itemStack2, itemStack)) {
+				if (!ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) {
 					((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
 					if (!itemStack.isEmpty()) {
 						this.getAttributeContainer().removeAll(itemStack.getAttributeModifiers(equipmentSlot));
@@ -2222,7 +2222,7 @@ public abstract class LivingEntity extends Entity {
 			if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
 				bl = true;
 				if (!this.world.isClient && (this.field_6239 + 1) % 20 == 0) {
-					itemStack.applyDamage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.field_6174));
+					itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.field_6174));
 				}
 			} else {
 				bl = false;
@@ -2442,12 +2442,12 @@ public abstract class LivingEntity extends Entity {
 	protected void method_6076() {
 		if (this.isUsingItem()) {
 			if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
-				this.activeItemStack.method_7949(this.world, this, this.getItemUseTimeLeft());
+				this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
 				if (this.getItemUseTimeLeft() <= 25 && this.getItemUseTimeLeft() % 4 == 0) {
 					this.spawnConsumptionEffects(this.activeItemStack, 5);
 				}
 
-				if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.method_7967()) {
+				if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.isUsedOnRelease()) {
 					this.method_6040();
 				}
 			} else {
@@ -2546,7 +2546,7 @@ public abstract class LivingEntity extends Entity {
 	protected void method_6040() {
 		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
 			this.spawnConsumptionEffects(this.activeItemStack, 16);
-			this.setStackInHand(this.getActiveHand(), this.activeItemStack.onItemFinishedUsing(this.world, this));
+			this.setStackInHand(this.getActiveHand(), this.activeItemStack.finishUsing(this.world, this));
 			this.clearActiveItem();
 		}
 	}
@@ -2565,8 +2565,8 @@ public abstract class LivingEntity extends Entity {
 
 	public void stopUsingItem() {
 		if (!this.activeItemStack.isEmpty()) {
-			this.activeItemStack.onItemStopUsing(this.world, this, this.getItemUseTimeLeft());
-			if (this.activeItemStack.method_7967()) {
+			this.activeItemStack.onStoppedUsing(this.world, this, this.getItemUseTimeLeft());
+			if (this.activeItemStack.isUsedOnRelease()) {
 				this.method_6076();
 			}
 		}
@@ -2775,7 +2775,7 @@ public abstract class LivingEntity extends Entity {
 				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
 			);
 			this.applyFoodEffects(itemStack, world, this);
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 		}
 
 		return itemStack;
@@ -2784,7 +2784,7 @@ public abstract class LivingEntity extends Entity {
 	private void applyFoodEffects(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		Item item = itemStack.getItem();
 		if (item.isFood()) {
-			for (Pair<StatusEffectInstance, Float> pair : item.getFoodSetting().getStatusEffectChances()) {
+			for (Pair<StatusEffectInstance, Float> pair : item.getFoodComponent().getStatusEffects()) {
 				if (!world.isClient && pair.getLeft() != null && world.random.nextFloat() < pair.getRight()) {
 					livingEntity.addPotionEffect(new StatusEffectInstance(pair.getLeft()));
 				}

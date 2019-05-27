@@ -232,7 +232,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			if (this.canPickupItem(itemStack)) {
 				this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
 				this.handDropChances[EquipmentSlot.field_6173.getEntitySlotId()] = 2.0F;
-				this.sendPickup(itemEntity, itemStack.getAmount());
+				this.sendPickup(itemEntity, itemStack.getCount());
 				itemEntity.remove();
 			}
 		}
@@ -312,14 +312,14 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!itemStack.isEmpty() && itemStack.getItem().matches(ItemTags.field_15527)) {
+		if (!itemStack.isEmpty() && itemStack.getItem().isIn(ItemTags.field_15527)) {
 			if (!this.world.isClient) {
 				this.playSound(SoundEvents.field_14590, 1.0F, 1.0F);
 			}
 
 			this.setHasFish(true);
 			if (!playerEntity.abilities.creativeMode) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			return true;

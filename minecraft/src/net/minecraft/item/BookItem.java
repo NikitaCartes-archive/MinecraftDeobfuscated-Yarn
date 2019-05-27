@@ -6,8 +6,8 @@ public class BookItem extends Item {
 	}
 
 	@Override
-	public boolean isTool(ItemStack itemStack) {
-		return itemStack.getAmount() == 1;
+	public boolean isEnchantable(ItemStack itemStack) {
+		return itemStack.getCount() == 1;
 	}
 
 	@Override

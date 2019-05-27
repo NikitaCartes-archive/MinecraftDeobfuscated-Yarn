@@ -10,25 +10,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ItemPlacementContext extends ItemUsageContext {
-	private final BlockPos placedPos;
-	protected boolean canReplaceHitBlock = true;
+	private final BlockPos placementPos;
+	protected boolean canReplaceExisting = true;
 
 	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
-		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getItemStack(), itemUsageContext.hitResult);
+		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getStack(), itemUsageContext.hit);
 	}
 
 	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
 		super(world, playerEntity, hand, itemStack, blockHitResult);
-		this.placedPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-		this.canReplaceHitBlock = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
+		this.placementPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
+		this.canReplaceExisting = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
 	}
 
-	public static ItemPlacementContext create(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
+	public static ItemPlacementContext offset(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
 		return new ItemPlacementContext(
 			itemPlacementContext.getWorld(),
 			itemPlacementContext.getPlayer(),
 			itemPlacementContext.getHand(),
-			itemPlacementContext.getItemStack(),
+			itemPlacementContext.getStack(),
 			new BlockHitResult(
 				new Vec3d(
 					(double)blockPos.getX() + 0.5 + (double)direction.getOffsetX() * 0.5,
@@ -44,27 +44,27 @@ public class ItemPlacementContext extends ItemUsageContext {
 
 	@Override
 	public BlockPos getBlockPos() {
-		return this.canReplaceHitBlock ? super.getBlockPos() : this.placedPos;
+		return this.canReplaceExisting ? super.getBlockPos() : this.placementPos;
 	}
 
 	public boolean canPlace() {
-		return this.canReplaceHitBlock || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
+		return this.canReplaceExisting || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
 	}
 
-	public boolean canReplaceHitBlock() {
-		return this.canReplaceHitBlock;
+	public boolean canReplaceExisting() {
+		return this.canReplaceExisting;
 	}
 
-	public Direction getPlayerFacing() {
+	public Direction getPlayerLookDirection() {
 		return Direction.getEntityFacingOrder(this.player)[0];
 	}
 
-	public Direction[] getPlacementFacings() {
+	public Direction[] getPlacementDirections() {
 		Direction[] directions = Direction.getEntityFacingOrder(this.player);
-		if (this.canReplaceHitBlock) {
+		if (this.canReplaceExisting) {
 			return directions;
 		} else {
-			Direction direction = this.getFacing();
+			Direction direction = this.getSide();
 			int i = 0;
 
 			while (i < directions.length && directions[i] != direction.getOpposite()) {

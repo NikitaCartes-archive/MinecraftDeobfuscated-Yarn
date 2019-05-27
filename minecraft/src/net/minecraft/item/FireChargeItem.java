@@ -29,19 +29,19 @@ public class FireChargeItem extends Item {
 					world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
 				}
 			} else {
-				blockPos = blockPos.offset(itemUsageContext.getFacing());
+				blockPos = blockPos.offset(itemUsageContext.getSide());
 				if (world.getBlockState(blockPos).isAir()) {
 					this.playUseSound(world, blockPos);
 					world.setBlockState(blockPos, ((FireBlock)Blocks.field_10036).getStateForPosition(world, blockPos));
 				}
 			}
 
-			itemUsageContext.getItemStack().subtractAmount(1);
+			itemUsageContext.getStack().decrement(1);
 			return ActionResult.field_5812;
 		}
 	}
 
 	private void playUseSound(World world, BlockPos blockPos) {
-		world.playSound(null, blockPos, SoundEvents.field_15013, SoundCategory.field_15245, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+		world.playSound(null, blockPos, SoundEvents.field_15013, SoundCategory.field_15245, 1.0F, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2F + 1.0F);
 	}
 }

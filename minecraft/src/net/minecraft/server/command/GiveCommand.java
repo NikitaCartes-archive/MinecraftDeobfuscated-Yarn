@@ -52,12 +52,12 @@ public class GiveCommand {
 			int j = i;
 
 			while (j > 0) {
-				int k = Math.min(itemStackArgument.getItem().getMaxAmount(), j);
+				int k = Math.min(itemStackArgument.getItem().getMaxCount(), j);
 				j -= k;
 				ItemStack itemStack = itemStackArgument.createStack(k, false);
 				boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
 				if (bl && itemStack.isEmpty()) {
-					itemStack.setAmount(1);
+					itemStack.setCount(1);
 					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.method_6987();
@@ -90,14 +90,14 @@ public class GiveCommand {
 				new TranslatableComponent(
 					"commands.give.success.single",
 					i,
-					itemStackArgument.createStack(i, false).toTextComponent(),
+					itemStackArgument.createStack(i, false).toHoverableText(),
 					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.size()), true
+				new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true
 			);
 		}
 

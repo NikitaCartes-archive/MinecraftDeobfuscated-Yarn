@@ -156,7 +156,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				boolean bl = this.receiveFood(playerEntity, itemStack);
 				if (!bl) {
 					if (!this.isTame() || itemStack.getItem() == Items.field_8448) {
-						if (itemStack.interactWithEntity(playerEntity, this, hand)) {
+						if (itemStack.useOnEntity(playerEntity, this, hand)) {
 							return true;
 						} else {
 							this.playAngrySound();
@@ -179,7 +179,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 
 				if (bl) {
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 
 					return true;

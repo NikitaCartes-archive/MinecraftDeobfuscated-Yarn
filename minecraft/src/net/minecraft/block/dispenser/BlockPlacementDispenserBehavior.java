@@ -12,7 +12,7 @@ import net.minecraft.util.math.Direction;
 
 public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavior {
 	@Override
-	protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+	protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
 		this.success = false;
 		Item item = itemStack.getItem();
 		if (item instanceof BlockItem) {
@@ -22,7 +22,7 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 			this.success = ((BlockItem)item).place(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
 				== ActionResult.field_5812;
 			if (this.success) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 		}
 

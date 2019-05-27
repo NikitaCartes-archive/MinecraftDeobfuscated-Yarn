@@ -50,7 +50,7 @@ public class DropperBlock extends DispenserBlock {
 					itemStack2 = HopperBlockEntity.transfer(dispenserBlockEntity, inventory, itemStack.copy().split(1), direction.getOpposite());
 					if (itemStack2.isEmpty()) {
 						itemStack2 = itemStack.copy();
-						itemStack2.subtractAmount(1);
+						itemStack2.decrement(1);
 					} else {
 						itemStack2 = itemStack.copy();
 					}

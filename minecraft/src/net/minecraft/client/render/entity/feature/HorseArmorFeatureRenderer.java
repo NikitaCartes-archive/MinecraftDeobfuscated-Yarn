@@ -23,7 +23,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
 			this.getModel().copyStateTo(this.model);
 			this.model.method_17084(horseEntity, f, g, h);
-			this.bindTexture(horseArmorItem.getHorseArmorTexture());
+			this.bindTexture(horseArmorItem.getEntityTexture());
 			if (horseArmorItem instanceof DyeableHorseArmorItem) {
 				int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
 				float n = (float)(m >> 16 & 0xFF) / 255.0F;

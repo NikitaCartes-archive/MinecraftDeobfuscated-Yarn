@@ -143,7 +143,7 @@ public class FireworksSparkParticle {
 				} else {
 					for (int i = 0; i < this.explosions.size(); i++) {
 						CompoundTag compoundTag = this.explosions.getCompoundTag(i);
-						if (FireworkItem.Type.fromId(compoundTag.getByte("Type")) == FireworkItem.Type.field_7977) {
+						if (FireworkItem.Type.byId(compoundTag.getByte("Type")) == FireworkItem.Type.field_7977) {
 							bl2 = true;
 							break;
 						}
@@ -163,7 +163,7 @@ public class FireworksSparkParticle {
 			if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
 				int j = this.age / 2;
 				CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
-				FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag2.getByte("Type"));
+				FireworkItem.Type type = FireworkItem.Type.byId(compoundTag2.getByte("Type"));
 				boolean bl3 = compoundTag2.getBoolean("Trail");
 				boolean bl4 = compoundTag2.getBoolean("Flicker");
 				int[] is = compoundTag2.getIntArray("Colors");

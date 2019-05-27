@@ -2242,7 +2242,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 				break;
 			case 2005:
-				BoneMealItem.playEffects(this.world, blockPos, j);
+				BoneMealItem.createParticles(this.world, blockPos, j);
 				break;
 			case 2006:
 				for (int k = 0; k < 200; k++) {

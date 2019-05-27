@@ -14,7 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,13 +25,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
-	public static final IntegerProperty AGE = Properties.AGE_3;
+	public static final IntProperty field_17000 = Properties.field_12497;
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
 	public SweetBerryBushBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_17000, Integer.valueOf(0)));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -42,19 +42,19 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		if ((Integer)blockState.get(AGE) == 0) {
+		if ((Integer)blockState.get(field_17000) == 0) {
 			return SMALL_SHAPE;
 		} else {
-			return blockState.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(blockState, blockView, blockPos, entityContext);
+			return blockState.get(field_17000) < 3 ? LARGE_SHAPE : super.getOutlineShape(blockState, blockView, blockPos, entityContext);
 		}
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, world, blockPos, random);
-		int i = (Integer)blockState.get(AGE);
+		int i = (Integer)blockState.get(field_17000);
 		if (i < 3 && random.nextInt(5) == 0 && world.getLightLevel(blockPos.up(), 0) >= 9) {
-			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(blockPos, blockState.with(field_17000, Integer.valueOf(i + 1)), 2);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (entity instanceof LivingEntity && entity.getType() != EntityType.field_17943) {
 			entity.slowMovement(blockState, new Vec3d(0.8F, 0.75, 0.8F));
-			if (!world.isClient && (Integer)blockState.get(AGE) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
+			if (!world.isClient && (Integer)blockState.get(field_17000) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
 				double d = Math.abs(entity.x - entity.prevRenderX);
 				double e = Math.abs(entity.z - entity.prevRenderZ);
 				if (d >= 0.003F || e >= 0.003F) {
@@ -74,7 +74,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		int i = (Integer)blockState.get(AGE);
+		int i = (Integer)blockState.get(field_17000);
 		boolean bl = i == 3;
 		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.field_8324) {
 			return false;
@@ -82,7 +82,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			int j = 1 + world.random.nextInt(2);
 			dropStack(world, blockPos, new ItemStack(Items.field_16998, j + (bl ? 1 : 0)));
 			world.playSound(null, blockPos, SoundEvents.field_17617, SoundCategory.field_15245, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(1)), 2);
+			world.setBlockState(blockPos, blockState.with(field_17000, Integer.valueOf(1)), 2);
 			return true;
 		} else {
 			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
@@ -91,12 +91,12 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_17000);
 	}
 
 	@Override
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return (Integer)blockState.get(AGE) < 3;
+		return (Integer)blockState.get(field_17000) < 3;
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		int i = Math.min(3, (Integer)blockState.get(AGE) + 1);
-		world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i)), 2);
+		int i = Math.min(3, (Integer)blockState.get(field_17000) + 1);
+		world.setBlockState(blockPos, blockState.with(field_17000, Integer.valueOf(i)), 2);
 	}
 }

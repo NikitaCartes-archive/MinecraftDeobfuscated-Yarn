@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -66,10 +66,10 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
 		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, itemStack, fishHookEntity, collection);
+			handler.handle(serverPlayerEntity, itemStack, fishingBobberEntity, collection);
 		}
 	}
 
@@ -89,16 +89,16 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 			return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
 			if (!this.rod.test(itemStack)) {
 				return false;
-			} else if (!this.entity.test(serverPlayerEntity, fishHookEntity.hookedEntity)) {
+			} else if (!this.entity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
 				return false;
 			} else {
 				if (this.item != ItemPredicate.ANY) {
 					boolean bl = false;
-					if (fishHookEntity.hookedEntity instanceof ItemEntity) {
-						ItemEntity itemEntity = (ItemEntity)fishHookEntity.hookedEntity;
+					if (fishingBobberEntity.hookedEntity instanceof ItemEntity) {
+						ItemEntity itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity;
 						if (this.item.test(itemEntity.getStack())) {
 							bl = true;
 						}
@@ -150,11 +150,11 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
 			List<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishHookEntity, collection)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newArrayList();
 					}

@@ -121,10 +121,10 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			String string = null;
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
 				itemStack = itemStack.copy();
-				itemStack.setAmount(MathHelper.ceil((float)itemStack.getAmount() / 2.0F));
+				itemStack.setCount(MathHelper.ceil((float)itemStack.getCount() / 2.0F));
 			} else if (this.isCursorDragging && this.cursorDragSlots.size() > 1) {
 				itemStack = itemStack.copy();
-				itemStack.setAmount(this.draggedStackRemainder);
+				itemStack.setCount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
 					string = "" + ChatFormat.field_1054 + "0";
 				}
@@ -184,7 +184,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		String string = null;
 		if (slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && this.touchIsRightClickDrag && !itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
-			itemStack.setAmount(itemStack.getAmount() / 2);
+			itemStack.setCount(itemStack.getCount() / 2);
 		} else if (this.isCursorDragging && this.cursorDragSlots.contains(slot) && !itemStack2.isEmpty()) {
 			if (this.cursorDragSlots.size() == 1) {
 				return;
@@ -193,11 +193,11 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			if (Container.canInsertItemIntoSlot(slot, itemStack2, true) && this.container.canInsertIntoSlot(slot)) {
 				itemStack = itemStack2.copy();
 				bl = true;
-				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
-				int k = Math.min(itemStack.getMaxAmount(), slot.getMaxStackAmount(itemStack));
-				if (itemStack.getAmount() > k) {
+				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getCount());
+				int k = Math.min(itemStack.getMaxCount(), slot.getMaxStackAmount(itemStack));
+				if (itemStack.getCount() > k) {
 					string = ChatFormat.field_1054.toString() + k;
-					itemStack.setAmount(k);
+					itemStack.setCount(k);
 				}
 			} else {
 				this.cursorDragSlots.remove(slot);
@@ -237,21 +237,21 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		ItemStack itemStack = this.minecraft.player.inventory.getCursorStack();
 		if (!itemStack.isEmpty() && this.isCursorDragging) {
 			if (this.heldButtonType == 2) {
-				this.draggedStackRemainder = itemStack.getMaxAmount();
+				this.draggedStackRemainder = itemStack.getMaxCount();
 			} else {
-				this.draggedStackRemainder = itemStack.getAmount();
+				this.draggedStackRemainder = itemStack.getCount();
 
 				for (Slot slot : this.cursorDragSlots) {
 					ItemStack itemStack2 = itemStack.copy();
 					ItemStack itemStack3 = slot.getStack();
-					int i = itemStack3.isEmpty() ? 0 : itemStack3.getAmount();
+					int i = itemStack3.isEmpty() ? 0 : itemStack3.getCount();
 					Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack2, i);
-					int j = Math.min(itemStack2.getMaxAmount(), slot.getMaxStackAmount(itemStack2));
-					if (itemStack2.getAmount() > j) {
-						itemStack2.setAmount(j);
+					int j = Math.min(itemStack2.getMaxCount(), slot.getMaxStackAmount(itemStack2));
+					if (itemStack2.getCount() > j) {
+						itemStack2.setCount(j);
 					}
 
-					this.draggedStackRemainder = this.draggedStackRemainder - (itemStack2.getAmount() - i);
+					this.draggedStackRemainder = this.draggedStackRemainder - (itemStack2.getCount() - i);
 				}
 			}
 		}
@@ -364,7 +364,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					if (slot != this.touchDragSlotStart && !this.touchDragSlotStart.getStack().isEmpty()) {
 						this.touchDragStack = this.touchDragSlotStart.getStack().copy();
 					}
-				} else if (this.touchDragStack.getAmount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.touchDragStack, false)) {
+				} else if (this.touchDragStack.getCount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.touchDragStack, false)) {
 					long l = SystemUtil.getMeasuringTimeMs();
 					if (this.touchHoveredSlot == slot) {
 						if (l - this.touchDropTimer > 500L) {
@@ -372,7 +372,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							this.onMouseClick(slot, slot.id, 1, SlotActionType.field_7790);
 							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.field_7790);
 							this.touchDropTimer = l + 750L;
-							this.touchDragStack.subtractAmount(1);
+							this.touchDragStack.decrement(1);
 						}
 					} else {
 						this.touchHoveredSlot = slot;
@@ -383,7 +383,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		} else if (this.isCursorDragging
 			&& slot != null
 			&& !itemStack.isEmpty()
-			&& (itemStack.getAmount() > this.cursorDragSlots.size() || this.heldButtonType == 2)
+			&& (itemStack.getCount() > this.cursorDragSlots.size() || this.heldButtonType == 2)
 			&& Container.canInsertItemIntoSlot(slot, itemStack, true)
 			&& slot.canInsert(itemStack)
 			&& this.container.canInsertIntoSlot(slot)) {

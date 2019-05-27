@@ -238,13 +238,13 @@ public class HorseEntity extends HorseBaseEntity {
 			if (bl) {
 				if (this.receiveFood(playerEntity, itemStack)) {
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 
 					return true;
 				}
 
-				if (itemStack.interactWithEntity(playerEntity, this, hand)) {
+				if (itemStack.useOnEntity(playerEntity, this, hand)) {
 					return true;
 				}
 

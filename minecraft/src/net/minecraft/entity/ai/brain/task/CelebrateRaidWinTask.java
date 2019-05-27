@@ -59,14 +59,14 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	private ItemStack createFirework(DyeColor dyeColor, int i) {
 		ItemStack itemStack = new ItemStack(Items.field_8639, 1);
 		ItemStack itemStack2 = new ItemStack(Items.field_8450);
-		CompoundTag compoundTag = itemStack2.getOrCreateSubCompoundTag("Explosion");
+		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
 		List<Integer> list = Lists.<Integer>newArrayList();
 		list.add(dyeColor.getFireworkColor());
 		compoundTag.putIntArray("Colors", list);
 		compoundTag.putByte("Type", (byte)FireworkItem.Type.field_7970.getId());
-		CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("Fireworks");
+		CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
 		ListTag listTag = new ListTag();
-		CompoundTag compoundTag3 = itemStack2.getSubCompoundTag("Explosion");
+		CompoundTag compoundTag3 = itemStack2.getSubTag("Explosion");
 		if (compoundTag3 != null) {
 			listTag.add(compoundTag3);
 		}

@@ -20,25 +20,25 @@ public class FireworkChargeItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("Explosion");
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		CompoundTag compoundTag = itemStack.getSubTag("Explosion");
 		if (compoundTag != null) {
-			buildTooltip(compoundTag, list);
+			appendFireworkTooltip(compoundTag, list);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void buildTooltip(CompoundTag compoundTag, List<Component> list) {
-		FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag.getByte("Type"));
+	public static void appendFireworkTooltip(CompoundTag compoundTag, List<Component> list) {
+		FireworkItem.Type type = FireworkItem.Type.byId(compoundTag.getByte("Type"));
 		list.add(new TranslatableComponent("item.minecraft.firework_star.shape." + type.getName()).applyFormat(ChatFormat.field_1080));
 		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {
-			list.add(appendColorNames(new TextComponent("").applyFormat(ChatFormat.field_1080), is));
+			list.add(appendColors(new TextComponent("").applyFormat(ChatFormat.field_1080), is));
 		}
 
 		int[] js = compoundTag.getIntArray("FadeColors");
 		if (js.length > 0) {
-			list.add(appendColorNames(new TranslatableComponent("item.minecraft.firework_star.fade_to").append(" ").applyFormat(ChatFormat.field_1080), js));
+			list.add(appendColors(new TranslatableComponent("item.minecraft.firework_star.fade_to").append(" ").applyFormat(ChatFormat.field_1080), js));
 		}
 
 		if (compoundTag.getBoolean("Trail")) {
@@ -51,20 +51,20 @@ public class FireworkChargeItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Component appendColorNames(Component component, int[] is) {
+	private static Component appendColors(Component component, int[] is) {
 		for (int i = 0; i < is.length; i++) {
 			if (i > 0) {
 				component.append(", ");
 			}
 
-			component.append(getColorTextComponent(is[i]));
+			component.append(getColorText(is[i]));
 		}
 
 		return component;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Component getColorTextComponent(int i) {
+	private static Component getColorText(int i) {
 		DyeColor dyeColor = DyeColor.byFireworkColor(i);
 		return dyeColor == null
 			? new TranslatableComponent("item.minecraft.firework_star.custom_color")

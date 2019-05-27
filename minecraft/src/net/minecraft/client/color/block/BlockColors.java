@@ -61,7 +61,7 @@ public class BlockColors {
 			Blocks.field_10593
 		);
 		blockColors.register(
-			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.POWER)), Blocks.field_10091
+			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.field_11432)), Blocks.field_10091
 		);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? BiomeColors.getGrassColor(extendedBlockView, blockPos) : -1,
@@ -69,7 +69,7 @@ public class BlockColors {
 		);
 		blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.field_10150, Blocks.field_10331);
 		blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
-			int j = (Integer)blockState.get(StemBlock.AGE);
+			int j = (Integer)blockState.get(StemBlock.field_11584);
 			int k = j * 32;
 			int l = 255 - j * 8;
 			int m = j * 4;

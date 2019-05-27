@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -13,12 +13,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
-	public static final IntegerProperty POWER = Properties.POWER;
+	public static final IntProperty field_11739 = Properties.field_12511;
 	private final int weight;
 
 	protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(POWER, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11739, Integer.valueOf(0)));
 		this.weight = i;
 	}
 
@@ -45,12 +45,12 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected int getRedstoneOutput(BlockState blockState) {
-		return (Integer)blockState.get(POWER);
+		return (Integer)blockState.get(field_11739);
 	}
 
 	@Override
 	protected BlockState setRedstoneOutput(BlockState blockState, int i) {
-		return blockState.with(POWER, Integer.valueOf(i));
+		return blockState.with(field_11739, Integer.valueOf(i));
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(POWER);
+		builder.add(field_11739);
 	}
 }

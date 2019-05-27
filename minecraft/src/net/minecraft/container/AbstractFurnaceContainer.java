@@ -148,7 +148,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

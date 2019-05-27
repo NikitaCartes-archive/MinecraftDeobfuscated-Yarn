@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -19,12 +19,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock extends Block {
-	public static final IntegerProperty MOISTURE = Properties.MOISTURE;
+	public static final IntProperty field_11009 = Properties.field_12510;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
 	protected FarmlandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11009, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -66,15 +66,15 @@ public class FarmlandBlock extends Block {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			setToDirt(blockState, world, blockPos);
 		} else {
-			int i = (Integer)blockState.get(MOISTURE);
+			int i = (Integer)blockState.get(field_11009);
 			if (!isWaterNearby(world, blockPos) && !world.hasRain(blockPos.up())) {
 				if (i > 0) {
-					world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+					world.setBlockState(blockPos, blockState.with(field_11009, Integer.valueOf(i - 1)), 2);
 				} else if (!hasCrop(world, blockPos)) {
 					setToDirt(blockState, world, blockPos);
 				}
 			} else if (i < 7) {
-				world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(7)), 2);
+				world.setBlockState(blockPos, blockState.with(field_11009, Integer.valueOf(7)), 2);
 			}
 		}
 	}
@@ -113,7 +113,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(MOISTURE);
+		builder.add(field_11009);
 	}
 
 	@Override

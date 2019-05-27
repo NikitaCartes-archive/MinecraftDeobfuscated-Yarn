@@ -62,7 +62,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		return this.getDefaultState()
-			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
+			.with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 

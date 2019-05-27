@@ -44,8 +44,8 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 
-public class FishHookEntity extends Entity {
-	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishHookEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public class FishingBobberEntity extends Entity {
+	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private boolean field_7176;
 	private int field_7167;
 	private final PlayerEntity owner;
@@ -55,11 +55,11 @@ public class FishHookEntity extends Entity {
 	private int field_7172;
 	private float field_7169;
 	public Entity hookedEntity;
-	private FishHookEntity.State state = FishHookEntity.State.field_7180;
+	private FishingBobberEntity.State state = FishingBobberEntity.State.field_7180;
 	private final int lureLevel;
 	private final int luckOfTheSeaLevel;
 
-	private FishHookEntity(World world, PlayerEntity playerEntity, int i, int j) {
+	private FishingBobberEntity(World world, PlayerEntity playerEntity, int i, int j) {
 		super(EntityType.field_6103, world);
 		this.ignoreCameraFrustum = true;
 		this.owner = playerEntity;
@@ -69,7 +69,7 @@ public class FishHookEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public FishHookEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
+	public FishingBobberEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
 		this(world, playerEntity, 0, 0);
 		this.setPosition(d, e, f);
 		this.prevX = this.x;
@@ -77,7 +77,7 @@ public class FishHookEntity extends Entity {
 		this.prevZ = this.z;
 	}
 
-	public FishHookEntity(PlayerEntity playerEntity, World world, int i, int j) {
+	public FishingBobberEntity(PlayerEntity playerEntity, World world, int i, int j) {
 		this(world, playerEntity, i, j);
 		float f = this.owner.pitch;
 		float g = this.owner.yaw;
@@ -151,16 +151,16 @@ public class FishHookEntity extends Entity {
 				f = fluidState.getHeight(this.world, blockPos);
 			}
 
-			if (this.state == FishHookEntity.State.field_7180) {
+			if (this.state == FishingBobberEntity.State.field_7180) {
 				if (this.hookedEntity != null) {
 					this.setVelocity(Vec3d.ZERO);
-					this.state = FishHookEntity.State.field_7178;
+					this.state = FishingBobberEntity.State.field_7178;
 					return;
 				}
 
 				if (f > 0.0F) {
 					this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
-					this.state = FishHookEntity.State.field_7179;
+					this.state = FishingBobberEntity.State.field_7179;
 					return;
 				}
 
@@ -175,11 +175,11 @@ public class FishHookEntity extends Entity {
 					this.setVelocity(Vec3d.ZERO);
 				}
 			} else {
-				if (this.state == FishHookEntity.State.field_7178) {
+				if (this.state == FishingBobberEntity.State.field_7178) {
 					if (this.hookedEntity != null) {
 						if (this.hookedEntity.removed) {
 							this.hookedEntity = null;
-							this.state = FishHookEntity.State.field_7180;
+							this.state = FishingBobberEntity.State.field_7180;
 						} else {
 							this.x = this.hookedEntity.x;
 							this.y = this.hookedEntity.getBoundingBox().minY + (double)this.hookedEntity.getHeight() * 0.8;
@@ -191,7 +191,7 @@ public class FishHookEntity extends Entity {
 					return;
 				}
 
-				if (this.state == FishHookEntity.State.field_7179) {
+				if (this.state == FishingBobberEntity.State.field_7179) {
 					Vec3d vec3d = this.getVelocity();
 					double d = this.y + vec3d.y - (double)blockPos.getY() - (double)f;
 					if (Math.abs(d) < 0.01) {
@@ -400,7 +400,7 @@ public class FishHookEntity extends Entity {
 					itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
 					this.world.spawnEntity(itemEntity);
 					this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
-					if (itemStack2.getItem().matches(ItemTags.field_15527)) {
+					if (itemStack2.getItem().isIn(ItemTags.field_15527)) {
 						this.owner.increaseStat(Stats.field_15391, 1);
 					}
 				}

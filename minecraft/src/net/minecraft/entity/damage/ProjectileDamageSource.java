@@ -33,8 +33,8 @@ public class ProjectileDamageSource extends EntityDamageSource {
 		ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		String string2 = string + ".item";
-		return !itemStack.isEmpty() && itemStack.hasDisplayName()
-			? new TranslatableComponent(string2, livingEntity.getDisplayName(), component, itemStack.toTextComponent())
+		return !itemStack.isEmpty() && itemStack.hasCustomName()
+			? new TranslatableComponent(string2, livingEntity.getDisplayName(), component, itemStack.toHoverableText())
 			: new TranslatableComponent(string, livingEntity.getDisplayName(), component);
 	}
 }

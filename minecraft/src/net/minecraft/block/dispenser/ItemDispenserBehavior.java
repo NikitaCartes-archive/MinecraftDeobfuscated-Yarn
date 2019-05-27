@@ -11,21 +11,21 @@ import net.minecraft.world.World;
 public class ItemDispenserBehavior implements DispenserBehavior {
 	@Override
 	public final ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-		ItemStack itemStack2 = this.dispenseStack(blockPointer, itemStack);
+		ItemStack itemStack2 = this.dispenseSilently(blockPointer, itemStack);
 		this.playSound(blockPointer);
 		this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.FACING));
 		return itemStack2;
 	}
 
-	protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+	protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
 		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 		Position position = DispenserBlock.getOutputLocation(blockPointer);
 		ItemStack itemStack2 = itemStack.split(1);
-		dispenseItem(blockPointer.getWorld(), itemStack2, 6, direction, position);
+		spawnItem(blockPointer.getWorld(), itemStack2, 6, direction, position);
 		return itemStack;
 	}
 
-	public static void dispenseItem(World world, ItemStack itemStack, int i, Direction direction, Position position) {
+	public static void spawnItem(World world, ItemStack itemStack, int i, Direction direction, Position position) {
 		double d = position.getX();
 		double e = position.getY();
 		double f = position.getZ();

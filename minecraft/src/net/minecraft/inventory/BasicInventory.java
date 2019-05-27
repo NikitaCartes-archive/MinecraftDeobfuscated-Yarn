@@ -61,12 +61,12 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 				return ItemStack.EMPTY;
 			}
 
-			if (ItemStack.areEqualIgnoreTags(itemStack3, itemStack2)) {
-				int j = Math.min(this.getInvMaxStackAmount(), itemStack3.getMaxAmount());
-				int k = Math.min(itemStack2.getAmount(), j - itemStack3.getAmount());
+			if (ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2)) {
+				int j = Math.min(this.getInvMaxStackAmount(), itemStack3.getMaxCount());
+				int k = Math.min(itemStack2.getCount(), j - itemStack3.getCount());
 				if (k > 0) {
-					itemStack3.addAmount(k);
-					itemStack2.subtractAmount(k);
+					itemStack3.increment(k);
+					itemStack2.decrement(k);
 					if (itemStack2.isEmpty()) {
 						this.markDirty();
 						return ItemStack.EMPTY;
@@ -75,7 +75,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 			}
 		}
 
-		if (itemStack2.getAmount() != itemStack.getAmount()) {
+		if (itemStack2.getCount() != itemStack.getCount()) {
 			this.markDirty();
 		}
 
@@ -96,8 +96,8 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void setInvStack(int i, ItemStack itemStack) {
 		this.stackList.set(i, itemStack);
-		if (!itemStack.isEmpty() && itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 
 		this.markDirty();

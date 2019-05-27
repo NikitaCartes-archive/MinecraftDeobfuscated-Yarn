@@ -110,7 +110,7 @@ public class ReplaceItemCommand {
 			if (i >= 0 && i < inventory.getInvSize()) {
 				inventory.setInvStack(i, itemStack);
 				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toTextComponent()), true
+					new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toHoverableText()), true
 				);
 				return 1;
 			} else {
@@ -136,15 +136,15 @@ public class ReplaceItemCommand {
 		}
 
 		if (list.isEmpty()) {
-			throw ENTITY_FAILED_EXCEPTION.create(itemStack.toTextComponent(), i);
+			throw ENTITY_FAILED_EXCEPTION.create(itemStack.toHoverableText(), i);
 		} else {
 			if (list.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toTextComponent()),
+					new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toHoverableText()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toTextComponent()), true);
+				serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toHoverableText()), true);
 			}
 
 			return list.size();

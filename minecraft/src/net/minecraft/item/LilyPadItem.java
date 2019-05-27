@@ -35,7 +35,7 @@ public class LilyPadItem extends BlockItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 		if (hitResult.getType() == HitResult.Type.field_1333) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
@@ -58,7 +58,7 @@ public class LilyPadItem extends BlockItem {
 					}
 
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));

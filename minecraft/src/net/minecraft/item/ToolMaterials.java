@@ -14,16 +14,16 @@ public enum ToolMaterials implements ToolMaterial {
 	field_8929(0, 32, 12.0F, 0.0F, 22, () -> Ingredient.ofItems(Items.field_8695));
 
 	private final int miningLevel;
-	private final int durability;
-	private final float blockBreakSpeed;
+	private final int itemDurability;
+	private final float miningSpeed;
 	private final float attackDamage;
 	private final int enchantability;
 	private final Lazy<Ingredient> repairIngredient;
 
 	private ToolMaterials(int j, int k, float f, float g, int l, Supplier<Ingredient> supplier) {
 		this.miningLevel = j;
-		this.durability = k;
-		this.blockBreakSpeed = f;
+		this.itemDurability = k;
+		this.miningSpeed = f;
 		this.attackDamage = g;
 		this.enchantability = l;
 		this.repairIngredient = new Lazy<>(supplier);
@@ -31,12 +31,12 @@ public enum ToolMaterials implements ToolMaterial {
 
 	@Override
 	public int getDurability() {
-		return this.durability;
+		return this.itemDurability;
 	}
 
 	@Override
-	public float getBlockBreakingSpeed() {
-		return this.blockBreakSpeed;
+	public float getMiningSpeed() {
+		return this.miningSpeed;
 	}
 
 	@Override

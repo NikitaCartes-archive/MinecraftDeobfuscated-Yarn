@@ -20,7 +20,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		itemStack.setAmount(this.countRange.next(lootContext.getRandom()));
+		itemStack.setCount(this.countRange.next(lootContext.getRandom()));
 		return itemStack;
 	}
 

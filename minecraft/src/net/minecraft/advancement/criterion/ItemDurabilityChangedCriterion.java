@@ -90,7 +90,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 			if (!this.item.test(itemStack)) {
 				return false;
 			} else {
-				return !this.durability.test(itemStack.getDurability() - i) ? false : this.delta.test(itemStack.getDamage() - i);
+				return !this.durability.test(itemStack.getMaxDamage() - i) ? false : this.delta.test(itemStack.getDamage() - i);
 			}
 		}
 

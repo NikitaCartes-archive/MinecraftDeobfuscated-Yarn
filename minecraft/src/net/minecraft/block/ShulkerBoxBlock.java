@@ -112,7 +112,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getSide());
 	}
 
 	@Override
@@ -129,11 +129,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				ItemStack itemStack = getItemStack(this.getColor());
 				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 				if (!compoundTag.isEmpty()) {
-					itemStack.setChildTag("BlockEntityTag", compoundTag);
+					itemStack.putSubTag("BlockEntityTag", compoundTag);
 				}
 
 				if (shulkerBoxBlockEntity.hasCustomName()) {
-					itemStack.setDisplayName(shulkerBoxBlockEntity.getCustomName());
+					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
 
 				ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
@@ -164,10 +164,10 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				((ShulkerBoxBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((ShulkerBoxBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}
@@ -188,7 +188,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, blockView, list, tooltipContext);
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("LootTable", 8)) {
 				list.add(new TextComponent("???????"));
@@ -205,8 +205,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							Component component = itemStack2.getDisplayName().copy();
-							component.append(" x").append(String.valueOf(itemStack2.getAmount()));
+							Component component = itemStack2.getCustomName().copy();
+							component.append(" x").append(String.valueOf(itemStack2.getCount()));
 							list.add(component);
 						}
 					}
@@ -254,7 +254,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockView.getBlockEntity(blockPos);
 		CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 		if (!compoundTag.isEmpty()) {
-			itemStack.setChildTag("BlockEntityTag", compoundTag);
+			itemStack.putSubTag("BlockEntityTag", compoundTag);
 		}
 
 		return itemStack;

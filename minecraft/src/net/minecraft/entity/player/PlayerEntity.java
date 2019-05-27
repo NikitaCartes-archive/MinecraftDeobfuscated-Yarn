@@ -57,17 +57,17 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
-import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -155,7 +155,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private ItemStack selectedItem = ItemStack.EMPTY;
 	private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
 	@Nullable
-	public FishHookEntity fishHook;
+	public FishingBobberEntity fishHook;
 
 	public PlayerEntity(World world, GameProfile gameProfile) {
 		super(EntityType.field_6097, world);
@@ -252,8 +252,8 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.lastAttackedTicks++;
 		ItemStack itemStack = this.getMainHandStack();
-		if (!ItemStack.areEqual(this.selectedItem, itemStack)) {
-			if (!ItemStack.areEqualIgnoreDurability(this.selectedItem, itemStack)) {
+		if (!ItemStack.areEqualIgnoreDamage(this.selectedItem, itemStack)) {
+			if (!ItemStack.areItemsEqual(this.selectedItem, itemStack)) {
 				this.resetLastAttackedTicks();
 			}
 
@@ -625,7 +625,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public ItemEntity dropSelectedItem(boolean bl) {
 		return this.dropItem(
 			this.inventory
-				.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getAmount() : 1),
+				.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1),
 			false,
 			true
 		);
@@ -847,7 +847,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (f >= 3.0F && this.activeItemStack.getItem() == Items.field_8255) {
 			int i = 1 + MathHelper.floor(f);
 			Hand hand = this.getActiveHand();
-			this.activeItemStack.applyDamage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+			this.activeItemStack.damage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			if (this.activeItemStack.isEmpty()) {
 				if (hand == Hand.field_5808) {
 					this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
@@ -924,8 +924,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			ItemStack itemStack = this.getStackInHand(hand);
 			ItemStack itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
 			if (entity.interact(this, hand)) {
-				if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getAmount() < itemStack2.getAmount()) {
-					itemStack.setAmount(itemStack2.getAmount());
+				if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getCount() < itemStack2.getCount()) {
+					itemStack.setCount(itemStack2.getCount());
 				}
 
 				return ActionResult.field_5812;
@@ -935,7 +935,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						itemStack = itemStack2;
 					}
 
-					if (itemStack.interactWithEntity(this, (LivingEntity)entity, hand)) {
+					if (itemStack.useOnEntity(this, (LivingEntity)entity, hand)) {
 						if (itemStack.isEmpty() && !this.abilities.creativeMode) {
 							this.setStackInHand(hand, ItemStack.EMPTY);
 						}
@@ -1102,7 +1102,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (!this.world.isClient && !itemStack2.isEmpty() && entity2 instanceof LivingEntity) {
-							itemStack2.onEntityDamaged((LivingEntity)entity2, this);
+							itemStack2.postHit((LivingEntity)entity2, this);
 							if (itemStack2.isEmpty()) {
 								this.setStackInHand(Hand.field_5808, ItemStack.EMPTY);
 							}
@@ -1610,7 +1610,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 			CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos2, false);
-			return itemStack.getCustomCanPlace(this.world.getTagManager(), cachedBlockPosition);
+			return itemStack.canPlaceOn(this.world.getTagManager(), cachedBlockPosition);
 		}
 	}
 
@@ -1953,15 +1953,15 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public ItemStack getArrowType(ItemStack itemStack) {
-		if (!(itemStack.getItem() instanceof BaseBowItem)) {
+		if (!(itemStack.getItem() instanceof RangedWeaponItem)) {
 			return ItemStack.EMPTY;
 		} else {
-			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).getHeldProjectilePredicate();
-			ItemStack itemStack2 = BaseBowItem.getItemHeld(this, predicate);
+			Predicate<ItemStack> predicate = ((RangedWeaponItem)itemStack.getItem()).getHeldProjectiles();
+			ItemStack itemStack2 = RangedWeaponItem.getHeldProjectile(this, predicate);
 			if (!itemStack2.isEmpty()) {
 				return itemStack2;
 			} else {
-				predicate = ((BaseBowItem)itemStack.getItem()).getInventoryProjectilePredicate();
+				predicate = ((RangedWeaponItem)itemStack.getItem()).getProjectiles();
 
 				for (int i = 0; i < this.inventory.getInvSize(); i++) {
 					ItemStack itemStack3 = this.inventory.getInvStack(i);

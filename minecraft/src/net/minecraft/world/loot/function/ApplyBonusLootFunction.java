@@ -41,8 +41,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		ItemStack itemStack2 = lootContext.get(LootContextParameters.field_1229);
 		if (itemStack2 != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack2);
-			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getAmount(), i);
-			itemStack.setAmount(j);
+			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getCount(), i);
+			itemStack.setCount(j);
 		}
 
 		return itemStack;

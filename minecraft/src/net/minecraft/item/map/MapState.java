@@ -78,7 +78,7 @@ public class MapState extends PersistentState {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(i));
 			this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 			this.addIcon(
-				mapBannerMarker.getType(),
+				mapBannerMarker.getIconType(),
 				null,
 				mapBannerMarker.getKey(),
 				(double)mapBannerMarker.getPos().getX(),
@@ -91,7 +91,7 @@ public class MapState extends PersistentState {
 		ListTag listTag2 = compoundTag.getList("frames", 10);
 
 		for (int j = 0; j < listTag2.size(); j++) {
-			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(listTag2.getCompoundTag(j));
+			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(j));
 			this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 			this.addIcon(
 				MapIcon.Type.field_95,
@@ -125,7 +125,7 @@ public class MapState extends PersistentState {
 		ListTag listTag2 = new ListTag();
 
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-			listTag2.add(mapFrameMarker.getNbt());
+			listTag2.add(mapFrameMarker.toTag());
 		}
 
 		compoundTag.put("frames", listTag2);
@@ -156,8 +156,8 @@ public class MapState extends PersistentState {
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
-			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isHeldInItemFrame())) {
-				if (!itemStack.isHeldInItemFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
+			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isInFrame())) {
+				if (!itemStack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.field_91,
 						playerUpdateTracker2.player.world,
@@ -175,8 +175,8 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		if (itemStack.isHeldInItemFrame() && this.showIcons) {
-			ItemFrameEntity itemFrameEntity = itemStack.getHoldingItemFrame();
+		if (itemStack.isInFrame() && this.showIcons) {
+			ItemFrameEntity itemFrameEntity = itemStack.getFrame();
 			BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 			MapFrameMarker mapFrameMarker = (MapFrameMarker)this.frames.get(MapFrameMarker.getKey(blockPos));
 			if (mapFrameMarker != null && itemFrameEntity.getEntityId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
@@ -223,7 +223,7 @@ public class MapState extends PersistentState {
 			listTag = itemStack.getTag().getList("Decorations", 10);
 		} else {
 			listTag = new ListTag();
-			itemStack.setChildTag("Decorations", listTag);
+			itemStack.putSubTag("Decorations", listTag);
 		}
 
 		CompoundTag compoundTag = new CompoundTag();
@@ -234,7 +234,7 @@ public class MapState extends PersistentState {
 		compoundTag.putDouble("rot", 180.0);
 		listTag.add(compoundTag);
 		if (type.hasTintColor()) {
-			CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("display");
+			CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("display");
 			compoundTag2.putInt("MapColor", type.getTintColor());
 		}
 	}
@@ -342,7 +342,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
+				this.addIcon(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
 				bl = true;
 			}
 

@@ -47,7 +47,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17708(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8639, 3);
-		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Fireworks");
+		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
 		ListTag listTag = new ListTag();
 		int i = 0;
 
@@ -57,7 +57,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 				if (field_9006.method_8093(itemStack2)) {
 					i++;
 				} else if (field_9008.method_8093(itemStack2)) {
-					CompoundTag compoundTag2 = itemStack2.getSubCompoundTag("Explosion");
+					CompoundTag compoundTag2 = itemStack2.getSubTag("Explosion");
 					if (compoundTag2 != null) {
 						listTag.add(compoundTag2);
 					}

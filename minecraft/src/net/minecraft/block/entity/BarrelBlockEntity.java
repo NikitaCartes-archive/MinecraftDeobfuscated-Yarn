@@ -84,8 +84,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	@Override
 	public void setInvStack(int i, ItemStack itemStack) {
 		this.inventory.set(i, itemStack);
-		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 

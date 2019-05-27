@@ -49,7 +49,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 		BlockState blockState = this.getDefaultState();
 		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {

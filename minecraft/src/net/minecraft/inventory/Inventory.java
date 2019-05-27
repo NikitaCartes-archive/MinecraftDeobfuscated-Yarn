@@ -43,7 +43,7 @@ public interface Inventory extends Clearable {
 		for (int j = 0; j < this.getInvSize(); j++) {
 			ItemStack itemStack = this.getInvStack(j);
 			if (itemStack.getItem().equals(item)) {
-				i += itemStack.getAmount();
+				i += itemStack.getCount();
 			}
 		}
 
@@ -53,7 +53,7 @@ public interface Inventory extends Clearable {
 	default boolean containsAnyInInv(Set<Item> set) {
 		for (int i = 0; i < this.getInvSize(); i++) {
 			ItemStack itemStack = this.getInvStack(i);
-			if (set.contains(itemStack.getItem()) && itemStack.getAmount() > 0) {
+			if (set.contains(itemStack.getItem()) && itemStack.getCount() > 0) {
 				return true;
 			}
 		}

@@ -68,9 +68,9 @@ public class CartographyTableContainer extends Container {
 					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
 						if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-							ItemStack itemStack2x = FilledMapItem.createCopy(world, CartographyTableContainer.this.inventory.getInvStack(0));
+							ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableContainer.this.inventory.getInvStack(0));
 							if (itemStack2x != null) {
-								itemStack2x.setAmount(1);
+								itemStack2x.setCount(1);
 								return itemStack2x;
 							}
 						}
@@ -90,7 +90,7 @@ public class CartographyTableContainer extends Container {
 
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-					itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
+					itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
 					blockContext.run(
 						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
@@ -137,12 +137,12 @@ public class CartographyTableContainer extends Container {
 				ItemStack itemStack4;
 				if (item == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
 					itemStack4 = itemStack.copy();
-					itemStack4.setAmount(1);
+					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
 					this.sendContentUpdates();
 				} else if (item == Items.GLASS_PANE && !mapState.locked) {
 					itemStack4 = itemStack.copy();
-					itemStack4.setAmount(1);
+					itemStack4.setCount(1);
 					this.sendContentUpdates();
 				} else {
 					if (item != Items.field_8895) {
@@ -152,11 +152,11 @@ public class CartographyTableContainer extends Container {
 					}
 
 					itemStack4 = itemStack.copy();
-					itemStack4.setAmount(2);
+					itemStack4.setCount(2);
 					this.sendContentUpdates();
 				}
 
-				if (!ItemStack.areEqual(itemStack4, itemStack3)) {
+				if (!ItemStack.areEqualIgnoreDamage(itemStack4, itemStack3)) {
 					this.resultSlot.setInvStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
@@ -181,9 +181,9 @@ public class CartographyTableContainer extends Container {
 			if (i == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2x = FilledMapItem.createCopy(world, this.inventory.getInvStack(0));
+						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
 						if (itemStack2x != null) {
-							itemStack2x.setAmount(1);
+							itemStack2x.setCount(1);
 							return itemStack2x;
 						} else {
 							return itemStack2;
@@ -191,7 +191,7 @@ public class CartographyTableContainer extends Container {
 					})).orElse(itemStack2);
 				}
 
-				item.onCrafted(itemStack3, playerEntity.world, playerEntity);
+				item.onCraft(itemStack3, playerEntity.world, playerEntity);
 				if (!this.insertItem(itemStack3, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -222,7 +222,7 @@ public class CartographyTableContainer extends Container {
 			}
 
 			slot.markDirty();
-			if (itemStack3.getAmount() == itemStack.getAmount()) {
+			if (itemStack3.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 

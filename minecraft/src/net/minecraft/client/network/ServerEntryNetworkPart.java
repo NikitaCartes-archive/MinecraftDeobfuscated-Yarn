@@ -1,4 +1,4 @@
-package net.minecraft.client.sortme;
+package net.minecraft.client.network;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;

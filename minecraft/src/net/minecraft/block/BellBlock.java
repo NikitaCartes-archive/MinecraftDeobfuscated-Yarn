@@ -142,14 +142,14 @@ public class BellBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.getFacing();
+		Direction direction = itemPlacementContext.getSide();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
 		Direction.Axis axis = direction.getAxis();
 		if (axis == Direction.Axis.Y) {
 			BlockState blockState = this.getDefaultState()
 				.with(ATTACHMENT, direction == Direction.field_11033 ? Attachment.field_17099 : Attachment.field_17098)
-				.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+				.with(FACING, itemPlacementContext.getPlayerFacing());
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), blockPos)) {
 				return blockState;
 			}

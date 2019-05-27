@@ -250,7 +250,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				thread2.start();
 			}
 
-			Items.AIR.appendItemsForGroup(ItemGroup.SEARCH, DefaultedList.create());
+			Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.create());
 			return true;
 		}
 	}

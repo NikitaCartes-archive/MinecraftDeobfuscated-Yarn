@@ -4,11 +4,11 @@ public class ToolItem extends Item {
 	private final ToolMaterial material;
 
 	public ToolItem(ToolMaterial toolMaterial, Item.Settings settings) {
-		super(settings.durabilityIfNotSet(toolMaterial.getDurability()));
+		super(settings.maxDamageIfAbsent(toolMaterial.getDurability()));
 		this.material = toolMaterial;
 	}
 
-	public ToolMaterial getType() {
+	public ToolMaterial getMaterial() {
 		return this.material;
 	}
 

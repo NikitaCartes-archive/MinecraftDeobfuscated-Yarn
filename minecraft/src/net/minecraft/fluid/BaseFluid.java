@@ -17,7 +17,7 @@ import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 public abstract class BaseFluid extends Fluid {
 	public static final BooleanProperty FALLING = Properties.FALLING;
-	public static final IntegerProperty LEVEL = Properties.FLUID_LEVEL;
+	public static final IntProperty LEVEL = Properties.field_12490;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override

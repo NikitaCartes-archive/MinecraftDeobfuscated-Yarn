@@ -9,22 +9,22 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 
 public class DyeItem extends Item {
-	private static final Map<DyeColor, DyeItem> dyes = Maps.newEnumMap(DyeColor.class);
+	private static final Map<DyeColor, DyeItem> DYES = Maps.newEnumMap(DyeColor.class);
 	private final DyeColor color;
 
 	public DyeItem(DyeColor dyeColor, Item.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		dyes.put(dyeColor, this);
+		DYES.put(dyeColor, this);
 	}
 
 	@Override
-	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+	public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (livingEntity instanceof SheepEntity) {
 			SheepEntity sheepEntity = (SheepEntity)livingEntity;
 			if (sheepEntity.isAlive() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
 				sheepEntity.setColor(this.color);
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			return true;
@@ -37,7 +37,7 @@ public class DyeItem extends Item {
 		return this.color;
 	}
 
-	public static DyeItem fromColor(DyeColor dyeColor) {
-		return (DyeItem)dyes.get(dyeColor);
+	public static DyeItem byColor(DyeColor dyeColor) {
+		return (DyeItem)DYES.get(dyeColor);
 	}
 }

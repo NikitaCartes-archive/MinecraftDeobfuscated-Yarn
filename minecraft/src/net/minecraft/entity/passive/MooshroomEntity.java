@@ -58,7 +58,7 @@ public class MooshroomEntity extends CowEntity {
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8428 && this.getBreedingAge() >= 0 && !playerEntity.abilities.creativeMode) {
-			itemStack.subtractAmount(1);
+			itemStack.decrement(1);
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
@@ -105,13 +105,13 @@ public class MooshroomEntity extends CowEntity {
 						.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
-				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				this.playSound(SoundEvents.field_14705, 1.0F, 1.0F);
 			}
 
 			return true;
 		} else {
-			if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().matches(ItemTags.field_15543)) {
+			if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().isIn(ItemTags.field_15543)) {
 				if (this.stewEffect != null) {
 					for (int j = 0; j < 2; j++) {
 						this.world
@@ -128,7 +128,7 @@ public class MooshroomEntity extends CowEntity {
 				} else {
 					Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 
 					for (int i = 0; i < 4; i++) {

@@ -20,13 +20,13 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getDefaultStack() {
-		return PotionUtil.setPotion(super.getDefaultStack(), Potions.field_8982);
+	public ItemStack getStackForRender() {
+		return PotionUtil.setPotion(super.getStackForRender(), Potions.field_8982);
 	}
 
 	@Override
-	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-		if (this.isInItemGroup(itemGroup)) {
+	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+		if (this.isIn(itemGroup)) {
 			for (Potion potion : Registry.POTION) {
 				if (!potion.getEffects().isEmpty()) {
 					defaultedList.add(PotionUtil.setPotion(new ItemStack(this), potion));
@@ -37,7 +37,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.125F);
 	}
 

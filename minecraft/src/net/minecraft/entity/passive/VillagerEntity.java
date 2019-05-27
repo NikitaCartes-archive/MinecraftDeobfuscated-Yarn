@@ -277,7 +277,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = itemStack.getItem() == Items.field_8448;
 		if (bl) {
-			itemStack.interactWithEntity(playerEntity, this, hand);
+			itemStack.useOnEntity(playerEntity, this, hand);
 			return true;
 		} else if (itemStack.getItem() == Items.field_8086 || !this.isAlive() || this.hasCustomer() || this.isSleeping()) {
 			return super.interactMob(playerEntity, hand);
@@ -351,7 +351,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 			for (TradeOffer tradeOffer2 : this.getOffers()) {
 				double d = 0.3 + 0.0625 * (double)j;
-				int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getAmount());
+				int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getCount());
 				tradeOffer2.increaseSpecialPrice(-Math.max(k, 1));
 			}
 		}
@@ -521,7 +521,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				if (!itemStack.isEmpty()) {
 					Integer integer = (Integer)ITEM_FOOD_VALUES.get(itemStack.getItem());
 					if (integer != null) {
-						int j = itemStack.getAmount();
+						int j = itemStack.getCount();
 
 						for (int k = j; k > 0; k--) {
 							this.foodLevel = (byte)(this.foodLevel + integer);
@@ -647,22 +647,22 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
 		if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
 			if (villagerProfession == VillagerProfession.field_17056 && item == Items.field_8861) {
-				int i = itemStack.getAmount() / 3;
+				int i = itemStack.getCount() / 3;
 				if (i > 0) {
 					ItemStack itemStack2 = this.getInventory().add(new ItemStack(Items.field_8229, i));
-					itemStack.subtractAmount(i * 3);
+					itemStack.decrement(i * 3);
 					if (!itemStack2.isEmpty()) {
 						this.dropStack(itemStack2, 0.5F);
 					}
 				}
 			}
 
-			this.sendPickup(itemEntity, itemStack.getAmount());
+			this.sendPickup(itemEntity, itemStack.getCount());
 			ItemStack itemStack3 = this.getInventory().add(itemStack);
 			if (itemStack3.isEmpty()) {
 				itemEntity.remove();
 			} else {
-				itemStack.setAmount(itemStack3.getAmount());
+				itemStack.setCount(itemStack3.getCount());
 			}
 		}
 	}

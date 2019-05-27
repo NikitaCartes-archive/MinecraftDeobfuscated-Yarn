@@ -128,7 +128,7 @@ public class MerchantContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
@@ -202,14 +202,14 @@ public class MerchantContainer extends Container {
 				ItemStack itemStack2 = ((Slot)this.slotList.get(j)).getStack();
 				if (!itemStack2.isEmpty() && this.equals(itemStack, itemStack2)) {
 					ItemStack itemStack3 = this.traderInventory.getInvStack(i);
-					int k = itemStack3.isEmpty() ? 0 : itemStack3.getAmount();
-					int l = Math.min(itemStack.getMaxAmount() - k, itemStack2.getAmount());
+					int k = itemStack3.isEmpty() ? 0 : itemStack3.getCount();
+					int l = Math.min(itemStack.getMaxCount() - k, itemStack2.getCount());
 					ItemStack itemStack4 = itemStack2.copy();
 					int m = k + l;
-					itemStack2.subtractAmount(l);
-					itemStack4.setAmount(m);
+					itemStack2.decrement(l);
+					itemStack4.setCount(m);
 					this.traderInventory.setInvStack(i, itemStack4);
-					if (m >= itemStack.getMaxAmount()) {
+					if (m >= itemStack.getMaxCount()) {
 						break;
 					}
 				}

@@ -40,7 +40,7 @@ public class EnderEyeItem extends Item {
 			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
 			world.setBlockState(blockPos, blockState2, 2);
 			world.updateHorizontalAdjacent(blockPos, Blocks.field_10398);
-			itemUsageContext.getItemStack().subtractAmount(1);
+			itemUsageContext.getStack().decrement(1);
 			world.playLevelEvent(1503, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
 			if (result != null) {
@@ -62,7 +62,7 @@ public class EnderEyeItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1348);
+		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1348);
 		if (hitResult.getType() == HitResult.Type.field_1332 && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10398) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
@@ -79,11 +79,11 @@ public class EnderEyeItem extends Item {
 					}
 
 					world.playSound(
-						null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15155, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
+						null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15155, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 					);
 					world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);
 					if (!playerEntity.abilities.creativeMode) {
-						itemStack.subtractAmount(1);
+						itemStack.decrement(1);
 					}
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));

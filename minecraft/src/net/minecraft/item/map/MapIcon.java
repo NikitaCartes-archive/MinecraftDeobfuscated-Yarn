@@ -11,14 +11,14 @@ public class MapIcon {
 	private final MapIcon.Type type;
 	private byte x;
 	private byte z;
-	private byte angle;
+	private byte rotation;
 	private final Component text;
 
 	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable Component component) {
 		this.type = type;
 		this.x = b;
 		this.z = c;
-		this.angle = d;
+		this.rotation = d;
 		this.text = component;
 	}
 
@@ -39,13 +39,13 @@ public class MapIcon {
 		return this.z;
 	}
 
-	public byte getAngle() {
-		return this.angle;
+	public byte getRotation() {
+		return this.rotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean renderIfNotHeld() {
-		return this.type.renderIfNotHeld();
+	public boolean isAlwaysRendered() {
+		return this.type.isAlwaysRendered();
 	}
 
 	@Nullable
@@ -62,7 +62,7 @@ public class MapIcon {
 			MapIcon mapIcon = (MapIcon)object;
 			if (this.type != mapIcon.type) {
 				return false;
-			} else if (this.angle != mapIcon.angle) {
+			} else if (this.rotation != mapIcon.rotation) {
 				return false;
 			} else if (this.x != mapIcon.x) {
 				return false;
@@ -76,7 +76,7 @@ public class MapIcon {
 		int i = this.type.getId();
 		i = 31 * i + this.x;
 		i = 31 * i + this.z;
-		i = 31 * i + this.angle;
+		i = 31 * i + this.rotation;
 		return 31 * i + Objects.hashCode(this.text);
 	}
 
@@ -110,7 +110,7 @@ public class MapIcon {
 		field_110(true);
 
 		private final byte id = (byte)this.ordinal();
-		private final boolean renderNotHeld;
+		private final boolean alwaysRender;
 		private final int tintColor;
 
 		private Type(boolean bl) {
@@ -118,7 +118,7 @@ public class MapIcon {
 		}
 
 		private Type(boolean bl, int j) {
-			this.renderNotHeld = bl;
+			this.alwaysRender = bl;
 			this.tintColor = j;
 		}
 
@@ -127,8 +127,8 @@ public class MapIcon {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public boolean renderIfNotHeld() {
-			return this.renderNotHeld;
+		public boolean isAlwaysRendered() {
+			return this.alwaysRender;
 		}
 
 		public boolean hasTintColor() {

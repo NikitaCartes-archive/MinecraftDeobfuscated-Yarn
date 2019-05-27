@@ -112,7 +112,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			return i;
 		} else {
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			return Math.max(i, blockState2.getBlock() == Blocks.field_10091 ? (Integer)blockState2.get(RedstoneWireBlock.POWER) : 0);
+			return Math.max(i, blockState2.getBlock() == Blocks.field_10091 ? (Integer)blockState2.get(RedstoneWireBlock.field_11432) : 0);
 		}
 	}
 
@@ -132,7 +132,9 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			if (block == Blocks.field_10002) {
 				return 15;
 			} else {
-				return block == Blocks.field_10091 ? (Integer)blockState.get(RedstoneWireBlock.POWER) : viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
+				return block == Blocks.field_10091
+					? (Integer)blockState.get(RedstoneWireBlock.field_11432)
+					: viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
 			}
 		} else {
 			return 0;
@@ -146,7 +148,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override

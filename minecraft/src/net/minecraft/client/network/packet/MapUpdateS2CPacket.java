@@ -84,7 +84,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			packetByteBuf.writeEnumConstant(mapIcon.getType());
 			packetByteBuf.writeByte(mapIcon.getX());
 			packetByteBuf.writeByte(mapIcon.getZ());
-			packetByteBuf.writeByte(mapIcon.getAngle() & 15);
+			packetByteBuf.writeByte(mapIcon.getRotation() & 15);
 			if (mapIcon.getText() != null) {
 				packetByteBuf.writeBoolean(true);
 				packetByteBuf.writeTextComponent(mapIcon.getText());

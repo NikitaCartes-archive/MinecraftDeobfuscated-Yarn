@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -17,13 +17,13 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CactusBlock extends Block {
-	public static final IntegerProperty AGE = Properties.AGE_15;
+	public static final IntProperty field_10709 = Properties.field_12498;
 	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 	protected static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
 	protected CactusBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10709, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -40,14 +40,14 @@ public class CactusBlock extends Block {
 				}
 
 				if (i < 3) {
-					int j = (Integer)blockState.get(AGE);
+					int j = (Integer)blockState.get(field_10709);
 					if (j == 15) {
 						world.setBlockState(blockPos2, this.getDefaultState());
-						BlockState blockState2 = blockState.with(AGE, Integer.valueOf(0));
+						BlockState blockState2 = blockState.with(field_10709, Integer.valueOf(0));
 						world.setBlockState(blockPos, blockState2, 4);
 						blockState2.neighborUpdate(world, blockPos2, this, blockPos, false);
 					} else {
-						world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(j + 1)), 4);
+						world.setBlockState(blockPos, blockState.with(field_10709, Integer.valueOf(j + 1)), 4);
 					}
 				}
 			}
@@ -107,7 +107,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_10709);
 	}
 
 	@Override

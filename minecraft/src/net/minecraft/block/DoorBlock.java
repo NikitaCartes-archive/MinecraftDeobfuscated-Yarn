@@ -147,7 +147,7 @@ public class DoorBlock extends Block {
 			World world = itemPlacementContext.getWorld();
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
-				.with(FACING, itemPlacementContext.getPlayerHorizontalFacing())
+				.with(FACING, itemPlacementContext.getPlayerFacing())
 				.with(HINGE, this.getHinge(itemPlacementContext))
 				.with(POWERED, Boolean.valueOf(bl))
 				.with(OPEN, Boolean.valueOf(bl))
@@ -165,7 +165,7 @@ public class DoorBlock extends Block {
 	private DoorHinge getHinge(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
+		Direction direction = itemPlacementContext.getPlayerFacing();
 		BlockPos blockPos2 = blockPos.up();
 		Direction direction2 = direction.rotateYCounterclockwise();
 		BlockPos blockPos3 = blockPos.offset(direction2);
@@ -187,7 +187,7 @@ public class DoorBlock extends Block {
 			if ((!bl2 || bl) && i >= 0) {
 				int j = direction.getOffsetX();
 				int k = direction.getOffsetZ();
-				Vec3d vec3d = itemPlacementContext.getPos();
+				Vec3d vec3d = itemPlacementContext.getHitPos();
 				double d = vec3d.x - (double)blockPos.getX();
 				double e = vec3d.z - (double)blockPos.getZ();
 				return (j >= 0 || !(e < 0.5)) && (j <= 0 || !(e > 0.5)) && (k >= 0 || !(d > 0.5)) && (k <= 0 || !(d < 0.5)) ? DoorHinge.field_12588 : DoorHinge.field_12586;

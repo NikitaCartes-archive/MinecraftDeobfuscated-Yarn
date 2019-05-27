@@ -140,7 +140,7 @@ public class LoomContainer extends Container {
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - 5 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
+				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
 				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
@@ -205,7 +205,7 @@ public class LoomContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
@@ -228,10 +228,10 @@ public class LoomContainer extends Container {
 			ItemStack itemStack3 = ItemStack.EMPTY;
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				itemStack3 = itemStack.copy();
-				itemStack3.setAmount(1);
+				itemStack3.setCount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
+				CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
 				ListTag listTag;
 				if (compoundTag.containsKey("Patterns", 9)) {
 					listTag = compoundTag.getList("Patterns", 10);
@@ -246,7 +246,7 @@ public class LoomContainer extends Container {
 				listTag.add(compoundTag2);
 			}
 
-			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+			if (!ItemStack.areEqualIgnoreDamage(itemStack3, this.outputSlot.getStack())) {
 				this.outputSlot.setStack(itemStack3);
 			}
 		}

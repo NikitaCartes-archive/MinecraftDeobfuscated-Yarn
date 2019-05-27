@@ -115,7 +115,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8463 && this.hasStatusEffect(StatusEffects.field_5911)) {
 			if (!playerEntity.abilities.creativeMode) {
-				itemStack.subtractAmount(1);
+				itemStack.decrement(1);
 			}
 
 			if (!this.world.isClient) {

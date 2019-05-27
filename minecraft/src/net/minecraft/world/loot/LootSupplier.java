@@ -49,15 +49,15 @@ public class LootSupplier {
 
 	public static Consumer<ItemStack> limitedConsumer(Consumer<ItemStack> consumer) {
 		return itemStack -> {
-			if (itemStack.getAmount() < itemStack.getMaxAmount()) {
+			if (itemStack.getCount() < itemStack.getMaxCount()) {
 				consumer.accept(itemStack);
 			} else {
-				int i = itemStack.getAmount();
+				int i = itemStack.getCount();
 
 				while (i > 0) {
 					ItemStack itemStack2 = itemStack.copy();
-					itemStack2.setAmount(Math.min(itemStack.getMaxAmount(), i));
-					i -= itemStack2.getAmount();
+					itemStack2.setCount(Math.min(itemStack.getMaxCount(), i));
+					i -= itemStack2.getCount();
 					consumer.accept(itemStack2);
 				}
 			}
@@ -130,7 +130,7 @@ public class LootSupplier {
 			ItemStack itemStack = (ItemStack)iterator.next();
 			if (itemStack.isEmpty()) {
 				iterator.remove();
-			} else if (itemStack.getAmount() > 1) {
+			} else if (itemStack.getCount() > 1) {
 				list2.add(itemStack);
 				iterator.remove();
 			}
@@ -138,15 +138,15 @@ public class LootSupplier {
 
 		while (i - list.size() - list2.size() > 0 && !list2.isEmpty()) {
 			ItemStack itemStack2 = (ItemStack)list2.remove(MathHelper.nextInt(random, 0, list2.size() - 1));
-			int j = MathHelper.nextInt(random, 1, itemStack2.getAmount() / 2);
+			int j = MathHelper.nextInt(random, 1, itemStack2.getCount() / 2);
 			ItemStack itemStack3 = itemStack2.split(j);
-			if (itemStack2.getAmount() > 1 && random.nextBoolean()) {
+			if (itemStack2.getCount() > 1 && random.nextBoolean()) {
 				list2.add(itemStack2);
 			} else {
 				list.add(itemStack2);
 			}
 
-			if (itemStack3.getAmount() > 1 && random.nextBoolean()) {
+			if (itemStack3.getCount() > 1 && random.nextBoolean()) {
 				list2.add(itemStack3);
 			} else {
 				list.add(itemStack3);

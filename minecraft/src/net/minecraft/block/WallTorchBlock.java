@@ -70,7 +70,7 @@ public class WallTorchBlock extends TorchBlock {
 		BlockState blockState = this.getDefaultState();
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {

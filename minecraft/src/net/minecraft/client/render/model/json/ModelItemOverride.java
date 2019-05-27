@@ -38,7 +38,7 @@ public class ModelItemOverride {
 		Item item = itemStack.getItem();
 
 		for (Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
-			ItemPropertyGetter itemPropertyGetter = item.getProperty((Identifier)entry.getKey());
+			ItemPropertyGetter itemPropertyGetter = item.getPropertyGetter((Identifier)entry.getKey());
 			if (itemPropertyGetter == null || itemPropertyGetter.call(itemStack, world, livingEntity) < (Float)entry.getValue()) {
 				return false;
 			}

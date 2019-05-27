@@ -294,7 +294,7 @@ public class VineBlock extends Block {
 		boolean bl = blockState.getBlock() == this;
 		BlockState blockState2 = bl ? blockState : this.getDefaultState();
 
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction != Direction.field_11033) {
 				BooleanProperty booleanProperty = getFacingProperty(direction);
 				boolean bl2 = bl && (Boolean)blockState.get(booleanProperty);

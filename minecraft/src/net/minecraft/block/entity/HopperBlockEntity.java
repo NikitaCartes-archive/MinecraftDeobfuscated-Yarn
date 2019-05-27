@@ -78,8 +78,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public void setInvStack(int i, ItemStack itemStack) {
 		this.checkLootInteraction(null);
 		this.getInvStackList().set(i, itemStack);
-		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
-			itemStack.setAmount(this.getInvMaxStackAmount());
+		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 
@@ -142,7 +142,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	private boolean isFull() {
 		for (ItemStack itemStack : this.inventory) {
-			if (itemStack.isEmpty() || itemStack.getAmount() != itemStack.getMaxAmount()) {
+			if (itemStack.isEmpty() || itemStack.getCount() != itemStack.getMaxCount()) {
 				return false;
 			}
 		}
@@ -186,7 +186,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	private boolean isInventoryFull(Inventory inventory, Direction direction) {
 		return getAvailableSlots(inventory, direction).allMatch(i -> {
 			ItemStack itemStack = inventory.getInvStack(i);
-			return itemStack.getAmount() >= itemStack.getMaxAmount();
+			return itemStack.getCount() >= itemStack.getMaxCount();
 		});
 	}
 
@@ -279,10 +279,10 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 				itemStack = ItemStack.EMPTY;
 				bl = true;
 			} else if (canMergeItems(itemStack2, itemStack)) {
-				int j = itemStack.getMaxAmount() - itemStack2.getAmount();
-				int k = Math.min(itemStack.getAmount(), j);
-				itemStack.subtractAmount(k);
-				itemStack2.addAmount(k);
+				int j = itemStack.getMaxCount() - itemStack2.getCount();
+				int k = Math.min(itemStack.getCount(), j);
+				itemStack.decrement(k);
+				itemStack2.increment(k);
 				bl = k > 0;
 			}
 
@@ -375,7 +375,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		} else if (itemStack.getDamage() != itemStack2.getDamage()) {
 			return false;
 		} else {
-			return itemStack.getAmount() > itemStack.getMaxAmount() ? false : ItemStack.areTagsEqual(itemStack, itemStack2);
+			return itemStack.getCount() > itemStack.getMaxCount() ? false : ItemStack.areTagsEqual(itemStack, itemStack2);
 		}
 	}
 

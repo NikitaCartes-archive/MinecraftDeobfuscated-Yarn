@@ -18,7 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.sortme.Snooper;
+import net.minecraft.client.util.Snooper;
 import net.minecraft.client.util.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -18,12 +18,12 @@ import net.minecraft.network.chat.TranslatableComponent;
 public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
 	private final Component message;
-	private final boolean field_18974;
+	private final boolean isHardcore;
 
 	public DeathScreen(@Nullable Component component, boolean bl) {
 		super(new TranslatableComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
 		this.message = component;
-		this.field_18974 = bl;
+		this.isHardcore = bl;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath = 0;
 		String string;
 		String string2;
-		if (this.field_18974) {
+		if (this.isHardcore) {
 			string = I18n.translate("deathScreen.spectate");
 			string2 = I18n.translate("deathScreen." + (this.minecraft.isInSingleplayer() ? "deleteWorld" : "leaveServer"));
 		} else {
@@ -51,7 +51,7 @@ public class DeathScreen extends Screen {
 				20,
 				string2,
 				buttonWidgetx -> {
-					if (this.field_18974) {
+					if (this.isHardcore) {
 						this.minecraft.openScreen(new TitleScreen());
 					} else {
 						ConfirmScreen confirmScreen = new ConfirmScreen(
@@ -67,7 +67,7 @@ public class DeathScreen extends Screen {
 				}
 			)
 		);
-		if (!this.field_18974 && this.minecraft.getSession() == null) {
+		if (!this.isHardcore && this.minecraft.getSession() == null) {
 			buttonWidget.active = false;
 		}
 

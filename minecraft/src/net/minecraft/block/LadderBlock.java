@@ -75,10 +75,10 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		if (!itemPlacementContext.canReplaceHitBlock()) {
+		if (!itemPlacementContext.canReplaceExisting()) {
 			BlockState blockState = itemPlacementContext.getWorld()
-				.getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing().getOpposite()));
-			if (blockState.getBlock() == this && blockState.get(FACING) == itemPlacementContext.getFacing()) {
+				.getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getSide().getOpposite()));
+			if (blockState.getBlock() == this && blockState.get(FACING) == itemPlacementContext.getSide()) {
 				return null;
 			}
 		}
@@ -88,7 +88,7 @@ public class LadderBlock extends Block implements Waterloggable {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(FACING, direction.getOpposite());
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {

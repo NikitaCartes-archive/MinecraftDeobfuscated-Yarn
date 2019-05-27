@@ -74,8 +74,8 @@ public class AnvilContainer extends Container {
 					AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
 					if (AnvilContainer.this.field_7776 > 0) {
 						ItemStack itemStack2 = AnvilContainer.this.inventory.getInvStack(1);
-						if (!itemStack2.isEmpty() && itemStack2.getAmount() > AnvilContainer.this.field_7776) {
-							itemStack2.subtractAmount(AnvilContainer.this.field_7776);
+						if (!itemStack2.isEmpty() && itemStack2.getCount() > AnvilContainer.this.field_7776) {
+							itemStack2.decrement(AnvilContainer.this.field_7776);
 							AnvilContainer.this.inventory.setInvStack(1, itemStack2);
 						} else {
 							AnvilContainer.this.inventory.setInvStack(1, ItemStack.EMPTY);
@@ -141,8 +141,8 @@ public class AnvilContainer extends Container {
 			this.field_7776 = 0;
 			if (!itemStack3.isEmpty()) {
 				boolean bl = itemStack3.getItem() == Items.field_8598 && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
-				if (itemStack2.hasDurability() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
-					int l = Math.min(itemStack2.getDamage(), itemStack2.getDurability() / 4);
+				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
+					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
@@ -150,27 +150,27 @@ public class AnvilContainer extends Container {
 					}
 
 					int m;
-					for (m = 0; l > 0 && m < itemStack3.getAmount(); m++) {
+					for (m = 0; l > 0 && m < itemStack3.getCount(); m++) {
 						int n = itemStack2.getDamage() - l;
 						itemStack2.setDamage(n);
 						i++;
-						l = Math.min(itemStack2.getDamage(), itemStack2.getDurability() / 4);
+						l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					}
 
 					this.field_7776 = m;
 				} else {
-					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.hasDurability())) {
+					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.isDamageable())) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
 					}
 
-					if (itemStack2.hasDurability() && !bl) {
-						int lx = itemStack.getDurability() - itemStack.getDamage();
-						int m = itemStack3.getDurability() - itemStack3.getDamage();
-						int n = m + itemStack2.getDurability() * 12 / 100;
+					if (itemStack2.isDamageable() && !bl) {
+						int lx = itemStack.getMaxDamage() - itemStack.getDamage();
+						int m = itemStack3.getMaxDamage() - itemStack3.getDamage();
+						int n = m + itemStack2.getMaxDamage() * 12 / 100;
 						int o = lx + n;
-						int p = itemStack2.getDurability() - o;
+						int p = itemStack2.getMaxDamage() - o;
 						if (p < 0) {
 							p = 0;
 						}
@@ -231,7 +231,7 @@ public class AnvilContainer extends Container {
 								}
 
 								i += s * r;
-								if (itemStack.getAmount() > 1) {
+								if (itemStack.getCount() > 1) {
 									i = 40;
 								}
 							}
@@ -247,15 +247,15 @@ public class AnvilContainer extends Container {
 			}
 
 			if (StringUtils.isBlank(this.newItemName)) {
-				if (itemStack.hasDisplayName()) {
+				if (itemStack.hasCustomName()) {
 					k = 1;
 					i += k;
-					itemStack2.removeDisplayName();
+					itemStack2.removeCustomName();
 				}
-			} else if (!this.newItemName.equals(itemStack.getDisplayName().getString())) {
+			} else if (!this.newItemName.equals(itemStack.getCustomName().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.setDisplayName(new TextComponent(this.newItemName));
+				itemStack2.setCustomName(new TextComponent(this.newItemName));
 			}
 
 			this.levelCost.set(j + i);
@@ -338,7 +338,7 @@ public class AnvilContainer extends Container {
 				slot.markDirty();
 			}
 
-			if (itemStack2.getAmount() == itemStack.getAmount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
@@ -353,9 +353,9 @@ public class AnvilContainer extends Container {
 		if (this.getSlot(2).hasStack()) {
 			ItemStack itemStack = this.getSlot(2).getStack();
 			if (StringUtils.isBlank(string)) {
-				itemStack.removeDisplayName();
+				itemStack.removeCustomName();
 			} else {
-				itemStack.setDisplayName(new TextComponent(this.newItemName));
+				itemStack.setCustomName(new TextComponent(this.newItemName));
 			}
 		}
 

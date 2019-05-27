@@ -100,7 +100,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 	public static class Factory extends LootCondition.Factory<BlockStatePropertyLootCondition> {
 		private static <T extends Comparable<T>> String getPropertyValueString(Property<T> property, Object object) {
-			return property.getValueAsString((T)object);
+			return property.getName((T)object);
 		}
 
 		protected Factory() {

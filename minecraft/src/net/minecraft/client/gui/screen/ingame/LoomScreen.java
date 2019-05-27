@@ -220,13 +220,15 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		ItemStack itemStack2 = this.container.getBannerSlot().getStack();
 		ItemStack itemStack3 = this.container.getDyeSlot().getStack();
 		ItemStack itemStack4 = this.container.getPatternSlot().getStack();
-		CompoundTag compoundTag = itemStack2.getOrCreateSubCompoundTag("BlockEntityTag");
+		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
 		this.hasTooManyPatterns = compoundTag.containsKey("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 		if (this.hasTooManyPatterns) {
 			this.output = null;
 		}
 
-		if (!ItemStack.areEqual(itemStack2, this.banner) || !ItemStack.areEqual(itemStack3, this.dye) || !ItemStack.areEqual(itemStack4, this.pattern)) {
+		if (!ItemStack.areEqualIgnoreDamage(itemStack2, this.banner)
+			|| !ItemStack.areEqualIgnoreDamage(itemStack3, this.dye)
+			|| !ItemStack.areEqualIgnoreDamage(itemStack4, this.pattern)) {
 			this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;
 			this.canApplySpecialPattern = !this.hasTooManyPatterns && !itemStack4.isEmpty() && !itemStack2.isEmpty() && !itemStack3.isEmpty();
 		}

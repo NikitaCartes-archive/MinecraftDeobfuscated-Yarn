@@ -104,7 +104,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = itemStack.getItem() == Items.field_8448;
 		if (bl) {
-			itemStack.interactWithEntity(playerEntity, this, hand);
+			itemStack.useOnEntity(playerEntity, this, hand);
 			return true;
 		} else if (itemStack.getItem() != Items.field_8086 && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
 			if (hand == Hand.field_5808) {

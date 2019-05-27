@@ -383,16 +383,16 @@ public class ArmorStandEntity extends LivingEntity {
 			if (!itemStack2.isEmpty() || (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) == 0) {
 				if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
 					ItemStack itemStack3 = itemStack.copy();
-					itemStack3.setAmount(1);
+					itemStack3.setCount(1);
 					this.setEquippedStack(equipmentSlot, itemStack3);
-				} else if (itemStack.isEmpty() || itemStack.getAmount() <= 1) {
+				} else if (itemStack.isEmpty() || itemStack.getCount() <= 1) {
 					this.setEquippedStack(equipmentSlot, itemStack);
 					playerEntity.setStackInHand(hand, itemStack2);
 				} else if (itemStack2.isEmpty()) {
 					ItemStack itemStack3 = itemStack.copy();
-					itemStack3.setAmount(1);
+					itemStack3.setCount(1);
 					this.setEquippedStack(equipmentSlot, itemStack3);
-					itemStack.subtractAmount(1);
+					itemStack.decrement(1);
 				}
 			}
 		}

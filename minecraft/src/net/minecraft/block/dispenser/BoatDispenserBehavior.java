@@ -18,7 +18,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	}
 
 	@Override
-	public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
+	public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
 		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 		World world = blockPointer.getWorld();
 		double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
@@ -40,7 +40,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		boatEntity.setBoatType(this.boatType);
 		boatEntity.yaw = direction.asRotation();
 		world.spawnEntity(boatEntity);
-		itemStack.subtractAmount(1);
+		itemStack.decrement(1);
 		return itemStack;
 	}
 

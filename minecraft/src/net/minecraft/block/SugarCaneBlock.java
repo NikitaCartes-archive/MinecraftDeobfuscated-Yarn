@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.IntegerProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +16,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SugarCaneBlock extends Block {
-	public static final IntegerProperty AGE = Properties.AGE_15;
+	public static final IntProperty field_11610 = Properties.field_12498;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	protected SugarCaneBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11610, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -41,12 +41,12 @@ public class SugarCaneBlock extends Block {
 			}
 
 			if (i < 3) {
-				int j = (Integer)blockState.get(AGE);
+				int j = (Integer)blockState.get(field_11610);
 				if (j == 15) {
 					world.setBlockState(blockPos.up(), this.getDefaultState());
-					world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(0)), 4);
+					world.setBlockState(blockPos, blockState.with(field_11610, Integer.valueOf(0)), 4);
 				} else {
-					world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(j + 1)), 4);
+					world.setBlockState(blockPos, blockState.with(field_11610, Integer.valueOf(j + 1)), 4);
 				}
 			}
 		}
@@ -97,6 +97,6 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(field_11610);
 	}
 }

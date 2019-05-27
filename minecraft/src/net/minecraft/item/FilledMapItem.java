@@ -34,7 +34,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 
-public class FilledMapItem extends MapItem {
+public class FilledMapItem extends NetworkSyncedItem {
 	public FilledMapItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -47,7 +47,7 @@ public class FilledMapItem extends MapItem {
 
 	@Nullable
 	public static MapState getMapState(ItemStack itemStack, World world) {
-		return world.getMapState(getMapStorageName(getMapId(itemStack)));
+		return world.getMapState(getMapName(getMapId(itemStack)));
 	}
 
 	@Nullable
@@ -69,14 +69,14 @@ public class FilledMapItem extends MapItem {
 
 	private static MapState createMapState(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
 		int l = world.getNextMapId();
-		MapState mapState = new MapState(getMapStorageName(l));
+		MapState mapState = new MapState(getMapName(l));
 		mapState.init(i, j, k, bl, bl2, dimensionType);
 		world.putMapState(mapState);
 		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
 
-	public static String getMapStorageName(int i) {
+	public static String getMapName(int i) {
 		return "map_" + i;
 	}
 
@@ -153,7 +153,7 @@ public class FilledMapItem extends MapItem {
 														w++;
 													} while (ab > 0 && !blockState2.getFluidState().isEmpty());
 
-													blockState = this.getTopFaceBlockState(world, blockState, mutable);
+													blockState = this.getFluidStateIfVisible(world, blockState, mutable);
 												}
 											}
 
@@ -206,7 +206,7 @@ public class FilledMapItem extends MapItem {
 		}
 	}
 
-	private BlockState getTopFaceBlockState(World world, BlockState blockState, BlockPos blockPos) {
+	private BlockState getFluidStateIfVisible(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
 		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.field_11036) ? fluidState.getBlockState() : blockState;
 	}
@@ -302,7 +302,7 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Override
-	public void onEntityTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+	public void inventoryTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 		if (!world.isClient) {
 			MapState mapState = getOrCreateMapState(itemStack, world);
 			if (mapState != null) {
@@ -320,12 +320,12 @@ public class FilledMapItem extends MapItem {
 
 	@Nullable
 	@Override
-	public Packet<?> createMapPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	public Packet<?> createSyncPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 		return getOrCreateMapState(itemStack, world).getPlayerMarkerPacket(itemStack, world, playerEntity);
 	}
 
 	@Override
-	public void onCrafted(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	public void onCraft(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("map_scale_direction", 99)) {
 			scale(itemStack, world, compoundTag.getInt("map_scale_direction"));
@@ -350,7 +350,7 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Nullable
-	public static ItemStack createCopy(World world, ItemStack itemStack) {
+	public static ItemStack copyMap(World world, ItemStack itemStack) {
 		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			ItemStack itemStack2 = itemStack.copy();
@@ -364,7 +364,7 @@ public class FilledMapItem extends MapItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
 		MapState mapState = world == null ? null : getOrCreateMapState(itemStack, world);
 		if (mapState != null && mapState.locked) {
 			list.add(new TranslatableComponent("filled_map.locked", getMapId(itemStack)).applyFormat(ChatFormat.field_1080));
@@ -382,8 +382,8 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int method_7999(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
+	public static int getMapColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getSubTag("display");
 		if (compoundTag != null && compoundTag.containsKey("MapColor", 99)) {
 			int i = compoundTag.getInt("MapColor");
 			return 0xFF000000 | i & 16777215;
@@ -397,7 +397,7 @@ public class FilledMapItem extends MapItem {
 		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getBlockPos());
 		if (blockState.matches(BlockTags.field_15501)) {
 			if (!itemUsageContext.world.isClient) {
-				MapState mapState = getOrCreateMapState(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
+				MapState mapState = getOrCreateMapState(itemUsageContext.getStack(), itemUsageContext.getWorld());
 				mapState.addBanner(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 

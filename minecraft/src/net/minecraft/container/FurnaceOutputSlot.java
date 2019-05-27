@@ -22,7 +22,7 @@ public class FurnaceOutputSlot extends Slot {
 	@Override
 	public ItemStack takeStack(int i) {
 		if (this.hasStack()) {
-			this.amount = this.amount + Math.min(i, this.getStack().getAmount());
+			this.amount = this.amount + Math.min(i, this.getStack().getCount());
 		}
 
 		return super.takeStack(i);
@@ -43,7 +43,7 @@ public class FurnaceOutputSlot extends Slot {
 
 	@Override
 	protected void onCrafted(ItemStack itemStack) {
-		itemStack.onCrafted(this.player.world, this.player, this.amount);
+		itemStack.onCraft(this.player.world, this.player, this.amount);
 		if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
 			((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
 		}

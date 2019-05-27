@@ -38,8 +38,8 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 			itemStack.setTag(this.tag);
 		}
 
-		if (bl && i > itemStack.getMaxAmount()) {
-			throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxAmount());
+		if (bl && i > itemStack.getMaxCount()) {
+			throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxCount());
 		} else {
 			return itemStack;
 		}

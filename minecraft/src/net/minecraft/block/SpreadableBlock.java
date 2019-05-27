@@ -16,7 +16,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	private static boolean canSurvive(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		if (blockState2.getBlock() == Blocks.field_10477 && (Integer)blockState2.get(SnowBlock.LAYERS) == 1) {
+		if (blockState2.getBlock() == Blocks.field_10477 && (Integer)blockState2.get(SnowBlock.field_11518) == 1) {
 			return true;
 		} else {
 			int i = ChunkLightProvider.method_20049(

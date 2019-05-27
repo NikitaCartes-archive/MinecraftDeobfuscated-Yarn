@@ -27,7 +27,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		}
 
 		private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
-			return property.getValueAsString((T)comparable);
+			return property.getName((T)comparable);
 		}
 	};
 	protected final O owner;
@@ -87,7 +87,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
 		} else {
-			return (T)property.getValueClass().cast(comparable);
+			return (T)property.getValueType().cast(comparable);
 		}
 	}
 

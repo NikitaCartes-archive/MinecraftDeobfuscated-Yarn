@@ -34,7 +34,7 @@ public class DebugStickItem extends Item {
 	}
 
 	@Override
-	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
 			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.field_5808));
 		}
@@ -48,7 +48,7 @@ public class DebugStickItem extends Item {
 		World world = itemUsageContext.getWorld();
 		if (!world.isClient && playerEntity != null) {
 			BlockPos blockPos = itemUsageContext.getBlockPos();
-			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
+			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getStack());
 		}
 
 		return ActionResult.field_5812;
@@ -63,7 +63,7 @@ public class DebugStickItem extends Item {
 			if (collection.isEmpty()) {
 				sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".empty", string));
 			} else {
-				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("DebugProperty");
+				CompoundTag compoundTag = itemStack.getOrCreateSubTag("DebugProperty");
 				String string2 = compoundTag.getString(string);
 				Property<?> property = stateFactory.getProperty(string2);
 				if (bl) {
@@ -73,12 +73,12 @@ public class DebugStickItem extends Item {
 
 					BlockState blockState2 = cycle(blockState, property, playerEntity.isSneaking());
 					iWorld.setBlockState(blockPos, blockState2, 18);
-					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".update", property.getName(), getPropertyString(blockState2, property)));
+					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState2, property)));
 				} else {
 					property = cycle(collection, property, playerEntity.isSneaking());
 					String string3 = property.getName();
 					compoundTag.putString(string, string3);
-					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".select", string3, getPropertyString(blockState, property)));
+					sendMessage(playerEntity, new TranslatableComponent(this.getTranslationKey() + ".select", string3, getValueString(blockState, property)));
 				}
 			}
 		}
@@ -96,7 +96,7 @@ public class DebugStickItem extends Item {
 		((ServerPlayerEntity)playerEntity).sendChatMessage(component, ChatMessageType.field_11733);
 	}
 
-	private static <T extends Comparable<T>> String getPropertyString(BlockState blockState, Property<T> property) {
-		return property.getValueAsString(blockState.get(property));
+	private static <T extends Comparable<T>> String getValueString(BlockState blockState, Property<T> property) {
+		return property.getName(blockState.get(property));
 	}
 }

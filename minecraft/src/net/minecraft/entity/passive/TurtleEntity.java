@@ -483,7 +483,7 @@ public class TurtleEntity extends AnimalEntity {
 					World world = this.turtle.world;
 					world.playSound(null, blockPos, SoundEvents.field_14634, SoundCategory.field_15245, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					world.setBlockState(
-						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), 3
+						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.field_11710, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), 3
 					);
 					this.turtle.setHasEgg(false);
 					this.turtle.setDiggingSand(false);

@@ -263,10 +263,10 @@ public class PacketByteBuf extends ByteBuf {
 		} else {
 			this.writeBoolean(true);
 			Item item = itemStack.getItem();
-			this.writeVarInt(Item.getRawIdByItem(item));
-			this.writeByte(itemStack.getAmount());
+			this.writeVarInt(Item.getRawId(item));
+			this.writeByte(itemStack.getCount());
 			CompoundTag compoundTag = null;
-			if (item.canDamage() || item.requiresClientSync()) {
+			if (item.isDamageable() || item.shouldSyncTagToClient()) {
 				compoundTag = itemStack.getTag();
 			}
 

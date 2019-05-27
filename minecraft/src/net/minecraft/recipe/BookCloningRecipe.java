@@ -65,10 +65,10 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getBookGeneration(itemStack) < 2) {
+		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
 			ItemStack itemStack3 = new ItemStack(Items.field_8360, i);
 			CompoundTag compoundTag = itemStack.getTag().method_10553();
-			compoundTag.putInt("generation", WrittenBookItem.getBookGeneration(itemStack) + 1);
+			compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
 			itemStack3.setTag(compoundTag);
 			return itemStack3;
 		} else {
@@ -85,7 +85,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {
 				ItemStack itemStack2 = itemStack.copy();
-				itemStack2.setAmount(1);
+				itemStack2.setCount(1);
 				defaultedList.set(i, itemStack2);
 				break;
 			}

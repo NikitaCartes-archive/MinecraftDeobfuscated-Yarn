@@ -64,8 +64,8 @@ public class SlabBlock extends Block implements Waterloggable {
 		} else {
 			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
 			BlockState blockState2 = this.getDefaultState().with(TYPE, SlabType.field_12681).with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
-			Direction direction = itemPlacementContext.getFacing();
-			return direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getPos().y - (double)blockPos.getY() > 0.5))
+			Direction direction = itemPlacementContext.getSide();
+			return direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5))
 				? blockState2
 				: blockState2.with(TYPE, SlabType.field_12679);
 		}
@@ -73,13 +73,13 @@ public class SlabBlock extends Block implements Waterloggable {
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		ItemStack itemStack = itemPlacementContext.getItemStack();
+		ItemStack itemStack = itemPlacementContext.getStack();
 		SlabType slabType = blockState.get(TYPE);
 		if (slabType == SlabType.field_12682 || itemStack.getItem() != this.asItem()) {
 			return false;
-		} else if (itemPlacementContext.canReplaceHitBlock()) {
-			boolean bl = itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
-			Direction direction = itemPlacementContext.getFacing();
+		} else if (itemPlacementContext.canReplaceExisting()) {
+			boolean bl = itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
+			Direction direction = itemPlacementContext.getSide();
 			return slabType == SlabType.field_12681
 				? direction == Direction.field_11036 || bl && direction.getAxis().isHorizontal()
 				: direction == Direction.field_11033 || !bl && direction.getAxis().isHorizontal();

@@ -144,7 +144,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		this.method_2282(i + 1, j + 1, 0, 0);
 		GlStateManager.enableRescaleNormal();
 		GuiLighting.enableForItems();
-		this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), i + 2, j + 2);
+		this.itemRenderer.renderGuiItemIcon(item.getStackForRender(), i + 2, j + 2);
 		GuiLighting.disable();
 		GlStateManager.disableRescaleNormal();
 	}
@@ -404,7 +404,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		protected Component method_19406(Item item) {
-			return item.getTextComponent();
+			return item.getName();
 		}
 
 		protected void method_19408(StatType<?> statType) {
@@ -480,7 +480,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 
 				return i == j
-					? ItemStatsListWidget.this.field_18760 * Integer.compare(Item.getRawIdByItem(item), Item.getRawIdByItem(item2))
+					? ItemStatsListWidget.this.field_18760 * Integer.compare(Item.getRawId(item), Item.getRawId(item2))
 					: ItemStatsListWidget.this.field_18760 * Integer.compare(i, j);
 			}
 		}

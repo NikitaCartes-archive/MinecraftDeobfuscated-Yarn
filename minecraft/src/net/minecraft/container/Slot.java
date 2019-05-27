@@ -22,7 +22,7 @@ public class Slot {
 	}
 
 	public void onStackChanged(ItemStack itemStack, ItemStack itemStack2) {
-		int i = itemStack2.getAmount() - itemStack.getAmount();
+		int i = itemStack2.getCount() - itemStack.getCount();
 		if (i > 0) {
 			this.onCrafted(itemStack2, i);
 		}

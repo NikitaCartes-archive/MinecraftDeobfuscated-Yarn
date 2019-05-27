@@ -177,12 +177,12 @@ public class BookEditScreen extends Screen {
 			ListTag listTag = new ListTag();
 			this.pages.stream().map(StringTag::new).forEach(listTag::add);
 			if (!this.pages.isEmpty()) {
-				this.itemStack.setChildTag("pages", listTag);
+				this.itemStack.putSubTag("pages", listTag);
 			}
 
 			if (bl) {
-				this.itemStack.setChildTag("author", new StringTag(this.player.getGameProfile().getName()));
-				this.itemStack.setChildTag("title", new StringTag(this.title.trim()));
+				this.itemStack.putSubTag("author", new StringTag(this.player.getGameProfile().getName()));
+				this.itemStack.putSubTag("title", new StringTag(this.title.trim()));
 			}
 
 			this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));

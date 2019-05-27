@@ -112,10 +112,10 @@ public class EnchantingTableBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		if (itemStack.hasDisplayName()) {
+		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof EnchantingTableBlockEntity) {
-				((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
 			}
 		}
 	}

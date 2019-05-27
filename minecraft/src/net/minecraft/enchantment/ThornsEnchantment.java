@@ -39,10 +39,10 @@ public class ThornsEnchantment extends Enchantment {
 			}
 
 			if (entry != null) {
-				((ItemStack)entry.getValue()).applyDamage(3, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+				((ItemStack)entry.getValue()).damage(3, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 			}
 		} else if (entry != null) {
-			((ItemStack)entry.getValue()).applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+			((ItemStack)entry.getValue()).damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 		}
 	}
 

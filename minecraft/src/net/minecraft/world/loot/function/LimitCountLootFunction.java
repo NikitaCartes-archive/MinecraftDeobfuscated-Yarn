@@ -20,8 +20,8 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		int i = this.limit.applyAsInt(itemStack.getAmount());
-		itemStack.setAmount(i);
+		int i = this.limit.applyAsInt(itemStack.getCount());
+		itemStack.setCount(i);
 		return itemStack;
 	}
 

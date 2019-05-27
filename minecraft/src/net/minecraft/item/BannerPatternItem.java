@@ -25,12 +25,12 @@ public class BannerPatternItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		list.add(this.nameTextComponent().applyFormat(ChatFormat.field_1080));
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().applyFormat(ChatFormat.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component nameTextComponent() {
+	public Component getDescription() {
 		return new TranslatableComponent(this.getTranslationKey() + ".desc");
 	}
 }

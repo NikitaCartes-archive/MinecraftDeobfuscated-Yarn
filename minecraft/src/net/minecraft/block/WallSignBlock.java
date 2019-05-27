@@ -61,7 +61,7 @@ public class WallSignBlock extends AbstractSignBlock {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
