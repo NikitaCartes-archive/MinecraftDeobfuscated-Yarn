@@ -128,6 +128,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -757,7 +758,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								}
 							}
 
-							boolean bl = serverWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(0.0625));
+							boolean bl = this.a(serverWorld);
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
@@ -788,7 +789,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
 							this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
-								boolean bl3 = serverWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(0.0625));
+								boolean bl3 = this.a(serverWorld);
 								if (bl && (bl2 || !bl3)) {
 									this.requestTeleport(d, e, f, k, l);
 									return;
@@ -813,6 +814,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 			}
 		}
+	}
+
+	private boolean a(ViewableWorld viewableWorld) {
+		return viewableWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
 	}
 
 	public void requestTeleport(double d, double e, double f, float g, float h) {
