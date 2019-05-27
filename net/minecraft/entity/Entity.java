@@ -2071,6 +2071,7 @@ CommandOutput {
         }
         ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
         ((ServerWorld)this.world).method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+        this.world.method_8497(chunkPos.x, chunkPos.z);
         this.requestTeleport(d, e, f);
     }
 
