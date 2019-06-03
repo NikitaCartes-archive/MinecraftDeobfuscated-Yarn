@@ -6,7 +6,7 @@ import net.minecraft.util.math.Direction;
 public class SliceVoxelShape extends VoxelShape {
 	private final VoxelShape shape;
 	private final Direction.Axis axis;
-	private final DoubleList points = new FractionalDoubleList(1);
+	private static final DoubleList points = new FractionalDoubleList(1);
 
 	public SliceVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
 		super(createVoxelSet(voxelShape.voxels, axis, i));
@@ -28,6 +28,6 @@ public class SliceVoxelShape extends VoxelShape {
 
 	@Override
 	protected DoubleList getPointPositions(Direction.Axis axis) {
-		return axis == this.axis ? this.points : this.shape.getPointPositions(axis);
+		return axis == this.axis ? points : this.shape.getPointPositions(axis);
 	}
 }

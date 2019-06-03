@@ -15,6 +15,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.math.BlockPos;
@@ -41,6 +42,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				GlStateManager.shadeModel(7424);
 			}
 
+			BlockModelRenderer.enableBrightnessCache();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
 			bufferBuilder.setOffset(
 				d - (double)blockPos.getX() + (double)pistonBlockEntity.getRenderOffsetX(g),
@@ -69,6 +71,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			tessellator.draw();
+			BlockModelRenderer.disableBrightnessCache();
 			GuiLighting.enable();
 		}
 	}

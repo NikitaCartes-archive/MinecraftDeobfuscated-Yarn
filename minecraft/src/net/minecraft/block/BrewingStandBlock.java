@@ -76,7 +76,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
-				((BrewingStandBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((BrewingStandBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}

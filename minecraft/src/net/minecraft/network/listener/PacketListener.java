@@ -1,7 +1,7 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public interface PacketListener {
-	void onDisconnected(Component component);
+	void method_10839(Text text);
 }

@@ -8,7 +8,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ChatOptionsScreen extends Screen {
@@ -32,7 +32,7 @@ public class ChatOptionsScreen extends Screen {
 	private AbstractButtonWidget narratorOptionButton;
 
 	public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableComponent("options.chat.title"));
+		super(new TranslatableText("options.chat.title"));
 		this.parent = screen;
 		this.options = gameOptions;
 	}
@@ -68,7 +68,7 @@ public class ChatOptionsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(i, j, f);
 	}
 

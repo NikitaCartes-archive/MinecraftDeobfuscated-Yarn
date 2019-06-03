@@ -2,21 +2,21 @@ package net.minecraft.advancement;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
+import net.minecraft.util.Formatting;
 
 public enum AdvancementFrame {
-	field_1254("task", 0, ChatFormat.field_1060),
-	field_1250("challenge", 26, ChatFormat.field_1064),
-	field_1249("goal", 52, ChatFormat.field_1060);
+	field_1254("task", 0, Formatting.field_1060),
+	field_1250("challenge", 26, Formatting.field_1064),
+	field_1249("goal", 52, Formatting.field_1060);
 
 	private final String id;
 	private final int texV;
-	private final ChatFormat titleFormat;
+	private final Formatting field_1255;
 
-	private AdvancementFrame(String string2, int j, ChatFormat chatFormat) {
+	private AdvancementFrame(String string2, int j, Formatting formatting) {
 		this.id = string2;
 		this.texV = j;
-		this.titleFormat = chatFormat;
+		this.field_1255 = formatting;
 	}
 
 	public String getId() {
@@ -38,7 +38,7 @@ public enum AdvancementFrame {
 		throw new IllegalArgumentException("Unknown frame type '" + string + "'");
 	}
 
-	public ChatFormat getTitleFormat() {
-		return this.titleFormat;
+	public Formatting method_830() {
+		return this.field_1255;
 	}
 }

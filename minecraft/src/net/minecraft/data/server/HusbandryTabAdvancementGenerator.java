@@ -17,9 +17,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
@@ -88,8 +88,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_10359,
-				new TranslatableComponent("advancements.husbandry.root.title"),
-				new TranslatableComponent("advancements.husbandry.root.description"),
+				new TranslatableText("advancements.husbandry.root.title"),
+				new TranslatableText("advancements.husbandry.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/husbandry.png"),
 				AdvancementFrame.field_1254,
 				false,
@@ -102,8 +102,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8861,
-				new TranslatableComponent("advancements.husbandry.plant_seed.title"),
-				new TranslatableComponent("advancements.husbandry.plant_seed.description"),
+				new TranslatableText("advancements.husbandry.plant_seed.title"),
+				new TranslatableText("advancements.husbandry.plant_seed.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -121,8 +121,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8861,
-				new TranslatableComponent("advancements.husbandry.breed_an_animal.title"),
-				new TranslatableComponent("advancements.husbandry.breed_an_animal.description"),
+				new TranslatableText("advancements.husbandry.breed_an_animal.title"),
+				new TranslatableText("advancements.husbandry.breed_an_animal.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -136,8 +136,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.field_8279,
-				new TranslatableComponent("advancements.husbandry.balanced_diet.title"),
-				new TranslatableComponent("advancements.husbandry.balanced_diet.description"),
+				new TranslatableText("advancements.husbandry.balanced_diet.title"),
+				new TranslatableText("advancements.husbandry.balanced_diet.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -150,8 +150,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.field_8527,
-				new TranslatableComponent("advancements.husbandry.break_diamond_hoe.title"),
-				new TranslatableComponent("advancements.husbandry.break_diamond_hoe.description"),
+				new TranslatableText("advancements.husbandry.break_diamond_hoe.title"),
+				new TranslatableText("advancements.husbandry.break_diamond_hoe.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -168,8 +168,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8719,
-				new TranslatableComponent("advancements.husbandry.tame_an_animal.title"),
-				new TranslatableComponent("advancements.husbandry.tame_an_animal.description"),
+				new TranslatableText("advancements.husbandry.tame_an_animal.title"),
+				new TranslatableText("advancements.husbandry.tame_an_animal.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -182,8 +182,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement3)
 			.display(
 				Items.field_8071,
-				new TranslatableComponent("advancements.husbandry.breed_all_animals.title"),
-				new TranslatableComponent("advancements.husbandry.breed_all_animals.description"),
+				new TranslatableText("advancements.husbandry.breed_all_animals.title"),
+				new TranslatableText("advancements.husbandry.breed_all_animals.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -197,8 +197,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
 				Items.field_8378,
-				new TranslatableComponent("advancements.husbandry.fishy_business.title"),
-				new TranslatableComponent("advancements.husbandry.fishy_business.description"),
+				new TranslatableText("advancements.husbandry.fishy_business.title"),
+				new TranslatableText("advancements.husbandry.fishy_business.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -211,8 +211,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
 				Items.field_8108,
-				new TranslatableComponent("advancements.husbandry.tactical_fishing.title"),
-				new TranslatableComponent("advancements.husbandry.tactical_fishing.description"),
+				new TranslatableText("advancements.husbandry.tactical_fishing.title"),
+				new TranslatableText("advancements.husbandry.tactical_fishing.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -224,8 +224,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement6)
 			.display(
 				Items.field_8429,
-				new TranslatableComponent("advancements.husbandry.complete_catalogue.title"),
-				new TranslatableComponent("advancements.husbandry.complete_catalogue.description"),
+				new TranslatableText("advancements.husbandry.complete_catalogue.title"),
+				new TranslatableText("advancements.husbandry.complete_catalogue.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,

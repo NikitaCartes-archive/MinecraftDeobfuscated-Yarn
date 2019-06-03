@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.arguments.TimeArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 
 public class TimeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -55,7 +55,7 @@ public class TimeCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.query", i), false);
+		serverCommandSource.method_9226(new TranslatableText("commands.time.query", i), false);
 		return i;
 	}
 
@@ -64,7 +64,7 @@ public class TimeCommand {
 			serverWorld.setTimeOfDay((long)i);
 		}
 
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.set", i), true);
+		serverCommandSource.method_9226(new TranslatableText("commands.time.set", i), true);
 		return getDayTime(serverCommandSource.getWorld());
 	}
 
@@ -74,7 +74,7 @@ public class TimeCommand {
 		}
 
 		int j = getDayTime(serverCommandSource.getWorld());
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.set", j), true);
+		serverCommandSource.method_9226(new TranslatableText("commands.time.set", j), true);
 		return j;
 	}
 }

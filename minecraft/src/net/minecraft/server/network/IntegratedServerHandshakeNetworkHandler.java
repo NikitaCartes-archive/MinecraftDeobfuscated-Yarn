@@ -3,10 +3,10 @@ package net.minecraft.server.network;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
@@ -25,6 +25,6 @@ public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakeP
 	}
 
 	@Override
-	public void onDisconnected(Component component) {
+	public void method_10839(Text text) {
 	}
 }

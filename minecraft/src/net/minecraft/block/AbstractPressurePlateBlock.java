@@ -5,7 +5,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 public abstract class AbstractPressurePlateBlock extends Block {
 	protected static final VoxelShape PRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
 	protected static final VoxelShape DEFAULT_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
-	protected static final BoundingBox BOX = new BoundingBox(0.125, 0.0, 0.125, 0.875, 0.25, 0.875);
+	protected static final Box BOX = new Box(0.125, 0.0, 0.125, 0.875, 0.25, 0.875);
 
 	protected AbstractPressurePlateBlock(Block.Settings settings) {
 		super(settings);

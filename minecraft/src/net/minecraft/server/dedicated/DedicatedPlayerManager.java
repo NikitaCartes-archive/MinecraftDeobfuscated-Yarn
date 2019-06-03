@@ -12,7 +12,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer) {
 		super(minecraftDedicatedServer, minecraftDedicatedServer.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
-		this.setViewDistance(serverPropertiesHandler.viewDistance, serverPropertiesHandler.viewDistance - 2);
+		this.setViewDistance(serverPropertiesHandler.viewDistance);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
 		if (!minecraftDedicatedServer.isSinglePlayer()) {
 			this.getUserBanList().setEnabled(true);

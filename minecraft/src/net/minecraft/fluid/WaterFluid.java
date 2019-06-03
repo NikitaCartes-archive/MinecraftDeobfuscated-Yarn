@@ -101,7 +101,7 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Override
 	public BlockState toBlockState(FluidState fluidState) {
-		return Blocks.field_10382.getDefaultState().with(FluidBlock.field_11278, Integer.valueOf(method_15741(fluidState)));
+		return Blocks.field_10382.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(fluidState)));
 	}
 
 	@Override

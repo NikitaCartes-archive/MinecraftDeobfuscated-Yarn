@@ -18,7 +18,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
@@ -26,6 +25,7 @@ import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
@@ -109,8 +109,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Items.field_8895,
-				new TranslatableComponent("advancements.adventure.root.title"),
-				new TranslatableComponent("advancements.adventure.root.description"),
+				new TranslatableText("advancements.adventure.root.title"),
+				new TranslatableText("advancements.adventure.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/adventure.png"),
 				AdvancementFrame.field_1254,
 				false,
@@ -125,8 +125,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.field_10069,
-				new TranslatableComponent("advancements.adventure.sleep_in_bed.title"),
-				new TranslatableComponent("advancements.adventure.sleep_in_bed.description"),
+				new TranslatableText("advancements.adventure.sleep_in_bed.title"),
+				new TranslatableText("advancements.adventure.sleep_in_bed.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -139,8 +139,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.field_8285,
-				new TranslatableComponent("advancements.adventure.adventuring_time.title"),
-				new TranslatableComponent("advancements.adventure.adventuring_time.description"),
+				new TranslatableText("advancements.adventure.adventuring_time.title"),
+				new TranslatableText("advancements.adventure.adventuring_time.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -153,8 +153,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8687,
-				new TranslatableComponent("advancements.adventure.trade.title"),
-				new TranslatableComponent("advancements.adventure.trade.description"),
+				new TranslatableText("advancements.adventure.trade.title"),
+				new TranslatableText("advancements.adventure.trade.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -167,8 +167,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8371,
-				new TranslatableComponent("advancements.adventure.kill_a_mob.title"),
-				new TranslatableComponent("advancements.adventure.kill_a_mob.description"),
+				new TranslatableText("advancements.adventure.kill_a_mob.title"),
+				new TranslatableText("advancements.adventure.kill_a_mob.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -181,8 +181,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8802,
-				new TranslatableComponent("advancements.adventure.kill_all_mobs.title"),
-				new TranslatableComponent("advancements.adventure.kill_all_mobs.description"),
+				new TranslatableText("advancements.adventure.kill_all_mobs.title"),
+				new TranslatableText("advancements.adventure.kill_all_mobs.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -195,8 +195,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8102,
-				new TranslatableComponent("advancements.adventure.shoot_arrow.title"),
-				new TranslatableComponent("advancements.adventure.shoot_arrow.description"),
+				new TranslatableText("advancements.adventure.shoot_arrow.title"),
+				new TranslatableText("advancements.adventure.shoot_arrow.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -215,8 +215,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8547,
-				new TranslatableComponent("advancements.adventure.throw_trident.title"),
-				new TranslatableComponent("advancements.adventure.throw_trident.description"),
+				new TranslatableText("advancements.adventure.throw_trident.title"),
+				new TranslatableText("advancements.adventure.throw_trident.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -235,8 +235,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement8)
 			.display(
 				Items.field_8547,
-				new TranslatableComponent("advancements.adventure.very_very_frightening.title"),
-				new TranslatableComponent("advancements.adventure.very_very_frightening.description"),
+				new TranslatableText("advancements.adventure.very_very_frightening.title"),
+				new TranslatableText("advancements.adventure.very_very_frightening.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -249,8 +249,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Blocks.field_10147,
-				new TranslatableComponent("advancements.adventure.summon_iron_golem.title"),
-				new TranslatableComponent("advancements.adventure.summon_iron_golem.description"),
+				new TranslatableText("advancements.adventure.summon_iron_golem.title"),
+				new TranslatableText("advancements.adventure.summon_iron_golem.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -263,8 +263,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement7)
 			.display(
 				Items.field_8107,
-				new TranslatableComponent("advancements.adventure.sniper_duel.title"),
-				new TranslatableComponent("advancements.adventure.sniper_duel.description"),
+				new TranslatableText("advancements.adventure.sniper_duel.title"),
+				new TranslatableText("advancements.adventure.sniper_duel.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -284,8 +284,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.field_8288,
-				new TranslatableComponent("advancements.adventure.totem_of_undying.title"),
-				new TranslatableComponent("advancements.adventure.totem_of_undying.description"),
+				new TranslatableText("advancements.adventure.totem_of_undying.title"),
+				new TranslatableText("advancements.adventure.totem_of_undying.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -298,8 +298,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.field_8399,
-				new TranslatableComponent("advancements.adventure.ol_betsy.title"),
-				new TranslatableComponent("advancements.adventure.ol_betsy.description"),
+				new TranslatableText("advancements.adventure.ol_betsy.title"),
+				new TranslatableText("advancements.adventure.ol_betsy.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -312,8 +312,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableComponent("advancements.adventure.whos_the_pillager_now.title"),
-				new TranslatableComponent("advancements.adventure.whos_the_pillager_now.description"),
+				new TranslatableText("advancements.adventure.whos_the_pillager_now.title"),
+				new TranslatableText("advancements.adventure.whos_the_pillager_now.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -326,8 +326,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableComponent("advancements.adventure.two_birds_one_arrow.title"),
-				new TranslatableComponent("advancements.adventure.two_birds_one_arrow.description"),
+				new TranslatableText("advancements.adventure.two_birds_one_arrow.title"),
+				new TranslatableText("advancements.adventure.two_birds_one_arrow.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -346,8 +346,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement13)
 			.display(
 				Items.field_8399,
-				new TranslatableComponent("advancements.adventure.arbalistic.title"),
-				new TranslatableComponent("advancements.adventure.arbalistic.description"),
+				new TranslatableText("advancements.adventure.arbalistic.title"),
+				new TranslatableText("advancements.adventure.arbalistic.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -360,9 +360,9 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement17 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
-				Raid.OMINOUS_BANNER,
-				new TranslatableComponent("advancements.adventure.voluntary_exile.title"),
-				new TranslatableComponent("advancements.adventure.voluntary_exile.description"),
+				Raid.getOminousBanner(),
+				new TranslatableText("advancements.adventure.voluntary_exile.title"),
+				new TranslatableText("advancements.adventure.voluntary_exile.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -379,9 +379,9 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement18 = Advancement.Task.create()
 			.parent(advancement17)
 			.display(
-				Raid.OMINOUS_BANNER,
-				new TranslatableComponent("advancements.adventure.hero_of_the_village.title"),
-				new TranslatableComponent("advancements.adventure.hero_of_the_village.description"),
+				Raid.getOminousBanner(),
+				new TranslatableText("advancements.adventure.hero_of_the_village.title"),
+				new TranslatableText("advancements.adventure.hero_of_the_village.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,

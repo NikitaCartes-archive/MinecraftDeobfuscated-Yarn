@@ -8,8 +8,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
@@ -17,19 +15,15 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class WhitelistCommand {
-	private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.whitelist.alreadyOn")
-	);
-	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.whitelist.alreadyOff")
-	);
-	private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.whitelist.add.failed")
-	);
+	private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.alreadyOn"));
+	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.alreadyOff"));
+	private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.add.failed"));
 	private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.whitelist.remove.failed")
+		new TranslatableText("commands.whitelist.remove.failed")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -76,7 +70,7 @@ public class WhitelistCommand {
 
 	private static int executeReload(ServerCommandSource serverCommandSource) {
 		serverCommandSource.getMinecraftServer().getPlayerManager().reloadWhitelist();
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.reloaded"), true);
+		serverCommandSource.method_9226(new TranslatableText("commands.whitelist.reloaded"), true);
 		serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
 		return 1;
 	}
@@ -89,7 +83,7 @@ public class WhitelistCommand {
 			if (!whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.add(whitelistEntry);
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.add.success", Components.profile(gameProfile)), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
 				++i;
 			}
 		}
@@ -109,7 +103,7 @@ public class WhitelistCommand {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.removeEntry(whitelistEntry);
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.remove.success", Components.profile(gameProfile)), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
 				++i;
 			}
 		}
@@ -128,7 +122,7 @@ public class WhitelistCommand {
 			throw ALREADY_ON_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(true);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.enabled"), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.enabled"), true);
 			serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
 			return 1;
 		}
@@ -140,7 +134,7 @@ public class WhitelistCommand {
 			throw ALREADY_OFF_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(false);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.disabled"), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.disabled"), true);
 			return 1;
 		}
 	}
@@ -148,9 +142,9 @@ public class WhitelistCommand {
 	private static int executeList(ServerCommandSource serverCommandSource) {
 		String[] strings = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelistedNames();
 		if (strings.length == 0) {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.none"), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.none"), false);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
 		}
 
 		return strings.length;

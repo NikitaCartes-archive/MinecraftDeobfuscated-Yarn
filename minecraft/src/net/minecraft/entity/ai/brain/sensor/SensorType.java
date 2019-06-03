@@ -14,6 +14,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<VillagerHostilesSensor> field_18470 = register("villager_hostiles", VillagerHostilesSensor::new);
 	public static final SensorType<VillagerBabiesSensor> field_19011 = register("villager_babies", VillagerBabiesSensor::new);
 	public static final SensorType<SecondaryPointsOfInterestSensor> field_18875 = register("secondary_pois", SecondaryPointsOfInterestSensor::new);
+	public static final SensorType<GolemLastSeenSensor> field_19356 = register("golem_last_seen", GolemLastSeenSensor::new);
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> supplier) {

@@ -2,12 +2,12 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SaveLevelScreen extends Screen {
-	public SaveLevelScreen(Component component) {
-		super(component);
+	public SaveLevelScreen(Text text) {
+		super(text);
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public class SaveLevelScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderDirtBackground(0);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 70, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 16777215);
 		super.render(i, j, f);
 	}
 }

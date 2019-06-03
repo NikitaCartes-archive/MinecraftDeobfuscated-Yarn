@@ -14,16 +14,18 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 	private int levelProgress;
 	private int experience;
 	private boolean leveled;
+	private boolean refreshable;
 
 	public SetTradeOffersPacket() {
 	}
 
-	public SetTradeOffersPacket(int i, TraderOfferList traderOfferList, int j, int k, boolean bl) {
+	public SetTradeOffersPacket(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
 		this.syncId = i;
 		this.recipes = traderOfferList;
 		this.levelProgress = j;
 		this.experience = k;
 		this.leveled = bl;
+		this.refreshable = bl2;
 	}
 
 	@Override
@@ -33,6 +35,7 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 		this.levelProgress = packetByteBuf.readVarInt();
 		this.experience = packetByteBuf.readVarInt();
 		this.leveled = packetByteBuf.readBoolean();
+		this.refreshable = packetByteBuf.readBoolean();
 	}
 
 	@Override
@@ -42,6 +45,7 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(this.levelProgress);
 		packetByteBuf.writeVarInt(this.experience);
 		packetByteBuf.writeBoolean(this.leveled);
+		packetByteBuf.writeBoolean(this.refreshable);
 	}
 
 	public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {
@@ -71,5 +75,10 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 	@Environment(EnvType.CLIENT)
 	public boolean isLeveled() {
 		return this.leveled;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_20722() {
+		return this.refreshable;
 	}
 }

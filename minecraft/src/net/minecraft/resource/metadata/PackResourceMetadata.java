@@ -1,18 +1,18 @@
 package net.minecraft.resource.metadata;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public class PackResourceMetadata {
 	public static final PackResourceMetadataReader READER = new PackResourceMetadataReader();
-	private final Component description;
+	private final Text description;
 	private final int packFormat;
 
-	public PackResourceMetadata(Component component, int i) {
-		this.description = component;
+	public PackResourceMetadata(Text text, int i) {
+		this.description = text;
 		this.packFormat = i;
 	}
 
-	public Component getDescription() {
+	public Text getDescription() {
 		return this.description;
 	}
 

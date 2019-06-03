@@ -8,7 +8,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.ViewableWorld;
 
 @Environment(EnvType.CLIENT)
@@ -40,7 +40,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 			if (fluidState.matches(FluidTags.field_15517)) {
 				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2));
 				DebugRenderer.method_19695(
-					new BoundingBox(
+					new Box(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),
 							(double)((float)blockPos2.getZ() + 0.01F),

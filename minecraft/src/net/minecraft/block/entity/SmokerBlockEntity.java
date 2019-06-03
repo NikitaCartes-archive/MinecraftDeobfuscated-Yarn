@@ -4,9 +4,9 @@ import net.minecraft.container.Container;
 import net.minecraft.container.SmokerContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	public SmokerBlockEntity() {
@@ -14,8 +14,8 @@ public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.smoker");
+	protected Text method_17823() {
+		return new TranslatableText("container.smoker");
 	}
 
 	@Override

@@ -14,11 +14,11 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
 public class Identifier implements Comparable<Identifier> {
-	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid"));
+	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
 

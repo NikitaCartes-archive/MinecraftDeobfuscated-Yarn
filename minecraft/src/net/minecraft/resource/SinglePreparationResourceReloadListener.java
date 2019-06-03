@@ -2,11 +2,8 @@ package net.minecraft.resource;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.profiler.Profiler;
 
-@Environment(EnvType.CLIENT)
 public abstract class SinglePreparationResourceReloadListener<T> implements ResourceReloadListener {
 	@Override
 	public final CompletableFuture<Void> reload(

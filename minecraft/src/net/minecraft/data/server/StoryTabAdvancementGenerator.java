@@ -12,10 +12,10 @@ import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
@@ -25,8 +25,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_10219,
-				new TranslatableComponent("advancements.story.root.title"),
-				new TranslatableComponent("advancements.story.root.description"),
+				new TranslatableText("advancements.story.root.title"),
+				new TranslatableText("advancements.story.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/stone.png"),
 				AdvancementFrame.field_1254,
 				false,
@@ -39,8 +39,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement)
 			.display(
 				Items.field_8647,
-				new TranslatableComponent("advancements.story.mine_stone.title"),
-				new TranslatableComponent("advancements.story.mine_stone.description"),
+				new TranslatableText("advancements.story.mine_stone.title"),
+				new TranslatableText("advancements.story.mine_stone.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -53,8 +53,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement2)
 			.display(
 				Items.field_8387,
-				new TranslatableComponent("advancements.story.upgrade_tools.title"),
-				new TranslatableComponent("advancements.story.upgrade_tools.description"),
+				new TranslatableText("advancements.story.upgrade_tools.title"),
+				new TranslatableText("advancements.story.upgrade_tools.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -67,8 +67,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement3)
 			.display(
 				Items.field_8620,
-				new TranslatableComponent("advancements.story.smelt_iron.title"),
-				new TranslatableComponent("advancements.story.smelt_iron.description"),
+				new TranslatableText("advancements.story.smelt_iron.title"),
+				new TranslatableText("advancements.story.smelt_iron.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -81,8 +81,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.field_8403,
-				new TranslatableComponent("advancements.story.iron_tools.title"),
-				new TranslatableComponent("advancements.story.iron_tools.description"),
+				new TranslatableText("advancements.story.iron_tools.title"),
+				new TranslatableText("advancements.story.iron_tools.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -95,8 +95,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement5)
 			.display(
 				Items.field_8477,
-				new TranslatableComponent("advancements.story.mine_diamond.title"),
-				new TranslatableComponent("advancements.story.mine_diamond.description"),
+				new TranslatableText("advancements.story.mine_diamond.title"),
+				new TranslatableText("advancements.story.mine_diamond.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -109,8 +109,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.field_8187,
-				new TranslatableComponent("advancements.story.lava_bucket.title"),
-				new TranslatableComponent("advancements.story.lava_bucket.description"),
+				new TranslatableText("advancements.story.lava_bucket.title"),
+				new TranslatableText("advancements.story.lava_bucket.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -123,8 +123,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.field_8523,
-				new TranslatableComponent("advancements.story.obtain_armor.title"),
-				new TranslatableComponent("advancements.story.obtain_armor.description"),
+				new TranslatableText("advancements.story.obtain_armor.title"),
+				new TranslatableText("advancements.story.obtain_armor.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -141,8 +141,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement6)
 			.display(
 				Items.field_8598,
-				new TranslatableComponent("advancements.story.enchant_item.title"),
-				new TranslatableComponent("advancements.story.enchant_item.description"),
+				new TranslatableText("advancements.story.enchant_item.title"),
+				new TranslatableText("advancements.story.enchant_item.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -155,8 +155,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement7)
 			.display(
 				Blocks.field_10540,
-				new TranslatableComponent("advancements.story.form_obsidian.title"),
-				new TranslatableComponent("advancements.story.form_obsidian.description"),
+				new TranslatableText("advancements.story.form_obsidian.title"),
+				new TranslatableText("advancements.story.form_obsidian.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -169,8 +169,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement8)
 			.display(
 				Items.field_8255,
-				new TranslatableComponent("advancements.story.deflect_arrow.title"),
-				new TranslatableComponent("advancements.story.deflect_arrow.description"),
+				new TranslatableText("advancements.story.deflect_arrow.title"),
+				new TranslatableText("advancements.story.deflect_arrow.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -186,8 +186,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement6)
 			.display(
 				Items.field_8058,
-				new TranslatableComponent("advancements.story.shiny_gear.title"),
-				new TranslatableComponent("advancements.story.shiny_gear.description"),
+				new TranslatableText("advancements.story.shiny_gear.title"),
+				new TranslatableText("advancements.story.shiny_gear.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -204,8 +204,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement10)
 			.display(
 				Items.field_8884,
-				new TranslatableComponent("advancements.story.enter_the_nether.title"),
-				new TranslatableComponent("advancements.story.enter_the_nether.description"),
+				new TranslatableText("advancements.story.enter_the_nether.title"),
+				new TranslatableText("advancements.story.enter_the_nether.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -218,8 +218,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement13)
 			.display(
 				Items.field_8463,
-				new TranslatableComponent("advancements.story.cure_zombie_villager.title"),
-				new TranslatableComponent("advancements.story.cure_zombie_villager.description"),
+				new TranslatableText("advancements.story.cure_zombie_villager.title"),
+				new TranslatableText("advancements.story.cure_zombie_villager.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -232,8 +232,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement13)
 			.display(
 				Items.field_8449,
-				new TranslatableComponent("advancements.story.follow_ender_eye.title"),
-				new TranslatableComponent("advancements.story.follow_ender_eye.description"),
+				new TranslatableText("advancements.story.follow_ender_eye.title"),
+				new TranslatableText("advancements.story.follow_ender_eye.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -246,8 +246,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement15)
 			.display(
 				Blocks.field_10471,
-				new TranslatableComponent("advancements.story.enter_the_end.title"),
-				new TranslatableComponent("advancements.story.enter_the_end.description"),
+				new TranslatableText("advancements.story.enter_the_end.title"),
+				new TranslatableText("advancements.story.enter_the_end.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,

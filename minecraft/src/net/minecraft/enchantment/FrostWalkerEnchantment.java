@@ -44,7 +44,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 					if (blockState2.isAir()) {
 						BlockState blockState3 = world.getBlockState(blockPos2);
 						if (blockState3.getMaterial() == Material.WATER
-							&& blockState3.get(FluidBlock.field_11278) == 0
+							&& blockState3.get(FluidBlock.LEVEL) == 0
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
 							world.setBlockState(blockPos2, blockState);

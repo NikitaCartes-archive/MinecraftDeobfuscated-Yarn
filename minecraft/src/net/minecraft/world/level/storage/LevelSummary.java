@@ -3,9 +3,9 @@ package net.minecraft.world.level.storage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -81,8 +81,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.commandsAllowed;
 	}
 
-	public Component getVersionTextComponent() {
-		return (Component)(ChatUtil.isEmpty(this.versionName) ? new TranslatableComponent("selectWorld.versionUnknown") : new TextComponent(this.versionName));
+	public Text method_258() {
+		return (Text)(ChatUtil.isEmpty(this.versionName) ? new TranslatableText("selectWorld.versionUnknown") : new LiteralText(this.versionName));
 	}
 
 	public boolean isDifferentVersion() {

@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class BossBarManager {
@@ -23,8 +23,8 @@ public class BossBarManager {
 		return (CommandBossBar)this.commandBossBars.get(identifier);
 	}
 
-	public CommandBossBar add(Identifier identifier, Component component) {
-		CommandBossBar commandBossBar = new CommandBossBar(identifier, component);
+	public CommandBossBar add(Identifier identifier, Text text) {
+		CommandBossBar commandBossBar = new CommandBossBar(identifier, text);
 		this.commandBossBars.put(identifier, commandBossBar);
 		return commandBossBar;
 	}

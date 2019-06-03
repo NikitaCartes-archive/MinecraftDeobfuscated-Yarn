@@ -3,15 +3,15 @@ package net.minecraft.server.network;
 import net.minecraft.client.network.packet.QueryPongS2CPacket;
 import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.packet.QueryPingC2SPacket;
 import net.minecraft.server.network.packet.QueryRequestC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
-	private static final Component REQUEST_HANDLED = new TranslatableComponent("multiplayer.status.request_handled");
+	private static final Text REQUEST_HANDLED = new TranslatableText("multiplayer.status.request_handled");
 	private final MinecraftServer server;
 	private final ClientConnection client;
 	private boolean responseSent;
@@ -22,13 +22,13 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(Component component) {
+	public void method_10839(Text text) {
 	}
 
 	@Override
 	public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
 		if (this.responseSent) {
-			this.client.disconnect(REQUEST_HANDLED);
+			this.client.method_10747(REQUEST_HANDLED);
 		} else {
 			this.responseSent = true;
 			this.client.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
@@ -38,6 +38,6 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	@Override
 	public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
 		this.client.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
-		this.client.disconnect(REQUEST_HANDLED);
+		this.client.method_10747(REQUEST_HANDLED);
 	}
 }

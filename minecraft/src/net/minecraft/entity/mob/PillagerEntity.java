@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -157,14 +158,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
 	}
 
-	@Override
-	protected boolean checkLightLevelForSpawn() {
-		return true;
-	}
-
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getLightLevel(LightType.field_9282, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
+	public static boolean method_20683(EntityType<PillagerEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getLightLevel(LightType.field_9282, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override

@@ -2,21 +2,21 @@ package net.minecraft.entity.effect;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
+import net.minecraft.util.Formatting;
 
 public enum StatusEffectType {
-	field_18271(ChatFormat.field_1078),
-	field_18272(ChatFormat.field_1061),
-	field_18273(ChatFormat.field_1078);
+	field_18271(Formatting.field_1078),
+	field_18272(Formatting.field_1061),
+	field_18273(Formatting.field_1078);
 
-	private final ChatFormat formatting;
+	private final Formatting field_18274;
 
-	private StatusEffectType(ChatFormat chatFormat) {
-		this.formatting = chatFormat;
+	private StatusEffectType(Formatting formatting) {
+		this.field_18274 = formatting;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ChatFormat getFormatting() {
-		return this.formatting;
+	public Formatting method_18793() {
+		return this.field_18274;
 	}
 }

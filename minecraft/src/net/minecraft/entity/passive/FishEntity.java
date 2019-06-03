@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPose;
@@ -58,12 +59,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		return this.isFromBucket();
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		BlockPos blockPos = new BlockPos(this);
-		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10382
-			? super.canSpawn(iWorld, spawnType)
-			: false;
+	public static boolean method_20662(EntityType<? extends FishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10382;
 	}
 
 	@Override
@@ -170,7 +167,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	protected void copyDataToStack(ItemStack itemStack) {
 		if (this.hasCustomName()) {
-			itemStack.setCustomName(this.getCustomName());
+			itemStack.method_7977(this.method_5797());
 		}
 	}
 

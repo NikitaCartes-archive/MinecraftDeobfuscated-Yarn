@@ -16,14 +16,14 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
@@ -37,7 +37,7 @@ public class Advancement {
 	private final Map<String, AdvancementCriterion> criteria;
 	private final String[][] requirements;
 	private final Set<Advancement> children = Sets.<Advancement>newLinkedHashSet();
-	private final Component textComponent;
+	private final Text text;
 
 	public Advancement(
 		Identifier identifier,
@@ -58,13 +58,13 @@ public class Advancement {
 		}
 
 		if (advancementDisplay == null) {
-			this.textComponent = new TextComponent(identifier.toString());
+			this.text = new LiteralText(identifier.toString());
 		} else {
-			Component component = advancementDisplay.getTitle();
-			ChatFormat chatFormat = advancementDisplay.getFrame().getTitleFormat();
-			Component component2 = component.copy().applyFormat(chatFormat).append("\n").append(advancementDisplay.getDescription());
-			Component component3 = component.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, component2)));
-			this.textComponent = new TextComponent("[").append(component3).append("]").applyFormat(chatFormat);
+			Text text = advancementDisplay.getTitle();
+			Formatting formatting = advancementDisplay.getFrame().method_830();
+			Text text2 = text.deepCopy().formatted(formatting).append("\n").append(advancementDisplay.getDescription());
+			Text text3 = text.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text2)));
+			this.text = new LiteralText("[").append(text3).append("]").formatted(formatting);
 		}
 	}
 
@@ -142,8 +142,8 @@ public class Advancement {
 		return this.requirements;
 	}
 
-	public Component getTextComponent() {
-		return this.textComponent;
+	public Text toHoverableText() {
+		return this.text;
 	}
 
 	public static class Task {
@@ -187,29 +187,22 @@ public class Advancement {
 		}
 
 		public Advancement.Task display(
-			ItemStack itemStack,
-			Component component,
-			Component component2,
-			@Nullable Identifier identifier,
-			AdvancementFrame advancementFrame,
-			boolean bl,
-			boolean bl2,
-			boolean bl3
+			ItemStack itemStack, Text text, Text text2, @Nullable Identifier identifier, AdvancementFrame advancementFrame, boolean bl, boolean bl2, boolean bl3
 		) {
-			return this.display(new AdvancementDisplay(itemStack, component, component2, identifier, advancementFrame, bl, bl2, bl3));
+			return this.display(new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, bl2, bl3));
 		}
 
 		public Advancement.Task display(
 			ItemConvertible itemConvertible,
-			Component component,
-			Component component2,
+			Text text,
+			Text text2,
 			@Nullable Identifier identifier,
 			AdvancementFrame advancementFrame,
 			boolean bl,
 			boolean bl2,
 			boolean bl3
 		) {
-			return this.display(new AdvancementDisplay(new ItemStack(itemConvertible.asItem()), component, component2, identifier, advancementFrame, bl, bl2, bl3));
+			return this.display(new AdvancementDisplay(new ItemStack(itemConvertible.asItem()), text, text2, identifier, advancementFrame, bl, bl2, bl3));
 		}
 
 		public Advancement.Task display(AdvancementDisplay advancementDisplay) {

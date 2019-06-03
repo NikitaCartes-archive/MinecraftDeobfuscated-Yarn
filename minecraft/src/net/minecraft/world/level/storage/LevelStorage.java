@@ -28,8 +28,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TagHelper;
@@ -79,7 +79,7 @@ public class LevelStorage {
 	@Environment(EnvType.CLIENT)
 	public List<LevelSummary> getLevelList() throws LevelStorageException {
 		if (!Files.isDirectory(this.savesDirectory, new LinkOption[0])) {
-			throw new LevelStorageException(new TranslatableComponent("selectWorld.load_folder_access").getString());
+			throw new LevelStorageException(new TranslatableText("selectWorld.load_folder_access").getString());
 		} else {
 			List<LevelSummary> list = Lists.<LevelSummary>newArrayList();
 			File[] files = this.savesDirectory.toFile().listFiles();

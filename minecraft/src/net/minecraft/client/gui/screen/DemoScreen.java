@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
@@ -15,7 +15,7 @@ public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
 
 	public DemoScreen() {
-		super(new TranslatableComponent("demo.help.title"));
+		super(new TranslatableText("demo.help.title"));
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class DemoScreen extends Screen {
 		this.renderBackground();
 		int k = (this.width - 248) / 2 + 10;
 		int l = (this.height - 166) / 2 + 8;
-		this.font.draw(this.title.getFormattedText(), (float)k, (float)l, 2039583);
+		this.font.draw(this.title.asFormattedString(), (float)k, (float)l, 2039583);
 		l += 12;
 		GameOptions gameOptions = this.minecraft.options;
 		this.font

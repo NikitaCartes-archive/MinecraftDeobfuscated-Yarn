@@ -18,7 +18,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -190,7 +190,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					if (pathNode != null && (pathNode.type == PathNodeType.field_7 || pathNode.type == PathNodeType.field_12) && this.entity.getWidth() < 1.0F) {
 						double h = (double)(i - direction.getOffsetX()) + 0.5;
 						double m = (double)(k - direction.getOffsetZ()) + 0.5;
-						BoundingBox boundingBox = new BoundingBox(
+						Box box = new Box(
 							h - g,
 							method_60(this.blockView, new BlockPos(h, (double)(j + 1), m)) + 0.001,
 							m - g,
@@ -198,7 +198,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							(double)this.entity.getHeight() + method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002,
 							m + g
 						);
-						if (!this.blockView.doesNotCollide(this.entity, boundingBox)) {
+						if (!this.blockView.doesNotCollide(this.entity, box)) {
 							pathNode = null;
 						}
 					}
@@ -222,10 +222,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				}
 
 				if (pathNodeType == PathNodeType.field_7) {
-					BoundingBox boundingBox2 = new BoundingBox(
+					Box box2 = new Box(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.blockView.doesNotCollide(this.entity, boundingBox2)) {
+					if (!this.blockView.doesNotCollide(this.entity, box2)) {
 						return null;
 					}
 

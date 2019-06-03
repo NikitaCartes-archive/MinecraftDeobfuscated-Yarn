@@ -26,7 +26,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return super.canSpawn(iWorld, spawnType) && this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
+		return this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
 	}
 
 	public boolean isNavigating() {

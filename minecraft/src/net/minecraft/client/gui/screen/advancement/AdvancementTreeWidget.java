@@ -52,7 +52,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 		this.rootAdvancement = advancement;
 		this.field_2695 = advancementDisplay;
 		this.field_2697 = advancementDisplay.getIcon();
-		this.field_2686 = advancementDisplay.getTitle().getFormattedText();
+		this.field_2686 = advancementDisplay.getTitle().asFormattedString();
 		this.field_2696 = new AdvancementWidget(this, minecraftClient, advancement, advancementDisplay);
 		this.method_2319(this.field_2696, advancement);
 	}

@@ -4,24 +4,24 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Component header;
-	private Component footer;
+	private Text header;
+	private Text footer;
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.header = packetByteBuf.readTextComponent();
-		this.footer = packetByteBuf.readTextComponent();
+		this.header = packetByteBuf.method_10808();
+		this.footer = packetByteBuf.method_10808();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeTextComponent(this.header);
-		packetByteBuf.writeTextComponent(this.footer);
+		packetByteBuf.method_10805(this.header);
+		packetByteBuf.method_10805(this.footer);
 	}
 
 	public void method_11907(ClientPlayPacketListener clientPlayPacketListener) {
@@ -29,12 +29,12 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getHeader() {
+	public Text getHeader() {
 		return this.header;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getFooter() {
+	public Text getFooter() {
 		return this.footer;
 	}
 }

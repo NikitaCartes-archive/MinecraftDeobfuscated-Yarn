@@ -14,7 +14,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -77,7 +77,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		PathNode pathNode = path.method_48();
 		if (method_20554(camera, pathNode) <= 40.0F) {
 			DebugRenderer.method_19695(
-				new BoundingBox(
+				new Box(
 						(double)((float)pathNode.x + 0.25F),
 						(double)((float)pathNode.y + 0.25F),
 						(double)pathNode.z + 0.25,
@@ -98,7 +98,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 					float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
 					float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 					DebugRenderer.method_19695(
-						new BoundingBox(
+						new Box(
 								(double)((float)pathNode2.x + 0.5F - f),
 								(double)((float)pathNode2.y + 0.01F * (float)i),
 								(double)((float)pathNode2.z + 0.5F - f),

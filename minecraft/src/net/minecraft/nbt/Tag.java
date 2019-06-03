@@ -3,15 +3,15 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public interface Tag {
 	String[] TYPES = new String[]{"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
-	ChatFormat AQUA = ChatFormat.field_1075;
-	ChatFormat GREEN = ChatFormat.field_1060;
-	ChatFormat GOLD = ChatFormat.field_1065;
-	ChatFormat RED = ChatFormat.field_1061;
+	Formatting AQUA = Formatting.field_1075;
+	Formatting GREEN = Formatting.field_1060;
+	Formatting GOLD = Formatting.field_1065;
+	Formatting RED = Formatting.field_1061;
 
 	void write(DataOutput dataOutput) throws IOException;
 
@@ -95,9 +95,9 @@ public interface Tag {
 		return this.toString();
 	}
 
-	default Component toTextComponent() {
-		return this.toTextComponent("", 0);
+	default Text method_10715() {
+		return this.method_10710("", 0);
 	}
 
-	Component toTextComponent(String string, int i);
+	Text method_10710(String string, int i);
 }

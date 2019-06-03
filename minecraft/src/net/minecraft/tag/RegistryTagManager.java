@@ -37,13 +37,6 @@ public class RegistryTagManager implements ResourceReloadListener {
 		return this.entityTypes;
 	}
 
-	public void clear() {
-		this.blocks.clear();
-		this.items.clear();
-		this.fluids.clear();
-		this.entityTypes.clear();
-	}
-
 	public void toPacket(PacketByteBuf packetByteBuf) {
 		this.blocks.toPacket(packetByteBuf);
 		this.items.toPacket(packetByteBuf);
@@ -85,7 +78,6 @@ public class RegistryTagManager implements ResourceReloadListener {
 			)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(builderHolder -> {
-				this.clear();
 				this.blocks.applyReload(builderHolder.blocks);
 				this.items.applyReload(builderHolder.items);
 				this.fluids.applyReload(builderHolder.fluids);

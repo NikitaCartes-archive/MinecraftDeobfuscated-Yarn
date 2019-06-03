@@ -6,17 +6,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
-	private static final Component TITLE = new TranslatableComponent("tutorial.craft_planks.title");
-	private static final Component DESCRIPTION = new TranslatableComponent("tutorial.craft_planks.description");
+	private static final Text field_5611 = new TranslatableText("tutorial.craft_planks.title");
+	private static final Text field_5612 = new TranslatableText("tutorial.craft_planks.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -47,7 +47,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 1200 && this.toast == null) {
-				this.toast = new TutorialToast(TutorialToast.Type.field_2236, TITLE, DESCRIPTION, false);
+				this.toast = new TutorialToast(TutorialToast.Type.field_2236, field_5611, field_5612, false);
 				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}

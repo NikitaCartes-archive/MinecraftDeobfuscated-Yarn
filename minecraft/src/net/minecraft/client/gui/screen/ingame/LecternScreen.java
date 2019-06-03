@@ -9,7 +9,7 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.LecternContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
@@ -34,7 +34,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 		}
 	};
 
-	public LecternScreen(LecternContainer lecternContainer, PlayerInventory playerInventory, Component component) {
+	public LecternScreen(LecternContainer lecternContainer, PlayerInventory playerInventory, Text text) {
 		this.lecternContainer = lecternContainer;
 	}
 

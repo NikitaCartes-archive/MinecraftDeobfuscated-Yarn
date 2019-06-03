@@ -1,6 +1,7 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.Sets;
+import com.google.common.collect.Streams;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,7 +11,7 @@ public final class PlayerChunkWatchingManager {
 	private final Set<ServerPlayerEntity> notWatchingPlayers = Sets.<ServerPlayerEntity>newHashSet();
 
 	public Stream<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
-		return this.watchingPlayers.stream();
+		return Streams.concat(this.watchingPlayers.stream(), this.notWatchingPlayers.stream());
 	}
 
 	public void add(long l, ServerPlayerEntity serverPlayerEntity, boolean bl) {

@@ -46,7 +46,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.get(predicate, blockPos, i, occupationStatus).count();
 	}
 
-	private Stream<PointOfInterest> get(
+	public Stream<PointOfInterest> get(
 		Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
 		int j = i * i;

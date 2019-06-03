@@ -86,7 +86,7 @@ public class BarrelBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BarrelBlockEntity) {
-				((BarrelBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((BarrelBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}

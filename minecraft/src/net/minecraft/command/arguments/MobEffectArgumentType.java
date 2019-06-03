@@ -11,16 +11,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
 	public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("effect.effectNotFound", object)
+		object -> new TranslatableText("effect.effectNotFound", object)
 	);
 
 	public static MobEffectArgumentType create() {

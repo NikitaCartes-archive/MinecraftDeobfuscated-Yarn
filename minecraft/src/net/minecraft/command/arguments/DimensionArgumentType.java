@@ -12,9 +12,9 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
@@ -24,7 +24,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		.map(dimensionType -> DimensionType.getId(dimensionType).toString())
 		.collect(Collectors.toList());
 	public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("argument.dimension.invalid", object)
+		object -> new TranslatableText("argument.dimension.invalid", object)
 	);
 
 	public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {

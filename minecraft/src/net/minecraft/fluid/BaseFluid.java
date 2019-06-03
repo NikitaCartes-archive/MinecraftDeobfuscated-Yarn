@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 public abstract class BaseFluid extends Fluid {
 	public static final BooleanProperty FALLING = Properties.FALLING;
-	public static final IntProperty LEVEL = Properties.field_12490;
+	public static final IntProperty LEVEL = Properties.LEVEL_1_8;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override

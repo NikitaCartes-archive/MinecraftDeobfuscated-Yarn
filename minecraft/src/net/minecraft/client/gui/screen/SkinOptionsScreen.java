@@ -7,14 +7,14 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SkinOptionsScreen extends Screen {
 	private final Screen parent;
 
 	public SkinOptionsScreen(Screen screen) {
-		super(new TranslatableComponent("options.skinCustomisation.title"));
+		super(new TranslatableText("options.skinCustomisation.title"));
 		this.parent = screen;
 	}
 
@@ -69,7 +69,7 @@ public class SkinOptionsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(i, j, f);
 	}
 
@@ -81,6 +81,6 @@ public class SkinOptionsScreen extends Screen {
 			string = I18n.translate("options.off");
 		}
 
-		return playerModelPart.getLocalizedName().getFormattedText() + ": " + string;
+		return playerModelPart.method_7428().asFormattedString() + ": " + string;
 	}
 }

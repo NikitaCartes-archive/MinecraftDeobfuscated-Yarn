@@ -141,9 +141,9 @@ public class MapRenderer implements AutoCloseable {
 					bufferBuilder.vertex(-1.0, -1.0, (double)((float)k * -0.001F)).texture((double)g, (double)m).next();
 					tessellator.draw();
 					GlStateManager.popMatrix();
-					if (mapIcon.getText() != null) {
+					if (mapIcon.method_88() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						String string = mapIcon.getText().getFormattedText();
+						String string = mapIcon.method_88().asFormattedString();
 						float o = (float)textRenderer.getStringWidth(string);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						GlStateManager.pushMatrix();

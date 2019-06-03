@@ -31,8 +31,6 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
@@ -40,6 +38,8 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
@@ -155,7 +155,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036);
+		return isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036) && this.lightLevel < 14;
 	}
 
 	@Deprecated
@@ -662,8 +662,8 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getTextComponent() {
-		return new TranslatableComponent(this.getTranslationKey());
+	public Text method_9518() {
+		return new TranslatableText(this.getTranslationKey());
 	}
 
 	public String getTranslationKey() {
@@ -802,7 +802,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Text> list, TooltipContext tooltipContext) {
 	}
 
 	public static boolean isNaturalStone(Block block) {

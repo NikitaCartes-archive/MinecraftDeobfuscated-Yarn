@@ -1,12 +1,12 @@
 package net.minecraft.entity.boss;
 
 import java.util.UUID;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public abstract class BossBar {
 	private final UUID uuid;
-	protected Component name;
+	protected Text field_5777;
 	protected float percent;
 	protected BossBar.Color color;
 	protected BossBar.Style style;
@@ -14,9 +14,9 @@ public abstract class BossBar {
 	protected boolean dragonMusic;
 	protected boolean thickenFog;
 
-	public BossBar(UUID uUID, Component component, BossBar.Color color, BossBar.Style style) {
+	public BossBar(UUID uUID, Text text, BossBar.Color color, BossBar.Style style) {
 		this.uuid = uUID;
-		this.name = component;
+		this.field_5777 = text;
 		this.color = color;
 		this.style = style;
 		this.percent = 1.0F;
@@ -26,12 +26,12 @@ public abstract class BossBar {
 		return this.uuid;
 	}
 
-	public Component getName() {
-		return this.name;
+	public Text method_5414() {
+		return this.field_5777;
 	}
 
-	public void setName(Component component) {
-		this.name = component;
+	public void method_5413(Text text) {
+		this.field_5777 = text;
 	}
 
 	public float getPercent() {
@@ -86,24 +86,24 @@ public abstract class BossBar {
 	}
 
 	public static enum Color {
-		field_5788("pink", ChatFormat.field_1061),
-		field_5780("blue", ChatFormat.field_1078),
-		field_5784("red", ChatFormat.field_1079),
-		field_5785("green", ChatFormat.field_1060),
-		field_5782("yellow", ChatFormat.field_1054),
-		field_5783("purple", ChatFormat.field_1058),
-		field_5786("white", ChatFormat.field_1068);
+		field_5788("pink", Formatting.field_1061),
+		field_5780("blue", Formatting.field_1078),
+		field_5784("red", Formatting.field_1079),
+		field_5785("green", Formatting.field_1060),
+		field_5782("yellow", Formatting.field_1054),
+		field_5783("purple", Formatting.field_1058),
+		field_5786("white", Formatting.field_1068);
 
 		private final String name;
-		private final ChatFormat format;
+		private final Formatting field_5787;
 
-		private Color(String string2, ChatFormat chatFormat) {
+		private Color(String string2, Formatting formatting) {
 			this.name = string2;
-			this.format = chatFormat;
+			this.field_5787 = formatting;
 		}
 
-		public ChatFormat getTextFormat() {
-			return this.format;
+		public Formatting method_5423() {
+			return this.field_5787;
 		}
 
 		public String getName() {

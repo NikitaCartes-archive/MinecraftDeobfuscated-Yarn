@@ -3,8 +3,8 @@ package net.minecraft.server.network;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -43,7 +43,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				if (m == 6L) {
 					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
-					this.player.sendMessage(new TranslatableComponent("demo.day." + m));
+					this.player.method_9203(new TranslatableText("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
@@ -55,13 +55,13 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.sendMessage(new TranslatableComponent("demo.day.warning"));
+			this.player.method_9203(new TranslatableText("demo.day.warning"));
 		}
 	}
 
 	private void sendDemoReminder() {
 		if (this.field_13888 > 100) {
-			this.player.sendMessage(new TranslatableComponent("demo.reminder"));
+			this.player.method_9203(new TranslatableText("demo.reminder"));
 			this.field_13888 = 0;
 		}
 	}

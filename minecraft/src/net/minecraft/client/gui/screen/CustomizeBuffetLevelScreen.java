@@ -15,7 +15,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -35,7 +35,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private ButtonWidget confirmButton;
 
 	public CustomizeBuffetLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
-		super(new TranslatableComponent("createWorld.customize.buffet.title"));
+		super(new TranslatableText("createWorld.customize.buffet.title"));
 		this.parent = createWorldScreen;
 		this.generatorOptionsTag = compoundTag;
 	}
@@ -140,7 +140,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderDirtBackground(0);
 		this.biomeSelectionList.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
 		super.render(i, j, f);
@@ -160,7 +160,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			Registry.BIOME
 				.getIds()
 				.stream()
-				.sorted(Comparator.comparing(identifier -> Registry.BIOME.get(identifier).getTextComponent().getString()))
+				.sorted(Comparator.comparing(identifier -> Registry.BIOME.get(identifier).method_8693().getString()))
 				.forEach(identifier -> this.addEntry(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(identifier)));
 		}
 
@@ -172,8 +172,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		public void method_20089(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
-				NarratorManager.INSTANCE
-					.narrate(new TranslatableComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
+				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).method_8693().getString()).getString());
 			}
 		}
 
@@ -194,7 +193,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 				BuffetBiomesListWidget.this.drawString(
-					CustomizeBuffetLevelScreen.this.font, Registry.BIOME.get(this.biome).getTextComponent().getString(), k + 5, j + 2, 16777215
+					CustomizeBuffetLevelScreen.this.font, Registry.BIOME.get(this.biome).method_8693().getString(), k + 5, j + 2, 16777215
 				);
 			}
 

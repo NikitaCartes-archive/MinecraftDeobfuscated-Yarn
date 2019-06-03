@@ -4,14 +4,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class FatalErrorScreen extends Screen {
 	private final String message;
 
-	public FatalErrorScreen(Component component, String string) {
-		super(component);
+	public FatalErrorScreen(Text text, String string) {
+		super(text);
 		this.message = string;
 	}
 
@@ -24,7 +24,7 @@ public class FatalErrorScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.fillGradient(0, 0, this.width, this.height, -12574688, -11530224);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 90, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 90, 16777215);
 		this.drawCenteredString(this.font, this.message, this.width / 2, 110, 16777215);
 		super.render(i, j, f);
 	}

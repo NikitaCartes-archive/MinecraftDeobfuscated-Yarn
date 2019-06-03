@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeetrootsBlock extends CropBlock {
-	public static final IntProperty field_9962 = Properties.field_12497;
+	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
@@ -28,8 +28,8 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public IntProperty method_9824() {
-		return field_9962;
+	public IntProperty getAgeProperty() {
+		return AGE;
 	}
 
 	@Override
@@ -57,11 +57,11 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_9962);
+		builder.add(AGE);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(this.method_9824())];
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

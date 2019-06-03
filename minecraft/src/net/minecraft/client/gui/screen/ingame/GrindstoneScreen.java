@@ -5,21 +5,21 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GrindstoneScreen extends AbstractContainerScreen<GrindstoneContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
-	public GrindstoneScreen(GrindstoneContainer grindstoneContainer, PlayerInventory playerInventory, Component component) {
-		super(grindstoneContainer, playerInventory, component);
+	public GrindstoneScreen(GrindstoneContainer grindstoneContainer, PlayerInventory playerInventory, Text text) {
+		super(grindstoneContainer, playerInventory, text);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.font.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

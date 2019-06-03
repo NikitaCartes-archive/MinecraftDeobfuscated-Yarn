@@ -42,6 +42,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 			if (this.method_19597(serverWorld, villagerEntity, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
 				villagerEntity.releaseTicketFor(this.destination);
 				brain.forget(this.destination);
+				brain.putMemory(MemoryModuleType.field_19293, l);
 			} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
 				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
 			}

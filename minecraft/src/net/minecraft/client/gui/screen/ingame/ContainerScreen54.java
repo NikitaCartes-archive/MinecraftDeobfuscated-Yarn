@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -13,8 +13,8 @@ public class ContainerScreen54 extends AbstractContainerScreen<GenericContainer>
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 	private final int rows;
 
-	public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, Component component) {
-		super(genericContainer, playerInventory, component);
+	public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, Text text) {
+		super(genericContainer, playerInventory, text);
 		this.passEvents = false;
 		int i = 222;
 		int j = 114;
@@ -31,8 +31,8 @@ public class ContainerScreen54 extends AbstractContainerScreen<GenericContainer>
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.font.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

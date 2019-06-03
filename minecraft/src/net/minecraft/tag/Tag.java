@@ -96,11 +96,6 @@ public class Tag<T> {
 			return this;
 		}
 
-		public Tag.Builder<T> add(Collection<T> collection) {
-			this.entries.add(new Tag.CollectionEntry(collection));
-			return this;
-		}
-
 		public Tag.Builder<T> add(Tag<T> tag) {
 			this.entries.add(new Tag.TagEntry<>(tag));
 			return this;

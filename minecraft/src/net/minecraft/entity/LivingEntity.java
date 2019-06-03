@@ -88,7 +88,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -1662,7 +1662,7 @@ public abstract class LivingEntity extends Entity {
 				double n = Math.floor(this.z) + 0.5;
 				double o = this.getBoundingBox().maxX - this.getBoundingBox().minX;
 				double p = this.getBoundingBox().maxZ - this.getBoundingBox().minZ;
-				BoundingBox boundingBox = new BoundingBox(
+				Box box = new Box(
 					m - o / 2.0, entity.getBoundingBox().minY, n - p / 2.0, m + o / 2.0, Math.floor(entity.getBoundingBox().minY) + (double)this.getHeight(), n + p / 2.0
 				);
 
@@ -1671,8 +1671,8 @@ public abstract class LivingEntity extends Entity {
 					double r = (double)(direction.getOffsetZ() * js[0] + direction2.getOffsetZ() * js[1]);
 					double s = m + q;
 					double t = n + r;
-					BoundingBox boundingBox2 = boundingBox.offset(q, 0.0, r);
-					if (this.world.doesNotCollide(this, boundingBox2)) {
+					Box box2 = box.offset(q, 0.0, r);
+					if (this.world.doesNotCollide(this, box2)) {
 						BlockPos blockPos = new BlockPos(s, this.y, t);
 						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
 							this.requestTeleport(s, this.y + 1.0, t);
@@ -1688,8 +1688,7 @@ public abstract class LivingEntity extends Entity {
 						}
 					} else {
 						BlockPos blockPos = new BlockPos(s, this.y + 1.0, t);
-						if (this.world.doesNotCollide(this, boundingBox2.offset(0.0, 1.0, 0.0))
-							&& this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
+						if (this.world.doesNotCollide(this, box2.offset(0.0, 1.0, 0.0)) && this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
 							k = s;
 							l = this.y + 2.0;
 							e = t;
@@ -2206,13 +2205,13 @@ public abstract class LivingEntity extends Entity {
 		this.forwardSpeed *= 0.98F;
 		this.field_6267 *= 0.9F;
 		this.initAi();
-		BoundingBox boundingBox = this.getBoundingBox();
+		Box box = this.getBoundingBox();
 		this.travel(new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed));
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("push");
 		if (this.field_6261 > 0) {
 			--this.field_6261;
-			this.method_6035(boundingBox, this.getBoundingBox());
+			this.method_6035(box, this.getBoundingBox());
 		}
 
 		this.tickPushing();
@@ -2268,9 +2267,9 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void method_6035(BoundingBox boundingBox, BoundingBox boundingBox2) {
-		BoundingBox boundingBox3 = boundingBox.union(boundingBox2);
-		List<Entity> list = this.world.getEntities(this, boundingBox3);
+	protected void method_6035(Box box, Box box2) {
+		Box box3 = box.union(box2);
+		List<Entity> list = this.world.getEntities(this, box3);
 		if (!list.isEmpty()) {
 			for(int i = 0; i < list.size(); ++i) {
 				Entity entity = (Entity)list.get(i);

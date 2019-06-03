@@ -29,30 +29,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public class DataCommand {
-	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.data.merge.failed")
-	);
+	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.merge.failed"));
 	private static final DynamicCommandExceptionType GET_INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.data.get.invalid", object)
+		object -> new TranslatableText("commands.data.get.invalid", object)
 	);
 	private static final DynamicCommandExceptionType GET_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.data.get.unknown", object)
+		object -> new TranslatableText("commands.data.get.unknown", object)
 	);
-	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.data.get.multiple")
-	);
+	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.get.multiple"));
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.data.modify.expected_list", object)
+		object -> new TranslatableText("commands.data.modify.expected_list", object)
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.data.modify.expected_object", object)
+		object -> new TranslatableText("commands.data.modify.expected_object", object)
 	);
 	private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.data.modify.invalid_index", object)
+		object -> new TranslatableText("commands.data.modify.invalid_index", object)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
 	public static final List<DataCommand.ObjectType> TARGET_OBJECT_TYPES = (List<DataCommand.ObjectType>)OBJECT_TYPES.stream()
@@ -260,7 +256,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag);
-			commandContext.getSource().sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+			commandContext.getSource().method_9226(dataCommandObject.getModifiedFeedback(), true);
 			return i;
 		}
 	}
@@ -272,7 +268,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag);
-			serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+			serverCommandSource.method_9226(dataCommandObject.getModifiedFeedback(), true);
 			return i;
 		}
 	}
@@ -305,7 +301,7 @@ public class DataCommand {
 			i = tag.asString().length();
 		}
 
-		serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(tag), false);
+		serverCommandSource.method_9226(dataCommandObject.getQueryFeedback(tag), false);
 		return i;
 	}
 
@@ -315,13 +311,13 @@ public class DataCommand {
 			throw GET_INVALID_EXCEPTION.create(nbtPath.toString());
 		} else {
 			int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-			serverCommandSource.sendFeedback(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
+			serverCommandSource.method_9226(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
 			return i;
 		}
 	}
 
 	private static int executeGet(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
-		serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
+		serverCommandSource.method_9226(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
 		return 1;
 	}
 
@@ -332,7 +328,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag3);
-			serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+			serverCommandSource.method_9226(dataCommandObject.getModifiedFeedback(), true);
 			return 1;
 		}
 	}

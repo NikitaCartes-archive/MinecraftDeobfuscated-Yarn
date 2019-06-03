@@ -11,21 +11,21 @@ import com.google.gson.JsonSerializer;
 import com.mojang.authlib.GameProfile;
 import java.lang.reflect.Type;
 import java.util.UUID;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 
 public class ServerMetadata {
-	private Component description;
+	private Text description;
 	private ServerMetadata.Players players;
 	private ServerMetadata.Version version;
 	private String favicon;
 
-	public Component getDescription() {
+	public Text getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(Component component) {
-		this.description = component;
+	public void setDescription(Text text) {
+		this.description = text;
 	}
 
 	public ServerMetadata.Players getPlayers() {
@@ -57,7 +57,7 @@ public class ServerMetadata {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
 			ServerMetadata serverMetadata = new ServerMetadata();
 			if (jsonObject.has("description")) {
-				serverMetadata.setDescription(jsonDeserializationContext.deserialize(jsonObject.get("description"), Component.class));
+				serverMetadata.setDescription(jsonDeserializationContext.deserialize(jsonObject.get("description"), Text.class));
 			}
 
 			if (jsonObject.has("players")) {

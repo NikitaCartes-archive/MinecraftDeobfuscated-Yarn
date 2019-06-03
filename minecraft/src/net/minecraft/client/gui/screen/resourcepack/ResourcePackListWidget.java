@@ -4,43 +4,43 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.ClientResourcePackContainer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePackCompatibility;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackEntry> {
 	private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
-	private static final Component INCOMPATIBLE = new TranslatableComponent("resourcePack.incompatible");
-	private static final Component INCOMPATIBLE_CONFIRM = new TranslatableComponent("resourcePack.incompatible.confirm.title");
+	private static final Text field_19126 = new TranslatableText("resourcePack.incompatible");
+	private static final Text field_19127 = new TranslatableText("resourcePack.incompatible.confirm.title");
 	protected final MinecraftClient client;
-	private final Component title;
+	private final Text field_18978;
 
-	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Component component) {
+	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Text text) {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.client = minecraftClient;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
-		this.title = component;
+		this.field_18978 = text;
 	}
 
 	@Override
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
-		Component component = new TextComponent("").append(this.title).applyFormat(ChatFormat.field_1073, ChatFormat.field_1067);
+		Text text = new LiteralText("").append(this.field_18978).formatted(Formatting.field_1073, Formatting.field_1067);
 		this.client
 			.textRenderer
 			.draw(
-				component.getFormattedText(),
-				(float)(i + this.width / 2 - this.client.textRenderer.getStringWidth(component.getFormattedText()) / 2),
+				text.asFormattedString(),
+				(float)(i + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2),
 				(float)Math.min(this.top + 3, j),
 				16777215
 			);
@@ -93,11 +93,11 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		}
 
 		protected String getDescription() {
-			return this.packContainer.getDescription().getFormattedText();
+			return this.packContainer.getDescription().asFormattedString();
 		}
 
 		protected String getDisplayName() {
-			return this.packContainer.getDisplayName().getFormattedText();
+			return this.packContainer.getDisplayName().asFormattedString();
 		}
 
 		public ClientResourcePackContainer getPackContainer() {
@@ -124,8 +124,8 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				int p = n - k;
 				int q = o - j;
 				if (!resourcePackCompatibility.isCompatible()) {
-					string = ResourcePackListWidget.INCOMPATIBLE.getFormattedText();
-					string2 = resourcePackCompatibility.getNotification().getFormattedText();
+					string = ResourcePackListWidget.field_19126.asFormattedString();
+					string2 = resourcePackCompatibility.getNotification().asFormattedString();
 				}
 
 				if (this.method_20152()) {
@@ -209,13 +209,13 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 					if (resourcePackCompatibility.isCompatible()) {
 						this.getScreen().select(this);
 					} else {
-						Component component = resourcePackCompatibility.getConfirmMessage();
+						Text text = resourcePackCompatibility.getConfirmMessage();
 						this.client.openScreen(new ConfirmScreen(bl -> {
 							this.client.openScreen(this.getScreen());
 							if (bl) {
 								this.getScreen().select(this);
 							}
-						}, ResourcePackListWidget.INCOMPATIBLE_CONFIRM, component));
+						}, ResourcePackListWidget.field_19127, text));
 					}
 
 					return true;

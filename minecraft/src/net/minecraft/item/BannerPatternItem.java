@@ -4,11 +4,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 public class BannerPatternItem extends Item {
@@ -25,12 +25,12 @@ public class BannerPatternItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-		list.add(this.getDescription().applyFormat(ChatFormat.field_1080));
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		list.add(this.method_7703().formatted(Formatting.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getDescription() {
-		return new TranslatableComponent(this.getTranslationKey() + ".desc");
+	public Text method_7703() {
+		return new TranslatableText(this.getTranslationKey() + ".desc");
 	}
 }

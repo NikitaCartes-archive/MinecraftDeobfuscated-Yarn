@@ -12,9 +12,9 @@ import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -36,8 +36,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public Component getPrompt() {
-		return new TranslatableComponent("spectatorMenu.team_teleport.prompt");
+	public Text method_2781() {
+		return new TranslatableText("spectatorMenu.team_teleport.prompt");
 	}
 
 	@Override
@@ -46,8 +46,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public Component getName() {
-		return new TranslatableComponent("spectatorMenu.team_teleport");
+	public Text method_16892() {
+		return new TranslatableText("spectatorMenu.team_teleport");
 	}
 
 	@Override
@@ -99,13 +99,13 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public Component getName() {
-			return this.team.getDisplayName();
+		public Text method_16892() {
+			return this.team.method_1140();
 		}
 
 		@Override
 		public void renderIcon(float f, int i) {
-			Integer integer = this.team.getColor().getColor();
+			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
 				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
 				float h = (float)(integer >> 8 & 0xFF) / 255.0F;

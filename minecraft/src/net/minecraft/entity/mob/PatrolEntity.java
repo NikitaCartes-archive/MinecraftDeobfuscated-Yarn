@@ -79,7 +79,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		if (this.isPatrolLeader()) {
-			this.setEquippedStack(EquipmentSlot.field_6169, Raid.OMINOUS_BANNER);
+			this.setEquippedStack(EquipmentSlot.field_6169, Raid.getOminousBanner());
 			this.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
 		}
 

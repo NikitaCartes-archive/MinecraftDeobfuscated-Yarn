@@ -16,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 
@@ -66,13 +67,17 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 					blockPos2 = blockPosx;
 				}
 
-				Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
-				boolean bl = path != null && path.method_19313(blockPos2);
-				if (!bl) {
-					this.field_19289.put(lxx, this.lastRunTime + 40L);
-				}
+				if (mobEntityWithAi.getBoundingBox().expand(2.0).contains(new Vec3d(blockPos2))) {
+					return true;
+				} else {
+					Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
+					boolean bl = path != null && path.method_19313(blockPos2);
+					if (!bl) {
+						this.field_19289.put(lxx, this.lastRunTime + 40L);
+					}
 
-				return bl;
+					return bl;
+				}
 			}
 		};
 		Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(this.poiType.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48);

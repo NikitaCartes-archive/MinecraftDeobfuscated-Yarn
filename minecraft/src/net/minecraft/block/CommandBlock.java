@@ -140,7 +140,7 @@ public class CommandBlock extends BlockWithEntity {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			if (itemStack.hasCustomName()) {
-				commandBlockExecutor.setCustomName(itemStack.getCustomName());
+				commandBlockExecutor.method_8290(itemStack.method_7964());
 			}
 
 			if (!world.isClient) {

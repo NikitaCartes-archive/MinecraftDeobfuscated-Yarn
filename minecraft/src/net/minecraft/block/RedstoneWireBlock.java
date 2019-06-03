@@ -37,7 +37,7 @@ public class RedstoneWireBlock extends Block {
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.EAST_WIRE_CONNECTION;
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.SOUTH_WIRE_CONNECTION;
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WEST_WIRE_CONNECTION;
-	public static final IntProperty field_11432 = Properties.field_12511;
+	public static final IntProperty POWER = Properties.POWER;
 	public static final Map<Direction, EnumProperty<WireConnection>> DIRECTION_TO_WIRE_CONNECTION_PROPERTY = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.field_11043,
@@ -80,7 +80,7 @@ public class RedstoneWireBlock extends Block {
 				.with(WIRE_CONNECTION_EAST, WireConnection.field_12687)
 				.with(WIRE_CONNECTION_SOUTH, WireConnection.field_12687)
 				.with(WIRE_CONNECTION_WEST, WireConnection.field_12687)
-				.with(field_11432, Integer.valueOf(0))
+				.with(POWER, Integer.valueOf(0))
 		);
 	}
 
@@ -213,7 +213,7 @@ public class RedstoneWireBlock extends Block {
 
 	private BlockState updateLogic(World world, BlockPos blockPos, BlockState blockState) {
 		BlockState blockState2 = blockState;
-		int i = blockState.get(field_11432);
+		int i = blockState.get(POWER);
 		this.wiresGivePower = false;
 		int j = world.getReceivedRedstonePower(blockPos);
 		this.wiresGivePower = true;
@@ -238,7 +238,7 @@ public class RedstoneWireBlock extends Block {
 		}
 
 		if (i != l) {
-			blockState = blockState.with(field_11432, Integer.valueOf(l));
+			blockState = blockState.with(POWER, Integer.valueOf(l));
 			if (world.getBlockState(blockPos) == blockState2) {
 				world.setBlockState(blockPos, blockState, 2);
 			}
@@ -318,7 +318,7 @@ public class RedstoneWireBlock extends Block {
 		if (blockState.getBlock() != this) {
 			return i;
 		} else {
-			int j = blockState.get(field_11432);
+			int j = blockState.get(POWER);
 			return j > i ? j : i;
 		}
 	}
@@ -345,7 +345,7 @@ public class RedstoneWireBlock extends Block {
 		if (!this.wiresGivePower) {
 			return 0;
 		} else {
-			int i = blockState.get(field_11432);
+			int i = blockState.get(POWER);
 			if (i == 0) {
 				return 0;
 			} else if (direction == Direction.field_11036) {
@@ -441,7 +441,7 @@ public class RedstoneWireBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = blockState.get(field_11432);
+		int i = blockState.get(POWER);
 		if (i != 0) {
 			double d = (double)blockPos.getX() + 0.5 + ((double)random.nextFloat() - 0.5) * 0.2;
 			double e = (double)((float)blockPos.getY() + 0.0625F);
@@ -496,6 +496,6 @@ public class RedstoneWireBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(WIRE_CONNECTION_NORTH, WIRE_CONNECTION_EAST, WIRE_CONNECTION_SOUTH, WIRE_CONNECTION_WEST, field_11432);
+		builder.add(WIRE_CONNECTION_NORTH, WIRE_CONNECTION_EAST, WIRE_CONNECTION_SOUTH, WIRE_CONNECTION_WEST, POWER);
 	}
 }

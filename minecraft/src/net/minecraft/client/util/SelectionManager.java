@@ -4,11 +4,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -62,7 +62,7 @@ public class SelectionManager {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			return true;
 		} else if (Screen.isPaste(i)) {
-			this.insert(SharedConstants.stripInvalidChars(ChatFormat.stripFormatting(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
+			this.insert(SharedConstants.stripInvalidChars(Formatting.strip(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.selectionEnd = this.selectionStart;
 			return true;
 		} else if (Screen.isCut(i)) {

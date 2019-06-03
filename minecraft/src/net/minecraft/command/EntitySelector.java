@@ -12,13 +12,13 @@ import javax.annotation.Nullable;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.NumberRange;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
@@ -29,7 +29,7 @@ public class EntitySelector {
 	private final NumberRange.FloatRange distance;
 	private final Function<Vec3d, Vec3d> positionOffset;
 	@Nullable
-	private final BoundingBox box;
+	private final Box box;
 	private final BiConsumer<Vec3d, List<? extends Entity>> sorter;
 	private final boolean senderOnly;
 	@Nullable
@@ -47,7 +47,7 @@ public class EntitySelector {
 		Predicate<Entity> predicate,
 		NumberRange.FloatRange floatRange,
 		Function<Vec3d, Vec3d> function,
-		@Nullable BoundingBox boundingBox,
+		@Nullable Box box,
 		BiConsumer<Vec3d, List<? extends Entity>> biConsumer,
 		boolean bl3,
 		@Nullable String string,
@@ -61,7 +61,7 @@ public class EntitySelector {
 		this.basePredicate = predicate;
 		this.distance = floatRange;
 		this.positionOffset = function;
-		this.box = boundingBox;
+		this.box = box;
 		this.sorter = biConsumer;
 		this.senderOnly = bl3;
 		this.playerName = string;
@@ -202,8 +202,8 @@ public class EntitySelector {
 	private Predicate<Entity> getPositionPredicate(Vec3d vec3d) {
 		Predicate<Entity> predicate = this.basePredicate;
 		if (this.box != null) {
-			BoundingBox boundingBox = this.box.offset(vec3d);
-			predicate = predicate.and(entity -> boundingBox.intersects(entity.getBoundingBox()));
+			Box box = this.box.offset(vec3d);
+			predicate = predicate.and(entity -> box.intersects(entity.getBoundingBox()));
 		}
 
 		if (!this.distance.isDummy()) {
@@ -221,7 +221,7 @@ public class EntitySelector {
 		return list.subList(0, Math.min(this.count, list.size()));
 	}
 
-	public static Component getNames(List<? extends Entity> list) {
-		return Components.join(list, Entity::getDisplayName);
+	public static Text method_9822(List<? extends Entity> list) {
+		return Texts.join(list, Entity::method_5476);
 	}
 }

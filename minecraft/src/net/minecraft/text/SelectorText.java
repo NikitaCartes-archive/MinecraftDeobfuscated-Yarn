@@ -1,4 +1,4 @@
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,13 +10,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SelectorComponent extends BaseComponent implements ComponentWithSelectors {
+public class SelectorText extends BaseText implements ParsableText {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String pattern;
 	@Nullable
-	private final EntitySelector field_11790;
+	private final EntitySelector selector;
 
-	public SelectorComponent(String string) {
+	public SelectorText(String string) {
 		this.pattern = string;
 		EntitySelector entitySelector = null;
 
@@ -27,7 +27,7 @@ public class SelectorComponent extends BaseComponent implements ComponentWithSel
 			LOGGER.warn("Invalid selector component: {}", string, var4.getMessage());
 		}
 
-		this.field_11790 = entitySelector;
+		this.selector = entitySelector;
 	}
 
 	public String getPattern() {
@@ -35,35 +35,35 @@ public class SelectorComponent extends BaseComponent implements ComponentWithSel
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-		return (Component)(serverCommandSource != null && this.field_11790 != null
-			? EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource))
-			: new TextComponent(""));
+	public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		return (Text)(serverCommandSource != null && this.selector != null
+			? EntitySelector.method_9822(this.selector.getEntities(serverCommandSource))
+			: new LiteralText(""));
 	}
 
 	@Override
-	public String getText() {
+	public String asString() {
 		return this.pattern;
 	}
 
-	public SelectorComponent method_10931() {
-		return new SelectorComponent(this.pattern);
+	public SelectorText method_10931() {
+		return new SelectorText(this.pattern);
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof SelectorComponent)) {
+		} else if (!(object instanceof SelectorText)) {
 			return false;
 		} else {
-			SelectorComponent selectorComponent = (SelectorComponent)object;
-			return this.pattern.equals(selectorComponent.pattern) && super.equals(object);
+			SelectorText selectorText = (SelectorText)object;
+			return this.pattern.equals(selectorText.pattern) && super.equals(object);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.method_10866() + '}';
 	}
 }

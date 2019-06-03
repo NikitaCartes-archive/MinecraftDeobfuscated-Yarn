@@ -10,7 +10,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
 
@@ -34,7 +34,7 @@ public class EndCrystalItem extends Item {
 				double d = (double)blockPos2.getX();
 				double e = (double)blockPos2.getY();
 				double f = (double)blockPos2.getZ();
-				List<Entity> list = world.getEntities(null, new BoundingBox(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
 					return ActionResult.field_5814;
 				} else {

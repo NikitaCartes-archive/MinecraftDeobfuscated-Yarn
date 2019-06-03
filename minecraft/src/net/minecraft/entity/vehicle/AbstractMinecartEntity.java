@@ -28,7 +28,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -116,7 +116,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Nullable
 	@Override
-	public BoundingBox method_5708(Entity entity) {
+	public Box method_5708(Entity entity) {
 		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
@@ -160,7 +160,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			ItemStack itemStack = new ItemStack(Items.field_8045);
 			if (this.hasCustomName()) {
-				itemStack.setCustomName(this.getCustomName());
+				itemStack.method_7977(this.method_5797());
 			}
 
 			this.dropStack(itemStack);
@@ -560,9 +560,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BoundingBox getVisibilityBoundingBox() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		return this.hasCustomBlock() ? boundingBox.expand((double)Math.abs(this.getBlockOffset()) / 16.0) : boundingBox;
+	public Box getVisibilityBoundingBox() {
+		Box box = this.getBoundingBox();
+		return this.hasCustomBlock() ? box.expand((double)Math.abs(this.getBlockOffset()) / 16.0) : box;
 	}
 
 	@Override

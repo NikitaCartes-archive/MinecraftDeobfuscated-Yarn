@@ -13,7 +13,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends Screen {
@@ -25,7 +25,7 @@ public class LanguageOptionsScreen extends Screen {
 	private ButtonWidget doneButton;
 
 	public LanguageOptionsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
-		super(new TranslatableComponent("options.language"));
+		super(new TranslatableText("options.language"));
 		this.parent = screen;
 		this.options = gameOptions;
 		this.languageManager = languageManager;
@@ -65,7 +65,7 @@ public class LanguageOptionsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.languageSelectionList.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 16, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 16777215);
 		this.drawCenteredString(this.font, "(" + I18n.translate("options.languageWarning") + ")", this.width / 2, this.height - 56, 8421504);
 		super.render(i, j, f);
 	}
@@ -103,7 +103,7 @@ public class LanguageOptionsScreen extends Screen {
 		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem) {
 			super.setSelected(languageItem);
 			if (languageItem != null) {
-				NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", languageItem.languageDefinition).getString());
+				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageItem.languageDefinition).getString());
 			}
 		}
 

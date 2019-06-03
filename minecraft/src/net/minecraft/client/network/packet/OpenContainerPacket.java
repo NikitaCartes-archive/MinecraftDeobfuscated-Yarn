@@ -6,37 +6,37 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.ContainerType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	private int syncId;
 	private int containerId;
-	private Component name;
+	private Text name;
 
 	public OpenContainerPacket() {
 	}
 
-	public OpenContainerPacket(int i, ContainerType<?> containerType, Component component) {
+	public OpenContainerPacket(int i, ContainerType<?> containerType, Text text) {
 		this.syncId = i;
 		this.containerId = Registry.CONTAINER.getRawId(containerType);
-		this.name = component;
+		this.name = text;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readVarInt();
 		this.containerId = packetByteBuf.readVarInt();
-		this.name = packetByteBuf.readTextComponent();
+		this.name = packetByteBuf.method_10808();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.syncId);
 		packetByteBuf.writeVarInt(this.containerId);
-		packetByteBuf.writeTextComponent(this.name);
+		packetByteBuf.method_10805(this.name);
 	}
 
 	public void method_17591(ClientPlayPacketListener clientPlayPacketListener) {
@@ -55,7 +55,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getName() {
+	public Text getName() {
 		return this.name;
 	}
 }

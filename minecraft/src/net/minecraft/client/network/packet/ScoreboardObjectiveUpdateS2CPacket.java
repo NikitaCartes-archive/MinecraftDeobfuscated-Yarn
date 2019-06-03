@@ -4,15 +4,15 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private String name;
-	private Component displayName;
+	private Text displayName;
 	private ScoreboardCriterion.RenderType type;
 	private int mode;
 
@@ -21,7 +21,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 
 	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective scoreboardObjective, int i) {
 		this.name = scoreboardObjective.getName();
-		this.displayName = scoreboardObjective.getDisplayName();
+		this.displayName = scoreboardObjective.method_1114();
 		this.type = scoreboardObjective.getRenderType();
 		this.mode = i;
 	}
@@ -31,7 +31,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		this.name = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.displayName = packetByteBuf.readTextComponent();
+			this.displayName = packetByteBuf.method_10808();
 			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 		}
 	}
@@ -41,7 +41,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		packetByteBuf.writeString(this.name);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeTextComponent(this.displayName);
+			packetByteBuf.method_10805(this.displayName);
 			packetByteBuf.writeEnumConstant(this.type);
 		}
 	}
@@ -56,7 +56,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getDisplayName() {
+	public Text getDisplayName() {
 		return this.displayName;
 	}
 

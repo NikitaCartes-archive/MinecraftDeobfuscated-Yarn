@@ -45,7 +45,7 @@ public class VillagerTaskListProvider {
 						Pair.of(new GoToIfNearbyTask(MemoryModuleType.field_18439, 4), 2),
 						Pair.of(new GoToNearbyPositionTask(MemoryModuleType.field_18439, 1, 10), 5),
 						Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.field_18873, 0.4F, 1, 6, MemoryModuleType.field_18439), 5),
-						Pair.of(new FarmerVillagerTask(), 5)
+						Pair.of(new FarmerVillagerTask(), villagerProfession == VillagerProfession.field_17056 ? 2 : 5)
 					)
 				)
 			),
@@ -173,7 +173,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, new StopPanicingTask()),
 			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.field_18453, g)),
 			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.field_18452, g)),
-			Pair.of(3, new FindWalkTargetTask(g)),
+			Pair.of(3, new FindWalkTargetTask(g, 2, 2)),
 			createBusyFollowTask()
 		);
 	}

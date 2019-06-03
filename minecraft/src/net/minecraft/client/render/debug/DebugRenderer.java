@@ -18,7 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -39,18 +39,6 @@ public class DebugRenderer {
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
 	private boolean showChunkBorder;
-	private boolean showPathfinding;
-	private boolean showWater;
-	private boolean showHeightmap;
-	private boolean showVoxels;
-	private boolean showNeighborUpdates;
-	private boolean showCaves;
-	private boolean showStructures;
-	private boolean showSkyLight;
-	private boolean showWorldGenAttempts;
-	private boolean showBlockOutlines;
-	private boolean field_18775;
-	private boolean showGoalSelectors;
 
 	public DebugRenderer(MinecraftClient minecraftClient) {
 		this.pathfindingDebugRenderer = new PathfindingDebugRenderer(minecraftClient);
@@ -89,17 +77,7 @@ public class DebugRenderer {
 	}
 
 	public boolean shouldRender() {
-		return this.showChunkBorder
-			|| this.showPathfinding
-			|| this.showWater
-			|| this.showHeightmap
-			|| this.showVoxels
-			|| this.showNeighborUpdates
-			|| this.showSkyLight
-			|| this.showWorldGenAttempts
-			|| this.showBlockOutlines
-			|| this.field_18775
-			|| this.showGoalSelectors;
+		return this.showChunkBorder;
 	}
 
 	public boolean toggleShowChunkBorder() {
@@ -108,52 +86,8 @@ public class DebugRenderer {
 	}
 
 	public void renderDebuggers(long l) {
-		if (this.showPathfinding) {
-			this.pathfindingDebugRenderer.render(l);
-		}
-
 		if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 			this.chunkBorderDebugRenderer.render(l);
-		}
-
-		if (this.showWater) {
-			this.waterDebugRenderer.render(l);
-		}
-
-		if (this.showHeightmap) {
-			this.heightmapDebugRenderer.render(l);
-		}
-
-		if (this.showVoxels) {
-			this.voxelDebugRenderer.render(l);
-		}
-
-		if (this.showNeighborUpdates) {
-			this.neighborUpdateDebugRenderer.render(l);
-		}
-
-		if (this.showCaves) {
-			this.caveDebugRenderer.render(l);
-		}
-
-		if (this.showStructures) {
-			this.structureDebugRenderer.render(l);
-		}
-
-		if (this.showSkyLight) {
-			this.skyLightDebugRenderer.render(l);
-		}
-
-		if (this.showWorldGenAttempts) {
-			this.worldGenAttemptDebugRenderer.render(l);
-		}
-
-		if (this.showBlockOutlines) {
-			this.blockOutlineDebugRenderer.render(l);
-		}
-
-		if (this.showGoalSelectors) {
-			this.goalSelectorDebugRenderer.render(l);
 		}
 	}
 
@@ -164,10 +98,10 @@ public class DebugRenderer {
 			Vec3d vec3d = entity.getCameraPosVec(1.0F);
 			Vec3d vec3d2 = entity.getRotationVec(1.0F).multiply((double)i);
 			Vec3d vec3d3 = vec3d.add(vec3d2);
-			BoundingBox boundingBox = entity.getBoundingBox().stretch(vec3d2).expand(1.0);
+			Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0);
 			int j = i * i;
 			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.collides();
-			EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, boundingBox, predicate, (double)j);
+			EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, predicate, (double)j);
 			if (entityHitResult == null) {
 				return Optional.empty();
 			} else {
@@ -180,8 +114,8 @@ public class DebugRenderer {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			Vec3d vec3d = camera.getPos().negate();
-			BoundingBox boundingBox = new BoundingBox(blockPos, blockPos2).offset(vec3d);
-			method_19695(boundingBox, f, g, h, i);
+			Box box = new Box(blockPos, blockPos2).offset(vec3d);
+			method_19695(box, f, g, h, i);
 		}
 	}
 
@@ -189,13 +123,13 @@ public class DebugRenderer {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			Vec3d vec3d = camera.getPos().negate();
-			BoundingBox boundingBox = new BoundingBox(blockPos).offset(vec3d).expand((double)f);
-			method_19695(boundingBox, g, h, i, j);
+			Box box = new Box(blockPos).offset(vec3d).expand((double)f);
+			method_19695(box, g, h, i, j);
 		}
 	}
 
-	public static void method_19695(BoundingBox boundingBox, float f, float g, float h, float i) {
-		method_19692(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ, f, g, h, i);
+	public static void method_19695(Box box, float f, float g, float h, float i) {
+		method_19692(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
 	}
 
 	public static void method_19692(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {

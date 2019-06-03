@@ -12,7 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -91,8 +91,8 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		BlockPos blockPos = this.getPos();
 		if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
 			this.field_19155 = this.world.getTime();
-			BoundingBox boundingBox = new BoundingBox(blockPos).expand(48.0);
-			this.field_19156 = this.world.getEntities(LivingEntity.class, boundingBox);
+			Box box = new Box(blockPos).expand(48.0);
+			this.field_19156 = this.world.getEntities(LivingEntity.class, box);
 		}
 
 		if (!this.world.isClient) {

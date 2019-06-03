@@ -9,7 +9,7 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.SpawnHelper;
@@ -63,7 +63,7 @@ public class CatSpawner {
 		if (serverWorld.getPointOfInterestStorage()
 				.count(PointOfInterestType.field_18517.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18488)
 			> 4L) {
-			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new BoundingBox(blockPos).expand(48.0, 8.0, 48.0));
+			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
 				return this.spawn(blockPos, serverWorld);
 			}
@@ -74,7 +74,7 @@ public class CatSpawner {
 
 	private int spawnInSwampHut(World world, BlockPos blockPos) {
 		int i = 16;
-		List<CatEntity> list = world.getEntities(CatEntity.class, new BoundingBox(blockPos).expand(16.0, 8.0, 16.0));
+		List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
 		return list.size() < 1 ? this.spawn(blockPos, world) : 0;
 	}
 

@@ -7,8 +7,8 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.RealmsBridge;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
@@ -16,7 +16,7 @@ public class PauseScreen extends Screen {
 	private final boolean field_19319;
 
 	public PauseScreen(boolean bl) {
-		super(bl ? new TranslatableComponent("menu.game") : new TranslatableComponent("menu.paused"));
+		super(bl ? new TranslatableText("menu.game") : new TranslatableText("menu.paused"));
 		this.field_19319 = bl;
 	}
 
@@ -115,7 +115,7 @@ public class PauseScreen extends Screen {
 				buttonWidgetx.active = false;
 				this.minecraft.world.disconnect();
 				if (bl) {
-					this.minecraft.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
+					this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 				} else {
 					this.minecraft.disconnect();
 				}
@@ -144,9 +144,9 @@ public class PauseScreen extends Screen {
 	public void render(int i, int j, float f) {
 		if (this.field_19319) {
 			this.renderBackground();
-			this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 16777215);
+			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		} else {
-			this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 10, 16777215);
+			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 16777215);
 		}
 
 		super.render(i, j, f);

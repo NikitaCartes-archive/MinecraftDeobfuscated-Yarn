@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,7 +112,8 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.doesNotCollide(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))) {
+					if (world.doesNotCollide(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))
+						&& SpawnRestriction.method_20638((EntityType)optional.get(), world.getWorld(), SpawnType.field_16469, new BlockPos(g, h, k), world.getRandom())) {
 						Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> {
 							entityx.setPositionAndAngles(g, h, k, entityx.yaw, entityx.pitch);
 							return entityx;
@@ -123,7 +125,7 @@ public abstract class MobSpawnerLogic {
 
 						int l = world.getEntities(
 								entity.getClass(),
-								new BoundingBox(
+								new Box(
 										(double)blockPos.getX(),
 										(double)blockPos.getY(),
 										(double)blockPos.getZ(),

@@ -47,10 +47,10 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 			this.tail1.pitch = 1.7278761F;
 			this.tail2.pitch = 2.670354F;
 			this.backLegLeft.pitch = (float) (-Math.PI / 20);
-			this.backLegLeft.rotationPointY = 15.8F;
+			this.backLegLeft.rotationPointY = 16.1F;
 			this.backLegLeft.rotationPointZ = -7.0F;
 			this.backLegRight.pitch = (float) (-Math.PI / 20);
-			this.backLegRight.rotationPointY = 15.8F;
+			this.backLegRight.rotationPointY = 16.1F;
 			this.backLegRight.rotationPointZ = -7.0F;
 			this.frontLegLeft.pitch = (float) (-Math.PI / 2);
 			this.frontLegLeft.rotationPointY = 21.0F;

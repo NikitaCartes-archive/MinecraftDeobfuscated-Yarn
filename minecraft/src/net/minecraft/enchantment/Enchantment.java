@@ -5,15 +5,15 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
@@ -23,7 +23,7 @@ public abstract class Enchantment {
 	@Nullable
 	public EnchantmentTarget type;
 	@Nullable
-	protected String translationName;
+	protected String translationKey;
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
@@ -83,30 +83,30 @@ public abstract class Enchantment {
 	}
 
 	protected String getOrCreateTranslationKey() {
-		if (this.translationName == null) {
-			this.translationName = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
+		if (this.translationKey == null) {
+			this.translationKey = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
 		}
 
-		return this.translationName;
+		return this.translationKey;
 	}
 
 	public String getTranslationKey() {
 		return this.getOrCreateTranslationKey();
 	}
 
-	public Component getTextComponent(int i) {
-		Component component = new TranslatableComponent(this.getTranslationKey());
+	public Text method_8179(int i) {
+		Text text = new TranslatableText(this.getTranslationKey());
 		if (this.isCursed()) {
-			component.applyFormat(ChatFormat.field_1061);
+			text.formatted(Formatting.field_1061);
 		} else {
-			component.applyFormat(ChatFormat.field_1080);
+			text.formatted(Formatting.field_1080);
 		}
 
 		if (i != 1 || this.getMaximumLevel() != 1) {
-			component.append(" ").append(new TranslatableComponent("enchantment.level." + i));
+			text.append(" ").append(new TranslatableText("enchantment.level." + i));
 		}
 
-		return component;
+		return text;
 	}
 
 	public boolean isAcceptableItem(ItemStack itemStack) {

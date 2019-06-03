@@ -2,8 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public enum PlayerModelPart {
@@ -18,13 +18,13 @@ public enum PlayerModelPart {
 	private final int id;
 	private final int bitFlag;
 	private final String name;
-	private final Component localizedName;
+	private final Text field_7567;
 
 	private PlayerModelPart(int j, String string2) {
 		this.id = j;
 		this.bitFlag = 1 << j;
 		this.name = string2;
-		this.localizedName = new TranslatableComponent("options.modelPart." + string2);
+		this.field_7567 = new TranslatableText("options.modelPart." + string2);
 	}
 
 	public int getBitFlag() {
@@ -35,7 +35,7 @@ public enum PlayerModelPart {
 		return this.name;
 	}
 
-	public Component getLocalizedName() {
-		return this.localizedName;
+	public Text method_7428() {
+		return this.field_7567;
 	}
 }

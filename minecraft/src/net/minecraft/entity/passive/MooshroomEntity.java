@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,6 +10,7 @@ import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -24,6 +26,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -35,7 +40,15 @@ public class MooshroomEntity extends CowEntity {
 
 	public MooshroomEntity(EntityType<? extends MooshroomEntity> entityType, World world) {
 		super(entityType, world);
-		this.spawningGround = Blocks.field_10402;
+	}
+
+	@Override
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+	}
+
+	public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 && iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -95,7 +108,7 @@ public class MooshroomEntity extends CowEntity {
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.field_6283 = this.field_6283;
 				if (this.hasCustomName()) {
-					cowEntity.setCustomName(this.getCustomName());
+					cowEntity.method_5665(this.method_5797());
 				}
 
 				this.world.spawnEntity(cowEntity);

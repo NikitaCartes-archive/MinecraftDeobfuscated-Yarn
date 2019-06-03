@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.LevelPropagator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -25,7 +26,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	protected final LightType type;
 	protected final S lightStorage;
 	private boolean field_15794;
-	private final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
+	protected final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
 	private final long[] field_17397 = new long[2];
 	private final BlockView[] field_17398 = new BlockView[2];
 
@@ -72,13 +73,13 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		Arrays.fill(this.field_17398, null);
 	}
 
-	protected VoxelShape method_20479(long l, @Nullable AtomicInteger atomicInteger) {
+	protected BlockState method_20479(long l, @Nullable AtomicInteger atomicInteger) {
 		if (l == Long.MAX_VALUE) {
 			if (atomicInteger != null) {
 				atomicInteger.set(0);
 			}
 
-			return VoxelShapes.empty();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			int i = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l));
 			int j = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l));
@@ -88,7 +89,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					atomicInteger.set(16);
 				}
 
-				return VoxelShapes.fullCube();
+				return Blocks.field_9987.getDefaultState();
 			} else {
 				this.field_19284.setFromLong(l);
 				BlockState blockState = blockView.getBlockState(this.field_19284);
@@ -97,9 +98,13 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
 				}
 
-				return bl ? blockState.method_11615(this.chunkProvider.getWorld(), this.field_19284) : VoxelShapes.empty();
+				return bl ? blockState : Blocks.field_10124.getDefaultState();
 			}
 		}
+	}
+
+	protected VoxelShape method_20710(BlockState blockState, long l, Direction direction) {
+		return blockState.isOpaque() ? blockState.getCullShape(this.chunkProvider.getWorld(), this.field_19284.setFromLong(l), direction) : VoxelShapes.empty();
 	}
 
 	public static int method_20049(

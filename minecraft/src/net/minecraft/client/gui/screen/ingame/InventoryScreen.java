@@ -16,7 +16,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -30,7 +30,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	private boolean isMouseDown;
 
 	public InventoryScreen(PlayerEntity playerEntity) {
-		super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableComponent("container.crafting"));
+		super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableText("container.crafting"));
 		this.passEvents = true;
 	}
 
@@ -67,7 +67,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.font.draw(this.title.getFormattedText(), 97.0F, 8.0F, 4210752);
+		this.font.draw(this.title.asFormattedString(), 97.0F, 8.0F, 4210752);
 	}
 
 	@Override

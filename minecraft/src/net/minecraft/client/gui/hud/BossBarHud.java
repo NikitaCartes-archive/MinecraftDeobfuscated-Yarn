@@ -32,7 +32,7 @@ public class BossBarHud extends DrawableHelper {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.drawBossBar(k, j, clientBossBar);
-				String string = clientBossBar.getName().getFormattedText();
+				String string = clientBossBar.method_5414().asFormattedString();
 				int m = this.client.textRenderer.getStringWidth(string);
 				int n = i / 2 - m / 2;
 				int o = j - 9;

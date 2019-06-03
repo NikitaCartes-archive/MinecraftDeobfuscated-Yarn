@@ -8,7 +8,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityScreen extends Screen {
@@ -20,7 +20,7 @@ public class AccessibilityScreen extends Screen {
 	private AbstractButtonWidget narratorButton;
 
 	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableComponent("options.accessibility.title"));
+		super(new TranslatableText("options.accessibility.title"));
 		this.parent = screen;
 		this.gameOptions = gameOptions;
 	}
@@ -54,7 +54,7 @@ public class AccessibilityScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(i, j, f);
 	}
 

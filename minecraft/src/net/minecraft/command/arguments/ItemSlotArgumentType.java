@@ -14,15 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
 	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("slot.unknown", object)
+		object -> new TranslatableText("slot.unknown", object)
 	);
 	private static final Map<String, Integer> slotNamesToSlotCommandId = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
 		for(int i = 0; i < 54; ++i) {

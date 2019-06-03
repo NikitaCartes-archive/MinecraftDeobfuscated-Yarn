@@ -10,9 +10,9 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
 import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class SettingsScreen extends Screen {
 	private Difficulty difficulty;
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableComponent("options.title"));
+		super(new TranslatableText("options.title"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
@@ -46,7 +46,7 @@ public class SettingsScreen extends Screen {
 			this.difficultyButton = this.addButton(
 				new ButtonWidget(
 					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), buttonWidget -> {
-						this.difficulty = Difficulty.getDifficulty(this.difficulty.getId() + 1);
+						this.difficulty = Difficulty.byOrdinal(this.difficulty.getId() + 1);
 						this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
 						this.difficultyButton.setMessage(this.getDifficultyButtonText(this.difficulty));
 					}
@@ -62,10 +62,9 @@ public class SettingsScreen extends Screen {
 								.openScreen(
 									new ConfirmScreen(
 										this::lockDifficulty,
-										new TranslatableComponent("difficulty.lock.title"),
-										new TranslatableComponent(
-											"difficulty.lock.question",
-											new TranslatableComponent("options.difficulty." + this.minecraft.world.getLevelProperties().getDifficulty().getTranslationKey())
+										new TranslatableText("difficulty.lock.title"),
+										new TranslatableText(
+											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.minecraft.world.getLevelProperties().getDifficulty().getName())
 										)
 									)
 								)
@@ -181,7 +180,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	public String getDifficultyButtonText(Difficulty difficulty) {
-		return new TranslatableComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
+		return new TranslatableText("options.difficulty").append(": ").append(difficulty.method_5463()).asFormattedString();
 	}
 
 	private void lockDifficulty(boolean bl) {
@@ -202,7 +201,7 @@ public class SettingsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 15, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 15, 16777215);
 		super.render(i, j, f);
 	}
 }

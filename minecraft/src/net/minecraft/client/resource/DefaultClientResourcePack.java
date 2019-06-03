@@ -39,6 +39,18 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 		return super.findInputStream(resourceType, identifier);
 	}
 
+	@Override
+	public boolean contains(ResourceType resourceType, Identifier identifier) {
+		if (resourceType == ResourceType.field_14188) {
+			File file = this.index.getResource(identifier);
+			if (file != null && file.exists()) {
+				return true;
+			}
+		}
+
+		return super.contains(resourceType, identifier);
+	}
+
 	@Nullable
 	@Override
 	protected InputStream getInputStream(String string) {

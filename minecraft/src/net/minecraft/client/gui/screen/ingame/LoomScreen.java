@@ -16,8 +16,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -42,8 +42,8 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private int firstPatternButtonId = 1;
 	private int lastCachedPatternButtonTextureId = 1;
 
-	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Component component) {
-		super(loomContainer, playerInventory, component);
+	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Text text) {
+		super(loomContainer, playerInventory, text);
 		loomContainer.setInventoryChangeListener(this::onInventoryChanged);
 	}
 
@@ -68,8 +68,8 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.font.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
+		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

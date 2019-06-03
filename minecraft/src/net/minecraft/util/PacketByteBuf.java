@@ -27,7 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.PositionTracker;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -148,12 +148,12 @@ public class PacketByteBuf extends ByteBuf {
 		return ChunkSectionPos.from(this.readLong());
 	}
 
-	public Component readTextComponent() {
-		return Component.Serializer.fromJsonString(this.readString(262144));
+	public Text method_10808() {
+		return Text.Serializer.fromJson(this.readString(262144));
 	}
 
-	public PacketByteBuf writeTextComponent(Component component) {
-		return this.writeString(Component.Serializer.toJsonString(component), 262144);
+	public PacketByteBuf method_10805(Text text) {
+		return this.writeString(Text.Serializer.toJson(text), 262144);
 	}
 
 	public <T extends Enum<T>> T readEnumConstant(Class<T> class_) {

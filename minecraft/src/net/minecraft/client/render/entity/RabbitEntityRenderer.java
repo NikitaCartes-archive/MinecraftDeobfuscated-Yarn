@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.render.entity.model.RabbitEntityModel;
 import net.minecraft.entity.passive.RabbitEntity;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -23,7 +23,7 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	}
 
 	protected Identifier method_4102(RabbitEntity rabbitEntity) {
-		String string = ChatFormat.stripFormatting(rabbitEntity.getName().getString());
+		String string = Formatting.strip(rabbitEntity.method_5477().getString());
 		if (string != null && "Toast".equals(string)) {
 			return TOAST_SKIN;
 		} else {

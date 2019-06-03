@@ -33,7 +33,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		if (object instanceof Nameable) {
 			Nameable nameable = (Nameable)object;
 			if (nameable.hasCustomName()) {
-				itemStack.setCustomName(nameable.getDisplayName());
+				itemStack.method_7977(nameable.method_5476());
 			}
 		}
 

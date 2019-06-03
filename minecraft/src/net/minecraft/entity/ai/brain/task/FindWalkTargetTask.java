@@ -14,10 +14,18 @@ import net.minecraft.util.math.Vec3d;
 
 public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private final float walkSpeed;
+	private final int field_19352;
+	private final int field_19353;
 
 	public FindWalkTargetTask(float f) {
+		this(f, 10, 7);
+	}
+
+	public FindWalkTargetTask(float f, int i, int j) {
 		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 		this.walkSpeed = f;
+		this.field_19352 = i;
+		this.field_19353 = j;
 	}
 
 	protected void method_18996(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
@@ -38,13 +46,15 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private void method_20430(MobEntityWithAi mobEntityWithAi, ChunkSectionPos chunkSectionPos) {
 		BlockPos blockPos = chunkSectionPos.getCenterPos();
 		Optional<Vec3d> optional = Optional.ofNullable(
-			PathfindingUtil.method_6373(mobEntityWithAi, 10, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()))
+			PathfindingUtil.method_6373(
+				mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
+			)
 		);
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 
 	private void method_20429(MobEntityWithAi mobEntityWithAi) {
-		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, 10, 7));
+		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

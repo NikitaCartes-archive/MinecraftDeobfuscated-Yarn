@@ -140,7 +140,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
-				this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().getFormattedText(), d, e, f, 64);
+				this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.method_1114().asFormattedString(), d, e, f, 64);
 				e += (double)(9.0F * 1.15F * 0.025F);
 			}
 		}

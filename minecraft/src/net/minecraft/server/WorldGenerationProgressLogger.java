@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
 import javax.annotation.Nullable;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +36,7 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 		int i = this.getProgressPercentage();
 		if (SystemUtil.getMeasuringTimeMs() > this.nextMessageTime) {
 			this.nextMessageTime += 500L;
-			LOGGER.info(new TranslatableComponent("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
+			LOGGER.info(new TranslatableText("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
 		}
 	}
 

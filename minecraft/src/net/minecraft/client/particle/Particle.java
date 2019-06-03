@@ -10,14 +10,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.LoopingStream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class Particle {
-	private static final BoundingBox EMPTY_BOUNDING_BOX = new BoundingBox(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	private static final Box EMPTY_BOUNDING_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	protected final World world;
 	protected double prevPosX;
 	protected double prevPosY;
@@ -28,7 +28,7 @@ public abstract class Particle {
 	protected double velocityX;
 	protected double velocityY;
 	protected double velocityZ;
-	private BoundingBox boundingBox = EMPTY_BOUNDING_BOX;
+	private Box boundingBox = EMPTY_BOUNDING_BOX;
 	protected boolean onGround;
 	protected boolean collidesWithWorld = true;
 	protected boolean dead;
@@ -151,12 +151,10 @@ public abstract class Particle {
 		if (f != this.spacingXZ || g != this.spacingY) {
 			this.spacingXZ = f;
 			this.spacingY = g;
-			BoundingBox boundingBox = this.getBoundingBox();
-			double d = (boundingBox.minX + boundingBox.maxX - (double)f) / 2.0;
-			double e = (boundingBox.minZ + boundingBox.maxZ - (double)f) / 2.0;
-			this.setBoundingBox(
-				new BoundingBox(d, boundingBox.minY, e, d + (double)this.spacingXZ, boundingBox.minY + (double)this.spacingY, e + (double)this.spacingXZ)
-			);
+			Box box = this.getBoundingBox();
+			double d = (box.minX + box.maxX - (double)f) / 2.0;
+			double e = (box.minZ + box.maxZ - (double)f) / 2.0;
+			this.setBoundingBox(new Box(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
 		}
 	}
 
@@ -166,7 +164,7 @@ public abstract class Particle {
 		this.z = f;
 		float g = this.spacingXZ / 2.0F;
 		float h = this.spacingY;
-		this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
+		this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
 	}
 
 	public void move(double d, double e, double f) {
@@ -196,10 +194,10 @@ public abstract class Particle {
 	}
 
 	protected void repositionFromBoundingBox() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		this.x = (boundingBox.minX + boundingBox.maxX) / 2.0;
-		this.y = boundingBox.minY;
-		this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0;
+		Box box = this.getBoundingBox();
+		this.x = (box.minX + box.maxX) / 2.0;
+		this.y = box.minY;
+		this.z = (box.minZ + box.maxZ) / 2.0;
 	}
 
 	protected int getColorMultiplier(float f) {
@@ -211,11 +209,11 @@ public abstract class Particle {
 		return !this.dead;
 	}
 
-	public BoundingBox getBoundingBox() {
+	public Box getBoundingBox() {
 		return this.boundingBox;
 	}
 
-	public void setBoundingBox(BoundingBox boundingBox) {
-		this.boundingBox = boundingBox;
+	public void setBoundingBox(Box box) {
+		this.boundingBox = box;
 	}
 }

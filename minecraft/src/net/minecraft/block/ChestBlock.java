@@ -21,8 +21,6 @@ import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -30,6 +28,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -37,7 +37,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -79,8 +79,8 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 				}
 
 				@Override
-				public Component getDisplayName() {
-					return new TranslatableComponent("container.chestDouble");
+				public Text method_5476() {
+					return new TranslatableText("container.chestDouble");
 				}
 			};
 		}
@@ -197,7 +197,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				((ChestBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((ChestBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}
@@ -298,7 +298,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
 		List<CatEntity> list = iWorld.getEntities(
 			CatEntity.class,
-			new BoundingBox(
+			new Box(
 				(double)blockPos.getX(),
 				(double)(blockPos.getY() + 1),
 				(double)blockPos.getZ(),

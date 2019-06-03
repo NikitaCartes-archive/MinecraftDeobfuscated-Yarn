@@ -26,7 +26,7 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.difficulty = Difficulty.getDifficulty(packetByteBuf.readUnsignedByte());
+		this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
 		this.difficultyLocked = packetByteBuf.readBoolean();
 	}
 

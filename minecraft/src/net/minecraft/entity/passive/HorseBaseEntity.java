@@ -548,7 +548,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected void walkToParent() {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
 			LivingEntity livingEntity = this.world
-				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().stretch(16.0, 16.0, 16.0));
+				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity);
 			}

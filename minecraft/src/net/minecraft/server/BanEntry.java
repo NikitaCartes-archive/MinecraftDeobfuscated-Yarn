@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.Nullable;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -58,7 +58,7 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 		return this.reason;
 	}
 
-	public abstract Component asTextComponent();
+	public abstract Text toText();
 
 	@Override
 	boolean isInvalid() {
