@@ -69,7 +69,6 @@ public class TurtleEntity extends AnimalEntity {
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new TurtleEntity.TurtleMoveControl(this);
-		this.spawningGround = Blocks.field_10102;
 		this.stepHeight = 1.0F;
 	}
 
@@ -169,10 +168,10 @@ public class TurtleEntity extends AnimalEntity {
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-		return blockPos.getY() < iWorld.getSeaLevel() + 4 && super.canSpawn(iWorld, spawnType);
+	public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return blockPos.getY() < iWorld.getSeaLevel() + 4
+			&& iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102
+			&& iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -282,9 +281,11 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return !this.isLandBound() && viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)
-			? 10.0F
-			: super.getPathfindingFavor(blockPos, viewableWorld);
+		if (!this.isLandBound() && viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)) {
+			return 10.0F;
+		} else {
+			return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+		}
 	}
 
 	@Override
@@ -483,7 +484,7 @@ public class TurtleEntity extends AnimalEntity {
 					World world = this.turtle.world;
 					world.playSound(null, blockPos, SoundEvents.field_14634, SoundCategory.field_15245, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					world.setBlockState(
-						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.field_11710, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), 3
+						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), 3
 					);
 					this.turtle.setHasEgg(false);
 					this.turtle.setDiggingSand(false);

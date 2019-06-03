@@ -4,9 +4,9 @@ import java.io.IOException;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -14,16 +14,16 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	public int entityId;
 	public int attackerEntityId;
 	public int timeSinceLastAttack;
-	public Component deathMessage;
+	public Text deathMessage;
 
 	public CombatEventS2CPacket() {
 	}
 
 	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type) {
-		this(damageTracker, type, new TextComponent(""));
+		this(damageTracker, type, new LiteralText(""));
 	}
 
-	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, Component component) {
+	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, Text text) {
 		this.type = type;
 		LivingEntity livingEntity = damageTracker.getBiggestAttacker();
 		switch (type) {
@@ -34,7 +34,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 			case field_12350:
 				this.entityId = damageTracker.getEntity().getEntityId();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
-				this.deathMessage = component;
+				this.deathMessage = text;
 		}
 	}
 
@@ -47,7 +47,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			this.entityId = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
-			this.deathMessage = packetByteBuf.readTextComponent();
+			this.deathMessage = packetByteBuf.method_10808();
 		}
 	}
 
@@ -60,7 +60,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			packetByteBuf.writeVarInt(this.entityId);
 			packetByteBuf.writeInt(this.attackerEntityId);
-			packetByteBuf.writeTextComponent(this.deathMessage);
+			packetByteBuf.method_10805(this.deathMessage);
 		}
 	}
 

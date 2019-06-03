@@ -56,7 +56,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 
 	public void add(BlockPos blockPos, PointOfInterestType pointOfInterestType) {
 		if (this.add(new PointOfInterest(blockPos, pointOfInterestType, this.updateListener))) {
-			LOGGER.debug(String.format("Added POI of type %s @ %s", pointOfInterestType, blockPos));
+			LOGGER.debug("Added POI of type {} @ {}", () -> pointOfInterestType, () -> blockPos);
 			this.updateListener.run();
 		}
 	}
@@ -85,7 +85,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 			LOGGER.error("POI data mismatch: never registered at " + blockPos);
 		} else {
 			((Set)this.pointsOfInterestByType.get(pointOfInterest.getType())).remove(pointOfInterest);
-			LOGGER.debug(String.format("Removed POI of type %s @ %s", pointOfInterest.getType(), pointOfInterest.getPos()));
+			LOGGER.debug("Removed POI of type {} @ {}", pointOfInterest::getType, pointOfInterest::getPos);
 			this.updateListener.run();
 		}
 	}

@@ -7,7 +7,6 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -19,6 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -370,7 +370,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = ChatFormat.stripFormatting(livingEntity.getName().getString());
+			String string = Formatting.strip(livingEntity.method_5477().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.field_7559))) {
@@ -414,7 +414,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
 			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
-				String string = livingEntity.getDisplayName().getFormattedText();
+				String string = livingEntity.method_5476().asFormattedString();
 				GlStateManager.alphaFunc(516, 0.1F);
 				this.renderLabel(livingEntity, d, e, f, string, g);
 			}

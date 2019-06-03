@@ -13,14 +13,14 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class SaplingBlock extends PlantBlock implements Fertilizable {
-	public static final IntProperty field_11476 = Properties.field_12549;
+	public static final IntProperty STAGE = Properties.STAGE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
 	private final SaplingGenerator generator;
 
 	protected SaplingBlock(SaplingGenerator saplingGenerator, Block.Settings settings) {
 		super(settings);
 		this.generator = saplingGenerator;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11476, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(STAGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	}
 
 	public void generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		if ((Integer)blockState.get(field_11476) == 0) {
-			iWorld.setBlockState(blockPos, blockState.cycle(field_11476), 4);
+		if ((Integer)blockState.get(STAGE) == 0) {
+			iWorld.setBlockState(blockPos, blockState.cycle(STAGE), 4);
 		} else {
 			this.generator.generate(iWorld, blockPos, blockState, random);
 		}
@@ -61,6 +61,6 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11476);
+		builder.add(STAGE);
 	}
 }

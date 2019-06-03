@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -170,7 +169,7 @@ public class DefaultResourcePack implements ResourcePack {
 
 	@Nullable
 	protected InputStream findInputStream(ResourceType resourceType, Identifier identifier) {
-		String string = "/" + resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath();
+		String string = method_20729(resourceType, identifier);
 		if (RESOURCE_PATH != null) {
 			Path path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath());
 			if (Files.exists(path, new LinkOption[0])) {
@@ -183,10 +182,18 @@ public class DefaultResourcePack implements ResourcePack {
 
 		try {
 			URL uRL = DefaultResourcePack.class.getResource(string);
-			return uRL != null && DirectoryResourcePack.isValidPath(new File(uRL.getFile()), string) ? DefaultResourcePack.class.getResourceAsStream(string) : null;
+			return method_20728(string, uRL) ? uRL.openStream() : null;
 		} catch (IOException var6) {
 			return DefaultResourcePack.class.getResourceAsStream(string);
 		}
+	}
+
+	private static String method_20729(ResourceType resourceType, Identifier identifier) {
+		return "/" + resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath();
+	}
+
+	private static boolean method_20728(String string, @Nullable URL uRL) throws IOException {
+		return uRL != null && (uRL.getProtocol().equals("jar") || DirectoryResourcePack.isValidPath(new File(uRL.getFile()), string));
 	}
 
 	@Nullable
@@ -196,10 +203,20 @@ public class DefaultResourcePack implements ResourcePack {
 
 	@Override
 	public boolean contains(ResourceType resourceType, Identifier identifier) {
-		InputStream inputStream = this.findInputStream(resourceType, identifier);
-		boolean bl = inputStream != null;
-		IOUtils.closeQuietly(inputStream);
-		return bl;
+		String string = method_20729(resourceType, identifier);
+		if (RESOURCE_PATH != null) {
+			Path path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath());
+			if (Files.exists(path, new LinkOption[0])) {
+				return true;
+			}
+		}
+
+		try {
+			URL uRL = DefaultResourcePack.class.getResource(string);
+			return method_20728(string, uRL);
+		} catch (IOException var5) {
+			return false;
+		}
 	}
 
 	@Override

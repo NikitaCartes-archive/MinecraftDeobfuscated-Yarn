@@ -14,12 +14,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class SkullBlock extends AbstractSkullBlock {
-	public static final IntProperty field_11505 = Properties.field_12532;
+	public static final IntProperty ROTATION = Properties.ROTATION;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
 
 	protected SkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
 		super(skullType, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11505, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -34,22 +34,22 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11505, Integer.valueOf(MathHelper.floor((double)(itemPlacementContext.getPlayerYaw() * 16.0F / 360.0F) + 0.5) & 15));
+		return this.getDefaultState().with(ROTATION, Integer.valueOf(MathHelper.floor((double)(itemPlacementContext.getPlayerYaw() * 16.0F / 360.0F) + 0.5) & 15));
 	}
 
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(field_11505, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(field_11505), 16)));
+		return blockState.with(ROTATION, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.with(field_11505, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(field_11505), 16)));
+		return blockState.with(ROTATION, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11505);
+		builder.add(ROTATION);
 	}
 
 	public interface SkullType {

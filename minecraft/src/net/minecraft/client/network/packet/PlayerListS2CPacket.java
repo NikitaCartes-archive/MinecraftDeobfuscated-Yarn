@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.GameMode;
 
@@ -64,7 +64,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			GameProfile gameProfile = null;
 			int k = 0;
 			GameMode gameMode = null;
-			Component component = null;
+			Text text = null;
 			switch (this.action) {
 				case field_12372:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
@@ -84,7 +84,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					k = packetByteBuf.readVarInt();
 					if (packetByteBuf.readBoolean()) {
-						component = packetByteBuf.readTextComponent();
+						text = packetByteBuf.method_10808();
 					}
 					break;
 				case field_12375:
@@ -98,14 +98,14 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				case field_12374:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					if (packetByteBuf.readBoolean()) {
-						component = packetByteBuf.readTextComponent();
+						text = packetByteBuf.method_10808();
 					}
 					break;
 				case field_12376:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 			}
 
-			this.entries.add(new PlayerListS2CPacket.Entry(gameProfile, k, gameMode, component));
+			this.entries.add(new PlayerListS2CPacket.Entry(gameProfile, k, gameMode, text));
 		}
 	}
 
@@ -138,7 +138,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.writeTextComponent(entry.getDisplayName());
+						packetByteBuf.method_10805(entry.getDisplayName());
 					}
 					break;
 				case field_12375:
@@ -155,7 +155,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.writeTextComponent(entry.getDisplayName());
+						packetByteBuf.method_10805(entry.getDisplayName());
 					}
 					break;
 				case field_12376:
@@ -194,13 +194,13 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final int latency;
 		private final GameMode gameMode;
 		private final GameProfile profile;
-		private final Component displayName;
+		private final Text displayName;
 
-		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable Component component) {
+		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable Text text) {
 			this.profile = gameProfile;
 			this.latency = i;
 			this.gameMode = gameMode;
-			this.displayName = component;
+			this.displayName = text;
 		}
 
 		public GameProfile getProfile() {
@@ -216,7 +216,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Nullable
-		public Component getDisplayName() {
+		public Text getDisplayName() {
 			return this.displayName;
 		}
 
@@ -225,7 +225,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add("latency", this.latency)
 				.add("gameMode", this.gameMode)
 				.add("profile", this.profile)
-				.add("displayName", this.displayName == null ? null : Component.Serializer.toJsonString(this.displayName))
+				.add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName))
 				.toString();
 		}
 	}

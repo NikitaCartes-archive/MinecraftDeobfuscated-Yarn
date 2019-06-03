@@ -12,7 +12,7 @@ import net.minecraft.util.OffsetDoubleList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -36,11 +36,11 @@ public abstract class VoxelShape {
 		return i <= 0 ? Double.NEGATIVE_INFINITY : this.getPointPosition(axis, i);
 	}
 
-	public BoundingBox getBoundingBox() {
+	public Box getBoundingBox() {
 		if (this.isEmpty()) {
 			throw new UnsupportedOperationException("No bounds for empty shape.");
 		} else {
-			return new BoundingBox(
+			return new Box(
 				this.getMinimum(Direction.Axis.X),
 				this.getMinimum(Direction.Axis.Y),
 				this.getMinimum(Direction.Axis.Z),
@@ -109,9 +109,9 @@ public abstract class VoxelShape {
 			);
 	}
 
-	public List<BoundingBox> getBoundingBoxes() {
-		List<BoundingBox> list = Lists.<BoundingBox>newArrayList();
-		this.forEachBox((d, e, f, g, h, i) -> list.add(new BoundingBox(d, e, f, g, h, i)));
+	public List<Box> getBoundingBoxes() {
+		List<Box> list = Lists.<Box>newArrayList();
+		this.forEachBox((d, e, f, g, h, i) -> list.add(new Box(d, e, f, g, h, i)));
 		return list;
 	}
 
@@ -162,7 +162,7 @@ public abstract class VoxelShape {
 				Vec3d vec3d4 = vec3d.add(vec3d3.multiply(0.001));
 				return this.contains(vec3d4.x - (double)blockPos.getX(), vec3d4.y - (double)blockPos.getY(), vec3d4.z - (double)blockPos.getZ())
 					? new BlockHitResult(vec3d4, Direction.getFacing(vec3d3.x, vec3d3.y, vec3d3.z).getOpposite(), blockPos, true)
-					: BoundingBox.rayTrace(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
+					: Box.rayTrace(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
 			}
 		}
 	}
@@ -198,11 +198,11 @@ public abstract class VoxelShape {
 		}
 	}
 
-	public double method_1108(Direction.Axis axis, BoundingBox boundingBox, double d) {
-		return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), boundingBox, d);
+	public double method_1108(Direction.Axis axis, Box box, double d) {
+		return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
 	}
 
-	protected double method_1103(AxisCycleDirection axisCycleDirection, BoundingBox boundingBox, double d) {
+	protected double method_1103(AxisCycleDirection axisCycleDirection, Box box, double d) {
 		if (this.isEmpty()) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
@@ -212,14 +212,14 @@ public abstract class VoxelShape {
 			Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.X);
 			Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
 			Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
-			double e = boundingBox.getMax(axis);
-			double f = boundingBox.getMin(axis);
+			double e = box.getMax(axis);
+			double f = box.getMin(axis);
 			int i = this.getCoordIndex(axis, f + 1.0E-7);
 			int j = this.getCoordIndex(axis, e - 1.0E-7);
-			int k = Math.max(0, this.getCoordIndex(axis2, boundingBox.getMin(axis2) + 1.0E-7));
-			int l = Math.min(this.voxels.getSize(axis2), this.getCoordIndex(axis2, boundingBox.getMax(axis2) - 1.0E-7) + 1);
-			int m = Math.max(0, this.getCoordIndex(axis3, boundingBox.getMin(axis3) + 1.0E-7));
-			int n = Math.min(this.voxels.getSize(axis3), this.getCoordIndex(axis3, boundingBox.getMax(axis3) - 1.0E-7) + 1);
+			int k = Math.max(0, this.getCoordIndex(axis2, box.getMin(axis2) + 1.0E-7));
+			int l = Math.min(this.voxels.getSize(axis2), this.getCoordIndex(axis2, box.getMax(axis2) - 1.0E-7) + 1);
+			int m = Math.max(0, this.getCoordIndex(axis3, box.getMin(axis3) + 1.0E-7));
+			int n = Math.min(this.voxels.getSize(axis3), this.getCoordIndex(axis3, box.getMax(axis3) - 1.0E-7) + 1);
 			int o = this.voxels.getSize(axis);
 			if (d > 0.0) {
 				for (int p = j + 1; p < o; p++) {

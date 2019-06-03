@@ -25,7 +25,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -155,10 +155,10 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		int k = this.pos.getX();
 		int l = this.pos.getY();
 		int m = this.pos.getZ();
-		BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
+		Box box = new Box((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
 			.stretch(0.0, (double)this.world.getHeight(), 0.0);
-		List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
+		List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
 				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
@@ -208,11 +208,11 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private BoundingBox getAttackZone() {
+	private Box getAttackZone() {
 		int i = this.pos.getX();
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
-		return new BoundingBox((double)i, (double)j, (double)k, (double)(i + 1), (double)(j + 1), (double)(k + 1)).expand(8.0);
+		return new Box((double)i, (double)j, (double)k, (double)(i + 1), (double)(j + 1), (double)(k + 1)).expand(8.0);
 	}
 
 	@Nullable

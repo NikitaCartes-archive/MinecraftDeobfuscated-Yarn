@@ -25,7 +25,7 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -222,7 +222,7 @@ public class ShulkerBulletEntity extends Entity {
 			super.tick();
 			if (!this.world.isClient) {
 				if (this.target == null && this.targetUuid != null) {
-					for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, new BoundingBox(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)))) {
+					for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)))) {
 						if (livingEntity.getUuid().equals(this.targetUuid)) {
 							this.target = livingEntity;
 							break;
@@ -233,7 +233,7 @@ public class ShulkerBulletEntity extends Entity {
 				}
 
 				if (this.owner == null && this.ownerUuid != null) {
-					for (LivingEntity livingEntityx : this.world.getEntities(LivingEntity.class, new BoundingBox(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)))) {
+					for (LivingEntity livingEntityx : this.world.getEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)))) {
 						if (livingEntityx.getUuid().equals(this.ownerUuid)) {
 							this.owner = livingEntityx;
 							break;

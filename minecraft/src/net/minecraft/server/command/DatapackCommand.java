@@ -8,22 +8,22 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.List;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 
 public class DatapackCommand {
 	private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.datapack.unknown", object)
+		object -> new TranslatableText("commands.datapack.unknown", object)
 	);
 	private static final DynamicCommandExceptionType ALREADY_ENABLED_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.datapack.enable.failed", object)
+		object -> new TranslatableText("commands.datapack.enable.failed", object)
 	);
 	private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.datapack.disable.failed", object)
+		object -> new TranslatableText("commands.datapack.disable.failed", object)
 	);
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 			commandContext.getSource()
@@ -132,7 +132,7 @@ public class DatapackCommand {
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().remove(resourcePackContainer.getName());
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.method_9226(new TranslatableText("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -147,7 +147,7 @@ public class DatapackCommand {
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
-		serverCommandSource.sendFeedback(new TranslatableComponent("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.method_9226(new TranslatableText("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -159,13 +159,13 @@ public class DatapackCommand {
 	private static int executeListAvailable(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
 		if (resourcePackContainerManager.getDisabledContainers().isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.datapack.list.available.none"), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.datapack.list.available.none"), false);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent(
+			serverCommandSource.method_9226(
+				new TranslatableText(
 					"commands.datapack.list.available.success",
 					resourcePackContainerManager.getDisabledContainers().size(),
-					Components.join(resourcePackContainerManager.getDisabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(false))
+					Texts.join(resourcePackContainerManager.getDisabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(false))
 				),
 				false
 			);
@@ -177,13 +177,13 @@ public class DatapackCommand {
 	private static int executeListEnabled(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
 		if (resourcePackContainerManager.getEnabledContainers().isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.datapack.list.enabled.none"), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.datapack.list.enabled.none"), false);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent(
+			serverCommandSource.method_9226(
+				new TranslatableText(
 					"commands.datapack.list.enabled.success",
 					resourcePackContainerManager.getEnabledContainers().size(),
-					Components.join(resourcePackContainerManager.getEnabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(true))
+					Texts.join(resourcePackContainerManager.getEnabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(true))
 				),
 				false
 			);

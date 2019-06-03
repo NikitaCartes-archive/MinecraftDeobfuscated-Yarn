@@ -44,7 +44,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -483,23 +483,23 @@ public class WorldChunk implements Chunk {
 		this.shouldSave = true;
 	}
 
-	public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
-		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+	public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
 			if (!this.entitySections[k].isEmpty()) {
 				for (Entity entity2 : this.entitySections[k]) {
-					if (entity2.getBoundingBox().intersects(boundingBox) && entity2 != entity) {
+					if (entity2.getBoundingBox().intersects(box) && entity2 != entity) {
 						if (predicate == null || predicate.test(entity2)) {
 							list.add(entity2);
 						}
 
 						if (entity2 instanceof EnderDragonEntity) {
 							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).method_5690()) {
-								if (enderDragonPart != entity && enderDragonPart.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(enderDragonPart))) {
+								if (enderDragonPart != entity && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
 									list.add(enderDragonPart);
 								}
 							}
@@ -510,30 +510,30 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public void appendEntities(@Nullable EntityType<?> entityType, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
-		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+	public void appendEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
 			for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
-				if ((entityType == null || entity.getType() == entityType) && entity.getBoundingBox().intersects(boundingBox) && predicate.test(entity)) {
+				if ((entityType == null || entity.getType() == entityType) && entity.getBoundingBox().intersects(box) && predicate.test(entity)) {
 					list.add(entity);
 				}
 			}
 		}
 	}
 
-	public <T extends Entity> void appendEntities(Class<? extends T> class_, BoundingBox boundingBox, List<T> list, @Nullable Predicate<? super T> predicate) {
-		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+	public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
 			for (T entity : this.entitySections[k].getAllOfType(class_)) {
-				if (entity.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(entity))) {
+				if (entity.getBoundingBox().intersects(box) && (predicate == null || predicate.test(entity))) {
 					list.add(entity);
 				}
 			}

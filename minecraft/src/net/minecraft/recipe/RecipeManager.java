@@ -1,103 +1,68 @@
 package net.minecraft.recipe;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.Resource;
+import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RecipeManager implements SynchronousResourceReloadListener {
+public class RecipeManager extends JsonDataLoader {
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final int PREFIX_LENGTH = "recipes/".length();
-	public static final int SUFFIX_LENGTH = ".json".length();
-	private final Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipeMap = SystemUtil.consume(
-		Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap(), RecipeManager::clear
-	);
+	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipeMap = ImmutableMap.of();
 	private boolean hadErrors;
 
-	@Override
-	public void apply(ResourceManager resourceManager) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-		this.hadErrors = false;
-		clear(this.recipeMap);
+	public RecipeManager() {
+		super(GSON, "recipes");
+	}
 
-		for (Identifier identifier : resourceManager.findResources("recipes", stringx -> stringx.endsWith(".json"))) {
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PREFIX_LENGTH, string.length() - SUFFIX_LENGTH));
+	protected void method_20705(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+		this.hadErrors = false;
+		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
+
+		for (Entry<Identifier, JsonObject> entry : map.entrySet()) {
+			Identifier identifier = (Identifier)entry.getKey();
 
 			try {
-				Resource resource = resourceManager.getResource(identifier);
-				Throwable var8 = null;
-
-				try {
-					JsonObject jsonObject = JsonHelper.deserialize(gson, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
-					if (jsonObject == null) {
-						LOGGER.error("Couldn't load recipe {} as it's null or empty", identifier2);
-					} else {
-						this.add(deserialize(identifier2, jsonObject));
-					}
-				} catch (Throwable var19) {
-					var8 = var19;
-					throw var19;
-				} finally {
-					if (resource != null) {
-						if (var8 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var18) {
-								var8.addSuppressed(var18);
-							}
-						} else {
-							resource.close();
-						}
-					}
-				}
-			} catch (IllegalArgumentException | JsonParseException var21) {
-				LOGGER.error("Parsing error loading recipe {}", identifier2, var21);
-				this.hadErrors = true;
-			} catch (IOException var22) {
-				LOGGER.error("Couldn't read custom advancement {} from {}", identifier2, identifier, var22);
-				this.hadErrors = true;
+				Recipe<?> recipe = deserialize(identifier, (JsonObject)entry.getValue());
+				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipe);
+			} catch (IllegalArgumentException | JsonParseException var9) {
+				LOGGER.error("Parsing error loading recipe {}", identifier, var9);
 			}
 		}
 
-		LOGGER.info("Loaded {} recipes", this.recipeMap.size());
-	}
-
-	public void add(Recipe<?> recipe) {
-		Map<Identifier, Recipe<?>> map = (Map<Identifier, Recipe<?>>)this.recipeMap.get(recipe.getType());
-		if (map.containsKey(recipe.getId())) {
-			throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
-		} else {
-			map.put(recipe.getId(), recipe);
-		}
+		this.recipeMap = (Map<RecipeType<?>, Map<Identifier, Recipe<?>>>)map2.entrySet()
+			.stream()
+			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entryx -> ((Builder)entryx.getValue()).build()));
+		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
@@ -114,7 +79,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	}
 
 	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllForType(RecipeType<T> recipeType) {
-		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Maps.newHashMap());
+		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Collections.emptyMap());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
@@ -144,11 +109,6 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 		return this.recipeMap.values().stream().flatMap(map -> map.keySet().stream());
 	}
 
-	@Environment(EnvType.CLIENT)
-	public void clear() {
-		clear(this.recipeMap);
-	}
-
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
@@ -157,11 +117,17 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 			.read(identifier, jsonObject);
 	}
 
-	private static void clear(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map) {
-		map.clear();
-
-		for (RecipeType<?> recipeType : Registry.RECIPE_TYPE) {
-			map.put(recipeType, Maps.newHashMap());
-		}
+	@Environment(EnvType.CLIENT)
+	public void method_20702(Iterable<Recipe<?>> iterable) {
+		this.hadErrors = false;
+		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();
+		iterable.forEach(recipe -> {
+			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), recipeType -> Maps.newHashMap());
+			Recipe<?> recipe2 = (Recipe<?>)map2.put(recipe.getId(), recipe);
+			if (recipe2 != null) {
+				throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
+			}
+		});
+		this.recipeMap = ImmutableMap.copyOf(map);
 	}
 }

@@ -25,12 +25,12 @@ import net.minecraft.world.World;
 public class TurtleEggBlock extends Block {
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
-	public static final IntProperty field_11711 = Properties.field_12530;
-	public static final IntProperty field_11710 = Properties.field_12509;
+	public static final IntProperty HATCH = Properties.HATCH;
+	public static final IntProperty EGGS = Properties.EGGS;
 
 	public TurtleEggBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11711, Integer.valueOf(0)).with(field_11710, Integer.valueOf(1)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(HATCH, Integer.valueOf(0)).with(EGGS, Integer.valueOf(1)));
 	}
 
 	@Override
@@ -60,11 +60,11 @@ public class TurtleEggBlock extends Block {
 
 	private void breakEgg(World world, BlockPos blockPos, BlockState blockState) {
 		world.playSound(null, blockPos, SoundEvents.field_14687, SoundCategory.field_15245, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
-		int i = (Integer)blockState.get(field_11710);
+		int i = (Integer)blockState.get(EGGS);
 		if (i <= 1) {
 			world.breakBlock(blockPos, false);
 		} else {
-			world.setBlockState(blockPos, blockState.with(field_11710, Integer.valueOf(i - 1)), 2);
+			world.setBlockState(blockPos, blockState.with(EGGS, Integer.valueOf(i - 1)), 2);
 			world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 		}
 	}
@@ -72,15 +72,15 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (this.shouldHatchProgress(world) && this.isSand(world, blockPos)) {
-			int i = (Integer)blockState.get(field_11711);
+			int i = (Integer)blockState.get(HATCH);
 			if (i < 2) {
 				world.playSound(null, blockPos, SoundEvents.field_15109, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-				world.setBlockState(blockPos, blockState.with(field_11711, Integer.valueOf(i + 1)), 2);
+				world.setBlockState(blockPos, blockState.with(HATCH, Integer.valueOf(i + 1)), 2);
 			} else {
 				world.playSound(null, blockPos, SoundEvents.field_14902, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.clearBlockState(blockPos, false);
 				if (!world.isClient) {
-					for (int j = 0; j < blockState.get(field_11710); j++) {
+					for (int j = 0; j < blockState.get(EGGS); j++) {
 						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 						TurtleEntity turtleEntity = EntityType.field_6113.create(world);
 						turtleEntity.setBreedingAge(-24000);
@@ -119,9 +119,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(field_11710) < 4
-			? true
-			: super.canReplace(blockState, itemPlacementContext);
+		return itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(EGGS) < 4 ? true : super.canReplace(blockState, itemPlacementContext);
 	}
 
 	@Nullable
@@ -129,7 +127,7 @@ public class TurtleEggBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		return blockState.getBlock() == this
-			? blockState.with(field_11710, Integer.valueOf(Math.min(4, (Integer)blockState.get(field_11710) + 1)))
+			? blockState.with(EGGS, Integer.valueOf(Math.min(4, (Integer)blockState.get(EGGS) + 1)))
 			: super.getPlacementState(itemPlacementContext);
 	}
 
@@ -140,12 +138,12 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return blockState.get(field_11710) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
+		return blockState.get(EGGS) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11711, field_11710);
+		builder.add(HATCH, EGGS);
 	}
 
 	private boolean breaksEgg(World world, Entity entity) {

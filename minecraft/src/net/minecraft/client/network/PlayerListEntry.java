@@ -11,8 +11,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
@@ -24,7 +24,7 @@ public class PlayerListEntry {
 	private int latency;
 	private boolean texturesLoaded;
 	private String model;
-	private Component displayName;
+	private Text field_3743;
 	private int field_3738;
 	private int field_3736;
 	private long field_3737;
@@ -39,7 +39,7 @@ public class PlayerListEntry {
 		this.profile = entry.getProfile();
 		this.gameMode = entry.getGameMode();
 		this.latency = entry.getLatency();
-		this.displayName = entry.getDisplayName();
+		this.field_3743 = entry.getDisplayName();
 	}
 
 	public GameProfile getProfile() {
@@ -116,13 +116,13 @@ public class PlayerListEntry {
 		}
 	}
 
-	public void setDisplayName(@Nullable Component component) {
-		this.displayName = component;
+	public void method_2962(@Nullable Text text) {
+		this.field_3743 = text;
 	}
 
 	@Nullable
-	public Component getDisplayName() {
-		return this.displayName;
+	public Text method_2971() {
+		return this.field_3743;
 	}
 
 	public int method_2973() {

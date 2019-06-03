@@ -17,19 +17,19 @@ import net.minecraft.command.arguments.ItemStackArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class ReplaceItemCommand {
 	public static final SimpleCommandExceptionType BLOCK_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.replaceitem.block.failed")
+		new TranslatableText("commands.replaceitem.block.failed")
 	);
 	public static final DynamicCommandExceptionType SLOT_INAPPLICABLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.replaceitem.slot.inapplicable", object)
+		object -> new TranslatableText("commands.replaceitem.slot.inapplicable", object)
 	);
 	public static final Dynamic2CommandExceptionType ENTITY_FAILED_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("commands.replaceitem.entity.failed", object, object2)
+		(object, object2) -> new TranslatableText("commands.replaceitem.entity.failed", object, object2)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -109,8 +109,8 @@ public class ReplaceItemCommand {
 			Inventory inventory = (Inventory)blockEntity;
 			if (i >= 0 && i < inventory.getInvSize()) {
 				inventory.setInvStack(i, itemStack);
-				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toHoverableText()), true
+				serverCommandSource.method_9226(
+					new TranslatableText("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.method_7954()), true
 				);
 				return 1;
 			} else {
@@ -136,15 +136,14 @@ public class ReplaceItemCommand {
 		}
 
 		if (list.isEmpty()) {
-			throw ENTITY_FAILED_EXCEPTION.create(itemStack.toHoverableText(), i);
+			throw ENTITY_FAILED_EXCEPTION.create(itemStack.method_7954(), i);
 		} else {
 			if (list.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toHoverableText()),
-					true
+				serverCommandSource.method_9226(
+					new TranslatableText("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).method_5476(), itemStack.method_7954()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toHoverableText()), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.replaceitem.entity.success.multiple", list.size(), itemStack.method_7954()), true);
 			}
 
 			return list.size();

@@ -13,12 +13,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
-	public static final IntProperty field_11739 = Properties.field_12511;
+	public static final IntProperty POWER = Properties.POWER;
 	private final int weight;
 
 	protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11739, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(POWER, Integer.valueOf(0)));
 		this.weight = i;
 	}
 
@@ -45,12 +45,12 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected int getRedstoneOutput(BlockState blockState) {
-		return (Integer)blockState.get(field_11739);
+		return (Integer)blockState.get(POWER);
 	}
 
 	@Override
 	protected BlockState setRedstoneOutput(BlockState blockState, int i) {
-		return blockState.with(field_11739, Integer.valueOf(i));
+		return blockState.with(POWER, Integer.valueOf(i));
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11739);
+		builder.add(POWER);
 	}
 }

@@ -7,13 +7,13 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
-	private static final Random field_19294 = new Random();
+	private static final Random RANDOM = new Random();
 	private final int senseInterval;
 	private long lastSenseTime;
 
 	public Sensor(int i) {
 		this.senseInterval = i;
-		this.lastSenseTime = (long)field_19294.nextInt(i);
+		this.lastSenseTime = (long)RANDOM.nextInt(i);
 	}
 
 	public Sensor() {

@@ -7,15 +7,15 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.command.arguments.FunctionArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.FunctionTagTimerCallback;
 import net.minecraft.world.timer.FunctionTimerCallback;
 
 public class ScheduleCommand {
-	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.schedule.same_tick"));
+	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.schedule.same_tick"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -49,7 +49,7 @@ public class ScheduleCommand {
 			either.ifLeft(commandFunction -> {
 					Identifier identifier = commandFunction.getId();
 					serverCommandSource.getWorld().getLevelProperties().getScheduledEvents().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
-					serverCommandSource.sendFeedback(new TranslatableComponent("commands.schedule.created.function", identifier, i, l), true);
+					serverCommandSource.method_9226(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
 				})
 				.ifRight(
 					tag -> {
@@ -58,7 +58,7 @@ public class ScheduleCommand {
 							.getLevelProperties()
 							.getScheduledEvents()
 							.replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
-						serverCommandSource.sendFeedback(new TranslatableComponent("commands.schedule.created.tag", identifier, i, l), true);
+						serverCommandSource.method_9226(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
 					}
 				);
 			return (int)Math.floorMod(l, 2147483647L);

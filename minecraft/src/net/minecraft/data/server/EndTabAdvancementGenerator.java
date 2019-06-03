@@ -14,10 +14,10 @@ import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
@@ -28,8 +28,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_10471,
-				new TranslatableComponent("advancements.end.root.title"),
-				new TranslatableComponent("advancements.end.root.description"),
+				new TranslatableText("advancements.end.root.title"),
+				new TranslatableText("advancements.end.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/end.png"),
 				AdvancementFrame.field_1254,
 				false,
@@ -42,8 +42,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement)
 			.display(
 				Blocks.field_10337,
-				new TranslatableComponent("advancements.end.kill_dragon.title"),
-				new TranslatableComponent("advancements.end.kill_dragon.description"),
+				new TranslatableText("advancements.end.kill_dragon.title"),
+				new TranslatableText("advancements.end.kill_dragon.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -56,8 +56,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.field_8634,
-				new TranslatableComponent("advancements.end.enter_end_gateway.title"),
-				new TranslatableComponent("advancements.end.enter_end_gateway.description"),
+				new TranslatableText("advancements.end.enter_end_gateway.title"),
+				new TranslatableText("advancements.end.enter_end_gateway.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -70,8 +70,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.field_8301,
-				new TranslatableComponent("advancements.end.respawn_dragon.title"),
-				new TranslatableComponent("advancements.end.respawn_dragon.description"),
+				new TranslatableText("advancements.end.respawn_dragon.title"),
+				new TranslatableText("advancements.end.respawn_dragon.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -84,8 +84,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement3)
 			.display(
 				Blocks.field_10286,
-				new TranslatableComponent("advancements.end.find_end_city.title"),
-				new TranslatableComponent("advancements.end.find_end_city.description"),
+				new TranslatableText("advancements.end.find_end_city.title"),
+				new TranslatableText("advancements.end.find_end_city.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -98,8 +98,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.field_8613,
-				new TranslatableComponent("advancements.end.dragon_breath.title"),
-				new TranslatableComponent("advancements.end.dragon_breath.description"),
+				new TranslatableText("advancements.end.dragon_breath.title"),
+				new TranslatableText("advancements.end.dragon_breath.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -112,8 +112,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement5)
 			.display(
 				Items.field_8815,
-				new TranslatableComponent("advancements.end.levitate.title"),
-				new TranslatableComponent("advancements.end.levitate.description"),
+				new TranslatableText("advancements.end.levitate.title"),
+				new TranslatableText("advancements.end.levitate.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -127,8 +127,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement5)
 			.display(
 				Items.field_8833,
-				new TranslatableComponent("advancements.end.elytra.title"),
-				new TranslatableComponent("advancements.end.elytra.description"),
+				new TranslatableText("advancements.end.elytra.title"),
+				new TranslatableText("advancements.end.elytra.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -141,8 +141,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Blocks.field_10081,
-				new TranslatableComponent("advancements.end.dragon_egg.title"),
-				new TranslatableComponent("advancements.end.dragon_egg.description"),
+				new TranslatableText("advancements.end.dragon_egg.title"),
+				new TranslatableText("advancements.end.dragon_egg.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,

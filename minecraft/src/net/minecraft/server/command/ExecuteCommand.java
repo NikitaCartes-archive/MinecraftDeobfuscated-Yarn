@@ -49,24 +49,24 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class ExecuteCommand {
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("commands.execute.blocks.toobig", object, object2)
+		(object, object2) -> new TranslatableText("commands.execute.blocks.toobig", object, object2)
 	);
 	private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.execute.conditional.fail")
+		new TranslatableText("commands.execute.conditional.fail")
 	);
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.execute.conditional.fail_count", object)
+		object -> new TranslatableText("commands.execute.conditional.fail_count", object)
 	);
 	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (resultConsumer, resultConsumer2) -> (commandContext, bl, i) -> {
 			resultConsumer.onCommandComplete(commandContext, bl, i);
@@ -554,7 +554,7 @@ public class ExecuteCommand {
 		return bl ? commandContext -> {
 			int i = existsCondition.test(commandContext);
 			if (i > 0) {
-				commandContext.getSource().sendFeedback(new TranslatableComponent("commands.execute.conditional.pass_count", i), false);
+				commandContext.getSource().method_9226(new TranslatableText("commands.execute.conditional.pass_count", i), false);
 				return i;
 			} else {
 				throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -562,7 +562,7 @@ public class ExecuteCommand {
 		} : commandContext -> {
 			int i = existsCondition.test(commandContext);
 			if (i == 0) {
-				commandContext.getSource().sendFeedback(new TranslatableComponent("commands.execute.conditional.pass"), false);
+				commandContext.getSource().method_9226(new TranslatableText("commands.execute.conditional.pass"), false);
 				return 1;
 			} else {
 				throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(i);
@@ -606,7 +606,7 @@ public class ExecuteCommand {
 		return argumentBuilder.fork(commandNode, commandContext -> getSourceOrEmptyForConditionFork(commandContext, bl, condition.test(commandContext)))
 			.executes(commandContext -> {
 				if (bl == condition.test(commandContext)) {
-					commandContext.getSource().sendFeedback(new TranslatableComponent("commands.execute.conditional.pass"), false);
+					commandContext.getSource().method_9226(new TranslatableText("commands.execute.conditional.pass"), false);
 					return 1;
 				} else {
 					throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -626,7 +626,7 @@ public class ExecuteCommand {
 	private static int executePositiveBlockCondition(CommandContext<ServerCommandSource> commandContext, boolean bl) throws CommandSyntaxException {
 		OptionalInt optionalInt = testBlocksCondition(commandContext, bl);
 		if (optionalInt.isPresent()) {
-			commandContext.getSource().sendFeedback(new TranslatableComponent("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
+			commandContext.getSource().method_9226(new TranslatableText("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
 			return optionalInt.getAsInt();
 		} else {
 			throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -638,7 +638,7 @@ public class ExecuteCommand {
 		if (optionalInt.isPresent()) {
 			throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(optionalInt.getAsInt());
 		} else {
-			commandContext.getSource().sendFeedback(new TranslatableComponent("commands.execute.conditional.pass"), false);
+			commandContext.getSource().method_9226(new TranslatableText("commands.execute.conditional.pass"), false);
 			return 1;
 		}
 	}

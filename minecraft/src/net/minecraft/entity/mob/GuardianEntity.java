@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -311,23 +312,14 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean checkLightLevelForSpawn() {
-		return true;
-	}
-
-	@Override
 	public boolean canSpawn(ViewableWorld viewableWorld) {
 		return viewableWorld.intersectsEntities(this);
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return (this.random.nextInt(20) == 0 || !iWorld.method_8626(new BlockPos(this))) && super.canSpawn(iWorld, spawnType);
-	}
-
-	@Override
-	protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
-		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
+	public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return (random.nextInt(20) == 0 || !iWorld.method_8626(blockPos))
+			&& iWorld.getDifficulty() != Difficulty.field_5801
+			&& (spawnType == SpawnType.field_16469 || iWorld.getFluidState(blockPos).matches(FluidTags.field_15517));
 	}
 
 	@Override

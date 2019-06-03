@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -77,14 +77,14 @@ public class MapState extends PersistentState {
 		for (int i = 0; i < listTag.size(); i++) {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(i));
 			this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-			this.addIcon(
+			this.method_107(
 				mapBannerMarker.getIconType(),
 				null,
 				mapBannerMarker.getKey(),
 				(double)mapBannerMarker.getPos().getX(),
 				(double)mapBannerMarker.getPos().getZ(),
 				180.0,
-				mapBannerMarker.getName()
+				mapBannerMarker.method_68()
 			);
 		}
 
@@ -93,7 +93,7 @@ public class MapState extends PersistentState {
 		for (int j = 0; j < listTag2.size(); j++) {
 			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(j));
 			this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
-			this.addIcon(
+			this.method_107(
 				MapIcon.Type.field_95,
 				null,
 				"frame-" + mapFrameMarker.getEntityId(),
@@ -150,15 +150,15 @@ public class MapState extends PersistentState {
 		}
 
 		if (!playerEntity.inventory.contains(itemStack)) {
-			this.icons.remove(playerEntity.getName().getString());
+			this.icons.remove(playerEntity.method_5477().getString());
 		}
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
-			String string = playerUpdateTracker2.player.getName().getString();
+			String string = playerUpdateTracker2.player.method_5477().getString();
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isInFrame())) {
 				if (!itemStack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
-					this.addIcon(
+					this.method_107(
 						MapIcon.Type.field_91,
 						playerUpdateTracker2.player.world,
 						string,
@@ -184,7 +184,7 @@ public class MapState extends PersistentState {
 			}
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
-			this.addIcon(
+			this.method_107(
 				MapIcon.Type.field_95,
 				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
@@ -203,7 +203,7 @@ public class MapState extends PersistentState {
 			for (int j = 0; j < listTag.size(); j++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(j);
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
-					this.addIcon(
+					this.method_107(
 						MapIcon.Type.byId(compoundTag2.getByte("type")),
 						playerEntity.world,
 						compoundTag2.getString("id"),
@@ -239,7 +239,7 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void addIcon(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Component component) {
+	private void method_107(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Text text) {
 		int i = 1 << this.scale;
 		float g = (float)(d - (double)this.xCenter) / (float)i;
 		float h = (float)(e - (double)this.zCenter) / (float)i;
@@ -290,7 +290,7 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		this.icons.put(string, new MapIcon(type, b, c, k, component));
+		this.icons.put(string, new MapIcon(type, b, c, k, text));
 	}
 
 	@Nullable
@@ -342,7 +342,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
+				this.method_107(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.method_68());
 				bl = true;
 			}
 

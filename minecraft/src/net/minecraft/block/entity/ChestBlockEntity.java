@@ -18,15 +18,15 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -68,8 +68,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.chest");
+	protected Text method_17823() {
+		return new TranslatableText("container.chest");
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 		for (PlayerEntity playerEntity : world.getEntities(
 			PlayerEntity.class,
-			new BoundingBox(
+			new Box(
 				(double)((float)i - 5.0F),
 				(double)((float)j - 5.0F),
 				(double)((float)k - 5.0F),

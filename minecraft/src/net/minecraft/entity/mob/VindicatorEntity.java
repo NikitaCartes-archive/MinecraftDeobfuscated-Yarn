@@ -35,10 +35,10 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -156,9 +156,9 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void setCustomName(@Nullable Component component) {
-		super.setCustomName(component);
-		if (!this.isJohnny && component != null && component.getString().equals("Johnny")) {
+	public void method_5665(@Nullable Text text) {
+		super.method_5665(text);
+		if (!this.isJohnny && text != null && text.getString().equals("Johnny")) {
 			this.isJohnny = true;
 		}
 	}

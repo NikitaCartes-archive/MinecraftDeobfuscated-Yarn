@@ -15,9 +15,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
@@ -32,7 +32,7 @@ public class EditWorldScreen extends Screen {
 	private final String levelName;
 
 	public EditWorldScreen(BooleanConsumer booleanConsumer, String string) {
-		super(new TranslatableComponent("selectWorld.edit.title"));
+		super(new TranslatableText("selectWorld.edit.title"));
 		this.callback = booleanConsumer;
 		this.levelName = string;
 	}
@@ -86,7 +86,7 @@ public class EditWorldScreen extends Screen {
 						}
 
 						this.minecraft.openScreen(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
-					}, new TranslatableComponent("optimizeWorld.confirm.title"), new TranslatableComponent("optimizeWorld.confirm.description"), true))
+					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
 		this.saveButton = this.addButton(
@@ -135,23 +135,23 @@ public class EditWorldScreen extends Screen {
 			iOException = var8;
 		}
 
-		Component component;
-		Component component2;
+		Text text;
+		Text text2;
 		if (iOException != null) {
-			component = new TranslatableComponent("selectWorld.edit.backupFailed");
-			component2 = new TextComponent(iOException.getMessage());
+			text = new TranslatableText("selectWorld.edit.backupFailed");
+			text2 = new LiteralText(iOException.getMessage());
 		} else {
-			component = new TranslatableComponent("selectWorld.edit.backupCreated", string);
-			component2 = new TranslatableComponent("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
+			text = new TranslatableText("selectWorld.edit.backupCreated", string);
+			text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
 		}
 
-		toastManager.add(new SystemToast(SystemToast.Type.field_2220, component, component2));
+		toastManager.add(new SystemToast(SystemToast.Type.field_2220, text, text2));
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
 		this.levelNameTextField.render(i, j, f);
 		super.render(i, j, f);

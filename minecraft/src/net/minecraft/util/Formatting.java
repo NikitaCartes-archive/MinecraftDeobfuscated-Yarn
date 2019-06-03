@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-public enum ChatFormat {
+public enum Formatting {
 	field_1074("BLACK", '0', 0, 0),
 	field_1058("DARK_BLUE", '1', 1, 170),
 	field_1077("DARK_GREEN", '2', 2, 43520),
@@ -36,36 +36,36 @@ public enum ChatFormat {
 	field_1056("ITALIC", 'o', true),
 	field_1070("RESET", 'r', -1, null);
 
-	private static final Map<String, ChatFormat> field_1052 = (Map<String, ChatFormat>)Arrays.stream(values())
-		.collect(Collectors.toMap(chatFormat -> sanitizeName(chatFormat.field_1057), chatFormat -> chatFormat));
-	private static final Pattern FORMAT_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
-	private final String field_1057;
-	private final char sectionSignCode;
+	private static final Map<String, Formatting> BY_NAME = (Map<String, Formatting>)Arrays.stream(values())
+		.collect(Collectors.toMap(formatting -> sanitize(formatting.name), formatting -> formatting));
+	private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
+	private final String name;
+	private final char code;
 	private final boolean modifier;
-	private final String code;
-	private final int id;
+	private final String stringValue;
+	private final int colorIndex;
 	@Nullable
-	private final Integer color;
+	private final Integer colorValue;
 
-	private static String sanitizeName(String string) {
+	private static String sanitize(String string) {
 		return string.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
 	}
 
-	private ChatFormat(String string2, char c, int j, @Nullable Integer integer) {
+	private Formatting(String string2, char c, int j, @Nullable Integer integer) {
 		this(string2, c, false, j, integer);
 	}
 
-	private ChatFormat(String string2, char c, boolean bl) {
+	private Formatting(String string2, char c, boolean bl) {
 		this(string2, c, bl, -1, null);
 	}
 
-	private ChatFormat(String string2, char c, boolean bl, int j, @Nullable Integer integer) {
-		this.field_1057 = string2;
-		this.sectionSignCode = c;
+	private Formatting(String string2, char c, boolean bl, int j, @Nullable Integer integer) {
+		this.name = string2;
+		this.code = c;
 		this.modifier = bl;
-		this.id = j;
-		this.color = integer;
-		this.code = "§" + c;
+		this.colorIndex = j;
+		this.colorValue = integer;
+		this.stringValue = "§" + c;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -76,14 +76,14 @@ public enum ChatFormat {
 
 		while ((i = string.indexOf(167, i + 1)) != -1) {
 			if (i < j - 1) {
-				ChatFormat chatFormat = bySectionSignCode(string.charAt(i + 1));
-				if (chatFormat != null) {
-					if (chatFormat.affectsGlyphWidth()) {
+				Formatting formatting = byCode(string.charAt(i + 1));
+				if (formatting != null) {
+					if (formatting.affectsGlyphWidth()) {
 						stringBuilder.setLength(0);
 					}
 
-					if (chatFormat != field_1070) {
-						stringBuilder.append(chatFormat);
+					if (formatting != field_1070) {
+						stringBuilder.append(formatting);
 					}
 				}
 			}
@@ -92,8 +92,8 @@ public enum ChatFormat {
 		return stringBuilder.toString();
 	}
 
-	public int getId() {
-		return this.id;
+	public int getColorIndex() {
+		return this.colorIndex;
 	}
 
 	public boolean isModifier() {
@@ -106,8 +106,8 @@ public enum ChatFormat {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public Integer getColor() {
-		return this.color;
+	public Integer getColorValue() {
+		return this.colorValue;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -120,27 +120,27 @@ public enum ChatFormat {
 	}
 
 	public String toString() {
-		return this.code;
+		return this.stringValue;
 	}
 
 	@Nullable
-	public static String stripFormatting(@Nullable String string) {
-		return string == null ? null : FORMAT_PATTERN.matcher(string).replaceAll("");
+	public static String strip(@Nullable String string) {
+		return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
 	}
 
 	@Nullable
-	public static ChatFormat getFormatByName(@Nullable String string) {
-		return string == null ? null : (ChatFormat)field_1052.get(sanitizeName(string));
+	public static Formatting byName(@Nullable String string) {
+		return string == null ? null : (Formatting)BY_NAME.get(sanitize(string));
 	}
 
 	@Nullable
-	public static ChatFormat byId(int i) {
+	public static Formatting byColorIndex(int i) {
 		if (i < 0) {
 			return field_1070;
 		} else {
-			for (ChatFormat chatFormat : values()) {
-				if (chatFormat.getId() == i) {
-					return chatFormat;
+			for (Formatting formatting : values()) {
+				if (formatting.getColorIndex() == i) {
+					return formatting;
 				}
 			}
 
@@ -150,12 +150,12 @@ public enum ChatFormat {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static ChatFormat bySectionSignCode(char c) {
+	public static Formatting byCode(char c) {
 		char d = Character.toString(c).toLowerCase(Locale.ROOT).charAt(0);
 
-		for (ChatFormat chatFormat : values()) {
-			if (chatFormat.sectionSignCode == d) {
-				return chatFormat;
+		for (Formatting formatting : values()) {
+			if (formatting.code == d) {
+				return formatting;
 			}
 		}
 
@@ -165,9 +165,9 @@ public enum ChatFormat {
 	public static Collection<String> getNames(boolean bl, boolean bl2) {
 		List<String> list = Lists.<String>newArrayList();
 
-		for (ChatFormat chatFormat : values()) {
-			if ((!chatFormat.isColor() || bl) && (!chatFormat.isModifier() || bl2)) {
-				list.add(chatFormat.getName());
+		for (Formatting formatting : values()) {
+			if ((!formatting.isColor() || bl) && (!formatting.isModifier() || bl2)) {
+				list.add(formatting.getName());
 			}
 		}
 

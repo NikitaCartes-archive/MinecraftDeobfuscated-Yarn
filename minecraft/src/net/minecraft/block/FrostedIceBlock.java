@@ -14,17 +14,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FrostedIceBlock extends IceBlock {
-	public static final IntProperty field_11097 = Properties.field_12497;
+	public static final IntProperty AGE = Properties.AGE_3;
 
 	public FrostedIceBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11097, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4))
-			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(field_11097) - blockState.getLightSubtracted(world, blockPos)
+			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
 			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
@@ -41,9 +41,9 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	private boolean increaseAge(BlockState blockState, World world, BlockPos blockPos) {
-		int i = (Integer)blockState.get(field_11097);
+		int i = (Integer)blockState.get(AGE);
 		if (i < 3) {
-			world.setBlockState(blockPos, blockState.with(field_11097, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 			return false;
 		} else {
 			this.melt(blockState, world, blockPos);
@@ -79,7 +79,7 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11097);
+		builder.add(AGE);
 	}
 
 	@Environment(EnvType.CLIENT)

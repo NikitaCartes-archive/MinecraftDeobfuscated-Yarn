@@ -24,12 +24,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Actor;
 import net.minecraft.util.ChunkPosLevelPropagator;
 import net.minecraft.util.MailboxProcessor;
-import net.minecraft.util.SectionRelativeLevelPropagator;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -41,11 +39,8 @@ public abstract class ChunkTicketManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12803) - 2;
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
-	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkSectionPos = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectOpenHashMap<ObjectSortedSet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.class_4077 distanceFromTicketTracker = new ChunkTicketManager.class_4077();
-	private final ChunkTicketManager.class_4078 shouldEntityTickTracker = new ChunkTicketManager.class_4078();
-	private int viewDistance;
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(8);
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(33);
 	private final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
@@ -63,16 +58,6 @@ public abstract class ChunkTicketManager {
 		this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor, true);
 		this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSortingActor(mailboxProcessor);
 		this.mainThreadExecutor = executor2;
-	}
-
-	protected void setViewDistance(int i) {
-		int j = this.method_18742();
-		this.viewDistance = i;
-		int k = this.method_18742();
-
-		for (Entry<ObjectSet<ServerPlayerEntity>> entry : this.playersByChunkSectionPos.long2ObjectEntrySet()) {
-			this.shouldEntityTickTracker.update(entry.getLongKey(), k, k < j);
-		}
 	}
 
 	protected void purge() {
@@ -107,7 +92,6 @@ public abstract class ChunkTicketManager {
 	public boolean tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
-		this.shouldEntityTickTracker.method_18747();
 		int i = Integer.MAX_VALUE - this.distanceFromTicketTracker.method_18746(Integer.MAX_VALUE);
 		boolean bl = i != 0;
 		if (bl) {
@@ -205,38 +189,21 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private int method_18742() {
-		return 16 - this.viewDistance;
-	}
-
 	public void handleChunkEnter(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
 		long l = chunkSectionPos.toChunkPos().toLong();
-		serverPlayerEntity.setCameraPosition(chunkSectionPos);
-		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ()));
-		this.playersByChunkSectionPos.computeIfAbsent(chunkSectionPos.asLong(), lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.distanceFromNearestPlayerTracker.update(l, 0, true);
 		this.nearbyChunkTicketUpdater.update(l, 0, true);
-		this.shouldEntityTickTracker.update(chunkSectionPos.asLong(), this.method_18742(), true);
 	}
 
 	public void handleChunkLeave(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
 		long l = chunkSectionPos.toChunkPos().toLong();
-		ObjectSet<ServerPlayerEntity> objectSet = this.playersByChunkSectionPos.get(chunkSectionPos.asLong());
-		if (objectSet != null) {
-			objectSet.remove(serverPlayerEntity);
-			if (objectSet.isEmpty()) {
-				this.playersByChunkSectionPos.remove(chunkSectionPos.asLong());
-				this.shouldEntityTickTracker.update(chunkSectionPos.asLong(), Integer.MAX_VALUE, false);
-			}
-
-			ObjectSet<ServerPlayerEntity> objectSet2 = this.playersByChunkPos.get(l);
-			objectSet2.remove(serverPlayerEntity);
-			if (objectSet2.isEmpty()) {
-				this.playersByChunkPos.remove(l);
-				this.distanceFromNearestPlayerTracker.update(l, Integer.MAX_VALUE, false);
-				this.nearbyChunkTicketUpdater.update(l, Integer.MAX_VALUE, false);
-			}
+		ObjectSet<ServerPlayerEntity> objectSet = this.playersByChunkPos.get(l);
+		objectSet.remove(serverPlayerEntity);
+		if (objectSet.isEmpty()) {
+			this.playersByChunkPos.remove(l);
+			this.distanceFromNearestPlayerTracker.update(l, Integer.MAX_VALUE, false);
+			this.nearbyChunkTicketUpdater.update(l, Integer.MAX_VALUE, false);
 		}
 	}
 
@@ -409,43 +376,6 @@ public abstract class ChunkTicketManager {
 
 		public int method_18746(int i) {
 			return this.updateAllRecursively(i);
-		}
-	}
-
-	class class_4078 extends SectionRelativeLevelPropagator {
-		protected final Long2ByteMap field_18256 = new Long2ByteOpenHashMap();
-
-		protected class_4078() {
-			super(18, 16, 256);
-			this.field_18256.defaultReturnValue((byte)18);
-		}
-
-		@Override
-		protected int getLevel(long l) {
-			return this.field_18256.get(l);
-		}
-
-		@Override
-		protected void setLevel(long l, int i) {
-			if (i > 16) {
-				this.field_18256.remove(l);
-			} else {
-				this.field_18256.put(l, (byte)i);
-			}
-		}
-
-		@Override
-		protected int getInitialLevel(long l) {
-			return this.method_18748(l) ? ChunkTicketManager.this.method_18742() : Integer.MAX_VALUE;
-		}
-
-		private boolean method_18748(long l) {
-			ObjectSet<ServerPlayerEntity> objectSet = ChunkTicketManager.this.playersByChunkSectionPos.get(l);
-			return objectSet != null && !objectSet.isEmpty();
-		}
-
-		public void method_18747() {
-			this.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}
 }

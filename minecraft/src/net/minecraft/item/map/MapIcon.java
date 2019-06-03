@@ -4,7 +4,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class MapIcon {
@@ -12,14 +12,14 @@ public class MapIcon {
 	private byte x;
 	private byte z;
 	private byte rotation;
-	private final Component text;
+	private final Text field_78;
 
-	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable Component component) {
+	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable Text text) {
 		this.type = type;
 		this.x = b;
 		this.z = c;
 		this.rotation = d;
-		this.text = component;
+		this.field_78 = text;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,8 +49,8 @@ public class MapIcon {
 	}
 
 	@Nullable
-	public Component getText() {
-		return this.text;
+	public Text method_88() {
+		return this.field_78;
 	}
 
 	public boolean equals(Object object) {
@@ -67,7 +67,7 @@ public class MapIcon {
 			} else if (this.x != mapIcon.x) {
 				return false;
 			} else {
-				return this.z != mapIcon.z ? false : Objects.equals(this.text, mapIcon.text);
+				return this.z != mapIcon.z ? false : Objects.equals(this.field_78, mapIcon.field_78);
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class MapIcon {
 		i = 31 * i + this.x;
 		i = 31 * i + this.z;
 		i = 31 * i + this.rotation;
-		return 31 * i + Objects.hashCode(this.text);
+		return 31 * i + Objects.hashCode(this.field_78);
 	}
 
 	public static enum Type {

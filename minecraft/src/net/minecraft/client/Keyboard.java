@@ -4,7 +4,6 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
@@ -24,8 +23,9 @@ import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
@@ -57,11 +57,11 @@ public class Keyboard {
 		this.client
 			.inGameHud
 			.getChatHud()
-			.addMessage(
-				new TextComponent("")
-					.append(new TranslatableComponent("debug.prefix").applyFormat(new ChatFormat[]{ChatFormat.field_1054, ChatFormat.field_1067}))
+			.method_1812(
+				new LiteralText("")
+					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1054, Formatting.field_1067}))
 					.append(" ")
-					.append(new TranslatableComponent(string, objects))
+					.append(new TranslatableText(string, objects))
 			);
 	}
 
@@ -69,11 +69,11 @@ public class Keyboard {
 		this.client
 			.inGameHud
 			.getChatHud()
-			.addMessage(
-				new TextComponent("")
-					.append(new TranslatableComponent("debug.prefix").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1067}))
+			.method_1812(
+				new LiteralText("")
+					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1067}))
 					.append(" ")
-					.append(new TranslatableComponent(string, objects))
+					.append(new TranslatableText(string, objects))
 			);
 	}
 
@@ -169,19 +169,19 @@ public class Keyboard {
 				case 81:
 					this.debugWarn("debug.help.message");
 					ChatHud chatHud = this.client.inGameHud.getChatHud();
-					chatHud.addMessage(new TranslatableComponent("debug.reload_chunks.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.show_hitboxes.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.copy_location.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.clear_chat.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.cycle_renderdistance.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.chunk_boundaries.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.advanced_tooltips.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.inspect.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.creative_spectator.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.pause_focus.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.help.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.reload_resourcepacks.help"));
-					chatHud.addMessage(new TranslatableComponent("debug.pause.help"));
+					chatHud.method_1812(new TranslatableText("debug.reload_chunks.help"));
+					chatHud.method_1812(new TranslatableText("debug.show_hitboxes.help"));
+					chatHud.method_1812(new TranslatableText("debug.copy_location.help"));
+					chatHud.method_1812(new TranslatableText("debug.clear_chat.help"));
+					chatHud.method_1812(new TranslatableText("debug.cycle_renderdistance.help"));
+					chatHud.method_1812(new TranslatableText("debug.chunk_boundaries.help"));
+					chatHud.method_1812(new TranslatableText("debug.advanced_tooltips.help"));
+					chatHud.method_1812(new TranslatableText("debug.inspect.help"));
+					chatHud.method_1812(new TranslatableText("debug.creative_spectator.help"));
+					chatHud.method_1812(new TranslatableText("debug.pause_focus.help"));
+					chatHud.method_1812(new TranslatableText("debug.help.help"));
+					chatHud.method_1812(new TranslatableText("debug.reload_resourcepacks.help"));
+					chatHud.method_1812(new TranslatableText("debug.pause.help"));
 					return true;
 				case 84:
 					this.debugWarn("debug.reload_resourcepacks.message");
@@ -262,7 +262,7 @@ public class Keyboard {
 			compoundTag.remove("UUIDLeast");
 			compoundTag.remove("Pos");
 			compoundTag.remove("Dimension");
-			String string = compoundTag.toTextComponent().getString();
+			String string = compoundTag.method_10715().getString();
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", identifier.toString(), vec3d.x, vec3d.y, vec3d.z, string);
 		} else {
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", identifier.toString(), vec3d.x, vec3d.y, vec3d.z);
@@ -304,7 +304,7 @@ public class Keyboard {
 						this.client.window.getFramebufferWidth(),
 						this.client.window.getFramebufferHeight(),
 						this.client.getFramebuffer(),
-						component -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(component))
+						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().method_1812(text))
 					);
 					return;
 				}

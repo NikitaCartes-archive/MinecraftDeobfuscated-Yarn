@@ -10,10 +10,10 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.pluginapi.LoadedRealmsPlugin;
 import net.minecraft.realms.pluginapi.RealmsPlugin;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,8 +72,8 @@ public class RealmsBridge extends RealmsScreen {
 			.openScreen(
 				new NoticeScreen(
 					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
-					new TextComponent(""),
-					new TranslatableComponent(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
+					new LiteralText(""),
+					new TranslatableText(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)
 			);
 	}

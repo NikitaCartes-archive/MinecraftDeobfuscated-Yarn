@@ -138,7 +138,6 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	public void apply(ResourceManager resourceManager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
-		this.tags.clear();
 		Collection<Identifier> collection = resourceManager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
 		List<CompletableFuture<CommandFunction>> list = Lists.<CompletableFuture<CommandFunction>>newArrayList();
 

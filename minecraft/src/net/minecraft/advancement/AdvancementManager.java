@@ -97,6 +97,7 @@ public class AdvancementManager {
 		LOGGER.info("Loaded {} advancements", this.advancements.size());
 	}
 
+	@Environment(EnvType.CLIENT)
 	public void clear() {
 		this.advancements.clear();
 		this.roots.clear();
@@ -144,6 +145,7 @@ public class AdvancementManager {
 		@Environment(EnvType.CLIENT)
 		void onDependentRemoved(Advancement advancement);
 
+		@Environment(EnvType.CLIENT)
 		void onClear();
 	}
 }

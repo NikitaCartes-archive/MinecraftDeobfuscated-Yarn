@@ -10,9 +10,9 @@ import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -23,13 +23,13 @@ import org.apache.logging.log4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Component name;
+	private final Text field_16228;
 	@Nullable
 	private final LootContext.EntityTarget entity;
 
-	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Component component, @Nullable LootContext.EntityTarget entityTarget) {
+	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
 		super(lootConditions);
-		this.name = component;
+		this.field_16228 = text;
 		this.entity = entityTarget;
 	}
 
@@ -38,29 +38,29 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
 	}
 
-	public static UnaryOperator<Component> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
+	public static UnaryOperator<Text> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
 		if (entityTarget != null) {
 			Entity entity = lootContext.get(entityTarget.getIdentifier());
 			if (entity != null) {
 				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
-				return component -> {
+				return text -> {
 					try {
-						return Components.resolveAndStyle(serverCommandSource, component, entity, 0);
+						return Texts.parse(serverCommandSource, text, entity, 0);
 					} catch (CommandSyntaxException var4) {
 						LOGGER.warn("Failed to resolve text component", (Throwable)var4);
-						return component;
+						return text;
 					}
 				};
 			}
 		}
 
-		return component -> component;
+		return text -> text;
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (this.name != null) {
-			itemStack.setCustomName((Component)applySourceEntity(lootContext, this.entity).apply(this.name));
+		if (this.field_16228 != null) {
+			itemStack.method_7977((Text)applySourceEntity(lootContext, this.entity).apply(this.field_16228));
 		}
 
 		return itemStack;
@@ -73,8 +73,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 		public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
-			if (setNameLootFunction.name != null) {
-				jsonObject.add("name", Component.Serializer.toJson(setNameLootFunction.name));
+			if (setNameLootFunction.field_16228 != null) {
+				jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.field_16228));
 			}
 
 			if (setNameLootFunction.entity != null) {
@@ -83,9 +83,9 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		}
 
 		public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Component component = Component.Serializer.fromJson(jsonObject.get("name"));
+			Text text = Text.Serializer.fromJson(jsonObject.get("name"));
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new SetNameLootFunction(lootConditions, component, entityTarget);
+			return new SetNameLootFunction(lootConditions, text, entityTarget);
 		}
 	}
 }

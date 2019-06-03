@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -42,18 +41,19 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -355,7 +355,7 @@ public final class ItemStack {
 	}
 
 	public String toString() {
-		return this.count + "x" + this.getItem().getTranslationKey();
+		return this.count + " " + this.getItem();
 	}
 
 	public void inventoryTick(World world, Entity entity, int i, boolean bl) {
@@ -438,13 +438,13 @@ public final class ItemStack {
 		this.tag = compoundTag;
 	}
 
-	public Component getCustomName() {
+	public Text method_7964() {
 		CompoundTag compoundTag = this.getSubTag("display");
 		if (compoundTag != null && compoundTag.containsKey("Name", 8)) {
 			try {
-				Component component = Component.Serializer.fromJsonString(compoundTag.getString("Name"));
-				if (component != null) {
-					return component;
+				Text text = Text.Serializer.fromJson(compoundTag.getString("Name"));
+				if (text != null) {
+					return text;
 				}
 
 				compoundTag.remove("Name");
@@ -453,13 +453,13 @@ public final class ItemStack {
 			}
 		}
 
-		return this.getItem().getName(this);
+		return this.getItem().method_7864(this);
 	}
 
-	public ItemStack setCustomName(@Nullable Component component) {
+	public ItemStack method_7977(@Nullable Text text) {
 		CompoundTag compoundTag = this.getOrCreateSubTag("display");
-		if (component != null) {
-			compoundTag.putString("Name", Component.Serializer.toJsonString(component));
+		if (text != null) {
+			compoundTag.putString("Name", Text.Serializer.toJson(text));
 		} else {
 			compoundTag.remove("Name");
 		}
@@ -487,16 +487,16 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<Component> getTooltip(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
-		List<Component> list = Lists.<Component>newArrayList();
-		Component component = new TextComponent("").append(this.getCustomName()).applyFormat(this.getRarity().formatting);
+	public List<Text> getTooltip(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
+		List<Text> list = Lists.<Text>newArrayList();
+		Text text = new LiteralText("").append(this.method_7964()).formatted(this.getRarity().field_8908);
 		if (this.hasCustomName()) {
-			component.applyFormat(ChatFormat.field_1056);
+			text.formatted(Formatting.field_1056);
 		}
 
-		list.add(component);
+		list.add(text);
 		if (!tooltipContext.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.field_8204) {
-			list.add(new TextComponent("#" + FilledMapItem.getMapId(this)).applyFormat(ChatFormat.field_1080));
+			list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.field_1080));
 		}
 
 		int i = 0;
@@ -517,9 +517,9 @@ public final class ItemStack {
 				CompoundTag compoundTag = this.tag.getCompound("display");
 				if (compoundTag.containsKey("color", 3)) {
 					if (tooltipContext.isAdvanced()) {
-						list.add(new TranslatableComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(ChatFormat.field_1080));
+						list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.field_1080));
 					} else {
-						list.add(new TranslatableComponent("item.dyed").applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056}));
+						list.add(new TranslatableText("item.dyed").formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}));
 					}
 				}
 
@@ -530,9 +530,9 @@ public final class ItemStack {
 						String string = listTag.getString(j);
 
 						try {
-							Component component2 = Component.Serializer.fromJsonString(string);
-							if (component2 != null) {
-								list.add(Components.style(component2, new Style().setColor(ChatFormat.field_1064).setItalic(true)));
+							Text text2 = Text.Serializer.fromJson(string);
+							if (text2 != null) {
+								list.add(Texts.method_10889(text2, new Style().setColor(Formatting.field_1064).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -545,8 +545,8 @@ public final class ItemStack {
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			Multimap<String, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 			if (!multimap.isEmpty() && (i & 2) == 0) {
-				list.add(new TextComponent(""));
-				list.add(new TranslatableComponent("item.modifiers." + equipmentSlot.getName()).applyFormat(ChatFormat.field_1080));
+				list.add(new LiteralText(""));
+				list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.field_1080));
 
 				for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -573,34 +573,34 @@ public final class ItemStack {
 
 					if (bl) {
 						list.add(
-							new TextComponent(" ")
+							new LiteralText(" ")
 								.append(
-									new TranslatableComponent(
+									new TranslatableText(
 										"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										new TranslatableComponent("attribute.name." + (String)entry.getKey())
+										new TranslatableText("attribute.name." + (String)entry.getKey())
 									)
 								)
-								.applyFormat(ChatFormat.field_1077)
+								.formatted(Formatting.field_1077)
 						);
 					} else if (d > 0.0) {
 						list.add(
-							new TranslatableComponent(
+							new TranslatableText(
 									"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableComponent("attribute.name." + (String)entry.getKey())
+									new TranslatableText("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(ChatFormat.field_1078)
+								.formatted(Formatting.field_1078)
 						);
 					} else if (d < 0.0) {
 						e *= -1.0;
 						list.add(
-							new TranslatableComponent(
+							new TranslatableText(
 									"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableComponent("attribute.name." + (String)entry.getKey())
+									new TranslatableText("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(ChatFormat.field_1061)
+								.formatted(Formatting.field_1061)
 						);
 					}
 				}
@@ -608,14 +608,14 @@ public final class ItemStack {
 		}
 
 		if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
-			list.add(new TranslatableComponent("item.unbreakable").applyFormat(ChatFormat.field_1078));
+			list.add(new TranslatableText("item.unbreakable").formatted(Formatting.field_1078));
 		}
 
 		if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0) {
 			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new TextComponent(""));
-				list.add(new TranslatableComponent("item.canBreak").applyFormat(ChatFormat.field_1080));
+				list.add(new LiteralText(""));
+				list.add(new TranslatableText("item.canBreak").formatted(Formatting.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(parseBlockTag(listTag2.getString(k)));
@@ -626,8 +626,8 @@ public final class ItemStack {
 		if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9) && (i & 16) == 0) {
 			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new TextComponent(""));
-				list.add(new TranslatableComponent("item.canPlace").applyFormat(ChatFormat.field_1080));
+				list.add(new LiteralText(""));
+				list.add(new TranslatableText("item.canPlace").formatted(Formatting.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(parseBlockTag(listTag2.getString(k)));
@@ -637,12 +637,12 @@ public final class ItemStack {
 
 		if (tooltipContext.isAdvanced()) {
 			if (this.isDamaged()) {
-				list.add(new TranslatableComponent("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
+				list.add(new TranslatableText("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
 			}
 
-			list.add(new TextComponent(Registry.ITEM.getId(this.getItem()).toString()).applyFormat(ChatFormat.field_1063));
+			list.add(new LiteralText(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.field_1063));
 			if (this.hasTag()) {
-				list.add(new TranslatableComponent("item.nbt_tags", this.getTag().getKeys().size()).applyFormat(ChatFormat.field_1063));
+				list.add(new TranslatableText("item.nbt_tags", this.getTag().getKeys().size()).formatted(Formatting.field_1063));
 			}
 		}
 
@@ -650,17 +650,17 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendEnchantments(List<Component> list, ListTag listTag) {
+	public static void appendEnchantments(List<Text> list, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT
 				.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id")))
-				.ifPresent(enchantment -> list.add(enchantment.getTextComponent(compoundTag.getInt("lvl"))));
+				.ifPresent(enchantment -> list.add(enchantment.method_8179(compoundTag.getInt("lvl"))));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Collection<Component> parseBlockTag(String string) {
+	private static Collection<Text> parseBlockTag(String string) {
 		try {
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), true).parse(true);
 			BlockState blockState = blockArgumentParser.getBlockState();
@@ -669,24 +669,21 @@ public final class ItemStack {
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {
 				if (bl) {
-					return Lists.<Component>newArrayList(blockState.getBlock().getTextComponent().applyFormat(ChatFormat.field_1063));
+					return Lists.<Text>newArrayList(blockState.getBlock().method_9518().formatted(Formatting.field_1063));
 				}
 
 				Tag<Block> tag = BlockTags.getContainer().get(identifier);
 				if (tag != null) {
 					Collection<Block> collection = tag.values();
 					if (!collection.isEmpty()) {
-						return (Collection<Component>)collection.stream()
-							.map(Block::getTextComponent)
-							.map(component -> component.applyFormat(ChatFormat.field_1063))
-							.collect(Collectors.toList());
+						return (Collection<Text>)collection.stream().map(Block::method_9518).map(text -> text.formatted(Formatting.field_1063)).collect(Collectors.toList());
 					}
 				}
 			}
 		} catch (CommandSyntaxException var8) {
 		}
 
-		return Lists.<Component>newArrayList(new TextComponent("missingno").applyFormat(ChatFormat.field_1063));
+		return Lists.<Text>newArrayList(new LiteralText("missingno").formatted(Formatting.field_1063));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -783,20 +780,20 @@ public final class ItemStack {
 		listTag.add(compoundTag);
 	}
 
-	public Component toHoverableText() {
-		Component component = new TextComponent("").append(this.getCustomName());
+	public Text method_7954() {
+		Text text = new LiteralText("").append(this.method_7964());
 		if (this.hasCustomName()) {
-			component.applyFormat(ChatFormat.field_1056);
+			text.formatted(Formatting.field_1056);
 		}
 
-		Component component2 = Components.bracketed(component);
+		Text text2 = Texts.bracketed(text);
 		if (!this.empty) {
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			component2.applyFormat(this.getRarity().formatting)
-				.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11757, new TextComponent(compoundTag.toString()))));
+			text2.formatted(this.getRarity().field_8908)
+				.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11757, new LiteralText(compoundTag.toString()))));
 		}
 
-		return component2;
+		return text2;
 	}
 
 	private static boolean areBlocksEqual(CachedBlockPosition cachedBlockPosition, @Nullable CachedBlockPosition cachedBlockPosition2) {

@@ -8,27 +8,27 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ResourcePackContainer implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(
-		new TranslatableComponent("resourcePack.broken_assets").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1056}),
+		new TranslatableText("resourcePack.broken_assets").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}),
 		SharedConstants.getGameVersion().getPackVersion()
 	);
 	private final String name;
 	private final Supplier<ResourcePack> packCreator;
-	private final Component displayName;
-	private final Component description;
+	private final Text displayName;
+	private final Text description;
 	private final ResourcePackCompatibility compatibility;
 	private final ResourcePackContainer.InsertionPosition position;
 	private final boolean notSorting;
@@ -90,16 +90,16 @@ public class ResourcePackContainer implements AutoCloseable {
 		String string,
 		boolean bl,
 		Supplier<ResourcePack> supplier,
-		Component component,
-		Component component2,
+		Text text,
+		Text text2,
 		ResourcePackCompatibility resourcePackCompatibility,
 		ResourcePackContainer.InsertionPosition insertionPosition,
 		boolean bl2
 	) {
 		this.name = string;
 		this.packCreator = supplier;
-		this.displayName = component;
-		this.description = component2;
+		this.displayName = text;
+		this.description = text2;
 		this.compatibility = resourcePackCompatibility;
 		this.notSorting = bl;
 		this.position = insertionPosition;
@@ -118,7 +118,7 @@ public class ResourcePackContainer implements AutoCloseable {
 			string,
 			bl,
 			supplier,
-			new TextComponent(resourcePack.getName()),
+			new LiteralText(resourcePack.getName()),
 			packResourceMetadata.getDescription(),
 			ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
 			insertionPosition,
@@ -127,21 +127,21 @@ public class ResourcePackContainer implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getDisplayName() {
+	public Text getDisplayName() {
 		return this.displayName;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getDescription() {
+	public Text getDescription() {
 		return this.description;
 	}
 
-	public Component getInformationText(boolean bl) {
-		return Components.bracketed(new TextComponent(this.name))
-			.modifyStyle(
-				style -> style.setColor(bl ? ChatFormat.field_1060 : ChatFormat.field_1061)
+	public Text getInformationText(boolean bl) {
+		return Texts.bracketed(new LiteralText(this.name))
+			.styled(
+				style -> style.setColor(bl ? Formatting.field_1060 : Formatting.field_1061)
 						.setInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent("").append(this.displayName).append("\n").append(this.description)))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 

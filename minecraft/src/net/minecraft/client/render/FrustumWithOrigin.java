@@ -2,7 +2,7 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 @Environment(EnvType.CLIENT)
 public class FrustumWithOrigin implements VisibleRegion {
@@ -31,7 +31,7 @@ public class FrustumWithOrigin implements VisibleRegion {
 	}
 
 	@Override
-	public boolean intersects(BoundingBox boundingBox) {
-		return this.intersects(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ);
+	public boolean intersects(Box box) {
+		return this.intersects(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 }

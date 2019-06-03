@@ -9,20 +9,20 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.List;
 import java.util.regex.Pattern;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public class StringNbtReader {
-	public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(new TranslatableComponent("argument.nbt.trailing"));
-	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableComponent("argument.nbt.expected.key"));
-	public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(new TranslatableComponent("argument.nbt.expected.value"));
+	public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.trailing"));
+	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.key"));
+	public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.value"));
 	public static final Dynamic2CommandExceptionType LIST_MIXED = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("argument.nbt.list.mixed", object, object2)
+		(object, object2) -> new TranslatableText("argument.nbt.list.mixed", object, object2)
 	);
 	public static final Dynamic2CommandExceptionType ARRAY_MIXED = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("argument.nbt.array.mixed", object, object2)
+		(object, object2) -> new TranslatableText("argument.nbt.array.mixed", object, object2)
 	);
 	public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("argument.nbt.array.invalid", object)
+		object -> new TranslatableText("argument.nbt.array.invalid", object)
 	);
 	private static final Pattern DOUBLE_PATTERN_IMPLICIT = Pattern.compile("[-+]?(?:[0-9]+[.]|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?", 2);
 	private static final Pattern DOUBLE_PATTERN = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?d", 2);

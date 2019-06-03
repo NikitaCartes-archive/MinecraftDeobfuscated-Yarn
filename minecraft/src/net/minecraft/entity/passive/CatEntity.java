@@ -51,7 +51,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
@@ -510,7 +510,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private boolean method_16098() {
-			for (CatEntity catEntity : this.cat.world.getEntities(CatEntity.class, new BoundingBox(this.bedPos).expand(2.0))) {
+			for (CatEntity catEntity : this.cat.world.getEntities(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
 				if (catEntity != this.cat && (catEntity.isSleepingWithOwner() || catEntity.isHeadDown())) {
 					return true;
 				}

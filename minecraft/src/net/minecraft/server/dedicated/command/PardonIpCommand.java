@@ -5,17 +5,15 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.regex.Matcher;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.BannedIpList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class PardonIpCommand {
-	private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.pardonip.invalid"));
-	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("commands.pardonip.failed")
-	);
+	private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.pardonip.invalid"));
+	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.pardonip.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -45,7 +43,7 @@ public class PardonIpCommand {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {
 				bannedIpList.remove(string);
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.pardonip.success", string), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.pardonip.success", string), true);
 				return 1;
 			}
 		}

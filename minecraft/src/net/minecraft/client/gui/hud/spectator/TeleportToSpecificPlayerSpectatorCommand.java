@@ -11,9 +11,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.packet.SpectatorTeleportC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -38,8 +38,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public Component getName() {
-		return new TextComponent(this.gameProfile.getName());
+	public Text method_16892() {
+		return new LiteralText(this.gameProfile.getName());
 	}
 
 	@Override

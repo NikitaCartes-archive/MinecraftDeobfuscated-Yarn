@@ -3,37 +3,37 @@ package net.minecraft.client.network.packet;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Component message;
-	private ChatMessageType location;
+	private Text message;
+	private MessageType location;
 
 	public ChatMessageS2CPacket() {
 	}
 
-	public ChatMessageS2CPacket(Component component) {
-		this(component, ChatMessageType.field_11735);
+	public ChatMessageS2CPacket(Text text) {
+		this(text, MessageType.field_11735);
 	}
 
-	public ChatMessageS2CPacket(Component component, ChatMessageType chatMessageType) {
-		this.message = component;
-		this.location = chatMessageType;
+	public ChatMessageS2CPacket(Text text, MessageType messageType) {
+		this.message = text;
+		this.location = messageType;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.message = packetByteBuf.readTextComponent();
-		this.location = ChatMessageType.byId(packetByteBuf.readByte());
+		this.message = packetByteBuf.method_10808();
+		this.location = MessageType.byId(packetByteBuf.readByte());
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeTextComponent(this.message);
+		packetByteBuf.method_10805(this.message);
 		packetByteBuf.writeByte(this.location.getId());
 	}
 
@@ -42,15 +42,15 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getMessage() {
+	public Text getMessage() {
 		return this.message;
 	}
 
 	public boolean isNonChat() {
-		return this.location == ChatMessageType.field_11735 || this.location == ChatMessageType.field_11733;
+		return this.location == MessageType.field_11735 || this.location == MessageType.field_11733;
 	}
 
-	public ChatMessageType getLocation() {
+	public MessageType getLocation() {
 		return this.location;
 	}
 

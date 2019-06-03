@@ -29,11 +29,11 @@ public class AdvancementToast implements Toast {
 		AdvancementDisplay advancementDisplay = this.field_2205.getDisplay();
 		toastManager.blit(0, 0, 0, 0, 160, 32);
 		if (advancementDisplay != null) {
-			List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().getFormattedText(), 125);
+			List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.field_1250 ? 16746751 : 16776960;
 			if (list.size() == 1) {
 				toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
-				toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().getFormattedText(), 30.0F, 18.0F, -1);
+				toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0F, 18.0F, -1);
 			} else {
 				int j = 1500;
 				float f = 300.0F;

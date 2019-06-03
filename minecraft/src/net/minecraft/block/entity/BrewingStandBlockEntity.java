@@ -15,9 +15,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Tickable;
@@ -68,8 +68,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.brewing");
+	protected Text method_17823() {
+		return new TranslatableText("container.brewing");
 	}
 
 	@Override

@@ -17,12 +17,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
@@ -33,8 +33,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_9986,
-				new TranslatableComponent("advancements.nether.root.title"),
-				new TranslatableComponent("advancements.nether.root.description"),
+				new TranslatableText("advancements.nether.root.title"),
+				new TranslatableText("advancements.nether.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/nether.png"),
 				AdvancementFrame.field_1254,
 				false,
@@ -47,8 +47,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.field_8814,
-				new TranslatableComponent("advancements.nether.return_to_sender.title"),
-				new TranslatableComponent("advancements.nether.return_to_sender.description"),
+				new TranslatableText("advancements.nether.return_to_sender.title"),
+				new TranslatableText("advancements.nether.return_to_sender.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -68,8 +68,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Blocks.field_10266,
-				new TranslatableComponent("advancements.nether.find_fortress.title"),
-				new TranslatableComponent("advancements.nether.find_fortress.description"),
+				new TranslatableText("advancements.nether.find_fortress.title"),
+				new TranslatableText("advancements.nether.find_fortress.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -82,8 +82,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.field_8895,
-				new TranslatableComponent("advancements.nether.fast_travel.title"),
-				new TranslatableComponent("advancements.nether.fast_travel.description"),
+				new TranslatableText("advancements.nether.fast_travel.title"),
+				new TranslatableText("advancements.nether.fast_travel.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -97,8 +97,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement2)
 			.display(
 				Items.field_8070,
-				new TranslatableComponent("advancements.nether.uneasy_alliance.title"),
-				new TranslatableComponent("advancements.nether.uneasy_alliance.description"),
+				new TranslatableText("advancements.nether.uneasy_alliance.title"),
+				new TranslatableText("advancements.nether.uneasy_alliance.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -117,8 +117,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement3)
 			.display(
 				Blocks.field_10177,
-				new TranslatableComponent("advancements.nether.get_wither_skull.title"),
-				new TranslatableComponent("advancements.nether.get_wither_skull.description"),
+				new TranslatableText("advancements.nether.get_wither_skull.title"),
+				new TranslatableText("advancements.nether.get_wither_skull.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -131,8 +131,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement6)
 			.display(
 				Items.field_8137,
-				new TranslatableComponent("advancements.nether.summon_wither.title"),
-				new TranslatableComponent("advancements.nether.summon_wither.description"),
+				new TranslatableText("advancements.nether.summon_wither.title"),
+				new TranslatableText("advancements.nether.summon_wither.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -145,8 +145,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement3)
 			.display(
 				Items.field_8894,
-				new TranslatableComponent("advancements.nether.obtain_blaze_rod.title"),
-				new TranslatableComponent("advancements.nether.obtain_blaze_rod.description"),
+				new TranslatableText("advancements.nether.obtain_blaze_rod.title"),
+				new TranslatableText("advancements.nether.obtain_blaze_rod.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -159,8 +159,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement7)
 			.display(
 				Blocks.field_10327,
-				new TranslatableComponent("advancements.nether.create_beacon.title"),
-				new TranslatableComponent("advancements.nether.create_beacon.description"),
+				new TranslatableText("advancements.nether.create_beacon.title"),
+				new TranslatableText("advancements.nether.create_beacon.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -173,8 +173,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement9)
 			.display(
 				Blocks.field_10327,
-				new TranslatableComponent("advancements.nether.create_full_beacon.title"),
-				new TranslatableComponent("advancements.nether.create_full_beacon.description"),
+				new TranslatableText("advancements.nether.create_full_beacon.title"),
+				new TranslatableText("advancements.nether.create_full_beacon.description"),
 				null,
 				AdvancementFrame.field_1249,
 				true,
@@ -187,8 +187,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement8)
 			.display(
 				Items.field_8574,
-				new TranslatableComponent("advancements.nether.brew_potion.title"),
-				new TranslatableComponent("advancements.nether.brew_potion.description"),
+				new TranslatableText("advancements.nether.brew_potion.title"),
+				new TranslatableText("advancements.nether.brew_potion.description"),
 				null,
 				AdvancementFrame.field_1254,
 				true,
@@ -201,8 +201,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement11)
 			.display(
 				Items.field_8103,
-				new TranslatableComponent("advancements.nether.all_potions.title"),
-				new TranslatableComponent("advancements.nether.all_potions.description"),
+				new TranslatableText("advancements.nether.all_potions.title"),
+				new TranslatableText("advancements.nether.all_potions.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,
@@ -234,8 +234,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement12)
 			.display(
 				Items.field_8550,
-				new TranslatableComponent("advancements.nether.all_effects.title"),
-				new TranslatableComponent("advancements.nether.all_effects.description"),
+				new TranslatableText("advancements.nether.all_effects.title"),
+				new TranslatableText("advancements.nether.all_effects.description"),
 				null,
 				AdvancementFrame.field_1250,
 				true,

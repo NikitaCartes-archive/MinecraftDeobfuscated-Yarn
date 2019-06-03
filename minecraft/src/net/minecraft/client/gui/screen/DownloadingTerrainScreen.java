@@ -8,7 +8,7 @@ import net.minecraft.client.util.NarratorManager;
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
 	public DownloadingTerrainScreen() {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 	}
 
 	@Override

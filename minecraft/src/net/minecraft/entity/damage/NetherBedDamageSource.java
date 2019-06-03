@@ -1,12 +1,12 @@
 package net.minecraft.entity.damage;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class NetherBedDamageSource extends DamageSource {
 	protected NetherBedDamageSource() {
@@ -16,12 +16,12 @@ public class NetherBedDamageSource extends DamageSource {
 	}
 
 	@Override
-	public Component getDeathMessage(LivingEntity livingEntity) {
-		Component component = Components.bracketed(new TranslatableComponent("death.attack.netherBed.link"))
-			.modifyStyle(
+	public Text method_5506(LivingEntity livingEntity) {
+		Text text = Texts.bracketed(new TranslatableText("death.attack.netherBed.link"))
+			.styled(
 				style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11749, "https://bugs.mojang.com/browse/MCPE-28723"))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent("MCPE-28723")))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText("MCPE-28723")))
 			);
-		return new TranslatableComponent("death.attack.netherBed.message", livingEntity.getDisplayName(), component);
+		return new TranslatableText("death.attack.netherBed.message", livingEntity.method_5476(), text);
 	}
 }

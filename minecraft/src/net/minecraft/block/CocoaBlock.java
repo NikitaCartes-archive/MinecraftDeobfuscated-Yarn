@@ -17,7 +17,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
-	public static final IntProperty field_10779 = Properties.field_12556;
+	public static final IntProperty AGE = Properties.AGE_2;
 	protected static final VoxelShape[] AGE_TO_EAST_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(11.0, 7.0, 6.0, 15.0, 12.0, 10.0),
 		Block.createCuboidShape(9.0, 5.0, 5.0, 15.0, 12.0, 11.0),
@@ -41,15 +41,15 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	public CocoaBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(field_10779, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.random.nextInt(5) == 0) {
-			int i = (Integer)blockState.get(field_10779);
+			int i = (Integer)blockState.get(AGE);
 			if (i < 2) {
-				world.setBlockState(blockPos, blockState.with(field_10779, Integer.valueOf(i + 1)), 2);
+				world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		int i = (Integer)blockState.get(field_10779);
+		int i = (Integer)blockState.get(AGE);
 		switch ((Direction)blockState.get(FACING)) {
 			case field_11035:
 				return AGE_TO_SOUTH_SHAPE[i];
@@ -106,7 +106,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return (Integer)blockState.get(field_10779) < 2;
+		return (Integer)blockState.get(AGE) < 2;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		world.setBlockState(blockPos, blockState.with(field_10779, Integer.valueOf((Integer)blockState.get(field_10779) + 1)), 2);
+		world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf((Integer)blockState.get(AGE) + 1)), 2);
 	}
 
 	@Override
@@ -126,6 +126,6 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING, field_10779);
+		builder.add(FACING, AGE);
 	}
 }

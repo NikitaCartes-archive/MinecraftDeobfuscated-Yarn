@@ -1,4 +1,4 @@
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -52,26 +52,26 @@ public class ClickEvent {
 		field_11745("suggest_command", true),
 		field_11748("change_page", true);
 
-		private static final Map<String, ClickEvent.Action> ACTIONS = (Map<String, ClickEvent.Action>)Arrays.stream(values())
+		private static final Map<String, ClickEvent.Action> BY_NAME = (Map<String, ClickEvent.Action>)Arrays.stream(values())
 			.collect(Collectors.toMap(ClickEvent.Action::getName, action -> action));
-		private final boolean safe;
+		private final boolean userDefinable;
 		private final String name;
 
 		private Action(String string2, boolean bl) {
 			this.name = string2;
-			this.safe = bl;
+			this.userDefinable = bl;
 		}
 
-		public boolean isSafe() {
-			return this.safe;
+		public boolean isUserDefinable() {
+			return this.userDefinable;
 		}
 
 		public String getName() {
 			return this.name;
 		}
 
-		public static ClickEvent.Action get(String string) {
-			return (ClickEvent.Action)ACTIONS.get(string);
+		public static ClickEvent.Action byName(String string) {
+			return (ClickEvent.Action)BY_NAME.get(string);
 		}
 	}
 }

@@ -9,15 +9,15 @@ import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCPETION = new SimpleCommandExceptionType(new TranslatableComponent("commands.particle.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.particle.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -159,10 +159,8 @@ public class ParticleCommand {
 		if (j == 0) {
 			throw FAILED_EXCPETION.create();
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent(
-					"commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()).toString()
-				),
+			serverCommandSource.method_9226(
+				new TranslatableText("commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()).toString()),
 				true
 			);
 			return j;

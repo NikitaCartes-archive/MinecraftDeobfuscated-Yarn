@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
 import net.minecraft.command.arguments.FunctionArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.text.TranslatableText;
 
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
@@ -35,11 +35,9 @@ public class FunctionCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true
-			);
+			serverCommandSource.method_9226(new TranslatableText("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.function.success.multiple", i, collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.function.success.multiple", i, collection.size()), true);
 		}
 
 		return i;

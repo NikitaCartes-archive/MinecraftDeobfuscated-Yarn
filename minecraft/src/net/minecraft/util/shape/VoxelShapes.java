@@ -18,7 +18,7 @@ import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
@@ -45,26 +45,26 @@ public final class VoxelShapes {
 	}
 
 	public static VoxelShape cuboid(double d, double e, double f, double g, double h, double i) {
-		return cuboid(new BoundingBox(d, e, f, g, h, i));
+		return cuboid(new Box(d, e, f, g, h, i));
 	}
 
-	public static VoxelShape cuboid(BoundingBox boundingBox) {
-		int i = findRequiredBitResolution(boundingBox.minX, boundingBox.maxX);
-		int j = findRequiredBitResolution(boundingBox.minY, boundingBox.maxY);
-		int k = findRequiredBitResolution(boundingBox.minZ, boundingBox.maxZ);
+	public static VoxelShape cuboid(Box box) {
+		int i = findRequiredBitResolution(box.minX, box.maxX);
+		int j = findRequiredBitResolution(box.minY, box.maxY);
+		int k = findRequiredBitResolution(box.minZ, box.maxZ);
 		if (i >= 0 && j >= 0 && k >= 0) {
 			if (i == 0 && j == 0 && k == 0) {
-				return boundingBox.contains(0.5, 0.5, 0.5) ? fullCube() : empty();
+				return box.contains(0.5, 0.5, 0.5) ? fullCube() : empty();
 			} else {
 				int l = 1 << i;
 				int m = 1 << j;
 				int n = 1 << k;
-				int o = (int)Math.round(boundingBox.minX * (double)l);
-				int p = (int)Math.round(boundingBox.maxX * (double)l);
-				int q = (int)Math.round(boundingBox.minY * (double)m);
-				int r = (int)Math.round(boundingBox.maxY * (double)m);
-				int s = (int)Math.round(boundingBox.minZ * (double)n);
-				int t = (int)Math.round(boundingBox.maxZ * (double)n);
+				int o = (int)Math.round(box.minX * (double)l);
+				int p = (int)Math.round(box.maxX * (double)l);
+				int q = (int)Math.round(box.minY * (double)m);
+				int r = (int)Math.round(box.maxY * (double)m);
+				int s = (int)Math.round(box.minZ * (double)n);
+				int t = (int)Math.round(box.maxZ * (double)n);
 				BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(l, m, n, o, q, s, p, r, t);
 
 				for (long u = (long)o; u < (long)p; u++) {
@@ -78,12 +78,7 @@ public final class VoxelShapes {
 				return new SimpleVoxelShape(bitSetVoxelSet);
 			}
 		} else {
-			return new ArrayVoxelShape(
-				FULL_CUBE.voxels,
-				new double[]{boundingBox.minX, boundingBox.maxX},
-				new double[]{boundingBox.minY, boundingBox.maxY},
-				new double[]{boundingBox.minZ, boundingBox.maxZ}
-			);
+			return new ArrayVoxelShape(FULL_CUBE.voxels, new double[]{box.minX, box.maxX}, new double[]{box.minY, box.maxY}, new double[]{box.minZ, box.maxZ});
 		}
 	}
 
@@ -212,7 +207,7 @@ public final class VoxelShapes {
 		);
 	}
 
-	public static double calculateMaxOffset(Direction.Axis axis, BoundingBox boundingBox, Stream<VoxelShape> stream, double d) {
+	public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> stream, double d) {
 		Iterator<VoxelShape> iterator = stream.iterator();
 
 		while (iterator.hasNext()) {
@@ -220,22 +215,20 @@ public final class VoxelShapes {
 				return 0.0;
 			}
 
-			d = ((VoxelShape)iterator.next()).method_1108(axis, boundingBox, d);
+			d = ((VoxelShape)iterator.next()).method_1108(axis, box, d);
 		}
 
 		return d;
 	}
 
-	public static double method_17945(
-		Direction.Axis axis, BoundingBox boundingBox, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream
-	) {
-		return method_17944(boundingBox, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
+	public static double method_17945(Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+		return method_17944(box, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
 	private static double method_17944(
-		BoundingBox boundingBox, ViewableWorld viewableWorld, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
+		Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
 	) {
-		if (boundingBox.getXSize() < 1.0E-6 || boundingBox.getYSize() < 1.0E-6 || boundingBox.getZSize() < 1.0E-6) {
+		if (box.getXSize() < 1.0E-6 || box.getYSize() < 1.0E-6 || box.getZSize() < 1.0E-6) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
 			return 0.0;
@@ -245,14 +238,14 @@ public final class VoxelShapes {
 			Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
 			Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			int i = MathHelper.floor(boundingBox.getMin(axis) - 1.0E-7) - 1;
-			int j = MathHelper.floor(boundingBox.getMax(axis) + 1.0E-7) + 1;
-			int k = MathHelper.floor(boundingBox.getMin(axis2) - 1.0E-7) - 1;
-			int l = MathHelper.floor(boundingBox.getMax(axis2) + 1.0E-7) + 1;
-			double e = boundingBox.getMin(axis3) - 1.0E-7;
-			double f = boundingBox.getMax(axis3) + 1.0E-7;
+			int i = MathHelper.floor(box.getMin(axis) - 1.0E-7) - 1;
+			int j = MathHelper.floor(box.getMax(axis) + 1.0E-7) + 1;
+			int k = MathHelper.floor(box.getMin(axis2) - 1.0E-7) - 1;
+			int l = MathHelper.floor(box.getMax(axis2) + 1.0E-7) + 1;
+			double e = box.getMin(axis3) - 1.0E-7;
+			double f = box.getMax(axis3) + 1.0E-7;
 			boolean bl = d > 0.0;
-			int m = bl ? MathHelper.floor(boundingBox.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.getMin(axis3) + 1.0E-7) + 1;
+			int m = bl ? MathHelper.floor(box.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(box.getMin(axis3) + 1.0E-7) + 1;
 			int n = method_17943(d, e, f);
 			int o = bl ? 1 : -1;
 
@@ -277,7 +270,7 @@ public final class VoxelShapes {
 							BlockState blockState = viewableWorld.getBlockState(mutable);
 							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.field_10008)) {
 								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
-									.method_1108(axis3, boundingBox.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
+									.method_1108(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {
 									return 0.0;
 								}
@@ -290,7 +283,7 @@ public final class VoxelShapes {
 			}
 
 			double[] ds = new double[]{d};
-			stream.forEach(voxelShape -> ds[0] = voxelShape.method_1108(axis3, boundingBox, ds[0]));
+			stream.forEach(voxelShape -> ds[0] = voxelShape.method_1108(axis3, box, ds[0]));
 			return ds[0];
 		}
 	}
@@ -320,18 +313,22 @@ public final class VoxelShapes {
 	}
 
 	public static VoxelShape method_16344(VoxelShape voxelShape, Direction direction) {
-		Direction.Axis axis = direction.getAxis();
-		boolean bl;
-		int i;
-		if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-			bl = DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7);
-			i = voxelShape.voxels.getSize(axis) - 1;
+		if (voxelShape == fullCube()) {
+			return fullCube();
 		} else {
-			bl = DoubleMath.fuzzyEquals(voxelShape.getMinimum(axis), 0.0, 1.0E-7);
-			i = 0;
-		}
+			Direction.Axis axis = direction.getAxis();
+			boolean bl;
+			int i;
+			if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
+				bl = DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7);
+				i = voxelShape.voxels.getSize(axis) - 1;
+			} else {
+				bl = DoubleMath.fuzzyEquals(voxelShape.getMinimum(axis), 0.0, 1.0E-7);
+				i = 0;
+			}
 
-		return (VoxelShape)(!bl ? empty() : new SliceVoxelShape(voxelShape, axis, i));
+			return (VoxelShape)(!bl ? empty() : new SliceVoxelShape(voxelShape, axis, i));
+		}
 	}
 
 	public static boolean method_1080(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
@@ -355,6 +352,16 @@ public final class VoxelShapes {
 			);
 		} else {
 			return true;
+		}
+	}
+
+	public static boolean method_20713(VoxelShape voxelShape, VoxelShape voxelShape2) {
+		if (voxelShape == fullCube() || voxelShape2 == fullCube()) {
+			return true;
+		} else {
+			return voxelShape.isEmpty() && voxelShape2.isEmpty()
+				? false
+				: !matchesAnywhere(fullCube(), combine(voxelShape, voxelShape2, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
 		}
 	}
 

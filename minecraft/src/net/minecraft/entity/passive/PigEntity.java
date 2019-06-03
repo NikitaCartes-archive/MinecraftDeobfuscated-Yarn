@@ -183,7 +183,7 @@ public class PigEntity extends AnimalEntity {
 		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			zombiePigmanEntity.setCustomName(this.getCustomName());
+			zombiePigmanEntity.method_5665(this.method_5797());
 			zombiePigmanEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 

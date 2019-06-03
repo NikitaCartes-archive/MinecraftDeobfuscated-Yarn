@@ -292,6 +292,10 @@ public class GLX {
 		return GL.getCapabilities().OpenGL20;
 	}
 
+	public static boolean supportsOpenGL32() {
+		return GL.getCapabilities().OpenGL32;
+	}
+
 	public static void withTextureRestore(Runnable runnable) {
 		GL11.glPushAttrib(270336);
 

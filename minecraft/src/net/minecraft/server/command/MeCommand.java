@@ -2,7 +2,7 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -15,9 +15,7 @@ public class MeCommand {
 								commandContext.getSource()
 									.getMinecraftServer()
 									.getPlayerManager()
-									.sendToAll(
-										new TranslatableComponent("chat.type.emote", commandContext.getSource().getDisplayName(), StringArgumentType.getString(commandContext, "action"))
-									);
+									.sendToAll(new TranslatableText("chat.type.emote", commandContext.getSource().method_9223(), StringArgumentType.getString(commandContext, "action")));
 								return 1;
 							}
 						)

@@ -2,6 +2,7 @@ package net.minecraft.entity.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
@@ -14,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
@@ -34,14 +34,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -54,12 +55,11 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 
 public class Raid {
-	public static final ItemStack OMINOUS_BANNER = getIllagerBanner();
-	private static final TranslatableComponent EVENT_TEXT = new TranslatableComponent("event.minecraft.raid");
-	private static final TranslatableComponent VICTORY_SUFFIX_TEXT = new TranslatableComponent("event.minecraft.raid.victory");
-	private static final TranslatableComponent DEFEAT_SUFFIX_TEXT = new TranslatableComponent("event.minecraft.raid.defeat");
-	private static final Component VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
-	private static final Component DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+	private static final TranslatableText field_19016 = new TranslatableText("event.minecraft.raid");
+	private static final TranslatableText field_19017 = new TranslatableText("event.minecraft.raid.victory");
+	private static final TranslatableText field_19018 = new TranslatableText("event.minecraft.raid.defeat");
+	private static final Text field_19019 = field_19016.method_11020().append(" - ").append(field_19017);
+	private static final Text field_19020 = field_19016.method_11020().append(" - ").append(field_19018);
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();
@@ -72,7 +72,7 @@ public class Raid {
 	private int badOmenLevel;
 	private boolean active;
 	private int wavesSpawned;
-	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.field_5784, BossBar.Style.field_5791);
+	private final ServerBossBar bar = new ServerBossBar(field_19016, BossBar.Color.field_5784, BossBar.Style.field_5791);
 	private int postRaidTicks;
 	private int preRaidTicks;
 	private final Random random = new Random();
@@ -157,24 +157,32 @@ public class Raid {
 	private Predicate<ServerPlayerEntity> isInRaidDistance() {
 		return serverPlayerEntity -> {
 			BlockPos blockPos = new BlockPos(serverPlayerEntity);
-			return serverPlayerEntity.isAlive()
-				&& serverPlayerEntity.getServerWorld().isNearOccupiedPointOfInterest(blockPos)
-				&& this.getCenter().getSquaredDistance(blockPos) <= 9216.0;
+			return serverPlayerEntity.isAlive() && this.world.getRaidAt(blockPos) == this;
 		};
 	}
 
 	private void updateBarToPlayers() {
-		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
+		Collection<ServerPlayerEntity> collection = this.bar.getPlayers();
+		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet(collection);
 
-		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers(this.isInRaidDistance())) {
-			this.bar.addPlayer(serverPlayerEntity);
-			set.add(serverPlayerEntity);
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			BlockPos blockPos = new BlockPos(serverPlayerEntity);
+			if (this.world.getRaidAt(blockPos) != this) {
+				set.remove(serverPlayerEntity);
+				this.bar.removePlayer(serverPlayerEntity);
+			}
 		}
 
-		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.bar.getPlayers());
-		set2.removeAll(set);
+		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
+		for (ServerPlayerEntity serverPlayerEntity2 : this.world.getPlayers(this.isInRaidDistance())) {
+			this.bar.addPlayer(serverPlayerEntity2);
+			set2.add(serverPlayerEntity2);
+		}
+
+		set.removeAll(set2);
+
+		for (ServerPlayerEntity serverPlayerEntity2 : set) {
 			this.bar.removePlayer(serverPlayerEntity2);
 		}
 	}
@@ -243,7 +251,7 @@ public class Raid {
 					if (this.preRaidTicks <= 0) {
 						if (this.preRaidTicks == 0 && this.wavesSpawned > 0) {
 							this.preRaidTicks = 300;
-							this.bar.setName(EVENT_TEXT);
+							this.bar.method_5413(field_19016);
 							return;
 						}
 					} else {
@@ -278,12 +286,12 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableComponent("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.method_5413(field_19016.method_11020().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
 						} else {
-							this.bar.setName(EVENT_TEXT);
+							this.bar.method_5413(field_19016);
 						}
 					} else {
-						this.bar.setName(EVENT_TEXT);
+						this.bar.method_5413(field_19016);
 					}
 				}
 
@@ -345,9 +353,9 @@ public class Raid {
 					this.bar.setVisible(true);
 					if (this.hasWon()) {
 						this.bar.setPercent(0.0F);
-						this.bar.setName(VICTORY_TITLE);
+						this.bar.method_5413(field_19019);
 					} else {
-						this.bar.setName(DEFEAT_TITLE);
+						this.bar.method_5413(field_19020);
 					}
 				}
 			}
@@ -456,13 +464,13 @@ public class Raid {
 
 			for (int l = 0; l < j; l++) {
 				RaiderEntity raiderEntity = member.type.create(this.world);
-				this.addRaider(i, raiderEntity, blockPos, false);
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
 					this.setWaveCaptain(i, raiderEntity);
 					bl = true;
 				}
 
+				this.addRaider(i, raiderEntity, blockPos, false);
 				if (member.type == EntityType.field_6134) {
 					RaiderEntity raiderEntity2 = null;
 					if (i == this.getMaxWaves(Difficulty.field_5802)) {
@@ -552,7 +560,7 @@ public class Raid {
 		this.world.getRaidManager().markDirty();
 	}
 
-	private static ItemStack getIllagerBanner() {
+	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.field_8539);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
 		ListTag listTag = new BannerPattern.Builder()
@@ -566,7 +574,7 @@ public class Raid {
 			.with(BannerPattern.BORDER, DyeColor.field_7963)
 			.build();
 		compoundTag.put("Patterns", listTag);
-		itemStack.setCustomName(new TranslatableComponent("block.minecraft.ominous_banner").applyFormat(ChatFormat.field_1065));
+		itemStack.method_7977(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.field_1065));
 		return itemStack;
 	}
 
@@ -633,7 +641,7 @@ public class Raid {
 
 	public void setWaveCaptain(int i, RaiderEntity raiderEntity) {
 		this.waveToCaptain.put(i, raiderEntity);
-		raiderEntity.setEquippedStack(EquipmentSlot.field_6169, OMINOUS_BANNER);
+		raiderEntity.setEquippedStack(EquipmentSlot.field_6169, getOminousBanner());
 		raiderEntity.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
 	}
 

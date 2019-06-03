@@ -17,7 +17,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
@@ -37,7 +37,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.field_11559) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
@@ -71,17 +71,17 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		int k = signBlockEntity.getTextColor().getSignColor();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
-				String string = signBlockEntity.getTextBeingEditedOnRow(l, component -> {
-					List<Component> list = TextComponentUtil.wrapLines(component, 90, textRenderer, false, true);
-					return list.isEmpty() ? "" : ((Component)list.get(0)).getFormattedText();
+				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
+					List<Text> list = TextComponentUtil.method_1850(text, 90, textRenderer, false, true);
+					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 				});
 				if (string != null) {
-					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
+					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.field_12050.length * 5), k);
 					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
 						int m = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
 						int n = textRenderer.isRightToLeft() ? -1 : 1;
 						int o = (m - textRenderer.getStringWidth(string) / 2) * n;
-						int p = l * 10 - signBlockEntity.text.length * 5;
+						int p = l * 10 - signBlockEntity.field_12050.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
 								DrawableHelper.fill(o, p - 1, o + 1, p + 9, 0xFF000000 | k);

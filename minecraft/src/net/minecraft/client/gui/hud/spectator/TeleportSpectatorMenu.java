@@ -11,8 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -40,8 +40,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public Component getPrompt() {
-		return new TranslatableComponent("spectatorMenu.teleport.prompt");
+	public Text method_2781() {
+		return new TranslatableText("spectatorMenu.teleport.prompt");
 	}
 
 	@Override
@@ -50,8 +50,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public Component getName() {
-		return new TranslatableComponent("spectatorMenu.teleport");
+	public Text method_16892() {
+		return new TranslatableText("spectatorMenu.teleport");
 	}
 
 	@Override

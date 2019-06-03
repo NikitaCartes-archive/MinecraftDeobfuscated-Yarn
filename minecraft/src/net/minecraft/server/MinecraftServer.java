@@ -52,9 +52,6 @@ import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DefaultResourcePackCreator;
 import net.minecraft.resource.FileResourcePackCreator;
@@ -80,6 +77,9 @@ import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
@@ -168,7 +168,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private volatile boolean loading;
 	private long field_4557;
 	@Nullable
-	private Component loadingStage;
+	private Text loadingStage;
 	private boolean profilerStartQueued;
 	private boolean forceGameMode;
 	@Nullable
@@ -250,17 +250,17 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	protected void upgradeWorld(String string) {
 		if (this.getLevelStorage().requiresConversion(string)) {
 			LOGGER.info("Converting map!");
-			this.setLoadingStage(new TranslatableComponent("menu.convertingLevel"));
+			this.setLoadingStage(new TranslatableText("menu.convertingLevel"));
 			this.getLevelStorage().convertLevel(string, new ProgressListener() {
 				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
 				@Override
-				public void method_15412(Component component) {
+				public void method_15412(Text text) {
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15413(Component component) {
+				public void method_15413(Text text) {
 				}
 
 				@Override
@@ -277,7 +277,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 				}
 
 				@Override
-				public void method_15414(Component component) {
+				public void method_15414(Text text) {
 				}
 			});
 		}
@@ -287,13 +287,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
 			if (levelProperties != null) {
 				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.eraseCache);
-				Component component = null;
+				Text text = null;
 
 				while (!worldUpdater.isDone()) {
-					Component component2 = worldUpdater.getStatus();
-					if (component != component2) {
-						component = component2;
-						LOGGER.info(worldUpdater.getStatus().getString());
+					Text text2 = worldUpdater.method_5394();
+					if (text != text2) {
+						text = text2;
+						LOGGER.info(worldUpdater.method_5394().getString());
 					}
 
 					int i = worldUpdater.getTotalChunkCount();
@@ -315,13 +315,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 	}
 
-	protected synchronized void setLoadingStage(Component component) {
-		this.loadingStage = component;
+	protected synchronized void setLoadingStage(Text text) {
+		this.loadingStage = text;
 	}
 
 	protected void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.upgradeWorld(string);
-		this.setLoadingStage(new TranslatableComponent("menu.loadingLevel"));
+		this.setLoadingStage(new TranslatableText("menu.loadingLevel"));
 		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
 		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
@@ -437,7 +437,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-		this.setLoadingStage(new TranslatableComponent("menu.generatingTerrain"));
+		this.setLoadingStage(new TranslatableText("menu.generatingTerrain"));
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
@@ -592,7 +592,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		try {
 			if (this.setupServer()) {
 				this.timeReference = SystemUtil.getMeasuringTimeMs();
-				this.metadata.setDescription(new TextComponent(this.motd));
+				this.metadata.setDescription(new LiteralText(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
 
@@ -1043,8 +1043,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Override
-	public void sendMessage(Component component) {
-		LOGGER.info(component.getString());
+	public void method_9203(Text text) {
+		LOGGER.info(text.getString());
 	}
 
 	public KeyPair getKeyPair() {
@@ -1437,7 +1437,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			if (whitelist.isEnabled()) {
 				for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
 					if (!whitelist.isAllowed(serverPlayerEntity.getGameProfile())) {
-						serverPlayerEntity.networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.not_whitelisted"));
+						serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
 					}
 				}
 			}
@@ -1464,7 +1464,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this.getWorld(DimensionType.field_13072),
 			4,
 			"Server",
-			new TextComponent("Server"),
+			new LiteralText("Server"),
 			this,
 			null
 		);

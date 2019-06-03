@@ -11,7 +11,7 @@ import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -25,10 +25,10 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		T abstractFurnaceContainer,
 		AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen,
 		PlayerInventory playerInventory,
-		Component component,
+		Text text,
 		Identifier identifier
 	) {
-		super(abstractFurnaceContainer, playerInventory, component);
+		super(abstractFurnaceContainer, playerInventory, text);
 		this.recipeBook = abstractFurnaceRecipeBookScreen;
 		this.field_18975 = identifier;
 	}
@@ -71,9 +71,9 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		String string = this.title.getFormattedText();
+		String string = this.title.asFormattedString();
 		this.font.draw(string, (float)(this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

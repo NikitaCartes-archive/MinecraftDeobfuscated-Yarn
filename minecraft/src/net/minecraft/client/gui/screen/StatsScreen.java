@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -22,14 +21,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -46,7 +46,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	private boolean field_2645 = true;
 
 	public StatsScreen(Screen screen, StatHandler statHandler) {
-		super(new TranslatableComponent("gui.stats"));
+		super(new TranslatableText("gui.stats"));
 		this.parent = screen;
 		this.statHandler = statHandler;
 	}
@@ -101,7 +101,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.method_19399().render(i, j, f);
-			this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 			super.render(i, j, f);
 		}
 	}
@@ -180,8 +180,8 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				Component component = new TranslatableComponent("stat." + this.field_18749.getValue().toString().replace(':', '.')).applyFormat(ChatFormat.field_1080);
-				CustomStatsListWidget.this.drawString(StatsScreen.this.font, component.getString(), k + 2, j + 1, i % 2 == 0 ? 16777215 : 9474192);
+				Text text = new TranslatableText("stat." + this.field_18749.getValue().toString().replace(':', '.')).formatted(Formatting.field_1080);
+				CustomStatsListWidget.this.drawString(StatsScreen.this.font, text.getString(), k + 2, j + 1, i % 2 == 0 ? 16777215 : 9474192);
 				String string = this.field_18749.format(StatsScreen.this.statHandler.getStat(this.field_18749));
 				CustomStatsListWidget.this.drawString(
 					StatsScreen.this.font, string, k + 2 + 213 - StatsScreen.this.font.getStringWidth(string), j + 1, i % 2 == 0 ? 16777215 : 9474192
@@ -376,25 +376,25 @@ public class StatsScreen extends Screen implements StatsListener {
 					Item item = (Item)this.field_18757.get(this.children().indexOf(itemStatItem));
 					this.method_19407(this.method_19406(item), i, j);
 				} else {
-					Component component = null;
+					Text text = null;
 					int l = i - k;
 
 					for (int m = 0; m < this.field_18753.length; m++) {
 						int n = StatsScreen.this.method_2285(m);
 						if (l >= n - 18 && l <= n) {
-							component = new TranslatableComponent(this.method_19410(m).getTranslationKey());
+							text = new TranslatableText(this.method_19410(m).getTranslationKey());
 							break;
 						}
 					}
 
-					this.method_19407(component, i, j);
+					this.method_19407(text, i, j);
 				}
 			}
 		}
 
-		protected void method_19407(@Nullable Component component, int i, int j) {
-			if (component != null) {
-				String string = component.getFormattedText();
+		protected void method_19407(@Nullable Text text, int i, int j) {
+			if (text != null) {
+				String string = text.asFormattedString();
 				int k = i + 12;
 				int l = j - 12;
 				int m = StatsScreen.this.font.getStringWidth(string);
@@ -403,8 +403,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 		}
 
-		protected Component method_19406(Item item) {
-			return item.getName();
+		protected Text method_19406(Item item) {
+			return item.method_7848();
 		}
 
 		protected void method_19408(StatType<?> statType) {

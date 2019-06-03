@@ -2,9 +2,9 @@ package net.minecraft.entity.raid;
 
 import com.google.common.collect.Maps;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.DebugRendererInfoManager;
@@ -16,6 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.PointOfInterest;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.PersistentState;
@@ -79,20 +81,28 @@ public class RaidManager extends PersistentState {
 				return null;
 			} else {
 				BlockPos blockPos = new BlockPos(serverPlayerEntity);
-				Optional<BlockPos> optional = this.world
+				List<PointOfInterest> list = (List<PointOfInterest>)this.world
 					.getPointOfInterestStorage()
-					.getNearestPosition(
-						pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518,
-						Objects::nonNull,
-						blockPos,
-						64,
-						PointOfInterestStorage.OccupationStatus.field_18489
-					);
-				if (!optional.isPresent()) {
-					optional = Optional.of(blockPos);
+					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.field_18488)
+					.collect(Collectors.toList());
+				int i = 0;
+				Vec3d vec3d = new Vec3d(0.0, 0.0, 0.0);
+
+				for (PointOfInterest pointOfInterest : list) {
+					BlockPos blockPos2 = pointOfInterest.getPos();
+					vec3d = vec3d.add((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
+					i++;
 				}
 
-				Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), (BlockPos)optional.get());
+				BlockPos blockPos3;
+				if (i > 0) {
+					vec3d = vec3d.multiply(1.0 / (double)i);
+					blockPos3 = new BlockPos(vec3d);
+				} else {
+					blockPos3 = blockPos;
+				}
+
+				Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), blockPos3);
 				boolean bl = false;
 				if (!raid.hasStarted()) {
 					if (!this.raids.containsKey(raid.getRaidId())) {

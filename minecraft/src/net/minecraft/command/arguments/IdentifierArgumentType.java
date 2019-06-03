@@ -8,22 +8,22 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	public static final DynamicCommandExceptionType UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("argument.id.unknown", object)
+		object -> new TranslatableText("argument.id.unknown", object)
 	);
 	public static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("advancement.advancementNotFound", object)
+		object -> new TranslatableText("advancement.advancementNotFound", object)
 	);
 	public static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("recipe.notFound", object)
+		object -> new TranslatableText("recipe.notFound", object)
 	);
 
 	public static IdentifierArgumentType create() {

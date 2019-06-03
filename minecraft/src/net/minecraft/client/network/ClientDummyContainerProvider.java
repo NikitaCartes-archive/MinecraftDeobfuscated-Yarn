@@ -5,20 +5,20 @@ import net.minecraft.container.ContainerProvider;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public final class ClientDummyContainerProvider implements NameableContainerProvider {
-	private final Component name;
+	private final Text field_3947;
 	private final ContainerProvider containerProvider;
 
-	public ClientDummyContainerProvider(ContainerProvider containerProvider, Component component) {
+	public ClientDummyContainerProvider(ContainerProvider containerProvider, Text text) {
 		this.containerProvider = containerProvider;
-		this.name = component;
+		this.field_3947 = text;
 	}
 
 	@Override
-	public Component getDisplayName() {
-		return this.name;
+	public Text method_5476() {
+		return this.field_3947;
 	}
 
 	@Override

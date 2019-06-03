@@ -57,8 +57,8 @@ public final class SpawnHelper {
 					int s = 0;
 
 					while (true) {
-						label108: {
-							label107:
+						label109: {
+							label108:
 							if (s < q) {
 								n += world.random.nextInt(6) - world.random.nextInt(6);
 								o += world.random.nextInt(6) - world.random.nextInt(6);
@@ -69,37 +69,37 @@ public final class SpawnHelper {
 								if (playerEntity == null
 									|| playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) <= 576.0
 									|| blockPos.isWithinDistance(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
-									break label108;
+									break label109;
 								}
 
 								ChunkPos chunkPos = new ChunkPos(mutable);
 								if (!Objects.equals(chunkPos, worldChunk.getPos()) && !world.getChunkManager().shouldTickChunk(chunkPos)) {
-									break label108;
+									break label109;
 								}
 
 								if (spawnEntry == null) {
 									spawnEntry = method_8664(chunkGenerator, entityCategory, world.random, mutable);
 									if (spawnEntry == null) {
-										break label107;
+										break label108;
 									}
 
 									q = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 								}
 
 								if (spawnEntry.type.getCategory() == EntityCategory.field_17715) {
-									break label108;
+									break label109;
 								}
 
 								EntityType<?> entityType = spawnEntry.type;
 								if (!entityType.isSummonable() || !method_8659(chunkGenerator, entityCategory, spawnEntry, mutable)) {
-									break label108;
+									break label109;
 								}
 
 								SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
-								if (location == null
-									|| !canSpawn(location, world, mutable, entityType)
+								if (!canSpawn(location, world, mutable, entityType)
+									|| !SpawnRestriction.method_20638(entityType, world, SpawnType.field_16459, mutable, world.random)
 									|| !world.doesNotCollide(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
-									break label108;
+									break label109;
 								}
 
 								MobEntity mobEntity;
@@ -120,7 +120,7 @@ public final class SpawnHelper {
 										&& mobEntity.canImmediatelyDespawn(playerEntity.squaredDistanceTo((double)f, (double)k, (double)g))
 									|| !mobEntity.canSpawn(world, SpawnType.field_16459)
 									|| !mobEntity.canSpawn(world)) {
-									break label108;
+									break label109;
 								}
 
 								entityData = mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16459, entityData, null);
@@ -132,7 +132,7 @@ public final class SpawnHelper {
 								}
 
 								if (!mobEntity.spawnsTooManyForEachTry(r)) {
-									break label108;
+									break label109;
 								}
 							}
 
@@ -178,7 +178,9 @@ public final class SpawnHelper {
 	}
 
 	public static boolean canSpawn(SpawnRestriction.Location location, ViewableWorld viewableWorld, BlockPos blockPos, @Nullable EntityType<?> entityType) {
-		if (entityType != null && viewableWorld.getWorldBorder().contains(blockPos)) {
+		if (location == SpawnRestriction.Location.field_19350) {
+			return true;
+		} else if (entityType != null && viewableWorld.getWorldBorder().contains(blockPos)) {
 			BlockState blockState = viewableWorld.getBlockState(blockPos);
 			FluidState fluidState = viewableWorld.getFluidState(blockPos);
 			BlockPos blockPos2 = blockPos.up();
@@ -225,7 +227,8 @@ public final class SpawnHelper {
 							float f = spawnEntry.type.getWidth();
 							double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
 							double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
-							if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))) {
+							if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))
+								|| !SpawnRestriction.method_20638(spawnEntry.type, iWorld, SpawnType.field_16472, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())) {
 								continue;
 							}
 

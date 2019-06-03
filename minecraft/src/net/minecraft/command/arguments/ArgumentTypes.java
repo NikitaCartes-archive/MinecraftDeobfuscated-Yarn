@@ -50,7 +50,7 @@ public class ArgumentTypes {
 		register("item_stack", ItemStackArgumentType.class, new ConstantArgumentSerializer(ItemStackArgumentType::create));
 		register("item_predicate", ItemPredicateArgumentType.class, new ConstantArgumentSerializer(ItemPredicateArgumentType::create));
 		register("color", ColorArgumentType.class, new ConstantArgumentSerializer(ColorArgumentType::create));
-		register("component", ComponentArgumentType.class, new ConstantArgumentSerializer(ComponentArgumentType::create));
+		register("component", TextArgumentType.class, new ConstantArgumentSerializer(TextArgumentType::create));
 		register("message", MessageArgumentType.class, new ConstantArgumentSerializer(MessageArgumentType::create));
 		register("nbt_compound_tag", NbtCompoundTagArgumentType.class, new ConstantArgumentSerializer(NbtCompoundTagArgumentType::create));
 		register("nbt_tag", NbtTagArgumentType.class, new ConstantArgumentSerializer(NbtTagArgumentType::create));

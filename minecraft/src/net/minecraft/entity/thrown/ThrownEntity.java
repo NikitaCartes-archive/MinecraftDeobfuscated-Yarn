@@ -18,7 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -115,9 +115,9 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			);
 		}
 
-		BoundingBox boundingBox = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
+		Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
 
-		for (Entity entity : this.world.getEntities(this, boundingBox, entityx -> !entityx.isSpectator() && entityx.collides())) {
+		for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
 			if (entity == this.field_7637) {
 				this.field_7638++;
 				break;
@@ -131,7 +131,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		HitResult hitResult = ProjectileUtil.getCollision(
-			this, boundingBox, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
+			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
 		);
 		if (this.field_7637 != null && this.field_7638-- <= 0) {
 			this.field_7637 = null;

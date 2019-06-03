@@ -16,8 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -421,23 +421,23 @@ public class CompoundTag implements Tag {
 		return PATTERN.matcher(string).matches() ? string : StringTag.escape(string);
 	}
 
-	protected static Component prettyPrintTagKey(String string) {
+	protected static Text method_10557(String string) {
 		if (PATTERN.matcher(string).matches()) {
-			return new TextComponent(string).applyFormat(AQUA);
+			return new LiteralText(string).formatted(AQUA);
 		} else {
 			String string2 = StringTag.escape(string);
 			String string3 = string2.substring(0, 1);
-			Component component = new TextComponent(string2.substring(1, string2.length() - 1)).applyFormat(AQUA);
-			return new TextComponent(string3).append(component).append(string3);
+			Text text = new LiteralText(string2.substring(1, string2.length() - 1)).formatted(AQUA);
+			return new LiteralText(string3).append(text).append(string3);
 		}
 	}
 
 	@Override
-	public Component toTextComponent(String string, int i) {
+	public Text method_10710(String string, int i) {
 		if (this.tags.isEmpty()) {
-			return new TextComponent("{}");
+			return new LiteralText("{}");
 		} else {
-			Component component = new TextComponent("{");
+			Text text = new LiteralText("{");
 			Collection<String> collection = this.tags.keySet();
 			if (LOGGER.isDebugEnabled()) {
 				List<String> list = Lists.<String>newArrayList(this.tags.keySet());
@@ -446,31 +446,31 @@ public class CompoundTag implements Tag {
 			}
 
 			if (!string.isEmpty()) {
-				component.append("\n");
+				text.append("\n");
 			}
 
 			Iterator<String> iterator = collection.iterator();
 
 			while (iterator.hasNext()) {
 				String string2 = (String)iterator.next();
-				Component component2 = new TextComponent(Strings.repeat(string, i + 1))
-					.append(prettyPrintTagKey(string2))
+				Text text2 = new LiteralText(Strings.repeat(string, i + 1))
+					.append(method_10557(string2))
 					.append(String.valueOf(':'))
 					.append(" ")
-					.append(((Tag)this.tags.get(string2)).toTextComponent(string, i + 1));
+					.append(((Tag)this.tags.get(string2)).method_10710(string, i + 1));
 				if (iterator.hasNext()) {
-					component2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
+					text2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}
 
-				component.append(component2);
+				text.append(text2);
 			}
 
 			if (!string.isEmpty()) {
-				component.append("\n").append(Strings.repeat(string, i));
+				text.append("\n").append(Strings.repeat(string, i));
 			}
 
-			component.append("}");
-			return component;
+			text.append("}");
+			return text;
 		}
 	}
 }

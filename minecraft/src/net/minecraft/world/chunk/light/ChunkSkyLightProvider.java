@@ -3,6 +3,7 @@ package net.minecraft.world.chunk.light;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -39,7 +40,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				return i;
 			} else {
 				AtomicInteger atomicInteger = new AtomicInteger();
-				VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+				BlockState blockState = this.method_20479(m, atomicInteger);
 				if (atomicInteger.get() >= 15) {
 					return 15;
 				} else {
@@ -60,13 +61,16 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 						direction = Direction.fromVector(r, s, t);
 					}
 
-					VoxelShape voxelShape2 = this.method_20479(l, null);
+					BlockState blockState2 = this.method_20479(l, null);
 					if (direction != null) {
-						if (VoxelShapes.method_1080(voxelShape2, voxelShape, direction)) {
+						VoxelShape voxelShape = this.method_20710(blockState2, l, direction);
+						VoxelShape voxelShape2 = this.method_20710(blockState, m, direction.getOpposite());
+						if (VoxelShapes.method_20713(voxelShape, voxelShape2)) {
 							return 15;
 						}
 					} else {
-						if (VoxelShapes.method_1080(voxelShape2, VoxelShapes.empty(), Direction.field_11033)) {
+						VoxelShape voxelShape = this.method_20710(blockState2, l, Direction.field_11033);
+						if (VoxelShapes.method_20713(voxelShape, VoxelShapes.empty())) {
 							return 15;
 						}
 
@@ -76,7 +80,8 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 							return 15;
 						}
 
-						if (VoxelShapes.method_1080(VoxelShapes.empty(), voxelShape, direction2)) {
+						VoxelShape voxelShape3 = this.method_20710(blockState, m, direction2.getOpposite());
+						if (VoxelShapes.method_20713(VoxelShapes.empty(), voxelShape3)) {
 							return 15;
 						}
 					}

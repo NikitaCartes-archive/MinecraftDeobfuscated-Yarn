@@ -3,12 +3,12 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
-import net.minecraft.ChatFormat;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class MessageCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -20,7 +20,7 @@ public class MessageCommand {
 							CommandManager.argument("message", MessageArgumentType.create())
 								.executes(
 									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message")
+											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.method_9339(commandContext, "message")
 										)
 								)
 						)
@@ -30,15 +30,15 @@ public class MessageCommand {
 		commandDispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.sendMessage(
-				new TranslatableComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), component.copy())
-					.applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056})
+			serverPlayerEntity.method_9203(
+				new TranslatableText("commands.message.display.incoming", serverCommandSource.method_9223(), text.deepCopy())
+					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056})
 			);
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), component.copy())
-					.applyFormat(new ChatFormat[]{ChatFormat.field_1080, ChatFormat.field_1056}),
+			serverCommandSource.method_9226(
+				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.method_5476(), text.deepCopy())
+					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}),
 				false
 			);
 		}

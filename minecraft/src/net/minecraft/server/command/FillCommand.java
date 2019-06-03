@@ -17,18 +17,18 @@ import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.command.arguments.BlockStateArgument;
 import net.minecraft.command.arguments.BlockStateArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("commands.fill.toobig", object, object2)
+		(object, object2) -> new TranslatableText("commands.fill.toobig", object, object2)
 	);
 	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.fill.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -185,7 +185,7 @@ public class FillCommand {
 			if (j == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.fill.success", j), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.fill.success", j), true);
 				return j;
 			}
 		}

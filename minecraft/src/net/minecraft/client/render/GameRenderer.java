@@ -56,7 +56,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -306,8 +306,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				net.minecraft.util.math.Vec3d vec3d2 = entity.getRotationVec(1.0F);
 				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float g = 1.0F;
-				BoundingBox boundingBox = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, boundingBox, entityx -> !entityx.isSpectator() && entityx.collides(), e);
+				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
+				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
 					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.getPos();

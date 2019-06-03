@@ -51,7 +51,7 @@ public class ChunkBatcher {
 		int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 10485760 - 1);
 		int j = Runtime.getRuntime().availableProcessors();
 		int k = bl ? j : Math.min(j, 4);
-		int l = Math.max(1, Math.min(k * 3, i));
+		int l = Math.max(1, Math.min(k * 2, i));
 		this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayListWithExpectedSize(l);
 
@@ -111,17 +111,26 @@ public class ChunkBatcher {
 					try {
 						this.clientThreadWorker.runTask(chunkRenderTask);
 						bl2 = true;
-					} catch (InterruptedException var8) {
+					} catch (InterruptedException var9) {
 						LOGGER.warn("Skipped task due to interrupt");
 					}
 				}
 			}
 
+			int i = 0;
 			synchronized (this.pendingUploads) {
-				if (!this.pendingUploads.isEmpty()) {
-					((ChunkBatcher.ChunkUploadTask)this.pendingUploads.poll()).task.run();
-					bl2 = true;
-					bl = true;
+				while (i < 10) {
+					ChunkBatcher.ChunkUploadTask chunkUploadTask = (ChunkBatcher.ChunkUploadTask)this.pendingUploads.poll();
+					if (chunkUploadTask == null) {
+						break;
+					}
+
+					if (!chunkUploadTask.task.isDone()) {
+						chunkUploadTask.task.run();
+						bl2 = true;
+						bl = true;
+						i++;
+					}
 				}
 			}
 		} while (l != 0L && bl2 && l >= SystemUtil.getMeasuringTimeNano());
@@ -216,7 +225,7 @@ public class ChunkBatcher {
 		return var3;
 	}
 
-	public ListenableFuture<Object> upload(
+	public ListenableFuture<Void> upload(
 		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
 		if (MinecraftClient.getInstance().isOnThread()) {
@@ -229,7 +238,7 @@ public class ChunkBatcher {
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			return Futures.immediateFuture(null);
 		} else {
-			ListenableFutureTask<Object> listenableFutureTask = ListenableFutureTask.create(
+			ListenableFutureTask<Void> listenableFutureTask = ListenableFutureTask.create(
 				() -> this.upload(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
 			);
 			synchronized (this.pendingUploads) {
@@ -284,10 +293,10 @@ public class ChunkBatcher {
 
 	@Environment(EnvType.CLIENT)
 	class ChunkUploadTask implements Comparable<ChunkBatcher.ChunkUploadTask> {
-		private final ListenableFutureTask<Object> task;
+		private final ListenableFutureTask<Void> task;
 		private final double priority;
 
-		public ChunkUploadTask(ListenableFutureTask<Object> listenableFutureTask, double d) {
+		public ChunkUploadTask(ListenableFutureTask<Void> listenableFutureTask, double d) {
 			this.task = listenableFutureTask;
 			this.priority = d;
 		}

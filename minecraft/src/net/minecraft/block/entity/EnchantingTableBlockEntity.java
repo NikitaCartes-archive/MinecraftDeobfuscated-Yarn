@@ -4,8 +4,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +22,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public float field_11963;
 	public float field_11962;
 	private static final Random RANDOM = new Random();
-	private Component customName;
+	private Text field_11959;
 
 	public EnchantingTableBlockEntity() {
 		super(BlockEntityType.field_11912);
@@ -32,7 +32,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		if (this.hasCustomName()) {
-			compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_11959));
 		}
 
 		return compoundTag;
@@ -42,7 +42,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.field_11959 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -107,17 +107,17 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	}
 
 	@Override
-	public Component getName() {
-		return (Component)(this.customName != null ? this.customName : new TranslatableComponent("container.enchant"));
+	public Text method_5477() {
+		return (Text)(this.field_11959 != null ? this.field_11959 : new TranslatableText("container.enchant"));
 	}
 
-	public void setCustomName(@Nullable Component component) {
-		this.customName = component;
+	public void method_11179(@Nullable Text text) {
+		this.field_11959 = text;
 	}
 
 	@Nullable
 	@Override
-	public Component getCustomName() {
-		return this.customName;
+	public Text method_5797() {
+		return this.field_11959;
 	}
 }

@@ -16,7 +16,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.ChunkLoadDistanceS2CPacket;
@@ -43,10 +42,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -58,6 +55,9 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
@@ -120,7 +120,7 @@ public abstract class PlayerManager {
 
 		LOGGER.info(
 			"{}[{}] logged in with entity id {} at ({}, {}, {})",
-			serverPlayerEntity.getName().getString(),
+			serverPlayerEntity.method_5477().getString(),
 			string2,
 			serverPlayerEntity.getEntityId(),
 			serverPlayerEntity.x,
@@ -155,14 +155,14 @@ public abstract class PlayerManager {
 		serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
 		this.sendScoreboard(serverWorld.method_14170(), serverPlayerEntity);
 		this.server.forcePlayerSampleUpdate();
-		Component component;
+		Text text;
 		if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string)) {
-			component = new TranslatableComponent("multiplayer.player.joined", serverPlayerEntity.getDisplayName());
+			text = new TranslatableText("multiplayer.player.joined", serverPlayerEntity.method_5476());
 		} else {
-			component = new TranslatableComponent("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
+			text = new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.method_5476(), string);
 		}
 
-		this.sendToAll(component.applyFormat(ChatFormat.field_1054));
+		this.sendToAll(text.formatted(Formatting.field_1054));
 		serverPlayNetworkHandler.requestTeleport(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
@@ -276,7 +276,7 @@ public abstract class PlayerManager {
 	public CompoundTag loadPlayerData(ServerPlayerEntity serverPlayerEntity) {
 		CompoundTag compoundTag = this.server.getWorld(DimensionType.field_13072).getLevelProperties().getPlayerData();
 		CompoundTag compoundTag2;
-		if (serverPlayerEntity.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
+		if (serverPlayerEntity.method_5477().getString().equals(this.server.getUserName()) && compoundTag != null) {
 			compoundTag2 = compoundTag;
 			serverPlayerEntity.fromTag(compoundTag);
 			LOGGER.debug("loading single player");
@@ -336,29 +336,27 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public Component checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
+	public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
 		if (this.bannedProfiles.contains(gameProfile)) {
 			BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(gameProfile);
-			Component component = new TranslatableComponent("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
+			Text text = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
 			if (bannedPlayerEntry.getExpiryDate() != null) {
-				component.append(new TranslatableComponent("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
+				text.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
 			}
 
-			return component;
+			return text;
 		} else if (!this.isWhitelisted(gameProfile)) {
-			return new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
+			return new TranslatableText("multiplayer.disconnect.not_whitelisted");
 		} else if (this.bannedIps.isBanned(socketAddress)) {
 			BannedIpEntry bannedIpEntry = this.bannedIps.get(socketAddress);
-			Component component = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
+			Text text = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
 			if (bannedIpEntry.getExpiryDate() != null) {
-				component.append(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
+				text.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
 			}
 
-			return component;
+			return text;
 		} else {
-			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)
-				? new TranslatableComponent("multiplayer.disconnect.server_full")
-				: null;
+			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile) ? new TranslatableText("multiplayer.disconnect.server_full") : null;
 		}
 	}
 
@@ -379,7 +377,7 @@ public abstract class PlayerManager {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity3 : list) {
-			serverPlayerEntity3.networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
+			serverPlayerEntity3.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
 		}
 
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
@@ -486,27 +484,27 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void sendToTeam(PlayerEntity playerEntity, Component component) {
+	public void sendToTeam(PlayerEntity playerEntity, Text text) {
 		AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
 		if (abstractTeam != null) {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
 				if (serverPlayerEntity != null && serverPlayerEntity != playerEntity) {
-					serverPlayerEntity.sendMessage(component);
+					serverPlayerEntity.method_9203(text);
 				}
 			}
 		}
 	}
 
-	public void sendToOtherTeams(PlayerEntity playerEntity, Component component) {
+	public void sendToOtherTeams(PlayerEntity playerEntity, Text text) {
 		AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
 		if (abstractTeam == null) {
-			this.sendToAll(component);
+			this.sendToAll(text);
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
-					serverPlayerEntity.sendMessage(component);
+					serverPlayerEntity.method_9203(text);
 				}
 			}
 		}
@@ -705,18 +703,18 @@ public abstract class PlayerManager {
 
 	public void disconnectAllPlayers() {
 		for (int i = 0; i < this.players.size(); i++) {
-			((ServerPlayerEntity)this.players.get(i)).networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.server_shutdown"));
+			((ServerPlayerEntity)this.players.get(i)).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
 		}
 	}
 
-	public void broadcastChatMessage(Component component, boolean bl) {
-		this.server.sendMessage(component);
-		ChatMessageType chatMessageType = bl ? ChatMessageType.field_11735 : ChatMessageType.field_11737;
-		this.sendToAll(new ChatMessageS2CPacket(component, chatMessageType));
+	public void broadcastChatMessage(Text text, boolean bl) {
+		this.server.method_9203(text);
+		MessageType messageType = bl ? MessageType.field_11735 : MessageType.field_11737;
+		this.sendToAll(new ChatMessageS2CPacket(text, messageType));
 	}
 
-	public void sendToAll(Component component) {
-		this.broadcastChatMessage(component, true);
+	public void sendToAll(Text text) {
+		this.broadcastChatMessage(text, true);
 	}
 
 	public ServerStatHandler createStatHandler(PlayerEntity playerEntity) {
@@ -726,7 +724,7 @@ public abstract class PlayerManager {
 			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "stats");
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
-				File file3 = new File(file, playerEntity.getName().getString() + ".json");
+				File file3 = new File(file, playerEntity.method_5477().getString() + ".json");
 				if (file3.exists() && file3.isFile()) {
 					file3.renameTo(file2);
 				}
@@ -753,13 +751,13 @@ public abstract class PlayerManager {
 		return playerAdvancementTracker;
 	}
 
-	public void setViewDistance(int i, int j) {
+	public void setViewDistance(int i) {
 		this.viewDistance = i;
 		this.sendToAll(new ChunkLoadDistanceS2CPacket(i));
 
 		for (ServerWorld serverWorld : this.server.getWorlds()) {
 			if (serverWorld != null) {
-				serverWorld.method_14178().applyViewDistance(i, j);
+				serverWorld.method_14178().applyViewDistance(i);
 			}
 		}
 	}

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -17,9 +16,10 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
@@ -148,14 +148,14 @@ public class PotionUtil {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void buildTooltip(ItemStack itemStack, List<Component> list, float f) {
+	public static void buildTooltip(ItemStack itemStack, List<Text> list, float f) {
 		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
 		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
-			list.add(new TranslatableComponent("effect.none").applyFormat(ChatFormat.field_1080));
+			list.add(new TranslatableText("effect.none").formatted(Formatting.field_1080));
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
-				Component component = new TranslatableComponent(statusEffectInstance.getTranslationKey());
+				Text text = new TranslatableText(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
 				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
@@ -171,20 +171,20 @@ public class PotionUtil {
 				}
 
 				if (statusEffectInstance.getAmplifier() > 0) {
-					component.append(" ").append(new TranslatableComponent("potion.potency." + statusEffectInstance.getAmplifier()));
+					text.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 
 				if (statusEffectInstance.getDuration() > 20) {
-					component.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+					text.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(component.applyFormat(statusEffect.getType().getFormatting()));
+				list.add(text.formatted(statusEffect.getType().method_18793()));
 			}
 		}
 
 		if (!list3.isEmpty()) {
-			list.add(new TextComponent(""));
-			list.add(new TranslatableComponent("potion.whenDrank").applyFormat(ChatFormat.field_1064));
+			list.add(new LiteralText(""));
+			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.field_1064));
 
 			for (Pair<String, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
@@ -199,22 +199,22 @@ public class PotionUtil {
 
 				if (d > 0.0) {
 					list.add(
-						new TranslatableComponent(
+						new TranslatableText(
 								"attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableComponent("attribute.name." + pair.getLeft())
+								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.applyFormat(ChatFormat.field_1078)
+							.formatted(Formatting.field_1078)
 					);
 				} else if (d < 0.0) {
 					e *= -1.0;
 					list.add(
-						new TranslatableComponent(
+						new TranslatableText(
 								"attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableComponent("attribute.name." + pair.getLeft())
+								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.applyFormat(ChatFormat.field_1061)
+							.formatted(Formatting.field_1061)
 					);
 				}
 			}

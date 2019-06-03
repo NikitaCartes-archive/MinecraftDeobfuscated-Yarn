@@ -6,13 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
@@ -138,9 +138,9 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			}
 
 			if (bl2) {
-				this.editButton.setMessage(ChatFormat.field_1068 + "> " + ChatFormat.field_1054 + this.editButton.getMessage() + ChatFormat.field_1068 + " <");
+				this.editButton.setMessage(Formatting.field_1068 + "> " + Formatting.field_1054 + this.editButton.getMessage() + Formatting.field_1068 + " <");
 			} else if (bl3) {
-				this.editButton.setMessage(ChatFormat.field_1061 + this.editButton.getMessage());
+				this.editButton.setMessage(Formatting.field_1061 + this.editButton.getMessage());
 			}
 
 			this.editButton.render(n, o, f);

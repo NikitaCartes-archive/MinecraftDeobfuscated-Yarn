@@ -34,7 +34,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
@@ -44,6 +43,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -151,7 +151,7 @@ public class ClientWorld extends World {
 			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
-			if (entity.field_6016) {
+			if (entity.field_6016 || entity.isSpectator()) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.tick();
@@ -311,7 +311,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void disconnect() {
-		this.netHandler.getClientConnection().disconnect(new TranslatableComponent("multiplayer.status.quitting"));
+		this.netHandler.getClientConnection().method_10747(new TranslatableText("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {

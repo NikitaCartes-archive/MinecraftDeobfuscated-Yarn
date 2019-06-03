@@ -24,20 +24,20 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
 	private static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	private static final VoxelShape OUTLINE_SHAPE = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
-	public static final IntProperty field_16495 = Properties.field_16503;
+	public static final IntProperty DISTANCE = Properties.DISTANCE_0_7;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
 	protected ScaffoldingBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(field_16495, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_16495, WATERLOGGED, BOTTOM);
+		builder.add(DISTANCE, WATERLOGGED, BOTTOM);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		int i = calculateDistance(world, blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
-			.with(field_16495, Integer.valueOf(i))
+			.with(DISTANCE, Integer.valueOf(i))
 			.with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
 	}
 
@@ -100,9 +100,9 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		int i = calculateDistance(world, blockPos);
-		BlockState blockState2 = blockState.with(field_16495, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
-		if ((Integer)blockState2.get(field_16495) == 7) {
-			if ((Integer)blockState.get(field_16495) == 7) {
+		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
+		if ((Integer)blockState2.get(DISTANCE) == 7) {
+			if ((Integer)blockState.get(DISTANCE) == 7) {
 				world.spawnEntity(
 					new FallingBlockEntity(
 						world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
@@ -126,7 +126,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		if (entityContext.isAbove(VoxelShapes.fullCube(), blockPos, true) && !entityContext.isSneaking()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return blockState.get(field_16495) != 0 && blockState.get(BOTTOM) && entityContext.isAbove(OUTLINE_SHAPE, blockPos, true)
+			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && entityContext.isAbove(OUTLINE_SHAPE, blockPos, true)
 				? COLLISION_SHAPE
 				: VoxelShapes.empty();
 		}
@@ -146,7 +146,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		BlockState blockState = blockView.getBlockState(mutable);
 		int i = 7;
 		if (blockState.getBlock() == Blocks.field_16492) {
-			i = (Integer)blockState.get(field_16495);
+			i = (Integer)blockState.get(DISTANCE);
 		} else if (Block.isSolidFullSquare(blockState, blockView, mutable, Direction.field_11036)) {
 			return 0;
 		}
@@ -154,7 +154,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		for (Direction direction : Direction.Type.field_11062) {
 			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
 			if (blockState2.getBlock() == Blocks.field_16492) {
-				i = Math.min(i, (Integer)blockState2.get(field_16495) + 1);
+				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;
 				}

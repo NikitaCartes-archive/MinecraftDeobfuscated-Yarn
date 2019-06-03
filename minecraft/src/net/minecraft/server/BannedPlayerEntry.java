@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class BannedPlayerEntry extends BanEntry<GameProfile> {
 	public BannedPlayerEntry(GameProfile gameProfile) {
@@ -32,9 +32,9 @@ public class BannedPlayerEntry extends BanEntry<GameProfile> {
 	}
 
 	@Override
-	public Component asTextComponent() {
+	public Text toText() {
 		GameProfile gameProfile = this.getKey();
-		return new TextComponent(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
+		return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
 	}
 
 	private static GameProfile getProfileFromJson(JsonObject jsonObject) {

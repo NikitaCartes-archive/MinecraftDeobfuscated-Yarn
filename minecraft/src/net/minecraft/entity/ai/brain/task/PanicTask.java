@@ -5,17 +5,21 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class PanicTask extends Task<LivingEntity> {
+public class PanicTask extends Task<VillagerEntity> {
 	public PanicTask() {
 		super(ImmutableMap.of());
 	}
 
-	@Override
-	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		if (wasHurt(livingEntity) || isHostileNearby(livingEntity)) {
-			Brain<?> brain = livingEntity.getBrain();
+	protected boolean method_20646(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return wasHurt(villagerEntity) || isHostileNearby(villagerEntity);
+	}
+
+	protected void method_20647(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		if (wasHurt(villagerEntity) || isHostileNearby(villagerEntity)) {
+			Brain<?> brain = villagerEntity.getBrain();
 			if (!brain.hasActivity(Activity.field_18599)) {
 				brain.forget(MemoryModuleType.field_18449);
 				brain.forget(MemoryModuleType.field_18445);
@@ -25,6 +29,12 @@ public class PanicTask extends Task<LivingEntity> {
 			}
 
 			brain.resetPossibleActivities(Activity.field_18599);
+		}
+	}
+
+	protected void method_20648(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		if (l % 100L == 0L) {
+			villagerEntity.method_20688(l, 3, true);
 		}
 	}
 

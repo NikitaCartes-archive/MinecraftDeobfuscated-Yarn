@@ -4,25 +4,25 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
-	private final Component message;
+	private final Text field_2450;
 	private final boolean isHardcore;
 
-	public DeathScreen(@Nullable Component component, boolean bl) {
-		super(new TranslatableComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
-		this.message = component;
+	public DeathScreen(@Nullable Text text, boolean bl) {
+		super(new TranslatableText(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
+		this.field_2450 = text;
 		this.isHardcore = bl;
 	}
 
@@ -56,8 +56,8 @@ public class DeathScreen extends Screen {
 					} else {
 						ConfirmScreen confirmScreen = new ConfirmScreen(
 							this::method_20373,
-							new TranslatableComponent("deathScreen.quit.confirm"),
-							new TextComponent(""),
+							new TranslatableText("deathScreen.quit.confirm"),
+							new LiteralText(""),
 							I18n.translate("deathScreen.titleScreen"),
 							I18n.translate("deathScreen.respawn")
 						);
@@ -87,7 +87,7 @@ public class DeathScreen extends Screen {
 				this.minecraft.world.disconnect();
 			}
 
-			this.minecraft.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
+			this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 			this.minecraft.openScreen(new TitleScreen());
 		} else {
 			this.minecraft.player.requestRespawn();
@@ -100,19 +100,19 @@ public class DeathScreen extends Screen {
 		this.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2 / 2, 30, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2 / 2, 30, 16777215);
 		GlStateManager.popMatrix();
-		if (this.message != null) {
-			this.drawCenteredString(this.font, this.message.getFormattedText(), this.width / 2, 85, 16777215);
+		if (this.field_2450 != null) {
+			this.drawCenteredString(this.font, this.field_2450.asFormattedString(), this.width / 2, 85, 16777215);
 		}
 
 		this.drawCenteredString(
-			this.font, I18n.translate("deathScreen.score") + ": " + ChatFormat.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
+			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
-		if (this.message != null && j > 85 && j < 85 + 9) {
-			Component component = this.method_2164(i);
-			if (component != null && component.getStyle().getHoverEvent() != null) {
-				this.renderComponentHoverEffect(component, i, j);
+		if (this.field_2450 != null && j > 85 && j < 85 + 9) {
+			Text text = this.method_2164(i);
+			if (text != null && text.method_10866().getHoverEvent() != null) {
+				this.renderComponentHoverEffect(text, i, j);
 			}
 		}
 
@@ -120,19 +120,19 @@ public class DeathScreen extends Screen {
 	}
 
 	@Nullable
-	public Component method_2164(int i) {
-		if (this.message == null) {
+	public Text method_2164(int i) {
+		if (this.field_2450 == null) {
 			return null;
 		} else {
-			int j = this.minecraft.textRenderer.getStringWidth(this.message.getFormattedText());
+			int j = this.minecraft.textRenderer.getStringWidth(this.field_2450.asFormattedString());
 			int k = this.width / 2 - j / 2;
 			int l = this.width / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
-				for (Component component : this.message) {
-					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(component.getText(), false));
+				for (Text text : this.field_2450) {
+					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(text.asString(), false));
 					if (m > i) {
-						return component;
+						return text;
 					}
 				}
 
@@ -145,10 +145,10 @@ public class DeathScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.message != null && e > 85.0 && e < (double)(85 + 9)) {
-			Component component = this.method_2164((int)d);
-			if (component != null && component.getStyle().getClickEvent() != null && component.getStyle().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
-				this.handleComponentClicked(component);
+		if (this.field_2450 != null && e > 85.0 && e < (double)(85 + 9)) {
+			Text text = this.method_2164((int)d);
+			if (text != null && text.method_10866().getClickEvent() != null && text.method_10866().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
+				this.handleComponentClicked(text);
 				return false;
 			}
 		}

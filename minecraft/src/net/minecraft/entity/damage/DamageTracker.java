@@ -9,8 +9,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
@@ -56,42 +56,42 @@ public class DamageTracker {
 		}
 	}
 
-	public Component getDeathMessage() {
+	public Text method_5548() {
 		if (this.recentDamage.isEmpty()) {
-			return new TranslatableComponent("death.attack.generic", this.entity.getDisplayName());
+			return new TranslatableText("death.attack.generic", this.entity.method_5476());
 		} else {
 			DamageRecord damageRecord = this.getBiggestFall();
 			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-			Component component = damageRecord2.getAttackerName();
+			Text text = damageRecord2.method_5498();
 			Entity entity = damageRecord2.getDamageSource().getAttacker();
-			Component component3;
+			Text text3;
 			if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
-				Component component2 = damageRecord.getAttackerName();
+				Text text2 = damageRecord.method_5498();
 				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
-					component3 = new TranslatableComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
-				} else if (component2 != null && (component == null || !component2.equals(component))) {
+					text3 = new TranslatableText("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.method_5476());
+				} else if (text2 != null && (text == null || !text2.equals(text))) {
 					Entity entity2 = damageRecord.getDamageSource().getAttacker();
 					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-						component3 = new TranslatableComponent("death.fell.assist.item", this.entity.getDisplayName(), component2, itemStack.toHoverableText());
+						text3 = new TranslatableText("death.fell.assist.item", this.entity.method_5476(), text2, itemStack.method_7954());
 					} else {
-						component3 = new TranslatableComponent("death.fell.assist", this.entity.getDisplayName(), component2);
+						text3 = new TranslatableText("death.fell.assist", this.entity.method_5476(), text2);
 					}
-				} else if (component != null) {
+				} else if (text != null) {
 					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
-						component3 = new TranslatableComponent("death.fell.finish.item", this.entity.getDisplayName(), component, itemStack2.toHoverableText());
+						text3 = new TranslatableText("death.fell.finish.item", this.entity.method_5476(), text, itemStack2.method_7954());
 					} else {
-						component3 = new TranslatableComponent("death.fell.finish", this.entity.getDisplayName(), component);
+						text3 = new TranslatableText("death.fell.finish", this.entity.method_5476(), text);
 					}
 				} else {
-					component3 = new TranslatableComponent("death.fell.killer", this.entity.getDisplayName());
+					text3 = new TranslatableText("death.fell.killer", this.entity.method_5476());
 				}
 			} else {
-				component3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
+				text3 = damageRecord2.getDamageSource().method_5506(this.entity);
 			}
 
-			return component3;
+			return text3;
 		}
 	}
 

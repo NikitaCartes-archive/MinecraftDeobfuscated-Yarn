@@ -16,8 +16,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
@@ -252,10 +252,10 @@ public class AnvilContainer extends Container {
 					i += k;
 					itemStack2.removeCustomName();
 				}
-			} else if (!this.newItemName.equals(itemStack.getCustomName().getString())) {
+			} else if (!this.newItemName.equals(itemStack.method_7964().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.setCustomName(new TextComponent(this.newItemName));
+				itemStack2.method_7977(new LiteralText(this.newItemName));
 			}
 
 			this.levelCost.set(j + i);
@@ -355,7 +355,7 @@ public class AnvilContainer extends Container {
 			if (StringUtils.isBlank(string)) {
 				itemStack.removeCustomName();
 			} else {
-				itemStack.setCustomName(new TextComponent(this.newItemName));
+				itemStack.method_7977(new LiteralText(this.newItemName));
 			}
 		}
 

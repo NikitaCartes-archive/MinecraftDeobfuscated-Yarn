@@ -42,9 +42,9 @@ public abstract class BillboardParticle extends Particle {
 		if (this.angle != 0.0F) {
 			float w = MathHelper.lerp(f, this.prevAngle, this.angle);
 			float x = MathHelper.cos(w * 0.5F);
-			float y = (float)((double)MathHelper.sin(w * 0.5F) * camera.method_19335().x);
-			float z = (float)((double)MathHelper.sin(w * 0.5F) * camera.method_19335().y);
-			float aa = (float)((double)MathHelper.sin(w * 0.5F) * camera.method_19335().z);
+			float y = (float)((double)MathHelper.sin(w * 0.5F) * camera.getHorizontalPlane().x);
+			float z = (float)((double)MathHelper.sin(w * 0.5F) * camera.getHorizontalPlane().y);
+			float aa = (float)((double)MathHelper.sin(w * 0.5F) * camera.getHorizontalPlane().z);
 			Vec3d vec3d = new Vec3d((double)y, (double)z, (double)aa);
 
 			for (int ab = 0; ab < 4; ab++) {

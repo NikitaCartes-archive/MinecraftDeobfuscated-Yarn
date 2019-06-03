@@ -531,7 +531,7 @@ public class BlockModelRenderer {
 	static class BrightnessCache {
 		private boolean enabled;
 		private final Object2IntLinkedOpenHashMap<BlockPos> intCache = SystemUtil.get(() -> {
-			Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = new Object2IntLinkedOpenHashMap<BlockPos>(50, 0.25F) {
+			Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = new Object2IntLinkedOpenHashMap<BlockPos>(100, 0.25F) {
 				@Override
 				protected void rehash(int i) {
 				}
@@ -540,7 +540,7 @@ public class BlockModelRenderer {
 			return object2IntLinkedOpenHashMap;
 		});
 		private final Object2FloatLinkedOpenHashMap<BlockPos> floatCache = SystemUtil.get(() -> {
-			Object2FloatLinkedOpenHashMap<BlockPos> object2FloatLinkedOpenHashMap = new Object2FloatLinkedOpenHashMap<BlockPos>(50, 0.25F) {
+			Object2FloatLinkedOpenHashMap<BlockPos> object2FloatLinkedOpenHashMap = new Object2FloatLinkedOpenHashMap<BlockPos>(100, 0.25F) {
 				@Override
 				protected void rehash(int i) {
 				}
@@ -572,7 +572,7 @@ public class BlockModelRenderer {
 
 			int i = blockState.getBlockBrightness(extendedBlockView, blockPos);
 			if (this.enabled) {
-				if (this.intCache.size() == 50) {
+				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();
 				}
 
@@ -592,7 +592,7 @@ public class BlockModelRenderer {
 
 			float f = blockState.getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
 			if (this.enabled) {
-				if (this.floatCache.size() == 50) {
+				if (this.floatCache.size() == 100) {
 					this.floatCache.removeFirstFloat();
 				}
 

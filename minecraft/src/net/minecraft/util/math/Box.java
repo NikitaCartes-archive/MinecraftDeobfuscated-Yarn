@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.hit.BlockHitResult;
 
-public class BoundingBox {
+public class Box {
 	public final double minX;
 	public final double minY;
 	public final double minZ;
@@ -14,7 +14,7 @@ public class BoundingBox {
 	public final double maxY;
 	public final double maxZ;
 
-	public BoundingBox(double d, double e, double f, double g, double h, double i) {
+	public Box(double d, double e, double f, double g, double h, double i) {
 		this.minX = Math.min(d, g);
 		this.minY = Math.min(e, h);
 		this.minZ = Math.min(f, i);
@@ -23,7 +23,7 @@ public class BoundingBox {
 		this.maxZ = Math.max(f, i);
 	}
 
-	public BoundingBox(BlockPos blockPos) {
+	public Box(BlockPos blockPos) {
 		this(
 			(double)blockPos.getX(),
 			(double)blockPos.getY(),
@@ -34,16 +34,16 @@ public class BoundingBox {
 		);
 	}
 
-	public BoundingBox(BlockPos blockPos, BlockPos blockPos2) {
+	public Box(BlockPos blockPos, BlockPos blockPos2) {
 		this((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), (double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 	}
 
-	public BoundingBox(Vec3d vec3d, Vec3d vec3d2) {
+	public Box(Vec3d vec3d, Vec3d vec3d2) {
 		this(vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
 	}
 
-	public static BoundingBox from(MutableIntBoundingBox mutableIntBoundingBox) {
-		return new BoundingBox(
+	public static Box from(MutableIntBoundingBox mutableIntBoundingBox) {
+		return new Box(
 			(double)mutableIntBoundingBox.minX,
 			(double)mutableIntBoundingBox.minY,
 			(double)mutableIntBoundingBox.minZ,
@@ -64,20 +64,20 @@ public class BoundingBox {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof BoundingBox)) {
+		} else if (!(object instanceof Box)) {
 			return false;
 		} else {
-			BoundingBox boundingBox = (BoundingBox)object;
-			if (Double.compare(boundingBox.minX, this.minX) != 0) {
+			Box box = (Box)object;
+			if (Double.compare(box.minX, this.minX) != 0) {
 				return false;
-			} else if (Double.compare(boundingBox.minY, this.minY) != 0) {
+			} else if (Double.compare(box.minY, this.minY) != 0) {
 				return false;
-			} else if (Double.compare(boundingBox.minZ, this.minZ) != 0) {
+			} else if (Double.compare(box.minZ, this.minZ) != 0) {
 				return false;
-			} else if (Double.compare(boundingBox.maxX, this.maxX) != 0) {
+			} else if (Double.compare(box.maxX, this.maxX) != 0) {
 				return false;
 			} else {
-				return Double.compare(boundingBox.maxY, this.maxY) != 0 ? false : Double.compare(boundingBox.maxZ, this.maxZ) == 0;
+				return Double.compare(box.maxY, this.maxY) != 0 ? false : Double.compare(box.maxZ, this.maxZ) == 0;
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class BoundingBox {
 		return 31 * i + (int)(l ^ l >>> 32);
 	}
 
-	public BoundingBox shrink(double d, double e, double f) {
+	public Box shrink(double d, double e, double f) {
 		double g = this.minX;
 		double h = this.minY;
 		double i = this.minZ;
@@ -122,14 +122,14 @@ public class BoundingBox {
 			l -= f;
 		}
 
-		return new BoundingBox(g, h, i, j, k, l);
+		return new Box(g, h, i, j, k, l);
 	}
 
-	public BoundingBox stretch(Vec3d vec3d) {
+	public Box stretch(Vec3d vec3d) {
 		return this.stretch(vec3d.x, vec3d.y, vec3d.z);
 	}
 
-	public BoundingBox stretch(double d, double e, double f) {
+	public Box stretch(double d, double e, double f) {
 		double g = this.minX;
 		double h = this.minY;
 		double i = this.minZ;
@@ -154,49 +154,49 @@ public class BoundingBox {
 			l += f;
 		}
 
-		return new BoundingBox(g, h, i, j, k, l);
+		return new Box(g, h, i, j, k, l);
 	}
 
-	public BoundingBox expand(double d, double e, double f) {
+	public Box expand(double d, double e, double f) {
 		double g = this.minX - d;
 		double h = this.minY - e;
 		double i = this.minZ - f;
 		double j = this.maxX + d;
 		double k = this.maxY + e;
 		double l = this.maxZ + f;
-		return new BoundingBox(g, h, i, j, k, l);
+		return new Box(g, h, i, j, k, l);
 	}
 
-	public BoundingBox expand(double d) {
+	public Box expand(double d) {
 		return this.expand(d, d, d);
 	}
 
-	public BoundingBox intersection(BoundingBox boundingBox) {
-		double d = Math.max(this.minX, boundingBox.minX);
-		double e = Math.max(this.minY, boundingBox.minY);
-		double f = Math.max(this.minZ, boundingBox.minZ);
-		double g = Math.min(this.maxX, boundingBox.maxX);
-		double h = Math.min(this.maxY, boundingBox.maxY);
-		double i = Math.min(this.maxZ, boundingBox.maxZ);
-		return new BoundingBox(d, e, f, g, h, i);
+	public Box intersection(Box box) {
+		double d = Math.max(this.minX, box.minX);
+		double e = Math.max(this.minY, box.minY);
+		double f = Math.max(this.minZ, box.minZ);
+		double g = Math.min(this.maxX, box.maxX);
+		double h = Math.min(this.maxY, box.maxY);
+		double i = Math.min(this.maxZ, box.maxZ);
+		return new Box(d, e, f, g, h, i);
 	}
 
-	public BoundingBox union(BoundingBox boundingBox) {
-		double d = Math.min(this.minX, boundingBox.minX);
-		double e = Math.min(this.minY, boundingBox.minY);
-		double f = Math.min(this.minZ, boundingBox.minZ);
-		double g = Math.max(this.maxX, boundingBox.maxX);
-		double h = Math.max(this.maxY, boundingBox.maxY);
-		double i = Math.max(this.maxZ, boundingBox.maxZ);
-		return new BoundingBox(d, e, f, g, h, i);
+	public Box union(Box box) {
+		double d = Math.min(this.minX, box.minX);
+		double e = Math.min(this.minY, box.minY);
+		double f = Math.min(this.minZ, box.minZ);
+		double g = Math.max(this.maxX, box.maxX);
+		double h = Math.max(this.maxY, box.maxY);
+		double i = Math.max(this.maxZ, box.maxZ);
+		return new Box(d, e, f, g, h, i);
 	}
 
-	public BoundingBox offset(double d, double e, double f) {
-		return new BoundingBox(this.minX + d, this.minY + e, this.minZ + f, this.maxX + d, this.maxY + e, this.maxZ + f);
+	public Box offset(double d, double e, double f) {
+		return new Box(this.minX + d, this.minY + e, this.minZ + f, this.maxX + d, this.maxY + e, this.maxZ + f);
 	}
 
-	public BoundingBox offset(BlockPos blockPos) {
-		return new BoundingBox(
+	public Box offset(BlockPos blockPos) {
+		return new Box(
 			this.minX + (double)blockPos.getX(),
 			this.minY + (double)blockPos.getY(),
 			this.minZ + (double)blockPos.getZ(),
@@ -206,12 +206,12 @@ public class BoundingBox {
 		);
 	}
 
-	public BoundingBox offset(Vec3d vec3d) {
+	public Box offset(Vec3d vec3d) {
 		return this.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
-	public boolean intersects(BoundingBox boundingBox) {
-		return this.intersects(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ);
+	public boolean intersects(Box box) {
+		return this.intersects(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 
 	public boolean intersects(double d, double e, double f, double g, double h, double i) {
@@ -257,7 +257,7 @@ public class BoundingBox {
 		return this.maxZ - this.minZ;
 	}
 
-	public BoundingBox contract(double d) {
+	public Box contract(double d) {
 		return this.expand(-d);
 	}
 
@@ -276,15 +276,15 @@ public class BoundingBox {
 	}
 
 	@Nullable
-	public static BlockHitResult rayTrace(Iterable<BoundingBox> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
+	public static BlockHitResult rayTrace(Iterable<Box> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
 		double[] ds = new double[]{1.0};
 		Direction direction = null;
 		double d = vec3d2.x - vec3d.x;
 		double e = vec3d2.y - vec3d.y;
 		double f = vec3d2.z - vec3d.z;
 
-		for (BoundingBox boundingBox : iterable) {
-			direction = method_1007(boundingBox.offset(blockPos), vec3d, ds, direction, d, e, f);
+		for (Box box : iterable) {
+			direction = method_1007(box.offset(blockPos), vec3d, ds, direction, d, e, f);
 		}
 
 		if (direction == null) {
@@ -296,113 +296,23 @@ public class BoundingBox {
 	}
 
 	@Nullable
-	private static Direction method_1007(BoundingBox boundingBox, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
+	private static Direction method_1007(Box box, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
 		if (d > 1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				d,
-				e,
-				f,
-				boundingBox.minX,
-				boundingBox.minY,
-				boundingBox.maxY,
-				boundingBox.minZ,
-				boundingBox.maxZ,
-				Direction.field_11039,
-				vec3d.x,
-				vec3d.y,
-				vec3d.z
-			);
+			direction = method_998(ds, direction, d, e, f, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.field_11039, vec3d.x, vec3d.y, vec3d.z);
 		} else if (d < -1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				d,
-				e,
-				f,
-				boundingBox.maxX,
-				boundingBox.minY,
-				boundingBox.maxY,
-				boundingBox.minZ,
-				boundingBox.maxZ,
-				Direction.field_11034,
-				vec3d.x,
-				vec3d.y,
-				vec3d.z
-			);
+			direction = method_998(ds, direction, d, e, f, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.field_11034, vec3d.x, vec3d.y, vec3d.z);
 		}
 
 		if (e > 1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				e,
-				f,
-				d,
-				boundingBox.minY,
-				boundingBox.minZ,
-				boundingBox.maxZ,
-				boundingBox.minX,
-				boundingBox.maxX,
-				Direction.field_11033,
-				vec3d.y,
-				vec3d.z,
-				vec3d.x
-			);
+			direction = method_998(ds, direction, e, f, d, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.field_11033, vec3d.y, vec3d.z, vec3d.x);
 		} else if (e < -1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				e,
-				f,
-				d,
-				boundingBox.maxY,
-				boundingBox.minZ,
-				boundingBox.maxZ,
-				boundingBox.minX,
-				boundingBox.maxX,
-				Direction.field_11036,
-				vec3d.y,
-				vec3d.z,
-				vec3d.x
-			);
+			direction = method_998(ds, direction, e, f, d, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.field_11036, vec3d.y, vec3d.z, vec3d.x);
 		}
 
 		if (f > 1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				f,
-				d,
-				e,
-				boundingBox.minZ,
-				boundingBox.minX,
-				boundingBox.maxX,
-				boundingBox.minY,
-				boundingBox.maxY,
-				Direction.field_11043,
-				vec3d.z,
-				vec3d.x,
-				vec3d.y
-			);
+			direction = method_998(ds, direction, f, d, e, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.field_11043, vec3d.z, vec3d.x, vec3d.y);
 		} else if (f < -1.0E-7) {
-			direction = method_998(
-				ds,
-				direction,
-				f,
-				d,
-				e,
-				boundingBox.maxZ,
-				boundingBox.minX,
-				boundingBox.maxX,
-				boundingBox.minY,
-				boundingBox.maxY,
-				Direction.field_11035,
-				vec3d.z,
-				vec3d.x,
-				vec3d.y
-			);
+			direction = method_998(ds, direction, f, d, e, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.field_11035, vec3d.z, vec3d.x, vec3d.y);
 		}
 
 		return direction;

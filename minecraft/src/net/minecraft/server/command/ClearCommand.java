@@ -10,15 +10,15 @@ import java.util.function.Predicate;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ItemPredicateArgumentType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 
 public class ClearCommand {
 	private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("clear.failed.single", object)
+		object -> new TranslatableText("clear.failed.single", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("clear.failed.multiple", object)
+		object -> new TranslatableText("clear.failed.multiple", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -66,25 +66,25 @@ public class ClearCommand {
 
 		if (j == 0) {
 			if (collection.size() == 1) {
-				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).getName().getFormattedText());
+				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).method_5477().asFormattedString());
 			} else {
 				throw FAILED_MULTIPLE_EXCEPTION.create(collection.size());
 			}
 		} else {
 			if (i == 0) {
 				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
-						new TranslatableComponent("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					serverCommandSource.method_9226(
+						new TranslatableText("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(new TranslatableComponent("commands.clear.test.multiple", j, collection.size()), true);
+					serverCommandSource.method_9226(new TranslatableText("commands.clear.test.multiple", j, collection.size()), true);
 				}
 			} else if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				serverCommandSource.method_9226(
+					new TranslatableText("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.clear.success.multiple", j, collection.size()), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.clear.success.multiple", j, collection.size()), true);
 			}
 
 			return j;

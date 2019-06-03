@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -40,11 +40,8 @@ public class WorldBorder {
 			&& (double)chunkPos.getStartZ() < this.getBoundSouth();
 	}
 
-	public boolean contains(BoundingBox boundingBox) {
-		return boundingBox.maxX > this.getBoundWest()
-			&& boundingBox.minX < this.getBoundEast()
-			&& boundingBox.maxZ > this.getBoundNorth()
-			&& boundingBox.minZ < this.getBoundSouth();
+	public boolean contains(Box box) {
+		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
 	}
 
 	public double contains(Entity entity) {

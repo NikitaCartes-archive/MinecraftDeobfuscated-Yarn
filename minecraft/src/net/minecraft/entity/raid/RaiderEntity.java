@@ -47,7 +47,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.OMINOUS_BANNER);
+			&& ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.getOminousBanner());
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -116,19 +116,20 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public void onDeath(DamageSource damageSource) {
 		if (this.world instanceof ServerWorld) {
 			Entity entity = damageSource.getAttacker();
-			if (this.getRaid() != null) {
+			Raid raid = this.getRaid();
+			if (raid != null) {
 				if (this.isPatrolLeader()) {
-					this.getRaid().removeLeader(this.getWave());
+					raid.removeLeader(this.getWave());
 				}
 
 				if (entity != null && entity.getType() == EntityType.field_6097) {
-					this.getRaid().addHero(entity);
+					raid.addHero(entity);
 				}
 
-				this.getRaid().removeFromWave(this, false);
+				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && this.getRaid() == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
+			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
@@ -141,7 +142,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
+				if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.field_16595);
 					int i = 1;
 					if (statusEffectInstance != null) {
@@ -229,7 +230,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER)) {
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner())) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.field_6169;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -518,7 +519,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.hasActiveRaid()
 				&& !this.actor.getRaid().isFinished()
 				&& this.actor.canLead()
-				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.OMINOUS_BANNER)) {
+				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.getOminousBanner())) {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor

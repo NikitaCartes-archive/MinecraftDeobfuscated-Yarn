@@ -18,7 +18,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -39,24 +39,17 @@ public final class ProjectileUtil {
 		);
 	}
 
-	public static HitResult getCollision(Entity entity, BoundingBox boundingBox, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType, boolean bl) {
-		return getCollision(entity, bl, false, null, shapeType, false, predicate, boundingBox);
+	public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType, boolean bl) {
+		return getCollision(entity, bl, false, null, shapeType, false, predicate, box);
 	}
 
 	@Nullable
-	public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, BoundingBox boundingBox, Predicate<Entity> predicate) {
-		return getEntityCollision(world, entity, vec3d, vec3d2, boundingBox, predicate, Double.MAX_VALUE);
+	public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
+		return getEntityCollision(world, entity, vec3d, vec3d2, box, predicate, Double.MAX_VALUE);
 	}
 
 	private static HitResult getCollision(
-		Entity entity,
-		boolean bl,
-		boolean bl2,
-		@Nullable Entity entity2,
-		RayTraceContext.ShapeType shapeType,
-		boolean bl3,
-		Predicate<Entity> predicate,
-		BoundingBox boundingBox
+		Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2, RayTraceContext.ShapeType shapeType, boolean bl3, Predicate<Entity> predicate, Box box
 	) {
 		double d = entity.x;
 		double e = entity.y;
@@ -75,7 +68,7 @@ public final class ProjectileUtil {
 					vec3d3 = hitResult.getPos();
 				}
 
-				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, boundingBox, predicate);
+				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, box, predicate);
 				if (hitResult2 != null) {
 					hitResult = hitResult2;
 				}
@@ -87,16 +80,16 @@ public final class ProjectileUtil {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static EntityHitResult rayTrace(Entity entity, Vec3d vec3d, Vec3d vec3d2, BoundingBox boundingBox, Predicate<Entity> predicate, double d) {
+	public static EntityHitResult rayTrace(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
 		World world = entity.world;
 		double e = d;
 		Entity entity2 = null;
 		Vec3d vec3d3 = null;
 
-		for (Entity entity3 : world.getEntities(entity, boundingBox, predicate)) {
-			BoundingBox boundingBox2 = entity3.getBoundingBox().expand((double)entity3.getBoundingBoxMarginForTargeting());
-			Optional<Vec3d> optional = boundingBox2.rayTrace(vec3d, vec3d2);
-			if (boundingBox2.contains(vec3d)) {
+		for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+			Box box2 = entity3.getBoundingBox().expand((double)entity3.getBoundingBoxMarginForTargeting());
+			Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
+			if (box2.contains(vec3d)) {
 				if (e >= 0.0) {
 					entity2 = entity3;
 					vec3d3 = (Vec3d)optional.orElse(vec3d);
@@ -124,15 +117,13 @@ public final class ProjectileUtil {
 	}
 
 	@Nullable
-	public static EntityHitResult getEntityCollision(
-		World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, BoundingBox boundingBox, Predicate<Entity> predicate, double d
-	) {
+	public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
 		double e = d;
 		Entity entity2 = null;
 
-		for (Entity entity3 : world.getEntities(entity, boundingBox, predicate)) {
-			BoundingBox boundingBox2 = entity3.getBoundingBox().expand(0.3F);
-			Optional<Vec3d> optional = boundingBox2.rayTrace(vec3d, vec3d2);
+		for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+			Box box2 = entity3.getBoundingBox().expand(0.3F);
+			Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
 			if (optional.isPresent()) {
 				double f = vec3d.squaredDistanceTo((Vec3d)optional.get());
 				if (f < e) {

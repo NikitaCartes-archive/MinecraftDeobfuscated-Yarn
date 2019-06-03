@@ -18,9 +18,9 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.Vec2ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -28,10 +28,10 @@ import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
 	private static final Dynamic4CommandExceptionType FAILED_TEAMS_EXCEPTION = new Dynamic4CommandExceptionType(
-		(object, object2, object3, object4) -> new TranslatableComponent("commands.spreadplayers.failed.teams", object, object2, object3, object4)
+		(object, object2, object3, object4) -> new TranslatableText("commands.spreadplayers.failed.teams", object, object2, object3, object4)
 	);
 	private static final Dynamic4CommandExceptionType FAILED_ENTITIES_EXCEPTION = new Dynamic4CommandExceptionType(
-		(object, object2, object3, object4) -> new TranslatableComponent("commands.spreadplayers.failed.entities", object, object2, object3, object4)
+		(object, object2, object3, object4) -> new TranslatableText("commands.spreadplayers.failed.entities", object, object2, object3, object4)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -75,10 +75,8 @@ public class SpreadPlayersCommand {
 		SpreadPlayersCommand.Pile[] piles = makePiles(random, bl ? getPileCountRespectingTeams(collection) : collection.size(), d, e, h, i);
 		spread(vec2f, (double)f, serverCommandSource.getWorld(), random, d, e, h, i, piles, bl);
 		double j = getMinimumDistance(collection, serverCommandSource.getWorld(), piles, bl);
-		serverCommandSource.sendFeedback(
-			new TranslatableComponent(
-				"commands.spreadplayers.success." + (bl ? "teams" : "entities"), piles.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", j)
-			),
+		serverCommandSource.method_9226(
+			new TranslatableText("commands.spreadplayers.success." + (bl ? "teams" : "entities"), piles.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", j)),
 			true
 		);
 		return piles.length;

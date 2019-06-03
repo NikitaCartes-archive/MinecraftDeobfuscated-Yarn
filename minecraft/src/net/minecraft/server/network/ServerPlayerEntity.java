@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
@@ -75,12 +74,8 @@ import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -96,8 +91,13 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -182,15 +182,17 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				i = 1;
 			}
 
-			int k = (i * 2 + 1) * (i * 2 + 1);
-			int l = this.method_14244(k);
-			int m = new Random().nextInt(k);
+			long l = (long)(i * 2 + 1);
+			long m = l * l;
+			int k = m > 2147483647L ? Integer.MAX_VALUE : (int)m;
+			int n = this.method_14244(k);
+			int o = new Random().nextInt(k);
 
-			for (int n = 0; n < k; n++) {
-				int o = (m + l * n) % k;
-				int p = o % (i * 2 + 1);
-				int q = o / (i * 2 + 1);
-				BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
+			for (int p = 0; p < k; p++) {
+				int q = (o + n * p) % k;
+				int r = q % (i * 2 + 1);
+				int s = q / (i * 2 + 1);
+				BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
 					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (serverWorld.doesNotCollide(this)) {
@@ -442,28 +444,28 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void onDeath(DamageSource damageSource) {
 		boolean bl = this.world.getGameRules().getBoolean("showDeathMessages");
 		if (bl) {
-			Component component = this.getDamageTracker().getDeathMessage();
+			Text text = this.getDamageTracker().method_5548();
 			this.networkHandler
 				.sendPacket(
-					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, component),
+					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text),
 					future -> {
 						if (!future.isSuccess()) {
 							int i = 256;
-							String string = component.getStringTruncated(256);
-							Component component2 = new TranslatableComponent("death.attack.message_too_long", new TextComponent(string).applyFormat(ChatFormat.field_1054));
-							Component component3 = new TranslatableComponent("death.attack.even_more_magic", this.getDisplayName())
-								.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, component2)));
-							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, component3));
+							String string = text.asTruncatedString(256);
+							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.field_1054));
+							Text text3 = new TranslatableText("death.attack.even_more_magic", this.method_5476())
+								.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text2)));
+							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text3));
 						}
 					}
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1442) {
-				this.server.getPlayerManager().sendToAll(component);
+				this.server.getPlayerManager().sendToAll(text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1444) {
-				this.server.getPlayerManager().sendToTeam(this, component);
+				this.server.getPlayerManager().sendToTeam(this, text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1446) {
-				this.server.getPlayerManager().sendToOtherTeams(this, component);
+				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
 			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350));
@@ -529,7 +531,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private void method_14227(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
 		Team team = this.getScoreboard().getPlayerTeam(string2);
 		if (team != null) {
-			int i = team.getColor().getId();
+			int i = team.getColor().getColorIndex();
 			if (i >= 0 && i < scoreboardCriterions.length) {
 				this.getScoreboard().forEachScore(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
 			}
@@ -824,12 +826,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
 			if (container == null) {
 				if (this.isSpectator()) {
-					this.addChatMessage(new TranslatableComponent("container.spectatorCantOpen").applyFormat(ChatFormat.field_1061), true);
+					this.method_7353(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.field_1061), true);
 				}
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
+				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.method_5476()));
 				container.addListener(this);
 				this.container = container;
 				return OptionalInt.of(this.containerSyncId);
@@ -838,8 +840,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl) {
-		this.networkHandler.sendPacket(new SetTradeOffersPacket(i, traderOfferList, j, k, bl));
+	public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
+		this.networkHandler.sendPacket(new SetTradeOffersPacket(i, traderOfferList, j, k, bl, bl2));
 	}
 
 	@Override
@@ -988,8 +990,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void addChatMessage(Component component, boolean bl) {
-		this.networkHandler.sendPacket(new ChatMessageS2CPacket(component, bl ? ChatMessageType.field_11733 : ChatMessageType.field_11737));
+	public void method_7353(Text text, boolean bl) {
+		this.networkHandler.sendPacket(new ChatMessageS2CPacket(text, bl ? MessageType.field_11733 : MessageType.field_11737));
 	}
 
 	@Override
@@ -1129,24 +1131,22 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void sendMessage(Component component) {
-		this.sendChatMessage(component, ChatMessageType.field_11735);
+	public void method_9203(Text text) {
+		this.sendChatMessage(text, MessageType.field_11735);
 	}
 
-	public void sendChatMessage(Component component, ChatMessageType chatMessageType) {
+	public void sendChatMessage(Text text, MessageType messageType) {
 		this.networkHandler
 			.sendPacket(
-				new ChatMessageS2CPacket(component, chatMessageType),
+				new ChatMessageS2CPacket(text, messageType),
 				future -> {
-					if (!future.isSuccess() && (chatMessageType == ChatMessageType.field_11733 || chatMessageType == ChatMessageType.field_11735)) {
+					if (!future.isSuccess() && (messageType == MessageType.field_11733 || messageType == MessageType.field_11735)) {
 						int i = 256;
-						String string = component.getStringTruncated(256);
-						Component component2 = new TextComponent(string).applyFormat(ChatFormat.field_1054);
+						String string = text.asTruncatedString(256);
+						Text text2 = new LiteralText(string).formatted(Formatting.field_1054);
 						this.networkHandler
 							.sendPacket(
-								new ChatMessageS2CPacket(
-									new TranslatableComponent("multiplayer.message_not_delivered", component2).applyFormat(ChatFormat.field_1061), ChatMessageType.field_11735
-								)
+								new ChatMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.field_1061), MessageType.field_11735)
 							);
 					}
 				}
@@ -1248,7 +1248,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Nullable
-	public Component method_14206() {
+	public Text method_14206() {
 		return null;
 	}
 

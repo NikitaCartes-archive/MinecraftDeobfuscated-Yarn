@@ -109,8 +109,8 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 
 	@Override
 	public void onSoundPlayed(SoundInstance soundInstance, WeightedSoundSet weightedSoundSet) {
-		if (weightedSoundSet.getSubtitle() != null) {
-			String string = weightedSoundSet.getSubtitle().getFormattedText();
+		if (weightedSoundSet.method_4886() != null) {
+			String string = weightedSoundSet.method_4886().asFormattedString();
 			if (!this.entries.isEmpty()) {
 				for (SubtitlesHud.SubtitleEntry subtitleEntry : this.entries) {
 					if (subtitleEntry.getText().equals(string)) {

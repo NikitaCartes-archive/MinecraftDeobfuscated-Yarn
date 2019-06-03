@@ -11,7 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -39,8 +39,8 @@ public class BoatItem extends Item {
 				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
 
 				for (Entity entity : list) {
-					BoundingBox boundingBox = entity.getBoundingBox().expand((double)entity.getBoundingBoxMarginForTargeting());
-					if (boundingBox.contains(vec3d2)) {
+					Box box = entity.getBoundingBox().expand((double)entity.getBoundingBoxMarginForTargeting());
+					if (box.contains(vec3d2)) {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}
 				}

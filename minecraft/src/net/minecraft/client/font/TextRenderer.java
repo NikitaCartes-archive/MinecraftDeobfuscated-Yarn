@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -103,9 +103,9 @@ public class TextRenderer implements AutoCloseable {
 		for (int q = 0; q < string.length(); q++) {
 			char c = string.charAt(q);
 			if (c == 167 && q + 1 < string.length()) {
-				ChatFormat chatFormat = ChatFormat.bySectionSignCode(string.charAt(q + 1));
-				if (chatFormat != null) {
-					if (chatFormat.affectsGlyphWidth()) {
+				Formatting formatting = Formatting.byCode(string.charAt(q + 1));
+				if (formatting != null) {
+					if (formatting.affectsGlyphWidth()) {
 						bl2 = false;
 						bl3 = false;
 						bl6 = false;
@@ -116,20 +116,20 @@ public class TextRenderer implements AutoCloseable {
 						o = l;
 					}
 
-					if (chatFormat.getColor() != null) {
-						int r = chatFormat.getColor();
+					if (formatting.getColorValue() != null) {
+						int r = formatting.getColorValue();
 						m = (float)(r >> 16 & 0xFF) / 255.0F * h;
 						n = (float)(r >> 8 & 0xFF) / 255.0F * h;
 						o = (float)(r & 0xFF) / 255.0F * h;
-					} else if (chatFormat == ChatFormat.field_1051) {
+					} else if (formatting == Formatting.field_1051) {
 						bl2 = true;
-					} else if (chatFormat == ChatFormat.field_1067) {
+					} else if (formatting == Formatting.field_1067) {
 						bl3 = true;
-					} else if (chatFormat == ChatFormat.field_1055) {
+					} else if (formatting == Formatting.field_1055) {
 						bl6 = true;
-					} else if (chatFormat == ChatFormat.field_1073) {
+					} else if (formatting == Formatting.field_1073) {
 						bl5 = true;
-					} else if (chatFormat == ChatFormat.field_1056) {
+					} else if (formatting == Formatting.field_1056) {
 						bl4 = true;
 					}
 				}
@@ -201,10 +201,10 @@ public class TextRenderer implements AutoCloseable {
 			for (int i = 0; i < string.length(); i++) {
 				char c = string.charAt(i);
 				if (c == 167 && i < string.length() - 1) {
-					ChatFormat chatFormat = ChatFormat.bySectionSignCode(string.charAt(++i));
-					if (chatFormat == ChatFormat.field_1067) {
+					Formatting formatting = Formatting.byCode(string.charAt(++i));
+					if (formatting == Formatting.field_1067) {
 						bl = true;
-					} else if (chatFormat != null && chatFormat.affectsGlyphWidth()) {
+					} else if (formatting != null && formatting.affectsGlyphWidth()) {
 						bl = false;
 					}
 				} else {
@@ -236,10 +236,10 @@ public class TextRenderer implements AutoCloseable {
 			char c = string.charAt(l);
 			if (bl2) {
 				bl2 = false;
-				ChatFormat chatFormat = ChatFormat.bySectionSignCode(c);
-				if (chatFormat == ChatFormat.field_1067) {
+				Formatting formatting = Formatting.byCode(c);
+				if (formatting == Formatting.field_1067) {
 					bl3 = true;
-				} else if (chatFormat != null && chatFormat.affectsGlyphWidth()) {
+				} else if (formatting != null && formatting.affectsGlyphWidth()) {
 					bl3 = false;
 				}
 			} else if (c == 167) {
@@ -315,7 +315,7 @@ public class TextRenderer implements AutoCloseable {
 			String string3 = string.substring(0, j);
 			char c = string.charAt(j);
 			boolean bl = c == ' ' || c == '\n';
-			string = ChatFormat.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
+			string = Formatting.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
 			string2 = string2 + string3 + "\n";
 		}
 
@@ -350,10 +350,10 @@ public class TextRenderer implements AutoCloseable {
 					break;
 				case '§':
 					if (l < k - 1) {
-						ChatFormat chatFormat = ChatFormat.bySectionSignCode(string.charAt(++l));
-						if (chatFormat == ChatFormat.field_1067) {
+						Formatting formatting = Formatting.byCode(string.charAt(++l));
+						if (formatting == Formatting.field_1067) {
 							bl = true;
-						} else if (chatFormat != null && chatFormat.affectsGlyphWidth()) {
+						} else if (formatting != null && formatting.affectsGlyphWidth()) {
 							bl = false;
 						}
 					}

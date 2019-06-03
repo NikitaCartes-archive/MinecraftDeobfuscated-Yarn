@@ -55,7 +55,7 @@ public class MinecartItem extends Item {
 
 			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)itemStack.getItem()).type);
 			if (itemStack.hasCustomName()) {
-				abstractMinecartEntity.setCustomName(itemStack.getCustomName());
+				abstractMinecartEntity.method_5665(itemStack.method_7964());
 			}
 
 			world.spawnEntity(abstractMinecartEntity);
@@ -98,7 +98,7 @@ public class MinecartItem extends Item {
 					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5, this.type
 				);
 				if (itemStack.hasCustomName()) {
-					abstractMinecartEntity.setCustomName(itemStack.getCustomName());
+					abstractMinecartEntity.method_5665(itemStack.method_7964());
 				}
 
 				world.spawnEntity(abstractMinecartEntity);

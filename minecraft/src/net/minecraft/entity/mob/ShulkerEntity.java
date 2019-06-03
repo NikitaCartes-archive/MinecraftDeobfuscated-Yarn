@@ -41,7 +41,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -276,7 +276,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			double e = 0.5 - (double)MathHelper.sin((0.5F + this.field_7339) * (float) Math.PI) * 0.5;
 			Direction direction3 = this.getAttachedFace().getOpposite();
 			this.setBoundingBox(
-				new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5)
+				new Box(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5)
 					.stretch((double)direction3.getOffsetX() * d, (double)direction3.getOffsetY() * d, (double)direction3.getOffsetZ() * d)
 			);
 			double g = d - e;
@@ -327,7 +327,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (blockPos2.getY() > 0
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
-					&& this.world.doesNotCollide(this, new BoundingBox(blockPos2))) {
+					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
 					boolean bl = false;
 
 					for (Direction direction : Direction.values()) {
@@ -421,7 +421,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Nullable
 	@Override
-	public BoundingBox getCollisionBox() {
+	public Box getCollisionBox() {
 		return this.isAlive() ? this.getBoundingBox() : null;
 	}
 
@@ -553,7 +553,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		protected BoundingBox getSearchBox(double d) {
+		protected Box getSearchBox(double d) {
 			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
 			if (direction.getAxis() == Direction.Axis.X) {
 				return this.mob.getBoundingBox().expand(4.0, d, d);
@@ -574,7 +574,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		protected BoundingBox getSearchBox(double d) {
+		protected Box getSearchBox(double d) {
 			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
 			if (direction.getAxis() == Direction.Axis.X) {
 				return this.mob.getBoundingBox().expand(4.0, d, d);

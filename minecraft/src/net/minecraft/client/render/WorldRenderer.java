@@ -88,7 +88,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -723,7 +723,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				WorldRenderer.ChunkInfo chunkInfo = new WorldRenderer.ChunkInfo(chunkRenderer, null, 0);
 				Set<Direction> set = this.getOpenChunkFaces(blockPos);
 				if (set.size() == 1) {
-					net.minecraft.util.math.Vec3d vec3d = camera.method_19335();
+					net.minecraft.util.math.Vec3d vec3d = camera.getHorizontalPlane();
 					Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite();
 					set.remove(direction);
 				}
@@ -1701,17 +1701,17 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public static void drawDebugShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-		List<BoundingBox> list = voxelShape.getBoundingBoxes();
+		List<Box> list = voxelShape.getBoundingBoxes();
 		int k = MathHelper.ceil((double)list.size() / 3.0);
 
 		for (int l = 0; l < list.size(); l++) {
-			BoundingBox boundingBox = (BoundingBox)list.get(l);
+			Box box = (Box)list.get(l);
 			float m = ((float)l % (float)k + 1.0F) / (float)k;
 			float n = (float)(l / k);
 			float o = m * (float)(n == 0.0F ? 1 : 0);
 			float p = m * (float)(n == 1.0F ? 1 : 0);
 			float q = m * (float)(n == 2.0F ? 1 : 0);
-			drawShapeOutline(VoxelShapes.cuboid(boundingBox.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0F);
+			drawShapeOutline(VoxelShapes.cuboid(box.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0F);
 		}
 	}
 
@@ -1726,8 +1726,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		tessellator.draw();
 	}
 
-	public static void drawBoxOutline(BoundingBox boundingBox, float f, float g, float h, float i) {
-		drawBoxOutline(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ, f, g, h, i);
+	public static void drawBoxOutline(Box box, float f, float g, float h, float i) {
+		drawBoxOutline(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
 	}
 
 	public static void drawBoxOutline(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
@@ -1844,7 +1844,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (soundEvent != null) {
 			MusicDiscItem musicDiscItem = MusicDiscItem.bySound(soundEvent);
 			if (musicDiscItem != null) {
-				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().getFormattedText());
+				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.method_8011().asFormattedString());
 			}
 
 			SoundInstance var5 = PositionedSoundInstance.record(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
@@ -1856,7 +1856,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void updateEntitiesForSong(World world, BlockPos blockPos, boolean bl) {
-		for (LivingEntity livingEntity : world.getEntities(LivingEntity.class, new BoundingBox(blockPos).expand(3.0))) {
+		for (LivingEntity livingEntity : world.getEntities(LivingEntity.class, new Box(blockPos).expand(3.0))) {
 			livingEntity.setNearbySongPlaying(blockPos, bl);
 		}
 	}

@@ -13,13 +13,13 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -35,7 +35,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	public static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.enderchest");
+	public static final TranslatableText field_17363 = new TranslatableText("container.enderchest");
 
 	protected EnderChestBlock(Block.Settings settings) {
 		super(settings);
@@ -81,7 +81,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
 				playerEntity.openContainer(
 					new ClientDummyContainerProvider(
-						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
+						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), field_17363
 					)
 				);
 				playerEntity.incrementStat(Stats.field_15424);

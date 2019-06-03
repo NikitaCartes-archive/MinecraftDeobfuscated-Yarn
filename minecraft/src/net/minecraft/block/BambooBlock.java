@@ -26,20 +26,18 @@ public class BambooBlock extends Block implements Fertilizable {
 	protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
 	protected static final VoxelShape LARGE_LEAVES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 	protected static final VoxelShape NO_LEAVES_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
-	public static final IntProperty field_9914 = Properties.field_12521;
+	public static final IntProperty AGE = Properties.AGE_1;
 	public static final EnumProperty<BambooLeaves> LEAVES = Properties.BAMBOO_LEAVES;
-	public static final IntProperty field_9916 = Properties.field_12549;
+	public static final IntProperty STAGE = Properties.STAGE;
 
 	public BambooBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(field_9914, Integer.valueOf(0)).with(LEAVES, BambooLeaves.field_12469).with(field_9916, Integer.valueOf(0))
-		);
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)).with(LEAVES, BambooLeaves.field_12469).with(STAGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_9914, LEAVES, field_9916);
+		builder.add(AGE, LEAVES, STAGE);
 	}
 
 	@Override
@@ -76,10 +74,10 @@ public class BambooBlock extends Block implements Fertilizable {
 			if (blockState.matches(BlockTags.field_15497)) {
 				Block block = blockState.getBlock();
 				if (block == Blocks.field_10108) {
-					return this.getDefaultState().with(field_9914, Integer.valueOf(0));
+					return this.getDefaultState().with(AGE, Integer.valueOf(0));
 				} else if (block == Blocks.field_10211) {
-					int i = blockState.get(field_9914) > 0 ? 1 : 0;
-					return this.getDefaultState().with(field_9914, Integer.valueOf(i));
+					int i = blockState.get(AGE) > 0 ? 1 : 0;
+					return this.getDefaultState().with(AGE, Integer.valueOf(i));
 				} else {
 					return Blocks.field_10108.getDefaultState();
 				}
@@ -93,7 +91,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			world.breakBlock(blockPos, true);
-		} else if ((Integer)blockState.get(field_9916) == 0) {
+		} else if ((Integer)blockState.get(STAGE) == 0) {
 			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 				int i = this.countBambooBelow(world, blockPos) + 1;
 				if (i < 16) {
@@ -116,10 +114,8 @@ public class BambooBlock extends Block implements Fertilizable {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		if (direction == Direction.field_11036
-			&& blockState2.getBlock() == Blocks.field_10211
-			&& (Integer)blockState2.get(field_9914) > (Integer)blockState.get(field_9914)) {
-			iWorld.setBlockState(blockPos, blockState.cycle(field_9914), 2);
+		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
+			iWorld.setBlockState(blockPos, blockState.cycle(AGE), 2);
 		}
 
 		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -129,7 +125,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
 		int i = this.countBambooAbove(blockView, blockPos);
 		int j = this.countBambooBelow(blockView, blockPos);
-		return i + j + 1 < 16 && (Integer)blockView.getBlockState(blockPos.up(i)).get(field_9916) != 1;
+		return i + j + 1 < 16 && (Integer)blockView.getBlockState(blockPos.up(i)).get(STAGE) != 1;
 	}
 
 	@Override
@@ -147,7 +143,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		for (int m = 0; m < l; m++) {
 			BlockPos blockPos2 = blockPos.up(i);
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (k >= 16 || (Integer)blockState2.get(field_9916) == 1 || !world.isAir(blockPos2.up())) {
+			if (k >= 16 || (Integer)blockState2.get(STAGE) == 1 || !world.isAir(blockPos2.up())) {
 				return;
 			}
 
@@ -184,11 +180,9 @@ public class BambooBlock extends Block implements Fertilizable {
 			}
 		}
 
-		int j = blockState.get(field_9914) != 1 && blockState3.getBlock() != Blocks.field_10211 ? 0 : 1;
+		int j = blockState.get(AGE) != 1 && blockState3.getBlock() != Blocks.field_10211 ? 0 : 1;
 		int k = (i < 11 || !(random.nextFloat() < 0.25F)) && i != 15 ? 0 : 1;
-		world.setBlockState(
-			blockPos.up(), this.getDefaultState().with(field_9914, Integer.valueOf(j)).with(LEAVES, bambooLeaves).with(field_9916, Integer.valueOf(k)), 3
-		);
+		world.setBlockState(blockPos.up(), this.getDefaultState().with(AGE, Integer.valueOf(j)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(k)), 3);
 	}
 
 	protected int countBambooAbove(BlockView blockView, BlockPos blockPos) {

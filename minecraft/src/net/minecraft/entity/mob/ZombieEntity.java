@@ -264,7 +264,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			if (this.hasCustomName()) {
-				zombieEntity.setCustomName(this.getCustomName());
+				zombieEntity.method_5665(this.method_5797());
 				zombieEntity.setCustomNameVisible(this.isCustomNameVisible());
 			}
 
@@ -426,7 +426,7 @@ public class ZombieEntity extends HostileEntity {
 			zombieVillagerEntity.setChild(villagerEntity.isBaby());
 			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
 			if (villagerEntity.hasCustomName()) {
-				zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
+				zombieVillagerEntity.method_5665(villagerEntity.method_5797());
 				zombieVillagerEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
 			}
 

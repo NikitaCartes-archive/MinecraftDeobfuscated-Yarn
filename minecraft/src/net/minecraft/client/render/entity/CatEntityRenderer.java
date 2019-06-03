@@ -10,7 +10,7 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -38,7 +38,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 			GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
 			BlockPos blockPos = new BlockPos(catEntity);
 
-			for (PlayerEntity playerEntity : catEntity.world.getEntities(PlayerEntity.class, new BoundingBox(blockPos).expand(2.0, 2.0, 2.0))) {
+			for (PlayerEntity playerEntity : catEntity.world.getEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
 					GlStateManager.translatef(0.15F * i, 0.0F, 0.0F);
 					break;

@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,11 +37,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -331,7 +332,7 @@ public class RabbitEntity extends AnimalEntity {
 			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new FollowTargetGoal(this, WolfEntity.class, true));
 			if (!this.hasCustomName()) {
-				this.setCustomName(new TranslatableComponent(SystemUtil.createTranslationKey("entity", KILLER_BUNNY)));
+				this.method_5665(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		}
 
@@ -373,14 +374,9 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.getBoundingBox().minY);
-		int k = MathHelper.floor(this.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
+	public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.field_10479 && block != Blocks.field_10477 && block != Blocks.field_10102 ? super.canSpawn(iWorld, spawnType) : true;
+		return block != Blocks.field_10219 && block != Blocks.field_10477 && block != Blocks.field_10102 ? iWorld.getLightLevel(blockPos, 0) > 8 : true;
 	}
 
 	private boolean wantsCarrots() {
@@ -447,12 +443,12 @@ public class RabbitEntity extends AnimalEntity {
 				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (this.field_6861 && block instanceof CarrotsBlock) {
-					Integer integer = blockState.get(CarrotsBlock.field_10835);
+					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
 						world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 						world.breakBlock(blockPos, true);
 					} else {
-						world.setBlockState(blockPos, blockState.with(CarrotsBlock.field_10835, Integer.valueOf(integer - 1)), 2);
+						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
 						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 					}
 

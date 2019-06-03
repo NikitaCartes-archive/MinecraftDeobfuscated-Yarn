@@ -7,8 +7,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
@@ -65,8 +65,8 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.dispenser");
+	protected Text method_17823() {
+		return new TranslatableText("container.dispenser");
 	}
 
 	@Override

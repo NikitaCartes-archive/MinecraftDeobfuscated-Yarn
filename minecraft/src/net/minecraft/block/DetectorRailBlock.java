@@ -19,7 +19,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ViewableWorld;
@@ -153,9 +153,9 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		return world.getEntities(class_, this.getCartDetectionBox(blockPos), predicate);
 	}
 
-	private BoundingBox getCartDetectionBox(BlockPos blockPos) {
+	private Box getCartDetectionBox(BlockPos blockPos) {
 		float f = 0.2F;
-		return new BoundingBox(
+		return new Box(
 			(double)((float)blockPos.getX() + 0.2F),
 			(double)blockPos.getY(),
 			(double)((float)blockPos.getZ() + 0.2F),

@@ -1,8 +1,8 @@
 package net.minecraft.world;
 
 import net.minecraft.entity.player.PlayerAbilities;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public enum GameMode {
 	field_9218(-1, ""),
@@ -27,8 +27,8 @@ public enum GameMode {
 		return this.name;
 	}
 
-	public Component getTextComponent() {
-		return new TranslatableComponent("gameMode." + this.name);
+	public Text method_8383() {
+		return new TranslatableText("gameMode." + this.name);
 	}
 
 	public void setAbilitites(PlayerAbilities playerAbilities) {

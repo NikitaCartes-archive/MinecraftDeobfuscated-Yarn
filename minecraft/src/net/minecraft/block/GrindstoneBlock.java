@@ -7,8 +7,8 @@ import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.state.StateFactory;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -86,7 +86,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
 	public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
 	public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.grindstone_title");
+	private static final TranslatableText field_17364 = new TranslatableText("container.grindstone_title");
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
@@ -154,7 +154,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17364
 		);
 	}
 

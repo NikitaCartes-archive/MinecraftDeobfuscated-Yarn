@@ -6,15 +6,15 @@ import net.minecraft.container.BlockContext;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
-	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.cartography_table");
+	private static final TranslatableText field_17355 = new TranslatableText("container.cartography_table");
 
 	protected CartographyTableBlock(Block.Settings settings) {
 		super(settings);
@@ -31,7 +31,7 @@ public class CartographyTableBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17355
 		);
 	}
 }

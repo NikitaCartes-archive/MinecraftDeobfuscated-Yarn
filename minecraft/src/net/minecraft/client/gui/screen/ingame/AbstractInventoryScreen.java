@@ -13,14 +13,14 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends Container> extends AbstractContainerScreen<T> {
 	protected boolean offsetGuiForEffects;
 
-	public AbstractInventoryScreen(T container, PlayerInventory playerInventory, Component component) {
-		super(container, playerInventory, component);
+	public AbstractInventoryScreen(T container, PlayerInventory playerInventory, Text text) {
+		super(container, playerInventory, text);
 	}
 
 	@Override

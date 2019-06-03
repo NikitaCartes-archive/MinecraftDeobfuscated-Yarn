@@ -1,4 +1,4 @@
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -11,11 +11,11 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.ChatFormat;
+import net.minecraft.util.Formatting;
 
 public class Style {
 	private Style parent;
-	private ChatFormat color;
+	private Formatting color;
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underline;
@@ -27,7 +27,7 @@ public class Style {
 	private static final Style ROOT = new Style() {
 		@Nullable
 		@Override
-		public ChatFormat getColor() {
+		public Formatting getColor() {
 			return null;
 		}
 
@@ -75,7 +75,7 @@ public class Style {
 		}
 
 		@Override
-		public Style setColor(ChatFormat chatFormat) {
+		public Style setColor(Formatting formatting) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -125,7 +125,7 @@ public class Style {
 		}
 
 		@Override
-		public Style clone() {
+		public Style deepCopy() {
 			return this;
 		}
 
@@ -135,13 +135,13 @@ public class Style {
 		}
 
 		@Override
-		public String getFormatString() {
+		public String asString() {
 			return "";
 		}
 	};
 
 	@Nullable
-	public ChatFormat getColor() {
+	public Formatting getColor() {
 		return this.color == null ? this.getParent().getColor() : this.color;
 	}
 
@@ -192,8 +192,8 @@ public class Style {
 		return this.insertion == null ? this.getParent().getInsertion() : this.insertion;
 	}
 
-	public Style setColor(ChatFormat chatFormat) {
-		this.color = chatFormat;
+	public Style setColor(Formatting formatting) {
+		this.color = formatting;
 		return this;
 	}
 
@@ -242,9 +242,9 @@ public class Style {
 		return this;
 	}
 
-	public String getFormatString() {
+	public String asString() {
 		if (this.isEmpty()) {
-			return this.parent != null ? this.parent.getFormatString() : "";
+			return this.parent != null ? this.parent.asString() : "";
 		} else {
 			StringBuilder stringBuilder = new StringBuilder();
 			if (this.getColor() != null) {
@@ -252,23 +252,23 @@ public class Style {
 			}
 
 			if (this.isBold()) {
-				stringBuilder.append(ChatFormat.field_1067);
+				stringBuilder.append(Formatting.field_1067);
 			}
 
 			if (this.isItalic()) {
-				stringBuilder.append(ChatFormat.field_1056);
+				stringBuilder.append(Formatting.field_1056);
 			}
 
 			if (this.isUnderlined()) {
-				stringBuilder.append(ChatFormat.field_1073);
+				stringBuilder.append(Formatting.field_1073);
 			}
 
 			if (this.isObfuscated()) {
-				stringBuilder.append(ChatFormat.field_1051);
+				stringBuilder.append(Formatting.field_1051);
 			}
 
 			if (this.isStrikethrough()) {
-				stringBuilder.append(ChatFormat.field_1055);
+				stringBuilder.append(Formatting.field_1055);
 			}
 
 			return stringBuilder.toString();
@@ -326,7 +326,7 @@ public class Style {
 		);
 	}
 
-	public Style clone() {
+	public Style deepCopy() {
 		Style style = new Style();
 		style.bold = this.bold;
 		style.italic = this.italic;
@@ -385,7 +385,7 @@ public class Style {
 					}
 
 					if (jsonObject.has("color")) {
-						style.color = jsonDeserializationContext.deserialize(jsonObject.get("color"), ChatFormat.class);
+						style.color = jsonDeserializationContext.deserialize(jsonObject.get("color"), Formatting.class);
 					}
 
 					if (jsonObject.has("insertion")) {
@@ -396,10 +396,10 @@ public class Style {
 						JsonObject jsonObject2 = jsonObject.getAsJsonObject("clickEvent");
 						if (jsonObject2 != null) {
 							JsonPrimitive jsonPrimitive = jsonObject2.getAsJsonPrimitive("action");
-							ClickEvent.Action action = jsonPrimitive == null ? null : ClickEvent.Action.get(jsonPrimitive.getAsString());
+							ClickEvent.Action action = jsonPrimitive == null ? null : ClickEvent.Action.byName(jsonPrimitive.getAsString());
 							JsonPrimitive jsonPrimitive2 = jsonObject2.getAsJsonPrimitive("value");
 							String string = jsonPrimitive2 == null ? null : jsonPrimitive2.getAsString();
-							if (action != null && string != null && action.isSafe()) {
+							if (action != null && string != null && action.isUserDefinable()) {
 								style.clickEvent = new ClickEvent(action, string);
 							}
 						}
@@ -409,10 +409,10 @@ public class Style {
 						JsonObject jsonObject2 = jsonObject.getAsJsonObject("hoverEvent");
 						if (jsonObject2 != null) {
 							JsonPrimitive jsonPrimitive = jsonObject2.getAsJsonPrimitive("action");
-							HoverEvent.Action action2 = jsonPrimitive == null ? null : HoverEvent.Action.get(jsonPrimitive.getAsString());
-							Component component = jsonDeserializationContext.deserialize(jsonObject2.get("value"), Component.class);
-							if (action2 != null && component != null && action2.isSafe()) {
-								style.hoverEvent = new HoverEvent(action2, component);
+							HoverEvent.Action action2 = jsonPrimitive == null ? null : HoverEvent.Action.byName(jsonPrimitive.getAsString());
+							Text text = jsonDeserializationContext.deserialize(jsonObject2.get("value"), Text.class);
+							if (action2 != null && text != null && action2.isUserDefinable()) {
+								style.hoverEvent = new HoverEvent(action2, text);
 							}
 						}
 					}

@@ -149,9 +149,9 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 							pooledMutable.method_10114(blockPos2).method_10118(direction);
 							if (!set.contains(pooledMutable)) {
 								BlockState blockState = iWorld.getBlockState(pooledMutable);
-								if (blockState.contains(Properties.field_12541)) {
+								if (blockState.contains(Properties.DISTANCE_1_7)) {
 									((Set)list.get(0)).add(pooledMutable.toImmutable());
-									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.with(Properties.field_12541, Integer.valueOf(1)));
+									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
 									if (mutableIntBoundingBox.contains(pooledMutable)) {
 										voxelSet.set(
 											pooledMutable.getX() - mutableIntBoundingBox.minX,
@@ -182,10 +182,10 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 							pooledMutable.method_10114(blockPos3).method_10118(direction2);
 							if (!set2.contains(pooledMutable) && !set3.contains(pooledMutable)) {
 								BlockState blockState2 = iWorld.getBlockState(pooledMutable);
-								if (blockState2.contains(Properties.field_12541)) {
-									int l = (Integer)blockState2.get(Properties.field_12541);
+								if (blockState2.contains(Properties.DISTANCE_1_7)) {
+									int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
 									if (l > k + 1) {
-										BlockState blockState3 = blockState2.with(Properties.field_12541, Integer.valueOf(k + 1));
+										BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
 										this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
 										if (mutableIntBoundingBox.contains(pooledMutable)) {
 											voxelSet.set(

@@ -28,7 +28,7 @@ import net.minecraft.client.gui.screen.ingame.StonecutterScreen;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,15 +38,15 @@ public class ContainerScreenRegistry {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<ContainerType<?>, ContainerScreenRegistry.GuiFactory<?, ?>> GUI_FACTORIES = Maps.<ContainerType<?>, ContainerScreenRegistry.GuiFactory<?, ?>>newHashMap();
 
-	public static <T extends Container> void openScreen(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Component component) {
+	public static <T extends Container> void method_17541(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Text text) {
 		if (containerType == null) {
-			LOGGER.warn("Trying to open invalid screen with name: {}", component.getString());
+			LOGGER.warn("Trying to open invalid screen with name: {}", text.getString());
 		} else {
 			ContainerScreenRegistry.GuiFactory<T, ?> guiFactory = getFactory(containerType);
 			if (guiFactory == null) {
 				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
 			} else {
-				guiFactory.openScreen(component, containerType, minecraftClient, i);
+				guiFactory.method_17543(text, containerType, minecraftClient, i);
 			}
 		}
 	}
@@ -106,12 +106,12 @@ public class ContainerScreenRegistry {
 
 	@Environment(EnvType.CLIENT)
 	interface GuiFactory<T extends Container, U extends Screen & ContainerProvider<T>> {
-		default void openScreen(Component component, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
-			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, component);
+		default void method_17543(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
+			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, text);
 			minecraftClient.player.container = screen.getContainer();
 			minecraftClient.openScreen(screen);
 		}
 
-		U create(T container, PlayerInventory playerInventory, Component component);
+		U create(T container, PlayerInventory playerInventory, Text text);
 	}
 }

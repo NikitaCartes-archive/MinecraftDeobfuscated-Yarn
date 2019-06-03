@@ -10,7 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 
 @Environment(EnvType.CLIENT)
@@ -40,7 +40,7 @@ public class AddServerScreen extends Screen {
 	};
 
 	public AddServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
-		super(new TranslatableComponent("addServer.title"));
+		super(new TranslatableText("addServer.title"));
 		this.callback = booleanConsumer;
 		this.serverEntry = serverEntry;
 	}
@@ -71,14 +71,14 @@ public class AddServerScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText(),
+				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().method_2997().asFormattedString(),
 				buttonWidget -> {
 					this.serverEntry
 						.setResourcePackState(
 							ServerEntry.ResourcePackState.values()[(this.serverEntry.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
 						);
 					this.resourcePackOptionButton
-						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText());
+						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().method_2997().asFormattedString());
 				}
 			)
 		);
@@ -125,7 +125,7 @@ public class AddServerScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 17, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 17, 16777215);
 		this.drawString(this.font, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
 		this.drawString(this.font, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
 		this.serverNameField.render(i, j, f);

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -39,22 +40,18 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	protected abstract void configure();
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache dataCache) {
 		this.field_11481.clear();
 		this.configure();
-		TagContainer<T> tagContainer = new TagContainer<>(identifierx -> Optional.empty(), "", false, "generated");
-
-		for (Entry<Tag<T>, Tag.Builder<T>> entry : this.field_11481.entrySet()) {
-			Identifier identifier = ((Tag)entry.getKey()).getId();
-			if (!((Tag.Builder)entry.getValue()).applyTagGetter(tagContainer::get)) {
-				throw new UnsupportedOperationException("Unsupported referencing of tags!");
-			}
-
-			Tag<T> tag = ((Tag.Builder)entry.getValue()).build(identifier);
+		TagContainer<T> tagContainer = new TagContainer<>(identifier -> Optional.empty(), "", false, "generated");
+		Map<Identifier, Tag.Builder<T>> map = (Map<Identifier, Tag.Builder<T>>)this.field_11481
+			.entrySet()
+			.stream()
+			.collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Entry::getValue));
+		tagContainer.applyReload(map);
+		tagContainer.getEntries().forEach((identifier, tag) -> {
 			JsonObject jsonObject = tag.toJson(this.registry::getId);
 			Path path = this.getOutput(identifier);
-			tagContainer.add(tag);
-			this.method_10511(tagContainer);
 
 			try {
 				String string = GSON.toJson((JsonElement)jsonObject);
@@ -62,20 +59,20 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 				if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 					Files.createDirectories(path.getParent());
 					BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-					Throwable var12 = null;
+					Throwable var9 = null;
 
 					try {
 						bufferedWriter.write(string);
-					} catch (Throwable var22) {
-						var12 = var22;
-						throw var22;
+					} catch (Throwable var19) {
+						var9 = var19;
+						throw var19;
 					} finally {
 						if (bufferedWriter != null) {
-							if (var12 != null) {
+							if (var9 != null) {
 								try {
 									bufferedWriter.close();
-								} catch (Throwable var21) {
-									var12.addSuppressed(var21);
+								} catch (Throwable var18) {
+									var9.addSuppressed(var18);
 								}
 							} else {
 								bufferedWriter.close();
@@ -85,10 +82,11 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 				}
 
 				dataCache.updateSha1(path, string2);
-			} catch (IOException var24) {
-				LOGGER.error("Couldn't save tags to {}", path, var24);
+			} catch (IOException var21) {
+				LOGGER.error("Couldn't save tags to {}", path, var21);
 			}
-		}
+		});
+		this.method_10511(tagContainer);
 	}
 
 	protected abstract void method_10511(TagContainer<T> tagContainer);

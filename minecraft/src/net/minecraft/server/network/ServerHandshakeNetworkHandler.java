@@ -4,11 +4,11 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
 	private final MinecraftServer server;
@@ -25,13 +25,13 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 			case LOGIN:
 				this.client.setState(NetworkState.LOGIN);
 				if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
-					Component component = new TranslatableComponent("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-					this.client.send(new LoginDisconnectS2CPacket(component));
-					this.client.disconnect(component);
+					Text text = new TranslatableText("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
+					this.client.send(new LoginDisconnectS2CPacket(text));
+					this.client.method_10747(text);
 				} else if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
-					Component component = new TranslatableComponent("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-					this.client.send(new LoginDisconnectS2CPacket(component));
-					this.client.disconnect(component);
+					Text text = new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+					this.client.send(new LoginDisconnectS2CPacket(text));
+					this.client.method_10747(text);
 				} else {
 					this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
 				}
@@ -46,6 +46,6 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void onDisconnected(Component component) {
+	public void method_10839(Text text) {
 	}
 }

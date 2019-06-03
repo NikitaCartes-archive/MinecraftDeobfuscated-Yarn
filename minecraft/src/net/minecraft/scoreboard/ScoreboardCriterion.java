@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.ChatFormat;
 import net.minecraft.stat.StatType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -24,40 +24,40 @@ public class ScoreboardCriterion {
 	public static final ScoreboardCriterion field_1460 = new ScoreboardCriterion("xp", true, ScoreboardCriterion.RenderType.field_1472);
 	public static final ScoreboardCriterion field_1465 = new ScoreboardCriterion("level", true, ScoreboardCriterion.RenderType.field_1472);
 	public static final ScoreboardCriterion[] TEAM_KILLS = new ScoreboardCriterion[]{
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1074.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1058.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1077.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1062.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1079.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1064.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1065.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1080.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1063.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1078.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1060.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1075.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1061.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1076.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1054.getName()),
-		new ScoreboardCriterion("teamkill." + ChatFormat.field_1068.getName())
+		new ScoreboardCriterion("teamkill." + Formatting.field_1074.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1058.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1077.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1062.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1079.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1064.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1065.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1080.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1063.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1078.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1060.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1075.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1061.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1076.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1054.getName()),
+		new ScoreboardCriterion("teamkill." + Formatting.field_1068.getName())
 	};
 	public static final ScoreboardCriterion[] KILLED_BY_TEAMS = new ScoreboardCriterion[]{
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1074.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1058.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1077.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1062.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1079.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1064.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1065.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1080.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1063.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1078.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1060.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1075.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1061.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1076.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1054.getName()),
-		new ScoreboardCriterion("killedByTeam." + ChatFormat.field_1068.getName())
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1074.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1058.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1077.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1062.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1079.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1064.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1065.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1080.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1063.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1078.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1060.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1075.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1061.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1076.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1054.getName()),
+		new ScoreboardCriterion("killedByTeam." + Formatting.field_1068.getName())
 	};
 	private final String name;
 	private final boolean readOnly;

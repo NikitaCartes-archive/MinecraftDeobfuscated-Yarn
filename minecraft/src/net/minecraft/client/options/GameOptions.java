@@ -347,7 +347,7 @@ public class GameOptions {
 					}
 
 					if ("difficulty".equals(string)) {
-						this.difficulty = Difficulty.getDifficulty(Integer.parseInt(string2));
+						this.difficulty = Difficulty.byOrdinal(Integer.parseInt(string2));
 					}
 
 					if ("fancyGraphics".equals(string)) {

@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -668,13 +669,13 @@ public abstract class MobEntity extends LivingEntity {
 		return f + i;
 	}
 
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return this.canSpawnAt(iWorld, spawnType, new BlockPos(this));
+	public static boolean method_20636(EntityType<? extends MobEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		BlockPos blockPos2 = blockPos.down();
+		return spawnType == SpawnType.field_16469 || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, entityType);
 	}
 
-	protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		return spawnType == SpawnType.field_16469 || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, this.getType());
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return true;
 	}
 
 	public boolean canSpawn(ViewableWorld viewableWorld) {

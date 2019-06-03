@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
@@ -31,6 +30,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.SystemUtil;
@@ -423,7 +423,7 @@ public class DebugHud extends DrawableHelper {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(ChatFormat.field_1073 + "Targeted Block");
+				list.add(Formatting.field_1073 + "Targeted Block");
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
@@ -439,7 +439,7 @@ public class DebugHud extends DrawableHelper {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(ChatFormat.field_1073 + "Targeted Fluid");
+				list.add(Formatting.field_1073 + "Targeted Fluid");
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
@@ -454,7 +454,7 @@ public class DebugHud extends DrawableHelper {
 			Entity entity = this.client.targetedEntity;
 			if (entity != null) {
 				list.add("");
-				list.add(ChatFormat.field_1073 + "Targeted Entity");
+				list.add(Formatting.field_1073 + "Targeted Entity");
 				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
@@ -467,9 +467,9 @@ public class DebugHud extends DrawableHelper {
 		Comparable<?> comparable = (Comparable<?>)entry.getValue();
 		String string = SystemUtil.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
-			string = ChatFormat.field_1060 + string;
+			string = Formatting.field_1060 + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
-			string = ChatFormat.field_1061 + string;
+			string = Formatting.field_1061 + string;
 		}
 
 		return property.getName() + ": " + string;

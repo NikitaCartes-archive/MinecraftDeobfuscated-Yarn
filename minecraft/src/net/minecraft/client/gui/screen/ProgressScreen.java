@@ -4,8 +4,8 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ProgressListener;
 
 @Environment(EnvType.CLIENT)
@@ -16,7 +16,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	private boolean done;
 
 	public ProgressScreen() {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 	}
 
 	@Override
@@ -25,19 +25,19 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void method_15412(Component component) {
-		this.method_15413(component);
+	public void method_15412(Text text) {
+		this.method_15413(text);
 	}
 
 	@Override
-	public void method_15413(Component component) {
-		this.title = component.getFormattedText();
-		this.method_15414(new TranslatableComponent("progress.working"));
+	public void method_15413(Text text) {
+		this.title = text.asFormattedString();
+		this.method_15414(new TranslatableText("progress.working"));
 	}
 
 	@Override
-	public void method_15414(Component component) {
-		this.task = component.getFormattedText();
+	public void method_15414(Text text) {
+		this.task = text.asFormattedString();
 		this.progressStagePercentage(0);
 	}
 

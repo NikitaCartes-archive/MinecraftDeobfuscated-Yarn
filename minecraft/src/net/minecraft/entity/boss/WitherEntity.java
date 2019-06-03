@@ -36,12 +36,12 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -62,7 +62,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private final int[] field_7091 = new int[2];
 	private final int[] field_7092 = new int[2];
 	private int field_7082;
-	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
+	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.method_5476(), BossBar.Color.field_5783, BossBar.Style.field_5795)
 		.setDarkenSky(true);
 	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
 			&& livingEntity.method_6102();
@@ -106,14 +106,14 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		super.readCustomDataFromTag(compoundTag);
 		this.setInvulTimer(compoundTag.getInt("Invul"));
 		if (this.hasCustomName()) {
-			this.bossBar.setName(this.getDisplayName());
+			this.bossBar.method_5413(this.method_5476());
 		}
 	}
 
 	@Override
-	public void setCustomName(@Nullable Component component) {
-		super.setCustomName(component);
-		this.bossBar.setName(this.getDisplayName());
+	public void method_5665(@Nullable Text text) {
+		super.method_5665(text);
+		this.bossBar.method_5413(this.method_5476());
 	}
 
 	@Override

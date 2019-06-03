@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public abstract class AbstractTeam {
 	public boolean isEqual(@Nullable AbstractTeam abstractTeam) {
@@ -18,7 +18,7 @@ public abstract class AbstractTeam {
 
 	public abstract String getName();
 
-	public abstract Component modifyText(Component component);
+	public abstract Text method_1198(Text text);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();
@@ -28,7 +28,7 @@ public abstract class AbstractTeam {
 	@Environment(EnvType.CLIENT)
 	public abstract AbstractTeam.VisibilityRule getNameTagVisibilityRule();
 
-	public abstract ChatFormat getColor();
+	public abstract Formatting getColor();
 
 	public abstract Collection<String> getPlayerList();
 
@@ -57,8 +57,8 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public Component getTranslationKey() {
-			return new TranslatableComponent("team.collision." + this.name);
+		public Text method_1209() {
+			return new TranslatableText("team.collision." + this.name);
 		}
 	}
 
@@ -83,8 +83,8 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public Component getTranslationKey() {
-			return new TranslatableComponent("team.visibility." + this.name);
+		public Text method_1214() {
+			return new TranslatableText("team.visibility." + this.name);
 		}
 	}
 }

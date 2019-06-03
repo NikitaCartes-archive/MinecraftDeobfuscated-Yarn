@@ -7,13 +7,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class RotationArgumentType implements ArgumentType<PosArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~-5 ~5");
 	public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("argument.rotation.incomplete")
+		new TranslatableText("argument.rotation.incomplete")
 	);
 
 	public static RotationArgumentType create() {

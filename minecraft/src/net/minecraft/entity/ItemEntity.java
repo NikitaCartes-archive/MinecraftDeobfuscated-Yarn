@@ -16,11 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -284,9 +284,9 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public Component getName() {
-		Component component = this.getCustomName();
-		return (Component)(component != null ? component : new TranslatableComponent(this.getStack().getTranslationKey()));
+	public Text method_5477() {
+		Text text = this.method_5797();
+		return (Text)(text != null ? text : new TranslatableText(this.getStack().getTranslationKey()));
 	}
 
 	@Override

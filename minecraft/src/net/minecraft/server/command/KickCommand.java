@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class KickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -17,14 +17,14 @@ public class KickCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
 							commandContext -> execute(
-									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableComponent("multiplayer.disconnect.kicked")
+									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableText("multiplayer.disconnect.kicked")
 								)
 						)
 						.then(
 							CommandManager.argument("reason", MessageArgumentType.create())
 								.executes(
 									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason")
+											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.method_9339(commandContext, "reason")
 										)
 								)
 						)
@@ -32,10 +32,10 @@ public class KickCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.disconnect(component);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), component), true);
+			serverPlayerEntity.networkHandler.disconnect(text);
+			serverCommandSource.method_9226(new TranslatableText("commands.kick.success", serverPlayerEntity.method_5476(), text), true);
 		}
 
 		return collection.size();

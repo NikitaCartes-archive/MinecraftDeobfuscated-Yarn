@@ -7,8 +7,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +33,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,55 +64,73 @@ public class FontManager implements AutoCloseable {
 							Throwable var13 = null;
 
 							try {
-								profiler.push("reading");
-								JsonArray jsonArray = JsonHelper.getArray(
-									JsonHelper.deserialize(gson, IOUtils.toString(inputStream, StandardCharsets.UTF_8), JsonObject.class), "providers"
-								);
-								profiler.swap("parsing");
+								Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+								Throwable var15 = null;
 
-								for (int i = jsonArray.size() - 1; i >= 0; i--) {
-									JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
+								try {
+									profiler.push("reading");
+									JsonArray jsonArray = JsonHelper.getArray(JsonHelper.deserialize(gson, reader, JsonObject.class), "providers");
+									profiler.swap("parsing");
 
-									try {
-										String string2 = JsonHelper.getString(jsonObject, "type");
-										FontType fontType = FontType.byId(string2);
-										if (!FontManager.this.forceUnicodeFont || fontType == FontType.field_2313 || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
-											profiler.push(string2);
-											list.add(fontType.createLoader(jsonObject).load(resourceManager));
-											profiler.pop();
+									for (int i = jsonArray.size() - 1; i >= 0; i--) {
+										JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
+
+										try {
+											String string2 = JsonHelper.getString(jsonObject, "type");
+											FontType fontType = FontType.byId(string2);
+											if (!FontManager.this.forceUnicodeFont || fontType == FontType.field_2313 || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
+												profiler.push(string2);
+												list.add(fontType.createLoader(jsonObject).load(resourceManager));
+												profiler.pop();
+											}
+										} catch (RuntimeException var48) {
+											FontManager.LOGGER
+												.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var48.getMessage());
 										}
-									} catch (RuntimeException var29) {
-										FontManager.LOGGER
-											.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var29.getMessage());
+									}
+
+									profiler.pop();
+								} catch (Throwable var49) {
+									var15 = var49;
+									throw var49;
+								} finally {
+									if (reader != null) {
+										if (var15 != null) {
+											try {
+												reader.close();
+											} catch (Throwable var47) {
+												var15.addSuppressed(var47);
+											}
+										} else {
+											reader.close();
+										}
 									}
 								}
-
-								profiler.pop();
-							} catch (Throwable var30) {
-								var13 = var30;
-								throw var30;
+							} catch (Throwable var51) {
+								var13 = var51;
+								throw var51;
 							} finally {
 								if (inputStream != null) {
 									if (var13 != null) {
 										try {
 											inputStream.close();
-										} catch (Throwable var28) {
-											var13.addSuppressed(var28);
+										} catch (Throwable var46) {
+											var13.addSuppressed(var46);
 										}
 									} else {
 										inputStream.close();
 									}
 								}
 							}
-						} catch (RuntimeException var32) {
+						} catch (RuntimeException var53) {
 							FontManager.LOGGER
-								.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var32.getMessage());
+								.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var53.getMessage());
 						}
 
 						profiler.pop();
 					}
-				} catch (IOException var33) {
-					FontManager.LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var33.getMessage());
+				} catch (IOException var54) {
+					FontManager.LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var54.getMessage());
 				}
 
 				profiler.push("caching");

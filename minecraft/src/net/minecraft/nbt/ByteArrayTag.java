@@ -5,8 +5,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ByteArrayTag extends AbstractListTag<ByteTag> {
@@ -85,20 +85,20 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public Component toTextComponent(String string, int i) {
-		Component component = new TextComponent("B").applyFormat(RED);
-		Component component2 = new TextComponent("[").append(component).append(";");
+	public Text method_10710(String string, int i) {
+		Text text = new LiteralText("B").formatted(RED);
+		Text text2 = new LiteralText("[").append(text).append(";");
 
 		for (int j = 0; j < this.value.length; j++) {
-			Component component3 = new TextComponent(String.valueOf(this.value[j])).applyFormat(GOLD);
-			component2.append(" ").append(component3).append(component);
+			Text text3 = new LiteralText(String.valueOf(this.value[j])).formatted(GOLD);
+			text2.append(" ").append(text3).append(text);
 			if (j != this.value.length - 1) {
-				component2.append(",");
+				text2.append(",");
 			}
 		}
 
-		component2.append("]");
-		return component2;
+		text2.append("]");
+		return text2;
 	}
 
 	public byte[] getByteArray() {

@@ -1,9 +1,9 @@
-package net.minecraft.network.chat;
+package net.minecraft.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-public enum ChatMessageType {
+public enum MessageType {
 	field_11737((byte)0, false),
 	field_11735((byte)1, true),
 	field_11733((byte)2, true);
@@ -11,7 +11,7 @@ public enum ChatMessageType {
 	private final byte id;
 	private final boolean interruptsNarration;
 
-	private ChatMessageType(byte b, boolean bl) {
+	private MessageType(byte b, boolean bl) {
 		this.id = b;
 		this.interruptsNarration = bl;
 	}
@@ -20,10 +20,10 @@ public enum ChatMessageType {
 		return this.id;
 	}
 
-	public static ChatMessageType byId(byte b) {
-		for (ChatMessageType chatMessageType : values()) {
-			if (b == chatMessageType.id) {
-				return chatMessageType;
+	public static MessageType byId(byte b) {
+		for (MessageType messageType : values()) {
+			if (b == messageType.id) {
+				return messageType;
 			}
 		}
 

@@ -71,7 +71,6 @@ public class ServerChunkManager extends ChunkManager {
 		Executor executor,
 		ChunkGenerator<?> chunkGenerator,
 		int i,
-		int j,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		Supplier<PersistentStateManager> supplier
 	) {
@@ -94,8 +93,7 @@ public class ServerChunkManager extends ChunkManager {
 			this.getChunkGenerator(),
 			worldGenerationProgressListener,
 			supplier,
-			i,
-			j
+			i
 		);
 		this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
@@ -270,6 +268,11 @@ public class ServerChunkManager extends ChunkManager {
 		return this.method_20585(l, ChunkHolder::getTickingFuture);
 	}
 
+	public boolean method_20727(Entity entity) {
+		long l = ChunkPos.toLong(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4);
+		return this.method_20585(l, ChunkHolder::method_20725);
+	}
+
 	private boolean method_20585(long l, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> function) {
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (chunkHolder == null) {
@@ -438,8 +441,8 @@ public class ServerChunkManager extends ChunkManager {
 		this.threadedAnvilChunkStorage.sendToOtherNearbyPlayers(entity, packet);
 	}
 
-	public void applyViewDistance(int i, int j) {
-		this.threadedAnvilChunkStorage.setViewDistance(i, j);
+	public void applyViewDistance(int i) {
+		this.threadedAnvilChunkStorage.setViewDistance(i);
 	}
 
 	@Override

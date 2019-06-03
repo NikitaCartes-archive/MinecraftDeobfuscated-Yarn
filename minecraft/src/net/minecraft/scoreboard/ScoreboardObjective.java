@@ -2,25 +2,23 @@ package net.minecraft.scoreboard;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 
 public class ScoreboardObjective {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final ScoreboardCriterion criterion;
-	private Component displayName;
+	private Text field_1402;
 	private ScoreboardCriterion.RenderType renderType;
 
-	public ScoreboardObjective(
-		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Component component, ScoreboardCriterion.RenderType renderType
-	) {
+	public ScoreboardObjective(Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
 		this.scoreboard = scoreboard;
 		this.name = string;
 		this.criterion = scoreboardCriterion;
-		this.displayName = component;
+		this.field_1402 = text;
 		this.renderType = renderType;
 	}
 
@@ -37,18 +35,18 @@ public class ScoreboardObjective {
 		return this.criterion;
 	}
 
-	public Component getDisplayName() {
-		return this.displayName;
+	public Text method_1114() {
+		return this.field_1402;
 	}
 
-	public Component getTextComponent() {
-		return Components.bracketed(
-			this.displayName.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TextComponent(this.getName()))))
+	public Text method_1120() {
+		return Texts.bracketed(
+			this.field_1402.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getName()))))
 		);
 	}
 
-	public void setDisplayName(Component component) {
-		this.displayName = component;
+	public void method_1121(Text text) {
+		this.field_1402 = text;
 		this.scoreboard.updateExistingObjective(this);
 	}
 

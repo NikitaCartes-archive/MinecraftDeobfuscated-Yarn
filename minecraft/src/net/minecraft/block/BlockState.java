@@ -85,7 +85,6 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getLightSubtracted(this, blockView, blockPos);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
 		return this.shapeCache != null && this.shapeCache.shapes != null
 			? this.shapeCache.shapes[direction.ordinal()]
@@ -197,7 +196,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
-		return this.getCollisionShape(blockView, blockPos, EntityContext.absent());
+		return this.shapeCache != null ? this.shapeCache.field_19360 : this.getCollisionShape(blockView, blockPos, EntityContext.absent());
 	}
 
 	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
@@ -381,6 +380,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private final boolean translucent;
 		private final int lightSubtracted;
 		private final VoxelShape[] shapes;
+		private final VoxelShape field_19360;
 		private final boolean field_17651;
 
 		private ShapeCache(BlockState blockState) {
@@ -400,8 +400,9 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 				}
 			}
 
-			VoxelShape voxelShape = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, EntityContext.absent());
-			this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> voxelShape.getMinimum(axis) < 0.0 || voxelShape.getMaximum(axis) > 1.0);
+			this.field_19360 = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, EntityContext.absent());
+			this.field_17651 = Arrays.stream(Direction.Axis.values())
+				.anyMatch(axis -> this.field_19360.getMinimum(axis) < 0.0 || this.field_19360.getMaximum(axis) > 1.0);
 		}
 	}
 }

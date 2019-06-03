@@ -27,7 +27,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -43,7 +43,7 @@ public class ChunkRenderer {
 	private ChunkRenderTask task;
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 	private final GlBuffer[] buffers = new GlBuffer[BlockRenderLayer.values().length];
-	public BoundingBox boundingBox;
+	public Box boundingBox;
 	private int field_4471 = -1;
 	private boolean rebuildScheduled = true;
 	private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
@@ -98,7 +98,7 @@ public class ChunkRenderer {
 		if (i != this.origin.getX() || j != this.origin.getY() || k != this.origin.getZ()) {
 			this.clear();
 			this.origin.set(i, j, k);
-			this.boundingBox = new BoundingBox((double)i, (double)j, (double)k, (double)(i + 16), (double)(j + 16), (double)(k + 16));
+			this.boundingBox = new Box((double)i, (double)j, (double)k, (double)(i + 16), (double)(j + 16), (double)(k + 16));
 
 			for (Direction direction : Direction.values()) {
 				this.neighborPositions[direction.ordinal()].set(this.origin).setOffset(direction, 16);

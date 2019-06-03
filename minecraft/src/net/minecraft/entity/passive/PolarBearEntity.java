@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -85,15 +86,10 @@ public class PolarBearEntity extends AnimalEntity {
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.getBoundingBox().minY);
-		int k = MathHelper.floor(this.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
+	public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
 		return biome != Biomes.field_9435 && biome != Biomes.field_9418
-			? super.canSpawn(iWorld, spawnType)
+			? method_20663(entityType, iWorld, spawnType, blockPos, random)
 			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
 	}
 

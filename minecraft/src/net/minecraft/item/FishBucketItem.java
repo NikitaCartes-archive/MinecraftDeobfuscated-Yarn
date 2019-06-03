@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,10 +13,11 @@ import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -51,30 +51,30 @@ public class FishBucketItem extends BucketItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		if (this.fishType == EntityType.field_6111) {
 			CompoundTag compoundTag = itemStack.getTag();
 			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
-				ChatFormat[] chatFormats = new ChatFormat[]{ChatFormat.field_1056, ChatFormat.field_1080};
+				Formatting[] formattings = new Formatting[]{Formatting.field_1056, Formatting.field_1080};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
 				String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
 
 				for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; j++) {
 					if (i == TropicalFishEntity.COMMON_VARIANTS[j]) {
-						list.add(new TranslatableComponent(TropicalFishEntity.getToolTipForVariant(j)).applyFormat(chatFormats));
+						list.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
 						return;
 					}
 				}
 
-				list.add(new TranslatableComponent(TropicalFishEntity.getTranslationKey(i)).applyFormat(chatFormats));
-				Component component = new TranslatableComponent(string);
+				list.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+				Text text = new TranslatableText(string);
 				if (!string.equals(string2)) {
-					component.append(", ").append(new TranslatableComponent(string2));
+					text.append(", ").append(new TranslatableText(string2));
 				}
 
-				component.applyFormat(chatFormats);
-				list.add(component);
+				text.formatted(formattings);
+				list.add(text);
 			}
 		}
 	}

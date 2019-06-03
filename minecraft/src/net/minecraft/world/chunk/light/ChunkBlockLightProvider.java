@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -44,12 +45,14 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 				return 15;
 			} else {
 				AtomicInteger atomicInteger = new AtomicInteger();
-				VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+				BlockState blockState = this.method_20479(m, atomicInteger);
 				if (atomicInteger.get() >= 15) {
 					return 15;
 				} else {
-					VoxelShape voxelShape2 = this.method_20479(l, null);
-					return VoxelShapes.method_1080(voxelShape2, voxelShape, direction) ? 15 : i + Math.max(1, atomicInteger.get());
+					BlockState blockState2 = this.method_20479(l, null);
+					VoxelShape voxelShape = this.method_20710(blockState2, l, direction);
+					VoxelShape voxelShape2 = this.method_20710(blockState, m, direction.getOpposite());
+					return VoxelShapes.method_20713(voxelShape, voxelShape2) ? 15 : i + Math.max(1, atomicInteger.get());
 				}
 			}
 		}

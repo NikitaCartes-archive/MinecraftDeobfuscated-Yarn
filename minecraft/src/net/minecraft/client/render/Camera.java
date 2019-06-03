@@ -21,15 +21,15 @@ public class Camera {
 	private Entity focusedEntity;
 	private net.minecraft.util.math.Vec3d pos = net.minecraft.util.math.Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private net.minecraft.util.math.Vec3d field_18714;
-	private net.minecraft.util.math.Vec3d field_18715;
-	private net.minecraft.util.math.Vec3d field_18716;
+	private net.minecraft.util.math.Vec3d horizontalPlane;
+	private net.minecraft.util.math.Vec3d verticalPlane;
+	private net.minecraft.util.math.Vec3d diagonalPlane;
 	private float pitch;
 	private float yaw;
 	private boolean thirdPerson;
 	private boolean inverseView;
-	private float field_18721;
-	private float field_18722;
+	private float cameraY;
+	private float lastCameraY;
 
 	public void update(BlockView blockView, Entity entity, boolean bl, boolean bl2, float f) {
 		this.ready = true;
@@ -40,7 +40,7 @@ public class Camera {
 		this.setRotation(entity.getYaw(f), entity.getPitch(f));
 		this.setPos(
 			MathHelper.lerp((double)f, entity.prevX, entity.x),
-			MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.field_18722, this.field_18721),
+			MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.lastCameraY, this.cameraY),
 			MathHelper.lerp((double)f, entity.prevZ, entity.z)
 		);
 		if (bl) {
@@ -50,7 +50,7 @@ public class Camera {
 				this.updateRotation();
 			}
 
-			this.moveBy(-this.method_19318(4.0), 0.0, 0.0);
+			this.moveBy(-this.clipToSpace(4.0), 0.0, 0.0);
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
 			Direction direction = ((LivingEntity)entity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);
@@ -65,12 +65,12 @@ public class Camera {
 
 	public void updateEyeHeight() {
 		if (this.focusedEntity != null) {
-			this.field_18722 = this.field_18721;
-			this.field_18721 = this.field_18721 + (this.focusedEntity.getStandingEyeHeight() - this.field_18721) * 0.5F;
+			this.lastCameraY = this.cameraY;
+			this.cameraY = this.cameraY + (this.focusedEntity.getStandingEyeHeight() - this.cameraY) * 0.5F;
 		}
 	}
 
-	private double method_19318(double d) {
+	private double clipToSpace(double d) {
 		for (int i = 0; i < 8; i++) {
 			float f = (float)((i & 1) * 2 - 1);
 			float g = (float)((i >> 1 & 1) * 2 - 1);
@@ -80,9 +80,9 @@ public class Camera {
 			h *= 0.1F;
 			net.minecraft.util.math.Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
 			net.minecraft.util.math.Vec3d vec3d2 = new net.minecraft.util.math.Vec3d(
-				this.pos.x - this.field_18714.x * d + (double)f + (double)h,
-				this.pos.y - this.field_18714.y * d + (double)g,
-				this.pos.z - this.field_18714.z * d + (double)h
+				this.pos.x - this.horizontalPlane.x * d + (double)f + (double)h,
+				this.pos.y - this.horizontalPlane.y * d + (double)g,
+				this.pos.z - this.horizontalPlane.z * d + (double)h
 			);
 			HitResult hitResult = this.area
 				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this.focusedEntity));
@@ -98,9 +98,9 @@ public class Camera {
 	}
 
 	protected void moveBy(double d, double e, double f) {
-		double g = this.field_18714.x * d + this.field_18715.x * e + this.field_18716.x * f;
-		double h = this.field_18714.y * d + this.field_18715.y * e + this.field_18716.y * f;
-		double i = this.field_18714.z * d + this.field_18715.z * e + this.field_18716.z * f;
+		double g = this.horizontalPlane.x * d + this.verticalPlane.x * e + this.diagonalPlane.x * f;
+		double h = this.horizontalPlane.y * d + this.verticalPlane.y * e + this.diagonalPlane.y * f;
+		double i = this.horizontalPlane.z * d + this.verticalPlane.z * e + this.diagonalPlane.z * f;
 		this.setPos(new net.minecraft.util.math.Vec3d(this.pos.x + g, this.pos.y + h, this.pos.z + i));
 	}
 
@@ -111,9 +111,9 @@ public class Camera {
 		float i = MathHelper.sin(-this.pitch * (float) (Math.PI / 180.0));
 		float j = MathHelper.cos((-this.pitch + 90.0F) * (float) (Math.PI / 180.0));
 		float k = MathHelper.sin((-this.pitch + 90.0F) * (float) (Math.PI / 180.0));
-		this.field_18714 = new net.minecraft.util.math.Vec3d((double)(f * h), (double)i, (double)(g * h));
-		this.field_18715 = new net.minecraft.util.math.Vec3d((double)(f * j), (double)k, (double)(g * j));
-		this.field_18716 = this.field_18714.crossProduct(this.field_18715).multiply(-1.0);
+		this.horizontalPlane = new net.minecraft.util.math.Vec3d((double)(f * h), (double)i, (double)(g * h));
+		this.verticalPlane = new net.minecraft.util.math.Vec3d((double)(f * j), (double)k, (double)(g * j));
+		this.diagonalPlane = this.horizontalPlane.crossProduct(this.verticalPlane).multiply(-1.0);
 	}
 
 	protected void setRotation(float f, float g) {
@@ -170,12 +170,12 @@ public class Camera {
 		}
 	}
 
-	public final net.minecraft.util.math.Vec3d method_19335() {
-		return this.field_18714;
+	public final net.minecraft.util.math.Vec3d getHorizontalPlane() {
+		return this.horizontalPlane;
 	}
 
-	public final net.minecraft.util.math.Vec3d method_19336() {
-		return this.field_18715;
+	public final net.minecraft.util.math.Vec3d getVerticalPlane() {
+		return this.verticalPlane;
 	}
 
 	public void reset() {

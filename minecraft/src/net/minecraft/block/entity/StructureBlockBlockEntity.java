@@ -173,7 +173,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public void setAuthor(LivingEntity livingEntity) {
-		this.author = livingEntity.getName().getString();
+		this.author = livingEntity.method_5477().getString();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -3,8 +3,8 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class IntTag extends AbstractNumberTag {
 	private int value;
@@ -50,8 +50,8 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Component toTextComponent(String string, int i) {
-		return new TextComponent(String.valueOf(this.value)).applyFormat(GOLD);
+	public Text method_10710(String string, int i) {
+		return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
 	}
 
 	@Override

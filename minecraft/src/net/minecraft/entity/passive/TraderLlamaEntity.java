@@ -20,7 +20,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class TraderLlamaEntity extends LlamaEntity {
-	private int despawnDelay;
+	private int despawnDelay = 47999;
 
 	public TraderLlamaEntity(EntityType<? extends TraderLlamaEntity> entityType, World world) {
 		super(entityType, world);
@@ -106,7 +106,6 @@ public class TraderLlamaEntity extends LlamaEntity {
 			this.setBreedingAge(0);
 		}
 
-		this.despawnDelay = 47999;
 		return entityData2;
 	}
 

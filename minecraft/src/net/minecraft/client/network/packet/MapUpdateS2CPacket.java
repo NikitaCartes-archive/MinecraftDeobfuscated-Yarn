@@ -59,7 +59,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 				packetByteBuf.readByte(),
 				packetByteBuf.readByte(),
 				(byte)(packetByteBuf.readByte() & 15),
-				packetByteBuf.readBoolean() ? packetByteBuf.readTextComponent() : null
+				packetByteBuf.readBoolean() ? packetByteBuf.method_10808() : null
 			);
 		}
 
@@ -85,9 +85,9 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			packetByteBuf.writeByte(mapIcon.getX());
 			packetByteBuf.writeByte(mapIcon.getZ());
 			packetByteBuf.writeByte(mapIcon.getRotation() & 15);
-			if (mapIcon.getText() != null) {
+			if (mapIcon.method_88() != null) {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeTextComponent(mapIcon.getText());
+				packetByteBuf.method_10805(mapIcon.method_88());
 			} else {
 				packetByteBuf.writeBoolean(false);
 			}

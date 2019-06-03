@@ -17,7 +17,7 @@ public class EntityEquipmentPredicate {
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
 	);
 	public static final EntityEquipmentPredicate field_19240 = new EntityEquipmentPredicate(
-		ItemPredicate.Builder.create().item(Items.field_8539).nbt(Raid.OMINOUS_BANNER.getTag()).build(),
+		ItemPredicate.Builder.create().item(Items.field_8539).nbt(Raid.getOminousBanner().getTag()).build(),
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,

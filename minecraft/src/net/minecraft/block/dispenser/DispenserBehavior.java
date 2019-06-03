@@ -46,7 +46,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.IWorld;
@@ -375,7 +375,7 @@ public interface DispenserBehavior {
 							blockPos,
 							Blocks.field_10177
 								.getDefaultState()
-								.with(SkullBlock.field_11505, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
+								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
 							3
 						);
 						BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -429,7 +429,7 @@ public interface DispenserBehavior {
 					this.success = false;
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
-					for (SheepEntity sheepEntity : world.getEntities(SheepEntity.class, new BoundingBox(blockPos))) {
+					for (SheepEntity sheepEntity : world.getEntities(SheepEntity.class, new Box(blockPos))) {
 						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isBaby()) {
 							sheepEntity.dropItems();
 							if (itemStack.damage(1, world.random, null)) {

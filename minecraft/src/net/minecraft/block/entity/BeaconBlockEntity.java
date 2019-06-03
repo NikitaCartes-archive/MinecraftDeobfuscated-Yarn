@@ -27,15 +27,15 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 
 public class BeaconBlockEntity extends BlockEntity implements NameableContainerProvider, Tickable {
@@ -55,7 +55,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Nullable
 	private StatusEffect secondary;
 	@Nullable
-	private Component customName;
+	private Text field_11793;
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
@@ -173,7 +173,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					this.playSound(SoundEvents.field_14703);
 
 					for (ServerPlayerEntity serverPlayerEntity : this.world
-						.getEntities(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
+						.getEntities(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
 						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 					}
 				}
@@ -223,8 +223,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			}
 
 			int j = (9 + this.level * 2) * 20;
-			BoundingBox boundingBox = new BoundingBox(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
+			Box box = new Box(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
+			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
 				playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
@@ -280,7 +280,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
 		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.field_11793 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
 		this.lock = ContainerLock.deserialize(compoundTag);
@@ -292,29 +292,29 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
 		compoundTag.putInt("Levels", this.level);
-		if (this.customName != null) {
-			compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+		if (this.field_11793 != null) {
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_11793));
 		}
 
 		this.lock.serialize(compoundTag);
 		return compoundTag;
 	}
 
-	public void setCustomName(@Nullable Component component) {
-		this.customName = component;
+	public void method_10936(@Nullable Text text) {
+		this.field_11793 = text;
 	}
 
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
+		return LockableContainerBlockEntity.method_17487(playerEntity, this.lock, this.method_5476())
 			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 
 	@Override
-	public Component getDisplayName() {
-		return (Component)(this.customName != null ? this.customName : new TranslatableComponent("container.beacon"));
+	public Text method_5476() {
+		return (Text)(this.field_11793 != null ? this.field_11793 : new TranslatableText("container.beacon"));
 	}
 
 	public static class BeamSegment {

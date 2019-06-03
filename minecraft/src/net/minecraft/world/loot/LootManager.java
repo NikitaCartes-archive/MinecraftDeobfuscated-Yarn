@@ -1,21 +1,20 @@
 package net.minecraft.world.loot;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.resource.Resource;
+import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
@@ -23,13 +22,12 @@ import net.minecraft.world.loot.entry.LootEntries;
 import net.minecraft.world.loot.entry.LootEntry;
 import net.minecraft.world.loot.function.LootFunction;
 import net.minecraft.world.loot.function.LootFunctions;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootManager implements SynchronousResourceReloadListener {
+public class LootManager extends JsonDataLoader {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Gson gson = new GsonBuilder()
+	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(UniformLootTableRange.class, new UniformLootTableRange.Serializer())
 		.registerTypeAdapter(BinomialLootTableRange.class, new BinomialLootTableRange.Serializer())
 		.registerTypeAdapter(ConstantLootTableRange.class, new ConstantLootTableRange.Serializer())
@@ -41,57 +39,32 @@ public class LootManager implements SynchronousResourceReloadListener {
 		.registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory())
 		.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer())
 		.create();
-	private final Map<Identifier, LootSupplier> suppliers = Maps.<Identifier, LootSupplier>newHashMap();
-	private final Set<Identifier> supplierNames = Collections.unmodifiableSet(this.suppliers.keySet());
-	public static final int lootTablesLength = "loot_tables/".length();
-	public static final int jsonLength = ".json".length();
+	private Map<Identifier, LootSupplier> suppliers = ImmutableMap.of();
+
+	public LootManager() {
+		super(GSON, "loot_tables");
+	}
 
 	public LootSupplier getSupplier(Identifier identifier) {
 		return (LootSupplier)this.suppliers.getOrDefault(identifier, LootSupplier.EMPTY);
 	}
 
-	@Override
-	public void apply(ResourceManager resourceManager) {
-		this.suppliers.clear();
-
-		for (Identifier identifier : resourceManager.findResources("loot_tables", stringx -> stringx.endsWith(".json"))) {
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(lootTablesLength, string.length() - jsonLength));
-
+	protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+		Builder<Identifier, LootSupplier> builder = ImmutableMap.builder();
+		map.forEach((identifier, jsonObject) -> {
 			try {
-				Resource resource = resourceManager.getResource(identifier);
-				Throwable var7 = null;
-
-				try {
-					LootSupplier lootSupplier = JsonHelper.deserialize(gson, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), LootSupplier.class);
-					if (lootSupplier != null) {
-						this.suppliers.put(identifier2, lootSupplier);
-					}
-				} catch (Throwable var17) {
-					var7 = var17;
-					throw var17;
-				} finally {
-					if (resource != null) {
-						if (var7 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var16) {
-								var7.addSuppressed(var16);
-							}
-						} else {
-							resource.close();
-						}
-					}
-				}
-			} catch (Throwable var19) {
-				LOGGER.error("Couldn't read loot table {} from {}", identifier2, identifier, var19);
+				LootSupplier lootSupplier = GSON.fromJson(jsonObject, LootSupplier.class);
+				builder.put(identifier, lootSupplier);
+			} catch (Exception var4x) {
+				LOGGER.error("Couldn't parse loot table {}", identifier, var4x);
 			}
-		}
-
-		this.suppliers.put(LootTables.EMPTY, LootSupplier.EMPTY);
+		});
+		builder.put(LootTables.EMPTY, LootSupplier.EMPTY);
+		ImmutableMap<Identifier, LootSupplier> immutableMap = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter();
-		this.suppliers.forEach((identifierx, lootSupplierx) -> check(lootTableReporter, identifierx, lootSupplierx, this.suppliers::get));
-		lootTableReporter.getMessages().forEach((stringx, string2) -> LOGGER.warn("Found validation problem in " + stringx + ": " + string2));
+		immutableMap.forEach((identifier, lootSupplier) -> check(lootTableReporter, identifier, lootSupplier, immutableMap::get));
+		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
+		this.suppliers = immutableMap;
 	}
 
 	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootSupplier lootSupplier, Function<Identifier, LootSupplier> function) {
@@ -100,10 +73,10 @@ public class LootManager implements SynchronousResourceReloadListener {
 	}
 
 	public static JsonElement toJson(LootSupplier lootSupplier) {
-		return gson.toJsonTree(lootSupplier);
+		return GSON.toJsonTree(lootSupplier);
 	}
 
 	public Set<Identifier> getSupplierNames() {
-		return this.supplierNames;
+		return this.suppliers.keySet();
 	}
 }

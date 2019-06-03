@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
 
 public class FluidBlock extends Block implements FluidDrainable {
-	public static final IntProperty field_11278 = Properties.field_12538;
+	public static final IntProperty LEVEL = Properties.LEVEL_15;
 	protected final BaseFluid fluid;
 	private final List<FluidState> statesByLevel;
 
@@ -43,7 +43,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		}
 
 		this.statesByLevel.add(baseFluid.getFlowing(8, true));
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11278, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		int i = (Integer)blockState.get(field_11278);
+		int i = (Integer)blockState.get(LEVEL);
 		return (FluidState)this.statesByLevel.get(Math.min(i, 8));
 	}
 
@@ -154,12 +154,12 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11278);
+		builder.add(LEVEL);
 	}
 
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		if ((Integer)blockState.get(field_11278) == 0) {
+		if ((Integer)blockState.get(LEVEL) == 0) {
 			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 			return this.fluid;
 		} else {

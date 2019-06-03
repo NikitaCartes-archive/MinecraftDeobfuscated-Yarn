@@ -27,7 +27,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private boolean field_2718;
 
 	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 		this.advancementHandler = clientAdvancementManager;
 	}
 

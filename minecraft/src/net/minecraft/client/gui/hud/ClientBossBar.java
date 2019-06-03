@@ -39,7 +39,7 @@ public class ClientBossBar extends BossBar {
 	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
 		switch (bossBarS2CPacket.getType()) {
 			case field_12084:
-				this.setName(bossBarS2CPacket.getName());
+				this.method_5413(bossBarS2CPacket.getName());
 				break;
 			case field_12080:
 				this.setPercent(bossBarS2CPacket.getPercent());

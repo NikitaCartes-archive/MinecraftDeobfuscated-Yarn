@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -146,8 +145,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.chat.KeybindComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.FileResourcePackCreator;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
@@ -163,8 +160,11 @@ import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
@@ -346,7 +346,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 		Bootstrap.initialize();
 		Bootstrap.logMissingTranslations();
-		KeybindComponent.field_11766 = KeyBinding::getLocalizedName;
+		KeybindText.i18n = KeyBinding::getLocalizedName;
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
 		this.tutorialManager = new TutorialManager(this);
@@ -555,7 +555,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<>(
 			itemStack -> itemStack.getTooltip(null, TooltipContext.Default.field_8934)
 					.stream()
-					.map(component -> ChatFormat.stripFormatting(component.getString()).trim())
+					.map(text -> Formatting.strip(text.getString()).trim())
 					.filter(string -> !string.isEmpty()),
 			itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem()))
 		);
@@ -576,7 +576,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			recipeResultCollection -> recipeResultCollection.getAllRecipes()
 					.stream()
 					.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.field_8934).stream())
-					.map(component -> ChatFormat.stripFormatting(component.getString()).trim())
+					.map(text -> Formatting.strip(text.getString()).trim())
 					.filter(string -> !string.isEmpty()),
 			recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
 		);
@@ -721,7 +721,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 			for (ItemStack itemStack : defaultedList) {
 				String string = itemStack.getTranslationKey();
-				String string2 = new TranslatableComponent(string).getString();
+				String string2 = new TranslatableText(string).getString();
 				if (string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) {
 					LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
 				}
@@ -989,7 +989,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				this.server.stop(true);
 			}
 
-			this.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel")));
+			this.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1538,7 +1538,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connect(socketAddress);
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, component -> {
+		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
@@ -1547,7 +1547,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 	public void joinWorld(ClientWorld clientWorld) {
 		ProgressScreen progressScreen = new ProgressScreen();
-		progressScreen.method_15412(new TranslatableComponent("connect.joining"));
+		progressScreen.method_15412(new TranslatableText("connect.joining"));
 		this.reset(progressScreen);
 		this.world = clientWorld;
 		this.setWorld(clientWorld);

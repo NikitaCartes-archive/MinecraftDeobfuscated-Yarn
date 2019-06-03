@@ -1,11 +1,11 @@
 package net.minecraft.server.dedicated;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
@@ -28,12 +28,12 @@ public class ServerCommandOutput implements CommandOutput {
 
 	public ServerCommandSource createReconCommandSource() {
 		ServerWorld serverWorld = this.server.getWorld(DimensionType.field_13072);
-		return new ServerCommandSource(this, new Vec3d(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new TextComponent("Rcon"), this.server, null);
+		return new ServerCommandSource(this, new Vec3d(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null);
 	}
 
 	@Override
-	public void sendMessage(Component component) {
-		this.buffer.append(component.getString());
+	public void method_9203(Text text) {
+		this.buffer.append(text.getString());
 	}
 
 	@Override

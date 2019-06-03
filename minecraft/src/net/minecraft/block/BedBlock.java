@@ -16,17 +16,17 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -103,12 +103,12 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				);
 				return true;
 			} else if ((Boolean)blockState.get(OCCUPIED)) {
-				playerEntity.addChatMessage(new TranslatableComponent("block.minecraft.bed.occupied"), true);
+				playerEntity.method_7353(new TranslatableText("block.minecraft.bed.occupied"), true);
 				return true;
 			} else {
 				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
 					if (sleepFailureReason != null) {
-						playerEntity.addChatMessage(sleepFailureReason.getText(), true);
+						playerEntity.method_7353(sleepFailureReason.method_19206(), true);
 					}
 				});
 				return true;
@@ -263,7 +263,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					float f = entityType.getWidth() / 2.0F;
 					Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
 					return viewableWorld.doesNotCollide(
-							new BoundingBox(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f)
+							new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f)
 						)
 						? Optional.of(vec3d)
 						: Optional.empty();

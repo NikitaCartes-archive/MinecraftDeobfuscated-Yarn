@@ -15,11 +15,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashCallable;
@@ -324,7 +324,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				CrashReportSection crashReportSection = crashReport.addElement("Item being added");
 				crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
 				crashReportSection.add("Item data", itemStack.getDamage());
-				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.getCustomName().getString()));
+				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.method_7964().getString()));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -519,8 +519,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public Component getName() {
-		return new TranslatableComponent("container.inventory");
+	public Text method_5477() {
+		return new TranslatableText("container.inventory");
 	}
 
 	public boolean isUsingEffectiveTool(BlockState blockState) {

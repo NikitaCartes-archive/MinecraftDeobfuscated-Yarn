@@ -15,7 +15,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -33,9 +32,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -48,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
-	protected final Component title;
+	protected final Text title;
 	protected final List<Element> children = Lists.<Element>newArrayList();
 	@Nullable
 	protected MinecraftClient minecraft;
@@ -60,11 +60,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected TextRenderer font;
 	private URI clickedLink;
 
-	protected Screen(Component component) {
-		this.title = component;
+	protected Screen(Text text) {
+		this.title = text;
 	}
 
-	public Component getTitle() {
+	public Text getTitle() {
 		return this.title;
 	}
 
@@ -115,13 +115,13 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public List<String> getTooltipFromItem(ItemStack itemStack) {
-		List<Component> list = itemStack.getTooltip(
+		List<Text> list = itemStack.getTooltip(
 			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
-		for (Component component : list) {
-			list2.add(component.getFormattedText());
+		for (Text text : list) {
+			list2.add(text.asFormattedString());
 		}
 
 		return list2;
@@ -195,9 +195,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	protected void renderComponentHoverEffect(Component component, int i, int j) {
-		if (component != null && component.getStyle().getHoverEvent() != null) {
-			HoverEvent hoverEvent = component.getStyle().getHoverEvent();
+	protected void renderComponentHoverEffect(Text text, int i, int j) {
+		if (text != null && text.method_10866().getHoverEvent() != null) {
+			HoverEvent hoverEvent = text.method_10866().getHoverEvent();
 			if (hoverEvent.getAction() == HoverEvent.Action.field_11757) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
@@ -210,7 +210,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 
 				if (itemStack.isEmpty()) {
-					this.renderTooltip(ChatFormat.field_1061 + "Invalid Item!", i, j);
+					this.renderTooltip(Formatting.field_1061 + "Invalid Item!", i, j);
 				} else {
 					this.renderTooltip(itemStack, i, j);
 				}
@@ -219,9 +219,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					try {
 						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
-						Component component2 = Component.Serializer.fromJsonString(compoundTag.getString("name"));
-						if (component2 != null) {
-							list.add(component2.getFormattedText());
+						Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
+						if (text2 != null) {
+							list.add(text2.asFormattedString());
 						}
 
 						if (compoundTag.containsKey("type", 8)) {
@@ -232,11 +232,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 						list.add(compoundTag.getString("id"));
 						this.renderTooltip(list, i, j);
 					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.renderTooltip(ChatFormat.field_1061 + "Invalid Entity!", i, j);
+						this.renderTooltip(Formatting.field_1061 + "Invalid Entity!", i, j);
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11762) {
-				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
+				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
 			}
 
 			GlStateManager.disableLighting();
@@ -246,14 +246,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected void insertText(String string, boolean bl) {
 	}
 
-	public boolean handleComponentClicked(Component component) {
-		if (component == null) {
+	public boolean handleComponentClicked(Text text) {
+		if (text == null) {
 			return false;
 		} else {
-			ClickEvent clickEvent = component.getStyle().getClickEvent();
+			ClickEvent clickEvent = text.method_10866().getClickEvent();
 			if (hasShiftDown()) {
-				if (component.getStyle().getInsertion() != null) {
-					this.insertText(component.getStyle().getInsertion(), false);
+				if (text.method_10866().getInsertion() != null) {
+					this.insertText(text.method_10866().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {

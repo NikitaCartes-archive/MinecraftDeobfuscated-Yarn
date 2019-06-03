@@ -13,6 +13,7 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.VillagerProfession;
 
 public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	private Set<Item> items = ImmutableSet.of();
@@ -40,7 +41,8 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 			villagerEntity.talkWithVillager(villagerEntity2, l);
-			if (villagerEntity.wantsToStartBreeding() && villagerEntity2.canBreed()) {
+			if (villagerEntity.wantsToStartBreeding()
+				&& (villagerEntity.getVillagerData().getProfession() == VillagerProfession.field_17056 || villagerEntity2.canBreed())) {
 				giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
 			}
 
@@ -69,7 +71,13 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (set.contains(item)) {
-					int j = itemStack2.getCount() / 2;
+					int j;
+					if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
+						j = itemStack2.getCount() / 2;
+					} else {
+						j = itemStack2.getCount();
+					}
+
 					itemStack2.decrement(j);
 					itemStack = new ItemStack(item, j);
 					break;

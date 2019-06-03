@@ -21,13 +21,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.ResourcePackCreator;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -286,7 +286,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				"server",
 				true,
 				() -> new ZipResourcePack(file),
-				new TranslatableComponent("resourcePack.server.name"),
+				new TranslatableText("resourcePack.server.name"),
 				packResourceMetadata.getDescription(),
 				ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
 				ResourcePackContainer.InsertionPosition.field_14280,

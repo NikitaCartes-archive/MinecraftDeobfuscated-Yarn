@@ -35,7 +35,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -108,13 +108,13 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	@Override
-	public BoundingBox method_5708(Entity entity) {
+	public Box method_5708(Entity entity) {
 		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
 	@Nullable
 	@Override
-	public BoundingBox getCollisionBox() {
+	public Box getCollisionBox() {
 		return this.getBoundingBox();
 	}
 
@@ -415,13 +415,13 @@ public class BoatEntity extends Entity {
 	}
 
 	public float method_7544() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.maxY);
-		int l = MathHelper.ceil(boundingBox.maxY - this.fallVelocity);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+		Box box = this.getBoundingBox();
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.maxY);
+		int l = MathHelper.ceil(box.maxY - this.fallVelocity);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			label136:
@@ -458,15 +458,15 @@ public class BoatEntity extends Entity {
 	}
 
 	public float method_7548() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		BoundingBox boundingBox2 = new BoundingBox(boundingBox.minX, boundingBox.minY - 0.001, boundingBox.minZ, boundingBox.maxX, boundingBox.minY, boundingBox.maxZ);
-		int i = MathHelper.floor(boundingBox2.minX) - 1;
-		int j = MathHelper.ceil(boundingBox2.maxX) + 1;
-		int k = MathHelper.floor(boundingBox2.minY) - 1;
-		int l = MathHelper.ceil(boundingBox2.maxY) + 1;
-		int m = MathHelper.floor(boundingBox2.minZ) - 1;
-		int n = MathHelper.ceil(boundingBox2.maxZ) + 1;
-		VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox2);
+		Box box = this.getBoundingBox();
+		Box box2 = new Box(box.minX, box.minY - 0.001, box.minZ, box.maxX, box.minY, box.maxZ);
+		int i = MathHelper.floor(box2.minX) - 1;
+		int j = MathHelper.ceil(box2.maxX) + 1;
+		int k = MathHelper.floor(box2.minY) - 1;
+		int l = MathHelper.ceil(box2.maxY) + 1;
+		int m = MathHelper.floor(box2.minZ) - 1;
+		int n = MathHelper.ceil(box2.maxZ) + 1;
+		VoxelShape voxelShape = VoxelShapes.cuboid(box2);
 		float f = 0.0F;
 		int o = 0;
 
@@ -497,13 +497,13 @@ public class BoatEntity extends Entity {
 	}
 
 	private boolean checKBoatInWater() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.minY);
-		int l = MathHelper.ceil(boundingBox.minY + 0.001);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+		Box box = this.getBoundingBox();
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.minY + 0.001);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		boolean bl = false;
 		this.waterLevel = Double.MIN_VALUE;
 
@@ -516,7 +516,7 @@ public class BoatEntity extends Entity {
 						if (fluidState.matches(FluidTags.field_15517)) {
 							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
 							this.waterLevel = Math.max((double)f, this.waterLevel);
-							bl |= boundingBox.minY < (double)f;
+							bl |= box.minY < (double)f;
 						}
 					}
 				}
@@ -528,14 +528,14 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	private BoatEntity.Location getUnderWaterLocation() {
-		BoundingBox boundingBox = this.getBoundingBox();
-		double d = boundingBox.maxY + 0.001;
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.maxY);
+		Box box = this.getBoundingBox();
+		double d = box.maxY + 0.001;
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.maxY);
 		int l = MathHelper.ceil(d);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		boolean bl = false;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {

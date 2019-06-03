@@ -39,7 +39,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 			&& hitResult.getType() == HitResult.Type.field_1332
 			&& blockEntity.getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
 			this.disableLightmap(true);
-			this.renderName(blockEntity, ((Nameable)blockEntity).getDisplayName().getFormattedText(), d, e, f, 12);
+			this.renderName(blockEntity, ((Nameable)blockEntity).method_5476().asFormattedString(), d, e, f, 12);
 			this.disableLightmap(false);
 		}
 	}

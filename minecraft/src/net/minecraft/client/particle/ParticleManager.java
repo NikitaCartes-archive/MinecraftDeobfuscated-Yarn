@@ -47,7 +47,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
@@ -107,7 +107,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.field_11245, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.field_11250, new ElderGuardianAppearanceParticle.Factory());
 		this.registerFactory(ParticleTypes.field_11208, DamageParticle.EnchantedHitFactory::new);
-		this.registerFactory(ParticleTypes.field_11215, EnchantGlyphParticle.NautilusFactory::new);
+		this.registerFactory(ParticleTypes.field_11215, EnchantGlyphParticle.EnchantFactory::new);
 		this.registerFactory(ParticleTypes.field_11207, EndRodParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11226, SpellParticle.EntityFactory::new);
 		this.registerFactory(ParticleTypes.field_11221, new ExplosionEmitterParticle.Factory());
@@ -126,7 +126,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.field_11237, FireSmokeLargeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11239, LavaEmberParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11219, SuspendParticle.MyceliumFactory::new);
-		this.registerFactory(ParticleTypes.field_11229, EnchantGlyphParticle.EnchantFactory::new);
+		this.registerFactory(ParticleTypes.field_11229, EnchantGlyphParticle.NautilusFactory::new);
 		this.registerFactory(ParticleTypes.field_11224, NoteParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11203, ExplosionSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.field_11214, PortalParticle.Factory::new);
@@ -438,32 +438,32 @@ public class ParticleManager implements ResourceReloadListener {
 			int j = blockPos.getY();
 			int k = blockPos.getZ();
 			float f = 0.1F;
-			BoundingBox boundingBox = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
-			double d = (double)i + this.random.nextDouble() * (boundingBox.maxX - boundingBox.minX - 0.2F) + 0.1F + boundingBox.minX;
-			double e = (double)j + this.random.nextDouble() * (boundingBox.maxY - boundingBox.minY - 0.2F) + 0.1F + boundingBox.minY;
-			double g = (double)k + this.random.nextDouble() * (boundingBox.maxZ - boundingBox.minZ - 0.2F) + 0.1F + boundingBox.minZ;
+			Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
+			double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - 0.2F) + 0.1F + box.minX;
+			double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - 0.2F) + 0.1F + box.minY;
+			double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - 0.2F) + 0.1F + box.minZ;
 			if (direction == Direction.field_11033) {
-				e = (double)j + boundingBox.minY - 0.1F;
+				e = (double)j + box.minY - 0.1F;
 			}
 
 			if (direction == Direction.field_11036) {
-				e = (double)j + boundingBox.maxY + 0.1F;
+				e = (double)j + box.maxY + 0.1F;
 			}
 
 			if (direction == Direction.field_11043) {
-				g = (double)k + boundingBox.minZ - 0.1F;
+				g = (double)k + box.minZ - 0.1F;
 			}
 
 			if (direction == Direction.field_11035) {
-				g = (double)k + boundingBox.maxZ + 0.1F;
+				g = (double)k + box.maxZ + 0.1F;
 			}
 
 			if (direction == Direction.field_11039) {
-				d = (double)i + boundingBox.minX - 0.1F;
+				d = (double)i + box.minX - 0.1F;
 			}
 
 			if (direction == Direction.field_11034) {
-				d = (double)i + boundingBox.maxX + 0.1F;
+				d = (double)i + box.maxX + 0.1F;
 			}
 
 			this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).method_3087(0.6F));

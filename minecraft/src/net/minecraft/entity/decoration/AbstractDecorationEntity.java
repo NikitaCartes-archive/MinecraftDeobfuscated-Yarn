@@ -16,7 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -81,7 +81,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			j /= 32.0;
 			k /= 32.0;
 			l /= 32.0;
-			this.setBoundingBox(new BoundingBox(d - j, e - k, f - l, d + j, e + k, f + l));
+			this.setBoundingBox(new Box(d - j, e - k, f - l, d + j, e + k, f + l));
 		}
 	}
 

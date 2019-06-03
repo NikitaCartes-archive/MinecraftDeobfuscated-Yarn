@@ -1,4 +1,4 @@
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -15,14 +15,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.ChatUtil;
 
-public class ScoreComponent extends BaseComponent implements ComponentWithSelectors {
+public class ScoreText extends BaseText implements ParsableText {
 	private final String name;
 	@Nullable
 	private final EntitySelector selector;
 	private final String objective;
-	private String text = "";
+	private String score = "";
 
-	public ScoreComponent(String string, String string2) {
+	public ScoreText(String string, String string2) {
 		this.name = string;
 		this.objective = string2;
 		EntitySelector entitySelector = null;
@@ -44,37 +44,37 @@ public class ScoreComponent extends BaseComponent implements ComponentWithSelect
 		return this.objective;
 	}
 
-	public void setText(String string) {
-		this.text = string;
+	public void setScore(String string) {
+		this.score = string;
 	}
 
 	@Override
-	public String getText() {
-		return this.text;
+	public String asString() {
+		return this.score;
 	}
 
-	private void resolve(ServerCommandSource serverCommandSource) {
+	private void parse(ServerCommandSource serverCommandSource) {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.text)) {
+		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.score)) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
 			if (scoreboard.playerHasObjective(this.name, scoreboardObjective)) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(this.name, scoreboardObjective);
-				this.setText(String.format("%d", scoreboardPlayerScore.getScore()));
+				this.setScore(String.format("%d", scoreboardPlayerScore.getScore()));
 			} else {
-				this.text = "";
+				this.score = "";
 			}
 		}
 	}
 
-	public ScoreComponent method_10929() {
-		ScoreComponent scoreComponent = new ScoreComponent(this.name, this.objective);
-		scoreComponent.setText(this.text);
-		return scoreComponent;
+	public ScoreText method_10929() {
+		ScoreText scoreText = new ScoreText(this.name, this.objective);
+		scoreText.setScore(this.score);
+		return scoreText;
 	}
 
 	@Override
-	public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+	public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		if (serverCommandSource == null) {
 			return this.method_10929();
 		} else {
@@ -95,10 +95,10 @@ public class ScoreComponent extends BaseComponent implements ComponentWithSelect
 			}
 
 			String string2 = entity != null && string.equals("*") ? entity.getEntityName() : string;
-			ScoreComponent scoreComponent = new ScoreComponent(string2, this.objective);
-			scoreComponent.setText(this.text);
-			scoreComponent.resolve(serverCommandSource);
-			return scoreComponent;
+			ScoreText scoreText = new ScoreText(string2, this.objective);
+			scoreText.setScore(this.score);
+			scoreText.parse(serverCommandSource);
+			return scoreText;
 		}
 	}
 
@@ -106,11 +106,11 @@ public class ScoreComponent extends BaseComponent implements ComponentWithSelect
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (!(object instanceof ScoreComponent)) {
+		} else if (!(object instanceof ScoreText)) {
 			return false;
 		} else {
-			ScoreComponent scoreComponent = (ScoreComponent)object;
-			return this.name.equals(scoreComponent.name) && this.objective.equals(scoreComponent.objective) && super.equals(object);
+			ScoreText scoreText = (ScoreText)object;
+			return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class ScoreComponent extends BaseComponent implements ComponentWithSelect
 			+ ", siblings="
 			+ this.siblings
 			+ ", style="
-			+ this.getStyle()
+			+ this.method_10866()
 			+ '}';
 	}
 }

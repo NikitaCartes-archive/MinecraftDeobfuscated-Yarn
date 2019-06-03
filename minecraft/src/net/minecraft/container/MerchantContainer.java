@@ -22,6 +22,8 @@ public class MerchantContainer extends Container {
 	private int levelProgress;
 	@Environment(EnvType.CLIENT)
 	private boolean levelled;
+	@Environment(EnvType.CLIENT)
+	private boolean canRefreshTrades;
 
 	public MerchantContainer(int i, PlayerInventory playerInventory) {
 		this(i, playerInventory, new SimpleTrader(playerInventory.player));
@@ -89,6 +91,16 @@ public class MerchantContainer extends Container {
 	@Environment(EnvType.CLIENT)
 	public void setLevelProgress(int i) {
 		this.levelProgress = i;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void setRefreshTrades(boolean bl) {
+		this.canRefreshTrades = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean canRefreshTrades() {
+		return this.canRefreshTrades;
 	}
 
 	@Override

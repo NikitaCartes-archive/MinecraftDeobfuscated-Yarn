@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 public class RevengeGoal extends TrackTargetGoal {
 	private static final TargetPredicate VALID_AVOIDABLES_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
@@ -63,9 +63,7 @@ public class RevengeGoal extends TrackTargetGoal {
 		double d = this.getFollowRange();
 		List<MobEntity> list = this.mob
 			.world
-			.getEntities(
-				this.mob.getClass(), new BoundingBox(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d)
-			);
+			.getEntities(this.mob.getClass(), new Box(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d));
 		Iterator var4 = list.iterator();
 
 		while (true) {

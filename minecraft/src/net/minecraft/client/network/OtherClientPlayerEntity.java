@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -92,7 +92,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Component component) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(component);
+	public void method_9203(Text text) {
+		MinecraftClient.getInstance().inGameHud.getChatHud().method_1812(text);
 	}
 }

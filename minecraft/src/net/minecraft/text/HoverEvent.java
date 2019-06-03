@@ -1,4 +1,4 @@
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -6,18 +6,18 @@ import java.util.stream.Collectors;
 
 public class HoverEvent {
 	private final HoverEvent.Action action;
-	private final Component value;
+	private final Text value;
 
-	public HoverEvent(HoverEvent.Action action, Component component) {
+	public HoverEvent(HoverEvent.Action action, Text text) {
 		this.action = action;
-		this.value = component;
+		this.value = text;
 	}
 
 	public HoverEvent.Action getAction() {
 		return this.action;
 	}
 
-	public Component getValue() {
+	public Text getValue() {
 		return this.value;
 	}
 
@@ -50,26 +50,26 @@ public class HoverEvent {
 		field_11757("show_item", true),
 		field_11761("show_entity", true);
 
-		private static final Map<String, HoverEvent.Action> ACTIONS = (Map<String, HoverEvent.Action>)Arrays.stream(values())
+		private static final Map<String, HoverEvent.Action> BY_NAME = (Map<String, HoverEvent.Action>)Arrays.stream(values())
 			.collect(Collectors.toMap(HoverEvent.Action::getName, action -> action));
-		private final boolean safe;
+		private final boolean userDefinable;
 		private final String name;
 
 		private Action(String string2, boolean bl) {
 			this.name = string2;
-			this.safe = bl;
+			this.userDefinable = bl;
 		}
 
-		public boolean isSafe() {
-			return this.safe;
+		public boolean isUserDefinable() {
+			return this.userDefinable;
 		}
 
 		public String getName() {
 			return this.name;
 		}
 
-		public static HoverEvent.Action get(String string) {
-			return (HoverEvent.Action)ACTIONS.get(string);
+		public static HoverEvent.Action byName(String string) {
+			return (HoverEvent.Action)BY_NAME.get(string);
 		}
 	}
 }

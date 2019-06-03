@@ -71,10 +71,6 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
@@ -89,13 +85,17 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -514,14 +514,14 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.field_7483 = this.field_7483 + (f - this.field_7483) * 0.4F;
 		if (this.getHealth() > 0.0F && !this.isSpectator()) {
-			BoundingBox boundingBox;
+			Box box;
 			if (this.hasVehicle() && !this.getVehicle().removed) {
-				boundingBox = this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0);
+				box = this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0);
 			} else {
-				boundingBox = this.getBoundingBox().expand(1.0, 0.5, 1.0);
+				box = this.getBoundingBox().expand(1.0, 0.5, 1.0);
 			}
 
-			List<Entity> list = this.world.getEntities(this, boundingBox);
+			List<Entity> list = this.world.getEntities(this, box);
 
 			for (int i = 0; i < list.size(); i++) {
 				Entity entity = (Entity)list.get(i);
@@ -907,7 +907,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return OptionalInt.empty();
 	}
 
-	public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl) {
+	public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
 	}
 
 	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
@@ -1216,7 +1216,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				List<HostileEntity> list = this.world
 					.getEntities(
 						HostileEntity.class,
-						new BoundingBox(
+						new Box(
 							(double)blockPos.getX() - 8.0,
 							(double)blockPos.getY() - 5.0,
 							(double)blockPos.getZ() - 8.0,
@@ -1307,7 +1307,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.sleepTimer;
 	}
 
-	public void addChatMessage(Component component, boolean bl) {
+	public void method_7353(Text text, boolean bl) {
 	}
 
 	public BlockPos getSpawnPosition() {
@@ -1647,8 +1647,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public Component getName() {
-		return new TextComponent(this.gameProfile.getName());
+	public Text method_5477() {
+		return new LiteralText(this.gameProfile.getName());
 	}
 
 	public EnderChestInventory getEnderChestInventory() {
@@ -1762,21 +1762,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public Component getDisplayName() {
-		Component component = Team.modifyText(this.getScoreboardTeam(), this.getName());
-		return this.addTellClickEvent(component);
+	public Text method_5476() {
+		Text text = Team.method_1142(this.getScoreboardTeam(), this.method_5477());
+		return this.method_7299(text);
 	}
 
-	public Component getNameAndUuid() {
-		return new TextComponent("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
+	public Text method_7306() {
+		return new LiteralText("").append(this.method_5477()).append(" (").append(this.gameProfile.getId().toString()).append(")");
 	}
 
-	private Component addTellClickEvent(Component component) {
+	private Text method_7299(Text text) {
 		String string = this.getGameProfile().getName();
-		return component.modifyStyle(
-			style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tell " + string + " "))
-					.setHoverEvent(this.getComponentHoverEvent())
-					.setInsertion(string)
+		return text.styled(
+			style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tell " + string + " ")).setHoverEvent(this.method_5769()).setInsertion(string)
 		);
 	}
 
@@ -1989,26 +1987,26 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public static enum SleepFailureReason {
 		field_7528,
-		field_7529(new TranslatableComponent("block.minecraft.bed.no_sleep")),
-		field_7530(new TranslatableComponent("block.minecraft.bed.too_far_away")),
-		field_18592(new TranslatableComponent("block.minecraft.bed.obstructed")),
+		field_7529(new TranslatableText("block.minecraft.bed.no_sleep")),
+		field_7530(new TranslatableText("block.minecraft.bed.too_far_away")),
+		field_18592(new TranslatableText("block.minecraft.bed.obstructed")),
 		field_7531,
-		field_7532(new TranslatableComponent("block.minecraft.bed.not_safe"));
+		field_7532(new TranslatableText("block.minecraft.bed.not_safe"));
 
 		@Nullable
-		private final Component text;
+		private final Text field_18593;
 
 		private SleepFailureReason() {
-			this.text = null;
+			this.field_18593 = null;
 		}
 
-		private SleepFailureReason(Component component) {
-			this.text = component;
+		private SleepFailureReason(Text text) {
+			this.field_18593 = text;
 		}
 
 		@Nullable
-		public Component getText() {
-			return this.text;
+		public Text method_19206() {
+			return this.field_18593;
 		}
 	}
 }

@@ -9,19 +9,19 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -31,8 +31,8 @@ public class PlayerListHud extends DrawableHelper {
 	private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new PlayerListHud.EntryOrderComparator());
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
-	private Component footer;
-	private Component header;
+	private Text field_2154;
+	private Text field_2153;
 	private long showTime;
 	private boolean visible;
 
@@ -41,10 +41,10 @@ public class PlayerListHud extends DrawableHelper {
 		this.inGameHud = inGameHud;
 	}
 
-	public Component method_1918(PlayerListEntry playerListEntry) {
-		return playerListEntry.getDisplayName() != null
-			? playerListEntry.getDisplayName()
-			: Team.modifyText(playerListEntry.getScoreboardTeam(), new TextComponent(playerListEntry.getProfile().getName()));
+	public Text method_1918(PlayerListEntry playerListEntry) {
+		return playerListEntry.method_2971() != null
+			? playerListEntry.method_2971()
+			: Team.method_1142(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName()));
 	}
 
 	public void tick(boolean bl) {
@@ -62,7 +62,7 @@ public class PlayerListHud extends DrawableHelper {
 		int k = 0;
 
 		for (PlayerListEntry playerListEntry : list) {
-			int l = this.client.textRenderer.getStringWidth(this.method_1918(playerListEntry).getFormattedText());
+			int l = this.client.textRenderer.getStringWidth(this.method_1918(playerListEntry).asFormattedString());
 			j = Math.max(j, l);
 			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.field_1471) {
 				l = this.client.textRenderer.getStringWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
@@ -96,8 +96,8 @@ public class PlayerListHud extends DrawableHelper {
 		int r = 10;
 		int s = p * l + (l - 1) * 5;
 		List<String> list2 = null;
-		if (this.header != null) {
-			list2 = this.client.textRenderer.wrapStringToWidthAsList(this.header.getFormattedText(), i - 50);
+		if (this.field_2153 != null) {
+			list2 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2153.asFormattedString(), i - 50);
 
 			for (String string : list2) {
 				s = Math.max(s, this.client.textRenderer.getStringWidth(string));
@@ -105,8 +105,8 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		List<String> list3 = null;
-		if (this.footer != null) {
-			list3 = this.client.textRenderer.wrapStringToWidthAsList(this.footer.getFormattedText(), i - 50);
+		if (this.field_2154 != null) {
+			list3 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2154.asFormattedString(), i - 50);
 
 			for (String string2 : list3) {
 				s = Math.max(s, this.client.textRenderer.getStringWidth(string2));
@@ -161,9 +161,9 @@ public class PlayerListHud extends DrawableHelper {
 					x += 9;
 				}
 
-				String string3 = this.method_1918(playerListEntry2).getFormattedText();
+				String string3 = this.method_1918(playerListEntry2).asFormattedString();
 				if (playerListEntry2.getGameMode() == GameMode.field_9219) {
-					this.client.textRenderer.drawWithShadow(ChatFormat.field_1056 + string3, (float)x, (float)y, -1862270977);
+					this.client.textRenderer.drawWithShadow(Formatting.field_1056 + string3, (float)x, (float)y, -1862270977);
 				} else {
 					this.client.textRenderer.drawWithShadow(string3, (float)x, (float)y, -1);
 				}
@@ -282,22 +282,22 @@ public class PlayerListHud extends DrawableHelper {
 				}
 			}
 		} else {
-			String string3 = ChatFormat.field_1054 + "" + l;
+			String string3 = Formatting.field_1054 + "" + l;
 			this.client.textRenderer.drawWithShadow(string3, (float)(k - this.client.textRenderer.getStringWidth(string3)), (float)i, 16777215);
 		}
 	}
 
-	public void setFooter(@Nullable Component component) {
-		this.footer = component;
+	public void method_1924(@Nullable Text text) {
+		this.field_2154 = text;
 	}
 
-	public void setHeader(@Nullable Component component) {
-		this.header = component;
+	public void method_1925(@Nullable Text text) {
+		this.field_2153 = text;
 	}
 
 	public void clear() {
-		this.header = null;
-		this.footer = null;
+		this.field_2153 = null;
+		this.field_2154 = null;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
@@ -24,8 +24,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Component getName() {
-			return new TextComponent("");
+		public Text method_16892() {
+			return new LiteralText("");
 		}
 
 		@Override
@@ -127,8 +127,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Component getName() {
-			return this.direction < 0 ? new TranslatableComponent("spectatorMenu.previous_page") : new TranslatableComponent("spectatorMenu.next_page");
+		public Text method_16892() {
+			return this.direction < 0 ? new TranslatableText("spectatorMenu.previous_page") : new TranslatableText("spectatorMenu.next_page");
 		}
 
 		@Override
@@ -158,8 +158,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Component getName() {
-			return new TranslatableComponent("spectatorMenu.close");
+		public Text method_16892() {
+			return new TranslatableText("spectatorMenu.close");
 		}
 
 		@Override

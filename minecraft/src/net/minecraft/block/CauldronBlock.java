@@ -30,7 +30,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CauldronBlock extends Block {
-	public static final IntProperty field_10745 = Properties.field_12513;
+	public static final IntProperty LEVEL = Properties.LEVEL_3;
 	private static final VoxelShape RAY_TRACE_SHAPE = createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
 	protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(
 		VoxelShapes.fullCube(),
@@ -45,7 +45,7 @@ public class CauldronBlock extends Block {
 
 	public CauldronBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10745, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CauldronBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		int i = (Integer)blockState.get(field_10745);
+		int i = (Integer)blockState.get(LEVEL);
 		float f = (float)blockPos.getY() + (6.0F + (float)(3 * i)) / 16.0F;
 		if (!world.isClient && entity.isOnFire() && i > 0 && entity.getBoundingBox().minY <= (double)f) {
 			entity.extinguish();
@@ -79,7 +79,7 @@ public class CauldronBlock extends Block {
 		if (itemStack.isEmpty()) {
 			return true;
 		} else {
-			int i = (Integer)blockState.get(field_10745);
+			int i = (Integer)blockState.get(LEVEL);
 			Item item = itemStack.getItem();
 			if (item == Items.field_8705) {
 				if (i < 3 && !world.isClient) {
@@ -200,7 +200,7 @@ public class CauldronBlock extends Block {
 	}
 
 	public void setLevel(World world, BlockPos blockPos, BlockState blockState, int i) {
-		world.setBlockState(blockPos, blockState.with(field_10745, Integer.valueOf(MathHelper.clamp(i, 0, 3))), 2);
+		world.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(MathHelper.clamp(i, 0, 3))), 2);
 		world.updateHorizontalAdjacent(blockPos, this);
 	}
 
@@ -210,8 +210,8 @@ public class CauldronBlock extends Block {
 			float f = world.getBiome(blockPos).getTemperature(blockPos);
 			if (!(f < 0.15F)) {
 				BlockState blockState = world.getBlockState(blockPos);
-				if ((Integer)blockState.get(field_10745) < 3) {
-					world.setBlockState(blockPos, blockState.cycle(field_10745), 2);
+				if ((Integer)blockState.get(LEVEL) < 3) {
+					world.setBlockState(blockPos, blockState.cycle(LEVEL), 2);
 				}
 			}
 		}
@@ -224,12 +224,12 @@ public class CauldronBlock extends Block {
 
 	@Override
 	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return (Integer)blockState.get(field_10745);
+		return (Integer)blockState.get(LEVEL);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_10745);
+		builder.add(LEVEL);
 	}
 
 	@Override

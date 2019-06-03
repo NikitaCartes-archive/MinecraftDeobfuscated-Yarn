@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -29,8 +28,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.CommandSource;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.CommandBlockExecutor;
@@ -52,7 +52,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public AbstractCommandBlockScreen() {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected void updateTrackedOutput() {
 		if (this.getCommandExecutor().isTrackingOutput()) {
 			this.toggleTrackingOutputButton.setMessage("O");
-			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
+			this.previousOutputTextField.setText(this.getCommandExecutor().method_8292().getString());
 		} else {
 			this.toggleTrackingOutputButton.setMessage("X");
 			this.previousOutputTextField.setText("-");
@@ -115,7 +115,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 		this.syncSettingsToServer(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
-			commandBlockExecutor.setLastOutput(null);
+			commandBlockExecutor.method_8291(null);
 		}
 
 		this.minecraft.openScreen(null);
@@ -226,7 +226,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.field_2757 = 0;
 		this.field_2756 = this.width;
 		if (this.exceptions.isEmpty()) {
-			this.method_2356(ChatFormat.field_1080);
+			this.method_2356(Formatting.field_1080);
 		}
 
 		this.suggestionWindow = null;
@@ -239,7 +239,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		return this.parsedCommand != null ? ChatScreen.getRenderText(this.parsedCommand, string, i) : string;
 	}
 
-	private void method_2356(ChatFormat chatFormat) {
+	private void method_2356(Formatting formatting) {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.minecraft
@@ -252,7 +252,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
-				list.add(chatFormat + (String)entry.getValue());
+				list.add(formatting + (String)entry.getValue());
 				i = Math.max(i, this.font.getStringWidth((String)entry.getValue()));
 			}
 		}
@@ -403,7 +403,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			if (bl5) {
 				Message message = ((Suggestion)this.suggestions.getList().get(this.selection)).getTooltip();
 				if (message != null) {
-					AbstractCommandBlockScreen.this.renderTooltip(Components.message(message).getFormattedText(), i, j);
+					AbstractCommandBlockScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), i, j);
 				}
 			}
 		}

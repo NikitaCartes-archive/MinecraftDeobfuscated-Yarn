@@ -18,7 +18,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SnowBlock extends Block {
-	public static final IntProperty field_11518 = Properties.field_12536;
+	public static final IntProperty LAYERS = Properties.LAYERS;
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[]{
 		VoxelShapes.empty(),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
@@ -33,14 +33,14 @@ public class SnowBlock extends Block {
 
 	protected SnowBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11518, Integer.valueOf(1)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LAYERS, Integer.valueOf(1)));
 	}
 
 	@Override
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
-				return (Integer)blockState.get(field_11518) < 5;
+				return (Integer)blockState.get(LAYERS) < 5;
 			case field_48:
 				return false;
 			case field_51:
@@ -52,12 +52,12 @@ public class SnowBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return LAYERS_TO_SHAPE[blockState.get(field_11518)];
+		return LAYERS_TO_SHAPE[blockState.get(LAYERS)];
 	}
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return LAYERS_TO_SHAPE[blockState.get(field_11518) - 1];
+		return LAYERS_TO_SHAPE[blockState.get(LAYERS) - 1];
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class SnowBlock extends Block {
 		Block block = blockState2.getBlock();
 		return block != Blocks.field_10295 && block != Blocks.field_10225 && block != Blocks.field_10499
 			? Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.field_11036)
-				|| block == this && (Integer)blockState2.get(field_11518) == 8
+				|| block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}
 
@@ -94,7 +94,7 @@ public class SnowBlock extends Block {
 
 	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		int i = (Integer)blockState.get(field_11518);
+		int i = (Integer)blockState.get(LAYERS);
 		if (itemPlacementContext.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else {
@@ -107,8 +107,8 @@ public class SnowBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		if (blockState.getBlock() == this) {
-			int i = (Integer)blockState.get(field_11518);
-			return blockState.with(field_11518, Integer.valueOf(Math.min(8, i + 1)));
+			int i = (Integer)blockState.get(LAYERS);
+			return blockState.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {
 			return super.getPlacementState(itemPlacementContext);
 		}
@@ -116,6 +116,6 @@ public class SnowBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11518);
+		builder.add(LAYERS);
 	}
 }

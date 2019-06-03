@@ -48,15 +48,11 @@ public class ChunkRenderWorker implements Runnable {
 		}
 	}
 
-	protected void runTask(ChunkRenderTask chunkRenderTask) throws InterruptedException {
+	void runTask(ChunkRenderTask chunkRenderTask) throws InterruptedException {
 		chunkRenderTask.getLock().lock();
 
 		try {
-			if (chunkRenderTask.getStage() != ChunkRenderTask.Stage.field_4422) {
-				if (!chunkRenderTask.isCancelled()) {
-					LOGGER.warn("Chunk render task was {} when I expected it to be pending; ignoring task", chunkRenderTask.getStage());
-				}
-
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4422)) {
 				return;
 			}
 
@@ -70,7 +66,19 @@ public class ChunkRenderWorker implements Runnable {
 			chunkRenderTask.getLock().unlock();
 		}
 
-		chunkRenderTask.setBufferBuilders(this.getBufferBuilders());
+		final BlockLayeredBufferBuilder blockLayeredBufferBuilder = this.getBufferBuilders();
+		chunkRenderTask.getLock().lock();
+
+		try {
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4424)) {
+				this.freeRenderTask(blockLayeredBufferBuilder);
+				return;
+			}
+		} finally {
+			chunkRenderTask.getLock().unlock();
+		}
+
+		chunkRenderTask.setBufferBuilders(blockLayeredBufferBuilder);
 		Vec3d vec3d = this.batcher.getCameraPosition();
 		float f = (float)vec3d.x;
 		float g = (float)vec3d.y;
@@ -85,12 +93,8 @@ public class ChunkRenderWorker implements Runnable {
 		chunkRenderTask.getLock().lock();
 
 		try {
-			if (chunkRenderTask.getStage() != ChunkRenderTask.Stage.field_4424) {
-				if (!chunkRenderTask.isCancelled()) {
-					LOGGER.warn("Chunk render task was {} when I expected it to be compiling; aborting task", chunkRenderTask.getStage());
-				}
-
-				this.freeRenderTask(chunkRenderTask);
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4424)) {
+				this.freeRenderTask(blockLayeredBufferBuilder);
 				return;
 			}
 
@@ -129,22 +133,18 @@ public class ChunkRenderWorker implements Runnable {
 			);
 		}
 
-		ListenableFuture<List<Object>> listenableFuture = Futures.allAsList(list);
+		ListenableFuture<List<Void>> listenableFuture = Futures.allAsList(list);
 		chunkRenderTask.addCompletionAction(() -> listenableFuture.cancel(false));
-		Futures.addCallback(listenableFuture, new FutureCallback<List<Object>>() {
-			public void method_3617(@Nullable List<Object> list) {
-				ChunkRenderWorker.this.freeRenderTask(chunkRenderTask);
+		Futures.addCallback(listenableFuture, new FutureCallback<List<Void>>() {
+			public void method_3617(@Nullable List<Void> list) {
+				ChunkRenderWorker.this.freeRenderTask(blockLayeredBufferBuilder);
 				chunkRenderTask.getLock().lock();
 
-				label43: {
+				label32: {
 					try {
-						if (chunkRenderTask.getStage() == ChunkRenderTask.Stage.field_4421) {
+						if (ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4421)) {
 							chunkRenderTask.setStage(ChunkRenderTask.Stage.field_4423);
-							break label43;
-						}
-
-						if (!chunkRenderTask.isCancelled()) {
-							ChunkRenderWorker.LOGGER.warn("Chunk render task was {} when I expected it to be uploading; aborting task", chunkRenderTask.getStage());
+							break label32;
 						}
 					} finally {
 						chunkRenderTask.getLock().unlock();
@@ -158,7 +158,7 @@ public class ChunkRenderWorker implements Runnable {
 
 			@Override
 			public void onFailure(Throwable throwable) {
-				ChunkRenderWorker.this.freeRenderTask(chunkRenderTask);
+				ChunkRenderWorker.this.freeRenderTask(blockLayeredBufferBuilder);
 				if (!(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
 					MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
 				}
@@ -166,13 +166,25 @@ public class ChunkRenderWorker implements Runnable {
 		});
 	}
 
+	private static boolean method_20719(ChunkRenderTask chunkRenderTask, ChunkRenderTask.Stage stage) {
+		if (chunkRenderTask.getStage() != stage) {
+			if (!chunkRenderTask.isCancelled()) {
+				LOGGER.warn("Chunk render task was {} when I expected it to be {}; ignoring task", chunkRenderTask.getStage(), stage);
+			}
+
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	private BlockLayeredBufferBuilder getBufferBuilders() throws InterruptedException {
 		return this.bufferBuilders != null ? this.bufferBuilders : this.batcher.getNextAvailableBuffer();
 	}
 
-	private void freeRenderTask(ChunkRenderTask chunkRenderTask) {
-		if (this.bufferBuilders == null) {
-			this.batcher.addAvailableBuffer(chunkRenderTask.getBufferBuilders());
+	private void freeRenderTask(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+		if (blockLayeredBufferBuilder != this.bufferBuilders) {
+			this.batcher.addAvailableBuffer(blockLayeredBufferBuilder);
 		}
 	}
 

@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -328,10 +329,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 		}
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return this.y > 45.0 && this.y < (double)iWorld.getSeaLevel() && iWorld.getBiome(new BlockPos(this)) != Biomes.field_9423
-			|| iWorld.getBiome(new BlockPos(this)) != Biomes.field_9446 && super.canSpawn(iWorld, spawnType);
+	public static boolean method_20664(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return blockPos.getY() > 45
+			&& blockPos.getY() < iWorld.getSeaLevel()
+			&& (iWorld.getBiome(blockPos) != Biomes.field_9423 || iWorld.getBiome(blockPos) != Biomes.field_9446)
+			&& iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
 	@Override

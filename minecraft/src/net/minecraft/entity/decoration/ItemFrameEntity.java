@@ -25,7 +25,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
@@ -100,7 +100,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			e /= 32.0;
 			f /= 32.0;
 			g /= 32.0;
-			this.setBoundingBox(new BoundingBox(this.x - e, this.y - f, this.z - g, this.x + e, this.y + f, this.z + g));
+			this.setBoundingBox(new Box(this.x - e, this.y - f, this.z - g, this.x + e, this.y + f, this.z + g));
 		}
 	}
 

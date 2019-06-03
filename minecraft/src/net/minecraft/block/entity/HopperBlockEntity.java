@@ -20,14 +20,14 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -84,8 +84,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.hopper");
+	protected Text method_17823() {
+		return new TranslatableText("container.hopper");
 	}
 
 	@Override
@@ -325,10 +325,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			.getBoundingBoxes()
 			.stream()
 			.flatMap(
-				boundingBox -> hopper.getWorld()
-						.getEntities(
-							ItemEntity.class, boundingBox.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY
-						)
+				box -> hopper.getWorld()
+						.getEntities(ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY)
 						.stream()
 			)
 			.collect(Collectors.toList());
@@ -358,9 +356,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.getEntities(
-				(Entity)null, new BoundingBox(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES
-			);
+			List<Entity> list = world.getEntities((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES);
 			if (!list.isEmpty()) {
 				inventory = (Inventory)list.get(world.random.nextInt(list.size()));
 			}

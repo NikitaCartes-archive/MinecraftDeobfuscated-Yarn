@@ -5,15 +5,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HopperScreen extends AbstractContainerScreen<HopperContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/hopper.png");
 
-	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, Component component) {
-		super(hopperContainer, playerInventory, component);
+	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, Text text) {
+		super(hopperContainer, playerInventory, text);
 		this.passEvents = false;
 		this.containerHeight = 133;
 	}
@@ -27,8 +27,8 @@ public class HopperScreen extends AbstractContainerScreen<HopperContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.font.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

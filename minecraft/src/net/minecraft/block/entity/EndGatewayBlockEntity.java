@@ -14,7 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -82,7 +82,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.getEntities(Entity.class, new BoundingBox(this.getPos()));
+			List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()));
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(0));
 			}

@@ -11,9 +11,9 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameMode;
@@ -40,8 +40,8 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 		Blocks.field_10098,
 		Blocks.field_10035
 	);
-	private static final Component TITLE = new TranslatableComponent("tutorial.find_tree.title");
-	private static final Component DESCRIPTION = new TranslatableComponent("tutorial.find_tree.description");
+	private static final Text field_5631 = new TranslatableText("tutorial.find_tree.title");
+	private static final Text field_5628 = new TranslatableText("tutorial.find_tree.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -74,7 +74,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 6000 && this.toast == null) {
-				this.toast = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, false);
+				this.toast = new TutorialToast(TutorialToast.Type.field_2235, field_5631, field_5628, false);
 				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}

@@ -20,12 +20,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class KelpBlock extends Block implements FluidFillable {
-	public static final IntProperty field_11194 = Properties.field_12517;
+	public static final IntProperty AGE = Properties.AGE_25;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	protected KelpBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11194, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class KelpBlock extends Block implements FluidFillable {
 	}
 
 	public BlockState getPlacementState(IWorld iWorld) {
-		return this.getDefaultState().with(field_11194, Integer.valueOf(iWorld.getRandom().nextInt(25)));
+		return this.getDefaultState().with(AGE, Integer.valueOf(iWorld.getRandom().nextInt(25)));
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class KelpBlock extends Block implements FluidFillable {
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(field_11194) < 25 && random.nextDouble() < 0.14) {
-				world.setBlockState(blockPos2, blockState.cycle(field_11194));
+			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(AGE) < 25 && random.nextDouble() < 0.14) {
+				world.setBlockState(blockPos2, blockState.cycle(AGE));
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11194);
+		builder.add(AGE);
 	}
 
 	@Override

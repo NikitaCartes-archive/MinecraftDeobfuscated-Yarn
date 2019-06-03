@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -20,21 +19,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -89,11 +89,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 				boolean bl;
 				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.field_12065) {
-					BoundingBox boundingBox = VoxelShapes.fullCube()
+					Box box = VoxelShapes.fullCube()
 						.getBoundingBox()
 						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
 						.shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
-					bl = world.doesNotCollide(boundingBox.offset(blockPos.offset(direction)));
+					bl = world.doesNotCollide(box.offset(blockPos.offset(direction)));
 				} else {
 					bl = true;
 				}
@@ -133,7 +133,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				}
 
 				if (shulkerBoxBlockEntity.hasCustomName()) {
-					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
+					itemStack.method_7977(shulkerBoxBlockEntity.method_5797());
 				}
 
 				ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
@@ -167,7 +167,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				((ShulkerBoxBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((ShulkerBoxBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}
@@ -186,12 +186,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Component> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Text> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, blockView, list, tooltipContext);
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("LootTable", 8)) {
-				list.add(new TextComponent("???????"));
+				list.add(new LiteralText("???????"));
 			}
 
 			if (compoundTag.containsKey("Items", 9)) {
@@ -205,15 +205,15 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							Component component = itemStack2.getCustomName().copy();
-							component.append(" x").append(String.valueOf(itemStack2.getCount()));
-							list.add(component);
+							Text text = itemStack2.method_7964().deepCopy();
+							text.append(" x").append(String.valueOf(itemStack2.getCount()));
+							list.add(text);
 						}
 					}
 				}
 
 				if (j - i > 0) {
-					list.add(new TranslatableComponent("container.shulkerBox.more", j - i).applyFormat(ChatFormat.field_1056));
+					list.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.field_1056));
 				}
 			}
 		}

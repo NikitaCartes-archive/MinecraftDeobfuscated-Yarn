@@ -33,7 +33,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -124,8 +124,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void damageEntitiesHurtByWater() {
-		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, boundingBox, WATER_HURTS);
+		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, box, WATER_HURTS);
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
@@ -137,8 +137,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void method_7498(List<StatusEffectInstance> list, @Nullable Entity entity) {
-		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, boundingBox);
+		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.method_6086()) {

@@ -55,7 +55,7 @@ public class PortalBlock extends Block {
 			}
 
 			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
-				Entity entity = EntityType.field_6050.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
+				Entity entity = EntityType.field_6050.method_5899(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}

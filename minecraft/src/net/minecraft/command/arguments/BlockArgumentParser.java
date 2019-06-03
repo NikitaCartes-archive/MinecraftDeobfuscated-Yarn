@@ -20,36 +20,34 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class BlockArgumentParser {
-	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("argument.block.tag.disallowed")
-	);
+	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.block.tag.disallowed"));
 	public static final DynamicCommandExceptionType INVALID_BLOCK_ID_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("argument.block.id.invalid", object)
+		object -> new TranslatableText("argument.block.id.invalid", object)
 	);
 	public static final Dynamic2CommandExceptionType UNKNOWN_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("argument.block.property.unknown", object, object2)
+		(object, object2) -> new TranslatableText("argument.block.property.unknown", object, object2)
 	);
 	public static final Dynamic2CommandExceptionType DUPLICATE_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("argument.block.property.duplicate", object2, object)
+		(object, object2) -> new TranslatableText("argument.block.property.duplicate", object2, object)
 	);
 	public static final Dynamic3CommandExceptionType INVALID_PROPERTY_EXCEPTION = new Dynamic3CommandExceptionType(
-		(object, object2, object3) -> new TranslatableComponent("argument.block.property.invalid", object, object3, object2)
+		(object, object2, object3) -> new TranslatableText("argument.block.property.invalid", object, object3, object2)
 	);
 	public static final Dynamic2CommandExceptionType EMPTY_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("argument.block.property.novalue", object, object2)
+		(object, object2) -> new TranslatableText("argument.block.property.novalue", object, object2)
 	);
 	public static final SimpleCommandExceptionType UNCLOSED_PROPERTIES_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableComponent("argument.block.property.unclosed")
+		new TranslatableText("argument.block.property.unclosed")
 	);
 	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = SuggestionsBuilder::buildFuture;
 	private final StringReader reader;

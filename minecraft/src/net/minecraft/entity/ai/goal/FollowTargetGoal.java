@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected final Class<T> targetClass;
@@ -42,7 +42,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		}
 	}
 
-	protected BoundingBox getSearchBox(double d) {
+	protected Box getSearchBox(double d) {
 		return this.mob.getBoundingBox().expand(d, 4.0, d);
 	}
 

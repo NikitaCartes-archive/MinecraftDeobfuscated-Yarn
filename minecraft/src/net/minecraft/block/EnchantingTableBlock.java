@@ -14,8 +14,8 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -101,9 +101,9 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
-			Component component = ((Nameable)blockEntity).getDisplayName();
+			Text text = ((Nameable)blockEntity).method_5476();
 			return new ClientDummyContainerProvider(
-				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), component
+				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), text
 			);
 		} else {
 			return null;
@@ -115,7 +115,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof EnchantingTableBlockEntity) {
-				((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((EnchantingTableBlockEntity)blockEntity).method_11179(itemStack.method_7964());
 			}
 		}
 	}

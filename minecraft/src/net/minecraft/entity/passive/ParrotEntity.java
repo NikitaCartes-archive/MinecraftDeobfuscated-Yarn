@@ -276,17 +276,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		return false;
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.getBoundingBox().minY);
-		int k = MathHelper.floor(this.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
+	public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return block.matches(BlockTags.field_15503)
-			|| block == Blocks.field_10219
-			|| block instanceof LogBlock
-			|| block == Blocks.field_10124 && super.canSpawn(iWorld, spawnType);
+		return (block.matches(BlockTags.field_15503) || block == Blocks.field_10219 || block instanceof LogBlock || block == Blocks.field_10124)
+			&& iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override

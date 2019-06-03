@@ -28,7 +28,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -76,10 +76,10 @@ public class Explosion {
 	}
 
 	public static float getExposure(Vec3d vec3d, Entity entity) {
-		BoundingBox boundingBox = entity.getBoundingBox();
-		double d = 1.0 / ((boundingBox.maxX - boundingBox.minX) * 2.0 + 1.0);
-		double e = 1.0 / ((boundingBox.maxY - boundingBox.minY) * 2.0 + 1.0);
-		double f = 1.0 / ((boundingBox.maxZ - boundingBox.minZ) * 2.0 + 1.0);
+		Box box = entity.getBoundingBox();
+		double d = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
+		double e = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
+		double f = 1.0 / ((box.maxZ - box.minZ) * 2.0 + 1.0);
 		double g = (1.0 - Math.floor(1.0 / d) * d) / 2.0;
 		double h = (1.0 - Math.floor(1.0 / f) * f) / 2.0;
 		if (!(d < 0.0) && !(e < 0.0) && !(f < 0.0)) {
@@ -89,9 +89,9 @@ public class Explosion {
 			for (float k = 0.0F; k <= 1.0F; k = (float)((double)k + d)) {
 				for (float l = 0.0F; l <= 1.0F; l = (float)((double)l + e)) {
 					for (float m = 0.0F; m <= 1.0F; m = (float)((double)m + f)) {
-						double n = MathHelper.lerp((double)k, boundingBox.minX, boundingBox.maxX);
-						double o = MathHelper.lerp((double)l, boundingBox.minY, boundingBox.maxY);
-						double p = MathHelper.lerp((double)m, boundingBox.minZ, boundingBox.maxZ);
+						double n = MathHelper.lerp((double)k, box.minX, box.maxX);
+						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
+						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
 						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
 						if (entity.world
 								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
@@ -165,7 +165,7 @@ public class Explosion {
 		int t = MathHelper.floor(this.y + (double)r + 1.0);
 		int u = MathHelper.floor(this.z - (double)r - 1.0);
 		int v = MathHelper.floor(this.z + (double)r + 1.0);
-		List<Entity> list = this.world.getEntities(this.entity, new BoundingBox((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
+		List<Entity> list = this.world.getEntities(this.entity, new Box((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
 		for (int w = 0; w < list.size(); w++) {

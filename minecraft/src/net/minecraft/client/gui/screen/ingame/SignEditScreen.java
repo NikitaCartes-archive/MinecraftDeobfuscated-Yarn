@@ -13,9 +13,9 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -26,7 +26,7 @@ public class SignEditScreen extends Screen {
 	private SelectionManager selectionManager;
 
 	public SignEditScreen(SignBlockEntity signBlockEntity) {
-		super(new TranslatableComponent("sign.edit"));
+		super(new TranslatableText("sign.edit"));
 		this.sign = signBlockEntity;
 	}
 
@@ -36,7 +36,7 @@ public class SignEditScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
-			this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new TextComponent(string)), 90
+			this.minecraft, () -> this.sign.method_11302(this.currentRow).getString(), string -> this.sign.method_11299(this.currentRow, new LiteralText(string)), 90
 		);
 	}
 
@@ -46,7 +46,7 @@ public class SignEditScreen extends Screen {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
+				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.method_11302(0), this.sign.method_11302(1), this.sign.method_11302(2), this.sign.method_11302(3))
 			);
 		}
 
@@ -95,7 +95,7 @@ public class SignEditScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)(this.width / 2), 0.0F, 50.0F);
@@ -105,7 +105,7 @@ public class SignEditScreen extends Screen {
 		BlockState blockState = this.sign.getCachedState();
 		float h;
 		if (blockState.getBlock() instanceof SignBlock) {
-			h = (float)((Integer)blockState.get(SignBlock.field_11559) * 360) / 16.0F;
+			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}

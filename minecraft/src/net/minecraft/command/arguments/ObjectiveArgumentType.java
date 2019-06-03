@@ -10,22 +10,22 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class ObjectiveArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "*", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("arguments.objective.notFound", object)
+		object -> new TranslatableText("arguments.objective.notFound", object)
 	);
 	private static final DynamicCommandExceptionType READONLY_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("arguments.objective.readonly", object)
+		object -> new TranslatableText("arguments.objective.readonly", object)
 	);
 	public static final DynamicCommandExceptionType LONG_NAME_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.scoreboard.objectives.add.longName", object)
+		object -> new TranslatableText("commands.scoreboard.objectives.add.longName", object)
 	);
 
 	public static ObjectiveArgumentType create() {

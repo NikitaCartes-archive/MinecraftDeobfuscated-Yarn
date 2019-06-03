@@ -12,15 +12,15 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.playsound.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.playsound.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.create())
@@ -152,12 +152,12 @@ public class PlaySoundCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				serverCommandSource.method_9226(
+					new TranslatableText("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
-					new TranslatableComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				serverCommandSource.method_9226(
+					new TranslatableText("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 				);
 			}
 

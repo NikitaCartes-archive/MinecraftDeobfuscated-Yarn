@@ -3,8 +3,8 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class FloatTag extends AbstractNumberTag {
@@ -51,9 +51,9 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Component toTextComponent(String string, int i) {
-		Component component = new TextComponent("f").applyFormat(RED);
-		return new TextComponent(String.valueOf(this.value)).append(component).applyFormat(GOLD);
+	public Text method_10710(String string, int i) {
+		Text text = new LiteralText("f").formatted(RED);
+		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}
 
 	@Override

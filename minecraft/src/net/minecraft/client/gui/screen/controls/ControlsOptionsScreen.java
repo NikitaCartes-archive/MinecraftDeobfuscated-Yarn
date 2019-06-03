@@ -10,7 +10,7 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
@@ -24,7 +24,7 @@ public class ControlsOptionsScreen extends Screen {
 	private ButtonWidget resetButton;
 
 	public ControlsOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableComponent("controls.title"));
+		super(new TranslatableText("controls.title"));
 		this.parent = screen;
 		this.options = gameOptions;
 	}
@@ -85,7 +85,7 @@ public class ControlsOptionsScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.keyBindingListWidget.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.options.keysAll) {

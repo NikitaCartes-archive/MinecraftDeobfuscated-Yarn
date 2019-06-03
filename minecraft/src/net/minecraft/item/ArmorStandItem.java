@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerRotation;
 import net.minecraft.util.math.MathHelper;
@@ -34,7 +34,7 @@ public class ArmorStandItem extends Item {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();
-				List<Entity> list = world.getEntities(null, new BoundingBox(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
 					return ActionResult.field_5814;
 				} else {

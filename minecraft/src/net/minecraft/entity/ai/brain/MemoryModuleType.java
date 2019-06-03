@@ -39,6 +39,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<GlobalPos> field_19008 = register("hiding_place", Optional.empty());
 	public static final MemoryModuleType<Long> field_19009 = register("heard_bell_time", Optional.empty());
 	public static final MemoryModuleType<Long> field_19293 = register("cant_reach_walk_target_since", Optional.empty());
+	public static final MemoryModuleType<Long> field_19355 = register("golem_last_seen_time", Optional.empty());
 	private final Optional<Function<Dynamic<?>, U>> factory;
 
 	private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {

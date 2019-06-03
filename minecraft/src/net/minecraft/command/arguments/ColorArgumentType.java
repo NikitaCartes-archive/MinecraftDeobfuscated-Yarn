@@ -10,15 +10,15 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
-public class ColorArgumentType implements ArgumentType<ChatFormat> {
+public class ColorArgumentType implements ArgumentType<Formatting> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
 	public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("argument.color.invalid", object)
+		object -> new TranslatableText("argument.color.invalid", object)
 	);
 
 	private ColorArgumentType() {
@@ -28,15 +28,15 @@ public class ColorArgumentType implements ArgumentType<ChatFormat> {
 		return new ColorArgumentType();
 	}
 
-	public static ChatFormat getColor(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, ChatFormat.class);
+	public static Formatting getColor(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, Formatting.class);
 	}
 
-	public ChatFormat method_9279(StringReader stringReader) throws CommandSyntaxException {
+	public Formatting method_9279(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		ChatFormat chatFormat = ChatFormat.getFormatByName(string);
-		if (chatFormat != null && !chatFormat.isModifier()) {
-			return chatFormat;
+		Formatting formatting = Formatting.byName(string);
+		if (formatting != null && !formatting.isModifier()) {
+			return formatting;
 		} else {
 			throw INVALID_COLOR_EXCEPTION.create(string);
 		}
@@ -44,7 +44,7 @@ public class ColorArgumentType implements ArgumentType<ChatFormat> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestMatching(ChatFormat.getNames(true, false), suggestionsBuilder);
+		return CommandSource.suggestMatching(Formatting.getNames(true, false), suggestionsBuilder);
 	}
 
 	@Override

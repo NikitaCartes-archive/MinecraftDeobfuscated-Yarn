@@ -17,8 +17,8 @@ import net.minecraft.client.network.ServerEntryNetworkPart;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +39,7 @@ public class MultiplayerScreen extends Screen {
 	private boolean initialized;
 
 	public MultiplayerScreen(Screen screen) {
-		super(new TranslatableComponent("multiplayer.title"));
+		super(new TranslatableText("multiplayer.title"));
 		this.parent = screen;
 	}
 
@@ -92,11 +92,11 @@ public class MultiplayerScreen extends Screen {
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 				String string = ((MultiplayerServerListWidget.ServerItem)entry).getServer().name;
 				if (string != null) {
-					Component component = new TranslatableComponent("selectServer.deleteQuestion");
-					Component component2 = new TranslatableComponent("selectServer.deleteWarning", string);
+					Text text = new TranslatableText("selectServer.deleteQuestion");
+					Text text2 = new TranslatableText("selectServer.deleteWarning", string);
 					String string2 = I18n.translate("selectServer.deleteButton");
 					String string3 = I18n.translate("gui.cancel");
-					this.minecraft.openScreen(new ConfirmScreen(this::removeEntry, component, component2, string2, string3));
+					this.minecraft.openScreen(new ConfirmScreen(this::removeEntry, text, text2, string2, string3));
 				}
 			}
 		}));
@@ -199,7 +199,7 @@ public class MultiplayerScreen extends Screen {
 		this.tooltipText = null;
 		this.renderBackground();
 		this.serverListWidget.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(i, j, f);
 		if (this.tooltipText != null) {
 			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);

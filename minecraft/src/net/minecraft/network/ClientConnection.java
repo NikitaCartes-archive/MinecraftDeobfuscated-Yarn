@@ -35,13 +35,13 @@ import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.DisconnectS2CPacket;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -69,7 +69,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private Channel channel;
 	private SocketAddress address;
 	private PacketListener packetListener;
-	private Component disconnectReason;
+	private Text field_11660;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -104,7 +104,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext channelHandlerContext) throws Exception {
-		this.disconnect(new TranslatableComponent("disconnect.endOfStream"));
+		this.method_10747(new TranslatableText("disconnect.endOfStream"));
 	}
 
 	@Override
@@ -117,16 +117,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			if (this.channel.isOpen()) {
 				if (throwable instanceof TimeoutException) {
 					LOGGER.debug("Timeout", throwable);
-					this.disconnect(new TranslatableComponent("disconnect.timeout"));
+					this.method_10747(new TranslatableText("disconnect.timeout"));
 				} else {
-					Component component = new TranslatableComponent("disconnect.genericReason", "Internal Exception: " + throwable);
+					Text text = new TranslatableText("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.send(new DisconnectS2CPacket(component), future -> this.disconnect(component));
+						this.send(new DisconnectS2CPacket(text), future -> this.method_10747(text));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
-						this.disconnect(component);
+						this.method_10747(text);
 					}
 				}
 			}
@@ -250,10 +250,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.address;
 	}
 
-	public void disconnect(Component component) {
+	public void method_10747(Text text) {
 		if (this.channel.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.disconnectReason = component;
+			this.field_11660 = text;
 		}
 	}
 
@@ -337,8 +337,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Nullable
-	public Component getDisconnectReason() {
-		return this.disconnectReason;
+	public Text method_10748() {
+		return this.field_11660;
 	}
 
 	public void disableAutoRead() {
@@ -375,10 +375,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				LOGGER.warn("handleDisconnection() called twice");
 			} else {
 				this.disconnected = true;
-				if (this.getDisconnectReason() != null) {
-					this.getPacketListener().onDisconnected(this.getDisconnectReason());
+				if (this.method_10748() != null) {
+					this.getPacketListener().method_10839(this.method_10748());
 				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().onDisconnected(new TranslatableComponent("multiplayer.disconnect.generic"));
+					this.getPacketListener().method_10839(new TranslatableText("multiplayer.disconnect.generic"));
 				}
 			}
 		}

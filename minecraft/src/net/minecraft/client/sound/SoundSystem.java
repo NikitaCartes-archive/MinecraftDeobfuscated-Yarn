@@ -342,8 +342,8 @@ public class SoundSystem {
 	public void updateListenerPosition(Camera camera) {
 		if (this.started && camera.isReady()) {
 			Vec3d vec3d = camera.getPos();
-			Vec3d vec3d2 = camera.method_19335();
-			Vec3d vec3d3 = camera.method_19336();
+			Vec3d vec3d2 = camera.getHorizontalPlane();
+			Vec3d vec3d3 = camera.getVerticalPlane();
 			this.taskQueue.execute(() -> {
 				this.listener.setPosition(vec3d);
 				this.listener.setOrientation(vec3d2, vec3d3);

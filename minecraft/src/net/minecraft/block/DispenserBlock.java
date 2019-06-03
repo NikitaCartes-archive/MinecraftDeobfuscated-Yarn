@@ -129,7 +129,7 @@ public class DispenserBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+				((DispenserBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}

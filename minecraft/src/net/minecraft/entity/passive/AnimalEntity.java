@@ -1,10 +1,10 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -17,13 +17,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AnimalEntity extends PassiveEntity {
-	protected Block spawningGround = Blocks.field_10219;
 	private int loveTicks;
 	private UUID lovingPlayer;
 
@@ -79,7 +77,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.getBlockState(blockPos.down()).getBlock() == this.spawningGround ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override
@@ -103,13 +101,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 		this.lovingPlayer = compoundTag.hasUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.getBoundingBox().minY);
-		int k = MathHelper.floor(this.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
-		return iWorld.getBlockState(blockPos.down()).getBlock() == this.spawningGround && iWorld.getLightLevel(blockPos, 0) > 8 && super.canSpawn(iWorld, spawnType);
+	public static boolean method_20663(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219 && iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override

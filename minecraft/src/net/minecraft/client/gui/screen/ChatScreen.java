@@ -25,16 +25,16 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.CommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 
@@ -55,7 +55,7 @@ public class ChatScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public ChatScreen(String string) {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 		this.field_18973 = string;
 	}
 
@@ -229,7 +229,7 @@ public class ChatScreen extends Screen {
 		this.commandExceptionsX = 0;
 		this.commandExceptionsWidth = this.width;
 		if (this.commandExceptions.isEmpty()) {
-			this.method_2107(ChatFormat.field_1080);
+			this.method_2107(Formatting.field_1080);
 		}
 
 		this.suggestionsWindow = null;
@@ -243,17 +243,17 @@ public class ChatScreen extends Screen {
 	}
 
 	public static String getRenderText(ParseResults<CommandSource> parseResults, String string, int i) {
-		ChatFormat[] chatFormats = new ChatFormat[]{
-			ChatFormat.field_1075, ChatFormat.field_1054, ChatFormat.field_1060, ChatFormat.field_1076, ChatFormat.field_1065
+		Formatting[] formattings = new Formatting[]{
+			Formatting.field_1075, Formatting.field_1054, Formatting.field_1060, Formatting.field_1076, Formatting.field_1065
 		};
-		String string2 = ChatFormat.field_1080.toString();
+		String string2 = Formatting.field_1080.toString();
 		StringBuilder stringBuilder = new StringBuilder(string2);
 		int j = 0;
 		int k = -1;
 		CommandContextBuilder<CommandSource> commandContextBuilder = parseResults.getContext().getLastChild();
 
 		for (ParsedArgument<CommandSource, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
-			if (++k >= chatFormats.length) {
+			if (++k >= formattings.length) {
 				k = 0;
 			}
 
@@ -265,7 +265,7 @@ public class ChatScreen extends Screen {
 			int m = Math.min(parsedArgument.getRange().getEnd() - i, string.length());
 			if (m > 0) {
 				stringBuilder.append(string, j, l);
-				stringBuilder.append(chatFormats[k]);
+				stringBuilder.append(formattings[k]);
 				stringBuilder.append(string, l, m);
 				stringBuilder.append(string2);
 				j = m;
@@ -277,7 +277,7 @@ public class ChatScreen extends Screen {
 			if (n < string.length()) {
 				int o = Math.min(n + parseResults.getReader().getRemainingLength(), string.length());
 				stringBuilder.append(string, j, n);
-				stringBuilder.append(ChatFormat.field_1061);
+				stringBuilder.append(Formatting.field_1061);
 				stringBuilder.append(string, n, o);
 				j = o;
 			}
@@ -315,8 +315,8 @@ public class ChatScreen extends Screen {
 			return true;
 		} else {
 			if (i == 0) {
-				Component component = this.minecraft.inGameHud.getChatHud().getTextComponentAt(d, e);
-				if (component != null && this.handleComponentClicked(component)) {
+				Text text = this.minecraft.inGameHud.getChatHud().method_1816(d, e);
+				if (text != null && this.handleComponentClicked(text)) {
 					return true;
 				}
 			}
@@ -379,9 +379,9 @@ public class ChatScreen extends Screen {
 			}
 		}
 
-		Component component = this.minecraft.inGameHud.getChatHud().getTextComponentAt((double)i, (double)j);
-		if (component != null && component.getStyle().getHoverEvent() != null) {
-			this.renderComponentHoverEffect(component, i, j);
+		Text text = this.minecraft.inGameHud.getChatHud().method_1816((double)i, (double)j);
+		if (text != null && text.method_10866().getHoverEvent() != null) {
+			this.renderComponentHoverEffect(text, i, j);
 		}
 
 		super.render(i, j, f);
@@ -392,7 +392,7 @@ public class ChatScreen extends Screen {
 		return false;
 	}
 
-	private void method_2107(ChatFormat chatFormat) {
+	private void method_2107(Formatting formatting) {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parseResults.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.chatField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.minecraft
@@ -405,7 +405,7 @@ public class ChatScreen extends Screen {
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
-				list.add(chatFormat + (String)entry.getValue());
+				list.add(formatting + (String)entry.getValue());
 				i = Math.max(i, this.font.getStringWidth((String)entry.getValue()));
 			}
 		}
@@ -504,7 +504,7 @@ public class ChatScreen extends Screen {
 			if (bl5) {
 				Message message = ((Suggestion)this.suggestions.getList().get(this.selection)).getTooltip();
 				if (message != null) {
-					ChatScreen.this.renderTooltip(Components.message(message).getFormattedText(), i, j);
+					ChatScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), i, j);
 				}
 			}
 		}

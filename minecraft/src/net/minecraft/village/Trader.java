@@ -8,8 +8,8 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public interface Trader {
@@ -37,14 +37,18 @@ public interface Trader {
 
 	SoundEvent method_18010();
 
-	default void sendOffers(PlayerEntity playerEntity, Component component, int i) {
+	default boolean canRefreshTrades() {
+		return false;
+	}
+
+	default void method_17449(PlayerEntity playerEntity, Text text, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
-			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), component)
+			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), text)
 		);
 		if (optionalInt.isPresent()) {
 			TraderOfferList traderOfferList = this.getOffers();
 			if (!traderOfferList.isEmpty()) {
-				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader());
+				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
 			}
 		}
 	}

@@ -33,6 +33,6 @@ public class PotatoesBlock extends CropBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(this.method_9824())];
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

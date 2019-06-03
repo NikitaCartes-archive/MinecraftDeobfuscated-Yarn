@@ -4,22 +4,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.toast.TutorialToast;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class MovementTutorialStepHandler implements TutorialStepHandler {
-	private static final Component MOVE_TITLE = new TranslatableComponent(
+	private static final Text field_5624 = new TranslatableText(
 		"tutorial.move.title",
-		TutorialManager.getKeybindName("forward"),
-		TutorialManager.getKeybindName("left"),
-		TutorialManager.getKeybindName("back"),
-		TutorialManager.getKeybindName("right")
+		TutorialManager.method_4913("forward"),
+		TutorialManager.method_4913("left"),
+		TutorialManager.method_4913("back"),
+		TutorialManager.method_4913("right")
 	);
-	private static final Component MOVE_DESCRIPTION = new TranslatableComponent("tutorial.move.description", TutorialManager.getKeybindName("jump"));
-	private static final Component LOOK_TITLE = new TranslatableComponent("tutorial.look.title");
-	private static final Component LOOK_DESCRIPTION = new TranslatableComponent("tutorial.look.description");
+	private static final Text field_5617 = new TranslatableText("tutorial.move.description", TutorialManager.method_4913("jump"));
+	private static final Text field_5621 = new TranslatableText("tutorial.look.title");
+	private static final Text field_5614 = new TranslatableText("tutorial.look.description");
 	private final TutorialManager manager;
 	private TutorialToast moveToast;
 	private TutorialToast lookAroundToast;
@@ -84,13 +84,13 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.ticks >= 100) {
 			if (this.moveAroundCompletionTicks == -1 && this.moveToast == null) {
-				this.moveToast = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.moveToast = new TutorialToast(TutorialToast.Type.field_2230, field_5624, field_5617, true);
 				this.manager.getClient().getToastManager().add(this.moveToast);
 			} else if (this.moveAroundCompletionTicks != -1
 				&& this.ticks - this.moveAroundCompletionTicks >= 20
 				&& this.lookAroundCompletionTicks == -1
 				&& this.lookAroundToast == null) {
-				this.lookAroundToast = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.lookAroundToast = new TutorialToast(TutorialToast.Type.field_2237, field_5621, field_5614, true);
 				this.manager.getClient().getToastManager().add(this.lookAroundToast);
 			}
 		}

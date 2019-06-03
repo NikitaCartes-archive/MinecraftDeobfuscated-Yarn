@@ -17,7 +17,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -109,9 +109,9 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		double d = (double)(f - this.nextProgress);
 		VoxelShape voxelShape = this.method_11496().getCollisionShape(this.world, this.getPos());
 		if (!voxelShape.isEmpty()) {
-			List<BoundingBox> list = voxelShape.getBoundingBoxes();
-			BoundingBox boundingBox = this.method_11500(this.method_11509(list));
-			List<Entity> list2 = this.world.getEntities(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
+			List<Box> list = voxelShape.getBoundingBoxes();
+			Box box = this.method_11500(this.method_11509(list));
+			List<Entity> list2 = this.world.getEntities(null, this.method_11502(box, direction, d).union(box));
 			if (!list2.isEmpty()) {
 				boolean bl = this.pushedBlock.getBlock() == Blocks.field_10030;
 
@@ -140,10 +140,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 						double j = 0.0;
 
 						for (int k = 0; k < list.size(); k++) {
-							BoundingBox boundingBox2 = this.method_11502(this.method_11500((BoundingBox)list.get(k)), direction, d);
-							BoundingBox boundingBox3 = entity.getBoundingBox();
-							if (boundingBox2.intersects(boundingBox3)) {
-								j = Math.max(j, this.method_11497(boundingBox2, direction, boundingBox3));
+							Box box2 = this.method_11502(this.method_11500((Box)list.get(k)), direction, d);
+							Box box3 = entity.getBoundingBox();
+							if (box2.intersects(box3)) {
+								j = Math.max(j, this.method_11497(box2, direction, box3));
 								if (j >= d) {
 									break;
 								}
@@ -171,7 +171,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return this.extending ? this.facing : this.facing.getOpposite();
 	}
 
-	private BoundingBox method_11509(List<BoundingBox> list) {
+	private Box method_11509(List<Box> list) {
 		double d = 0.0;
 		double e = 0.0;
 		double f = 0.0;
@@ -179,67 +179,67 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		double h = 1.0;
 		double i = 1.0;
 
-		for (BoundingBox boundingBox : list) {
-			d = Math.min(boundingBox.minX, d);
-			e = Math.min(boundingBox.minY, e);
-			f = Math.min(boundingBox.minZ, f);
-			g = Math.max(boundingBox.maxX, g);
-			h = Math.max(boundingBox.maxY, h);
-			i = Math.max(boundingBox.maxZ, i);
+		for (Box box : list) {
+			d = Math.min(box.minX, d);
+			e = Math.min(box.minY, e);
+			f = Math.min(box.minZ, f);
+			g = Math.max(box.maxX, g);
+			h = Math.max(box.maxY, h);
+			i = Math.max(box.maxZ, i);
 		}
 
-		return new BoundingBox(d, e, f, g, h, i);
+		return new Box(d, e, f, g, h, i);
 	}
 
-	private double method_11497(BoundingBox boundingBox, Direction direction, BoundingBox boundingBox2) {
+	private double method_11497(Box box, Direction direction, Box box2) {
 		switch (direction.getAxis()) {
 			case X:
-				return method_11493(boundingBox, direction, boundingBox2);
+				return method_11493(box, direction, box2);
 			case Y:
 			default:
-				return method_11510(boundingBox, direction, boundingBox2);
+				return method_11510(box, direction, box2);
 			case Z:
-				return method_11505(boundingBox, direction, boundingBox2);
+				return method_11505(box, direction, box2);
 		}
 	}
 
-	private BoundingBox method_11500(BoundingBox boundingBox) {
+	private Box method_11500(Box box) {
 		double d = (double)this.method_11504(this.nextProgress);
-		return boundingBox.offset(
+		return box.offset(
 			(double)this.pos.getX() + d * (double)this.facing.getOffsetX(),
 			(double)this.pos.getY() + d * (double)this.facing.getOffsetY(),
 			(double)this.pos.getZ() + d * (double)this.facing.getOffsetZ()
 		);
 	}
 
-	private BoundingBox method_11502(BoundingBox boundingBox, Direction direction, double d) {
+	private Box method_11502(Box box, Direction direction, double d) {
 		double e = d * (double)direction.getDirection().offset();
 		double f = Math.min(e, 0.0);
 		double g = Math.max(e, 0.0);
 		switch (direction) {
 			case field_11039:
-				return new BoundingBox(boundingBox.minX + f, boundingBox.minY, boundingBox.minZ, boundingBox.minX + g, boundingBox.maxY, boundingBox.maxZ);
+				return new Box(box.minX + f, box.minY, box.minZ, box.minX + g, box.maxY, box.maxZ);
 			case field_11034:
-				return new BoundingBox(boundingBox.maxX + f, boundingBox.minY, boundingBox.minZ, boundingBox.maxX + g, boundingBox.maxY, boundingBox.maxZ);
+				return new Box(box.maxX + f, box.minY, box.minZ, box.maxX + g, box.maxY, box.maxZ);
 			case field_11033:
-				return new BoundingBox(boundingBox.minX, boundingBox.minY + f, boundingBox.minZ, boundingBox.maxX, boundingBox.minY + g, boundingBox.maxZ);
+				return new Box(box.minX, box.minY + f, box.minZ, box.maxX, box.minY + g, box.maxZ);
 			case field_11036:
 			default:
-				return new BoundingBox(boundingBox.minX, boundingBox.maxY + f, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY + g, boundingBox.maxZ);
+				return new Box(box.minX, box.maxY + f, box.minZ, box.maxX, box.maxY + g, box.maxZ);
 			case field_11043:
-				return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ + f, boundingBox.maxX, boundingBox.maxY, boundingBox.minZ + g);
+				return new Box(box.minX, box.minY, box.minZ + f, box.maxX, box.maxY, box.minZ + g);
 			case field_11035:
-				return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.maxZ + f, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ + g);
+				return new Box(box.minX, box.minY, box.maxZ + f, box.maxX, box.maxY, box.maxZ + g);
 		}
 	}
 
 	private void method_11514(Entity entity, Direction direction, double d) {
-		BoundingBox boundingBox = entity.getBoundingBox();
-		BoundingBox boundingBox2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos);
-		if (boundingBox.intersects(boundingBox2)) {
+		Box box = entity.getBoundingBox();
+		Box box2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos);
+		if (box.intersects(box2)) {
 			Direction direction2 = direction.getOpposite();
-			double e = this.method_11497(boundingBox2, direction2, boundingBox) + 0.01;
-			double f = this.method_11497(boundingBox2, direction2, boundingBox.intersection(boundingBox2)) + 0.01;
+			double e = this.method_11497(box2, direction2, box) + 0.01;
+			double f = this.method_11497(box2, direction2, box.intersection(box2)) + 0.01;
 			if (Math.abs(e - f) < 0.01) {
 				e = Math.min(e, d) + 0.01;
 				field_12205.set(direction);
@@ -251,16 +251,16 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private static double method_11493(BoundingBox boundingBox, Direction direction, BoundingBox boundingBox2) {
-		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxX - boundingBox2.minX : boundingBox2.maxX - boundingBox.minX;
+	private static double method_11493(Box box, Direction direction, Box box2) {
+		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxX - box2.minX : box2.maxX - box.minX;
 	}
 
-	private static double method_11510(BoundingBox boundingBox, Direction direction, BoundingBox boundingBox2) {
-		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxY - boundingBox2.minY : boundingBox2.maxY - boundingBox.minY;
+	private static double method_11510(Box box, Direction direction, Box box2) {
+		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxY - box2.minY : box2.maxY - box.minY;
 	}
 
-	private static double method_11505(BoundingBox boundingBox, Direction direction, BoundingBox boundingBox2) {
-		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxZ - boundingBox2.minZ : boundingBox2.maxZ - boundingBox.minZ;
+	private static double method_11505(Box box, Direction direction, Box box2) {
+		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxZ - box2.minZ : box2.maxZ - box.minZ;
 	}
 
 	public BlockState getPushedBlock() {

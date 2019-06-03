@@ -12,8 +12,8 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +54,7 @@ public class ChatHud extends DrawableHelper {
 				for (int n = 0; n + this.field_2066 < this.visibleMessages.size() && n < j; n++) {
 					ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(n + this.field_2066);
 					if (chatHudLine != null) {
-						int o = i - chatHudLine.getTickCreated();
+						int o = i - chatHudLine.getTimestamp();
 						if (o < 200 || bl) {
 							double g = bl ? 1.0 : method_19348(o);
 							int p = (int)(255.0 * g * e);
@@ -64,7 +64,7 @@ public class ChatHud extends DrawableHelper {
 								int r = 0;
 								int s = -n * 9;
 								fill(-2, s - 9, 0 + l + 4, s, q << 24);
-								String string = chatHudLine.getContents().getFormattedText();
+								String string = chatHudLine.method_1412().asFormattedString();
 								GlStateManager.enableBlend();
 								this.client.textRenderer.drawWithShadow(string, 0.0F, (float)(s - 8), 16777215 + (p << 24));
 								GlStateManager.disableAlphaTest();
@@ -110,31 +110,31 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
-	public void addMessage(Component component) {
-		this.addMessage(component, 0);
+	public void method_1812(Text text) {
+		this.method_1804(text, 0);
 	}
 
-	public void addMessage(Component component, int i) {
-		this.addMessage(component, i, this.client.inGameHud.getTicks(), false);
-		LOGGER.info("[CHAT] {}", component.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
+	public void method_1804(Text text, int i) {
+		this.method_1815(text, i, this.client.inGameHud.getTicks(), false);
+		LOGGER.info("[CHAT] {}", text.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
 	}
 
-	private void addMessage(Component component, int i, int j, boolean bl) {
+	private void method_1815(Text text, int i, int j, boolean bl) {
 		if (i != 0) {
 			this.removeMessage(i);
 		}
 
 		int k = MathHelper.floor((double)this.getWidth() / this.getScale());
-		List<Component> list = TextComponentUtil.wrapLines(component, k, this.client.textRenderer, false, false);
+		List<Text> list = TextComponentUtil.method_1850(text, k, this.client.textRenderer, false, false);
 		boolean bl2 = this.isChatFocused();
 
-		for (Component component2 : list) {
+		for (Text text2 : list) {
 			if (bl2 && this.field_2066 > 0) {
 				this.field_2067 = true;
 				this.method_1802(1.0);
 			}
 
-			this.visibleMessages.add(0, new ChatHudLine(j, component2, i));
+			this.visibleMessages.add(0, new ChatHudLine(j, text2, i));
 		}
 
 		while (this.visibleMessages.size() > 100) {
@@ -142,7 +142,7 @@ public class ChatHud extends DrawableHelper {
 		}
 
 		if (!bl) {
-			this.messages.add(0, new ChatHudLine(j, component, i));
+			this.messages.add(0, new ChatHudLine(j, text, i));
 
 			while (this.messages.size() > 100) {
 				this.messages.remove(this.messages.size() - 1);
@@ -156,7 +156,7 @@ public class ChatHud extends DrawableHelper {
 
 		for (int i = this.messages.size() - 1; i >= 0; i--) {
 			ChatHudLine chatHudLine = (ChatHudLine)this.messages.get(i);
-			this.addMessage(chatHudLine.getContents(), chatHudLine.getId(), chatHudLine.getTickCreated(), true);
+			this.method_1815(chatHudLine.method_1412(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
 		}
 	}
 
@@ -189,7 +189,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	@Nullable
-	public Component getTextComponentAt(double d, double e) {
+	public Text method_1816(double d, double e) {
 		if (!this.isChatFocused()) {
 			return null;
 		} else {
@@ -206,11 +206,11 @@ public class ChatHud extends DrawableHelper {
 						ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(j);
 						int k = 0;
 
-						for (Component component : chatHudLine.getContents()) {
-							if (component instanceof TextComponent) {
-								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((TextComponent)component).getTextField(), false));
+						for (Text text : chatHudLine.method_1412()) {
+							if (text instanceof LiteralText) {
+								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((LiteralText)text).getRawString(), false));
 								if ((double)k > g) {
-									return component;
+									return text;
 								}
 							}
 						}

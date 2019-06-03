@@ -13,14 +13,14 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class SummonCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.summon.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -72,7 +72,7 @@ public class SummonCommand {
 		if (EntityType.getId(EntityType.field_6112).equals(identifier)) {
 			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
 			serverCommandSource.getWorld().addLightning(lightningEntity);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.summon.success", lightningEntity.method_5476()), true);
 			return 1;
 		} else {
 			ServerWorld serverWorld = serverCommandSource.getWorld();
@@ -88,7 +88,7 @@ public class SummonCommand {
 						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
 				}
 
-				serverCommandSource.sendFeedback(new TranslatableComponent("commands.summon.success", entity.getDisplayName()), true);
+				serverCommandSource.method_9226(new TranslatableText("commands.summon.success", entity.method_5476()), true);
 				return 1;
 			}
 		}

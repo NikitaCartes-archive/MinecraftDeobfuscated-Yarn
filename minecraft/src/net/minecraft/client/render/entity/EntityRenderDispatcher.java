@@ -123,7 +123,7 @@ import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -430,14 +430,14 @@ public class EntityRenderDispatcher {
 		GlStateManager.disableCull();
 		GlStateManager.disableBlend();
 		float i = entity.getWidth() / 2.0F;
-		BoundingBox boundingBox = entity.getBoundingBox();
+		Box box = entity.getBoundingBox();
 		WorldRenderer.drawBoxOutline(
-			boundingBox.minX - entity.x + d,
-			boundingBox.minY - entity.y + e,
-			boundingBox.minZ - entity.z + f,
-			boundingBox.maxX - entity.x + d,
-			boundingBox.maxY - entity.y + e,
-			boundingBox.maxZ - entity.z + f,
+			box.minX - entity.x + d,
+			box.minY - entity.y + e,
+			box.minZ - entity.z + f,
+			box.maxX - entity.x + d,
+			box.maxY - entity.y + e,
+			box.maxZ - entity.z + f,
 			1.0F,
 			1.0F,
 			1.0F,
@@ -448,14 +448,14 @@ public class EntityRenderDispatcher {
 				double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
 				double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
 				double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
-				BoundingBox boundingBox2 = enderDragonPart.getBoundingBox();
+				Box box2 = enderDragonPart.getBoundingBox();
 				WorldRenderer.drawBoxOutline(
-					boundingBox2.minX - this.renderPosX + j,
-					boundingBox2.minY - this.renderPosY + k,
-					boundingBox2.minZ - this.renderPosZ + l,
-					boundingBox2.maxX - this.renderPosX + j,
-					boundingBox2.maxY - this.renderPosY + k,
-					boundingBox2.maxZ - this.renderPosZ + l,
+					box2.minX - this.renderPosX + j,
+					box2.minY - this.renderPosY + k,
+					box2.minZ - this.renderPosZ + l,
+					box2.maxX - this.renderPosX + j,
+					box2.maxY - this.renderPosY + k,
+					box2.maxZ - this.renderPosZ + l,
 					0.25F,
 					1.0F,
 					0.0F,

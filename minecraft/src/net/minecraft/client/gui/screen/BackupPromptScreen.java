@@ -7,13 +7,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
 	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
-	private final Component subtitle;
+	private final Text field_2364;
 	private final boolean showEraseCacheCheckbox;
 	private final List<String> wrappedText = Lists.<String>newArrayList();
 	private final String eraseCacheText;
@@ -22,11 +22,11 @@ public class BackupPromptScreen extends Screen {
 	private final String cancelText;
 	private CheckboxWidget eraseCacheCheckbox;
 
-	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, Component component, Component component2, boolean bl) {
-		super(component);
+	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, Text text, Text text2, boolean bl) {
+		super(text);
 		this.parent = screen;
 		this.callback = callback;
-		this.subtitle = component2;
+		this.field_2364 = text2;
 		this.showEraseCacheCheckbox = bl;
 		this.eraseCacheText = I18n.translate("selectWorld.backupEraseCache");
 		this.confirmText = I18n.translate("selectWorld.backupJoinConfirmButton");
@@ -38,7 +38,7 @@ public class BackupPromptScreen extends Screen {
 	protected void init() {
 		super.init();
 		this.wrappedText.clear();
-		this.wrappedText.addAll(this.font.wrapStringToWidthAsList(this.subtitle.getFormattedText(), this.width - 50));
+		this.wrappedText.addAll(this.font.wrapStringToWidthAsList(this.field_2364.asFormattedString(), this.width - 50));
 		int i = (this.wrappedText.size() + 1) * 9;
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, this.confirmText, buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked()))
@@ -58,7 +58,7 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 50, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 16777215);
 		int k = 70;
 
 		for (String string : this.wrappedText) {

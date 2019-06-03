@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -53,8 +52,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
@@ -63,10 +60,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestStorage;
@@ -94,12 +93,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private boolean levellingUp;
 	@Nullable
 	private PlayerEntity lastCustomer;
-	@Nullable
-	private UUID buddyGolemId;
-	private long oneMinAfterLastGolemCheckTimestamp = Long.MIN_VALUE;
 	private byte foodLevel;
 	private final VillagerGossips gossip = new VillagerGossips();
 	private long gossipStartTime;
+	private long field_19357;
 	private int experience;
 	private long lastRestock;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
@@ -125,7 +122,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.field_18874,
 		MemoryModuleType.field_19008,
 		MemoryModuleType.field_19009,
-		MemoryModuleType.field_19293
+		MemoryModuleType.field_19293,
+		MemoryModuleType.field_19355
 	);
 	private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(
 		SensorType.field_18466,
@@ -135,7 +133,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		SensorType.field_18469,
 		SensorType.field_18470,
 		SensorType.field_19011,
-		SensorType.field_18875
+		SensorType.field_18875,
+		SensorType.field_19356
 	);
 	public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(
 		MemoryModuleType.field_18438,
@@ -259,7 +258,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		super.mobTick();
 	}
 
-	public void resetCustomer() {
+	private void resetCustomer() {
 		this.setCurrentCustomer(null);
 		this.clearCurrentBonus();
 	}
@@ -270,6 +269,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		if (this.getHeadRollingTimeLeft() > 0) {
 			this.setHeadRollingTimeLeft(this.getHeadRollingTimeLeft() - 1);
 		}
+
+		this.method_20696();
 	}
 
 	@Override
@@ -316,7 +317,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private void beginTradeWith(PlayerEntity playerEntity) {
 		this.prepareRecipesFor(playerEntity);
 		this.setCurrentCustomer(playerEntity);
-		this.sendOffers(playerEntity, this.getDisplayName(), this.getVillagerData().getLevel());
+		this.method_17449(playerEntity, this.method_5476(), this.getVillagerData().getLevel());
 	}
 
 	@Override
@@ -328,17 +329,26 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
+	@Override
+	public boolean canRefreshTrades() {
+		return true;
+	}
+
 	public void restock() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			tradeOffer.updatePriceOnDemand();
 			tradeOffer.resetUses();
 		}
 
+		if (this.getVillagerData().getProfession() == VillagerProfession.field_17056) {
+			this.method_20695();
+		}
+
 		this.lastRestock = this.world.getTimeOfDay() % 24000L;
 	}
 
 	private void prepareRecipesFor(PlayerEntity playerEntity) {
-		int i = this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> villageGossipType != VillageGossipType.field_18429);
+		int i = this.method_20594(playerEntity);
 		if (i != 0) {
 			for (TradeOffer tradeOffer : this.getOffers()) {
 				tradeOffer.increaseSpecialPrice(-MathHelper.floor((float)i * tradeOffer.getPriceMultiplier()));
@@ -377,9 +387,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		compoundTag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		compoundTag.putInt("Xp", this.experience);
 		compoundTag.putLong("LastRestock", this.lastRestock);
-		if (this.buddyGolemId != null) {
-			compoundTag.putUuid("BuddyGolem", this.buddyGolemId);
-		}
+		compoundTag.putLong("LastGossipDecay", this.field_19357);
 	}
 
 	@Override
@@ -404,10 +412,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		this.lastRestock = compoundTag.getLong("LastRestock");
-		if (compoundTag.hasUuid("BuddyGolem")) {
-			this.buddyGolemId = compoundTag.getUuid("BuddyGolem");
-		}
-
+		this.field_19357 = compoundTag.getLong("LastGossipDecay");
 		this.setCanPickUpLoot(true);
 		this.reinitializeBrain((ServerWorld)this.world);
 	}
@@ -488,10 +493,28 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
+		Entity entity = damageSource.getAttacker();
+		if (entity != null) {
+			this.method_20690(entity);
+		}
+
 		this.releaseTicketFor(MemoryModuleType.field_18438);
 		this.releaseTicketFor(MemoryModuleType.field_18439);
 		this.releaseTicketFor(MemoryModuleType.field_18440);
 		super.onDeath(damageSource);
+	}
+
+	private void method_20690(Entity entity) {
+		if (this.world instanceof ServerWorld) {
+			Optional<List<LivingEntity>> optional = this.brain.getOptionalMemory(MemoryModuleType.field_18442);
+			if (optional.isPresent()) {
+				ServerWorld serverWorld = (ServerWorld)this.world;
+				((List)optional.get())
+					.stream()
+					.filter(livingEntity -> livingEntity instanceof InteractionObserver)
+					.forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.field_18477, entity, (InteractionObserver)livingEntity));
+			}
+		}
 	}
 
 	public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
@@ -514,8 +537,12 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
 	}
 
+	private boolean method_20698() {
+		return this.foodLevel < 12;
+	}
+
 	public void consumeAvailableFood() {
-		if (this.foodLevel < 12 && this.getAvailableFood() != 0) {
+		if (this.method_20698() && this.getAvailableFood() != 0) {
 			for (int i = 0; i < this.getInventory().getInvSize(); i++) {
 				ItemStack itemStack = this.getInventory().getInvStack(i);
 				if (!itemStack.isEmpty()) {
@@ -526,7 +553,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 						for (int k = j; k > 0; k--) {
 							this.foodLevel = (byte)(this.foodLevel + integer);
 							this.getInventory().takeInvStack(i, 1);
-							if (this.foodLevel >= 12) {
+							if (!this.method_20698()) {
 								return;
 							}
 						}
@@ -537,11 +564,16 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public int method_20594(PlayerEntity playerEntity) {
-		return this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> villageGossipType != VillageGossipType.field_18429);
+		return this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> true);
 	}
 
-	public void depleteFood(int i) {
+	private void depleteFood(int i) {
 		this.foodLevel = (byte)(this.foodLevel - i);
+	}
+
+	public void method_20697() {
+		this.consumeAvailableFood();
+		this.depleteFood(12);
 	}
 
 	public void setOffers(TraderOfferList traderOfferList) {
@@ -559,21 +591,20 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public Component getDisplayName() {
+	public Text method_5476() {
 		AbstractTeam abstractTeam = this.getScoreboardTeam();
-		Component component = this.getCustomName();
-		if (component != null) {
-			return Team.modifyText(abstractTeam, component)
-				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
+		Text text = this.method_5797();
+		if (text != null) {
+			return Team.method_1142(abstractTeam, text).styled(style -> style.setHoverEvent(this.method_5769()).setInsertion(this.getUuidAsString()));
 		} else {
 			VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-			Component component2 = new TranslatableComponent(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath())
-				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
+			Text text2 = new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath())
+				.styled(style -> style.setHoverEvent(this.method_5769()).setInsertion(this.getUuidAsString()));
 			if (abstractTeam != null) {
-				component2.applyFormat(abstractTeam.getColor());
+				text2.formatted(abstractTeam.getColor());
 			}
 
-			return component2;
+			return text2;
 		}
 	}
 
@@ -632,7 +663,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.field_16468, null, null);
 		witchEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			witchEntity.setCustomName(this.getCustomName());
+			witchEntity.method_5665(this.method_5797());
 			witchEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
@@ -646,23 +677,23 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		Item item = itemStack.getItem();
 		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
 		if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
-			if (villagerProfession == VillagerProfession.field_17056 && item == Items.field_8861) {
-				int i = itemStack.getCount() / 3;
-				if (i > 0) {
-					ItemStack itemStack2 = this.getInventory().add(new ItemStack(Items.field_8229, i));
-					itemStack.decrement(i * 3);
-					if (!itemStack2.isEmpty()) {
-						this.dropStack(itemStack2, 0.5F);
-					}
-				}
+			BasicInventory basicInventory = this.getInventory();
+			int i = basicInventory.getInvAmountOf(item);
+			if (i == 256) {
+				return;
+			}
+
+			if (i > 256) {
+				basicInventory.method_20631(item, i - 256);
+				return;
 			}
 
 			this.sendPickup(itemEntity, itemStack.getCount());
-			ItemStack itemStack3 = this.getInventory().add(itemStack);
-			if (itemStack3.isEmpty()) {
+			ItemStack itemStack2 = basicInventory.add(itemStack);
+			if (itemStack2.isEmpty()) {
 				itemEntity.remove();
 			} else {
-				itemStack.setCount(itemStack3.getCount());
+				itemStack.setCount(itemStack2.getCount());
 			}
 		}
 	}
@@ -672,14 +703,26 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public boolean canBreed() {
-		boolean bl = this.getVillagerData().getProfession() == VillagerProfession.field_17056;
-		int i = this.getAvailableFood();
-		return bl ? i < 60 : i < 12;
+		return this.getAvailableFood() < 12;
 	}
 
 	private int getAvailableFood() {
 		BasicInventory basicInventory = this.getInventory();
 		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.getInvAmountOf((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+	}
+
+	private void method_20695() {
+		BasicInventory basicInventory = this.getInventory();
+		int i = basicInventory.getInvAmountOf(Items.field_8861);
+		int j = i / 3;
+		if (j != 0) {
+			int k = j * 3;
+			basicInventory.method_20631(Items.field_8861, k);
+			ItemStack itemStack = basicInventory.add(new ItemStack(Items.field_8229, j));
+			if (!itemStack.isEmpty()) {
+				this.dropStack(itemStack, 0.5F);
+			}
+		}
 	}
 
 	public boolean hasSeedToPlant() {
@@ -703,72 +746,64 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	public void talkWithVillager(VillagerEntity villagerEntity, long l) {
 		if ((l < this.gossipStartTime || l >= this.gossipStartTime + 1200L) && (l < villagerEntity.gossipStartTime || l >= villagerEntity.gossipStartTime + 1200L)) {
-			boolean bl = this.isLackingBuddyGolem(l);
-			if (this.wantsGolem(this) || bl) {
-				this.gossip.startGossip(this.getUuid(), VillageGossipType.field_18429, VillageGossipType.field_18429.maxReputation);
-			}
-
 			this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
 			this.gossipStartTime = l;
 			villagerEntity.gossipStartTime = l;
-			if (bl) {
-				this.trySpawnGolem();
+			this.method_20688(l, 5, false);
+		}
+	}
+
+	private void method_20696() {
+		long l = this.world.getTime();
+		if (this.field_19357 == 0L) {
+			this.field_19357 = l;
+		} else if (l >= this.field_19357 + 24000L) {
+			this.gossip.method_20651();
+			this.field_19357 = l;
+		}
+	}
+
+	public void method_20688(long l, int i, boolean bl) {
+		if (!bl || !this.method_20694(l) || this.method_20687(l)) {
+			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
+			List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
+			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream()
+				.filter(villagerEntity -> villagerEntity.method_20687(l) || villagerEntity.getBrain().hasActivity(Activity.field_18599) && !villagerEntity.method_20694(l))
+				.limit(5L)
+				.collect(Collectors.toList());
+			if (list2.size() >= i) {
+				IronGolemEntity ironGolemEntity = this.spawnIronGolem();
+				if (ironGolemEntity != null) {
+					list.forEach(villagerEntity -> villagerEntity.method_20692(l));
+				}
 			}
 		}
 	}
 
-	private void trySpawnGolem() {
+	private void method_20692(long l) {
+		this.brain.putMemory(MemoryModuleType.field_19355, l);
+	}
+
+	private boolean method_20694(long l) {
+		Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.field_19355);
+		if (!optional.isPresent()) {
+			return false;
+		} else {
+			Long long_ = (Long)optional.get();
+			return l - long_ <= 600L;
+		}
+	}
+
+	public boolean method_20687(long l) {
 		VillagerData villagerData = this.getVillagerData();
 		if (villagerData.getProfession() != VillagerProfession.field_17051 && villagerData.getProfession() != VillagerProfession.field_17062) {
 			Optional<VillagerEntity.GolemSpawnCondition> optional = this.getBrain().getOptionalMemory(MemoryModuleType.field_18874);
-			if (optional.isPresent()) {
-				if (((VillagerEntity.GolemSpawnCondition)optional.get()).canSpawn(this.world.getTime())) {
-					boolean bl = this.gossip.getGossipCount(VillageGossipType.field_18429, d -> d > 30.0) >= 5L;
-					if (bl) {
-						BoundingBox boundingBox = this.getBoundingBox().stretch(80.0, 80.0, 80.0);
-						List<VillagerEntity> list = (List<VillagerEntity>)this.world
-							.getEntities(VillagerEntity.class, boundingBox, this::wantsGolem)
-							.stream()
-							.limit(5L)
-							.collect(Collectors.toList());
-						boolean bl2 = list.size() >= 5;
-						if (bl2) {
-							IronGolemEntity ironGolemEntity = this.spawnIronGolem();
-							if (ironGolemEntity != null) {
-								UUID uUID = ironGolemEntity.getUuid();
-
-								for (VillagerEntity villagerEntity : list) {
-									for (VillagerEntity villagerEntity2 : list) {
-										villagerEntity.gossip.startGossip(villagerEntity2.getUuid(), VillageGossipType.field_18429, -VillageGossipType.field_18429.maxReputation);
-									}
-
-									villagerEntity.buddyGolemId = uUID;
-								}
-							}
-						}
-					}
-				}
+			if (!optional.isPresent()) {
+				return false;
+			} else {
+				return !((VillagerEntity.GolemSpawnCondition)optional.get()).canSpawn(l) ? false : !this.method_20694(l);
 			}
-		}
-	}
-
-	private boolean wantsGolem(Entity entity) {
-		return this.gossip.getReputationFor(entity.getUuid(), villageGossipType -> villageGossipType == VillageGossipType.field_18429) > 30;
-	}
-
-	private boolean isLackingBuddyGolem(long l) {
-		if (this.buddyGolemId == null) {
-			return true;
 		} else {
-			if (this.oneMinAfterLastGolemCheckTimestamp < l + 1200L) {
-				this.oneMinAfterLastGolemCheckTimestamp = l + 1200L;
-				Entity entity = ((ServerWorld)this.world).getEntity(this.buddyGolemId);
-				if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 6400.0) {
-					this.buddyGolemId = null;
-					return true;
-				}
-			}
-
 			return false;
 		}
 	}
@@ -778,8 +813,21 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		BlockPos blockPos = new BlockPos(this);
 
 		for (int i = 0; i < 10; i++) {
-			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
-			IronGolemEntity ironGolemEntity = EntityType.field_6147.create(this.world, null, null, null, blockPos2, SpawnType.field_16471, false, false);
+			double d = (double)(this.world.random.nextInt(16) - 8);
+			double e = (double)(this.world.random.nextInt(16) - 8);
+			double f = 6.0;
+
+			for (int j = 0; j >= -12; j--) {
+				BlockPos blockPos2 = blockPos.add(d, f + (double)j, e);
+				if ((this.world.getBlockState(blockPos2).isAir() || this.world.getBlockState(blockPos2).getMaterial().isLiquid())
+					&& this.world.getBlockState(blockPos2.down()).getMaterial().blocksLight()) {
+					f += (double)j;
+					break;
+				}
+			}
+
+			BlockPos blockPos3 = blockPos.add(d, f, e);
+			IronGolemEntity ironGolemEntity = EntityType.field_6147.method_5888(this.world, null, null, null, blockPos3, SpawnType.field_16471, false, false);
 			if (ironGolemEntity != null) {
 				if (ironGolemEntity.canSpawn(this.world, SpawnType.field_16471) && ironGolemEntity.canSpawn(this.world)) {
 					this.world.spawnEntity(ironGolemEntity);
@@ -849,6 +897,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 		private boolean canSpawn(long l) {
 			return l - this.lastSlept < 24000L && l - this.lastWorked < 36000L;
+		}
+
+		public String toString() {
+			return "lastWorked: " + this.lastWorked + ", lastSlept: " + this.lastSlept;
 		}
 	}
 }

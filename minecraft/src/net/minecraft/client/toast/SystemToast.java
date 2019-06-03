@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
@@ -14,10 +14,10 @@ public class SystemToast implements Toast {
 	private long startTime;
 	private boolean justUpdated;
 
-	public SystemToast(SystemToast.Type type, Component component, @Nullable Component component2) {
+	public SystemToast(SystemToast.Type type, Text text, @Nullable Text text2) {
 		this.field_2213 = type;
-		this.field_2215 = component.getString();
-		this.field_2217 = component2 == null ? null : component2.getString();
+		this.field_2215 = text.getString();
+		this.field_2217 = text2 == null ? null : text2.getString();
 	}
 
 	@Override
@@ -40,9 +40,9 @@ public class SystemToast implements Toast {
 		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
 	}
 
-	public void setContent(Component component, @Nullable Component component2) {
-		this.field_2215 = component.getString();
-		this.field_2217 = component2 == null ? null : component2.getString();
+	public void method_1991(Text text, @Nullable Text text2) {
+		this.field_2215 = text.getString();
+		this.field_2217 = text2 == null ? null : text2.getString();
 		this.justUpdated = true;
 	}
 
@@ -50,12 +50,12 @@ public class SystemToast implements Toast {
 		return this.field_2213;
 	}
 
-	public static void show(ToastManager toastManager, SystemToast.Type type, Component component, @Nullable Component component2) {
+	public static void method_1990(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			toastManager.add(new SystemToast(type, component, component2));
+			toastManager.add(new SystemToast(type, text, text2));
 		} else {
-			systemToast.setContent(component, component2);
+			systemToast.method_1991(text, text2);
 		}
 	}
 

@@ -9,9 +9,9 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.PacketByteBuf;
 
 public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -37,8 +37,8 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 
 		for (int l = 0; l < k; l++) {
 			String string = packetByteBuf.readString(32767);
-			Component component = packetByteBuf.readBoolean() ? packetByteBuf.readTextComponent() : null;
-			list.add(new Suggestion(stringRange, string, component));
+			Text text = packetByteBuf.readBoolean() ? packetByteBuf.method_10808() : null;
+			list.add(new Suggestion(stringRange, string, text));
 		}
 
 		this.suggestions = new Suggestions(stringRange, list);
@@ -55,7 +55,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 			packetByteBuf.writeString(suggestion.getText());
 			packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
 			if (suggestion.getTooltip() != null) {
-				packetByteBuf.writeTextComponent(Components.message(suggestion.getTooltip()));
+				packetByteBuf.method_10805(Texts.toText(suggestion.getTooltip()));
 			}
 		}
 	}

@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -152,10 +152,10 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 				}
 
 				if (pathNodeType == PathNodeType.field_7) {
-					BoundingBox boundingBox = new BoundingBox(
+					Box box = new Box(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.entity.world.doesNotCollide(this.entity, boundingBox)) {
+					if (!this.entity.world.doesNotCollide(this.entity, box)) {
 						return null;
 					}
 

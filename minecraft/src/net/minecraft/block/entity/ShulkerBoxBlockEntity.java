@@ -19,14 +19,14 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Tickable;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -92,11 +92,11 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return this.animationStage;
 	}
 
-	public BoundingBox getBoundingBox(BlockState blockState) {
+	public Box getBoundingBox(BlockState blockState) {
 		return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
 	}
 
-	public BoundingBox getBoundingBox(Direction direction) {
+	public Box getBoundingBox(Direction direction) {
 		float f = this.getAnimationProgress(1.0F);
 		return VoxelShapes.fullCube()
 			.getBoundingBox()
@@ -105,7 +105,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			);
 	}
 
-	private BoundingBox getCollisionBox(Direction direction) {
+	private Box getCollisionBox(Direction direction) {
 		Direction direction2 = direction.getOpposite();
 		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
 	}
@@ -114,8 +114,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		BlockState blockState = this.world.getBlockState(this.getPos());
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
 			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-			BoundingBox boundingBox = this.getCollisionBox(direction).offset(this.pos);
-			List<Entity> list = this.world.getEntities(null, boundingBox);
+			Box box = this.getCollisionBox(direction).offset(this.pos);
+			List<Entity> list = this.world.getEntities(null, box);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
@@ -123,31 +123,31 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 						double d = 0.0;
 						double e = 0.0;
 						double f = 0.0;
-						BoundingBox boundingBox2 = entity.getBoundingBox();
+						Box box2 = entity.getBoundingBox();
 						switch (direction.getAxis()) {
 							case X:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									d = boundingBox.maxX - boundingBox2.minX;
+									d = box.maxX - box2.minX;
 								} else {
-									d = boundingBox2.maxX - boundingBox.minX;
+									d = box2.maxX - box.minX;
 								}
 
 								d += 0.01;
 								break;
 							case Y:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									e = boundingBox.maxY - boundingBox2.minY;
+									e = box.maxY - box2.minY;
 								} else {
-									e = boundingBox2.maxY - boundingBox.minY;
+									e = box2.maxY - box.minY;
 								}
 
 								e += 0.01;
 								break;
 							case Z:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									f = boundingBox.maxZ - boundingBox2.minZ;
+									f = box.maxZ - box2.minZ;
 								} else {
-									f = boundingBox2.maxZ - boundingBox.minZ;
+									f = box2.maxZ - box.minZ;
 								}
 
 								f += 0.01;
@@ -218,8 +218,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected Component getContainerName() {
-		return new TranslatableComponent("container.shulkerBox");
+	protected Text method_17823() {
+		return new TranslatableText("container.shulkerBox");
 	}
 
 	@Override

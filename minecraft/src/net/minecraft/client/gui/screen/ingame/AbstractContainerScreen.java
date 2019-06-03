@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GuiLighting;
@@ -18,7 +17,8 @@ import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -55,8 +55,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	private boolean isDoubleClicking;
 	private ItemStack quickMovingStack = ItemStack.EMPTY;
 
-	public AbstractContainerScreen(T container, PlayerInventory playerInventory, Component component) {
-		super(component);
+	public AbstractContainerScreen(T container, PlayerInventory playerInventory, Text text) {
+		super(text);
 		this.container = container;
 		this.playerInventory = playerInventory;
 		this.cancelNextRelease = true;
@@ -126,7 +126,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				itemStack = itemStack.copy();
 				itemStack.setCount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
-					string = "" + ChatFormat.field_1054 + "0";
+					string = "" + Formatting.field_1054 + "0";
 				}
 			}
 
@@ -196,7 +196,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getCount());
 				int k = Math.min(itemStack.getMaxCount(), slot.getMaxStackAmount(itemStack));
 				if (itemStack.getCount() > k) {
-					string = ChatFormat.field_1054.toString() + k;
+					string = Formatting.field_1054.toString() + k;
 					itemStack.setCount(k);
 				}
 			} else {

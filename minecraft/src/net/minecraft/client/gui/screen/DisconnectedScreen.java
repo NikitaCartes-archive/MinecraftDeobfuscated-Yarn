@@ -5,20 +5,20 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedScreen extends Screen {
-	private final Component reason;
+	private final Text field_2457;
 	private List<String> reasonFormatted;
 	private final Screen parent;
 	private int reasonHeight;
 
-	public DisconnectedScreen(Screen screen, String string, Component component) {
-		super(new TranslatableComponent(string));
+	public DisconnectedScreen(Screen screen, String string, Text text) {
+		super(new TranslatableText(string));
 		this.parent = screen;
-		this.reason = component;
+		this.field_2457 = text;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class DisconnectedScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.reason.getFormattedText(), this.width - 50);
+		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.field_2457.asFormattedString(), this.width - 50);
 		this.reasonHeight = this.reasonFormatted.size() * 9;
 		this.addButton(
 			new ButtonWidget(
@@ -45,7 +45,7 @@ public class DisconnectedScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int k = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (String string : this.reasonFormatted) {

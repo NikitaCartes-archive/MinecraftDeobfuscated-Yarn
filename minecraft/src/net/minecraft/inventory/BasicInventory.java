@@ -2,7 +2,9 @@ package net.minecraft.inventory;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
@@ -50,36 +52,37 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack add(ItemStack itemStack) {
-		ItemStack itemStack2 = itemStack.copy();
+	public ItemStack method_20631(Item item, int i) {
+		ItemStack itemStack = new ItemStack(item, 0);
 
-		for (int i = 0; i < this.size; i++) {
-			ItemStack itemStack3 = this.getInvStack(i);
-			if (itemStack3.isEmpty()) {
-				this.setInvStack(i, itemStack2);
-				this.markDirty();
-				return ItemStack.EMPTY;
-			}
-
-			if (ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2)) {
-				int j = Math.min(this.getInvMaxStackAmount(), itemStack3.getMaxCount());
-				int k = Math.min(itemStack2.getCount(), j - itemStack3.getCount());
-				if (k > 0) {
-					itemStack3.increment(k);
-					itemStack2.decrement(k);
-					if (itemStack2.isEmpty()) {
-						this.markDirty();
-						return ItemStack.EMPTY;
-					}
+		for (int j = this.size - 1; j >= 0; j--) {
+			ItemStack itemStack2 = this.getInvStack(j);
+			if (itemStack2.getItem().equals(item)) {
+				int k = i - itemStack.getCount();
+				ItemStack itemStack3 = itemStack2.split(k);
+				itemStack.increment(itemStack3.getCount());
+				if (itemStack.getCount() == i) {
+					break;
 				}
 			}
 		}
 
-		if (itemStack2.getCount() != itemStack.getCount()) {
+		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
 
-		return itemStack2;
+		return itemStack;
+	}
+
+	public ItemStack add(ItemStack itemStack) {
+		ItemStack itemStack2 = itemStack.copy();
+		this.method_20634(itemStack2);
+		if (itemStack2.isEmpty()) {
+			return ItemStack.EMPTY;
+		} else {
+			this.method_20633(itemStack2);
+			return itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2;
+		}
 	}
 
 	@Override
@@ -136,12 +139,50 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void clear() {
 		this.stackList.clear();
+		this.markDirty();
 	}
 
 	@Override
 	public void provideRecipeInputs(RecipeFinder recipeFinder) {
 		for (ItemStack itemStack : this.stackList) {
 			recipeFinder.addItem(itemStack);
+		}
+	}
+
+	public String toString() {
+		return ((List)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList())).toString();
+	}
+
+	private void method_20633(ItemStack itemStack) {
+		for (int i = 0; i < this.size; i++) {
+			ItemStack itemStack2 = this.getInvStack(i);
+			if (itemStack2.isEmpty()) {
+				this.setInvStack(i, itemStack.copy());
+				itemStack.setCount(0);
+				return;
+			}
+		}
+	}
+
+	private void method_20634(ItemStack itemStack) {
+		for (int i = 0; i < this.size; i++) {
+			ItemStack itemStack2 = this.getInvStack(i);
+			if (ItemStack.areItemsEqualIgnoreDamage(itemStack2, itemStack)) {
+				this.method_20632(itemStack, itemStack2);
+				if (itemStack.isEmpty()) {
+					return;
+				}
+			}
+		}
+	}
+
+	private void method_20632(ItemStack itemStack, ItemStack itemStack2) {
+		int i = Math.min(this.getInvMaxStackAmount(), itemStack2.getMaxCount());
+		int j = Math.min(itemStack.getCount(), i - itemStack2.getCount());
+		if (j > 0) {
+			itemStack2.increment(j);
+			itemStack.decrement(j);
+			this.markDirty();
 		}
 	}
 }

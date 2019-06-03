@@ -17,7 +17,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.shape.VoxelShape;
@@ -118,17 +118,13 @@ public class StructurePoolBasedGenerator {
 			list.add(poolStructurePiece);
 			if (i > 0) {
 				int m = 80;
-				BoundingBox boundingBox = new BoundingBox(
-					(double)(j - 80), (double)(l - 80), (double)(k - 80), (double)(j + 80 + 1), (double)(l + 80 + 1), (double)(k + 80 + 1)
-				);
+				Box box = new Box((double)(j - 80), (double)(l - 80), (double)(k - 80), (double)(j + 80 + 1), (double)(l + 80 + 1), (double)(k + 80 + 1));
 				this.field_18706
 					.addLast(
 						new StructurePoolBasedGenerator.class_4181(
 							poolStructurePiece,
 							new AtomicReference(
-								VoxelShapes.combineAndSimplify(
-									VoxelShapes.cuboid(boundingBox), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST
-								)
+								VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST)
 							),
 							l + 80,
 							0
@@ -171,7 +167,7 @@ public class StructurePoolBasedGenerator {
 						atomicReference3 = atomicReference2;
 						n = k;
 						if (atomicReference2.get() == null) {
-							atomicReference2.set(VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)));
+							atomicReference2.set(VoxelShapes.cuboid(Box.from(mutableIntBoundingBox)));
 						}
 					} else {
 						atomicReference3 = atomicReference;
@@ -241,10 +237,10 @@ public class StructurePoolBasedGenerator {
 									}
 
 									if (!VoxelShapes.matchesAnywhere(
-										(VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
+										(VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
 									)) {
 										atomicReference3.set(
-											VoxelShapes.combine((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST)
+											VoxelShapes.combine((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST)
 										);
 										int u = poolStructurePiece.getGroundLevelDelta();
 										int v;

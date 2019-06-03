@@ -285,7 +285,7 @@ public class UpgradeData {
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 				if (blockState != blockState3) {
-					int i = (Integer)blockState3.get(Properties.field_12541);
+					int i = (Integer)blockState3.get(Properties.DISTANCE_1_7);
 					List<ObjectSet<BlockPos>> list = (List<ObjectSet<BlockPos>>)this.field_12964.get();
 					if (list.isEmpty()) {
 						for (int j = 0; j < 7; j++) {
@@ -311,13 +311,13 @@ public class UpgradeData {
 
 					for (BlockPos blockPos : objectSet) {
 						BlockState blockState = iWorld.getBlockState(blockPos);
-						if ((Integer)blockState.get(Properties.field_12541) >= j) {
-							iWorld.setBlockState(blockPos, blockState.with(Properties.field_12541, Integer.valueOf(j)), 18);
+						if ((Integer)blockState.get(Properties.DISTANCE_1_7) >= j) {
+							iWorld.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), 18);
 							if (i != 7) {
 								for (Direction direction : field_12959) {
 									mutable.set(blockPos).setOffset(direction);
 									BlockState blockState2 = iWorld.getBlockState(mutable);
-									if (blockState2.contains(Properties.field_12541) && (Integer)blockState.get(Properties.field_12541) > i) {
+									if (blockState2.contains(Properties.DISTANCE_1_7) && (Integer)blockState.get(Properties.DISTANCE_1_7) > i) {
 										objectSet2.add(mutable.toImmutable());
 									}
 								}
@@ -332,7 +332,7 @@ public class UpgradeData {
 		STEM_BLOCK(Blocks.field_10168, Blocks.field_9984) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				if ((Integer)blockState.get(StemBlock.field_11584) == 7) {
+				if ((Integer)blockState.get(StemBlock.AGE) == 7) {
 					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
 					if (blockState2.getBlock() == gourdBlock) {
 						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);

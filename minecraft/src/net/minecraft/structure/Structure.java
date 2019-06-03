@@ -29,7 +29,7 @@ import net.minecraft.util.Clearable;
 import net.minecraft.util.IdList;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
@@ -104,7 +104,7 @@ public class Structure {
 	}
 
 	private void method_15164(World world, BlockPos blockPos, BlockPos blockPos2) {
-		List<Entity> list = world.getEntities(Entity.class, new BoundingBox(blockPos, blockPos2), entityx -> !(entityx instanceof PlayerEntity));
+		List<Entity> list = world.getEntities(Entity.class, new Box(blockPos, blockPos2), entityx -> !(entityx instanceof PlayerEntity));
 		this.entities.clear();
 
 		for (Entity entity : list) {
@@ -191,7 +191,7 @@ public class Structure {
 						if (structureBlockInfo.tag != null) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
 							Clearable.clear(blockEntity);
-							iWorld.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 4);
+							iWorld.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 20);
 						}
 
 						if (iWorld.setBlockState(blockPos2, blockState, i)) {

@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SelectWorldScreen extends Screen {
@@ -22,7 +22,7 @@ public class SelectWorldScreen extends Screen {
 	private WorldListWidget levelList;
 
 	public SelectWorldScreen(Screen screen) {
-		super(new TranslatableComponent("selectWorld.title"));
+		super(new TranslatableText("selectWorld.title"));
 		this.parent = screen;
 	}
 
@@ -111,7 +111,7 @@ public class SelectWorldScreen extends Screen {
 		this.tooltipText = null;
 		this.levelList.render(i, j, f);
 		this.searchBox.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		super.render(i, j, f);
 		if (this.tooltipText != null) {
 			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);

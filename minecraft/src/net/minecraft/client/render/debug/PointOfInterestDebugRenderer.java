@@ -165,8 +165,17 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		boolean bl = this.method_19711(arg);
 		int i = 0;
 		method_19704(arg.field_18926, i, arg.field_19328, -1, 0.03F);
-		method_19704(arg.field_18926, ++i, arg.field_18925 + " " + arg.field_19329 + "xp", -1, 0.02F);
 		i++;
+		if (bl) {
+			method_19704(arg.field_18926, i, arg.field_18925 + " " + arg.field_19329 + "xp", -1, 0.02F);
+			i++;
+		}
+
+		if (bl && !arg.field_19372.equals("")) {
+			method_19704(arg.field_18926, i, arg.field_19372, -98404, 0.02F);
+			i++;
+		}
+
 		if (bl) {
 			for (String string : arg.field_18928) {
 				method_19704(arg.field_18926, i, string, -16711681, 0.02F);
@@ -181,8 +190,25 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
+		if (arg.field_19373) {
+			method_19704(arg.field_18926, i, "Wants Golem", -23296, 0.02F);
+			i++;
+		}
+
 		if (bl) {
-			for (String string : Lists.reverse(arg.field_18929)) {
+			for (String string : arg.field_19375) {
+				if (string.startsWith(arg.field_19328)) {
+					method_19704(arg.field_18926, i, string, -1, 0.02F);
+				} else {
+					method_19704(arg.field_18926, i, string, -23296, 0.02F);
+				}
+
+				i++;
+			}
+		}
+
+		if (bl) {
+			for (String string : Lists.reverse(arg.field_19374)) {
 				method_19704(arg.field_18926, i, string, -3355444, 0.02F);
 				i++;
 			}
@@ -278,20 +304,25 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		public final String field_18925;
 		public final int field_19329;
 		public final Position field_18926;
+		public final String field_19372;
 		public final Path field_19330;
+		public final boolean field_19373;
 		public final List<String> field_18927 = Lists.<String>newArrayList();
 		public final List<String> field_18928 = Lists.<String>newArrayList();
-		public final List<String> field_18929 = Lists.<String>newArrayList();
+		public final List<String> field_19374 = Lists.<String>newArrayList();
+		public final List<String> field_19375 = Lists.<String>newArrayList();
 		public final Set<BlockPos> field_18930 = Sets.<BlockPos>newHashSet();
 
-		public class_4232(UUID uUID, int i, String string, String string2, int j, Position position, @Nullable Path path) {
+		public class_4232(UUID uUID, int i, String string, String string2, int j, Position position, String string3, @Nullable Path path, boolean bl) {
 			this.field_18923 = uUID;
 			this.field_18924 = i;
 			this.field_19328 = string;
 			this.field_18925 = string2;
 			this.field_19329 = j;
 			this.field_18926 = position;
+			this.field_19372 = string3;
 			this.field_19330 = path;
+			this.field_19373 = bl;
 		}
 
 		private boolean method_19718(BlockPos blockPos) {

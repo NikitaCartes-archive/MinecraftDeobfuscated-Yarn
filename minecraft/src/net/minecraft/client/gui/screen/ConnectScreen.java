@@ -14,10 +14,10 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
@@ -30,11 +30,11 @@ public class ConnectScreen extends Screen {
 	private ClientConnection connection;
 	private boolean field_2409;
 	private final Screen parent;
-	private Component status = new TranslatableComponent("connect.connecting");
+	private Text field_2413 = new TranslatableText("connect.connecting");
 	private long field_19097 = -1L;
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 		this.minecraft = minecraftClient;
 		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
@@ -44,7 +44,7 @@ public class ConnectScreen extends Screen {
 	}
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
-		super(NarratorManager.EMPTY);
+		super(NarratorManager.field_18967);
 		this.minecraft = minecraftClient;
 		this.parent = screen;
 		minecraftClient.disconnect();
@@ -67,7 +67,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, component -> ConnectScreen.this.setStatus(component)
+								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.method_2131(text)
 							)
 						);
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
@@ -81,7 +81,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host")))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host")))
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.field_2409) {
@@ -93,7 +93,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", string)))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string)))
 						);
 				}
 			}
@@ -102,8 +102,8 @@ public class ConnectScreen extends Screen {
 		thread.start();
 	}
 
-	private void setStatus(Component component) {
-		this.status = component;
+	private void method_2131(Text text) {
+		this.field_2413 = text;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class ConnectScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
 			this.field_2409 = true;
 			if (this.connection != null) {
-				this.connection.disconnect(new TranslatableComponent("connect.aborted"));
+				this.connection.method_10747(new TranslatableText("connect.aborted"));
 			}
 
 			this.minecraft.openScreen(this.parent);
@@ -140,10 +140,10 @@ public class ConnectScreen extends Screen {
 		long l = SystemUtil.getMeasuringTimeMs();
 		if (l - this.field_19097 > 2000L) {
 			this.field_19097 = l;
-			NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.joining").getString());
+			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.drawCenteredString(this.font, this.status.getFormattedText(), this.width / 2, this.height / 2 - 50, 16777215);
+		this.drawCenteredString(this.font, this.field_2413.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(i, j, f);
 	}
 }

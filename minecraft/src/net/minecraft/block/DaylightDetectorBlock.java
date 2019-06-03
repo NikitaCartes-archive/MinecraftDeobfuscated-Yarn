@@ -19,13 +19,13 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class DaylightDetectorBlock extends BlockWithEntity {
-	public static final IntProperty field_10897 = Properties.field_12511;
+	public static final IntProperty POWER = Properties.POWER;
 	public static final BooleanProperty INVERTED = Properties.INVERTED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0);
 
 	public DaylightDetectorBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10897, Integer.valueOf(0)).with(INVERTED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(POWER, Integer.valueOf(0)).with(INVERTED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return (Integer)blockState.get(field_10897);
+		return (Integer)blockState.get(POWER);
 	}
 
 	public static void updateState(BlockState blockState, World world, BlockPos blockPos) {
@@ -57,8 +57,8 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 			}
 
 			i = MathHelper.clamp(i, 0, 15);
-			if ((Integer)blockState.get(field_10897) != i) {
-				world.setBlockState(blockPos, blockState.with(field_10897, Integer.valueOf(i)), 3);
+			if ((Integer)blockState.get(POWER) != i) {
+				world.setBlockState(blockPos, blockState.with(POWER, Integer.valueOf(i)), 3);
 			}
 		}
 	}
@@ -96,6 +96,6 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_10897, INVERTED);
+		builder.add(POWER, INVERTED);
 	}
 }

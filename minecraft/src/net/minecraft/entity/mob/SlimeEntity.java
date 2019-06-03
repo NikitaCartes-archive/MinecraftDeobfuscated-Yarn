@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -184,7 +185,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 				float g = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
 				SlimeEntity slimeEntity = this.getType().create(this.world);
 				if (this.hasCustomName()) {
-					slimeEntity.setCustomName(this.getCustomName());
+					slimeEntity.method_5665(this.method_5797());
 				}
 
 				if (this.isPersistent()) {
@@ -259,27 +260,25 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
 	}
 
-	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		BlockPos blockPos = new BlockPos(this.x, 0.0, this.z);
-		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && this.random.nextInt(4) != 1) {
+	public static boolean method_20685(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
 			return false;
 		} else {
 			if (iWorld.getDifficulty() != Difficulty.field_5801) {
 				Biome biome = iWorld.getBiome(blockPos);
 				if (biome == Biomes.field_9471
-					&& this.y > 50.0
-					&& this.y < 70.0
-					&& this.random.nextFloat() < 0.5F
-					&& this.random.nextFloat() < iWorld.getMoonSize()
-					&& iWorld.getLightLevel(new BlockPos(this)) <= this.random.nextInt(8)) {
-					return super.canSpawn(iWorld, spawnType);
+					&& blockPos.getY() > 50
+					&& blockPos.getY() < 70
+					&& random.nextFloat() < 0.5F
+					&& random.nextFloat() < iWorld.getMoonSize()
+					&& iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
+					return method_20636(entityType, iWorld, spawnType, blockPos, random);
 				}
 
 				ChunkPos chunkPos = new ChunkPos(blockPos);
 				boolean bl = ChunkRandom.create(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
-				if (this.random.nextInt(10) == 0 && bl && this.y < 40.0) {
-					return super.canSpawn(iWorld, spawnType);
+				if (random.nextInt(10) == 0 && bl && blockPos.getY() < 40) {
+					return method_20636(entityType, iWorld, spawnType, blockPos, random);
 				}
 			}
 

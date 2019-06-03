@@ -6,8 +6,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -15,11 +15,11 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	private final List<SoundContainer<Sound>> sounds = Lists.<SoundContainer<Sound>>newArrayList();
 	private final Random random = new Random();
 	private final Identifier id;
-	private final Component subtitle;
+	private final Text field_5599;
 
 	public WeightedSoundSet(Identifier identifier, @Nullable String string) {
 		this.id = identifier;
-		this.subtitle = string == null ? null : new TranslatableComponent(string);
+		this.field_5599 = string == null ? null : new TranslatableText(string);
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	}
 
 	@Nullable
-	public Component getSubtitle() {
-		return this.subtitle;
+	public Text method_4886() {
+		return this.field_5599;
 	}
 
 	@Override

@@ -236,13 +236,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.realms.RealmsScreenProxy;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -268,6 +265,8 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -776,20 +775,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onDisconnect(DisconnectS2CPacket disconnectS2CPacket) {
-		this.connection.disconnect(disconnectS2CPacket.getReason());
+		this.connection.method_10747(disconnectS2CPacket.getReason());
 	}
 
 	@Override
-	public void onDisconnected(Component component) {
+	public void method_10839(Text text) {
 		this.client.disconnect();
 		if (this.loginScreen != null) {
 			if (this.loginScreen instanceof RealmsScreenProxy) {
-				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.loginScreen).getScreen(), "disconnect.lost", component).getProxy());
+				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.loginScreen).getScreen(), "disconnect.lost", text).getProxy());
 			} else {
-				this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", component));
+				this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", text));
 			}
 		} else {
-			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", component));
+			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", text));
 		}
 	}
 
@@ -845,7 +844,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChatMessage(ChatMessageS2CPacket chatMessageS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chatMessageS2CPacket, this, this.client);
-		this.client.inGameHud.addChatMessage(chatMessageS2CPacket.getLocation(), chatMessageS2CPacket.getMessage());
+		this.client.inGameHud.method_1755(chatMessageS2CPacket.getLocation(), chatMessageS2CPacket.getMessage());
 	}
 
 	@Override
@@ -1093,7 +1092,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onOpenContainer(OpenContainerPacket openContainerPacket) {
 		NetworkThreadUtils.forceMainThread(openContainerPacket, this, this.client);
-		ContainerScreenRegistry.openScreen(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
+		ContainerScreenRegistry.method_17541(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
 	}
 
 	@Override
@@ -1249,7 +1248,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float f = gameStateChangeS2CPacket.getValue();
 		int j = MathHelper.floor(f + 0.5F);
 		if (i >= 0 && i < GameStateChangeS2CPacket.REASON_MESSAGES.length && GameStateChangeS2CPacket.REASON_MESSAGES[i] != null) {
-			playerEntity.addChatMessage(new TranslatableComponent(GameStateChangeS2CPacket.REASON_MESSAGES[i]), false);
+			playerEntity.method_7353(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i]), false);
 		}
 
 		if (i == 1) {
@@ -1278,8 +1277,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client
 					.inGameHud
 					.getChatHud()
-					.addMessage(
-						new TranslatableComponent(
+					.method_1812(
+						new TranslatableText(
 							"demo.help.movement",
 							gameOptions.keyForward.getLocalizedName(),
 							gameOptions.keyLeft.getLocalizedName(),
@@ -1288,11 +1287,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						)
 					);
 			} else if (f == 102.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableComponent("demo.help.jump", gameOptions.keyJump.getLocalizedName()));
+				this.client.inGameHud.getChatHud().method_1812(new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()));
 			} else if (f == 103.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableComponent("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()));
+				this.client.inGameHud.getChatHud().method_1812(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()));
 			} else if (f == 104.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableComponent("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
+				this.client.inGameHud.getChatHud().method_1812(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
 			}
 		} else if (i == 6) {
 			this.world
@@ -1389,12 +1388,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeRecipes(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(synchronizeRecipesS2CPacket, this, this.client);
-		this.recipeManager.clear();
-
-		for (Recipe<?> recipe : synchronizeRecipesS2CPacket.getRecipes()) {
-			this.recipeManager.add(recipe);
-		}
-
+		this.recipeManager.method_20702(synchronizeRecipesS2CPacket.getRecipes());
 		SearchableContainer<RecipeResultCollection> searchableContainer = this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT);
 		searchableContainer.clear();
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
@@ -1549,7 +1543,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		TitleS2CPacket.Action action = titleS2CPacket.getAction();
 		String string = null;
 		String string2 = null;
-		String string3 = titleS2CPacket.getText() != null ? titleS2CPacket.getText().getFormattedText() : "";
+		String string3 = titleS2CPacket.getText() != null ? titleS2CPacket.getText().asFormattedString() : "";
 		switch (action) {
 			case field_12630:
 				string = string3;
@@ -1574,11 +1568,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client
 			.inGameHud
 			.getPlayerListWidget()
-			.setHeader(playerListHeaderS2CPacket.getHeader().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getHeader());
+			.method_1925(playerListHeaderS2CPacket.getHeader().asFormattedString().isEmpty() ? null : playerListHeaderS2CPacket.getHeader());
 		this.client
 			.inGameHud
 			.getPlayerListWidget()
-			.setFooter(playerListHeaderS2CPacket.getFooter().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getFooter());
+			.method_1924(playerListHeaderS2CPacket.getFooter().asFormattedString().isEmpty() ? null : playerListHeaderS2CPacket.getFooter());
 	}
 
 	@Override
@@ -1609,7 +1603,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						case field_12372:
 							playerListEntry.setGameMode(entry.getGameMode());
 							playerListEntry.setLatency(entry.getLatency());
-							playerListEntry.setDisplayName(entry.getDisplayName());
+							playerListEntry.method_2962(entry.getDisplayName());
 							break;
 						case field_12375:
 							playerListEntry.setGameMode(entry.getGameMode());
@@ -1618,7 +1612,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							playerListEntry.setLatency(entry.getLatency());
 							break;
 						case field_12374:
-							playerListEntry.setDisplayName(entry.getDisplayName());
+							playerListEntry.method_2962(entry.getDisplayName());
 					}
 				}
 			}
@@ -1747,7 +1741,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 							ServerList.updateServerListEntry(serverEntryx);
 							this.client.openScreen(null);
-						}, new TranslatableComponent("multiplayer.texturePrompt.line1"), new TranslatableComponent("multiplayer.texturePrompt.line2"))));
+						}, new TranslatableText("multiplayer.texturePrompt.line1"), new TranslatableText("multiplayer.texturePrompt.line2"))));
 				}
 			}
 		}
@@ -1938,6 +1932,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				String string3 = packetByteBuf.readString();
 				String string4 = packetByteBuf.readString();
 				int r = packetByteBuf.readInt();
+				String string5 = packetByteBuf.readString();
 				boolean bl2 = packetByteBuf.readBoolean();
 				Path path2;
 				if (bl2) {
@@ -1946,26 +1941,27 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					path2 = null;
 				}
 
-				PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string3, string4, r, position, path2);
+				boolean bl3 = packetByteBuf.readBoolean();
+				PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string3, string4, r, position, string5, path2, bl3);
 				int s = packetByteBuf.readInt();
 
 				for (int t = 0; t < s; t++) {
-					String string5 = packetByteBuf.readString();
-					lv2.field_18927.add(string5);
+					String string6 = packetByteBuf.readString();
+					lv2.field_18927.add(string6);
 				}
 
 				int t = packetByteBuf.readInt();
 
 				for (int u = 0; u < t; u++) {
-					String string6 = packetByteBuf.readString();
-					lv2.field_18928.add(string6);
+					String string7 = packetByteBuf.readString();
+					lv2.field_18928.add(string7);
 				}
 
 				int u = packetByteBuf.readInt();
 
 				for (int v = 0; v < u; v++) {
-					String string7 = packetByteBuf.readString();
-					lv2.field_18929.add(string7);
+					String string8 = packetByteBuf.readString();
+					lv2.field_19374.add(string8);
 				}
 
 				int v = packetByteBuf.readInt();
@@ -1973,6 +1969,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				for (int w = 0; w < v; w++) {
 					BlockPos blockPos4 = packetByteBuf.readBlockPos();
 					lv2.field_18930.add(blockPos4);
+				}
+
+				int w = packetByteBuf.readInt();
+
+				for (int x = 0; x < w; x++) {
+					String string9 = packetByteBuf.readString();
+					lv2.field_19375.add(string9);
 				}
 
 				this.client.debugRenderer.pointsOfInterestDebugRenderer.addPointOfInterest(lv2);
@@ -1992,7 +1995,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardObjectiveUpdateS2CPacket.getName();
 		if (scoreboardObjectiveUpdateS2CPacket.getMode() == 0) {
-			scoreboard.addObjective(
+			scoreboard.method_1168(
 				string, ScoreboardCriterion.field_1468, scoreboardObjectiveUpdateS2CPacket.getDisplayName(), scoreboardObjectiveUpdateS2CPacket.getType()
 			);
 		} else if (scoreboard.containsObjective(string)) {
@@ -2001,7 +2004,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				scoreboard.removeObjective(scoreboardObjective);
 			} else if (scoreboardObjectiveUpdateS2CPacket.getMode() == 2) {
 				scoreboardObjective.setRenderType(scoreboardObjectiveUpdateS2CPacket.getType());
-				scoreboardObjective.setDisplayName(scoreboardObjectiveUpdateS2CPacket.getDisplayName());
+				scoreboardObjective.method_1121(scoreboardObjectiveUpdateS2CPacket.getDisplayName());
 			}
 		}
 	}
@@ -2043,7 +2046,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		if (teamS2CPacket.getMode() == 0 || teamS2CPacket.getMode() == 2) {
-			team.setDisplayName(teamS2CPacket.getDisplayName());
+			team.method_1137(teamS2CPacket.getDisplayName());
 			team.setColor(teamS2CPacket.getPlayerPrefix());
 			team.setFriendlyFlagsBitwise(teamS2CPacket.getFlags());
 			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(teamS2CPacket.getNameTagVisibilityRule());
@@ -2056,8 +2059,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				team.setCollisionRule(collisionRule);
 			}
 
-			team.setPrefix(teamS2CPacket.getPrefix());
-			team.setSuffix(teamS2CPacket.getSuffix());
+			team.method_1138(teamS2CPacket.getPrefix());
+			team.method_1139(teamS2CPacket.getSuffix());
 		}
 
 		if (teamS2CPacket.getMode() == 0 || teamS2CPacket.getMode() == 3) {
@@ -2197,6 +2200,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			((MerchantContainer)container).setExperienceFromServer(setTradeOffersPacket.getExperience());
 			((MerchantContainer)container).setLevelProgress(setTradeOffersPacket.getLevelProgress());
 			((MerchantContainer)container).setCanLevel(setTradeOffersPacket.isLeveled());
+			((MerchantContainer)container).setRefreshTrades(setTradeOffersPacket.method_20722());
 		}
 	}
 

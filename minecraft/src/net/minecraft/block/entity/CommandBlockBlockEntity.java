@@ -62,8 +62,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 				Vec2f.ZERO,
 				this.getWorld(),
 				2,
-				this.getCustomName().getString(),
-				this.getCustomName(),
+				this.method_8299().getString(),
+				this.method_8299(),
 				this.getWorld().getServer(),
 				null
 			);

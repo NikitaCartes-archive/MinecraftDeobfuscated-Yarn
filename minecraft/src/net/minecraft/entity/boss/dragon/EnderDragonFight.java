@@ -29,17 +29,17 @@ import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.block.BlockPredicate;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -61,7 +61,7 @@ public class EnderDragonFight {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maximumDistance(0.0, 128.0, 0.0, 192.0));
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(
-			new TranslatableComponent("entity.minecraft.ender_dragon"), BossBar.Color.field_5788, BossBar.Style.field_5795
+			new TranslatableText("entity.minecraft.ender_dragon"), BossBar.Color.field_5788, BossBar.Style.field_5795
 		)
 		.setDragonMusic(true)
 		.setThickenFog(true);
@@ -417,7 +417,7 @@ public class EnderDragonFight {
 			this.bossBar.setPercent(enderDragonEntity.getHealth() / enderDragonEntity.getHealthMaximum());
 			this.dragonSeenTimer = 0;
 			if (enderDragonEntity.hasCustomName()) {
-				this.bossBar.setName(enderDragonEntity.getDisplayName());
+				this.bossBar.method_5413(enderDragonEntity.method_5476());
 			}
 		}
 	}
@@ -466,7 +466,7 @@ public class EnderDragonFight {
 			BlockPos blockPos2 = blockPos.up(1);
 
 			for (Direction direction : Direction.Type.field_11062) {
-				List<EnderCrystalEntity> list2 = this.world.getEntities(EnderCrystalEntity.class, new BoundingBox(blockPos2.offset(direction, 2)));
+				List<EnderCrystalEntity> list2 = this.world.getEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
 				if (list2.isEmpty()) {
 					return;
 				}

@@ -9,7 +9,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.InfoEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +38,7 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		super.appendTooltip(itemStack, world, list, tooltipContext);
 		ItemStack.appendEnchantments(list, getEnchantmentTag(itemStack));
 	}

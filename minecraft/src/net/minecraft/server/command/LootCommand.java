@@ -27,9 +27,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -45,10 +45,10 @@ public class LootCommand {
 		return CommandSource.suggestIdentifiers(lootManager.getSupplierNames(), suggestionsBuilder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.drop.no_held_items", object)
+		object -> new TranslatableText("commands.drop.no_held_items", object)
 	);
 	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.drop.no_loot_table", object)
+		object -> new TranslatableText("commands.drop.no_loot_table", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -404,20 +404,20 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.single", itemStack.getCount(), itemStack.method_7954()), false);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple", list.size()), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.multiple", list.size()), false);
 		}
 	}
 
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list, Identifier identifier) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), identifier), false
+			serverCommandSource.method_9226(
+				new TranslatableText("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.method_7954(), identifier), false
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple_with_table", list.size(), identifier), false);
+			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.multiple_with_table", list.size(), identifier), false);
 		}
 	}
 
@@ -426,7 +426,7 @@ public class LootCommand {
 		if (entity instanceof LivingEntity) {
 			return ((LivingEntity)entity).getEquippedStack(equipmentSlot);
 		} else {
-			throw NO_HELD_ITEMS_EXCEPTION.create(entity.getDisplayName());
+			throw NO_HELD_ITEMS_EXCEPTION.create(entity.method_5476());
 		}
 	}
 
@@ -447,7 +447,7 @@ public class LootCommand {
 
 	private static int executeKill(CommandContext<ServerCommandSource> commandContext, Entity entity, LootCommand.Target target) throws CommandSyntaxException {
 		if (!(entity instanceof LivingEntity)) {
-			throw NO_LOOT_TABLE_EXCEPTION.create(entity.getDisplayName());
+			throw NO_LOOT_TABLE_EXCEPTION.create(entity.method_5476());
 		} else {
 			Identifier identifier = ((LivingEntity)entity).getLootTable();
 			ServerCommandSource serverCommandSource = commandContext.getSource();

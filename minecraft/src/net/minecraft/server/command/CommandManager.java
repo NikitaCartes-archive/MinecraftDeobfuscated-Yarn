@@ -12,16 +12,9 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.dedicated.command.BanCommand;
 import net.minecraft.server.dedicated.command.BanIpCommand;
 import net.minecraft.server.dedicated.command.BanListCommand;
@@ -36,6 +29,13 @@ import net.minecraft.server.dedicated.command.SetIdleTimeoutCommand;
 import net.minecraft.server.dedicated.command.StopCommand;
 import net.minecraft.server.dedicated.command.WhitelistCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -134,37 +134,37 @@ public class CommandManager {
 		try {
 			return this.dispatcher.execute(stringReader, serverCommandSource);
 		} catch (CommandException var13) {
-			serverCommandSource.sendError(var13.getMessageComponent());
+			serverCommandSource.method_9213(var13.method_9199());
 			return 0;
 		} catch (CommandSyntaxException var14) {
-			serverCommandSource.sendError(Components.message(var14.getRawMessage()));
+			serverCommandSource.method_9213(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
-				Component component = new TextComponent("")
-					.applyFormat(ChatFormat.field_1080)
-					.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, string)));
+				Text text = new LiteralText("")
+					.formatted(Formatting.field_1080)
+					.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, string)));
 				if (i > 10) {
-					component.append("...");
+					text.append("...");
 				}
 
-				component.append(var14.getInput().substring(Math.max(0, i - 10), i));
+				text.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					Component component2 = new TextComponent(var14.getInput().substring(i)).applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1073});
-					component.append(component2);
+					Text text2 = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1073});
+					text.append(text2);
 				}
 
-				component.append(new TranslatableComponent("command.context.here").applyFormat(new ChatFormat[]{ChatFormat.field_1061, ChatFormat.field_1056}));
-				serverCommandSource.sendError(component);
+				text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}));
+				serverCommandSource.method_9213(text);
 			}
 
 			return 0;
 		} catch (Exception var15) {
-			Component component3 = new TextComponent(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
+			Text text3 = new LiteralText(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 			if (LOGGER.isDebugEnabled()) {
 				StackTraceElement[] stackTraceElements = var15.getStackTrace();
 
 				for (int j = 0; j < Math.min(stackTraceElements.length, 3); j++) {
-					component3.append("\n\n")
+					text3.append("\n\n")
 						.append(stackTraceElements[j].getMethodName())
 						.append("\n ")
 						.append(stackTraceElements[j].getFileName())
@@ -173,8 +173,8 @@ public class CommandManager {
 				}
 			}
 
-			serverCommandSource.sendError(
-				new TranslatableComponent("command.failed").modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, component3)))
+			serverCommandSource.method_9213(
+				new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text3)))
 			);
 			var20 = 0;
 		} finally {

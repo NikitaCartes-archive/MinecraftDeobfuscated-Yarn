@@ -19,7 +19,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StemBlock extends PlantBlock implements Fertilizable {
-	public static final IntProperty field_11584 = Properties.field_12550;
+	public static final IntProperty AGE = Properties.AGE_7;
 	protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 2.0, 9.0),
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0),
@@ -35,12 +35,12 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	protected StemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11584, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(field_11584)];
+		return AGE_TO_SHAPE[blockState.get(AGE)];
 	}
 
 	@Override
@@ -54,9 +54,9 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		if (world.getLightLevel(blockPos, 0) >= 9) {
 			float f = CropBlock.getAvailableMoisture(this, world, blockPos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-				int i = (Integer)blockState.get(field_11584);
+				int i = (Integer)blockState.get(AGE);
 				if (i < 7) {
-					blockState = blockState.with(field_11584, Integer.valueOf(i + 1));
+					blockState = blockState.with(AGE, Integer.valueOf(i + 1));
 					world.setBlockState(blockPos, blockState, 2);
 				} else {
 					Direction direction = Direction.Type.field_11062.random(random);
@@ -93,7 +93,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return (Integer)blockState.get(field_11584) != 7;
+		return (Integer)blockState.get(AGE) != 7;
 	}
 
 	@Override
@@ -103,8 +103,8 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		int i = Math.min(7, (Integer)blockState.get(field_11584) + MathHelper.nextInt(world.random, 2, 5));
-		BlockState blockState2 = blockState.with(field_11584, Integer.valueOf(i));
+		int i = Math.min(7, (Integer)blockState.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
+		BlockState blockState2 = blockState.with(AGE, Integer.valueOf(i));
 		world.setBlockState(blockPos, blockState2, 2);
 		if (i == 7) {
 			blockState2.scheduledTick(world, blockPos, world.random);
@@ -113,7 +113,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(field_11584);
+		builder.add(AGE);
 	}
 
 	public GourdBlock getGourdBlock() {

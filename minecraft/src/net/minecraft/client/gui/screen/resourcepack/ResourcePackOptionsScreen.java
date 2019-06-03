@@ -9,8 +9,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
@@ -21,7 +21,7 @@ public class ResourcePackOptionsScreen extends Screen {
 	private boolean edited;
 
 	public ResourcePackOptionsScreen(Screen screen) {
-		super(new TranslatableComponent("resourcePack.title"));
+		super(new TranslatableText("resourcePack.title"));
 		this.parent = screen;
 	}
 
@@ -121,7 +121,7 @@ public class ResourcePackOptionsScreen extends Screen {
 		this.renderDirtBackground(0);
 		this.availableList.render(i, j, f);
 		this.selectedList.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 16, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
 		super.render(i, j, f);
 	}

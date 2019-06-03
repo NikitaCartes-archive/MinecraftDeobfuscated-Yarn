@@ -14,22 +14,22 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public class EnchantCommand {
 	private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.enchant.failed.entity", object)
+		object -> new TranslatableText("commands.enchant.failed.entity", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_ITEMLESS_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.enchant.failed.itemless", object)
+		object -> new TranslatableText("commands.enchant.failed.itemless", object)
 	);
 	private static final DynamicCommandExceptionType FAILED_INCOMPATIBLE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableComponent("commands.enchant.failed.incompatible", object)
+		object -> new TranslatableText("commands.enchant.failed.incompatible", object)
 	);
 	private static final Dynamic2CommandExceptionType FAILED_LEVEL_EXCEPTION = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableComponent("commands.enchant.failed.level", object, object2)
+		(object, object2) -> new TranslatableText("commands.enchant.failed.level", object, object2)
 	);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.enchant.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.enchant.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -78,13 +78,13 @@ public class EnchantCommand {
 							itemStack.addEnchantment(enchantment, i);
 							j++;
 						} else if (collection.size() == 1) {
-							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());
+							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().method_7864(itemStack).getString());
 						}
 					} else if (collection.size() == 1) {
-						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.getName().getString());
+						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.method_5477().getString());
 					}
 				} else if (collection.size() == 1) {
-					throw FAILED_ENTITY_EXCEPTION.create(entity.getName().getString());
+					throw FAILED_ENTITY_EXCEPTION.create(entity.method_5477().getString());
 				}
 			}
 
@@ -92,12 +92,11 @@ public class EnchantCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
-						new TranslatableComponent("commands.enchant.success.single", enchantment.getTextComponent(i), ((Entity)collection.iterator().next()).getDisplayName()),
-						true
+					serverCommandSource.method_9226(
+						new TranslatableText("commands.enchant.success.single", enchantment.method_8179(i), ((Entity)collection.iterator().next()).method_5476()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(new TranslatableComponent("commands.enchant.success.multiple", enchantment.getTextComponent(i), collection.size()), true);
+					serverCommandSource.method_9226(new TranslatableText("commands.enchant.success.multiple", enchantment.method_8179(i), collection.size()), true);
 				}
 
 				return j;

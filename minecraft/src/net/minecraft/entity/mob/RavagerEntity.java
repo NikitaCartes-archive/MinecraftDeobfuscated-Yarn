@@ -35,7 +35,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -150,15 +150,15 @@ public class RavagerEntity extends RaiderEntity {
 
 			if (this.horizontalCollision && this.world.getGameRules().getBoolean("mobGriefing")) {
 				boolean bl = false;
-				BoundingBox boundingBox = this.getBoundingBox().expand(0.2);
+				Box box = this.getBoundingBox().expand(0.2);
 
 				for (BlockPos blockPos : BlockPos.iterate(
-					MathHelper.floor(boundingBox.minX),
-					MathHelper.floor(boundingBox.minY),
-					MathHelper.floor(boundingBox.minZ),
-					MathHelper.floor(boundingBox.maxX),
-					MathHelper.floor(boundingBox.maxY),
-					MathHelper.floor(boundingBox.maxZ)
+					MathHelper.floor(box.minX),
+					MathHelper.floor(box.minY),
+					MathHelper.floor(box.minZ),
+					MathHelper.floor(box.maxX),
+					MathHelper.floor(box.maxY),
+					MathHelper.floor(box.maxZ)
 				)) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();

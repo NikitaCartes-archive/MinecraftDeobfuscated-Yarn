@@ -43,7 +43,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -636,13 +636,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean isAreaNotEmpty(BoundingBox boundingBox) {
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.minY);
-		int l = MathHelper.ceil(boundingBox.maxY);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+	public boolean isAreaNotEmpty(Box box) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (int o = i; o < j; o++) {
@@ -660,13 +660,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean doesAreaContainFireSource(BoundingBox boundingBox) {
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.minY);
-		int l = MathHelper.ceil(boundingBox.maxY);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+	public boolean doesAreaContainFireSource(Box box) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		if (this.isAreaLoaded(i, k, m, j, l, n)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (int o = i; o < j; o++) {
@@ -687,13 +687,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public BlockState getBlockState(BoundingBox boundingBox, Block block) {
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.minY);
-		int l = MathHelper.ceil(boundingBox.maxY);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+	public BlockState getBlockState(Box box, Block block) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		if (this.isAreaLoaded(i, k, m, j, l, n)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (int o = i; o < j; o++) {
@@ -714,13 +714,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean containsBlockWithMaterial(BoundingBox boundingBox, Material material) {
-		int i = MathHelper.floor(boundingBox.minX);
-		int j = MathHelper.ceil(boundingBox.maxX);
-		int k = MathHelper.floor(boundingBox.minY);
-		int l = MathHelper.ceil(boundingBox.maxY);
-		int m = MathHelper.floor(boundingBox.minZ);
-		int n = MathHelper.ceil(boundingBox.maxZ);
+	public boolean containsBlockWithMaterial(Box box, Material material) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
 		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState(blockPos)));
 	}
@@ -882,18 +882,18 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
 		List<Entity> list = Lists.<Entity>newArrayList();
-		int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
-		int j = MathHelper.floor((boundingBox.maxX + 2.0) / 16.0);
-		int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
-		int l = MathHelper.floor((boundingBox.maxZ + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.floor((box.maxZ + 2.0) / 16.0);
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
 				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.appendEntities(entity, boundingBox, list, predicate);
+					worldChunk.appendEntities(entity, box, list, predicate);
 				}
 			}
 		}
@@ -901,18 +901,18 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return list;
 	}
 
-	public List<Entity> getEntities(@Nullable EntityType<?> entityType, BoundingBox boundingBox, Predicate<? super Entity> predicate) {
-		int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
-		int j = MathHelper.ceil((boundingBox.maxX + 2.0) / 16.0);
-		int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
-		int l = MathHelper.ceil((boundingBox.maxZ + 2.0) / 16.0);
+	public List<Entity> getEntities(@Nullable EntityType<?> entityType, Box box, Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<Entity> list = Lists.<Entity>newArrayList();
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.appendEntities(entityType, boundingBox, list, predicate);
+					worldChunk.appendEntities(entityType, box, list, predicate);
 				}
 			}
 		}
@@ -921,18 +921,18 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate) {
-		int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
-		int j = MathHelper.ceil((boundingBox.maxX + 2.0) / 16.0);
-		int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
-		int l = MathHelper.ceil((boundingBox.maxZ + 2.0) / 16.0);
+	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.appendEntities(class_, boundingBox, list, predicate);
+					worldChunk.appendEntities(class_, box, list, predicate);
 				}
 			}
 		}

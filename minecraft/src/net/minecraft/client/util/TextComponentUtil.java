@@ -4,41 +4,41 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class TextComponentUtil {
 	public static String method_1849(String string, boolean bl) {
-		return !bl && !MinecraftClient.getInstance().options.chatColors ? ChatFormat.stripFormatting(string) : string;
+		return !bl && !MinecraftClient.getInstance().options.chatColors ? Formatting.strip(string) : string;
 	}
 
-	public static List<Component> wrapLines(Component component, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
+	public static List<Text> method_1850(Text text, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
 		int j = 0;
-		Component component2 = new TextComponent("");
-		List<Component> list = Lists.<Component>newArrayList();
-		List<Component> list2 = Lists.<Component>newArrayList(component);
+		Text text2 = new LiteralText("");
+		List<Text> list = Lists.<Text>newArrayList();
+		List<Text> list2 = Lists.<Text>newArrayList(text);
 
 		for (int k = 0; k < list2.size(); k++) {
-			Component component3 = (Component)list2.get(k);
-			String string = component3.getText();
+			Text text3 = (Text)list2.get(k);
+			String string = text3.asString();
 			boolean bl3 = false;
 			if (string.contains("\n")) {
 				int l = string.indexOf(10);
 				String string2 = string.substring(l + 1);
 				string = string.substring(0, l + 1);
-				Component component4 = new TextComponent(string2).setStyle(component3.getStyle().clone());
-				list2.add(k + 1, component4);
+				Text text4 = new LiteralText(string2).method_10862(text3.method_10866().deepCopy());
+				list2.add(k + 1, text4);
 				bl3 = true;
 			}
 
-			String string3 = method_1849(component3.getStyle().getFormatString() + string, bl2);
+			String string3 = method_1849(text3.method_10866().asString() + string, bl2);
 			String string2 = string3.endsWith("\n") ? string3.substring(0, string3.length() - 1) : string3;
 			int m = textRenderer.getStringWidth(string2);
-			Component component5 = new TextComponent(string2).setStyle(component3.getStyle().clone());
+			Text text5 = new LiteralText(string2).method_10862(text3.method_10866().deepCopy());
 			if (j + m > i) {
 				String string4 = textRenderer.trimToWidth(string3, i - j, false);
 				String string5 = string4.length() < string3.length() ? string3.substring(string4.length()) : null;
@@ -56,31 +56,31 @@ public class TextComponentUtil {
 						string5 = string3;
 					}
 
-					Component component6 = new TextComponent(string5).setStyle(component3.getStyle().clone());
-					list2.add(k + 1, component6);
+					Text text6 = new LiteralText(string5).method_10862(text3.method_10866().deepCopy());
+					list2.add(k + 1, text6);
 				}
 
 				m = textRenderer.getStringWidth(string4);
-				component5 = new TextComponent(string4);
-				component5.setStyle(component3.getStyle().clone());
+				text5 = new LiteralText(string4);
+				text5.method_10862(text3.method_10866().deepCopy());
 				bl3 = true;
 			}
 
 			if (j + m <= i) {
 				j += m;
-				component2.append(component5);
+				text2.append(text5);
 			} else {
 				bl3 = true;
 			}
 
 			if (bl3) {
-				list.add(component2);
+				list.add(text2);
 				j = 0;
-				component2 = new TextComponent("");
+				text2 = new LiteralText("");
 			}
 		}
 
-		list.add(component2);
+		list.add(text2);
 		return list;
 	}
 }

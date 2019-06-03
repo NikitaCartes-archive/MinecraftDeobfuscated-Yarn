@@ -7,17 +7,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
-	private static final Component TITLE = new TranslatableComponent("tutorial.punch_tree.title");
-	private static final Component DESCRIPTION = new TranslatableComponent("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
+	private static final Text field_5638 = new TranslatableText("tutorial.punch_tree.title");
+	private static final Text field_5639 = new TranslatableText("tutorial.punch_tree.description", TutorialManager.method_4913("attack"));
 	private final TutorialManager manager;
 	private TutorialToast field_5637;
 	private int ticks;
@@ -49,7 +49,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
+				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, field_5638, field_5639, true);
 				this.manager.getClient().getToastManager().add(this.field_5637);
 			}
 		}

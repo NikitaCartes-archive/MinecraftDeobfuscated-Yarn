@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class ProjectileDamageSource extends EntityDamageSource {
 	private final Entity attacker;
@@ -28,13 +28,13 @@ public class ProjectileDamageSource extends EntityDamageSource {
 	}
 
 	@Override
-	public Component getDeathMessage(LivingEntity livingEntity) {
-		Component component = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
+	public Text method_5506(LivingEntity livingEntity) {
+		Text text = this.attacker == null ? this.source.method_5476() : this.attacker.method_5476();
 		ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		String string2 = string + ".item";
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableComponent(string2, livingEntity.getDisplayName(), component, itemStack.toHoverableText())
-			: new TranslatableComponent(string, livingEntity.getDisplayName(), component);
+			? new TranslatableText(string2, livingEntity.method_5476(), text, itemStack.method_7954())
+			: new TranslatableText(string, livingEntity.method_5476(), text);
 	}
 }

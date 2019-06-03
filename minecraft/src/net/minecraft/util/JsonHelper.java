@@ -313,7 +313,6 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static <T> T deserialize(Gson gson, Reader reader, Class<T> class_) {
 		return deserialize(gson, reader, class_, false);
 	}

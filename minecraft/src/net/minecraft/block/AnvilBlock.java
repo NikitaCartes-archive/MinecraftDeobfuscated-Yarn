@@ -9,9 +9,9 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -33,7 +33,7 @@ public class AnvilBlock extends FallingBlock {
 	private static final VoxelShape Z_FACE_SHAPE = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
 	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
 	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
-	private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.repair");
+	private static final TranslatableText field_17349 = new TranslatableText("container.repair");
 
 	public AnvilBlock(Block.Settings settings) {
 		super(settings);
@@ -55,7 +55,7 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17349
 		);
 	}
 

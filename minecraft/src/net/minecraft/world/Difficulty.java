@@ -3,8 +3,8 @@ package net.minecraft.world;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.annotation.Nullable;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public enum Difficulty {
 	field_5801(0, "peaceful"),
@@ -12,33 +12,33 @@ public enum Difficulty {
 	field_5802(2, "normal"),
 	field_5807(3, "hard");
 
-	private static final Difficulty[] DIFFICULTIES = (Difficulty[])Arrays.stream(values())
+	private static final Difficulty[] BY_NAME = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))
 		.toArray(Difficulty[]::new);
 	private final int id;
-	private final String translationKey;
+	private final String name;
 
 	private Difficulty(int j, String string2) {
 		this.id = j;
-		this.translationKey = string2;
+		this.name = string2;
 	}
 
 	public int getId() {
 		return this.id;
 	}
 
-	public Component toTextComponent() {
-		return new TranslatableComponent("options.difficulty." + this.translationKey);
+	public Text method_5463() {
+		return new TranslatableText("options.difficulty." + this.name);
 	}
 
-	public static Difficulty getDifficulty(int i) {
-		return DIFFICULTIES[i % DIFFICULTIES.length];
+	public static Difficulty byOrdinal(int i) {
+		return BY_NAME[i % BY_NAME.length];
 	}
 
 	@Nullable
-	public static Difficulty getDifficulty(String string) {
+	public static Difficulty byName(String string) {
 		for (Difficulty difficulty : values()) {
-			if (difficulty.translationKey.equals(string)) {
+			if (difficulty.name.equals(string)) {
 				return difficulty;
 			}
 		}
@@ -46,7 +46,7 @@ public enum Difficulty {
 		return null;
 	}
 
-	public String getTranslationKey() {
-		return this.translationKey;
+	public String getName() {
+		return this.name;
 	}
 }

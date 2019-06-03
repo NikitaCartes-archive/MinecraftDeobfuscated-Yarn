@@ -8,32 +8,32 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmScreen extends Screen {
-	private final Component message;
+	private final Text field_2401;
 	private final List<String> messageSplit = Lists.<String>newArrayList();
 	protected String yesTranslated;
 	protected String noTranslated;
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
 
-	public ConfirmScreen(BooleanConsumer booleanConsumer, Component component, Component component2) {
-		this(booleanConsumer, component, component2, I18n.translate("gui.yes"), I18n.translate("gui.no"));
+	public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2) {
+		this(booleanConsumer, text, text2, I18n.translate("gui.yes"), I18n.translate("gui.no"));
 	}
 
-	public ConfirmScreen(BooleanConsumer booleanConsumer, Component component, Component component2, String string, String string2) {
-		super(component);
+	public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2, String string, String string2) {
+		super(text);
 		this.callback = booleanConsumer;
-		this.message = component2;
+		this.field_2401 = text2;
 		this.yesTranslated = string;
 		this.noTranslated = string2;
 	}
 
 	@Override
 	public String getNarrationMessage() {
-		return super.getNarrationMessage() + ". " + this.message.getString();
+		return super.getNarrationMessage() + ". " + this.field_2401.getString();
 	}
 
 	@Override
@@ -42,13 +42,13 @@ public class ConfirmScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
 		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
 		this.messageSplit.clear();
-		this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.message.getFormattedText(), this.width - 50));
+		this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.field_2401.asFormattedString(), this.width - 50));
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 70, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.messageSplit) {

@@ -44,10 +44,10 @@ public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
 		this.frontLegRight.setRotationPoint(-1.1F, 18.0F, 5.0F);
 		this.backLegLeft = new Cuboid(this, 40, 0);
 		this.backLegLeft.addBox(-1.0F, 0.0F, 0.0F, 2, 10, 2, f);
-		this.backLegLeft.setRotationPoint(1.2F, 13.8F, -5.0F);
+		this.backLegLeft.setRotationPoint(1.2F, 14.1F, -5.0F);
 		this.backLegRight = new Cuboid(this, 40, 0);
 		this.backLegRight.addBox(-1.0F, 0.0F, 0.0F, 2, 10, 2, f);
-		this.backLegRight.setRotationPoint(-1.2F, 13.8F, -5.0F);
+		this.backLegRight.setRotationPoint(-1.2F, 14.1F, -5.0F);
 	}
 
 	@Override
@@ -119,9 +119,9 @@ public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
 		this.tail1.rotationPointZ = 8.0F;
 		this.tail2.rotationPointY = 20.0F;
 		this.tail2.rotationPointZ = 14.0F;
-		this.backLegLeft.rotationPointY = 13.8F;
+		this.backLegLeft.rotationPointY = 14.1F;
 		this.backLegLeft.rotationPointZ = -5.0F;
-		this.backLegRight.rotationPointY = 13.8F;
+		this.backLegRight.rotationPointY = 14.1F;
 		this.backLegRight.rotationPointZ = -5.0F;
 		this.frontLegLeft.rotationPointY = 18.0F;
 		this.frontLegLeft.rotationPointZ = 5.0F;

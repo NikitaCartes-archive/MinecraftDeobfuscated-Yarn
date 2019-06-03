@@ -17,7 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -87,7 +87,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	private ItemFrameEntity getAttachedItemFrame(World world, Direction direction, BlockPos blockPos) {
 		List<ItemFrameEntity> list = world.getEntities(
 			ItemFrameEntity.class,
-			new BoundingBox(
+			new Box(
 				(double)blockPos.getX(),
 				(double)blockPos.getY(),
 				(double)blockPos.getZ(),

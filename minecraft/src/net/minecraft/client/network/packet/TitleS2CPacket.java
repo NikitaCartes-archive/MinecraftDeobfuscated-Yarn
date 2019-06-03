@@ -5,13 +5,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TitleS2CPacket.Action action;
-	private Component text;
+	private Text text;
 	private int fadeInTicks;
 	private int stayTicks;
 	private int fadeOutTicks;
@@ -19,17 +19,17 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public TitleS2CPacket() {
 	}
 
-	public TitleS2CPacket(TitleS2CPacket.Action action, Component component) {
-		this(action, component, -1, -1, -1);
+	public TitleS2CPacket(TitleS2CPacket.Action action, Text text) {
+		this(action, text, -1, -1, -1);
 	}
 
 	public TitleS2CPacket(int i, int j, int k) {
 		this(TitleS2CPacket.Action.field_12629, null, i, j, k);
 	}
 
-	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable Component component, int i, int j, int k) {
+	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable Text text, int i, int j, int k) {
 		this.action = action;
-		this.text = component;
+		this.text = text;
 		this.fadeInTicks = i;
 		this.stayTicks = j;
 		this.fadeOutTicks = k;
@@ -39,7 +39,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.action = packetByteBuf.readEnumConstant(TitleS2CPacket.Action.class);
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
-			this.text = packetByteBuf.readTextComponent();
+			this.text = packetByteBuf.method_10808();
 		}
 
 		if (this.action == TitleS2CPacket.Action.field_12629) {
@@ -53,7 +53,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.action);
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
-			packetByteBuf.writeTextComponent(this.text);
+			packetByteBuf.method_10805(this.text);
 		}
 
 		if (this.action == TitleS2CPacket.Action.field_12629) {
@@ -73,7 +73,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Component getText() {
+	public Text getText() {
 		return this.text;
 	}
 

@@ -9,8 +9,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.TradeOffer;
@@ -25,8 +25,8 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	private int field_19163;
 	private boolean field_19164;
 
-	public MerchantScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Component component) {
-		super(merchantContainer, playerInventory, component);
+	public MerchantScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Text text) {
+		super(merchantContainer, playerInventory, text);
 		this.containerWidth = 276;
 	}
 
@@ -59,19 +59,19 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 		int k = this.container.getLevelProgress();
 		int l = this.containerHeight - 94;
 		if (k > 0 && k <= 5 && this.container.isLevelled()) {
-			String string = this.title.getFormattedText();
+			String string = this.title.asFormattedString();
 			String string2 = "- " + I18n.translate("merchant.level." + k);
 			int m = this.font.getStringWidth(string);
 			int n = this.font.getStringWidth(string2);
 			int o = m + n + 3;
 			int p = 49 + this.containerWidth / 2 - o / 2;
 			this.font.draw(string, (float)p, 6.0F, 4210752);
-			this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 107.0F, (float)l, 4210752);
+			this.font.draw(this.playerInventory.method_5476().asFormattedString(), 107.0F, (float)l, 4210752);
 			this.font.draw(string2, (float)(p + m + 3), 6.0F, 4210752);
 		} else {
-			String string = this.title.getFormattedText();
+			String string = this.title.asFormattedString();
 			this.font.draw(string, (float)(49 + this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
-			this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 107.0F, (float)l, 4210752);
+			this.font.draw(this.playerInventory.method_5476().asFormattedString(), 107.0F, (float)l, 4210752);
 		}
 
 		String string = I18n.translate("merchant.trades");
@@ -195,7 +195,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 				this.method_19413(k, l, tradeOfferx);
 			}
 
-			if (tradeOfferx.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, (double)i, (double)j)) {
+			if (tradeOfferx.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, (double)i, (double)j) && this.container.canRefreshTrades()) {
 				this.renderTooltip(I18n.translate("merchant.deprecated"), i, j);
 			}
 

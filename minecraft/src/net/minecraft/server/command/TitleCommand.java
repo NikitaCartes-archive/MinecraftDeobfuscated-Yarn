@@ -6,12 +6,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.Locale;
 import net.minecraft.client.network.packet.TitleS2CPacket;
-import net.minecraft.command.arguments.ComponentArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.command.arguments.TextArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class TitleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -31,12 +31,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("title")
 								.then(
-									CommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													ComponentArgumentType.getComponent(commandContext, "title"),
+													TextArgumentType.method_9280(commandContext, "title"),
 													TitleS2CPacket.Action.field_12630
 												)
 										)
@@ -45,12 +45,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("subtitle")
 								.then(
-									CommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													ComponentArgumentType.getComponent(commandContext, "title"),
+													TextArgumentType.method_9280(commandContext, "title"),
 													TitleS2CPacket.Action.field_12632
 												)
 										)
@@ -59,12 +59,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("actionbar")
 								.then(
-									CommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													ComponentArgumentType.getComponent(commandContext, "title"),
+													TextArgumentType.method_9280(commandContext, "title"),
 													TitleS2CPacket.Action.field_12627
 												)
 										)
@@ -103,11 +103,11 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			serverCommandSource.method_9226(
+				new TranslatableText("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.cleared.multiple", collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.cleared.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -121,34 +121,28 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
-			);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.reset.multiple", collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.reset.multiple", collection.size()), true);
 		}
 
 		return collection.size();
 	}
 
-	private static int executeTitle(
-		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component, TitleS2CPacket.Action action
-	) throws CommandSyntaxException {
+	private static int executeTitle(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text, TitleS2CPacket.Action action) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Components.resolveAndStyle(serverCommandSource, component, serverPlayerEntity, 0)));
+			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Texts.parse(serverCommandSource, text, serverPlayerEntity, 0)));
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent(
-					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+			serverCommandSource.method_9226(
+				new TranslatableText(
+					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
-			);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -162,11 +156,9 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableComponent("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
-			);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.times.multiple", collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableText("commands.title.times.multiple", collection.size()), true);
 		}
 
 		return collection.size();

@@ -22,7 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
@@ -40,7 +40,7 @@ public class PresetsScreen extends Screen {
 	private TextFieldWidget customPresetField;
 
 	public PresetsScreen(CustomizeFlatLevelScreen customizeFlatLevelScreen) {
-		super(new TranslatableComponent("createWorld.customize.presets.title"));
+		super(new TranslatableText("createWorld.customize.presets.title"));
 		this.parent = customizeFlatLevelScreen;
 	}
 
@@ -88,7 +88,7 @@ public class PresetsScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.field_2521.render(i, j, f);
-		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		this.drawString(this.font, this.shareText, 50, 30, 10526880);
 		this.drawString(this.font, this.listText, 50, 70, 10526880);
 		this.customPresetField.render(i, j, f);
@@ -241,7 +241,7 @@ public class PresetsScreen extends Screen {
 			if (superflatPresetItem != null) {
 				NarratorManager.INSTANCE
 					.narrate(
-						new TranslatableComponent(
+						new TranslatableText(
 								"narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(this.children().indexOf(superflatPresetItem))).field_2528
 							)
 							.getString()

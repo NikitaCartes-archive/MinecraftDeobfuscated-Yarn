@@ -143,7 +143,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 			file.renameTo(file2);
 		} catch (Exception var5) {
-			LOGGER.warn("Failed to save player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to save player data for {}", playerEntity.method_5477().getString());
 		}
 	}
 
@@ -158,7 +158,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 				compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			}
 		} catch (Exception var4) {
-			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to load player data for {}", playerEntity.method_5477().getString());
 		}
 
 		if (compoundTag != null) {

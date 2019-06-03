@@ -18,12 +18,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
@@ -37,7 +37,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.field_5474, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
-		.registerTypeHierarchyAdapter(Component.class, new Component.Serializer())
+		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
 		.registerTypeAdapter(SoundEntry.class, new SoundEntryDeserializer())
 		.create();
 	private static final ParameterizedType TYPE = new ParameterizedType() {
@@ -102,8 +102,8 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 
 		for (Identifier identifier : this.sounds.keySet()) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-			if (weightedSoundSet.getSubtitle() instanceof TranslatableComponent) {
-				String string = ((TranslatableComponent)weightedSoundSet.getSubtitle()).getKey();
+			if (weightedSoundSet.method_4886() instanceof TranslatableText) {
+				String string = ((TranslatableText)weightedSoundSet.method_4886()).getKey();
 				if (!I18n.hasTranslation(string)) {
 					LOGGER.debug("Missing subtitle {} for event: {}", string, identifier);
 				}
