@@ -6,13 +6,13 @@ package net.minecraft.item;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,13 +31,13 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
-        list.add(this.getDescription().applyFormat(ChatFormat.GRAY));
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+        list.add(this.getDescription().formatted(Formatting.GRAY));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getDescription() {
-        return new TranslatableComponent(this.getTranslationKey() + ".desc", new Object[0]);
+    public Text getDescription() {
+        return new TranslatableText(this.getTranslationKey() + ".desc", new Object[0]);
     }
 }
 

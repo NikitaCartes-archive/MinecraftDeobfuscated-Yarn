@@ -126,14 +126,14 @@ import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -257,7 +257,7 @@ public class EntityType<T extends Entity> {
     @Nullable
     private String translationKey;
     @Nullable
-    private Component textComponent;
+    private Text name;
     @Nullable
     private Identifier lootTableId;
     @Nullable
@@ -288,18 +288,18 @@ public class EntityType<T extends Entity> {
 
     @Nullable
     public Entity spawnFromItemStack(World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
-        return this.spawn(world, itemStack == null ? null : itemStack.getTag(), itemStack != null && itemStack.hasCustomName() ? itemStack.getCustomName() : null, playerEntity, blockPos, spawnType, bl, bl2);
+        return this.spawn(world, itemStack == null ? null : itemStack.getTag(), itemStack != null && itemStack.hasCustomName() ? itemStack.getName() : null, playerEntity, blockPos, spawnType, bl, bl2);
     }
 
     @Nullable
-    public T spawn(World world, @Nullable CompoundTag compoundTag, @Nullable Component component, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
-        T entity = this.create(world, compoundTag, component, playerEntity, blockPos, spawnType, bl, bl2);
+    public T spawn(World world, @Nullable CompoundTag compoundTag, @Nullable Text text, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
+        T entity = this.create(world, compoundTag, text, playerEntity, blockPos, spawnType, bl, bl2);
         world.spawnEntity((Entity)entity);
         return entity;
     }
 
     @Nullable
-    public T create(World world, @Nullable CompoundTag compoundTag, @Nullable Component component, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
+    public T create(World world, @Nullable CompoundTag compoundTag, @Nullable Text text, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2) {
         double d;
         T entity = this.create(world);
         if (entity == null) {
@@ -319,20 +319,20 @@ public class EntityType<T extends Entity> {
             mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
             mobEntity.playAmbientSound();
         }
-        if (component != null && entity instanceof LivingEntity) {
-            ((Entity)entity).setCustomName(component);
+        if (text != null && entity instanceof LivingEntity) {
+            ((Entity)entity).setCustomName(text);
         }
         EntityType.loadFromEntityTag(world, playerEntity, entity, compoundTag);
         return entity;
     }
 
-    protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, BoundingBox boundingBox) {
-        BoundingBox boundingBox2 = new BoundingBox(blockPos);
+    protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
+        Box box2 = new Box(blockPos);
         if (bl) {
-            boundingBox2 = boundingBox2.stretch(0.0, -1.0, 0.0);
+            box2 = box2.stretch(0.0, -1.0, 0.0);
         }
-        Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, boundingBox2, Collections.emptySet());
-        return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
+        Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, box2, Collections.emptySet());
+        return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
     }
 
     public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
@@ -376,11 +376,11 @@ public class EntityType<T extends Entity> {
         return this.translationKey;
     }
 
-    public Component getTextComponent() {
-        if (this.textComponent == null) {
-            this.textComponent = new TranslatableComponent(this.getTranslationKey(), new Object[0]);
+    public Text getName() {
+        if (this.name == null) {
+            this.name = new TranslatableText(this.getTranslationKey(), new Object[0]);
         }
-        return this.textComponent;
+        return this.name;
     }
 
     public Identifier getLootTableId() {
@@ -420,9 +420,9 @@ public class EntityType<T extends Entity> {
         return entityType == null ? null : (Entity)entityType.create(world);
     }
 
-    public BoundingBox createSimpleBoundingBox(double d, double e, double f) {
+    public Box createSimpleBoundingBox(double d, double e, double f) {
         float g = this.getWidth() / 2.0f;
-        return new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
+        return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
     }
 
     public EntitySize getDefaultSize() {

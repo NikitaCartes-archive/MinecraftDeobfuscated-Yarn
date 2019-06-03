@@ -8,9 +8,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.container.Container;
 import net.minecraft.container.FurnaceContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class FurnaceBlockEntity
 extends AbstractFurnaceBlockEntity {
@@ -19,8 +19,8 @@ extends AbstractFurnaceBlockEntity {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.furnace", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.furnace", new Object[0]);
     }
 
     @Override

@@ -134,7 +134,7 @@ extends BlockWithEntity {
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
         if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof DispenserBlockEntity) {
-            ((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+            ((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 

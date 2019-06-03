@@ -20,7 +20,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ extends AbstractDecorationEntity {
         float f = 0.125f;
         float g = 0.1875f;
         float h = 0.25f;
-        this.setBoundingBox(new BoundingBox(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
+        this.setBoundingBox(new Box(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
         this.teleporting = true;
     }
 
@@ -99,7 +99,7 @@ extends AbstractDecorationEntity {
         }
         boolean bl = false;
         double d = 7.0;
-        List<MobEntity> list = this.world.getEntities(MobEntity.class, new BoundingBox(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+        List<MobEntity> list = this.world.getEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
         for (MobEntity mobEntity : list) {
             if (mobEntity.getHoldingEntity() != playerEntity) continue;
             mobEntity.attachLeash(this, true);
@@ -126,7 +126,7 @@ extends AbstractDecorationEntity {
         int i = blockPos.getX();
         int j = blockPos.getY();
         int k = blockPos.getZ();
-        List<LeadKnotEntity> list = world.getEntities(LeadKnotEntity.class, new BoundingBox((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0));
+        List<LeadKnotEntity> list = world.getEntities(LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0));
         for (LeadKnotEntity leadKnotEntity : list) {
             if (!leadKnotEntity.getDecorationBlockPos().equals(blockPos)) continue;
             return leadKnotEntity;

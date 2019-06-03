@@ -5,8 +5,8 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DispenserBlockEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class DropperBlockEntity
 extends DispenserBlockEntity {
@@ -15,8 +15,8 @@ extends DispenserBlockEntity {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.dropper", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.dropper", new Object[0]);
     }
 }
 

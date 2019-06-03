@@ -15,7 +15,7 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +44,7 @@ extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
             GlStateManager.translatef(0.4f * i, 0.15f * i, 0.1f * i);
             GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f), 0.0f, 0.0f, 1.0f);
             BlockPos blockPos = new BlockPos(catEntity);
-            List<PlayerEntity> list = catEntity.world.getEntities(PlayerEntity.class, new BoundingBox(blockPos).expand(2.0, 2.0, 2.0));
+            List<PlayerEntity> list = catEntity.world.getEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0));
             for (PlayerEntity playerEntity : list) {
                 if (!playerEntity.isSleeping()) continue;
                 GlStateManager.translatef(0.15f * i, 0.0f, 0.0f);

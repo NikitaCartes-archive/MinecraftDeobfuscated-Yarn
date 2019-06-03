@@ -17,31 +17,31 @@ import com.mojang.datafixers.schemas.Schema;
 import java.lang.reflect.Type;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.fixes.ChoiceFix;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class BlockEntitySignTextStrictJsonFix
 extends ChoiceFix {
-    public static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)Component.class), new JsonDeserializer<Component>(){
+    public static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)Text.class), new JsonDeserializer<Text>(){
 
-        public Component method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public Text method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonPrimitive()) {
-                return new TextComponent(jsonElement.getAsString());
+                return new LiteralText(jsonElement.getAsString());
             }
             if (jsonElement.isJsonArray()) {
                 JsonArray jsonArray = jsonElement.getAsJsonArray();
-                Component component = null;
+                Text text = null;
                 for (JsonElement jsonElement2 : jsonArray) {
-                    Component component2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
-                    if (component == null) {
-                        component = component2;
+                    Text text2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+                    if (text == null) {
+                        text = text2;
                         continue;
                     }
-                    component.append(component2);
+                    text.append(text2);
                 }
-                return component;
+                return text;
             }
             throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
         }
@@ -58,39 +58,39 @@ extends ChoiceFix {
 
     private Dynamic<?> fix(Dynamic<?> dynamic, String string) {
         String string2 = dynamic.get(string).asString("");
-        Component component = null;
+        Text text = null;
         if ("null".equals(string2) || StringUtils.isEmpty(string2)) {
-            component = new TextComponent("");
+            text = new LiteralText("");
         } else if (string2.charAt(0) == '\"' && string2.charAt(string2.length() - 1) == '\"' || string2.charAt(0) == '{' && string2.charAt(string2.length() - 1) == '}') {
             try {
-                component = JsonHelper.deserialize(GSON, string2, Component.class, true);
-                if (component == null) {
-                    component = new TextComponent("");
+                text = JsonHelper.deserialize(GSON, string2, Text.class, true);
+                if (text == null) {
+                    text = new LiteralText("");
                 }
             } catch (JsonParseException jsonParseException) {
                 // empty catch block
             }
-            if (component == null) {
+            if (text == null) {
                 try {
-                    component = Component.Serializer.fromJsonString(string2);
+                    text = Text.Serializer.fromJson(string2);
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block
                 }
             }
-            if (component == null) {
+            if (text == null) {
                 try {
-                    component = Component.Serializer.fromLenientJsonString(string2);
+                    text = Text.Serializer.fromLenientJson(string2);
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block
                 }
             }
-            if (component == null) {
-                component = new TextComponent(string2);
+            if (text == null) {
+                text = new LiteralText(string2);
             }
         } else {
-            component = new TextComponent(string2);
+            text = new LiteralText(string2);
         }
-        return dynamic.set(string, dynamic.createString(Component.Serializer.toJsonString(component)));
+        return dynamic.set(string, dynamic.createString(Text.Serializer.toJson(text)));
     }
 
     @Override

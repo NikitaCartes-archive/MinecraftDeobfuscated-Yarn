@@ -13,9 +13,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class MessageArgumentType
@@ -26,7 +26,7 @@ implements ArgumentType<MessageFormat> {
         return new MessageArgumentType();
     }
 
-    public static Component getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+    public static Text getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
         return commandContext.getArgument(string, MessageFormat.class).format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
     }
 
@@ -64,7 +64,7 @@ implements ArgumentType<MessageFormat> {
         }
 
         @Nullable
-        public Component format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+        public Text format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
             return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
         }
     }
@@ -78,26 +78,26 @@ implements ArgumentType<MessageFormat> {
             this.selectors = messageSelectors;
         }
 
-        public Component format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+        public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
             if (this.selectors.length == 0 || !bl) {
-                return new TextComponent(this.contents);
+                return new LiteralText(this.contents);
             }
-            TextComponent component = new TextComponent(this.contents.substring(0, this.selectors[0].getStart()));
+            LiteralText text = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
             int i = this.selectors[0].getStart();
             for (MessageSelector messageSelector : this.selectors) {
-                Component component2 = messageSelector.format(serverCommandSource);
+                Text text2 = messageSelector.format(serverCommandSource);
                 if (i < messageSelector.getStart()) {
-                    component.append(this.contents.substring(i, messageSelector.getStart()));
+                    text.append(this.contents.substring(i, messageSelector.getStart()));
                 }
-                if (component2 != null) {
-                    component.append(component2);
+                if (text2 != null) {
+                    text.append(text2);
                 }
                 i = messageSelector.getEnd();
             }
             if (i < this.contents.length()) {
-                component.append(this.contents.substring(i, this.contents.length()));
+                text.append(this.contents.substring(i, this.contents.length()));
             }
-            return component;
+            return text;
         }
 
         public static MessageFormat parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {

@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryListener;
@@ -43,13 +42,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -72,7 +72,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
     private final Map<Identifier, Tag<Item>> field_16201 = Maps.newTreeMap();
 
     public CreativeInventoryScreen(PlayerEntity playerEntity) {
-        super(new CreativeContainer(playerEntity), playerEntity.inventory, new TextComponent(""));
+        super(new CreativeContainer(playerEntity), playerEntity.inventory, new LiteralText(""));
         playerEntity.container = this.container;
         this.passEvents = true;
         this.containerHeight = 136;
@@ -421,7 +421,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                             itemStack.getOrCreateSubTag("CustomCreativeLock");
                             String string = this.minecraft.options.keysHotbar[j].getLocalizedName();
                             String string2 = this.minecraft.options.keySaveToolbarActivator.getLocalizedName();
-                            itemStack.setCustomName(new TranslatableComponent("inventory.hotbarInfo", string2, string));
+                            itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", string2, string));
                             ((CreativeContainer)this.container).itemList.add(itemStack);
                             continue;
                         }
@@ -558,10 +558,10 @@ extends AbstractInventoryScreen<CreativeContainer> {
     protected void renderTooltip(ItemStack itemStack, int i, int j) {
         if (selectedTab == ItemGroup.SEARCH.getIndex()) {
             Map<Enchantment, Integer> map;
-            List<Component> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+            List<Text> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
             ArrayList<String> list2 = Lists.newArrayListWithCapacity(list.size());
-            for (Component component : list) {
-                list2.add(component.getFormattedText());
+            for (Text text : list) {
+                list2.add(text.asFormattedString());
             }
             Item item = itemStack.getItem();
             ItemGroup itemGroup = item.getGroup();
@@ -575,18 +575,18 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
             this.field_16201.forEach((identifier, tag) -> {
                 if (tag.contains(item)) {
-                    list2.add(1, "" + (Object)((Object)ChatFormat.BOLD) + (Object)((Object)ChatFormat.DARK_PURPLE) + "#" + identifier);
+                    list2.add(1, "" + (Object)((Object)Formatting.BOLD) + (Object)((Object)Formatting.DARK_PURPLE) + "#" + identifier);
                 }
             });
             if (itemGroup != null) {
-                list2.add(1, "" + (Object)((Object)ChatFormat.BOLD) + (Object)((Object)ChatFormat.BLUE) + I18n.translate(itemGroup.getTranslationKey(), new Object[0]));
+                list2.add(1, "" + (Object)((Object)Formatting.BOLD) + (Object)((Object)Formatting.BLUE) + I18n.translate(itemGroup.getTranslationKey(), new Object[0]));
             }
             for (int k = 0; k < list2.size(); ++k) {
                 if (k == 0) {
                     list2.set(k, (Object)((Object)itemStack.getRarity().formatting) + (String)list2.get(k));
                     continue;
                 }
-                list2.set(k, (Object)((Object)ChatFormat.GRAY) + (String)list2.get(k));
+                list2.set(k, (Object)((Object)Formatting.GRAY) + (String)list2.get(k));
             }
             this.renderTooltip(list2, i, j);
         } else {
@@ -710,7 +710,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
             String string = minecraftClient.options.keysHotbar[i].getLocalizedName();
             String string2 = minecraftClient.options.keyLoadToolbarActivator.getLocalizedName();
-            minecraftClient.inGameHud.setOverlayMessage(new TranslatableComponent("inventory.hotbarSaved", string2, string), false);
+            minecraftClient.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", string2, string), false);
             hotbarStorage.save();
         }
     }

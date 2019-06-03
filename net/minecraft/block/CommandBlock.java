@@ -155,7 +155,7 @@ extends BlockWithEntity {
         CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
         CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
         if (itemStack.hasCustomName()) {
-            commandBlockExecutor.setCustomName(itemStack.getCustomName());
+            commandBlockExecutor.setCustomName(itemStack.getName());
         }
         if (!world.isClient) {
             if (itemStack.getSubTag("BlockEntityTag") == null) {

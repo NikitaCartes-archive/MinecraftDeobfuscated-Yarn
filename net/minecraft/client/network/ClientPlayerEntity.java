@@ -52,7 +52,6 @@ import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
@@ -71,9 +70,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -213,9 +213,9 @@ extends AbstractClientPlayerEntity {
         }
         if (this.isCamera()) {
             boolean bl4;
-            BoundingBox boundingBox = this.getBoundingBox();
+            Box box = this.getBoundingBox();
             double d = this.x - this.lastX;
-            double e = boundingBox.minY - this.lastBaseY;
+            double e = box.minY - this.lastBaseY;
             double f = this.z - this.lastZ;
             double g = this.yaw - this.lastYaw;
             double h = this.pitch - this.lastPitch;
@@ -227,9 +227,9 @@ extends AbstractClientPlayerEntity {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
                 bl3 = false;
             } else if (bl3 && bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.x, box.minY, this.z, this.yaw, this.pitch, this.onGround));
             } else if (bl3) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.x, boundingBox.minY, this.z, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.x, box.minY, this.z, this.onGround));
             } else if (bl4) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
             } else if (this.lastOnGround != this.onGround) {
@@ -237,7 +237,7 @@ extends AbstractClientPlayerEntity {
             }
             if (bl3) {
                 this.lastX = this.x;
-                this.lastBaseY = boundingBox.minY;
+                this.lastBaseY = box.minY;
                 this.lastZ = this.z;
                 this.field_3923 = 0;
             }
@@ -366,11 +366,11 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void addChatMessage(Component component, boolean bl) {
+    public void addChatMessage(Text text, boolean bl) {
         if (bl) {
-            this.client.inGameHud.setOverlayMessage(component, false);
+            this.client.inGameHud.setOverlayMessage(text, false);
         } else {
-            this.client.inGameHud.getChatHud().addMessage(component);
+            this.client.inGameHud.getChatHud().addMessage(text);
         }
     }
 
@@ -422,9 +422,9 @@ extends AbstractClientPlayerEntity {
     }
 
     private boolean cannotFitAt(BlockPos blockPos) {
-        BoundingBox boundingBox = this.getBoundingBox();
+        Box box = this.getBoundingBox();
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-        for (int i = MathHelper.floor(boundingBox.minY); i < MathHelper.ceil(boundingBox.maxY); ++i) {
+        for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); ++i) {
             mutable.setY(i);
             if (this.doesNotSuffocate(mutable)) continue;
             return true;
@@ -445,8 +445,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Component component) {
-        this.client.inGameHud.getChatHud().addMessage(component);
+    public void sendMessage(Text text) {
+        this.client.inGameHud.getChatHud().addMessage(text);
     }
 
     @Override
@@ -633,11 +633,11 @@ extends AbstractClientPlayerEntity {
             this.input.jumping = true;
         }
         if (!this.noClip) {
-            BoundingBox boundingBox = this.getBoundingBox();
-            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+            Box box = this.getBoundingBox();
+            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, box.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, box.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, box.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, box.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
         }
         boolean bl7 = bl6 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
         if (!(!this.onGround && !this.isInWater() || bl2 || bl3 || !this.method_20623() || this.isSprinting() || !bl6 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
@@ -861,7 +861,7 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d7 = vec3d2.add(vec3d4.multiply(p));
         float q = this.getWidth();
         float r = this.getHeight();
-        BoundingBox boundingBox = new BoundingBox(vec3d6, vec3d7.add(0.0, r, 0.0)).expand(q, 0.0, q);
+        Box box = new Box(vec3d6, vec3d7.add(0.0, r, 0.0)).expand(q, 0.0, q);
         vec3d6 = vec3d6.add(0.0, 0.51f, 0.0);
         vec3d7 = vec3d7.add(0.0, 0.51f, 0.0);
         Vec3d vec3d8 = vec3d4.crossProduct(new Vec3d(0.0, 1.0, 0.0));
@@ -870,13 +870,13 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
-        Iterator iterator = this.world.getCollisionShapes((Entity)this, boundingBox, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterator iterator = this.world.getCollisionShapes((Entity)this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
         float s = Float.MIN_VALUE;
         while (iterator.hasNext()) {
-            BoundingBox boundingBox2 = (BoundingBox)iterator.next();
-            if (!boundingBox2.intersects(vec3d10, vec3d11) && !boundingBox2.intersects(vec3d12, vec3d13)) continue;
-            s = (float)boundingBox2.maxY;
-            Vec3d vec3d14 = boundingBox2.getCenter();
+            Box box2 = (Box)iterator.next();
+            if (!box2.intersects(vec3d10, vec3d11) && !box2.intersects(vec3d12, vec3d13)) continue;
+            s = (float)box2.maxY;
+            Vec3d vec3d14 = box2.getCenter();
             BlockPos blockPos2 = new BlockPos(vec3d14);
             int t = 1;
             while ((float)t < o) {

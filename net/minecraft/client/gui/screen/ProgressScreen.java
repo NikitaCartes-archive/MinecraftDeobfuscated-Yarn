@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ProgressListener;
 
 @Environment(value=EnvType.CLIENT)
@@ -31,19 +31,19 @@ implements ProgressListener {
     }
 
     @Override
-    public void method_15412(Component component) {
-        this.method_15413(component);
+    public void method_15412(Text text) {
+        this.method_15413(text);
     }
 
     @Override
-    public void method_15413(Component component) {
-        this.title = component.getFormattedText();
-        this.method_15414(new TranslatableComponent("progress.working", new Object[0]));
+    public void method_15413(Text text) {
+        this.title = text.asFormattedString();
+        this.method_15414(new TranslatableText("progress.working", new Object[0]));
     }
 
     @Override
-    public void method_15414(Component component) {
-        this.task = component.getFormattedText();
+    public void method_15414(Text text) {
+        this.task = text.asFormattedString();
         this.progressStagePercentage(0);
     }
 

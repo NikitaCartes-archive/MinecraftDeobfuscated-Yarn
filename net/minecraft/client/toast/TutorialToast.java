@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +25,10 @@ implements Toast {
     private float progress;
     private final boolean hasProgressBar;
 
-    public TutorialToast(Type type, Component component, @Nullable Component component2, boolean bl) {
+    public TutorialToast(Type type, Text text, @Nullable Text text2, boolean bl) {
         this.type = type;
-        this.title = component.getFormattedText();
-        this.description = component2 == null ? null : component2.getFormattedText();
+        this.title = text.asFormattedString();
+        this.description = text2 == null ? null : text2.asFormattedString();
         this.hasProgressBar = bl;
     }
 

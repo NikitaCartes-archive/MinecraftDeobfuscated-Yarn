@@ -7,37 +7,37 @@ import com.mojang.brigadier.exceptions.BuiltInExceptionProvider;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public class TextComponentBuiltInExceptionProvider
 implements BuiltInExceptionProvider {
-    private static final Dynamic2CommandExceptionType DOUBLE_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.double.low", object2, object));
-    private static final Dynamic2CommandExceptionType DOUBLE_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.double.big", object2, object));
-    private static final Dynamic2CommandExceptionType FLOAT_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.float.low", object2, object));
-    private static final Dynamic2CommandExceptionType FLOAT_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.float.big", object2, object));
-    private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.integer.low", object2, object));
-    private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.integer.big", object2, object));
-    private static final Dynamic2CommandExceptionType LONG_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.long.low", object2, object));
-    private static final Dynamic2CommandExceptionType LONG_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("argument.long.big", object2, object));
-    private static final DynamicCommandExceptionType EXPECTED_LITERAL_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("argument.literal.incorrect", object));
-    private static final SimpleCommandExceptionType EXPECTED_START_QUOTE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.quote.expected.start", new Object[0]));
-    private static final SimpleCommandExceptionType EXPECTED_END_QUOTE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.quote.expected.end", new Object[0]));
-    private static final DynamicCommandExceptionType INVALID_ESCAPE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.quote.escape", object));
-    private static final DynamicCommandExceptionType INVALID_BOOLEAN_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.bool.invalid", object));
-    private static final DynamicCommandExceptionType INVALID_INTEGER_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.int.invalid", object));
-    private static final SimpleCommandExceptionType EXPECTED_INTEGER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.int.expected", new Object[0]));
-    private static final DynamicCommandExceptionType INVALID_LONG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.long.invalid", object));
-    private static final SimpleCommandExceptionType EXPECTED_LONG_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.long.expected", new Object[0]));
-    private static final DynamicCommandExceptionType INVALID_DOUBLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.double.invalid", object));
-    private static final SimpleCommandExceptionType EXPECTED_DOUBLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.double.expected", new Object[0]));
-    private static final DynamicCommandExceptionType INVALID_FLOAT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.float.invalid", object));
-    private static final SimpleCommandExceptionType EXPECTED_FLOAT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.float.expected", new Object[0]));
-    private static final SimpleCommandExceptionType EXPECTED_BOOLEAN_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("parsing.bool.expected", new Object[0]));
-    private static final DynamicCommandExceptionType EXPECTED_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("parsing.expected", object));
-    private static final SimpleCommandExceptionType UNKNOWN_COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("command.unknown.command", new Object[0]));
-    private static final SimpleCommandExceptionType UNKNOWN_ARGUMENT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("command.unknown.argument", new Object[0]));
-    private static final SimpleCommandExceptionType EXPECTED_SEPARATOR_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("command.expected.separator", new Object[0]));
-    private static final DynamicCommandExceptionType COMMAND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("command.exception", object));
+    private static final Dynamic2CommandExceptionType DOUBLE_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.double.low", object2, object));
+    private static final Dynamic2CommandExceptionType DOUBLE_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.double.big", object2, object));
+    private static final Dynamic2CommandExceptionType FLOAT_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.float.low", object2, object));
+    private static final Dynamic2CommandExceptionType FLOAT_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.float.big", object2, object));
+    private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.integer.low", object2, object));
+    private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.integer.big", object2, object));
+    private static final Dynamic2CommandExceptionType LONG_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.long.low", object2, object));
+    private static final Dynamic2CommandExceptionType LONG_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.long.big", object2, object));
+    private static final DynamicCommandExceptionType EXPECTED_LITERAL_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.literal.incorrect", object));
+    private static final SimpleCommandExceptionType EXPECTED_START_QUOTE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.quote.expected.start", new Object[0]));
+    private static final SimpleCommandExceptionType EXPECTED_END_QUOTE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.quote.expected.end", new Object[0]));
+    private static final DynamicCommandExceptionType INVALID_ESCAPE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.quote.escape", object));
+    private static final DynamicCommandExceptionType INVALID_BOOLEAN_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.bool.invalid", object));
+    private static final DynamicCommandExceptionType INVALID_INTEGER_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.int.invalid", object));
+    private static final SimpleCommandExceptionType EXPECTED_INTEGER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.int.expected", new Object[0]));
+    private static final DynamicCommandExceptionType INVALID_LONG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.long.invalid", object));
+    private static final SimpleCommandExceptionType EXPECTED_LONG_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.long.expected", new Object[0]));
+    private static final DynamicCommandExceptionType INVALID_DOUBLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.double.invalid", object));
+    private static final SimpleCommandExceptionType EXPECTED_DOUBLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.double.expected", new Object[0]));
+    private static final DynamicCommandExceptionType INVALID_FLOAT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.float.invalid", object));
+    private static final SimpleCommandExceptionType EXPECTED_FLOAT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.float.expected", new Object[0]));
+    private static final SimpleCommandExceptionType EXPECTED_BOOLEAN_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("parsing.bool.expected", new Object[0]));
+    private static final DynamicCommandExceptionType EXPECTED_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("parsing.expected", object));
+    private static final SimpleCommandExceptionType UNKNOWN_COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("command.unknown.command", new Object[0]));
+    private static final SimpleCommandExceptionType UNKNOWN_ARGUMENT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("command.unknown.argument", new Object[0]));
+    private static final SimpleCommandExceptionType EXPECTED_SEPARATOR_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("command.expected.separator", new Object[0]));
+    private static final DynamicCommandExceptionType COMMAND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("command.exception", object));
 
     @Override
     public Dynamic2CommandExceptionType doubleTooLow() {

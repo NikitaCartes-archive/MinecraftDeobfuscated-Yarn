@@ -104,7 +104,7 @@ implements SpectatorMenuCloseCallback {
         if (i > 3 && this.spectatorMenu != null) {
             String string;
             SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
-            String string2 = string = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt().getFormattedText() : spectatorMenuCommand.getName().getFormattedText();
+            String string2 = string = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt().asFormattedString() : spectatorMenuCommand.getName().asFormattedString();
             if (string != null) {
                 int j = (this.client.window.getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
                 int k = this.client.window.getScaledHeight() - 35;

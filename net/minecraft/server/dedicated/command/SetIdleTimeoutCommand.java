@@ -6,9 +6,9 @@ package net.minecraft.server.dedicated.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class SetIdleTimeoutCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -17,7 +17,7 @@ public class SetIdleTimeoutCommand {
 
     private static int execute(ServerCommandSource serverCommandSource, int i) {
         serverCommandSource.getMinecraftServer().setPlayerIdleTimeout(i);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.setidletimeout.success", i), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.setidletimeout.success", i), true);
         return i;
     }
 }

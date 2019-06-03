@@ -6,7 +6,6 @@ package net.minecraft.client;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -25,9 +24,10 @@ import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
@@ -57,11 +57,11 @@ public class Keyboard {
     }
 
     private void debugWarn(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new TextComponent("").append(new TranslatableComponent("debug.prefix", new Object[0]).applyFormat(ChatFormat.YELLOW, ChatFormat.BOLD)).append(" ").append(new TranslatableComponent(string, objects)));
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix", new Object[0]).formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
     private void debugError(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new TextComponent("").append(new TranslatableComponent("debug.prefix", new Object[0]).applyFormat(ChatFormat.RED, ChatFormat.BOLD)).append(" ").append(new TranslatableComponent(string, objects)));
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix", new Object[0]).formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
     private boolean processF3(int i) {
@@ -127,19 +127,19 @@ public class Keyboard {
             case 81: {
                 this.debugWarn("debug.help.message", new Object[0]);
                 ChatHud chatHud = this.client.inGameHud.getChatHud();
-                chatHud.addMessage(new TranslatableComponent("debug.reload_chunks.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.show_hitboxes.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.copy_location.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.clear_chat.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.cycle_renderdistance.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.chunk_boundaries.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.advanced_tooltips.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.inspect.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.creative_spectator.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.pause_focus.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.help.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.reload_resourcepacks.help", new Object[0]));
-                chatHud.addMessage(new TranslatableComponent("debug.pause.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.reload_chunks.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.copy_location.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.clear_chat.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.cycle_renderdistance.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.inspect.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.creative_spectator.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.pause_focus.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.help.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.pause.help", new Object[0]));
                 return true;
             }
             case 84: {
@@ -232,7 +232,7 @@ public class Keyboard {
             compoundTag.remove("UUIDLeast");
             compoundTag.remove("Pos");
             compoundTag.remove("Dimension");
-            String string = compoundTag.toTextComponent().getString();
+            String string = compoundTag.toText().getString();
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", identifier.toString(), vec3d.x, vec3d.y, vec3d.z, string);
         } else {
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", identifier.toString(), vec3d.x, vec3d.y, vec3d.z);
@@ -266,7 +266,7 @@ public class Keyboard {
                 if (Screen.hasControlDown()) {
                     // empty if block
                 }
-                ScreenshotUtils.method_1659(this.client.runDirectory, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), this.client.getFramebuffer(), component -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Component)component)));
+                ScreenshotUtils.method_1659(this.client.runDirectory, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), this.client.getFramebuffer(), text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Text)text)));
                 return;
             }
         }

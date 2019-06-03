@@ -102,7 +102,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -686,7 +686,7 @@ SynchronousResourceReloadListener {
                 ChunkInfo chunkInfo = new ChunkInfo(chunkRenderer, null, 0);
                 Set<Direction> set = this.getOpenChunkFaces(blockPos);
                 if (set.size() == 1) {
-                    Direction[] vec3d = camera.method_19335();
+                    Direction[] vec3d = camera.getHorizontalPlane();
                     Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite();
                     set.remove(direction);
                 }
@@ -1451,16 +1451,16 @@ SynchronousResourceReloadListener {
     }
 
     public static void drawDebugShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-        List<BoundingBox> list = voxelShape.getBoundingBoxes();
+        List<Box> list = voxelShape.getBoundingBoxes();
         int k = MathHelper.ceil((double)list.size() / 3.0);
         for (int l = 0; l < list.size(); ++l) {
-            BoundingBox boundingBox = list.get(l);
+            Box box = list.get(l);
             float m = ((float)l % (float)k + 1.0f) / (float)k;
             float n = l / k;
             float o = m * (float)(n == 0.0f ? 1 : 0);
             float p = m * (float)(n == 1.0f ? 1 : 0);
             float q = m * (float)(n == 2.0f ? 1 : 0);
-            WorldRenderer.drawShapeOutline(VoxelShapes.cuboid(boundingBox.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0f);
+            WorldRenderer.drawShapeOutline(VoxelShapes.cuboid(box.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0f);
         }
     }
 
@@ -1475,8 +1475,8 @@ SynchronousResourceReloadListener {
         tessellator.draw();
     }
 
-    public static void drawBoxOutline(BoundingBox boundingBox, float f, float g, float h, float i) {
-        WorldRenderer.drawBoxOutline(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ, f, g, h, i);
+    public static void drawBoxOutline(Box box, float f, float g, float h, float i) {
+        WorldRenderer.drawBoxOutline(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
     }
 
     public static void drawBoxOutline(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
@@ -1592,7 +1592,7 @@ SynchronousResourceReloadListener {
         if (soundEvent != null) {
             MusicDiscItem musicDiscItem = MusicDiscItem.bySound(soundEvent);
             if (musicDiscItem != null) {
-                this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().getFormattedText());
+                this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().asFormattedString());
             }
             soundInstance = PositionedSoundInstance.record(soundEvent, blockPos.getX(), blockPos.getY(), blockPos.getZ());
             this.playingSongs.put(blockPos, soundInstance);
@@ -1602,7 +1602,7 @@ SynchronousResourceReloadListener {
     }
 
     private void updateEntitiesForSong(World world, BlockPos blockPos, boolean bl) {
-        List<LivingEntity> list = world.getEntities(LivingEntity.class, new BoundingBox(blockPos).expand(3.0));
+        List<LivingEntity> list = world.getEntities(LivingEntity.class, new Box(blockPos).expand(3.0));
         for (LivingEntity livingEntity : list) {
             livingEntity.setNearbySongPlaying(blockPos, bl);
         }

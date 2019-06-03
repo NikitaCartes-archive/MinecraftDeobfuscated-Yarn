@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
@@ -20,7 +20,7 @@ extends Screen {
     private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
 
     public DemoScreen() {
-        super(new TranslatableComponent("demo.help.title", new Object[0]));
+        super(new TranslatableText("demo.help.title", new Object[0]));
     }
 
     @Override
@@ -51,7 +51,7 @@ extends Screen {
         this.renderBackground();
         int k = (this.width - 248) / 2 + 10;
         int l = (this.height - 166) / 2 + 8;
-        this.font.draw(this.title.getFormattedText(), k, l, 0x1F1F1F);
+        this.font.draw(this.title.asFormattedString(), k, l, 0x1F1F1F);
         GameOptions gameOptions = this.minecraft.options;
         this.font.draw(I18n.translate("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), k, l += 12, 0x4F4F4F);
         this.font.draw(I18n.translate("demo.help.movementMouse", new Object[0]), k, l + 12, 0x4F4F4F);

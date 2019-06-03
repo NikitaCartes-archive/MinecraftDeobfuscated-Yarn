@@ -18,7 +18,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -111,28 +111,28 @@ extends ExtendedBlockView {
         return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
     }
 
-    default public boolean doesNotCollide(BoundingBox boundingBox) {
-        return this.doesNotCollide(null, boundingBox, Collections.emptySet());
+    default public boolean doesNotCollide(Box box) {
+        return this.doesNotCollide(null, box, Collections.emptySet());
     }
 
     default public boolean doesNotCollide(Entity entity) {
         return this.doesNotCollide(entity, entity.getBoundingBox(), Collections.emptySet());
     }
 
-    default public boolean doesNotCollide(Entity entity, BoundingBox boundingBox) {
-        return this.doesNotCollide(entity, boundingBox, Collections.emptySet());
+    default public boolean doesNotCollide(Entity entity, Box box) {
+        return this.doesNotCollide(entity, box, Collections.emptySet());
     }
 
-    default public boolean doesNotCollide(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-        return this.getCollisionShapes(entity, boundingBox, set).allMatch(VoxelShape::isEmpty);
+    default public boolean doesNotCollide(@Nullable Entity entity, Box box, Set<Entity> set) {
+        return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
     }
 
     default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
         return Stream.empty();
     }
 
-    default public Stream<VoxelShape> getCollisionShapes(final @Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-        final VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox);
+    default public Stream<VoxelShape> getCollisionShapes(final @Nullable Entity entity, Box box, Set<Entity> set) {
+        final VoxelShape voxelShape = VoxelShapes.cuboid(box);
         final int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X) - 1.0E-7) - 1;
         final int j = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.X) + 1.0E-7) + 1;
         final int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y) - 1.0E-7) - 1;
@@ -183,7 +183,7 @@ extends ExtendedBlockView {
                     if (l2 >= 3 || (chunk = ViewableWorld.this.getChunk(m2 = i2 >> 4, n2 = k2 >> 4, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false)) == null) continue;
                     mutable.set(i2, j2, k2);
                     BlockState blockState = chunk.getBlockState(mutable);
-                    if (l2 == 1 && !blockState.method_17900() || l2 == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = ViewableWorld.this.getBlockState(mutable).getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i2, j2, k2), BooleanBiFunction.AND)) continue;
+                    if (l2 == 1 && !blockState.method_17900() || l2 == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i2, j2, k2), BooleanBiFunction.AND)) continue;
                     consumer.accept(voxelShape3);
                     return true;
                 }
@@ -196,13 +196,13 @@ extends ExtendedBlockView {
         return this.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
-    default public boolean intersectsFluid(BoundingBox boundingBox) {
-        int i = MathHelper.floor(boundingBox.minX);
-        int j = MathHelper.ceil(boundingBox.maxX);
-        int k = MathHelper.floor(boundingBox.minY);
-        int l = MathHelper.ceil(boundingBox.maxY);
-        int m = MathHelper.floor(boundingBox.minZ);
-        int n = MathHelper.ceil(boundingBox.maxZ);
+    default public boolean intersectsFluid(Box box) {
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.ceil(box.maxX);
+        int k = MathHelper.floor(box.minY);
+        int l = MathHelper.ceil(box.maxY);
+        int m = MathHelper.floor(box.minZ);
+        int n = MathHelper.ceil(box.maxZ);
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {

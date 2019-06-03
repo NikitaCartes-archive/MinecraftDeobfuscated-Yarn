@@ -18,12 +18,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -187,17 +187,17 @@ NameableContainerProvider {
     }
 
     private ServerCommandSource getCommandSource(@Nullable PlayerEntity playerEntity) {
-        Component component;
+        Text text;
         String string;
         if (playerEntity == null) {
             string = "Lectern";
-            component = new TextComponent("Lectern");
+            text = new LiteralText("Lectern");
         } else {
             string = playerEntity.getName().getString();
-            component = playerEntity.getDisplayName();
+            text = playerEntity.getDisplayName();
         }
         Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
-        return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, component, this.world.getServer(), playerEntity);
+        return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), playerEntity);
     }
 
     @Override
@@ -229,8 +229,8 @@ NameableContainerProvider {
     }
 
     @Override
-    public Component getDisplayName() {
-        return new TranslatableComponent("container.lectern", new Object[0]);
+    public Text getDisplayName() {
+        return new TranslatableText("container.lectern", new Object[0]);
     }
 }
 

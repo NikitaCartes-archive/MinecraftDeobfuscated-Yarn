@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ClientChatListener;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.MessageType;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class GameInfoChatListener
@@ -20,8 +20,8 @@ implements ClientChatListener {
     }
 
     @Override
-    public void onChatMessage(ChatMessageType chatMessageType, Component component) {
-        this.client.inGameHud.setOverlayMessage(component, false);
+    public void onChatMessage(MessageType messageType, Text text) {
+        this.client.inGameHud.setOverlayMessage(text, false);
     }
 }
 

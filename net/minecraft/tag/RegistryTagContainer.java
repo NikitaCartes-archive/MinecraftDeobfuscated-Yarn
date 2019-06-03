@@ -3,8 +3,8 @@
  */
 package net.minecraft.tag;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
+import com.google.common.collect.Maps;
+import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
@@ -22,8 +22,9 @@ extends TagContainer<T> {
     }
 
     public void toPacket(PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeVarInt(this.getEntries().size());
-        for (Map.Entry entry : this.getEntries().entrySet()) {
+        Map map = this.getEntries();
+        packetByteBuf.writeVarInt(map.size());
+        for (Map.Entry entry : map.entrySet()) {
             packetByteBuf.writeIdentifier(entry.getKey());
             packetByteBuf.writeVarInt(entry.getValue().values().size());
             for (Object object : entry.getValue().values()) {
@@ -33,16 +34,18 @@ extends TagContainer<T> {
     }
 
     public void fromPacket(PacketByteBuf packetByteBuf) {
+        HashMap map = Maps.newHashMap();
         int i = packetByteBuf.readVarInt();
         for (int j = 0; j < i; ++j) {
             Identifier identifier = packetByteBuf.readIdentifier();
             int k = packetByteBuf.readVarInt();
-            ArrayList list = Lists.newArrayList();
+            Tag.Builder builder = Tag.Builder.create();
             for (int l = 0; l < k; ++l) {
-                list.add(this.registry.get(packetByteBuf.readVarInt()));
+                builder.add(this.registry.get(packetByteBuf.readVarInt()));
             }
-            this.getEntries().put(identifier, Tag.Builder.create().add(list).build(identifier));
+            map.put(identifier, builder.build(identifier));
         }
+        this.method_20735(map);
     }
 }
 

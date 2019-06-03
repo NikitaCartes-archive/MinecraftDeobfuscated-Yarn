@@ -11,7 +11,7 @@ import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -60,7 +60,7 @@ extends Screen {
         long l = SystemUtil.getMeasuringTimeMs();
         if (l - this.field_19101 > 2000L) {
             this.field_19101 = l;
-            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.loading", string).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.loading", string).getString());
         }
         int k = this.width / 2;
         int m = this.height / 2;

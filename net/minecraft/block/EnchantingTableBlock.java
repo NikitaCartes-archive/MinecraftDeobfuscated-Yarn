@@ -22,8 +22,8 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -95,8 +95,8 @@ extends BlockWithEntity {
     public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof EnchantingTableBlockEntity) {
-            Component component = ((Nameable)((Object)blockEntity)).getDisplayName();
-            return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), component);
+            Text text = ((Nameable)((Object)blockEntity)).getDisplayName();
+            return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), text);
         }
         return null;
     }
@@ -105,7 +105,7 @@ extends BlockWithEntity {
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
         if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof EnchantingTableBlockEntity) {
-            ((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+            ((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 

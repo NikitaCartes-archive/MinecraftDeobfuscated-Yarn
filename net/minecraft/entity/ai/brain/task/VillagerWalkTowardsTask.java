@@ -38,6 +38,7 @@ extends Task<VillagerEntity> {
             if (this.method_19597(serverWorld, villagerEntity, (GlobalPos)globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
                 villagerEntity.releaseTicketFor(this.destination);
                 brain.forget(this.destination);
+                brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
             } else if (!this.reachedDestination(serverWorld, villagerEntity, (GlobalPos)globalPos)) {
                 brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
             }

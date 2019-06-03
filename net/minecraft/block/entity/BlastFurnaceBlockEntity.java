@@ -9,9 +9,9 @@ import net.minecraft.container.BlastFurnaceContainer;
 import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class BlastFurnaceBlockEntity
 extends AbstractFurnaceBlockEntity {
@@ -20,8 +20,8 @@ extends AbstractFurnaceBlockEntity {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.blast_furnace", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.blast_furnace", new Object[0]);
     }
 
     @Override

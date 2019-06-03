@@ -23,13 +23,13 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -47,7 +47,7 @@ implements Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-    public static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.enderchest", new Object[0]);
+    public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest", new Object[0]);
 
     protected EnderChestBlock(Block.Settings settings) {
         super(settings);

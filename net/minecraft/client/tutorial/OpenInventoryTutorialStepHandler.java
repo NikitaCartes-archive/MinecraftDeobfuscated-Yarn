@@ -9,15 +9,15 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class OpenInventoryTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Component TITLE = new TranslatableComponent("tutorial.open_inventory.title", new Object[0]);
-    private static final Component DESCRIPTION = new TranslatableComponent("tutorial.open_inventory.description", TutorialManager.getKeybindName("inventory"));
+    private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title", new Object[0]);
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.open_inventory.description", TutorialManager.getKeybindName("inventory"));
     private final TutorialManager manager;
     private TutorialToast field_5642;
     private int ticks;

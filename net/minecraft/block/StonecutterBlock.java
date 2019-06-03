@@ -16,10 +16,10 @@ import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class StonecutterBlock
 extends Block {
-    private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.stonecutter", new Object[0]);
+    private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.stonecutter", new Object[0]);
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 

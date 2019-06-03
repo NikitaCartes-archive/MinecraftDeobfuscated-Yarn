@@ -4,12 +4,12 @@
 package net.minecraft.entity.boss;
 
 import java.util.UUID;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public abstract class BossBar {
     private final UUID uuid;
-    protected Component name;
+    protected Text name;
     protected float percent;
     protected Color color;
     protected Style style;
@@ -17,9 +17,9 @@ public abstract class BossBar {
     protected boolean dragonMusic;
     protected boolean thickenFog;
 
-    public BossBar(UUID uUID, Component component, Color color, Style style) {
+    public BossBar(UUID uUID, Text text, Color color, Style style) {
         this.uuid = uUID;
-        this.name = component;
+        this.name = text;
         this.color = color;
         this.style = style;
         this.percent = 1.0f;
@@ -29,12 +29,12 @@ public abstract class BossBar {
         return this.uuid;
     }
 
-    public Component getName() {
+    public Text getName() {
         return this.name;
     }
 
-    public void setName(Component component) {
-        this.name = component;
+    public void setName(Text text) {
+        this.name = text;
     }
 
     public float getPercent() {
@@ -115,23 +115,23 @@ public abstract class BossBar {
     }
 
     public static enum Color {
-        PINK("pink", ChatFormat.RED),
-        BLUE("blue", ChatFormat.BLUE),
-        RED("red", ChatFormat.DARK_RED),
-        GREEN("green", ChatFormat.GREEN),
-        YELLOW("yellow", ChatFormat.YELLOW),
-        PURPLE("purple", ChatFormat.DARK_BLUE),
-        WHITE("white", ChatFormat.WHITE);
+        PINK("pink", Formatting.RED),
+        BLUE("blue", Formatting.BLUE),
+        RED("red", Formatting.DARK_RED),
+        GREEN("green", Formatting.GREEN),
+        YELLOW("yellow", Formatting.YELLOW),
+        PURPLE("purple", Formatting.DARK_BLUE),
+        WHITE("white", Formatting.WHITE);
 
         private final String name;
-        private final ChatFormat format;
+        private final Formatting format;
 
-        private Color(String string2, ChatFormat chatFormat) {
+        private Color(String string2, Formatting formatting) {
             this.name = string2;
-            this.format = chatFormat;
+            this.format = formatting;
         }
 
-        public ChatFormat getTextFormat() {
+        public Formatting getTextFormat() {
             return this.format;
         }
 

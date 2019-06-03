@@ -48,13 +48,6 @@ implements ResourceReloadListener {
         return this.entityTypes;
     }
 
-    public void clear() {
-        this.blocks.clear();
-        this.items.clear();
-        this.fluids.clear();
-        this.entityTypes.clear();
-    }
-
     public void toPacket(PacketByteBuf packetByteBuf) {
         this.blocks.toPacket(packetByteBuf);
         this.items.toPacket(packetByteBuf);
@@ -78,7 +71,6 @@ implements ResourceReloadListener {
         CompletableFuture completableFuture3 = this.fluids.prepareReload(resourceManager, executor);
         CompletableFuture completableFuture4 = this.entityTypes.prepareReload(resourceManager, executor);
         return ((CompletableFuture)((CompletableFuture)((CompletableFuture)completableFuture.thenCombine((CompletionStage)completableFuture2, Pair::of)).thenCombine(completableFuture3.thenCombine((CompletionStage)completableFuture4, Pair::of), (pair, pair2) -> new BuilderHolder((Map)pair.getFirst(), (Map)pair.getSecond(), (Map)pair2.getFirst(), (Map)pair2.getSecond()))).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(builderHolder -> {
-            this.clear();
             this.blocks.applyReload(builderHolder.blocks);
             this.items.applyReload(builderHolder.items);
             this.fluids.applyReload(builderHolder.fluids);

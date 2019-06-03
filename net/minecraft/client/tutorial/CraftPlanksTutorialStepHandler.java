@@ -12,18 +12,18 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Component TITLE = new TranslatableComponent("tutorial.craft_planks.title", new Object[0]);
-    private static final Component DESCRIPTION = new TranslatableComponent("tutorial.craft_planks.description", new Object[0]);
+    private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title", new Object[0]);
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description", new Object[0]);
     private final TutorialManager manager;
     private TutorialToast toast;
     private int ticks;

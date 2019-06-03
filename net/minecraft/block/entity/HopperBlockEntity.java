@@ -27,14 +27,14 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -93,8 +93,8 @@ Tickable {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.hopper", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.hopper", new Object[0]);
     }
 
     @Override
@@ -309,7 +309,7 @@ Tickable {
     }
 
     public static List<ItemEntity> getInputItemEntities(Hopper hopper) {
-        return hopper.getInputAreaShape().getBoundingBoxes().stream().flatMap(boundingBox -> hopper.getWorld().getEntities(ItemEntity.class, boundingBox.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY).stream()).collect(Collectors.toList());
+        return hopper.getInputAreaShape().getBoundingBoxes().stream().flatMap(box -> hopper.getWorld().getEntities(ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY).stream()).collect(Collectors.toList());
     }
 
     @Nullable
@@ -330,7 +330,7 @@ Tickable {
         } else if (block.hasBlockEntity() && (blockEntity = world.getBlockEntity(blockPos)) instanceof Inventory && (inventory = (Inventory)((Object)blockEntity)) instanceof ChestBlockEntity && block instanceof ChestBlock) {
             inventory = ChestBlock.getInventory(blockState, world, blockPos, true);
         }
-        if (inventory == null && !(list = world.getEntities((Entity)null, new BoundingBox(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES)).isEmpty()) {
+        if (inventory == null && !(list = world.getEntities((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES)).isEmpty()) {
             inventory = (Inventory)((Object)list.get(world.random.nextInt(list.size())));
         }
         return inventory;

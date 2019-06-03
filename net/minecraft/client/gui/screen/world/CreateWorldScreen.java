@@ -16,7 +16,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -56,7 +56,7 @@ extends Screen {
     public CompoundTag generatorOptionsTag = new CompoundTag();
 
     public CreateWorldScreen(Screen screen) {
-        super(new TranslatableComponent("selectWorld.create", new Object[0]));
+        super(new TranslatableText("selectWorld.create", new Object[0]));
         this.parent = screen;
         this.seed = "";
         this.levelName = I18n.translate("selectWorld.newWorld", new Object[0]);
@@ -295,7 +295,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, -1);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);
         if (this.field_3202) {
             this.drawString(this.font, I18n.translate("selectWorld.enterSeed", new Object[0]), this.width / 2 - 100, 47, -6250336);
             this.drawString(this.font, I18n.translate("selectWorld.seedInfo", new Object[0]), this.width / 2 - 100, 85, -6250336);

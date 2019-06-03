@@ -29,7 +29,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -150,8 +150,8 @@ implements Tickable {
         int i = this.activatingBlocks.size();
         int j = i / 7 * 16;
         int k = this.pos.getX();
-        BoundingBox boundingBox = new BoundingBox(k, l = this.pos.getY(), m = this.pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
+        Box box = new Box(k, l = this.pos.getY(), m = this.pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, this.world.getHeight(), 0.0);
+        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
         if (list.isEmpty()) {
             return;
         }
@@ -198,11 +198,11 @@ implements Tickable {
         }
     }
 
-    private BoundingBox getAttackZone() {
+    private Box getAttackZone() {
         int i = this.pos.getX();
         int j = this.pos.getY();
         int k = this.pos.getZ();
-        return new BoundingBox(i, j, k, i + 1, j + 1, k + 1).expand(8.0);
+        return new Box(i, j, k, i + 1, j + 1, k + 1).expand(8.0);
     }
 
     @Nullable

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.controls.ControlsOptionsScreen;
@@ -17,6 +16,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(value=EnvType.CLIENT)
@@ -110,9 +110,9 @@ extends ElementListWidget<Entry> {
                 }
             }
             if (bl2) {
-                this.editButton.setMessage((Object)((Object)ChatFormat.WHITE) + "> " + (Object)((Object)ChatFormat.YELLOW) + this.editButton.getMessage() + (Object)((Object)ChatFormat.WHITE) + " <");
+                this.editButton.setMessage((Object)((Object)Formatting.WHITE) + "> " + (Object)((Object)Formatting.YELLOW) + this.editButton.getMessage() + (Object)((Object)Formatting.WHITE) + " <");
             } else if (bl3) {
-                this.editButton.setMessage((Object)((Object)ChatFormat.RED) + this.editButton.getMessage());
+                this.editButton.setMessage((Object)((Object)Formatting.RED) + this.editButton.getMessage());
             }
             this.editButton.render(n, o, f);
         }

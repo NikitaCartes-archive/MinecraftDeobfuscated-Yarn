@@ -17,6 +17,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -43,20 +44,15 @@ implements DataProvider {
     protected abstract void configure();
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache dataCache) {
         this.field_11481.clear();
         this.configure();
-        TagContainer<Object> tagContainer = new TagContainer<Object>(identifier -> Optional.empty(), "", false, "generated");
-        for (Map.Entry<Tag<T>, Tag.Builder<T>> entry : this.field_11481.entrySet()) {
-            Identifier identifier2 = entry.getKey().getId();
-            if (!entry.getValue().applyTagGetter(tagContainer::get)) {
-                throw new UnsupportedOperationException("Unsupported referencing of tags!");
-            }
-            Tag<Object> tag = entry.getValue().build(identifier2);
+        TagContainer tagContainer = new TagContainer(identifier -> Optional.empty(), "", false, "generated");
+        Map map = this.field_11481.entrySet().stream().collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Map.Entry::getValue));
+        tagContainer.applyReload(map);
+        tagContainer.getEntries().forEach((identifier, tag) -> {
             JsonObject jsonObject = tag.toJson(this.registry::getId);
-            Path path = this.getOutput(identifier2);
-            tagContainer.add(tag);
-            this.method_10511(tagContainer);
+            Path path = this.getOutput((Identifier)identifier);
             try {
                 String string = GSON.toJson(jsonObject);
                 String string2 = SHA1.hashUnencodedChars(string).toString();
@@ -70,7 +66,8 @@ implements DataProvider {
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }
-        }
+        });
+        this.method_10511(tagContainer);
     }
 
     protected abstract void method_10511(TagContainer<T> var1);

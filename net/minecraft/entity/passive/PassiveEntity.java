@@ -46,7 +46,7 @@ extends MobEntityWithAi {
                 passiveEntity.setPositionAndAngles(this.x, this.y, this.z, 0.0f, 0.0f);
                 this.world.spawnEntity(passiveEntity);
                 if (itemStack.hasCustomName()) {
-                    passiveEntity.setCustomName(itemStack.getCustomName());
+                    passiveEntity.setCustomName(itemStack.getName());
                 }
                 this.onPlayerSpawnedChild(playerEntity, passiveEntity);
                 if (!playerEntity.abilities.creativeMode) {

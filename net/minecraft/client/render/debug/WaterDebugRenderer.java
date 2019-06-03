@@ -12,7 +12,7 @@ import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -42,7 +42,7 @@ implements DebugRenderer.Renderer {
             fluidState = viewableWorld.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
             double g = (float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2);
-            DebugRenderer.method_19695(new BoundingBox((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
+            DebugRenderer.method_19695(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
         }
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = viewableWorld.getFluidState(blockPos2);

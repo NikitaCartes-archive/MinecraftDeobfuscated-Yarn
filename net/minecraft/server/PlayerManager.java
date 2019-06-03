@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.ChunkLoadDistanceS2CPacket;
@@ -47,10 +46,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -70,6 +67,9 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
@@ -148,8 +148,8 @@ public abstract class PlayerManager {
         serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
         this.sendScoreboard(serverWorld.method_14170(), serverPlayerEntity);
         this.server.forcePlayerSampleUpdate();
-        TranslatableComponent component = serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableComponent("multiplayer.player.joined", serverPlayerEntity.getDisplayName()) : new TranslatableComponent("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
-        this.sendToAll(component.applyFormat(ChatFormat.YELLOW));
+        TranslatableText text = serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", serverPlayerEntity.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
+        this.sendToAll(text.formatted(Formatting.YELLOW));
         serverPlayNetworkHandler.requestTeleport(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
         this.players.add(serverPlayerEntity);
         this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
@@ -304,28 +304,28 @@ public abstract class PlayerManager {
     }
 
     @Nullable
-    public Component checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
+    public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
         if (this.bannedProfiles.contains(gameProfile)) {
             BannedPlayerEntry bannedPlayerEntry = (BannedPlayerEntry)this.bannedProfiles.get(gameProfile);
-            TranslatableComponent component = new TranslatableComponent("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
+            TranslatableText text = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
             if (bannedPlayerEntry.getExpiryDate() != null) {
-                component.append(new TranslatableComponent("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
+                text.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
             }
-            return component;
+            return text;
         }
         if (!this.isWhitelisted(gameProfile)) {
-            return new TranslatableComponent("multiplayer.disconnect.not_whitelisted", new Object[0]);
+            return new TranslatableText("multiplayer.disconnect.not_whitelisted", new Object[0]);
         }
         if (this.bannedIps.isBanned(socketAddress)) {
             BannedIpEntry bannedIpEntry = this.bannedIps.get(socketAddress);
-            TranslatableComponent component = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
+            TranslatableText text = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
             if (bannedIpEntry.getExpiryDate() != null) {
-                component.append(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
+                text.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
             }
-            return component;
+            return text;
         }
         if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)) {
-            return new TranslatableComponent("multiplayer.disconnect.server_full", new Object[0]);
+            return new TranslatableText("multiplayer.disconnect.server_full", new Object[0]);
         }
         return null;
     }
@@ -343,7 +343,7 @@ public abstract class PlayerManager {
             list.add(serverPlayerEntity2);
         }
         for (ServerPlayerEntity serverPlayerEntity : list) {
-            serverPlayerEntity.networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.duplicate_login", new Object[0]));
+            serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login", new Object[0]));
         }
         ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(this.server.getWorld(DimensionType.OVERWORLD)) : new ServerPlayerInteractionManager(this.server.getWorld(DimensionType.OVERWORLD));
         return new ServerPlayerEntity(this.server, this.server.getWorld(DimensionType.OVERWORLD), gameProfile, serverPlayerInteractionManager);
@@ -423,7 +423,7 @@ public abstract class PlayerManager {
         }
     }
 
-    public void sendToTeam(PlayerEntity playerEntity, Component component) {
+    public void sendToTeam(PlayerEntity playerEntity, Text text) {
         AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
         if (abstractTeam == null) {
             return;
@@ -432,20 +432,20 @@ public abstract class PlayerManager {
         for (String string : collection) {
             ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
             if (serverPlayerEntity == null || serverPlayerEntity == playerEntity) continue;
-            serverPlayerEntity.sendMessage(component);
+            serverPlayerEntity.sendMessage(text);
         }
     }
 
-    public void sendToOtherTeams(PlayerEntity playerEntity, Component component) {
+    public void sendToOtherTeams(PlayerEntity playerEntity, Text text) {
         AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
         if (abstractTeam == null) {
-            this.sendToAll(component);
+            this.sendToAll(text);
             return;
         }
         for (int i = 0; i < this.players.size(); ++i) {
             ServerPlayerEntity serverPlayerEntity = this.players.get(i);
             if (serverPlayerEntity.getScoreboardTeam() == abstractTeam) continue;
-            serverPlayerEntity.sendMessage(component);
+            serverPlayerEntity.sendMessage(text);
         }
     }
 
@@ -619,18 +619,18 @@ public abstract class PlayerManager {
 
     public void disconnectAllPlayers() {
         for (int i = 0; i < this.players.size(); ++i) {
-            this.players.get((int)i).networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.server_shutdown", new Object[0]));
+            this.players.get((int)i).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown", new Object[0]));
         }
     }
 
-    public void broadcastChatMessage(Component component, boolean bl) {
-        this.server.sendMessage(component);
-        ChatMessageType chatMessageType = bl ? ChatMessageType.SYSTEM : ChatMessageType.CHAT;
-        this.sendToAll(new ChatMessageS2CPacket(component, chatMessageType));
+    public void broadcastChatMessage(Text text, boolean bl) {
+        this.server.sendMessage(text);
+        MessageType messageType = bl ? MessageType.SYSTEM : MessageType.CHAT;
+        this.sendToAll(new ChatMessageS2CPacket(text, messageType));
     }
 
-    public void sendToAll(Component component) {
-        this.broadcastChatMessage(component, true);
+    public void sendToAll(Text text) {
+        this.broadcastChatMessage(text, true);
     }
 
     public ServerStatHandler createStatHandler(PlayerEntity playerEntity) {
@@ -663,12 +663,12 @@ public abstract class PlayerManager {
         return playerAdvancementTracker;
     }
 
-    public void setViewDistance(int i, int j) {
+    public void setViewDistance(int i) {
         this.viewDistance = i;
         this.sendToAll(new ChunkLoadDistanceS2CPacket(i));
         for (ServerWorld serverWorld : this.server.getWorlds()) {
             if (serverWorld == null) continue;
-            serverWorld.method_14178().applyViewDistance(i, j);
+            serverWorld.method_14178().applyViewDistance(i);
         }
     }
 

@@ -11,9 +11,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.CubeMapRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.AccessibilityScreen;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
@@ -29,10 +29,12 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -43,31 +45,22 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class TitleScreen
 extends Screen {
-    public static final CubeMapRenderer panoramaCubeMap = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
-    private static final Identifier panoramaOverlay = new Identifier("textures/gui/title/background/panorama_overlay.png");
-    private static final Identifier field_19102 = new Identifier("textures/gui/accessibility.png");
+    public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
+    private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
+    private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
     private final boolean field_17776;
     @Nullable
     private String splashText;
     private ButtonWidget buttonResetDemo;
-    private final Object mutex = new Object();
-    public static final String OUTDATED_GL_TEXT = "Please click " + (Object)((Object)ChatFormat.UNDERLINE) + "here" + (Object)((Object)ChatFormat.RESET) + " for more information.";
-    private int warningTextWidth;
-    private int warningTitleWidth;
-    private int warningAlignLeft;
-    private int warningAlignTop;
-    private int warningAlignRight;
-    private int warningAlignBottom;
-    private String warningTitle;
-    private String warningText = OUTDATED_GL_TEXT;
-    private String warningLink;
+    @Nullable
+    private Warning warning;
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private boolean realmsNotificationsInitialized;
     private Screen realmsNotificationGui;
     private int copyrightTextWidth;
     private int copyrightTextX;
-    private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(panoramaCubeMap);
+    private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
     private final boolean doBackgroundFade;
     private long backgroundFadeStart;
 
@@ -76,14 +69,13 @@ extends Screen {
     }
 
     public TitleScreen(boolean bl) {
-        super(new TranslatableComponent("narrator.screen.title", new Object[0]));
+        super(new TranslatableText("narrator.screen.title", new Object[0]));
         this.doBackgroundFade = bl;
-        this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
-        this.warningTitle = "";
+        boolean bl2 = this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
         if (!GLX.supportsOpenGL2() && !GLX.isNextGen()) {
-            this.warningTitle = I18n.translate("title.oldgl1", new Object[0]);
-            this.warningText = I18n.translate("title.oldgl2", new Object[0]);
-            this.warningLink = "https://help.mojang.com/customer/portal/articles/325948?ref=game";
+            this.warning = new Warning(new TranslatableText("title.oldgl.eol.line1", new Object[0]).formatted(Formatting.RED).formatted(Formatting.BOLD), new TranslatableText("title.oldgl.eol.line2", new Object[0]).formatted(Formatting.RED).formatted(Formatting.BOLD), "https://help.mojang.com/customer/portal/articles/325948?ref=game");
+        } else if (!GLX.supportsOpenGL32()) {
+            this.warning = new Warning(new TranslatableText("title.oldgl.deprecation.line1", new Object[0]), new TranslatableText("title.oldgl.deprecation.line2", new Object[0]), "https://help.mojang.com/customer/portal/articles/325948?ref=game");
         }
     }
 
@@ -99,7 +91,7 @@ extends Screen {
     }
 
     public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
-        return CompletableFuture.allOf(textureManager.loadTextureAsync(MINECRAFT_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(EDITION_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(panoramaOverlay, executor), panoramaCubeMap.loadTexturesAsync(textureManager, executor));
+        return CompletableFuture.allOf(textureManager.loadTextureAsync(MINECRAFT_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(EDITION_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(PANORAMA_OVERLAY, executor), PANORAMA_CUBE_MAP.loadTexturesAsync(textureManager, executor));
     }
 
     @Override
@@ -112,9 +104,6 @@ extends Screen {
         return false;
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     @Override
     protected void init() {
         if (this.splashText == null) {
@@ -132,16 +121,9 @@ extends Screen {
         this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())), I18n.translate("narrator.button.language", new Object[0])));
         this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options", new Object[0]), buttonWidget -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))));
         this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit", new Object[0]), buttonWidget -> this.minecraft.scheduleStop()));
-        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, field_19102, 32, 64, buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.minecraft.options)), I18n.translate("narrator.button.accessibility", new Object[0])));
-        Object object = this.mutex;
-        synchronized (object) {
-            this.warningTitleWidth = this.font.getStringWidth(this.warningTitle);
-            this.warningTextWidth = this.font.getStringWidth(this.warningText);
-            int k = Math.max(this.warningTitleWidth, this.warningTextWidth);
-            this.warningAlignLeft = (this.width - k) / 2;
-            this.warningAlignTop = j - 24;
-            this.warningAlignRight = this.warningAlignLeft + k;
-            this.warningAlignBottom = this.warningAlignTop + 24;
+        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.minecraft.options)), I18n.translate("narrator.button.accessibility", new Object[0])));
+        if (this.warning != null) {
+            this.warning.init(j);
         }
         this.minecraft.setConnectedToRealms(false);
         if (this.minecraft.options.realmsNotifications && !this.realmsNotificationsInitialized) {
@@ -166,7 +148,7 @@ extends Screen {
             LevelStorage levelStorage = this.minecraft.getLevelStorage();
             LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
             if (levelProperties != null) {
-                this.minecraft.openScreen(new ConfirmScreen(this::method_20375, new TranslatableComponent("selectWorld.deleteQuestion", new Object[0]), new TranslatableComponent("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
+                this.minecraft.openScreen(new ConfirmScreen(this::method_20375, new TranslatableText("selectWorld.deleteQuestion", new Object[0]), new TranslatableText("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
             }
         }));
         LevelStorage levelStorage = this.minecraft.getLevelStorage();
@@ -192,7 +174,7 @@ extends Screen {
         int k = 274;
         int l = this.width / 2 - 137;
         int m = 30;
-        this.minecraft.getTextureManager().bindTexture(panoramaOverlay);
+        this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0f, 1.0f)) : 1.0f);
@@ -233,10 +215,8 @@ extends Screen {
         if (i > this.copyrightTextX && i < this.copyrightTextX + this.copyrightTextWidth && j > this.height - 10 && j < this.height) {
             TitleScreen.fill(this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | n);
         }
-        if (this.warningTitle != null && !this.warningTitle.isEmpty()) {
-            TitleScreen.fill(this.warningAlignLeft - 2, this.warningAlignTop - 2, this.warningAlignRight + 2, this.warningAlignBottom - 1, 0x55200000);
-            this.drawString(this.font, this.warningTitle, this.warningAlignLeft, this.warningAlignTop, 0xFFFFFF | n);
-            this.drawString(this.font, this.warningText, (this.width - this.warningTextWidth) / 2, this.warningAlignTop + 12, 0xFFFFFF | n);
+        if (this.warning != null) {
+            this.warning.render(n);
         }
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             abstractButtonWidget.setAlpha(h);
@@ -247,26 +227,13 @@ extends Screen {
         }
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         if (super.mouseClicked(d, e, i)) {
             return true;
         }
-        Object object = this.mutex;
-        synchronized (object) {
-            if (!this.warningTitle.isEmpty() && !ChatUtil.isEmpty(this.warningLink) && d >= (double)this.warningAlignLeft && d <= (double)this.warningAlignRight && e >= (double)this.warningAlignTop && e <= (double)this.warningAlignBottom) {
-                ConfirmChatLinkScreen confirmChatLinkScreen = new ConfirmChatLinkScreen(bl -> {
-                    if (bl) {
-                        SystemUtil.getOperatingSystem().open(this.warningLink);
-                    }
-                    this.minecraft.openScreen(this);
-                }, this.warningLink, true);
-                this.minecraft.openScreen(confirmChatLinkScreen);
-                return true;
-            }
+        if (this.warning != null && this.warning.onClick(d, e)) {
+            return true;
         }
         if (this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(d, e, i)) {
             return true;
@@ -290,6 +257,53 @@ extends Screen {
             levelStorage.deleteLevel("Demo_World");
         }
         this.minecraft.openScreen(this);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    class Warning {
+        private int line2Width;
+        private int startX;
+        private int startY;
+        private int endX;
+        private int endY;
+        private final Text line1;
+        private final Text line2;
+        private final String helpUrl;
+
+        public Warning(Text text, Text text2, String string) {
+            this.line1 = text;
+            this.line2 = text2;
+            this.helpUrl = string;
+        }
+
+        public void init(int i) {
+            int j = TitleScreen.this.font.getStringWidth(this.line1.getString());
+            this.line2Width = TitleScreen.this.font.getStringWidth(this.line2.getString());
+            int k = Math.max(j, this.line2Width);
+            this.startX = (TitleScreen.this.width - k) / 2;
+            this.startY = i - 24;
+            this.endX = this.startX + k;
+            this.endY = this.startY + 24;
+        }
+
+        public void render(int i) {
+            DrawableHelper.fill(this.startX - 2, this.startY - 2, this.endX + 2, this.endY - 1, 0x55200000);
+            TitleScreen.this.drawString(TitleScreen.this.font, this.line1.asFormattedString(), this.startX, this.startY, 0xFFFFFF | i);
+            TitleScreen.this.drawString(TitleScreen.this.font, this.line2.asFormattedString(), (TitleScreen.this.width - this.line2Width) / 2, this.startY + 12, 0xFFFFFF | i);
+        }
+
+        public boolean onClick(double d, double e) {
+            if (!ChatUtil.isEmpty(this.helpUrl) && d >= (double)this.startX && d <= (double)this.endX && e >= (double)this.startY && e <= (double)this.endY) {
+                TitleScreen.this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
+                    if (bl) {
+                        SystemUtil.getOperatingSystem().open(this.helpUrl);
+                    }
+                    TitleScreen.this.minecraft.openScreen(TitleScreen.this);
+                }, this.helpUrl, true));
+                return true;
+            }
+            return false;
+        }
     }
 }
 

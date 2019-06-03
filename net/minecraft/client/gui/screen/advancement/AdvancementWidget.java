@@ -46,14 +46,14 @@ extends DrawableHelper {
         this.advancement = advancement;
         this.display = advancementDisplay;
         this.client = minecraftClient;
-        this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().getFormattedText(), 163);
+        this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().asFormattedString(), 163);
         this.xPos = MathHelper.floor(advancementDisplay.getX() * 28.0f);
         this.yPos = MathHelper.floor(advancementDisplay.getY() * 27.0f);
         int i = advancement.getRequirementCount();
         int j = String.valueOf(i).length();
         int k = i > 1 ? minecraftClient.textRenderer.getStringWidth("  ") + minecraftClient.textRenderer.getStringWidth("0") * j * 2 + minecraftClient.textRenderer.getStringWidth("/") : 0;
         int l = 29 + minecraftClient.textRenderer.getStringWidth(this.field_2713) + k;
-        String string = advancementDisplay.getDescription().getFormattedText();
+        String string = advancementDisplay.getDescription().asFormattedString();
         this.field_2705 = this.method_2330(string, l);
         for (String string2 : this.field_2705) {
             l = Math.max(l, minecraftClient.textRenderer.getStringWidth(string2));

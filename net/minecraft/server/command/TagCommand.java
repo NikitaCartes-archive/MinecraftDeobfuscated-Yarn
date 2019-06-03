@@ -15,15 +15,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class TagCommand {
-    private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.tag.add.failed", new Object[0]));
-    private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.tag.remove.failed", new Object[0]));
+    private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.add.failed", new Object[0]));
+    private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.remove.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("tag").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.entities()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).executes(commandContext -> TagCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).suggests((commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(TagCommand.getTags(EntityArgumentType.getEntities(commandContext, "targets")), suggestionsBuilder)).executes(commandContext -> TagCommand.executeRemove((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("list").executes(commandContext -> TagCommand.executeList((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"))))));
@@ -47,9 +47,9 @@ public class TagCommand {
             throw ADD_FAILED_EXCEPTION.create();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.add.success.single", string, collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.single", string, collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.add.success.multiple", string, collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", string, collection.size()), true);
         }
         return i;
     }
@@ -64,9 +64,9 @@ public class TagCommand {
             throw REMOVE_FAILED_EXCEPTION.create();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.remove.success.single", string, collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.single", string, collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.remove.success.multiple", string, collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", string, collection.size()), true);
         }
         return i;
     }
@@ -79,14 +79,14 @@ public class TagCommand {
         if (collection.size() == 1) {
             Entity entity2 = collection.iterator().next();
             if (set.isEmpty()) {
-                serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.list.single.empty", entity2.getDisplayName()), false);
+                serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
             } else {
-                serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Components.sortedJoin(set)), false);
+                serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
             }
         } else if (set.isEmpty()) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.list.multiple.empty", collection.size()), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", collection.size()), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.tag.list.multiple.success", collection.size(), set.size(), Components.sortedJoin(set)), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", collection.size(), set.size(), Texts.joinOrdered(set)), false);
         }
         return set.size();
     }

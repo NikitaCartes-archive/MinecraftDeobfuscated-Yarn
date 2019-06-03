@@ -11,33 +11,33 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
-public class ComponentArgumentType
-implements ArgumentType<Component> {
+public class TextArgumentType
+implements ArgumentType<Text> {
     private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
-    public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("argument.component.invalid", object));
+    public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.component.invalid", object));
 
-    private ComponentArgumentType() {
+    private TextArgumentType() {
     }
 
-    public static Component getComponent(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, Component.class);
+    public static Text getTextArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+        return commandContext.getArgument(string, Text.class);
     }
 
-    public static ComponentArgumentType create() {
-        return new ComponentArgumentType();
+    public static TextArgumentType create() {
+        return new TextArgumentType();
     }
 
-    public Component method_9283(StringReader stringReader) throws CommandSyntaxException {
+    public Text method_9283(StringReader stringReader) throws CommandSyntaxException {
         try {
-            Component component = Component.Serializer.fromJsonString(stringReader);
-            if (component == null) {
+            Text text = Text.Serializer.fromJson(stringReader);
+            if (text == null) {
                 throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
             }
-            return component;
+            return text;
         } catch (JsonParseException jsonParseException) {
             String string = jsonParseException.getCause() != null ? jsonParseException.getCause().getMessage() : jsonParseException.getMessage();
             throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, string);

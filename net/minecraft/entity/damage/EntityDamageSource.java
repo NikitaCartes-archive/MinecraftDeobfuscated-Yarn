@@ -8,8 +8,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,13 +40,13 @@ extends DamageSource {
     }
 
     @Override
-    public Component getDeathMessage(LivingEntity livingEntity) {
+    public Text getDeathMessage(LivingEntity livingEntity) {
         ItemStack itemStack = this.source instanceof LivingEntity ? ((LivingEntity)this.source).getMainHandStack() : ItemStack.EMPTY;
         String string = "death.attack." + this.name;
         if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-            return new TranslatableComponent(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText());
+            return new TranslatableText(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText());
         }
-        return new TranslatableComponent(string, livingEntity.getDisplayName(), this.source.getDisplayName());
+        return new TranslatableText(string, livingEntity.getDisplayName(), this.source.getDisplayName());
     }
 
     @Override

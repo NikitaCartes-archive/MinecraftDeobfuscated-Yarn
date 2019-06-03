@@ -20,9 +20,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.BaseText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
@@ -38,7 +38,7 @@ extends Screen {
     private final String levelName;
 
     public EditWorldScreen(BooleanConsumer booleanConsumer, String string) {
-        super(new TranslatableComponent("selectWorld.edit.title", new Object[0]));
+        super(new TranslatableText("selectWorld.edit.title", new Object[0]));
         this.callback = booleanConsumer;
         this.levelName = string;
     }
@@ -80,7 +80,7 @@ extends Screen {
                 EditWorldScreen.backupLevel(this.minecraft.getLevelStorage(), this.levelName);
             }
             this.minecraft.openScreen(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
-        }, new TranslatableComponent("optimizeWorld.confirm.title", new Object[0]), new TranslatableComponent("optimizeWorld.confirm.description", new Object[0]), true))));
+        }, new TranslatableText("optimizeWorld.confirm.title", new Object[0]), new TranslatableText("optimizeWorld.confirm.description", new Object[0]), true))));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, I18n.translate("selectWorld.edit.save", new Object[0]), buttonWidget -> this.commit()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
         buttonWidget2.active = this.minecraft.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
@@ -115,8 +115,8 @@ extends Screen {
     }
 
     public static void backupLevel(LevelStorage levelStorage, String string) {
-        BaseComponent component2;
-        TranslatableComponent component;
+        BaseText text2;
+        TranslatableText text;
         ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
         long l = 0L;
         IOException iOException = null;
@@ -126,19 +126,19 @@ extends Screen {
             iOException = iOException2;
         }
         if (iOException != null) {
-            component = new TranslatableComponent("selectWorld.edit.backupFailed", new Object[0]);
-            component2 = new TextComponent(iOException.getMessage());
+            text = new TranslatableText("selectWorld.edit.backupFailed", new Object[0]);
+            text2 = new LiteralText(iOException.getMessage());
         } else {
-            component = new TranslatableComponent("selectWorld.edit.backupCreated", string);
-            component2 = new TranslatableComponent("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
+            text = new TranslatableText("selectWorld.edit.backupCreated", string);
+            text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
         }
-        toastManager.add(new SystemToast(SystemToast.Type.WORLD_BACKUP, component, component2));
+        toastManager.add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
     }
 
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 40, 0xA0A0A0);
         this.levelNameTextField.render(i, j, f);
         super.render(i, j, f);

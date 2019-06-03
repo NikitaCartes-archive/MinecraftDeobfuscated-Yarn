@@ -10,17 +10,17 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class MovementTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Component MOVE_TITLE = new TranslatableComponent("tutorial.move.title", TutorialManager.getKeybindName("forward"), TutorialManager.getKeybindName("left"), TutorialManager.getKeybindName("back"), TutorialManager.getKeybindName("right"));
-    private static final Component MOVE_DESCRIPTION = new TranslatableComponent("tutorial.move.description", TutorialManager.getKeybindName("jump"));
-    private static final Component LOOK_TITLE = new TranslatableComponent("tutorial.look.title", new Object[0]);
-    private static final Component LOOK_DESCRIPTION = new TranslatableComponent("tutorial.look.description", new Object[0]);
+    private static final Text MOVE_TITLE = new TranslatableText("tutorial.move.title", TutorialManager.getKeybindName("forward"), TutorialManager.getKeybindName("left"), TutorialManager.getKeybindName("back"), TutorialManager.getKeybindName("right"));
+    private static final Text MOVE_DESCRIPTION = new TranslatableText("tutorial.move.description", TutorialManager.getKeybindName("jump"));
+    private static final Text LOOK_TITLE = new TranslatableText("tutorial.look.title", new Object[0]);
+    private static final Text LOOK_DESCRIPTION = new TranslatableText("tutorial.look.description", new Object[0]);
     private final TutorialManager manager;
     private TutorialToast moveToast;
     private TutorialToast lookAroundToast;

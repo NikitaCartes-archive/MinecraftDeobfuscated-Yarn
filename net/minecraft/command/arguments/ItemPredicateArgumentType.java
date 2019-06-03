@@ -18,9 +18,9 @@ import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemPredicateArgumentType
 implements ArgumentType<ItemPredicateArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
-    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("arguments.item.tag.unknown", object));
+    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.item.tag.unknown", object));
 
     public static ItemPredicateArgumentType create() {
         return new ItemPredicateArgumentType();

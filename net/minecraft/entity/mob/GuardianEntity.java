@@ -4,6 +4,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -282,23 +283,12 @@ extends HostileEntity {
     }
 
     @Override
-    protected boolean checkLightLevelForSpawn() {
-        return true;
-    }
-
-    @Override
     public boolean canSpawn(ViewableWorld viewableWorld) {
         return viewableWorld.intersectsEntities(this);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return (this.random.nextInt(20) == 0 || !iWorld.method_8626(new BlockPos(this))) && super.canSpawn(iWorld, spawnType);
-    }
-
-    @Override
-    protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
-        return iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
+    public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return !(random.nextInt(20) != 0 && iWorld.method_8626(blockPos) || iWorld.getDifficulty() == Difficulty.PEACEFUL || spawnType != SpawnType.SPAWNER && !iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
     }
 
     @Override

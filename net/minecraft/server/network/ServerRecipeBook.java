@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -19,6 +20,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,24 +92,26 @@ extends RecipeBook {
         this.furnaceGuiOpen = compoundTag.getBoolean("isFurnaceGuiOpen");
         this.furnaceFilteringCraftable = compoundTag.getBoolean("isFurnaceFilteringCraftable");
         ListTag listTag = compoundTag.getList("recipes", 8);
-        for (int i = 0; i < listTag.size(); ++i) {
-            Identifier identifier = new Identifier(listTag.getString(i));
-            Optional<Recipe<?>> optional = this.manager.get(identifier);
-            if (!optional.isPresent()) {
-                LOGGER.error("Tried to load unrecognized recipe: {} removed now.", (Object)identifier);
-                continue;
-            }
-            this.add(optional.get());
-        }
+        this.method_20732(listTag, this::add);
         ListTag listTag2 = compoundTag.getList("toBeDisplayed", 8);
-        for (int j = 0; j < listTag2.size(); ++j) {
-            Identifier identifier2 = new Identifier(listTag2.getString(j));
-            Optional<Recipe<?>> optional2 = this.manager.get(identifier2);
-            if (!optional2.isPresent()) {
-                LOGGER.error("Tried to load unrecognized recipe: {} removed now.", (Object)identifier2);
+        this.method_20732(listTag2, this::display);
+    }
+
+    private void method_20732(ListTag listTag, Consumer<Recipe<?>> consumer) {
+        for (int i = 0; i < listTag.size(); ++i) {
+            String string = listTag.getString(i);
+            try {
+                Identifier identifier = new Identifier(string);
+                Optional<Recipe<?>> optional = this.manager.get(identifier);
+                if (!optional.isPresent()) {
+                    LOGGER.error("Tried to load unrecognized recipe: {} removed now.", (Object)identifier);
+                    continue;
+                }
+                consumer.accept(optional.get());
                 continue;
+            } catch (InvalidIdentifierException invalidIdentifierException) {
+                LOGGER.error("Tried to load improperly formatted recipe: {} removed now.", (Object)string);
             }
-            this.display(optional2.get());
         }
     }
 

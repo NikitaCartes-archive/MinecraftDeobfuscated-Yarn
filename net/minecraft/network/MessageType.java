@@ -1,12 +1,12 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.chat;
+package net.minecraft.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-public enum ChatMessageType {
+public enum MessageType {
     CHAT(0, false),
     SYSTEM(1, true),
     GAME_INFO(2, true);
@@ -14,7 +14,7 @@ public enum ChatMessageType {
     private final byte id;
     private final boolean interruptsNarration;
 
-    private ChatMessageType(byte b, boolean bl) {
+    private MessageType(byte b, boolean bl) {
         this.id = b;
         this.interruptsNarration = bl;
     }
@@ -23,10 +23,10 @@ public enum ChatMessageType {
         return this.id;
     }
 
-    public static ChatMessageType byId(byte b) {
-        for (ChatMessageType chatMessageType : ChatMessageType.values()) {
-            if (b != chatMessageType.id) continue;
-            return chatMessageType;
+    public static MessageType byId(byte b) {
+        for (MessageType messageType : MessageType.values()) {
+            if (b != messageType.id) continue;
+            return messageType;
         }
         return CHAT;
     }

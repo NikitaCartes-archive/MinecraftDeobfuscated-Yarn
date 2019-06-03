@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TraderLlamaEntity
 extends LlamaEntity {
-    private int despawnDelay;
+    private int despawnDelay = 47999;
 
     public TraderLlamaEntity(EntityType<? extends TraderLlamaEntity> entityType, World world) {
         super((EntityType<? extends LlamaEntity>)entityType, world);
@@ -111,7 +111,6 @@ extends LlamaEntity {
         if (spawnType == SpawnType.EVENT) {
             this.setBreedingAge(0);
         }
-        this.despawnDelay = 47999;
         return entityData2;
     }
 

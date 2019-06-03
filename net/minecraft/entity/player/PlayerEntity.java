@@ -77,10 +77,6 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
@@ -95,13 +91,17 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -449,8 +449,8 @@ extends LivingEntity {
         float f = !this.onGround || this.getHealth() <= 0.0f || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
         this.field_7483 += (f - this.field_7483) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
-            BoundingBox boundingBox = this.hasVehicle() && !this.getVehicle().removed ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
-            List<Entity> list = this.world.getEntities(this, boundingBox);
+            Box box = this.hasVehicle() && !this.getVehicle().removed ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
+            List<Entity> list = this.world.getEntities(this, box);
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity = list.get(i);
                 if (entity.removed) continue;
@@ -809,7 +809,7 @@ extends LivingEntity {
         return OptionalInt.empty();
     }
 
-    public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl) {
+    public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
     }
 
     public void openEditBookScreen(ItemStack itemStack, Hand hand) {
@@ -1057,7 +1057,7 @@ extends LivingEntity {
             if (!this.isCreative()) {
                 double d = 8.0;
                 double e = 5.0;
-                List<HostileEntity> list = this.world.getEntities(HostileEntity.class, new BoundingBox((double)blockPos.getX() - 8.0, (double)blockPos.getY() - 5.0, (double)blockPos.getZ() - 8.0, (double)blockPos.getX() + 8.0, (double)blockPos.getY() + 5.0, (double)blockPos.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
+                List<HostileEntity> list = this.world.getEntities(HostileEntity.class, new Box((double)blockPos.getX() - 8.0, (double)blockPos.getY() - 5.0, (double)blockPos.getZ() - 8.0, (double)blockPos.getX() + 8.0, (double)blockPos.getY() + 5.0, (double)blockPos.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
                 if (!list.isEmpty()) {
                     return Either.left(SleepFailureReason.NOT_SAFE);
                 }
@@ -1132,7 +1132,7 @@ extends LivingEntity {
         return this.sleepTimer;
     }
 
-    public void addChatMessage(Component component, boolean bl) {
+    public void addChatMessage(Text text, boolean bl) {
     }
 
     public BlockPos getSpawnPosition() {
@@ -1474,8 +1474,8 @@ extends LivingEntity {
     }
 
     @Override
-    public Component getName() {
-        return new TextComponent(this.gameProfile.getName());
+    public Text getName() {
+        return new LiteralText(this.gameProfile.getName());
     }
 
     public EnderChestInventory getEnderChestInventory() {
@@ -1592,18 +1592,18 @@ extends LivingEntity {
     }
 
     @Override
-    public Component getDisplayName() {
-        Component component = Team.modifyText(this.getScoreboardTeam(), this.getName());
-        return this.addTellClickEvent(component);
+    public Text getDisplayName() {
+        Text text = Team.modifyText(this.getScoreboardTeam(), this.getName());
+        return this.addTellClickEvent(text);
     }
 
-    public Component getNameAndUuid() {
-        return new TextComponent("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
+    public Text getNameAndUuid() {
+        return new LiteralText("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
     }
 
-    private Component addTellClickEvent(Component component) {
+    private Text addTellClickEvent(Text text) {
         String string = this.getGameProfile().getName();
-        return component.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " ")).setHoverEvent(this.getComponentHoverEvent()).setInsertion(string));
+        return text.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " ")).setHoverEvent(this.getHoverEvent()).setInsertion(string));
     }
 
     @Override
@@ -1788,25 +1788,25 @@ extends LivingEntity {
 
     public static enum SleepFailureReason {
         NOT_POSSIBLE_HERE,
-        NOT_POSSIBLE_NOW(new TranslatableComponent("block.minecraft.bed.no_sleep", new Object[0])),
-        TOO_FAR_AWAY(new TranslatableComponent("block.minecraft.bed.too_far_away", new Object[0])),
-        OBSTRUCTED(new TranslatableComponent("block.minecraft.bed.obstructed", new Object[0])),
+        NOT_POSSIBLE_NOW(new TranslatableText("block.minecraft.bed.no_sleep", new Object[0])),
+        TOO_FAR_AWAY(new TranslatableText("block.minecraft.bed.too_far_away", new Object[0])),
+        OBSTRUCTED(new TranslatableText("block.minecraft.bed.obstructed", new Object[0])),
         OTHER_PROBLEM,
-        NOT_SAFE(new TranslatableComponent("block.minecraft.bed.not_safe", new Object[0]));
+        NOT_SAFE(new TranslatableText("block.minecraft.bed.not_safe", new Object[0]));
 
         @Nullable
-        private final Component text;
+        private final Text text;
 
         private SleepFailureReason() {
             this.text = null;
         }
 
-        private SleepFailureReason(Component component) {
-            this.text = component;
+        private SleepFailureReason(Text text) {
+            this.text = text;
         }
 
         @Nullable
-        public Component getText() {
+        public Text toText() {
             return this.text;
         }
     }

@@ -135,7 +135,6 @@ implements SynchronousResourceReloadListener {
     public void apply(ResourceManager resourceManager) {
         this.idMap.clear();
         this.tickFunctions.clear();
-        this.tags.clear();
         Collection<Identifier> collection = resourceManager.findResources("functions", string -> string.endsWith(".mcfunction"));
         ArrayList<CompletionStage> list2 = Lists.newArrayList();
         for (Identifier identifier : collection) {

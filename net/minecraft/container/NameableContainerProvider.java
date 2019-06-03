@@ -4,10 +4,10 @@
 package net.minecraft.container;
 
 import net.minecraft.container.ContainerProvider;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public interface NameableContainerProvider
 extends ContainerProvider {
-    public Component getDisplayName();
+    public Text getDisplayName();
 }
 

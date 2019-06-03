@@ -10,8 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +42,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -66,9 +68,10 @@ implements AutoCloseable {
                 try {
                     for (Resource resource : resourceManager.getAllResources(identifier2)) {
                         profiler.push(resource::getResourcePackName);
-                        try (InputStream inputStream = resource.getInputStream();){
+                        try (InputStream inputStream = resource.getInputStream();
+                             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));){
                             profiler.push("reading");
-                            JsonArray jsonArray = JsonHelper.getArray(JsonHelper.deserialize(gson, IOUtils.toString(inputStream, StandardCharsets.UTF_8), JsonObject.class), "providers");
+                            JsonArray jsonArray = JsonHelper.getArray(JsonHelper.deserialize(gson, (Reader)reader, JsonObject.class), "providers");
                             profiler.swap("parsing");
                             for (int i = jsonArray.size() - 1; i >= 0; --i) {
                                 JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");

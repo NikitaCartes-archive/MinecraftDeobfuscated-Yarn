@@ -10,9 +10,9 @@ import net.minecraft.container.BlockContext;
 import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 
 public class CraftingTableBlock
 extends Block {
-    private static final Component CONTAINER_NAME = new TranslatableComponent("container.crafting", new Object[0]);
+    private static final Text CONTAINER_NAME = new TranslatableText("container.crafting", new Object[0]);
 
     protected CraftingTableBlock(Block.Settings settings) {
         super(settings);

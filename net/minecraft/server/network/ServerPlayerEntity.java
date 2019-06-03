@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
@@ -78,12 +77,8 @@ import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -103,8 +98,13 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -180,6 +180,8 @@ implements ContainerListener {
     private void method_14245(ServerWorld serverWorld) {
         BlockPos blockPos = serverWorld.getSpawnPos();
         if (serverWorld.dimension.hasSkyLight() && serverWorld.getLevelProperties().getGameMode() != GameMode.ADVENTURE) {
+            long l;
+            long m;
             int i = Math.max(0, this.server.getSpawnRadius(serverWorld));
             int j = MathHelper.floor(serverWorld.getWorldBorder().contains(blockPos.getX(), blockPos.getZ()));
             if (j < i) {
@@ -188,14 +190,14 @@ implements ContainerListener {
             if (j <= 1) {
                 i = 1;
             }
-            int k = (i * 2 + 1) * (i * 2 + 1);
-            int l = this.method_14244(k);
-            int m = new Random().nextInt(k);
-            for (int n = 0; n < k; ++n) {
-                int o = (m + l * n) % k;
-                int p = o % (i * 2 + 1);
-                int q = o / (i * 2 + 1);
-                BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
+            int k = (m = (l = (long)(i * 2 + 1)) * l) > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)m;
+            int n = this.method_14244(k);
+            int o = new Random().nextInt(k);
+            for (int p = 0; p < k; ++p) {
+                int q = (o + n * p) % k;
+                int r = q % (i * 2 + 1);
+                int s = q / (i * 2 + 1);
+                BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
                 if (blockPos2 == null) continue;
                 this.setPositionAndAngles(blockPos2, 0.0f, 0.0f);
                 if (!serverWorld.doesNotCollide(this)) {
@@ -419,23 +421,23 @@ implements ContainerListener {
     public void onDeath(DamageSource damageSource) {
         boolean bl = this.world.getGameRules().getBoolean("showDeathMessages");
         if (bl) {
-            Component component = this.getDamageTracker().getDeathMessage();
-            this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, component), future -> {
+            Text text = this.getDamageTracker().getDeathMessage();
+            this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text), future -> {
                 if (!future.isSuccess()) {
                     int i = 256;
-                    String string = component.getStringTruncated(256);
-                    TranslatableComponent component2 = new TranslatableComponent("death.attack.message_too_long", new TextComponent(string).applyFormat(ChatFormat.YELLOW));
-                    Component component3 = new TranslatableComponent("death.attack.even_more_magic", this.getDisplayName()).modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component2)));
-                    this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, component3));
+                    String string = text.asTruncatedString(256);
+                    TranslatableText text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
+                    Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+                    this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
                 }
             });
             AbstractTeam abstractTeam = this.getScoreboardTeam();
             if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-                this.server.getPlayerManager().sendToAll(component);
+                this.server.getPlayerManager().sendToAll(text);
             } else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
-                this.server.getPlayerManager().sendToTeam(this, component);
+                this.server.getPlayerManager().sendToTeam(this, text);
             } else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
-                this.server.getPlayerManager().sendToOtherTeams(this, component);
+                this.server.getPlayerManager().sendToOtherTeams(this, text);
             }
         } else {
             this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
@@ -497,7 +499,7 @@ implements ContainerListener {
     private void method_14227(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
         int i;
         Team team = this.getScoreboard().getPlayerTeam(string2);
-        if (team != null && (i = team.getColor().getId()) >= 0 && i < scoreboardCriterions.length) {
+        if (team != null && (i = team.getColor().getColorIndex()) >= 0 && i < scoreboardCriterions.length) {
             this.getScoreboard().forEachScore(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
         }
     }
@@ -773,7 +775,7 @@ implements ContainerListener {
         Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
         if (container == null) {
             if (this.isSpectator()) {
-                this.addChatMessage(new TranslatableComponent("container.spectatorCantOpen", new Object[0]).applyFormat(ChatFormat.RED), true);
+                this.addChatMessage(new TranslatableText("container.spectatorCantOpen", new Object[0]).formatted(Formatting.RED), true);
             }
             return OptionalInt.empty();
         }
@@ -784,8 +786,8 @@ implements ContainerListener {
     }
 
     @Override
-    public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl) {
-        this.networkHandler.sendPacket(new SetTradeOffersPacket(i, traderOfferList, j, k, bl));
+    public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
+        this.networkHandler.sendPacket(new SetTradeOffersPacket(i, traderOfferList, j, k, bl, bl2));
     }
 
     @Override
@@ -930,8 +932,8 @@ implements ContainerListener {
     }
 
     @Override
-    public void addChatMessage(Component component, boolean bl) {
-        this.networkHandler.sendPacket(new ChatMessageS2CPacket(component, bl ? ChatMessageType.GAME_INFO : ChatMessageType.CHAT));
+    public void addChatMessage(Text text, boolean bl) {
+        this.networkHandler.sendPacket(new ChatMessageS2CPacket(text, bl ? MessageType.GAME_INFO : MessageType.CHAT));
     }
 
     @Override
@@ -1068,17 +1070,17 @@ implements ContainerListener {
     }
 
     @Override
-    public void sendMessage(Component component) {
-        this.sendChatMessage(component, ChatMessageType.SYSTEM);
+    public void sendMessage(Text text) {
+        this.sendChatMessage(text, MessageType.SYSTEM);
     }
 
-    public void sendChatMessage(Component component, ChatMessageType chatMessageType) {
-        this.networkHandler.sendPacket(new ChatMessageS2CPacket(component, chatMessageType), future -> {
-            if (!(future.isSuccess() || chatMessageType != ChatMessageType.GAME_INFO && chatMessageType != ChatMessageType.SYSTEM)) {
+    public void sendChatMessage(Text text, MessageType messageType) {
+        this.networkHandler.sendPacket(new ChatMessageS2CPacket(text, messageType), future -> {
+            if (!(future.isSuccess() || messageType != MessageType.GAME_INFO && messageType != MessageType.SYSTEM)) {
                 int i = 256;
-                String string = component.getStringTruncated(256);
-                Component component2 = new TextComponent(string).applyFormat(ChatFormat.YELLOW);
-                this.networkHandler.sendPacket(new ChatMessageS2CPacket(new TranslatableComponent("multiplayer.message_not_delivered", component2).applyFormat(ChatFormat.RED), ChatMessageType.SYSTEM));
+                String string = text.asTruncatedString(256);
+                Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
+                this.networkHandler.sendPacket(new ChatMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
             }
         });
     }
@@ -1179,7 +1181,7 @@ implements ContainerListener {
     }
 
     @Nullable
-    public Component method_14206() {
+    public Text method_14206() {
         return null;
     }
 

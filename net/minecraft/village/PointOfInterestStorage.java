@@ -51,7 +51,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.get(predicate, blockPos, i, occupationStatus).count();
     }
 
-    private Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+    public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
         int j = i * i;
         return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).flatMap(chunkPos -> this.get(predicate, (ChunkPos)chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j));
     }

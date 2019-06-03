@@ -12,15 +12,15 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SignBlockEntity
 extends BlockEntity {
-    public final Component[] text = new Component[]{new TextComponent(""), new TextComponent(""), new TextComponent(""), new TextComponent("")};
+    public final Text[] text = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
     @Environment(value=EnvType.CLIENT)
     private boolean caretVisible;
     private int currentRow = -1;
@@ -47,7 +47,7 @@ extends BlockEntity {
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
         for (int i = 0; i < 4; ++i) {
-            String string = Component.Serializer.toJsonString(this.text[i]);
+            String string = Text.Serializer.toJson(this.text[i]);
             compoundTag.putString("Text" + (i + 1), string);
         }
         compoundTag.putString("Color", this.textColor.getName());
@@ -61,33 +61,33 @@ extends BlockEntity {
         this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
             String string = compoundTag.getString("Text" + (i + 1));
-            Component component = Component.Serializer.fromJsonString(string.isEmpty() ? "\"\"" : string);
+            Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
             if (this.world instanceof ServerWorld) {
                 try {
-                    this.text[i] = Components.resolveAndStyle(this.getCommandSource(null), component, null, 0);
+                    this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
                 } catch (CommandSyntaxException commandSyntaxException) {
-                    this.text[i] = component;
+                    this.text[i] = text;
                 }
             } else {
-                this.text[i] = component;
+                this.text[i] = text;
             }
             this.textBeingEdited[i] = null;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getTextOnRow(int i) {
+    public Text getTextOnRow(int i) {
         return this.text[i];
     }
 
-    public void setTextOnRow(int i, Component component) {
-        this.text[i] = component;
+    public void setTextOnRow(int i, Text text) {
+        this.text[i] = text;
         this.textBeingEdited[i] = null;
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public String getTextBeingEditedOnRow(int i, Function<Component, String> function) {
+    public String getTextBeingEditedOnRow(int i, Function<Text, String> function) {
         if (this.textBeingEdited[i] == null && this.text[i] != null) {
             this.textBeingEdited[i] = function.apply(this.text[i]);
         }
@@ -131,10 +131,10 @@ extends BlockEntity {
     }
 
     public boolean onActivate(PlayerEntity playerEntity) {
-        for (Component component : this.text) {
+        for (Text text : this.text) {
             ClickEvent clickEvent;
             Style style;
-            Style style2 = style = component == null ? null : component.getStyle();
+            Style style2 = style = text == null ? null : text.getStyle();
             if (style == null || style.getClickEvent() == null || (clickEvent = style.getClickEvent()).getAction() != ClickEvent.Action.RUN_COMMAND) continue;
             playerEntity.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)playerEntity), clickEvent.getValue());
         }
@@ -143,8 +143,8 @@ extends BlockEntity {
 
     public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
         String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
-        Component component = serverPlayerEntity == null ? new TextComponent("Sign") : serverPlayerEntity.getDisplayName();
-        return new ServerCommandSource(CommandOutput.DUMMY, new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5), Vec2f.ZERO, (ServerWorld)this.world, 2, string, component, this.world.getServer(), serverPlayerEntity);
+        Text text = serverPlayerEntity == null ? new LiteralText("Sign") : serverPlayerEntity.getDisplayName();
+        return new ServerCommandSource(CommandOutput.DUMMY, new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), serverPlayerEntity);
     }
 
     public DyeColor getTextColor() {

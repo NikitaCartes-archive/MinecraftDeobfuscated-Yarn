@@ -60,9 +60,6 @@ import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DefaultResourcePackCreator;
 import net.minecraft.resource.FileResourcePackCreator;
@@ -98,6 +95,9 @@ import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
@@ -191,7 +191,7 @@ Runnable {
     private volatile boolean loading;
     private long field_4557;
     @Nullable
-    private Component loadingStage;
+    private Text loadingStage;
     private boolean profilerStartQueued;
     private boolean forceGameMode;
     @Nullable
@@ -260,17 +260,17 @@ Runnable {
     protected void upgradeWorld(String string) {
         if (this.getLevelStorage().requiresConversion(string)) {
             LOGGER.info("Converting map!");
-            this.setLoadingStage(new TranslatableComponent("menu.convertingLevel", new Object[0]));
+            this.setLoadingStage(new TranslatableText("menu.convertingLevel", new Object[0]));
             this.getLevelStorage().convertLevel(string, new ProgressListener(){
                 private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
                 @Override
-                public void method_15412(Component component) {
+                public void method_15412(Text text) {
                 }
 
                 @Override
                 @Environment(value=EnvType.CLIENT)
-                public void method_15413(Component component) {
+                public void method_15413(Text text) {
                 }
 
                 @Override
@@ -287,7 +287,7 @@ Runnable {
                 }
 
                 @Override
-                public void method_15414(Component component) {
+                public void method_15414(Text text) {
                 }
             });
         }
@@ -296,12 +296,12 @@ Runnable {
             LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
             if (levelProperties != null) {
                 WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.eraseCache);
-                Component component = null;
+                Text text = null;
                 while (!worldUpdater.isDone()) {
                     int i;
-                    Component component2 = worldUpdater.getStatus();
-                    if (component != component2) {
-                        component = component2;
+                    Text text2 = worldUpdater.getStatus();
+                    if (text != text2) {
+                        text = text2;
                         LOGGER.info(worldUpdater.getStatus().getString());
                     }
                     if ((i = worldUpdater.getTotalChunkCount()) > 0) {
@@ -320,14 +320,14 @@ Runnable {
         }
     }
 
-    protected synchronized void setLoadingStage(Component component) {
-        this.loadingStage = component;
+    protected synchronized void setLoadingStage(Text text) {
+        this.loadingStage = text;
     }
 
     protected void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
         LevelInfo levelInfo;
         this.upgradeWorld(string);
-        this.setLoadingStage(new TranslatableComponent("menu.loadingLevel", new Object[0]));
+        this.setLoadingStage(new TranslatableText("menu.loadingLevel", new Object[0]));
         WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
         this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
         LevelProperties levelProperties = worldSaveHandler.readProperties();
@@ -423,7 +423,7 @@ Runnable {
     }
 
     protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-        this.setLoadingStage(new TranslatableComponent("menu.generatingTerrain", new Object[0]));
+        this.setLoadingStage(new TranslatableText("menu.generatingTerrain", new Object[0]));
         ServerWorld serverWorld = this.getWorld(DimensionType.OVERWORLD);
         LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
         BlockPos blockPos = serverWorld.getSpawnPos();
@@ -564,7 +564,7 @@ Runnable {
         try {
             if (this.setupServer()) {
                 this.timeReference = SystemUtil.getMeasuringTimeMs();
-                this.metadata.setDescription(new TextComponent(this.motd));
+                this.metadata.setDescription(new LiteralText(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
                 while (this.running) {
@@ -957,8 +957,8 @@ Runnable {
     }
 
     @Override
-    public void sendMessage(Component component) {
-        LOGGER.info(component.getString());
+    public void sendMessage(Text text) {
+        LOGGER.info(text.getString());
     }
 
     public KeyPair getKeyPair() {
@@ -1348,7 +1348,7 @@ Runnable {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList(playerManager.getPlayerList());
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (whitelist.isAllowed(serverPlayerEntity.getGameProfile())) continue;
-            serverPlayerEntity.networkHandler.disconnect(new TranslatableComponent("multiplayer.disconnect.not_whitelisted", new Object[0]));
+            serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.not_whitelisted", new Object[0]));
         }
     }
 
@@ -1365,7 +1365,7 @@ Runnable {
     }
 
     public ServerCommandSource getCommandSource() {
-        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.OVERWORLD).getSpawnPos()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new TextComponent("Server"), this, null);
+        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.OVERWORLD).getSpawnPos()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new LiteralText("Server"), this, null);
     }
 
     @Override

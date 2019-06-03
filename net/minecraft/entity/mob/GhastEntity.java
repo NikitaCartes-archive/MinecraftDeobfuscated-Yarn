@@ -29,7 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -127,9 +127,8 @@ implements Monster {
         return 10.0f;
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.random.nextInt(20) == 0 && super.canSpawn(iWorld, spawnType) && iWorld.getDifficulty() != Difficulty.PEACEFUL;
+    public static boolean method_20675(EntityType<GhastEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return iWorld.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override
@@ -308,9 +307,9 @@ implements Monster {
         }
 
         private boolean method_7051(Vec3d vec3d, int i) {
-            BoundingBox boundingBox = this.ghast.getBoundingBox();
+            Box box = this.ghast.getBoundingBox();
             for (int j = 1; j < i; ++j) {
-                if (this.ghast.world.doesNotCollide(this.ghast, boundingBox = boundingBox.offset(vec3d))) continue;
+                if (this.ghast.world.doesNotCollide(this.ghast, box = box.offset(vec3d))) continue;
                 return false;
             }
             return true;

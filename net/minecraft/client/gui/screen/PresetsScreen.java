@@ -27,7 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
@@ -47,7 +47,7 @@ extends Screen {
     private TextFieldWidget customPresetField;
 
     public PresetsScreen(CustomizeFlatLevelScreen customizeFlatLevelScreen) {
-        super(new TranslatableComponent("createWorld.customize.presets.title", new Object[0]));
+        super(new TranslatableText("createWorld.customize.presets.title", new Object[0]));
         this.parent = customizeFlatLevelScreen;
     }
 
@@ -91,7 +91,7 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.field_2521.render(i, j, f);
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         this.drawString(this.font, this.shareText, 50, 30, 0xA0A0A0);
         this.drawString(this.font, this.listText, 50, 70, 0xA0A0A0);
         this.customPresetField.render(i, j, f);
@@ -159,7 +159,7 @@ extends Screen {
         public void method_20103(@Nullable SuperflatPresetItem superflatPresetItem) {
             super.setSelected(superflatPresetItem);
             if (superflatPresetItem != null) {
-                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetItem))).field_2528).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetItem))).field_2528).getString());
             }
         }
 

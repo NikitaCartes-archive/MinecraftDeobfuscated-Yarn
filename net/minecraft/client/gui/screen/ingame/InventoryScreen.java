@@ -21,7 +21,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -37,7 +37,7 @@ implements RecipeBookProvider {
     private boolean isMouseDown;
 
     public InventoryScreen(PlayerEntity playerEntity) {
-        super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableComponent("container.crafting", new Object[0]));
+        super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableText("container.crafting", new Object[0]));
         this.passEvents = true;
     }
 
@@ -74,7 +74,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 97.0f, 8.0f, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 97.0f, 8.0f, 0x404040);
     }
 
     @Override

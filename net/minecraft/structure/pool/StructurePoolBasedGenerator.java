@@ -26,7 +26,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.shape.VoxelShape;
@@ -83,8 +83,8 @@ public class StructurePoolBasedGenerator {
                 return;
             }
             int m = 80;
-            BoundingBox boundingBox = new BoundingBox(j - 80, l - 80, k - 80, j + 80 + 1, l + 80 + 1, k + 80 + 1);
-            this.field_18706.addLast(new class_4181(poolStructurePiece, new AtomicReference<VoxelShape>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(boundingBox), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST)), l + 80, 0));
+            Box box = new Box(j - 80, l - 80, k - 80, j + 80 + 1, l + 80 + 1, k + 80 + 1);
+            this.field_18706.addLast(new class_4181(poolStructurePiece, new AtomicReference<VoxelShape>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST)), l + 80, 0));
             while (!this.field_18706.isEmpty()) {
                 class_4181 lv = this.field_18706.removeFirst();
                 this.method_19306(lv.field_18696, lv.field_18697, lv.field_18698, lv.field_18699);
@@ -120,7 +120,7 @@ public class StructurePoolBasedGenerator {
                     atomicReference3 = atomicReference2;
                     n = k;
                     if (atomicReference2.get() == null) {
-                        atomicReference2.set(VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)));
+                        atomicReference2.set(VoxelShapes.cuboid(Box.from(mutableIntBoundingBox)));
                     }
                 } else {
                     atomicReference3 = atomicReference;
@@ -173,8 +173,8 @@ public class StructurePoolBasedGenerator {
                                 u = Math.max(o + 1, mutableIntBoundingBox4.maxY - mutableIntBoundingBox4.minY);
                                 mutableIntBoundingBox4.maxY = mutableIntBoundingBox4.minY + u;
                             }
-                            if (VoxelShapes.matchesAnywhere((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND)) continue;
-                            atomicReference3.set(VoxelShapes.combine((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST));
+                            if (VoxelShapes.matchesAnywhere((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND)) continue;
+                            atomicReference3.set(VoxelShapes.combine((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(Box.from(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST));
                             u = poolStructurePiece.getGroundLevelDelta();
                             int v = bl3 ? u - r : structurePoolElement2.method_19308();
                             PoolStructurePiece poolStructurePiece2 = this.field_18701.create(this.field_18703, structurePoolElement2, blockPos6, v, blockRotation2, mutableIntBoundingBox4);

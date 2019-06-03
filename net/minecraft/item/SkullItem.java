@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WallStandingBlockItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +23,7 @@ extends WallStandingBlockItem {
     }
 
     @Override
-    public Component getName(ItemStack itemStack) {
+    public Text getName(ItemStack itemStack) {
         if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
             CompoundTag compoundTag2;
             String string = null;
@@ -34,7 +34,7 @@ extends WallStandingBlockItem {
                 string = compoundTag2.getString("Name");
             }
             if (string != null) {
-                return new TranslatableComponent(this.getTranslationKey() + ".named", string);
+                return new TranslatableText(this.getTranslationKey() + ".named", string);
             }
         }
         return super.getName(itemStack);

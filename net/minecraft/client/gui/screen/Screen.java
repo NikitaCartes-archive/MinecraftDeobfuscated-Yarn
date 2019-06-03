@@ -18,7 +18,6 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -36,9 +35,10 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -53,7 +53,7 @@ extends AbstractParentElement
 implements Drawable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
-    protected final Component title;
+    protected final Text title;
     protected final List<Element> children = Lists.newArrayList();
     @Nullable
     protected MinecraftClient minecraft;
@@ -65,11 +65,11 @@ implements Drawable {
     protected TextRenderer font;
     private URI clickedLink;
 
-    protected Screen(Component component) {
-        this.title = component;
+    protected Screen(Text text) {
+        this.title = text;
     }
 
-    public Component getTitle() {
+    public Text getTitle() {
         return this.title;
     }
 
@@ -120,10 +120,10 @@ implements Drawable {
     }
 
     public List<String> getTooltipFromItem(ItemStack itemStack) {
-        List<Component> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+        List<Text> list = itemStack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
         ArrayList<String> list2 = Lists.newArrayList();
-        for (Component component : list) {
-            list2.add(component.getFormattedText());
+        for (Text text : list) {
+            list2.add(text.asFormattedString());
         }
         return list2;
     }
@@ -190,11 +190,11 @@ implements Drawable {
         GlStateManager.enableRescaleNormal();
     }
 
-    protected void renderComponentHoverEffect(Component component, int i, int j) {
-        if (component == null || component.getStyle().getHoverEvent() == null) {
+    protected void renderComponentHoverEffect(Text text, int i, int j) {
+        if (text == null || text.getStyle().getHoverEvent() == null) {
             return;
         }
-        HoverEvent hoverEvent = component.getStyle().getHoverEvent();
+        HoverEvent hoverEvent = text.getStyle().getHoverEvent();
         if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
             ItemStack itemStack = ItemStack.EMPTY;
             try {
@@ -206,7 +206,7 @@ implements Drawable {
                 // empty catch block
             }
             if (itemStack.isEmpty()) {
-                this.renderTooltip((Object)((Object)ChatFormat.RED) + "Invalid Item!", i, j);
+                this.renderTooltip((Object)((Object)Formatting.RED) + "Invalid Item!", i, j);
             } else {
                 this.renderTooltip(itemStack, i, j);
             }
@@ -215,9 +215,9 @@ implements Drawable {
                 try {
                     CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
                     ArrayList<String> list = Lists.newArrayList();
-                    Component component2 = Component.Serializer.fromJsonString(compoundTag.getString("name"));
-                    if (component2 != null) {
-                        list.add(component2.getFormattedText());
+                    Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
+                    if (text2 != null) {
+                        list.add(text2.asFormattedString());
                     }
                     if (compoundTag.containsKey("type", 8)) {
                         String string = compoundTag.getString("type");
@@ -226,11 +226,11 @@ implements Drawable {
                     list.add(compoundTag.getString("id"));
                     this.renderTooltip(list, i, j);
                 } catch (JsonSyntaxException | CommandSyntaxException exception) {
-                    this.renderTooltip((Object)((Object)ChatFormat.RED) + "Invalid Entity!", i, j);
+                    this.renderTooltip((Object)((Object)Formatting.RED) + "Invalid Entity!", i, j);
                 }
             }
         } else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-            this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
+            this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
         }
         GlStateManager.disableLighting();
     }
@@ -238,14 +238,14 @@ implements Drawable {
     protected void insertText(String string, boolean bl) {
     }
 
-    public boolean handleComponentClicked(Component component) {
-        if (component == null) {
+    public boolean handleComponentClicked(Text text) {
+        if (text == null) {
             return false;
         }
-        ClickEvent clickEvent = component.getStyle().getClickEvent();
+        ClickEvent clickEvent = text.getStyle().getClickEvent();
         if (Screen.hasShiftDown()) {
-            if (component.getStyle().getInsertion() != null) {
-                this.insertText(component.getStyle().getInsertion(), false);
+            if (text.getStyle().getInsertion() != null) {
+                this.insertText(text.getStyle().getInsertion(), false);
             }
         } else if (clickEvent != null) {
             block19: {

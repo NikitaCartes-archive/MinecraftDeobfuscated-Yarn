@@ -44,7 +44,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -170,8 +170,8 @@ implements Projectile {
             this.prevPitch = this.pitch;
         }
         if (!((blockState = this.world.getBlockState(blockPos = new BlockPos(this.x, this.y, this.z))).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
-            for (BoundingBox boundingBox : voxelShape.getBoundingBoxes()) {
-                if (!boundingBox.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) continue;
+            for (Box box : voxelShape.getBoundingBoxes()) {
+                if (!box.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) continue;
                 this.inGround = true;
                 break;
             }

@@ -15,7 +15,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -94,11 +94,11 @@ extends WorldChunk {
     }
 
     @Override
-    public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
+    public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
     }
 
     @Override
-    public <T extends Entity> void appendEntities(Class<? extends T> class_, BoundingBox boundingBox, List<T> list, Predicate<? super T> predicate) {
+    public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, Predicate<? super T> predicate) {
     }
 
     @Override

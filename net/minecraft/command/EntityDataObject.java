@@ -17,16 +17,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class EntityDataObject
 implements DataCommandObject {
-    private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.data.entity.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid", new Object[0]));
     public static final Function<String, DataCommand.ObjectType> field_13800 = string -> new DataCommand.ObjectType((String)string){
         final /* synthetic */ String field_13802;
         {
@@ -65,18 +65,18 @@ implements DataCommandObject {
     }
 
     @Override
-    public Component getModifiedFeedback() {
-        return new TranslatableComponent("commands.data.entity.modified", this.field_13801.getDisplayName());
+    public Text getModifiedFeedback() {
+        return new TranslatableText("commands.data.entity.modified", this.field_13801.getDisplayName());
     }
 
     @Override
-    public Component getQueryFeedback(Tag tag) {
-        return new TranslatableComponent("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toTextComponent());
+    public Text getQueryFeedback(Tag tag) {
+        return new TranslatableText("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toText());
     }
 
     @Override
-    public Component getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-        return new TranslatableComponent("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
+    public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+        return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
     }
 }
 

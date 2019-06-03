@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.ShulkerBoxContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -17,8 +17,8 @@ public class ShulkerBoxScreen
 extends AbstractContainerScreen<ShulkerBoxContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
-    public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, Component component) {
-        super(shulkerBoxContainer, playerInventory, component);
+    public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, Text text) {
+        super(shulkerBoxContainer, playerInventory, text);
         ++this.containerHeight;
     }
 
@@ -31,8 +31,8 @@ extends AbstractContainerScreen<ShulkerBoxContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 8.0f, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 8.0f, 6.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

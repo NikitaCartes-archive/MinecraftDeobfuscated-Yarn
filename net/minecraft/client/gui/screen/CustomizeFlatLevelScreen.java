@@ -26,7 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ extends Screen {
     private ButtonWidget widgetButtonRemoveLayer;
 
     public CustomizeFlatLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
-        super(new TranslatableComponent("createWorld.customize.flat.title", new Object[0]));
+        super(new TranslatableText("createWorld.customize.flat.title", new Object[0]));
         this.parent = createWorldScreen;
         this.method_2144(compoundTag);
     }
@@ -114,7 +114,7 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.layers.render(i, j, f);
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         int k = this.width / 2 - 92 - 16;
         this.drawString(this.font, this.tileText, k, 32, 0xFFFFFF);
         this.drawString(this.font, this.heightText, k + 2 + 213 - this.font.getStringWidth(this.heightText), 32, 0xFFFFFF);
@@ -136,7 +136,7 @@ extends Screen {
             Item item;
             super.setSelected(superflatLayerItem);
             if (superflatLayerItem != null && (item = (flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1)).getBlockState().getBlock().asItem()) != Items.AIR) {
-                NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", item.getName(new ItemStack(item))).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", item.getName(new ItemStack(item))).getString());
             }
         }
 
@@ -193,7 +193,7 @@ extends Screen {
                     }
                 }
                 ItemStack itemStack = new ItemStack(item);
-                String string = item.getName(itemStack).getFormattedText();
+                String string = item.getName(itemStack).asFormattedString();
                 this.method_19375(k, j, itemStack);
                 CustomizeFlatLevelScreen.this.font.draw(string, k + 18 + 5, j + 3, 0xFFFFFF);
                 String string2 = i == 0 ? I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (i == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));

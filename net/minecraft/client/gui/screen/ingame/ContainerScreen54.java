@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.ContainerProvider;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -20,8 +20,8 @@ implements ContainerProvider<GenericContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
     private final int rows;
 
-    public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, Component component) {
-        super(genericContainer, playerInventory, component);
+    public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, Text text) {
+        super(genericContainer, playerInventory, text);
         this.passEvents = false;
         int i = 222;
         int j = 114;
@@ -38,8 +38,8 @@ implements ContainerProvider<GenericContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 8.0f, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 8.0f, 6.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

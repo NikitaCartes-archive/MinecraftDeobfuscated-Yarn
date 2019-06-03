@@ -6,13 +6,13 @@ package net.minecraft.client.gui.hud.spectator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public interface SpectatorMenuCommand {
     public void use(SpectatorMenu var1);
 
-    public Component getName();
+    public Text getName();
 
     public void renderIcon(float var1, int var2);
 

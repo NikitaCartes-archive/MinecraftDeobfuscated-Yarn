@@ -131,7 +131,7 @@ public class BackgroundRenderer {
             float[] fs;
             double d = MathHelper.sin(world.getSkyAngleRadians(f)) > 0.0f ? -1.0 : 1.0;
             Vec3d vec3d3 = new Vec3d(d, 0.0, 0.0);
-            float k = (float)camera.method_19335().dotProduct(vec3d3);
+            float k = (float)camera.getHorizontalPlane().dotProduct(vec3d3);
             if (k < 0.0f) {
                 k = 0.0f;
             }

@@ -23,7 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -94,7 +94,7 @@ implements BlockEntityProvider {
 
     @Nullable
     private ItemFrameEntity getAttachedItemFrame(World world, Direction direction, BlockPos blockPos) {
-        List<ItemFrameEntity> list = world.getEntities(ItemFrameEntity.class, new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == direction);
+        List<ItemFrameEntity> list = world.getEntities(ItemFrameEntity.class, new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == direction);
         if (list.size() == 1) {
             return list.get(0);
         }

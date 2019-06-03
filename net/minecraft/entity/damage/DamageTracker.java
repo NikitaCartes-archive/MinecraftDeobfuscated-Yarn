@@ -13,8 +13,8 @@ import net.minecraft.entity.damage.DamageRecord;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,35 +60,35 @@ public class DamageTracker {
         }
     }
 
-    public Component getDeathMessage() {
-        Component component3;
+    public Text getDeathMessage() {
+        Text text3;
         if (this.recentDamage.isEmpty()) {
-            return new TranslatableComponent("death.attack.generic", this.entity.getDisplayName());
+            return new TranslatableText("death.attack.generic", this.entity.getDisplayName());
         }
         DamageRecord damageRecord = this.getBiggestFall();
         DamageRecord damageRecord2 = this.recentDamage.get(this.recentDamage.size() - 1);
-        Component component = damageRecord2.getAttackerName();
+        Text text = damageRecord2.getAttackerName();
         Entity entity = damageRecord2.getDamageSource().getAttacker();
         if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
-            Component component2 = damageRecord.getAttackerName();
+            Text text2 = damageRecord.getAttackerName();
             if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
-                component3 = new TranslatableComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
-            } else if (!(component2 == null || component != null && component2.equals(component))) {
+                text3 = new TranslatableText("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
+            } else if (!(text2 == null || text != null && text2.equals(text))) {
                 ItemStack itemStack;
                 Entity entity2 = damageRecord.getDamageSource().getAttacker();
                 ItemStack itemStack2 = itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
-                component3 = !itemStack.isEmpty() && itemStack.hasCustomName() ? new TranslatableComponent("death.fell.assist.item", this.entity.getDisplayName(), component2, itemStack.toHoverableText()) : new TranslatableComponent("death.fell.assist", this.entity.getDisplayName(), component2);
-            } else if (component != null) {
+                text3 = !itemStack.isEmpty() && itemStack.hasCustomName() ? new TranslatableText("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText()) : new TranslatableText("death.fell.assist", this.entity.getDisplayName(), text2);
+            } else if (text != null) {
                 ItemStack itemStack2;
                 ItemStack itemStack = itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
-                component3 = !itemStack2.isEmpty() && itemStack2.hasCustomName() ? new TranslatableComponent("death.fell.finish.item", this.entity.getDisplayName(), component, itemStack2.toHoverableText()) : new TranslatableComponent("death.fell.finish", this.entity.getDisplayName(), component);
+                text3 = !itemStack2.isEmpty() && itemStack2.hasCustomName() ? new TranslatableText("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText()) : new TranslatableText("death.fell.finish", this.entity.getDisplayName(), text);
             } else {
-                component3 = new TranslatableComponent("death.fell.killer", this.entity.getDisplayName());
+                text3 = new TranslatableText("death.fell.killer", this.entity.getDisplayName());
             }
         } else {
-            component3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
+            text3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
         }
-        return component3;
+        return text3;
     }
 
     @Nullable

@@ -22,12 +22,12 @@ import net.minecraft.command.arguments.RotationArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -46,9 +46,9 @@ public class TeleportCommand {
             TeleportCommand.teleport(serverCommandSource, entity2, (ServerWorld)entity.world, entity.x, entity.y, entity.z, EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), entity.yaw, entity.pitch, null);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.teleport.success.entity.single", collection.iterator().next().getDisplayName(), entity.getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.entity.single", collection.iterator().next().getDisplayName(), entity.getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true);
         }
         return collection.size();
     }
@@ -85,9 +85,9 @@ public class TeleportCommand {
             TeleportCommand.teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, lookTarget);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.teleport.success.location.single", collection.iterator().next().getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.location.single", collection.iterator().next().getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true);
         }
         return collection.size();
     }

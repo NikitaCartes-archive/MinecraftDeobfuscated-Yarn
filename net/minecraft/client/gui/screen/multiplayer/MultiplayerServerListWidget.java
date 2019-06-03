@@ -13,7 +13,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -28,7 +27,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -64,7 +64,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     public void method_20122(Entry entry) {
         super.setSelected(entry);
         if (this.getSelected() instanceof ServerItem) {
-            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.select", ((ServerItem)((ServerItem)this.getSelected())).server.name).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerItem)((ServerItem)this.getSelected())).server.name).getString());
         }
     }
 
@@ -157,10 +157,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         this.screen.method_2538().method_3003(this.server);
                     } catch (UnknownHostException unknownHostException) {
                         this.server.ping = -1L;
-                        this.server.label = (Object)((Object)ChatFormat.DARK_RED) + I18n.translate("multiplayer.status.cannot_resolve", new Object[0]);
+                        this.server.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_resolve", new Object[0]);
                     } catch (Exception exception) {
                         this.server.ping = -1L;
-                        this.server.label = (Object)((Object)ChatFormat.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
+                        this.server.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
                     }
                 });
             }
@@ -172,7 +172,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             for (int p = 0; p < Math.min(list.size(), 2); ++p) {
                 this.client.textRenderer.draw(list.get(p), k + 32 + 3, j + 12 + this.client.textRenderer.fontHeight * p, 0x808080);
             }
-            String string = bl4 ? (Object)((Object)ChatFormat.DARK_RED) + this.server.version : this.server.playerCountLabel;
+            String string = bl4 ? (Object)((Object)Formatting.DARK_RED) + this.server.version : this.server.playerCountLabel;
             int q = this.client.textRenderer.getStringWidth(string);
             this.client.textRenderer.draw(string, k + l - q - 15 - 2, j + 1, 0x808080);
             int r = 0;

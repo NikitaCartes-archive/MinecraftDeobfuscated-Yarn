@@ -79,7 +79,7 @@ extends HostileEntity {
             this.patrolLeader = true;
         }
         if (this.isPatrolLeader()) {
-            this.setEquippedStack(EquipmentSlot.HEAD, Raid.OMINOUS_BANNER);
+            this.setEquippedStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
             this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0f);
         }
         if (spawnType == SpawnType.PATROL) {

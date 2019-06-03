@@ -22,11 +22,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockPredicateArgumentType
 implements ArgumentType<BlockPredicate> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
-    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("arguments.block.tag.unknown", object));
+    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.block.tag.unknown", object));
 
     public static BlockPredicateArgumentType create() {
         return new BlockPredicateArgumentType();

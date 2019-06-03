@@ -10,16 +10,16 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -27,11 +27,11 @@ import org.jetbrains.annotations.Nullable;
 public class ResourcePackContainer
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(new TranslatableComponent("resourcePack.broken_assets", new Object[0]).applyFormat(ChatFormat.RED, ChatFormat.ITALIC), SharedConstants.getGameVersion().getPackVersion());
+    private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(new TranslatableText("resourcePack.broken_assets", new Object[0]).formatted(Formatting.RED, Formatting.ITALIC), SharedConstants.getGameVersion().getPackVersion());
     private final String name;
     private final Supplier<ResourcePack> packCreator;
-    private final Component displayName;
-    private final Component description;
+    private final Text displayName;
+    private final Text description;
     private final ResourcePackCompatibility compatibility;
     private final InsertionPosition position;
     private final boolean notSorting;
@@ -62,11 +62,11 @@ implements AutoCloseable {
         return null;
     }
 
-    public ResourcePackContainer(String string, boolean bl, Supplier<ResourcePack> supplier, Component component, Component component2, ResourcePackCompatibility resourcePackCompatibility, InsertionPosition insertionPosition, boolean bl2) {
+    public ResourcePackContainer(String string, boolean bl, Supplier<ResourcePack> supplier, Text text, Text text2, ResourcePackCompatibility resourcePackCompatibility, InsertionPosition insertionPosition, boolean bl2) {
         this.name = string;
         this.packCreator = supplier;
-        this.displayName = component;
-        this.description = component2;
+        this.displayName = text;
+        this.description = text2;
         this.compatibility = resourcePackCompatibility;
         this.notSorting = bl;
         this.position = insertionPosition;
@@ -74,21 +74,21 @@ implements AutoCloseable {
     }
 
     public ResourcePackContainer(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, InsertionPosition insertionPosition) {
-        this(string, bl, supplier, new TextComponent(resourcePack.getName()), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), insertionPosition, false);
+        this(string, bl, supplier, new LiteralText(resourcePack.getName()), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), insertionPosition, false);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getDisplayName() {
+    public Text getDisplayName() {
         return this.displayName;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getDescription() {
+    public Text getDescription() {
         return this.description;
     }
 
-    public Component getInformationText(boolean bl) {
-        return Components.bracketed(new TextComponent(this.name)).modifyStyle(style -> style.setColor(bl ? ChatFormat.GREEN : ChatFormat.RED).setInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("").append(this.displayName).append("\n").append(this.description))));
+    public Text getInformationText(boolean bl) {
+        return Texts.bracketed(new LiteralText(this.name)).styled(style -> style.setColor(bl ? Formatting.GREEN : Formatting.RED).setInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description))));
     }
 
     public ResourcePackCompatibility getCompatibility() {

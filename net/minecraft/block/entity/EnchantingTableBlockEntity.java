@@ -8,8 +8,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
@@ -30,7 +30,7 @@ Tickable {
     public float field_11963;
     public float field_11962;
     private static final Random RANDOM = new Random();
-    private Component customName;
+    private Text customName;
 
     public EnchantingTableBlockEntity() {
         super(BlockEntityType.ENCHANTING_TABLE);
@@ -40,7 +40,7 @@ Tickable {
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
         if (this.hasCustomName()) {
-            compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+            compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
         return compoundTag;
     }
@@ -49,7 +49,7 @@ Tickable {
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
         if (compoundTag.containsKey("CustomName", 8)) {
-            this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
     }
 
@@ -103,20 +103,20 @@ Tickable {
     }
 
     @Override
-    public Component getName() {
+    public Text getName() {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableComponent("container.enchant", new Object[0]);
+        return new TranslatableText("container.enchant", new Object[0]);
     }
 
-    public void setCustomName(@Nullable Component component) {
-        this.customName = component;
+    public void setCustomName(@Nullable Text text) {
+        this.customName = text;
     }
 
     @Override
     @Nullable
-    public Component getCustomName() {
+    public Text getCustomName() {
         return this.customName;
     }
 }

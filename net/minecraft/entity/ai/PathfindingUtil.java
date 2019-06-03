@@ -42,6 +42,12 @@ public class PathfindingUtil {
     }
 
     @Nullable
+    public static Vec3d method_20658(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+        Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
+        return PathfindingUtil.findTarget(mobEntityWithAi, i, j, vec3d2, false, 1.5707963705062866, mobEntityWithAi::getPathfindingFavor);
+    }
+
+    @Nullable
     public static Vec3d method_6379(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
         Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
         return PathfindingUtil.findTarget(mobEntityWithAi, i, j, vec3d2);
@@ -59,32 +65,28 @@ public class PathfindingUtil {
         boolean bl2 = mobEntityWithAi.hasWalkTargetRange() ? mobEntityWithAi.getWalkTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0) : false;
         boolean bl3 = false;
         double e = Double.NEGATIVE_INFINITY;
-        int k = 0;
-        int l = 0;
-        int m = 0;
-        for (int n = 0; n < 10; ++n) {
+        BlockPos blockPos = new BlockPos(mobEntityWithAi);
+        for (int k = 0; k < 10; ++k) {
             double f;
-            BlockPos blockPos2;
-            BlockPos blockPos = PathfindingUtil.method_6374(random, i, j, vec3d, d);
-            if (blockPos == null) continue;
-            int o = blockPos.getX();
-            int p = blockPos.getY();
-            int q = blockPos.getZ();
+            BlockPos blockPos3;
+            BlockPos blockPos2 = PathfindingUtil.method_6374(random, i, j, vec3d, d);
+            if (blockPos2 == null) continue;
+            int l = blockPos2.getX();
+            int m = blockPos2.getY();
+            int n = blockPos2.getZ();
             if (mobEntityWithAi.hasWalkTargetRange() && i > 1) {
-                blockPos2 = mobEntityWithAi.getWalkTarget();
-                o = mobEntityWithAi.x > (double)blockPos2.getX() ? (o -= random.nextInt(i / 2)) : (o += random.nextInt(i / 2));
-                q = mobEntityWithAi.z > (double)blockPos2.getZ() ? (q -= random.nextInt(i / 2)) : (q += random.nextInt(i / 2));
+                blockPos3 = mobEntityWithAi.getWalkTarget();
+                l = mobEntityWithAi.x > (double)blockPos3.getX() ? (l -= random.nextInt(i / 2)) : (l += random.nextInt(i / 2));
+                n = mobEntityWithAi.z > (double)blockPos3.getZ() ? (n -= random.nextInt(i / 2)) : (n += random.nextInt(i / 2));
             }
-            blockPos2 = new BlockPos((double)o + mobEntityWithAi.x, (double)p + mobEntityWithAi.y, (double)q + mobEntityWithAi.z);
-            if (bl2 && !mobEntityWithAi.isInWalkTargetRange(blockPos2) || !entityNavigation.isValidPosition(blockPos2) || !bl && PathfindingUtil.isWater(blockPos2 = PathfindingUtil.method_6372(blockPos2, mobEntityWithAi), mobEntityWithAi) || !((f = toDoubleFunction.applyAsDouble(blockPos2)) > e)) continue;
+            blockPos3 = new BlockPos((double)l + mobEntityWithAi.x, (double)m + mobEntityWithAi.y, (double)n + mobEntityWithAi.z);
+            if (bl2 && !mobEntityWithAi.isInWalkTargetRange(blockPos3) || !entityNavigation.isValidPosition(blockPos3) || !bl && PathfindingUtil.isWater(blockPos3 = PathfindingUtil.method_6372(blockPos3, mobEntityWithAi), mobEntityWithAi) || !((f = toDoubleFunction.applyAsDouble(blockPos3)) > e)) continue;
             e = f;
-            k = o;
-            l = p;
-            m = q;
+            blockPos = blockPos3;
             bl3 = true;
         }
         if (bl3) {
-            return new Vec3d((double)k + mobEntityWithAi.x, (double)l + mobEntityWithAi.y, (double)m + mobEntityWithAi.z);
+            return new Vec3d(blockPos);
         }
         return null;
     }

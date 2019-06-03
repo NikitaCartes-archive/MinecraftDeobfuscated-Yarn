@@ -45,7 +45,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -271,7 +271,7 @@ implements Monster {
             double d = 0.5 - (double)MathHelper.sin((0.5f + this.field_7337) * (float)Math.PI) * 0.5;
             double e = 0.5 - (double)MathHelper.sin((0.5f + this.field_7339) * (float)Math.PI) * 0.5;
             Direction direction3 = this.getAttachedFace().getOpposite();
-            this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5).stretch((double)direction3.getOffsetX() * d, (double)direction3.getOffsetY() * d, (double)direction3.getOffsetZ() * d));
+            this.setBoundingBox(new Box(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5).stretch((double)direction3.getOffsetX() * d, (double)direction3.getOffsetY() * d, (double)direction3.getOffsetZ() * d));
             double g = d - e;
             if (g > 0.0 && !(list = this.world.getEntities(this, this.getBoundingBox())).isEmpty()) {
                 for (Entity entity : list) {
@@ -313,7 +313,7 @@ implements Monster {
         BlockPos blockPos = new BlockPos(this);
         for (int i = 0; i < 5; ++i) {
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new BoundingBox(blockPos2))) continue;
+            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
             boolean bl = false;
             for (Direction direction : Direction.values()) {
                 if (!this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) continue;
@@ -389,7 +389,7 @@ implements Monster {
 
     @Override
     @Nullable
-    public BoundingBox getCollisionBox() {
+    public Box getCollisionBox() {
         return this.isAlive() ? this.getBoundingBox() : null;
     }
 
@@ -492,7 +492,7 @@ implements Monster {
         }
 
         @Override
-        protected BoundingBox getSearchBox(double d) {
+        protected Box getSearchBox(double d) {
             Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
             if (direction.getAxis() == Direction.Axis.X) {
                 return this.mob.getBoundingBox().expand(4.0, d, d);
@@ -519,7 +519,7 @@ implements Monster {
         }
 
         @Override
-        protected BoundingBox getSearchBox(double d) {
+        protected Box getSearchBox(double d) {
             Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
             if (direction.getAxis() == Direction.Axis.X) {
                 return this.mob.getBoundingBox().expand(4.0, d, d);

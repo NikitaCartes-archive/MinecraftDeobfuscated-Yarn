@@ -1,31 +1,31 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentWithSelectors;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.BaseText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.ParsableText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class SelectorComponent
-extends BaseComponent
-implements ComponentWithSelectors {
+public class SelectorText
+extends BaseText
+implements ParsableText {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String pattern;
     @Nullable
-    private final EntitySelector field_11790;
+    private final EntitySelector selector;
 
-    public SelectorComponent(String string) {
+    public SelectorText(String string) {
         this.pattern = string;
         EntitySelector entitySelector = null;
         try {
@@ -34,7 +34,7 @@ implements ComponentWithSelectors {
         } catch (CommandSyntaxException commandSyntaxException) {
             LOGGER.warn("Invalid selector component: {}", (Object)string, (Object)commandSyntaxException.getMessage());
         }
-        this.field_11790 = entitySelector;
+        this.selector = entitySelector;
     }
 
     public String getPattern() {
@@ -42,20 +42,20 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-        if (serverCommandSource == null || this.field_11790 == null) {
-            return new TextComponent("");
+    public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+        if (serverCommandSource == null || this.selector == null) {
+            return new LiteralText("");
         }
-        return EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource));
+        return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
     }
 
     @Override
-    public String getText() {
+    public String asString() {
         return this.pattern;
     }
 
-    public SelectorComponent method_10931() {
-        return new SelectorComponent(this.pattern);
+    public SelectorText method_10931() {
+        return new SelectorText(this.pattern);
     }
 
     @Override
@@ -63,9 +63,9 @@ implements ComponentWithSelectors {
         if (this == object) {
             return true;
         }
-        if (object instanceof SelectorComponent) {
-            SelectorComponent selectorComponent = (SelectorComponent)object;
-            return this.pattern.equals(selectorComponent.pattern) && super.equals(object);
+        if (object instanceof SelectorText) {
+            SelectorText selectorText = (SelectorText)object;
+            return this.pattern.equals(selectorText.pattern) && super.equals(object);
         }
         return false;
     }
@@ -76,7 +76,7 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public /* synthetic */ Component copyShallow() {
+    public /* synthetic */ Text copy() {
         return this.method_10931();
     }
 }

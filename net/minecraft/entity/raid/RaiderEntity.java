@@ -52,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class RaiderEntity
 extends PatrolEntity {
     protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.OMINOUS_BANNER);
+    private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.getOminousBanner());
     @Nullable
     protected Raid raid;
     private int wave;
@@ -118,16 +118,17 @@ extends PatrolEntity {
     public void onDeath(DamageSource damageSource) {
         if (this.world instanceof ServerWorld) {
             Entity entity = damageSource.getAttacker();
-            if (this.getRaid() != null) {
+            Raid raid = this.getRaid();
+            if (raid != null) {
                 if (this.isPatrolLeader()) {
-                    this.getRaid().removeLeader(this.getWave());
+                    raid.removeLeader(this.getWave());
                 }
                 if (entity != null && entity.getType() == EntityType.PLAYER) {
-                    this.getRaid().addHero(entity);
+                    raid.addHero(entity);
                 }
-                this.getRaid().removeFromWave(this, false);
+                raid.removeFromWave(this, false);
             }
-            if (this.isPatrolLeader() && this.getRaid() == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
+            if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
                 ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
                 PlayerEntity playerEntity = null;
                 Entity entity2 = entity;
@@ -140,7 +141,7 @@ extends PatrolEntity {
                         playerEntity = (PlayerEntity)livingEntity;
                     }
                 }
-                if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
+                if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
                     StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
                     int i = 1;
                     if (statusEffectInstance != null) {
@@ -226,7 +227,7 @@ extends PatrolEntity {
         boolean bl;
         ItemStack itemStack = itemEntity.getStack();
         boolean bl2 = bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-        if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.OMINOUS_BANNER)) {
+        if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner())) {
             EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
             ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
             double d = this.getDropChance(equipmentSlot);
@@ -488,7 +489,7 @@ extends PatrolEntity {
         public boolean canStart() {
             List<ItemEntity> list;
             Raid raid = ((RaiderEntity)this.actor).getRaid();
-            if (!((RaiderEntity)this.actor).hasActiveRaid() || ((RaiderEntity)this.actor).getRaid().isFinished() || !((PatrolEntity)this.actor).canLead() || ItemStack.areEqualIgnoreDamage(((MobEntity)this.actor).getEquippedStack(EquipmentSlot.HEAD), Raid.OMINOUS_BANNER)) {
+            if (!((RaiderEntity)this.actor).hasActiveRaid() || ((RaiderEntity)this.actor).getRaid().isFinished() || !((PatrolEntity)this.actor).canLead() || ItemStack.areEqualIgnoreDamage(((MobEntity)this.actor).getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner())) {
                 return false;
             }
             RaiderEntity raiderEntity = raid.getCaptain(((RaiderEntity)this.actor).getWave());

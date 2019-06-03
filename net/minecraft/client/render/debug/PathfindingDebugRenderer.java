@@ -18,7 +18,7 @@ import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -78,13 +78,13 @@ implements DebugRenderer.Renderer {
         double g = camera.getPos().z;
         PathNode pathNode = path.method_48();
         if (PathfindingDebugRenderer.method_20554(camera, pathNode) <= 40.0f) {
-            DebugRenderer.method_19695(new BoundingBox((float)pathNode.x + 0.25f, (float)pathNode.y + 0.25f, (double)pathNode.z + 0.25, (float)pathNode.x + 0.75f, (float)pathNode.y + 0.75f, (float)pathNode.z + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
+            DebugRenderer.method_19695(new Box((float)pathNode.x + 0.25f, (float)pathNode.y + 0.25f, (double)pathNode.z + 0.25, (float)pathNode.x + 0.75f, (float)pathNode.y + 0.75f, (float)pathNode.z + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode2 = path.getNode(i);
                 if (!(PathfindingDebugRenderer.method_20554(camera, pathNode2) <= 40.0f)) continue;
                 float h = i == path.getCurrentNodeIndex() ? 1.0f : 0.0f;
                 float j = i == path.getCurrentNodeIndex() ? 0.0f : 1.0f;
-                DebugRenderer.method_19695(new BoundingBox((float)pathNode2.x + 0.5f - f, (float)pathNode2.y + 0.01f * (float)i, (float)pathNode2.z + 0.5f - f, (float)pathNode2.x + 0.5f + f, (float)pathNode2.y + 0.25f + 0.01f * (float)i, (float)pathNode2.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
+                DebugRenderer.method_19695(new Box((float)pathNode2.x + 0.5f - f, (float)pathNode2.y + 0.01f * (float)i, (float)pathNode2.z + 0.5f - f, (float)pathNode2.x + 0.5f + f, (float)pathNode2.y + 0.25f + 0.01f * (float)i, (float)pathNode2.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
             }
         }
         if (bl) {

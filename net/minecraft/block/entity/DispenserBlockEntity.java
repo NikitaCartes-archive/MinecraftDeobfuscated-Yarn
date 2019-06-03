@@ -12,8 +12,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 
 public class DispenserBlockEntity
@@ -64,8 +64,8 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.dispenser", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.dispenser", new Object[0]);
     }
 
     @Override

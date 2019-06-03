@@ -23,8 +23,8 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
@@ -277,8 +277,8 @@ public abstract class Biome {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getTextComponent() {
-        return new TranslatableComponent(this.getTranslationKey(), new Object[0]);
+    public Text getName() {
+        return new TranslatableText(this.getTranslationKey(), new Object[0]);
     }
 
     public String getTranslationKey() {

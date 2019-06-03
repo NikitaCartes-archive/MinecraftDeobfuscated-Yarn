@@ -36,11 +36,11 @@ implements Toast {
         toastManager.blit(0, 0, 0, 0, 160, 32);
         if (advancementDisplay != null) {
             int i;
-            List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().getFormattedText(), 125);
+            List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
             int n = i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 0xFF88FF : 0xFFFF00;
             if (list.size() == 1) {
                 toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 7.0f, i | 0xFF000000);
-                toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().getFormattedText(), 30.0f, 18.0f, -1);
+                toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0f, 18.0f, -1);
             } else {
                 int j = 1500;
                 float f = 300.0f;

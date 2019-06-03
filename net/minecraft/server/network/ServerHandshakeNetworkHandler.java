@@ -7,13 +7,13 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerQueryNetworkHandler;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class ServerHandshakeNetworkHandler
 implements ServerHandshakePacketListener {
@@ -31,15 +31,15 @@ implements ServerHandshakePacketListener {
             case LOGIN: {
                 this.client.setState(NetworkState.LOGIN);
                 if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
-                    TranslatableComponent component = new TranslatableComponent("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-                    this.client.send(new LoginDisconnectS2CPacket(component));
-                    this.client.disconnect(component);
+                    TranslatableText text = new TranslatableText("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
+                    this.client.send(new LoginDisconnectS2CPacket(text));
+                    this.client.disconnect(text);
                     break;
                 }
                 if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
-                    TranslatableComponent component = new TranslatableComponent("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-                    this.client.send(new LoginDisconnectS2CPacket(component));
-                    this.client.disconnect(component);
+                    TranslatableText text = new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+                    this.client.send(new LoginDisconnectS2CPacket(text));
+                    this.client.disconnect(text);
                     break;
                 }
                 this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
@@ -57,7 +57,7 @@ implements ServerHandshakePacketListener {
     }
 
     @Override
-    public void onDisconnected(Component component) {
+    public void onDisconnected(Text text) {
     }
 }
 

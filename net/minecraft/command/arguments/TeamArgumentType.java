@@ -13,16 +13,16 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class TeamArgumentType
 implements ArgumentType<String> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "123");
-    private static final DynamicCommandExceptionType UNKNOWN_TEAM_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("team.notFound", object));
+    private static final DynamicCommandExceptionType UNKNOWN_TEAM_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("team.notFound", object));
 
     public static TeamArgumentType create() {
         return new TeamArgumentType();

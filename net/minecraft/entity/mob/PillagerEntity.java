@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.Maps;
 import java.util.HashMap;
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -165,17 +166,11 @@ RangedAttackMob {
         return 0.5f - viewableWorld.getBrightness(blockPos);
     }
 
-    @Override
-    protected boolean checkLightLevelForSpawn() {
-        return true;
-    }
-
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        if (iWorld.getLightLevel(LightType.BLOCK, new BlockPos(this.x, this.y, this.z)) > 8) {
+    public static boolean method_20683(EntityType<PillagerEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        if (iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8) {
             return false;
         }
-        return super.canSpawn(iWorld, spawnType);
+        return PillagerEntity.method_20681(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override

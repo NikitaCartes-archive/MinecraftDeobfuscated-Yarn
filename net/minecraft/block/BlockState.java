@@ -100,7 +100,6 @@ implements PropertyContainer<BlockState> {
         return this.getBlock().getLightSubtracted(this, blockView, blockPos);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
         if (this.shapeCache != null && this.shapeCache.shapes != null) {
             return this.shapeCache.shapes[direction.ordinal()];
@@ -219,6 +218,9 @@ implements PropertyContainer<BlockState> {
     }
 
     public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
+        if (this.shapeCache != null) {
+            return this.shapeCache.field_19360;
+        }
         return this.getCollisionShape(blockView, blockPos, EntityContext.absent());
     }
 
@@ -375,10 +377,10 @@ implements PropertyContainer<BlockState> {
         private final boolean translucent;
         private final int lightSubtracted;
         private final VoxelShape[] shapes;
+        private final VoxelShape field_19360;
         private final boolean field_17651;
 
         private ShapeCache(BlockState blockState) {
-            VoxelShape voxelShape;
             Block block = blockState.getBlock();
             this.opaque = block.isOpaque(blockState);
             this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
@@ -388,13 +390,13 @@ implements PropertyContainer<BlockState> {
                 this.shapes = null;
             } else {
                 this.shapes = new VoxelShape[DIRECTIONS.length];
-                voxelShape = block.method_9571(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
                 for (Direction direction : DIRECTIONS) {
                     this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
                 }
             }
-            voxelShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
-            this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> voxelShape.getMinimum((Direction.Axis)axis) < 0.0 || voxelShape.getMaximum((Direction.Axis)axis) > 1.0);
+            this.field_19360 = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
+            this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.field_19360.getMinimum((Direction.Axis)axis) < 0.0 || this.field_19360.getMaximum((Direction.Axis)axis) > 1.0);
         }
     }
 }

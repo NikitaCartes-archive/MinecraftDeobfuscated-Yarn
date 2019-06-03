@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.LevelPropagator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -32,7 +33,7 @@ implements ChunkLightingView {
     protected final LightType type;
     protected final S lightStorage;
     private boolean field_15794;
-    private final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
+    protected final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
     private final long[] field_17397 = new long[2];
     private final BlockView[] field_17398 = new BlockView[2];
 
@@ -74,14 +75,14 @@ implements ChunkLightingView {
         Arrays.fill(this.field_17398, null);
     }
 
-    protected VoxelShape method_20479(long l, @Nullable AtomicInteger atomicInteger) {
+    protected BlockState method_20479(long l, @Nullable AtomicInteger atomicInteger) {
         boolean bl;
         int j;
         if (l == Long.MAX_VALUE) {
             if (atomicInteger != null) {
                 atomicInteger.set(0);
             }
-            return VoxelShapes.empty();
+            return Blocks.AIR.getDefaultState();
         }
         int i = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l));
         BlockView blockView = this.method_17529(i, j = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l)));
@@ -89,7 +90,7 @@ implements ChunkLightingView {
             if (atomicInteger != null) {
                 atomicInteger.set(16);
             }
-            return VoxelShapes.fullCube();
+            return Blocks.BEDROCK.getDefaultState();
         }
         this.field_19284.setFromLong(l);
         BlockState blockState = blockView.getBlockState(this.field_19284);
@@ -97,7 +98,11 @@ implements ChunkLightingView {
         if (atomicInteger != null) {
             atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
         }
-        return bl ? blockState.method_11615(this.chunkProvider.getWorld(), this.field_19284) : VoxelShapes.empty();
+        return bl ? blockState : Blocks.AIR.getDefaultState();
+    }
+
+    protected VoxelShape method_20710(BlockState blockState, long l, Direction direction) {
+        return blockState.isOpaque() ? blockState.getCullShape(this.chunkProvider.getWorld(), this.field_19284.setFromLong(l), direction) : VoxelShapes.empty();
     }
 
     public static int method_20049(BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i) {

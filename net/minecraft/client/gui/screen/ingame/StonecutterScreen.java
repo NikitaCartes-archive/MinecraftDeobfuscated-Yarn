@@ -13,9 +13,9 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -28,8 +28,8 @@ extends AbstractContainerScreen<StonecutterContainer> {
     private int scrollOffset;
     private boolean canCraft;
 
-    public StonecutterScreen(StonecutterContainer stonecutterContainer, PlayerInventory playerInventory, Component component) {
-        super(stonecutterContainer, playerInventory, component);
+    public StonecutterScreen(StonecutterContainer stonecutterContainer, PlayerInventory playerInventory, Text text) {
+        super(stonecutterContainer, playerInventory, text);
         stonecutterContainer.setContentsChangedListener(this::onInventoryChange);
     }
 
@@ -41,8 +41,8 @@ extends AbstractContainerScreen<StonecutterContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 8.0f, 4.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 94, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 8.0f, 4.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 94, 0x404040);
     }
 
     @Override

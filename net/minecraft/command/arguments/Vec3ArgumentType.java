@@ -17,17 +17,17 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.arguments.DefaultPosArgument;
 import net.minecraft.command.arguments.LookingPosArgument;
 import net.minecraft.command.arguments.PosArgument;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 
 public class Vec3ArgumentType
 implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0 0", "~ ~ ~", "^ ^ ^", "^1 ^ ^-5", "0.1 -0.5 .9", "~0.5 ~1 ~-5");
-    public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos3d.incomplete", new Object[0]));
-    public static final SimpleCommandExceptionType MIXED_COORDINATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.pos.mixed", new Object[0]));
+    public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos3d.incomplete", new Object[0]));
+    public static final SimpleCommandExceptionType MIXED_COORDINATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.mixed", new Object[0]));
     private final boolean centerIntegers;
 
     public Vec3ArgumentType(boolean bl) {

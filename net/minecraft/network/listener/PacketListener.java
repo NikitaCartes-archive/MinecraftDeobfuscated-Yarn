@@ -3,9 +3,9 @@
  */
 package net.minecraft.network.listener;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public interface PacketListener {
-    public void onDisconnected(Component var1);
+    public void onDisconnected(Text var1);
 }
 

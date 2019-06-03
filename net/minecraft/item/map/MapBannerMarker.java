@@ -8,7 +8,7 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
@@ -19,19 +19,19 @@ public class MapBannerMarker {
     private final BlockPos pos;
     private final DyeColor color;
     @Nullable
-    private final Component name;
+    private final Text name;
 
-    public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Component component) {
+    public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Text text) {
         this.pos = blockPos;
         this.color = dyeColor;
-        this.name = component;
+        this.name = text;
     }
 
     public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
         BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
         DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.WHITE);
-        Component component = compoundTag.containsKey("Name") ? Component.Serializer.fromJsonString(compoundTag.getString("Name")) : null;
-        return new MapBannerMarker(blockPos, dyeColor, component);
+        Text text = compoundTag.containsKey("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
+        return new MapBannerMarker(blockPos, dyeColor, text);
     }
 
     @Nullable
@@ -40,8 +40,8 @@ public class MapBannerMarker {
         if (blockEntity instanceof BannerBlockEntity) {
             BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
             DyeColor dyeColor = bannerBlockEntity.getColorForState(() -> blockView.getBlockState(blockPos));
-            Component component = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
-            return new MapBannerMarker(blockPos, dyeColor, component);
+            Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
+            return new MapBannerMarker(blockPos, dyeColor, text);
         }
         return null;
     }
@@ -102,7 +102,7 @@ public class MapBannerMarker {
     }
 
     @Nullable
-    public Component getName() {
+    public Text getName() {
         return this.name;
     }
 
@@ -126,7 +126,7 @@ public class MapBannerMarker {
         compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
         compoundTag.putString("Color", this.color.getName());
         if (this.name != null) {
-            compoundTag.putString("Name", Component.Serializer.toJsonString(this.name));
+            compoundTag.putString("Name", Text.Serializer.toJson(this.name));
         }
         return compoundTag;
     }

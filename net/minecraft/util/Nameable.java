@@ -3,22 +3,22 @@
  */
 package net.minecraft.util;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public interface Nameable {
-    public Component getName();
+    public Text getName();
 
     default public boolean hasCustomName() {
         return this.getCustomName() != null;
     }
 
-    default public Component getDisplayName() {
+    default public Text getDisplayName() {
         return this.getName();
     }
 
     @Nullable
-    default public Component getCustomName() {
+    default public Text getCustomName() {
         return null;
     }
 }

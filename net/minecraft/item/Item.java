@@ -28,9 +28,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -187,8 +187,12 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getName() {
-        return new TranslatableComponent(this.getTranslationKey(), new Object[0]);
+    public Text getName() {
+        return new TranslatableText(this.getTranslationKey(), new Object[0]);
+    }
+
+    public String toString() {
+        return Registry.ITEM.getId(this).getPath();
     }
 
     protected String getOrCreateTranslationKey() {
@@ -244,11 +248,11 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
     }
 
-    public Component getName(ItemStack itemStack) {
-        return new TranslatableComponent(this.getTranslationKey(itemStack), new Object[0]);
+    public Text getName(ItemStack itemStack) {
+        return new TranslatableText(this.getTranslationKey(itemStack), new Object[0]);
     }
 
     @Environment(value=EnvType.CLIENT)

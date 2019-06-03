@@ -152,7 +152,7 @@ public class LevelProperties {
             this.gameRules.deserialize(compoundTag.getCompound("GameRules"));
         }
         if (compoundTag.containsKey("Difficulty", 99)) {
-            this.difficulty = Difficulty.getDifficulty(compoundTag.getByte("Difficulty"));
+            this.difficulty = Difficulty.byOrdinal(compoundTag.getByte("Difficulty"));
         }
         if (compoundTag.containsKey("DifficultyLocked", 1)) {
             this.difficultyLocked = compoundTag.getBoolean("DifficultyLocked");

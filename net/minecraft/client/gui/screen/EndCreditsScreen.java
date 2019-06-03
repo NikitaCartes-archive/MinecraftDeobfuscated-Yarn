@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -22,6 +21,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.resource.Resource;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -84,7 +84,7 @@ extends Screen {
             String string5;
             BufferedReader bufferedReader;
             InputStream inputStream;
-            String string = "" + (Object)((Object)ChatFormat.WHITE) + (Object)((Object)ChatFormat.OBFUSCATED) + (Object)((Object)ChatFormat.GREEN) + (Object)((Object)ChatFormat.AQUA);
+            String string = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
             int i = 274;
             if (this.inGame) {
                 int j;
@@ -99,7 +99,7 @@ extends Screen {
                         j = string2.indexOf(string);
                         String string3 = string2.substring(0, j);
                         String string4 = string2.substring(j + string.length());
-                        string2 = string3 + (Object)((Object)ChatFormat.WHITE) + (Object)((Object)ChatFormat.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
+                        string2 = string3 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
                     }
                     this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));
                     this.field_2634.add("");

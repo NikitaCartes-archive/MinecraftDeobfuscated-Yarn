@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 
@@ -69,6 +70,9 @@ extends Task<LivingEntity> {
                 blockPos2 = mutable;
             } else {
                 blockPos2 = blockPos;
+            }
+            if (mobEntityWithAi.getBoundingBox().expand(2.0).contains(new Vec3d(blockPos2))) {
+                return true;
             }
             Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
             boolean bl2 = bl = path != null && path.method_19313(blockPos2);

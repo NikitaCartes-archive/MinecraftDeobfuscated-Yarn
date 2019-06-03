@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
@@ -31,7 +31,7 @@ extends Screen {
     private final WorldUpdater updater;
 
     public OptimizeWorldScreen(BooleanConsumer booleanConsumer, String string, LevelStorage levelStorage, boolean bl) {
-        super(new TranslatableComponent("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
+        super(new TranslatableText("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
         this.callback = booleanConsumer;
         this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string), bl);
     }
@@ -60,12 +60,12 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         int k = this.width / 2 - 150;
         int l = this.width / 2 + 150;
         int m = this.height / 4 + 100;
         int n = m + 10;
-        this.drawCenteredString(this.font, this.updater.getStatus().getFormattedText(), this.width / 2, m - this.font.fontHeight - 2, 0xA0A0A0);
+        this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, m - this.font.fontHeight - 2, 0xA0A0A0);
         if (this.updater.getTotalChunkCount() > 0) {
             OptimizeWorldScreen.fill(k - 1, m - 1, l + 1, n + 1, -16777216);
             this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 0xA0A0A0);

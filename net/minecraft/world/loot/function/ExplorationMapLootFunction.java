@@ -14,8 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +65,7 @@ extends ConditionalLootFunction {
             ItemStack itemStack2 = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
             FilledMapItem.fillExplorationMap(serverWorld, itemStack2);
             MapState.addDecorationsTag(itemStack2, blockPos2, "+", this.decoration);
-            itemStack2.setCustomName(new TranslatableComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
+            itemStack2.setCustomName(new TranslatableText("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
             return itemStack2;
         }
         return itemStack;

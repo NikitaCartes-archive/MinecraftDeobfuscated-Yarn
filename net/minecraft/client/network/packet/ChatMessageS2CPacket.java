@@ -6,38 +6,38 @@ package net.minecraft.client.network.packet;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class ChatMessageS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private Component message;
-    private ChatMessageType location;
+    private Text message;
+    private MessageType location;
 
     public ChatMessageS2CPacket() {
     }
 
-    public ChatMessageS2CPacket(Component component) {
-        this(component, ChatMessageType.SYSTEM);
+    public ChatMessageS2CPacket(Text text) {
+        this(text, MessageType.SYSTEM);
     }
 
-    public ChatMessageS2CPacket(Component component, ChatMessageType chatMessageType) {
-        this.message = component;
-        this.location = chatMessageType;
+    public ChatMessageS2CPacket(Text text, MessageType messageType) {
+        this.message = text;
+        this.location = messageType;
     }
 
     @Override
     public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.message = packetByteBuf.readTextComponent();
-        this.location = ChatMessageType.byId(packetByteBuf.readByte());
+        this.message = packetByteBuf.readText();
+        this.location = MessageType.byId(packetByteBuf.readByte());
     }
 
     @Override
     public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeTextComponent(this.message);
+        packetByteBuf.writeText(this.message);
         packetByteBuf.writeByte(this.location.getId());
     }
 
@@ -46,15 +46,15 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getMessage() {
+    public Text getMessage() {
         return this.message;
     }
 
     public boolean isNonChat() {
-        return this.location == ChatMessageType.SYSTEM || this.location == ChatMessageType.GAME_INFO;
+        return this.location == MessageType.SYSTEM || this.location == MessageType.GAME_INFO;
     }
 
-    public ChatMessageType getLocation() {
+    public MessageType getLocation() {
         return this.location;
     }
 

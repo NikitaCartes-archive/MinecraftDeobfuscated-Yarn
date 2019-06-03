@@ -27,7 +27,7 @@ extends Task<MobEntityWithAi> {
 
     protected boolean method_19002(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Entity entity = mobEntityWithAi.getBrain().getOptionalMemory(this.entityMemory).get();
-        return mobEntityWithAi.squaredDistanceTo(entity) < 16.0;
+        return mobEntityWithAi.squaredDistanceTo(entity) < 36.0;
     }
 
     protected void method_19003(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
@@ -37,12 +37,10 @@ extends Task<MobEntityWithAi> {
 
     public static void method_19596(MobEntityWithAi mobEntityWithAi, Entity entity, float f) {
         for (int i = 0; i < 10; ++i) {
-            Vec3d vec3d = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
-            Vec3d vec3d2 = new Vec3d(entity.x, entity.y, entity.z);
-            Vec3d vec3d3 = vec3d.subtract(vec3d2).normalize();
-            Vec3d vec3d4 = PathfindingUtil.method_6377(mobEntityWithAi, 16, 7, vec3d3, 0.3141592741012573);
-            if (vec3d4 == null) continue;
-            mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d4, f, 0));
+            Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
+            Vec3d vec3d2 = PathfindingUtil.method_20658(mobEntityWithAi, 16, 7, vec3d);
+            if (vec3d2 == null) continue;
+            mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d2, f, 0));
             return;
         }
     }

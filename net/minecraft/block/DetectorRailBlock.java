@@ -25,7 +25,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ViewableWorld;
@@ -158,9 +158,9 @@ extends AbstractRailBlock {
         return world.getEntities(class_, this.getCartDetectionBox(blockPos), predicate);
     }
 
-    private BoundingBox getCartDetectionBox(BlockPos blockPos) {
+    private Box getCartDetectionBox(BlockPos blockPos) {
         float f = 0.2f;
-        return new BoundingBox((float)blockPos.getX() + 0.2f, blockPos.getY(), (float)blockPos.getZ() + 0.2f, (float)(blockPos.getX() + 1) - 0.2f, (float)(blockPos.getY() + 1) - 0.2f, (float)(blockPos.getZ() + 1) - 0.2f);
+        return new Box((float)blockPos.getX() + 0.2f, blockPos.getY(), (float)blockPos.getZ() + 0.2f, (float)(blockPos.getX() + 1) - 0.2f, (float)(blockPos.getY() + 1) - 0.2f, (float)(blockPos.getZ() + 1) - 0.2f);
     }
 
     @Override

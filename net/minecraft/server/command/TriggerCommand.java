@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.arguments.ObjectiveArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -27,10 +26,11 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 
 public class TriggerCommand {
-    private static final SimpleCommandExceptionType FAILED_UMPRIMED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.trigger.failed.unprimed", new Object[0]));
-    private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.trigger.failed.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType FAILED_UMPRIMED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.trigger.failed.unprimed", new Object[0]));
+    private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.trigger.failed.invalid", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("trigger").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.create()).suggests((commandContext, suggestionsBuilder) -> TriggerCommand.suggestObjectives((ServerCommandSource)commandContext.getSource(), suggestionsBuilder)).executes(commandContext -> TriggerCommand.executeSimple((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective"))))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", IntegerArgumentType.integer()).executes(commandContext -> TriggerCommand.executeAdd((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")), IntegerArgumentType.getInteger(commandContext, "value")))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", IntegerArgumentType.integer()).executes(commandContext -> TriggerCommand.executeSet((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")), IntegerArgumentType.getInteger(commandContext, "value")))))));
@@ -53,19 +53,19 @@ public class TriggerCommand {
 
     private static int executeAdd(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
         scoreboardPlayerScore.incrementScore(i);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.add.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.add.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
         return scoreboardPlayerScore.getScore();
     }
 
     private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
         scoreboardPlayerScore.setScore(i);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.set.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
         return i;
     }
 
     private static int executeSimple(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore) {
         scoreboardPlayerScore.incrementScore(1);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().getTextComponent()), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().toHoverableText()), true);
         return scoreboardPlayerScore.getScore();
     }
 

@@ -13,13 +13,13 @@ import java.util.Collection;
 import net.minecraft.command.arguments.CoordinateArgument;
 import net.minecraft.command.arguments.DefaultPosArgument;
 import net.minecraft.command.arguments.PosArgument;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class RotationArgumentType
 implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~-5 ~5");
-    public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.rotation.incomplete", new Object[0]));
+    public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.rotation.incomplete", new Object[0]));
 
     public static RotationArgumentType create() {
         return new RotationArgumentType();

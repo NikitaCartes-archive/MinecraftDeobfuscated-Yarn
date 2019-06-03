@@ -48,6 +48,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -97,22 +98,18 @@ implements RangedAttackMob {
         return entityData;
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        Biome biome = iWorld.getBiome(new BlockPos(this.x, this.y, this.z));
+    public static boolean method_20673(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        boolean bl;
+        Biome biome = iWorld.getBiome(blockPos);
+        boolean bl2 = bl = iWorld.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.method_20679(iWorld, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
         if (biome == Biomes.RIVER || biome == Biomes.FROZEN_RIVER) {
-            return this.random.nextInt(15) == 0 && super.canSpawn(iWorld, spawnType);
+            return random.nextInt(15) == 0 && bl;
         }
-        return this.random.nextInt(40) == 0 && this.method_7015() && super.canSpawn(iWorld, spawnType);
+        return random.nextInt(40) == 0 && DrownedEntity.method_20672(iWorld, blockPos) && bl;
     }
 
-    @Override
-    protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
-        return iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
-    }
-
-    private boolean method_7015() {
-        return this.getBoundingBox().minY < (double)(this.world.getSeaLevel() - 5);
+    private static boolean method_20672(IWorld iWorld, BlockPos blockPos) {
+        return blockPos.getY() < iWorld.getSeaLevel() - 5;
     }
 
     @Override

@@ -5,6 +5,7 @@ package net.minecraft.entity.passive;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
+import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -199,26 +200,24 @@ extends AmbientEntity {
         compoundTag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
+    public static boolean method_20661(EntityType<BatEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         if (blockPos.getY() >= iWorld.getSeaLevel()) {
             return false;
         }
         int i = iWorld.getLightLevel(blockPos);
         int j = 4;
-        if (this.isTodayAroundHalloween()) {
+        if (BatEntity.isTodayAroundHalloween()) {
             j = 7;
-        } else if (this.random.nextBoolean()) {
+        } else if (random.nextBoolean()) {
             return false;
         }
-        if (i > this.random.nextInt(j)) {
+        if (i > random.nextInt(j)) {
             return false;
         }
-        return super.canSpawn(iWorld, spawnType);
+        return BatEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
     }
 
-    private boolean isTodayAroundHalloween() {
+    private static boolean isTodayAroundHalloween() {
         LocalDate localDate = LocalDate.now();
         int i = localDate.get(ChronoField.DAY_OF_MONTH);
         int j = localDate.get(ChronoField.MONTH_OF_YEAR);

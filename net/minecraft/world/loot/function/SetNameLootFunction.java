@@ -12,9 +12,9 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -28,13 +28,13 @@ import org.jetbrains.annotations.Nullable;
 public class SetNameLootFunction
 extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Component name;
+    private final Text name;
     @Nullable
     private final LootContext.EntityTarget entity;
 
-    private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Component component, @Nullable LootContext.EntityTarget entityTarget) {
+    private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
         super(lootConditions);
-        this.name = component;
+        this.name = text;
         this.entity = entityTarget;
     }
 
@@ -43,26 +43,26 @@ extends ConditionalLootFunction {
         return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
     }
 
-    public static UnaryOperator<Component> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
+    public static UnaryOperator<Text> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
         Entity entity;
         if (entityTarget != null && (entity = lootContext.get(entityTarget.getIdentifier())) != null) {
             ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
-            return component -> {
+            return text -> {
                 try {
-                    return Components.resolveAndStyle(serverCommandSource, component, entity, 0);
+                    return Texts.parse(serverCommandSource, text, entity, 0);
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.warn("Failed to resolve text component", (Throwable)commandSyntaxException);
-                    return component;
+                    return text;
                 }
             };
         }
-        return component -> component;
+        return text -> text;
     }
 
     @Override
     public ItemStack process(ItemStack itemStack, LootContext lootContext) {
         if (this.name != null) {
-            itemStack.setCustomName((Component)SetNameLootFunction.applySourceEntity(lootContext, this.entity).apply(this.name));
+            itemStack.setCustomName((Text)SetNameLootFunction.applySourceEntity(lootContext, this.entity).apply(this.name));
         }
         return itemStack;
     }
@@ -76,7 +76,7 @@ extends ConditionalLootFunction {
         public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
             if (setNameLootFunction.name != null) {
-                jsonObject.add("name", Component.Serializer.toJson(setNameLootFunction.name));
+                jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.name));
             }
             if (setNameLootFunction.entity != null) {
                 jsonObject.add("entity", jsonSerializationContext.serialize((Object)setNameLootFunction.entity));
@@ -84,9 +84,9 @@ extends ConditionalLootFunction {
         }
 
         public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            Component component = Component.Serializer.fromJson(jsonObject.get("name"));
+            Text text = Text.Serializer.fromJson(jsonObject.get("name"));
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-            return new SetNameLootFunction(lootConditions, component, entityTarget);
+            return new SetNameLootFunction(lootConditions, text, entityTarget);
         }
 
         @Override

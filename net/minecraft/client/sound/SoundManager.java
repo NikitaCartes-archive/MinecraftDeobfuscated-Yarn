@@ -29,12 +29,12 @@ import net.minecraft.client.sound.SoundEntryDeserializer;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
@@ -49,7 +49,7 @@ public class SoundManager
 extends SinglePreparationResourceReloadListener<SoundList> {
     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16);
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Component.class, new Component.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
+    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
     private static final ParameterizedType TYPE = new ParameterizedType(){
 
         @Override
@@ -110,7 +110,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         for (Identifier identifier : this.sounds.keySet()) {
             String string;
             WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
-            if (!(weightedSoundSet.getSubtitle() instanceof TranslatableComponent) || I18n.hasTranslation(string = ((TranslatableComponent)weightedSoundSet.getSubtitle()).getKey())) continue;
+            if (!(weightedSoundSet.getSubtitle() instanceof TranslatableText) || I18n.hasTranslation(string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey())) continue;
             LOGGER.debug("Missing subtitle {} for event: {}", (Object)string, (Object)identifier);
         }
         if (LOGGER.isDebugEnabled()) {

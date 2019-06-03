@@ -48,10 +48,10 @@ extends EntityModel<T> {
         this.frontLegRight.setRotationPoint(-1.1f, 18.0f, 5.0f);
         this.backLegLeft = new Cuboid(this, 40, 0);
         this.backLegLeft.addBox(-1.0f, 0.0f, 0.0f, 2, 10, 2, f);
-        this.backLegLeft.setRotationPoint(1.2f, 13.8f, -5.0f);
+        this.backLegLeft.setRotationPoint(1.2f, 14.1f, -5.0f);
         this.backLegRight = new Cuboid(this, 40, 0);
         this.backLegRight.addBox(-1.0f, 0.0f, 0.0f, 2, 10, 2, f);
-        this.backLegRight.setRotationPoint(-1.2f, 13.8f, -5.0f);
+        this.backLegRight.setRotationPoint(-1.2f, 14.1f, -5.0f);
     }
 
     @Override
@@ -119,9 +119,9 @@ extends EntityModel<T> {
         this.tail1.rotationPointZ = 8.0f;
         this.tail2.rotationPointY = 20.0f;
         this.tail2.rotationPointZ = 14.0f;
-        this.backLegLeft.rotationPointY = 13.8f;
+        this.backLegLeft.rotationPointY = 14.1f;
         this.backLegLeft.rotationPointZ = -5.0f;
-        this.backLegRight.rotationPointY = 13.8f;
+        this.backLegRight.rotationPointY = 14.1f;
         this.backLegRight.rotationPointZ = -5.0f;
         this.frontLegLeft.rotationPointY = 18.0f;
         this.frontLegLeft.rotationPointZ = 5.0f;

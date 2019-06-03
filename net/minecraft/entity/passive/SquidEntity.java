@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -182,9 +183,8 @@ extends WaterCreatureEntity {
         this.move(MovementType.SELF, this.getVelocity());
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.y > 45.0 && this.y < (double)iWorld.getSeaLevel();
+    public static boolean method_20670(EntityType<SquidEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel();
     }
 
     @Override

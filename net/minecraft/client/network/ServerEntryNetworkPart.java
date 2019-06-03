@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.network.packet.QueryPongS2CPacket;
 import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.client.options.ServerEntry;
@@ -34,13 +33,14 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.QueryPingC2SPacket;
 import net.minecraft.server.network.packet.QueryRequestC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
@@ -68,12 +68,12 @@ public class ServerEntryNetworkPart {
             @Override
             public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
                 if (this.field_3773) {
-                    clientConnection.disconnect(new TranslatableComponent("multiplayer.status.unrequested", new Object[0]));
+                    clientConnection.disconnect(new TranslatableText("multiplayer.status.unrequested", new Object[0]));
                     return;
                 }
                 this.field_3773 = true;
                 ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
-                serverEntry.label = serverMetadata.getDescription() != null ? serverMetadata.getDescription().getFormattedText() : "";
+                serverEntry.label = serverMetadata.getDescription() != null ? serverMetadata.getDescription().asFormattedString() : "";
                 if (serverMetadata.getVersion() != null) {
                     serverEntry.version = serverMetadata.getVersion().getGameVersion();
                     serverEntry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
@@ -82,7 +82,7 @@ public class ServerEntryNetworkPart {
                     serverEntry.protocolVersion = 0;
                 }
                 if (serverMetadata.getPlayers() != null) {
-                    serverEntry.playerCountLabel = (Object)((Object)ChatFormat.GRAY) + "" + serverMetadata.getPlayers().getOnlinePlayerCount() + "" + (Object)((Object)ChatFormat.DARK_GRAY) + "/" + (Object)((Object)ChatFormat.GRAY) + serverMetadata.getPlayers().getPlayerLimit();
+                    serverEntry.playerCountLabel = (Object)((Object)Formatting.GRAY) + "" + serverMetadata.getPlayers().getOnlinePlayerCount() + "" + (Object)((Object)Formatting.DARK_GRAY) + "/" + (Object)((Object)Formatting.GRAY) + serverMetadata.getPlayers().getPlayerLimit();
                     if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
                         StringBuilder stringBuilder = new StringBuilder();
                         for (GameProfile gameProfile : serverMetadata.getPlayers().getSample()) {
@@ -100,7 +100,7 @@ public class ServerEntryNetworkPart {
                         serverEntry.playerListSummary = stringBuilder.toString();
                     }
                 } else {
-                    serverEntry.playerCountLabel = (Object)((Object)ChatFormat.DARK_GRAY) + I18n.translate("multiplayer.status.unknown", new Object[0]);
+                    serverEntry.playerCountLabel = (Object)((Object)Formatting.DARK_GRAY) + I18n.translate("multiplayer.status.unknown", new Object[0]);
                 }
                 if (serverMetadata.getFavicon() != null) {
                     String string = serverMetadata.getFavicon();
@@ -122,14 +122,14 @@ public class ServerEntryNetworkPart {
                 long l = this.field_3772;
                 long m = SystemUtil.getMeasuringTimeMs();
                 serverEntry.ping = m - l;
-                clientConnection.disconnect(new TranslatableComponent("multiplayer.status.finished", new Object[0]));
+                clientConnection.disconnect(new TranslatableText("multiplayer.status.finished", new Object[0]));
             }
 
             @Override
-            public void onDisconnected(Component component) {
+            public void onDisconnected(Text text) {
                 if (!this.field_3775) {
-                    LOGGER.error("Can't ping {}: {}", (Object)serverEntry.address, (Object)component.getString());
-                    serverEntry.label = (Object)((Object)ChatFormat.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
+                    LOGGER.error("Can't ping {}: {}", (Object)serverEntry.address, (Object)text.getString());
+                    serverEntry.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
                     serverEntry.playerCountLabel = "";
                     ServerEntryNetworkPart.this.ping(serverEntry);
                 }
@@ -200,7 +200,7 @@ public class ServerEntryNetworkPart {
                                 serverEntry.protocolVersion = -1;
                                 serverEntry.version = string2;
                                 serverEntry.label = string3;
-                                serverEntry.playerCountLabel = (Object)((Object)ChatFormat.GRAY) + "" + j + "" + (Object)((Object)ChatFormat.DARK_GRAY) + "/" + (Object)((Object)ChatFormat.GRAY) + k;
+                                serverEntry.playerCountLabel = (Object)((Object)Formatting.GRAY) + "" + j + "" + (Object)((Object)Formatting.DARK_GRAY) + "/" + (Object)((Object)Formatting.GRAY) + k;
                             }
                         }
                         channelHandlerContext.close();
@@ -250,7 +250,7 @@ public class ServerEntryNetworkPart {
                 ClientConnection clientConnection = iterator.next();
                 if (!clientConnection.isOpen()) continue;
                 iterator.remove();
-                clientConnection.disconnect(new TranslatableComponent("multiplayer.status.cancelled", new Object[0]));
+                clientConnection.disconnect(new TranslatableText("multiplayer.status.cancelled", new Object[0]));
             }
         }
     }

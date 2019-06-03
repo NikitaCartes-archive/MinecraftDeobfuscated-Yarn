@@ -12,9 +12,9 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Int2ObjectBiMap;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -102,18 +102,18 @@ public class TrackedDataHandlerRegistry {
             return this.method_12722(packetByteBuf);
         }
     };
-    public static final TrackedDataHandler<Component> TEXT_COMPONENT = new TrackedDataHandler<Component>(){
+    public static final TrackedDataHandler<Text> TEXT_COMPONENT = new TrackedDataHandler<Text>(){
 
-        public void method_12727(PacketByteBuf packetByteBuf, Component component) {
-            packetByteBuf.writeTextComponent(component);
+        public void method_12727(PacketByteBuf packetByteBuf, Text text) {
+            packetByteBuf.writeText(text);
         }
 
-        public Component method_12725(PacketByteBuf packetByteBuf) {
-            return packetByteBuf.readTextComponent();
+        public Text method_12725(PacketByteBuf packetByteBuf) {
+            return packetByteBuf.readText();
         }
 
-        public Component method_12726(Component component) {
-            return component.copy();
+        public Text method_12726(Text text) {
+            return text.deepCopy();
         }
 
         @Override
@@ -121,23 +121,23 @@ public class TrackedDataHandlerRegistry {
             return this.method_12725(packetByteBuf);
         }
     };
-    public static final TrackedDataHandler<Optional<Component>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Component>>(){
+    public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Text>>(){
 
-        public void method_12728(PacketByteBuf packetByteBuf, Optional<Component> optional) {
+        public void method_12728(PacketByteBuf packetByteBuf, Optional<Text> optional) {
             if (optional.isPresent()) {
                 packetByteBuf.writeBoolean(true);
-                packetByteBuf.writeTextComponent(optional.get());
+                packetByteBuf.writeText(optional.get());
             } else {
                 packetByteBuf.writeBoolean(false);
             }
         }
 
-        public Optional<Component> method_12729(PacketByteBuf packetByteBuf) {
-            return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readTextComponent()) : Optional.empty();
+        public Optional<Text> method_12729(PacketByteBuf packetByteBuf) {
+            return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readText()) : Optional.empty();
         }
 
-        public Optional<Component> method_12730(Optional<Component> optional) {
-            return optional.isPresent() ? Optional.of(optional.get().copy()) : Optional.empty();
+        public Optional<Text> method_12730(Optional<Text> optional) {
+            return optional.isPresent() ? Optional.of(optional.get().deepCopy()) : Optional.empty();
         }
 
         @Override

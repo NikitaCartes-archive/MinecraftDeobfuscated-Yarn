@@ -8,7 +8,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -16,8 +15,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public abstract class Enchantment {
     @Nullable
     public EnchantmentTarget type;
     @Nullable
-    protected String translationName;
+    protected String translationKey;
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
@@ -85,27 +85,27 @@ public abstract class Enchantment {
     }
 
     protected String getOrCreateTranslationKey() {
-        if (this.translationName == null) {
-            this.translationName = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
+        if (this.translationKey == null) {
+            this.translationKey = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
         }
-        return this.translationName;
+        return this.translationKey;
     }
 
     public String getTranslationKey() {
         return this.getOrCreateTranslationKey();
     }
 
-    public Component getTextComponent(int i) {
-        TranslatableComponent component = new TranslatableComponent(this.getTranslationKey(), new Object[0]);
+    public Text getName(int i) {
+        TranslatableText text = new TranslatableText(this.getTranslationKey(), new Object[0]);
         if (this.isCursed()) {
-            component.applyFormat(ChatFormat.RED);
+            text.formatted(Formatting.RED);
         } else {
-            component.applyFormat(ChatFormat.GRAY);
+            text.formatted(Formatting.GRAY);
         }
         if (i != 1 || this.getMaximumLevel() != 1) {
-            component.append(" ").append(new TranslatableComponent("enchantment.level." + i, new Object[0]));
+            text.append(" ").append(new TranslatableText("enchantment.level." + i, new Object[0]));
         }
-        return component;
+        return text;
     }
 
     public boolean isAcceptableItem(ItemStack itemStack) {

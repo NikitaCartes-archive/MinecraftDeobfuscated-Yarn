@@ -9,8 +9,8 @@ import java.io.IOException;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class IntTag
 extends AbstractNumberTag {
@@ -60,8 +60,8 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public Component toTextComponent(String string, int i) {
-        return new TextComponent(String.valueOf(this.value)).applyFormat(GOLD);
+    public Text toText(String string, int i) {
+        return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
     }
 
     @Override

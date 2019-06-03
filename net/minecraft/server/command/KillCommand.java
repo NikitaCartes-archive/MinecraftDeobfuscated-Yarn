@@ -8,9 +8,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class KillCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -22,9 +22,9 @@ public class KillCommand {
             entity.kill();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.kill.success.single", collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.single", collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.kill.success.multiple", collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.multiple", collection.size()), true);
         }
         return collection.size();
     }

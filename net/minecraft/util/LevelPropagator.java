@@ -6,6 +6,7 @@ package net.minecraft.util;
 import it.unimi.dsi.fastutil.longs.Long2ByteFunction;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+import net.minecraft.util.math.MathHelper;
 
 public abstract class LevelPropagator {
     private final int levelCount;
@@ -87,10 +88,6 @@ public abstract class LevelPropagator {
     }
 
     private void add(long l, int i, int j) {
-        if (i > this.levelCount - 1) {
-            return;
-        }
-        i = Math.min(this.levelCount - 1, i);
         this.idToLevel.put(l, (byte)i);
         this.levelToIds[j].add(l);
         if (this.minLevel > j) {
@@ -112,16 +109,15 @@ public abstract class LevelPropagator {
         if (this.isInvalid(m)) {
             return;
         }
-        if (i >= this.levelCount) {
-            i = this.levelCount;
-        }
+        i = MathHelper.clamp(i, 0, this.levelCount - 1);
+        j = MathHelper.clamp(j, 0, this.levelCount - 1);
         if (k == 255) {
             bl2 = true;
             k = j;
         } else {
             bl2 = false;
         }
-        int n = bl ? Math.min(k, i) : this.getMergedLevel(m, l, i);
+        int n = bl ? Math.min(k, i) : MathHelper.clamp(this.getMergedLevel(m, l, i), 0, this.levelCount - 1);
         int o = this.min(j, k);
         if (j != n) {
             int p = this.min(j, n);
@@ -136,7 +132,7 @@ public abstract class LevelPropagator {
 
     protected final void updateRecursively(long l, long m, int i, boolean bl) {
         int j = this.idToLevel.get(m) & 0xFF;
-        int k = this.getPropagatedLevel(l, m, i);
+        int k = MathHelper.clamp(this.getPropagatedLevel(l, m, i), 0, this.levelCount - 1);
         if (bl) {
             this.update(l, m, k, this.getLevel(m), j, true);
         } else {
@@ -144,7 +140,7 @@ public abstract class LevelPropagator {
             boolean bl2;
             if (j == 255) {
                 bl2 = true;
-                n = this.getLevel(m);
+                n = MathHelper.clamp(this.getLevel(m), 0, this.levelCount - 1);
             } else {
                 n = j;
                 bl2 = false;
@@ -168,7 +164,7 @@ public abstract class LevelPropagator {
             --i;
             LongLinkedOpenHashSet longLinkedOpenHashSet = this.levelToIds[this.minLevel];
             long l = longLinkedOpenHashSet.removeFirstLong();
-            int j = this.getLevel(l);
+            int j = MathHelper.clamp(this.getLevel(l), 0, this.levelCount - 1);
             if (longLinkedOpenHashSet.isEmpty()) {
                 this.updateMinLevel(this.levelCount);
             }

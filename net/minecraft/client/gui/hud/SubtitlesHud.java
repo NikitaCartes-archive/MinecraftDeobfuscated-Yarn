@@ -99,7 +99,7 @@ implements ListenerSoundInstance {
         if (weightedSoundSet.getSubtitle() == null) {
             return;
         }
-        String string = weightedSoundSet.getSubtitle().getFormattedText();
+        String string = weightedSoundSet.getSubtitle().asFormattedString();
         if (!this.entries.isEmpty()) {
             for (SubtitleEntry subtitleEntry : this.entries) {
                 if (!subtitleEntry.getText().equals(string)) continue;

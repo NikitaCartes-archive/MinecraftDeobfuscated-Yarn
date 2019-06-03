@@ -17,9 +17,9 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class SpectatorMenu {
@@ -34,8 +34,8 @@ public class SpectatorMenu {
         }
 
         @Override
-        public Component getName() {
-            return new TextComponent("");
+        public Text getName() {
+            return new LiteralText("");
         }
 
         @Override
@@ -140,11 +140,11 @@ public class SpectatorMenu {
         }
 
         @Override
-        public Component getName() {
+        public Text getName() {
             if (this.direction < 0) {
-                return new TranslatableComponent("spectatorMenu.previous_page", new Object[0]);
+                return new TranslatableText("spectatorMenu.previous_page", new Object[0]);
             }
-            return new TranslatableComponent("spectatorMenu.next_page", new Object[0]);
+            return new TranslatableText("spectatorMenu.next_page", new Object[0]);
         }
 
         @Override
@@ -175,8 +175,8 @@ public class SpectatorMenu {
         }
 
         @Override
-        public Component getName() {
-            return new TranslatableComponent("spectatorMenu.close", new Object[0]);
+        public Text getName() {
+            return new TranslatableText("spectatorMenu.close", new Object[0]);
         }
 
         @Override

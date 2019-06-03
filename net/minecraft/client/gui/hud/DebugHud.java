@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
@@ -32,6 +31,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.SystemUtil;
@@ -300,7 +300,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
             BlockState blockState = this.client.world.getBlockState(blockPos);
             list.add("");
-            list.add((Object)((Object)ChatFormat.UNDERLINE) + "Targeted Block");
+            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Block");
             list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
             for (Map.Entry entry : blockState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
@@ -313,7 +313,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
             FluidState fluidState = this.client.world.getFluidState(blockPos);
             list.add("");
-            list.add((Object)((Object)ChatFormat.UNDERLINE) + "Targeted Fluid");
+            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Fluid");
             list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
             for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
@@ -324,7 +324,7 @@ extends DrawableHelper {
         }
         if ((entity = this.client.targetedEntity) != null) {
             list.add("");
-            list.add((Object)((Object)ChatFormat.UNDERLINE) + "Targeted Entity");
+            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Entity");
             list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
         }
         return list;
@@ -335,9 +335,9 @@ extends DrawableHelper {
         Comparable<?> comparable = entry.getValue();
         String string = SystemUtil.getValueAsString(property, comparable);
         if (Boolean.TRUE.equals(comparable)) {
-            string = (Object)((Object)ChatFormat.GREEN) + string;
+            string = (Object)((Object)Formatting.GREEN) + string;
         } else if (Boolean.FALSE.equals(comparable)) {
-            string = (Object)((Object)ChatFormat.RED) + string;
+            string = (Object)((Object)Formatting.RED) + string;
         }
         return property.getName() + ": " + string;
     }

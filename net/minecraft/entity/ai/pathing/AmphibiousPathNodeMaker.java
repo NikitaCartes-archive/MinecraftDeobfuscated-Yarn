@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -137,8 +137,8 @@ extends LandPathNodeMaker {
             pathNode = this.method_65(i, j + 1, k, l - 1, d);
         }
         if (pathNodeType == PathNodeType.OPEN) {
-            BoundingBox boundingBox = new BoundingBox((double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (float)j + this.entity.getHeight(), (double)k + g + 0.5);
-            if (!this.entity.world.doesNotCollide(this.entity, boundingBox)) {
+            Box box = new Box((double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (float)j + this.entity.getHeight(), (double)k + g + 0.5);
+            if (!this.entity.world.doesNotCollide(this.entity, box)) {
                 return null;
             }
             PathNodeType pathNodeType2 = this.getPathNodeType(this.blockView, i, j - 1, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);

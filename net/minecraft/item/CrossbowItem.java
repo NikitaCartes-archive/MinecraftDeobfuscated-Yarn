@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.Quaternion;
@@ -31,15 +30,16 @@ import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -344,19 +344,19 @@ extends RangedWeaponItem {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         List<ItemStack> list2 = CrossbowItem.getProjectiles(itemStack);
         if (!CrossbowItem.isCharged(itemStack) || list2.isEmpty()) {
             return;
         }
         ItemStack itemStack2 = list2.get(0);
-        list.add(new TranslatableComponent("item.minecraft.crossbow.projectile", new Object[0]).append(" ").append(itemStack2.toHoverableText()));
+        list.add(new TranslatableText("item.minecraft.crossbow.projectile", new Object[0]).append(" ").append(itemStack2.toHoverableText()));
         if (tooltipContext.isAdvanced() && itemStack2.getItem() == Items.FIREWORK_ROCKET) {
-            ArrayList<Component> list3 = Lists.newArrayList();
+            ArrayList<Text> list3 = Lists.newArrayList();
             Items.FIREWORK_ROCKET.appendTooltip(itemStack2, world, list3, tooltipContext);
             if (!list3.isEmpty()) {
                 for (int i = 0; i < list3.size(); ++i) {
-                    list3.set(i, new TextComponent("  ").append((Component)list3.get(i)).applyFormat(ChatFormat.GRAY));
+                    list3.set(i, new LiteralText("  ").append((Text)list3.get(i)).formatted(Formatting.GRAY));
                 }
                 list.addAll(list3);
             }

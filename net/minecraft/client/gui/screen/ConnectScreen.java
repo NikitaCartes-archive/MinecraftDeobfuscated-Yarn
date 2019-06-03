@@ -19,10 +19,10 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +36,7 @@ extends Screen {
     private ClientConnection connection;
     private boolean field_2409;
     private final Screen parent;
-    private Component status = new TranslatableComponent("connect.connecting", new Object[0]);
+    private Text status = new TranslatableText("connect.connecting", new Object[0]);
     private long field_19097 = -1L;
 
     public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
@@ -70,7 +70,7 @@ extends Screen {
                     }
                     inetAddress = InetAddress.getByName(string);
                     ConnectScreen.this.connection = ClientConnection.connect(inetAddress, i, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
-                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, component -> ConnectScreen.this.setStatus(component)));
+                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)));
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
                     ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
                 } catch (UnknownHostException unknownHostException) {
@@ -78,14 +78,14 @@ extends Screen {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)unknownHostException);
-                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", "Unknown host"))));
+                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host"))));
                 } catch (Exception exception) {
                     if (ConnectScreen.this.field_2409) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
                     String string2 = inetAddress == null ? exception.toString() : exception.toString().replaceAll(inetAddress + ":" + i, "");
-                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableComponent("disconnect.genericReason", string2))));
+                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string2))));
                 }
             }
         };
@@ -93,8 +93,8 @@ extends Screen {
         thread.start();
     }
 
-    private void setStatus(Component component) {
-        this.status = component;
+    private void setStatus(Text text) {
+        this.status = text;
     }
 
     @Override
@@ -118,7 +118,7 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> {
             this.field_2409 = true;
             if (this.connection != null) {
-                this.connection.disconnect(new TranslatableComponent("connect.aborted", new Object[0]));
+                this.connection.disconnect(new TranslatableText("connect.aborted", new Object[0]));
             }
             this.minecraft.openScreen(this.parent);
         }));
@@ -130,9 +130,9 @@ extends Screen {
         long l = SystemUtil.getMeasuringTimeMs();
         if (l - this.field_19097 > 2000L) {
             this.field_19097 = l;
-            NarratorManager.INSTANCE.narrate(new TranslatableComponent("narrator.joining", new Object[0]).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining", new Object[0]).getString());
         }
-        this.drawCenteredString(this.font, this.status.getFormattedText(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(i, j, f);
     }
 }

@@ -8,13 +8,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class ListCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -29,11 +29,11 @@ public class ListCommand {
         return ListCommand.execute(serverCommandSource, PlayerEntity::getNameAndUuid);
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, Component> function) {
+    private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, Text> function) {
         PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
         List<ServerPlayerEntity> list = playerManager.getPlayerList();
-        Component component = Components.join(list, function);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), component), false);
+        Text text = Texts.join(list, function);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
         return list.size();
     }
 }

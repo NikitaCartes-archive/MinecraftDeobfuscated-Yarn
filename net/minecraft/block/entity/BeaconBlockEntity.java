@@ -32,15 +32,15 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +59,7 @@ Tickable {
     @Nullable
     private StatusEffect secondary;
     @Nullable
-    private Component customName;
+    private Text customName;
     private ContainerLock lock = ContainerLock.NONE;
     private final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
@@ -180,7 +180,7 @@ Tickable {
                 boolean bl3 = bl2 = this.level > 0;
                 if (!bl && bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
-                    for (ServerPlayerEntity serverPlayerEntity : this.world.getEntities(ServerPlayerEntity.class, new BoundingBox(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
+                    for (ServerPlayerEntity serverPlayerEntity : this.world.getEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
                         Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
                     }
                 }
@@ -223,8 +223,8 @@ Tickable {
             i = 1;
         }
         int j = (9 + this.level * 2) * 20;
-        BoundingBox boundingBox = new BoundingBox(this.pos).expand(d).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
+        Box box = new Box(this.pos).expand(d).stretch(0.0, this.world.getHeight(), 0.0);
+        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : list) {
             playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
         }
@@ -277,7 +277,7 @@ Tickable {
         this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
         this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
         if (compoundTag.containsKey("CustomName", 8)) {
-            this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         this.lock = ContainerLock.deserialize(compoundTag);
     }
@@ -289,14 +289,14 @@ Tickable {
         compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
         compoundTag.putInt("Levels", this.level);
         if (this.customName != null) {
-            compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+            compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
         this.lock.serialize(compoundTag);
         return compoundTag;
     }
 
-    public void setCustomName(@Nullable Component component) {
-        this.customName = component;
+    public void setCustomName(@Nullable Text text) {
+        this.customName = text;
     }
 
     @Override
@@ -309,8 +309,8 @@ Tickable {
     }
 
     @Override
-    public Component getDisplayName() {
-        return this.customName != null ? this.customName : new TranslatableComponent("container.beacon", new Object[0]);
+    public Text getDisplayName() {
+        return this.customName != null ? this.customName : new TranslatableText("container.beacon", new Object[0]);
     }
 
     public static class BeamSegment {

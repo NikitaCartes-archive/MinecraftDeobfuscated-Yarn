@@ -56,7 +56,7 @@ implements Packet<ClientPlayPacketListener> {
         this.icons = new MapIcon[packetByteBuf.readVarInt()];
         for (int i = 0; i < this.icons.length; ++i) {
             MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
-            this.icons[i] = new MapIcon(type, packetByteBuf.readByte(), packetByteBuf.readByte(), (byte)(packetByteBuf.readByte() & 0xF), packetByteBuf.readBoolean() ? packetByteBuf.readTextComponent() : null);
+            this.icons[i] = new MapIcon(type, packetByteBuf.readByte(), packetByteBuf.readByte(), (byte)(packetByteBuf.readByte() & 0xF), packetByteBuf.readBoolean() ? packetByteBuf.readText() : null);
         }
         this.width = packetByteBuf.readUnsignedByte();
         if (this.width > 0) {
@@ -81,7 +81,7 @@ implements Packet<ClientPlayPacketListener> {
             packetByteBuf.writeByte(mapIcon.getRotation() & 0xF);
             if (mapIcon.getText() != null) {
                 packetByteBuf.writeBoolean(true);
-                packetByteBuf.writeTextComponent(mapIcon.getText());
+                packetByteBuf.writeText(mapIcon.getText());
                 continue;
             }
             packetByteBuf.writeBoolean(false);

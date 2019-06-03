@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.Generic3x3Container;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -17,8 +17,8 @@ public class ContainerScreen9
 extends AbstractContainerScreen<Generic3x3Container> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/dispenser.png");
 
-    public ContainerScreen9(Generic3x3Container generic3x3Container, PlayerInventory playerInventory, Component component) {
-        super(generic3x3Container, playerInventory, component);
+    public ContainerScreen9(Generic3x3Container generic3x3Container, PlayerInventory playerInventory, Text text) {
+        super(generic3x3Container, playerInventory, text);
     }
 
     @Override
@@ -30,9 +30,9 @@ extends AbstractContainerScreen<Generic3x3Container> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        String string = this.title.getFormattedText();
+        String string = this.title.asFormattedString();
         this.font.draw(string, this.containerWidth / 2 - this.font.getStringWidth(string) / 2, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

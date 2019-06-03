@@ -16,7 +16,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Identifier
 implements Comparable<Identifier> {
-    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("argument.id.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid", new Object[0]));
     protected final String namespace;
     protected final String path;
 

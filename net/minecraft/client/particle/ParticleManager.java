@@ -94,7 +94,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
@@ -150,7 +150,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.EFFECT, SpellParticle.DefaultFactory::new);
         this.registerFactory(ParticleTypes.ELDER_GUARDIAN, new ElderGuardianAppearanceParticle.Factory());
         this.registerFactory(ParticleTypes.ENCHANTED_HIT, DamageParticle.EnchantedHitFactory::new);
-        this.registerFactory(ParticleTypes.ENCHANT, EnchantGlyphParticle.NautilusFactory::new);
+        this.registerFactory(ParticleTypes.ENCHANT, EnchantGlyphParticle.EnchantFactory::new);
         this.registerFactory(ParticleTypes.END_ROD, EndRodParticle.Factory::new);
         this.registerFactory(ParticleTypes.ENTITY_EFFECT, SpellParticle.EntityFactory::new);
         this.registerFactory(ParticleTypes.EXPLOSION_EMITTER, new ExplosionEmitterParticle.Factory());
@@ -169,7 +169,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.LARGE_SMOKE, FireSmokeLargeParticle.Factory::new);
         this.registerFactory(ParticleTypes.LAVA, LavaEmberParticle.Factory::new);
         this.registerFactory(ParticleTypes.MYCELIUM, SuspendParticle.MyceliumFactory::new);
-        this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.EnchantFactory::new);
+        this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.NautilusFactory::new);
         this.registerFactory(ParticleTypes.NOTE, NoteParticle.Factory::new);
         this.registerFactory(ParticleTypes.POOF, ExplosionSmokeParticle.Factory::new);
         this.registerFactory(ParticleTypes.PORTAL, PortalParticle.Factory::new);
@@ -404,27 +404,27 @@ implements ResourceReloadListener {
         int j = blockPos.getY();
         int k = blockPos.getZ();
         float f = 0.1f;
-        BoundingBox boundingBox = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
-        double d = (double)i + this.random.nextDouble() * (boundingBox.maxX - boundingBox.minX - (double)0.2f) + (double)0.1f + boundingBox.minX;
-        double e = (double)j + this.random.nextDouble() * (boundingBox.maxY - boundingBox.minY - (double)0.2f) + (double)0.1f + boundingBox.minY;
-        double g = (double)k + this.random.nextDouble() * (boundingBox.maxZ - boundingBox.minZ - (double)0.2f) + (double)0.1f + boundingBox.minZ;
+        Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
+        double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - (double)0.2f) + (double)0.1f + box.minX;
+        double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - (double)0.2f) + (double)0.1f + box.minY;
+        double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - (double)0.2f) + (double)0.1f + box.minZ;
         if (direction == Direction.DOWN) {
-            e = (double)j + boundingBox.minY - (double)0.1f;
+            e = (double)j + box.minY - (double)0.1f;
         }
         if (direction == Direction.UP) {
-            e = (double)j + boundingBox.maxY + (double)0.1f;
+            e = (double)j + box.maxY + (double)0.1f;
         }
         if (direction == Direction.NORTH) {
-            g = (double)k + boundingBox.minZ - (double)0.1f;
+            g = (double)k + box.minZ - (double)0.1f;
         }
         if (direction == Direction.SOUTH) {
-            g = (double)k + boundingBox.maxZ + (double)0.1f;
+            g = (double)k + box.maxZ + (double)0.1f;
         }
         if (direction == Direction.WEST) {
-            d = (double)i + boundingBox.minX - (double)0.1f;
+            d = (double)i + box.minX - (double)0.1f;
         }
         if (direction == Direction.EAST) {
-            d = (double)i + boundingBox.maxX + (double)0.1f;
+            d = (double)i + box.maxX + (double)0.1f;
         }
         this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).method_3087(0.6f));
     }

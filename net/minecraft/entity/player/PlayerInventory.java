@@ -19,11 +19,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashException;
@@ -291,7 +291,7 @@ Nameable {
             CrashReportSection crashReportSection = crashReport.addElement("Item being added");
             crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
             crashReportSection.add("Item data", itemStack.getDamage());
-            crashReportSection.add("Item name", () -> itemStack.getCustomName().getString());
+            crashReportSection.add("Item name", () -> itemStack.getName().getString());
             throw new CrashException(crashReport);
         }
     }
@@ -463,8 +463,8 @@ Nameable {
     }
 
     @Override
-    public Component getName() {
-        return new TranslatableComponent("container.inventory", new Object[0]);
+    public Text getName() {
+        return new TranslatableText("container.inventory", new Object[0]);
     }
 
     public boolean isUsingEffectiveTool(BlockState blockState) {

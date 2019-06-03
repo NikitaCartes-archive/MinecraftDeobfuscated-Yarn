@@ -10,7 +10,6 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -26,6 +25,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -360,7 +360,7 @@ implements FeatureRendererContext<T, M> {
             GlStateManager.rotatef(direction != null ? LivingEntityRenderer.method_18656(direction) : g, 0.0f, 1.0f, 0.0f);
             GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0f, 0.0f, 1.0f);
             GlStateManager.rotatef(270.0f, 0.0f, 1.0f, 0.0f);
-        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && (string = ChatFormat.stripFormatting(((Entity)livingEntity).getName().getString())) != null && ("Dinnerbone".equals(string) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && (string = Formatting.strip(((Entity)livingEntity).getName().getString())) != null && ("Dinnerbone".equals(string) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
             GlStateManager.translatef(0.0f, ((Entity)livingEntity).getHeight() + 0.1f, 0.0f);
             GlStateManager.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
         }
@@ -404,7 +404,7 @@ implements FeatureRendererContext<T, M> {
         if (g >= (double)(h * h)) {
             return;
         }
-        String string = ((Entity)livingEntity).getDisplayName().getFormattedText();
+        String string = ((Entity)livingEntity).getDisplayName().asFormattedString();
         GlStateManager.alphaFunc(516, 0.1f);
         this.renderLabel(livingEntity, d, e, f, string, g);
     }

@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -43,11 +44,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -326,7 +327,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new FollowTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(new TranslatableComponent(SystemUtil.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
+                this.setCustomName(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, i);
@@ -363,17 +364,12 @@ extends AnimalEntity {
         return i < 50 ? 0 : (i < 90 ? 5 : 2);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        int k;
-        int j;
-        int i = MathHelper.floor(this.x);
-        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.getBoundingBox().minY), k = MathHelper.floor(this.z));
+    public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        if (block == Blocks.GRASS || block == Blocks.SNOW || block == Blocks.SAND) {
+        if (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) {
             return true;
         }
-        return super.canSpawn(iWorld, spawnType);
+        return iWorld.getLightLevel(blockPos, 0) > 8;
     }
 
     private boolean wantsCarrots() {

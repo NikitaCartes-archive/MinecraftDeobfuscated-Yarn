@@ -12,9 +12,9 @@ import net.minecraft.container.LoomContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class LoomBlock
 extends HorizontalFacingBlock {
-    private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.loom", new Object[0]);
+    private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.loom", new Object[0]);
 
     protected LoomBlock(Block.Settings settings) {
         super(settings);

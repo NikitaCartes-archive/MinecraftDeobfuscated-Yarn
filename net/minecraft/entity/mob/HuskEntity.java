@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.mob;
 
+import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -24,9 +25,8 @@ extends ZombieEntity {
         super((EntityType<? extends ZombieEntity>)entityType, world);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return super.canSpawn(iWorld, spawnType) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(new BlockPos(this)));
+    public static boolean method_20677(EntityType<HuskEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return HuskEntity.method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
     }
 
     @Override

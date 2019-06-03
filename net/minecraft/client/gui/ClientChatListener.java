@@ -5,11 +5,11 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.MessageType;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public interface ClientChatListener {
-    public void onChatMessage(ChatMessageType var1, Component var2);
+    public void onChatMessage(MessageType var1, Text var2);
 }
 

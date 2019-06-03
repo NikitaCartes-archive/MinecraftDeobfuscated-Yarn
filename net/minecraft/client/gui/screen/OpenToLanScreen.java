@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NetworkUtils;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
@@ -22,7 +22,7 @@ extends Screen {
     private boolean allowCommands;
 
     public OpenToLanScreen(Screen screen) {
-        super(new TranslatableComponent("lanServer.title", new Object[0]));
+        super(new TranslatableText("lanServer.title", new Object[0]));
         this.parent = screen;
     }
 
@@ -31,8 +31,8 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start", new Object[0]), buttonWidget -> {
             this.minecraft.openScreen(null);
             int i = NetworkUtils.findLocalPort();
-            TranslatableComponent component = this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i) ? new TranslatableComponent("commands.publish.started", i) : new TranslatableComponent("commands.publish.failed", new Object[0]);
-            this.minecraft.inGameHud.getChatHud().addMessage(component);
+            TranslatableText text = this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed", new Object[0]);
+            this.minecraft.inGameHud.getChatHud().addMessage(text);
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
         this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode", new Object[0]), buttonWidget -> {
@@ -54,7 +54,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 50, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 0xFFFFFF);
         this.drawCenteredString(this.font, I18n.translate("lanServer.otherPlayers", new Object[0]), this.width / 2, 82, 0xFFFFFF);
         super.render(i, j, f);
     }

@@ -13,17 +13,17 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public class OperationArgumentType
 implements ArgumentType<Operation> {
     private static final Collection<String> EXAMPLES = Arrays.asList("=", ">", "<");
-    private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.invalid", new Object[0]));
-    private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.div0", new Object[0]));
+    private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0", new Object[0]));
 
     public static OperationArgumentType create() {
         return new OperationArgumentType();

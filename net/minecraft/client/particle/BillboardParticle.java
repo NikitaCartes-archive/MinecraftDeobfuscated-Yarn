@@ -44,9 +44,9 @@ extends Particle {
         if (this.angle != 0.0f) {
             float w = MathHelper.lerp(f, this.prevAngle, this.angle);
             float x = MathHelper.cos(w * 0.5f);
-            float y = (float)((double)MathHelper.sin(w * 0.5f) * camera.method_19335().x);
-            float z = (float)((double)MathHelper.sin(w * 0.5f) * camera.method_19335().y);
-            float aa = (float)((double)MathHelper.sin(w * 0.5f) * camera.method_19335().z);
+            float y = (float)((double)MathHelper.sin(w * 0.5f) * camera.getHorizontalPlane().x);
+            float z = (float)((double)MathHelper.sin(w * 0.5f) * camera.getHorizontalPlane().y);
+            float aa = (float)((double)MathHelper.sin(w * 0.5f) * camera.getHorizontalPlane().z);
             Vec3d vec3d = new Vec3d(y, z, aa);
             for (int ab = 0; ab < 4; ++ab) {
                 vec3ds[ab] = vec3d.multiply(2.0 * vec3ds[ab].dotProduct(vec3d)).add(vec3ds[ab].multiply((double)(x * x) - vec3d.dotProduct(vec3d))).add(vec3d.crossProduct(vec3ds[ab]).multiply(2.0f * x));

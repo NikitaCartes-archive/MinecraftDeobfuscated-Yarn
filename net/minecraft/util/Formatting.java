@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 
-public enum ChatFormat {
+public enum Formatting {
     BLACK("BLACK", '0', 0, 0),
     DARK_BLUE("DARK_BLUE", '1', 1, 170),
     DARK_GREEN("DARK_GREEN", '2', 2, 43520),
@@ -39,35 +39,35 @@ public enum ChatFormat {
     ITALIC("ITALIC", 'o', true),
     RESET("RESET", 'r', -1, null);
 
-    private static final Map<String, ChatFormat> field_1052;
-    private static final Pattern FORMAT_PATTERN;
-    private final String field_1057;
-    private final char sectionSignCode;
+    private static final Map<String, Formatting> BY_NAME;
+    private static final Pattern FORMATTING_CODE_PATTERN;
+    private final String name;
+    private final char code;
     private final boolean modifier;
-    private final String code;
-    private final int id;
+    private final String stringValue;
+    private final int colorIndex;
     @Nullable
-    private final Integer color;
+    private final Integer colorValue;
 
-    private static String sanitizeName(String string) {
+    private static String sanitize(String string) {
         return string.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
     }
 
-    private ChatFormat(String string2, @Nullable char c, int j, Integer integer) {
+    private Formatting(String string2, @Nullable char c, int j, Integer integer) {
         this(string2, c, false, j, integer);
     }
 
-    private ChatFormat(String string2, char c, boolean bl) {
+    private Formatting(String string2, char c, boolean bl) {
         this(string2, c, bl, -1, null);
     }
 
-    private ChatFormat(String string2, char c, @Nullable boolean bl, int j, Integer integer) {
-        this.field_1057 = string2;
-        this.sectionSignCode = c;
+    private Formatting(String string2, char c, @Nullable boolean bl, int j, Integer integer) {
+        this.name = string2;
+        this.code = c;
         this.modifier = bl;
-        this.id = j;
-        this.color = integer;
-        this.code = "\u00a7" + c;
+        this.colorIndex = j;
+        this.colorValue = integer;
+        this.stringValue = "\u00a7" + c;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -76,19 +76,19 @@ public enum ChatFormat {
         int i = -1;
         int j = string.length();
         while ((i = string.indexOf(167, i + 1)) != -1) {
-            ChatFormat chatFormat;
-            if (i >= j - 1 || (chatFormat = ChatFormat.bySectionSignCode(string.charAt(i + 1))) == null) continue;
-            if (chatFormat.affectsGlyphWidth()) {
+            Formatting formatting;
+            if (i >= j - 1 || (formatting = Formatting.byCode(string.charAt(i + 1))) == null) continue;
+            if (formatting.affectsGlyphWidth()) {
                 stringBuilder.setLength(0);
             }
-            if (chatFormat == RESET) continue;
-            stringBuilder.append((Object)chatFormat);
+            if (formatting == RESET) continue;
+            stringBuilder.append((Object)formatting);
         }
         return stringBuilder.toString();
     }
 
-    public int getId() {
-        return this.id;
+    public int getColorIndex() {
+        return this.colorIndex;
     }
 
     public boolean isModifier() {
@@ -101,8 +101,8 @@ public enum ChatFormat {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public Integer getColor() {
-        return this.color;
+    public Integer getColorValue() {
+        return this.colorValue;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -115,57 +115,57 @@ public enum ChatFormat {
     }
 
     public String toString() {
-        return this.code;
+        return this.stringValue;
     }
 
     @Nullable
-    public static String stripFormatting(@Nullable String string) {
-        return string == null ? null : FORMAT_PATTERN.matcher(string).replaceAll("");
+    public static String strip(@Nullable String string) {
+        return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
     }
 
     @Nullable
-    public static ChatFormat getFormatByName(@Nullable String string) {
+    public static Formatting byName(@Nullable String string) {
         if (string == null) {
             return null;
         }
-        return field_1052.get(ChatFormat.sanitizeName(string));
+        return BY_NAME.get(Formatting.sanitize(string));
     }
 
     @Nullable
-    public static ChatFormat byId(int i) {
+    public static Formatting byColorIndex(int i) {
         if (i < 0) {
             return RESET;
         }
-        for (ChatFormat chatFormat : ChatFormat.values()) {
-            if (chatFormat.getId() != i) continue;
-            return chatFormat;
+        for (Formatting formatting : Formatting.values()) {
+            if (formatting.getColorIndex() != i) continue;
+            return formatting;
         }
         return null;
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static ChatFormat bySectionSignCode(char c) {
+    public static Formatting byCode(char c) {
         char d = Character.toString(c).toLowerCase(Locale.ROOT).charAt(0);
-        for (ChatFormat chatFormat : ChatFormat.values()) {
-            if (chatFormat.sectionSignCode != d) continue;
-            return chatFormat;
+        for (Formatting formatting : Formatting.values()) {
+            if (formatting.code != d) continue;
+            return formatting;
         }
         return null;
     }
 
     public static Collection<String> getNames(boolean bl, boolean bl2) {
         ArrayList<String> list = Lists.newArrayList();
-        for (ChatFormat chatFormat : ChatFormat.values()) {
-            if (chatFormat.isColor() && !bl || chatFormat.isModifier() && !bl2) continue;
-            list.add(chatFormat.getName());
+        for (Formatting formatting : Formatting.values()) {
+            if (formatting.isColor() && !bl || formatting.isModifier() && !bl2) continue;
+            list.add(formatting.getName());
         }
         return list;
     }
 
     static {
-        field_1052 = Arrays.stream(ChatFormat.values()).collect(Collectors.toMap(chatFormat -> ChatFormat.sanitizeName(chatFormat.field_1057), chatFormat -> chatFormat));
-        FORMAT_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
+        BY_NAME = Arrays.stream(Formatting.values()).collect(Collectors.toMap(formatting -> Formatting.sanitize(formatting.name), formatting -> formatting));
+        FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
     }
 }
 

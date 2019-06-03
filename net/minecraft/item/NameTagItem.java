@@ -20,7 +20,7 @@ extends Item {
     public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
         if (itemStack.hasCustomName() && !(livingEntity instanceof PlayerEntity)) {
             if (livingEntity.isAlive()) {
-                livingEntity.setCustomName(itemStack.getCustomName());
+                livingEntity.setCustomName(itemStack.getName());
                 if (livingEntity instanceof MobEntity) {
                     ((MobEntity)livingEntity).setPersistent();
                 }

@@ -16,7 +16,7 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -62,14 +62,14 @@ extends AbstractPressurePlateBlock {
     @Override
     protected int getRedstoneOutput(World world, BlockPos blockPos) {
         List<Entity> list;
-        BoundingBox boundingBox = BOX.offset(blockPos);
+        Box box = BOX.offset(blockPos);
         switch (this.type) {
             case EVERYTHING: {
-                list = world.getEntities((Entity)null, boundingBox);
+                list = world.getEntities((Entity)null, box);
                 break;
             }
             case MOBS: {
-                list = world.getEntities(LivingEntity.class, boundingBox);
+                list = world.getEntities(LivingEntity.class, box);
                 break;
             }
             default: {

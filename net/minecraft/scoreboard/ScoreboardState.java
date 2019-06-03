@@ -4,16 +4,16 @@
 package net.minecraft.scoreboard;
 
 import java.util.Collection;
-import net.minecraft.ChatFormat;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,19 +55,19 @@ extends PersistentState {
         for (int i = 0; i < listTag.size(); ++i) {
             AbstractTeam.CollisionRule collisionRule;
             AbstractTeam.VisibilityRule visibilityRule;
-            Component component2;
+            Text text2;
             CompoundTag compoundTag = listTag.getCompoundTag(i);
             String string = compoundTag.getString("Name");
             if (string.length() > 16) {
                 string = string.substring(0, 16);
             }
             Team team = this.scoreboard.addTeam(string);
-            Component component = Component.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
-            if (component != null) {
-                team.setDisplayName(component);
+            Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
+            if (text != null) {
+                team.setDisplayName(text);
             }
             if (compoundTag.containsKey("TeamColor", 8)) {
-                team.setColor(ChatFormat.getFormatByName(compoundTag.getString("TeamColor")));
+                team.setColor(Formatting.byName(compoundTag.getString("TeamColor")));
             }
             if (compoundTag.containsKey("AllowFriendlyFire", 99)) {
                 team.setFriendlyFireAllowed(compoundTag.getBoolean("AllowFriendlyFire"));
@@ -75,11 +75,11 @@ extends PersistentState {
             if (compoundTag.containsKey("SeeFriendlyInvisibles", 99)) {
                 team.setShowFriendlyInvisibles(compoundTag.getBoolean("SeeFriendlyInvisibles"));
             }
-            if (compoundTag.containsKey("MemberNamePrefix", 8) && (component2 = Component.Serializer.fromJsonString(compoundTag.getString("MemberNamePrefix"))) != null) {
-                team.setPrefix(component2);
+            if (compoundTag.containsKey("MemberNamePrefix", 8) && (text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNamePrefix"))) != null) {
+                team.setPrefix(text2);
             }
-            if (compoundTag.containsKey("MemberNameSuffix", 8) && (component2 = Component.Serializer.fromJsonString(compoundTag.getString("MemberNameSuffix"))) != null) {
-                team.setSuffix(component2);
+            if (compoundTag.containsKey("MemberNameSuffix", 8) && (text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNameSuffix"))) != null) {
+                team.setSuffix(text2);
             }
             if (compoundTag.containsKey("NameTagVisibility", 8) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("NameTagVisibility"))) != null) {
                 team.setNameTagVisibilityRule(visibilityRule);
@@ -117,9 +117,9 @@ extends PersistentState {
                 if (string.length() > 16) {
                     string = string.substring(0, 16);
                 }
-                Component component = Component.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
+                Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
                 ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
-                this.scoreboard.addObjective(string, (ScoreboardCriterion)scoreboardCriterion, component, renderType);
+                this.scoreboard.addObjective(string, (ScoreboardCriterion)scoreboardCriterion, text, renderType);
             });
         }
     }
@@ -143,14 +143,14 @@ extends PersistentState {
         for (Team team : collection) {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putString("Name", team.getName());
-            compoundTag.putString("DisplayName", Component.Serializer.toJsonString(team.getDisplayName()));
-            if (team.getColor().getId() >= 0) {
+            compoundTag.putString("DisplayName", Text.Serializer.toJson(team.getDisplayName()));
+            if (team.getColor().getColorIndex() >= 0) {
                 compoundTag.putString("TeamColor", team.getColor().getName());
             }
             compoundTag.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
             compoundTag.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
-            compoundTag.putString("MemberNamePrefix", Component.Serializer.toJsonString(team.getPrefix()));
-            compoundTag.putString("MemberNameSuffix", Component.Serializer.toJsonString(team.getSuffix()));
+            compoundTag.putString("MemberNamePrefix", Text.Serializer.toJson(team.getPrefix()));
+            compoundTag.putString("MemberNameSuffix", Text.Serializer.toJson(team.getSuffix()));
             compoundTag.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
             compoundTag.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
             compoundTag.putString("CollisionRule", team.getCollisionRule().name);
@@ -186,7 +186,7 @@ extends PersistentState {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putString("Name", scoreboardObjective.getName());
             compoundTag.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
-            compoundTag.putString("DisplayName", Component.Serializer.toJsonString(scoreboardObjective.getDisplayName()));
+            compoundTag.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
             compoundTag.putString("RenderType", scoreboardObjective.getRenderType().getName());
             listTag.add(compoundTag);
         }

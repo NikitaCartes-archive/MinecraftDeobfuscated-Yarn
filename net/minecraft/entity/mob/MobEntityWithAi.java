@@ -29,16 +29,9 @@ extends MobEntity {
         return 0.0f;
     }
 
-    /*
-     * Enabled force condition propagation
-     * Lifted jumps to return sites
-     */
     @Override
     public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        if (!super.canSpawn(iWorld, spawnType)) return false;
-        BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-        if (!(this.getPathfindingFavor(blockPos, iWorld) >= 0.0f)) return false;
-        return true;
+        return this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0f;
     }
 
     public boolean isNavigating() {

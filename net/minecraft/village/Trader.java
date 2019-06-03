@@ -10,8 +10,8 @@ import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
@@ -42,11 +42,15 @@ public interface Trader {
 
     public SoundEvent method_18010();
 
-    default public void sendOffers(PlayerEntity playerEntity2, Component component, int i2) {
+    default public boolean canRefreshTrades() {
+        return false;
+    }
+
+    default public void sendOffers(PlayerEntity playerEntity2, Text text, int i2) {
         TraderOfferList traderOfferList;
-        OptionalInt optionalInt = playerEntity2.openContainer(new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new MerchantContainer(i, playerInventory, this), component));
+        OptionalInt optionalInt = playerEntity2.openContainer(new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new MerchantContainer(i, playerInventory, this), text));
         if (optionalInt.isPresent() && !(traderOfferList = this.getOffers()).isEmpty()) {
-            playerEntity2.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i2, this.getExperience(), this.isLevelledTrader());
+            playerEntity2.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i2, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
         }
     }
 }

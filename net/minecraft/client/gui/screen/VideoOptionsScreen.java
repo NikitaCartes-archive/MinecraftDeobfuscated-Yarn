@@ -12,7 +12,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class VideoOptionsScreen
@@ -24,7 +24,7 @@ extends Screen {
     private int mipmapLevels;
 
     public VideoOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(new TranslatableComponent("options.videoTitle", new Object[0]));
+        super(new TranslatableText("options.videoTitle", new Object[0]));
         this.parent = screen;
         this.options = gameOptions;
     }
@@ -85,7 +85,7 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.list.render(i, j, f);
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 5, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
         super.render(i, j, f);
     }
 }

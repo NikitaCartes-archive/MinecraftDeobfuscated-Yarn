@@ -8,14 +8,14 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
-import net.minecraft.ChatFormat;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -24,10 +24,10 @@ public class MessageCommand {
         commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component) {
+    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
         for (ServerPlayerEntity serverPlayerEntity : collection) {
-            serverPlayerEntity.sendMessage(new TranslatableComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), component.copy()).applyFormat(ChatFormat.GRAY, ChatFormat.ITALIC));
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), component.copy()).applyFormat(ChatFormat.GRAY, ChatFormat.ITALIC), false);
+            serverPlayerEntity.sendMessage(new TranslatableText("commands.message.display.incoming", serverCommandSource.getDisplayName(), text.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC));
+            serverCommandSource.sendFeedback(new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
         }
         return collection.size();
     }

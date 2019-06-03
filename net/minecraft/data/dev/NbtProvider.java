@@ -15,7 +15,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,8 +49,8 @@ implements DataProvider {
     private void method_10493(Path path, String string, Path path2) {
         try {
             CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path, new OpenOption[0]));
-            Component component = compoundTag.toTextComponent("    ", 0);
-            String string2 = component.getString() + "\n";
+            Text text = compoundTag.toText("    ", 0);
+            String string2 = text.getString() + "\n";
             Path path3 = path2.resolve(string + ".snbt");
             Files.createDirectories(path3.getParent(), new FileAttribute[0]);
             try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){

@@ -25,7 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class ArmorItem
@@ -46,7 +46,7 @@ extends Item {
 
     public static ItemStack dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
         BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-        List<Entity> list = blockPointer.getWorld().getEntities(LivingEntity.class, new BoundingBox(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
+        List<Entity> list = blockPointer.getWorld().getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
         if (list.isEmpty()) {
             return ItemStack.EMPTY;
         }

@@ -15,9 +15,9 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.packet.SpectatorTeleportC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,8 +39,8 @@ implements SpectatorMenuCommand {
     }
 
     @Override
-    public Component getName() {
-        return new TextComponent(this.gameProfile.getName());
+    public Text getName() {
+        return new LiteralText(this.gameProfile.getName());
     }
 
     @Override

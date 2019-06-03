@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.ServerConfigEntry;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BanEntry<T>
@@ -59,7 +59,7 @@ extends ServerConfigEntry<T> {
         return this.reason;
     }
 
-    public abstract Component asTextComponent();
+    public abstract Text toText();
 
     @Override
     boolean isInvalid() {

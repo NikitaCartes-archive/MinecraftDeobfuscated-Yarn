@@ -11,8 +11,8 @@ import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -178,14 +178,14 @@ public class DamageSource {
         return this;
     }
 
-    public Component getDeathMessage(LivingEntity livingEntity) {
+    public Text getDeathMessage(LivingEntity livingEntity) {
         LivingEntity livingEntity2 = livingEntity.method_6124();
         String string = "death.attack." + this.name;
         String string2 = string + ".player";
         if (livingEntity2 != null) {
-            return new TranslatableComponent(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName());
+            return new TranslatableText(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName());
         }
-        return new TranslatableComponent(string, livingEntity.getDisplayName());
+        return new TranslatableText(string, livingEntity.getDisplayName());
     }
 
     public boolean isFire() {

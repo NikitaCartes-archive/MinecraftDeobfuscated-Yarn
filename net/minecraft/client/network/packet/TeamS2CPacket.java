@@ -8,24 +8,24 @@ import java.io.IOException;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.PacketByteBuf;
 
 public class TeamS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private String teamName = "";
-    private Component displayName = new TextComponent("");
-    private Component prefix = new TextComponent("");
-    private Component suffix = new TextComponent("");
+    private Text displayName = new LiteralText("");
+    private Text prefix = new LiteralText("");
+    private Text suffix = new LiteralText("");
     private String nameTagVisibilityRule;
     private String collisionRule;
-    private ChatFormat color;
+    private Formatting color;
     private final Collection<String> playerList;
     private int mode;
     private int flags;
@@ -33,14 +33,14 @@ implements Packet<ClientPlayPacketListener> {
     public TeamS2CPacket() {
         this.nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
         this.collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
-        this.color = ChatFormat.RESET;
+        this.color = Formatting.RESET;
         this.playerList = Lists.newArrayList();
     }
 
     public TeamS2CPacket(Team team, int i) {
         this.nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
         this.collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
-        this.color = ChatFormat.RESET;
+        this.color = Formatting.RESET;
         this.playerList = Lists.newArrayList();
         this.teamName = team.getName();
         this.mode = i;
@@ -61,7 +61,7 @@ implements Packet<ClientPlayPacketListener> {
     public TeamS2CPacket(Team team, Collection<String> collection, int i) {
         this.nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
         this.collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
-        this.color = ChatFormat.RESET;
+        this.color = Formatting.RESET;
         this.playerList = Lists.newArrayList();
         if (i != 3 && i != 4) {
             throw new IllegalArgumentException("Method must be join or leave for player constructor");
@@ -79,13 +79,13 @@ implements Packet<ClientPlayPacketListener> {
         this.teamName = packetByteBuf.readString(16);
         this.mode = packetByteBuf.readByte();
         if (this.mode == 0 || this.mode == 2) {
-            this.displayName = packetByteBuf.readTextComponent();
+            this.displayName = packetByteBuf.readText();
             this.flags = packetByteBuf.readByte();
             this.nameTagVisibilityRule = packetByteBuf.readString(40);
             this.collisionRule = packetByteBuf.readString(40);
-            this.color = packetByteBuf.readEnumConstant(ChatFormat.class);
-            this.prefix = packetByteBuf.readTextComponent();
-            this.suffix = packetByteBuf.readTextComponent();
+            this.color = packetByteBuf.readEnumConstant(Formatting.class);
+            this.prefix = packetByteBuf.readText();
+            this.suffix = packetByteBuf.readText();
         }
         if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
             int i = packetByteBuf.readVarInt();
@@ -100,13 +100,13 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeString(this.teamName);
         packetByteBuf.writeByte(this.mode);
         if (this.mode == 0 || this.mode == 2) {
-            packetByteBuf.writeTextComponent(this.displayName);
+            packetByteBuf.writeText(this.displayName);
             packetByteBuf.writeByte(this.flags);
             packetByteBuf.writeString(this.nameTagVisibilityRule);
             packetByteBuf.writeString(this.collisionRule);
             packetByteBuf.writeEnumConstant(this.color);
-            packetByteBuf.writeTextComponent(this.prefix);
-            packetByteBuf.writeTextComponent(this.suffix);
+            packetByteBuf.writeText(this.prefix);
+            packetByteBuf.writeText(this.suffix);
         }
         if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
             packetByteBuf.writeVarInt(this.playerList.size());
@@ -126,7 +126,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getDisplayName() {
+    public Text getDisplayName() {
         return this.displayName;
     }
 
@@ -146,7 +146,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ChatFormat getPlayerPrefix() {
+    public Formatting getPlayerPrefix() {
         return this.color;
     }
 
@@ -161,12 +161,12 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getPrefix() {
+    public Text getPrefix() {
         return this.prefix;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getSuffix() {
+    public Text getSuffix() {
         return this.suffix;
     }
 }

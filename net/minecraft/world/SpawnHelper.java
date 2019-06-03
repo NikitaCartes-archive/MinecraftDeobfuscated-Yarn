@@ -79,7 +79,7 @@ public final class SpawnHelper {
                     if (spawnEntry == null) continue block2;
                     q = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
-                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.method_8659(chunkGenerator, entityCategory, spawnEntry, mutable) || (location = SpawnRestriction.getLocation(entityType)) == null || !SpawnHelper.canSpawn(location, world, mutable, entityType) || !world.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
+                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.method_8659(chunkGenerator, entityCategory, spawnEntry, mutable) || !SpawnHelper.canSpawn(location = SpawnRestriction.getLocation(entityType), world, mutable, entityType) || !SpawnRestriction.method_20638(entityType, world, SpawnType.NATURAL, mutable, world.random) || !world.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
                 try {
                     Object entity = entityType.create(world);
                     if (!(entity instanceof MobEntity)) {
@@ -143,6 +143,9 @@ public final class SpawnHelper {
     }
 
     public static boolean canSpawn(SpawnRestriction.Location location, ViewableWorld viewableWorld, BlockPos blockPos, @Nullable EntityType<?> entityType) {
+        if (location == SpawnRestriction.Location.NO_RESTRICTIONS) {
+            return true;
+        }
         if (entityType == null || !viewableWorld.getWorldBorder().contains(blockPos)) {
             return false;
         }
@@ -187,7 +190,7 @@ public final class SpawnHelper {
                         float f = spawnEntry.type.getWidth();
                         double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
                         double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
-                        if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e))) continue;
+                        if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.method_20638(spawnEntry.type, iWorld, SpawnType.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())) continue;
                         try {
                             entity = spawnEntry.type.create(iWorld.getWorld());
                         } catch (Exception exception) {

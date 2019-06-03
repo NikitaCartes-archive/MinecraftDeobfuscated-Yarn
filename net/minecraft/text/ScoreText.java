@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,27 +10,27 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentWithSelectors;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.BaseText;
+import net.minecraft.text.ParsableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ChatUtil;
 import org.jetbrains.annotations.Nullable;
 
-public class ScoreComponent
-extends BaseComponent
-implements ComponentWithSelectors {
+public class ScoreText
+extends BaseText
+implements ParsableText {
     private final String name;
     @Nullable
     private final EntitySelector selector;
     private final String objective;
-    private String text = "";
+    private String score = "";
 
-    public ScoreComponent(String string, String string2) {
+    public ScoreText(String string, String string2) {
         this.name = string;
         this.objective = string2;
         EntitySelector entitySelector = null;
@@ -51,33 +51,33 @@ implements ComponentWithSelectors {
         return this.objective;
     }
 
-    public void setText(String string) {
-        this.text = string;
+    public void setScore(String string) {
+        this.score = string;
     }
 
     @Override
-    public String getText() {
-        return this.text;
+    public String asString() {
+        return this.score;
     }
 
-    private void resolve(ServerCommandSource serverCommandSource) {
+    private void parse(ServerCommandSource serverCommandSource) {
         MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-        if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.text)) {
+        if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.score)) {
             ScoreboardObjective scoreboardObjective;
             ServerScoreboard scoreboard = minecraftServer.getScoreboard();
             if (scoreboard.playerHasObjective(this.name, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {
                 ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(this.name, scoreboardObjective);
-                this.setText(String.format("%d", scoreboardPlayerScore.getScore()));
+                this.setScore(String.format("%d", scoreboardPlayerScore.getScore()));
             } else {
-                this.text = "";
+                this.score = "";
             }
         }
     }
 
-    public ScoreComponent method_10929() {
-        ScoreComponent scoreComponent = new ScoreComponent(this.name, this.objective);
-        scoreComponent.setText(this.text);
-        return scoreComponent;
+    public ScoreText method_10929() {
+        ScoreText scoreText = new ScoreText(this.name, this.objective);
+        scoreText.setScore(this.score);
+        return scoreText;
     }
 
     /*
@@ -85,7 +85,7 @@ implements ComponentWithSelectors {
      * Lifted jumps to return sites
      */
     @Override
-    public Component resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+    public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         String string;
         if (serverCommandSource == null) {
             return this.method_10929();
@@ -102,10 +102,10 @@ implements ComponentWithSelectors {
             string = this.name;
         }
         String string2 = entity != null && string.equals("*") ? entity.getEntityName() : string;
-        ScoreComponent scoreComponent = new ScoreComponent(string2, this.objective);
-        scoreComponent.setText(this.text);
-        scoreComponent.resolve(serverCommandSource);
-        return scoreComponent;
+        ScoreText scoreText = new ScoreText(string2, this.objective);
+        scoreText.setScore(this.score);
+        scoreText.parse(serverCommandSource);
+        return scoreText;
     }
 
     @Override
@@ -113,9 +113,9 @@ implements ComponentWithSelectors {
         if (this == object) {
             return true;
         }
-        if (object instanceof ScoreComponent) {
-            ScoreComponent scoreComponent = (ScoreComponent)object;
-            return this.name.equals(scoreComponent.name) && this.objective.equals(scoreComponent.objective) && super.equals(object);
+        if (object instanceof ScoreText) {
+            ScoreText scoreText = (ScoreText)object;
+            return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
         }
         return false;
     }
@@ -126,7 +126,7 @@ implements ComponentWithSelectors {
     }
 
     @Override
-    public /* synthetic */ Component copyShallow() {
+    public /* synthetic */ Text copy() {
         return this.method_10929();
     }
 }

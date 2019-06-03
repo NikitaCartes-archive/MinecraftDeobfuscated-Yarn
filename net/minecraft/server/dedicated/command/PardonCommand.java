@@ -10,15 +10,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class PardonCommand {
-    private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.pardon.failed", new Object[0]));
+    private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.pardon.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("pardon").requires(serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3))).then(CommandManager.argument("targets", GameProfileArgumentType.create()).suggests((commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getUserBanList().getNames(), suggestionsBuilder)).executes(commandContext -> PardonCommand.pardon((ServerCommandSource)commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))));
@@ -31,7 +31,7 @@ public class PardonCommand {
             if (!bannedPlayerList.contains(gameProfile)) continue;
             bannedPlayerList.remove(gameProfile);
             ++i;
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.pardon.success", Components.profile(gameProfile)), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.pardon.success", Texts.toText(gameProfile)), true);
         }
         if (i == 0) {
             throw ALREADY_UNBANNED_EXCEPTION.create();

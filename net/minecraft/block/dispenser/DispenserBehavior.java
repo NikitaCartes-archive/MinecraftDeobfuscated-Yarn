@@ -55,7 +55,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -405,7 +405,7 @@ public interface DispenserBehavior {
                 if (!world.isClient()) {
                     this.success = false;
                     BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-                    List<SheepEntity> list = world.getEntities(SheepEntity.class, new BoundingBox(blockPos));
+                    List<SheepEntity> list = world.getEntities(SheepEntity.class, new Box(blockPos));
                     for (SheepEntity sheepEntity : list) {
                         if (!sheepEntity.isAlive() || sheepEntity.isSheared() || sheepEntity.isBaby()) continue;
                         sheepEntity.dropItems();

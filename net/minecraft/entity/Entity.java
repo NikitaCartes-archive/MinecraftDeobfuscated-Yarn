@@ -59,9 +59,6 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -79,6 +76,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -92,7 +92,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -117,7 +117,7 @@ CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
     private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
-    private static final BoundingBox NULL_BOX = new BoundingBox(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     private static double renderDistanceMultiplier = 1.0;
     private final EntityType<?> type;
     private int entityId = MAX_ENTITY_ID.incrementAndGet();
@@ -138,7 +138,7 @@ CommandOutput {
     public float pitch;
     public float prevYaw;
     public float prevPitch;
-    private BoundingBox boundingBox = NULL_BOX;
+    private Box boundingBox = NULL_BOX;
     public boolean onGround;
     public boolean horizontalCollision;
     public boolean verticalCollision;
@@ -170,7 +170,7 @@ CommandOutput {
     protected final DataTracker dataTracker;
     protected static final TrackedData<Byte> FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Integer> BREATH = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Optional<Component>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
+    private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
     private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -330,7 +330,7 @@ CommandOutput {
         this.z = f;
         float g = this.size.width / 2.0f;
         float h = this.size.height;
-        this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
+        this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -441,8 +441,8 @@ CommandOutput {
         return this.doesNotCollide(this.getBoundingBox().offset(d, e, f));
     }
 
-    private boolean doesNotCollide(BoundingBox boundingBox) {
-        return this.world.doesNotCollide(this, boundingBox) && !this.world.intersectsFluid(boundingBox);
+    private boolean doesNotCollide(Box box) {
+        return this.world.doesNotCollide(this, box) && !this.world.intersectsFluid(box);
     }
 
     public void move(MovementType movementType, Vec3d vec3d) {
@@ -631,27 +631,27 @@ CommandOutput {
 
     private Vec3d method_17835(Vec3d vec3d) {
         boolean bl4;
-        BoundingBox boundingBox = this.getBoundingBox();
+        Box box = this.getBoundingBox();
         EntityContext entityContext = EntityContext.of(this);
         VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
-        Stream<Object> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
-        BoundingBox boundingBox2 = boundingBox.stretch(vec3d).expand(1.0E-7);
-        Stream<VoxelShape> stream2 = this.world.getEntities(this, boundingBox2).stream().filter(entity -> !this.isConnectedThroughVehicle((Entity)entity)).flatMap(entity -> Stream.of(entity.getCollisionBox(), this.method_5708((Entity)entity))).filter(Objects::nonNull).filter(boundingBox2::intersects).map(VoxelShapes::cuboid);
+        Stream<Object> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
+        Box box2 = box.stretch(vec3d).expand(1.0E-7);
+        Stream<VoxelShape> stream2 = this.world.getEntities(this, box2).stream().filter(entity -> !this.isConnectedThroughVehicle((Entity)entity)).flatMap(entity -> Stream.of(entity.getCollisionBox(), this.method_5708((Entity)entity))).filter(Objects::nonNull).filter(box2::intersects).map(VoxelShapes::cuboid);
         LoopingStream<VoxelShape> loopingStream = new LoopingStream<VoxelShape>(Stream.concat(stream2, stream));
-        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.method_17833(vec3d, boundingBox, this.world, entityContext, loopingStream);
+        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.method_17833(vec3d, box, this.world, entityContext, loopingStream);
         boolean bl = vec3d.x != vec3d2.x;
         boolean bl2 = vec3d.y != vec3d2.y;
         boolean bl3 = vec3d.z != vec3d2.z;
         boolean bl5 = bl4 = this.onGround || bl2 && vec3d.y < 0.0;
         if (this.stepHeight > 0.0f && bl4 && (bl || bl3)) {
             Vec3d vec3d5;
-            Vec3d vec3d3 = Entity.method_17833(new Vec3d(vec3d.x, this.stepHeight, vec3d.z), boundingBox, this.world, entityContext, loopingStream);
-            Vec3d vec3d4 = Entity.method_17833(new Vec3d(0.0, this.stepHeight, 0.0), boundingBox.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, loopingStream);
-            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d4), this.world, entityContext, loopingStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
+            Vec3d vec3d3 = Entity.method_17833(new Vec3d(vec3d.x, this.stepHeight, vec3d.z), box, this.world, entityContext, loopingStream);
+            Vec3d vec3d4 = Entity.method_17833(new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, loopingStream);
+            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), box.offset(vec3d4), this.world, entityContext, loopingStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
                 vec3d3 = vec3d5;
             }
             if (Entity.squaredHorizontalLength(vec3d3) > Entity.squaredHorizontalLength(vec3d2)) {
-                return vec3d3.add(Entity.method_17833(new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), boundingBox.offset(vec3d3), this.world, entityContext, loopingStream));
+                return vec3d3.add(Entity.method_17833(new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), box.offset(vec3d3), this.world, entityContext, loopingStream));
             }
         }
         return vec3d2;
@@ -661,26 +661,26 @@ CommandOutput {
         return vec3d.x * vec3d.x + vec3d.z * vec3d.z;
     }
 
-    public static Vec3d method_17833(Vec3d vec3d, BoundingBox boundingBox, ViewableWorld viewableWorld, EntityContext entityContext, LoopingStream<VoxelShape> loopingStream) {
+    public static Vec3d method_17833(Vec3d vec3d, Box box, ViewableWorld viewableWorld, EntityContext entityContext, LoopingStream<VoxelShape> loopingStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, boundingBox, viewableWorld, e, entityContext, loopingStream.getStream())) != 0.0) {
-            boundingBox = boundingBox.offset(0.0, e, 0.0);
+        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, box, viewableWorld, e, entityContext, loopingStream.getStream())) != 0.0) {
+            box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, boundingBox, viewableWorld, f, entityContext, loopingStream.getStream())) != 0.0) {
-            boundingBox = boundingBox.offset(0.0, 0.0, f);
+        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, box, viewableWorld, f, entityContext, loopingStream.getStream())) != 0.0) {
+            box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.method_17945(Direction.Axis.X, boundingBox, viewableWorld, d, entityContext, loopingStream.getStream());
+            d = VoxelShapes.method_17945(Direction.Axis.X, box, viewableWorld, d, entityContext, loopingStream.getStream());
             if (!bl && d != 0.0) {
-                boundingBox = boundingBox.offset(d, 0.0, 0.0);
+                box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.method_17945(Direction.Axis.Z, boundingBox, viewableWorld, f, entityContext, loopingStream.getStream());
+            f = VoxelShapes.method_17945(Direction.Axis.Z, box, viewableWorld, f, entityContext, loopingStream.getStream());
         }
         return new Vec3d(d, e, f);
     }
@@ -690,10 +690,10 @@ CommandOutput {
     }
 
     public void moveToBoundingBoxCenter() {
-        BoundingBox boundingBox = this.getBoundingBox();
-        this.x = (boundingBox.minX + boundingBox.maxX) / 2.0;
-        this.y = boundingBox.minY;
-        this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0;
+        Box box = this.getBoundingBox();
+        this.x = (box.minX + box.maxX) / 2.0;
+        this.y = box.minY;
+        this.z = (box.minZ + box.maxZ) / 2.0;
     }
 
     protected SoundEvent getSwimSound() {
@@ -709,9 +709,9 @@ CommandOutput {
     }
 
     protected void checkBlockCollision() {
-        BoundingBox boundingBox = this.getBoundingBox();
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(boundingBox.minX + 0.001, boundingBox.minY + 0.001, boundingBox.minZ + 0.001);
-             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(boundingBox.maxX - 0.001, boundingBox.maxY - 0.001, boundingBox.maxZ - 0.001);
+        Box box = this.getBoundingBox();
+        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
+             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
              BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
             if (this.world.isAreaLoaded(pooledMutable, pooledMutable2)) {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
@@ -798,7 +798,7 @@ CommandOutput {
     }
 
     @Nullable
-    public BoundingBox getCollisionBox() {
+    public Box getCollisionBox() {
         return null;
     }
 
@@ -1236,9 +1236,9 @@ CommandOutput {
             compoundTag.putBoolean("Invulnerable", this.invulnerable);
             compoundTag.putInt("PortalCooldown", this.portalCooldown);
             compoundTag.putUuid("UUID", this.getUuid());
-            Component component = this.getCustomName();
-            if (component != null) {
-                compoundTag.putString("CustomName", Component.Serializer.toJsonString(component));
+            Text text = this.getCustomName();
+            if (text != null) {
+                compoundTag.putString("CustomName", Text.Serializer.toJson(text));
             }
             if (this.isCustomNameVisible()) {
                 compoundTag.putBoolean("CustomNameVisible", this.isCustomNameVisible());
@@ -1326,7 +1326,7 @@ CommandOutput {
             this.setPosition(this.x, this.y, this.z);
             this.setRotation(this.yaw, this.pitch);
             if (compoundTag.containsKey("CustomName", 8)) {
-                this.setCustomName(Component.Serializer.fromJsonString(compoundTag.getString("CustomName")));
+                this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
             }
             this.setCustomNameVisible(compoundTag.getBoolean("CustomNameVisible"));
             this.setSilent(compoundTag.getBoolean("Silent"));
@@ -1440,7 +1440,7 @@ CommandOutput {
     }
 
     @Nullable
-    public BoundingBox method_5708(Entity entity) {
+    public Box method_5708(Entity entity) {
         return null;
     }
 
@@ -1831,19 +1831,19 @@ CommandOutput {
         this.movementMultiplier = vec3d;
     }
 
-    private static void removeClickEvents(Component component) {
-        component.modifyStyle(style -> style.setClickEvent(null)).getSiblings().forEach(Entity::removeClickEvents);
+    private static void removeClickEvents(Text text) {
+        text.styled(style -> style.setClickEvent(null)).getSiblings().forEach(Entity::removeClickEvents);
     }
 
     @Override
-    public Component getName() {
-        Component component = this.getCustomName();
-        if (component != null) {
-            Component component2 = component.copy();
-            Entity.removeClickEvents(component2);
-            return component2;
+    public Text getName() {
+        Text text = this.getCustomName();
+        if (text != null) {
+            Text text2 = text.deepCopy();
+            Entity.removeClickEvents(text2);
+            return text2;
         }
-        return this.type.getTextComponent();
+        return this.type.getName();
     }
 
     public boolean isPartOf(Entity entity) {
@@ -1869,7 +1869,7 @@ CommandOutput {
     }
 
     public String toString() {
-        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().getText(), this.entityId, this.world == null ? "~NULL~" : this.world.getLevelProperties().getLevelName(), this.x, this.y, this.z);
+        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().asString(), this.entityId, this.world == null ? "~NULL~" : this.world.getLevelProperties().getLevelName(), this.x, this.y, this.z);
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
@@ -2038,17 +2038,17 @@ CommandOutput {
     }
 
     @Override
-    public Component getDisplayName() {
-        return Team.modifyText(this.getScoreboardTeam(), this.getName()).modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
+    public Text getDisplayName() {
+        return Team.modifyText(this.getScoreboardTeam(), this.getName()).styled(style -> style.setHoverEvent(this.getHoverEvent()).setInsertion(this.getUuidAsString()));
     }
 
-    public void setCustomName(@Nullable Component component) {
-        this.dataTracker.set(CUSTOM_NAME, Optional.ofNullable(component));
+    public void setCustomName(@Nullable Text text) {
+        this.dataTracker.set(CUSTOM_NAME, Optional.ofNullable(text));
     }
 
     @Override
     @Nullable
-    public Component getCustomName() {
+    public Text getCustomName() {
         return this.dataTracker.get(CUSTOM_NAME).orElse(null);
     }
 
@@ -2103,11 +2103,11 @@ CommandOutput {
         this.standingEyeHeight = this.getEyeHeight(entityPose, entitySize2);
         if (entitySize2.width < entitySize.width) {
             double d = (double)entitySize2.width / 2.0;
-            this.setBoundingBox(new BoundingBox(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)entitySize2.height, this.z + d));
+            this.setBoundingBox(new Box(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)entitySize2.height, this.z + d));
             return;
         }
-        BoundingBox boundingBox = this.getBoundingBox();
-        this.setBoundingBox(new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.minX + (double)entitySize2.width, boundingBox.minY + (double)entitySize2.height, boundingBox.minZ + (double)entitySize2.width));
+        Box box = this.getBoundingBox();
+        this.setBoundingBox(new Box(box.minX, box.minY, box.minZ, box.minX + (double)entitySize2.width, box.minY + (double)entitySize2.height, box.minZ + (double)entitySize2.width));
         if (entitySize2.width > entitySize.width && !this.field_5953 && !this.world.isClient) {
             float f = entitySize.width - entitySize2.width;
             this.move(MovementType.SELF, new Vec3d(f, 0.0, f));
@@ -2122,40 +2122,40 @@ CommandOutput {
         return this.getHorizontalFacing();
     }
 
-    protected HoverEvent getComponentHoverEvent() {
+    protected HoverEvent getHoverEvent() {
         CompoundTag compoundTag = new CompoundTag();
         Identifier identifier = EntityType.getId(this.getType());
         compoundTag.putString("id", this.getUuidAsString());
         if (identifier != null) {
             compoundTag.putString("type", identifier.toString());
         }
-        compoundTag.putString("name", Component.Serializer.toJsonString(this.getName()));
-        return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new TextComponent(compoundTag.toString()));
+        compoundTag.putString("name", Text.Serializer.toJson(this.getName()));
+        return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(compoundTag.toString()));
     }
 
     public boolean canBeSpectated(ServerPlayerEntity serverPlayerEntity) {
         return true;
     }
 
-    public BoundingBox getBoundingBox() {
+    public Box getBoundingBox() {
         return this.boundingBox;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public BoundingBox getVisibilityBoundingBox() {
+    public Box getVisibilityBoundingBox() {
         return this.getBoundingBox();
     }
 
-    protected BoundingBox method_20343(EntityPose entityPose) {
+    protected Box method_20343(EntityPose entityPose) {
         EntitySize entitySize = this.getSize(entityPose);
         float f = entitySize.width / 2.0f;
         Vec3d vec3d = new Vec3d(this.x - (double)f, this.y, this.z - (double)f);
         Vec3d vec3d2 = new Vec3d(this.x + (double)f, this.y + (double)entitySize.height, this.z + (double)f);
-        return new BoundingBox(vec3d, vec3d2);
+        return new Box(vec3d, vec3d2);
     }
 
-    public void setBoundingBox(BoundingBox boundingBox) {
-        this.boundingBox = boundingBox;
+    public void setBoundingBox(Box box) {
+        this.boundingBox = box;
     }
 
     protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
@@ -2176,7 +2176,7 @@ CommandOutput {
     }
 
     @Override
-    public void sendMessage(Component component) {
+    public void sendMessage(Text text) {
     }
 
     public BlockPos getBlockPos() {
@@ -2398,13 +2398,13 @@ CommandOutput {
 
     public boolean updateMovementInFluid(Tag<Fluid> tag) {
         int n;
-        BoundingBox boundingBox = this.getBoundingBox().contract(0.001);
-        int i = MathHelper.floor(boundingBox.minX);
-        int j = MathHelper.ceil(boundingBox.maxX);
-        int k = MathHelper.floor(boundingBox.minY);
-        int l = MathHelper.ceil(boundingBox.maxY);
-        int m = MathHelper.floor(boundingBox.minZ);
-        if (!this.world.isAreaLoaded(i, k, m, j, l, n = MathHelper.ceil(boundingBox.maxZ))) {
+        Box box = this.getBoundingBox().contract(0.001);
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.ceil(box.maxX);
+        int k = MathHelper.floor(box.minY);
+        int l = MathHelper.ceil(box.maxY);
+        int m = MathHelper.floor(box.minZ);
+        if (!this.world.isAreaLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
             return false;
         }
         double d = 0.0;
@@ -2419,9 +2419,9 @@ CommandOutput {
                         double e;
                         pooledMutable.method_10113(p, q, r);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= boundingBox.minY)) continue;
+                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.minY)) continue;
                         bl2 = true;
-                        d = Math.max(e - boundingBox.minY, d);
+                        d = Math.max(e - box.minY, d);
                         if (!bl) continue;
                         Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
                         if (d < 0.4) {

@@ -5,8 +5,8 @@ package net.minecraft.world;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 public enum Difficulty {
@@ -15,42 +15,42 @@ public enum Difficulty {
     NORMAL(2, "normal"),
     HARD(3, "hard");
 
-    private static final Difficulty[] DIFFICULTIES;
+    private static final Difficulty[] BY_NAME;
     private final int id;
-    private final String translationKey;
+    private final String name;
 
     private Difficulty(int j, String string2) {
         this.id = j;
-        this.translationKey = string2;
+        this.name = string2;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public Component toTextComponent() {
-        return new TranslatableComponent("options.difficulty." + this.translationKey, new Object[0]);
+    public Text getTranslatableName() {
+        return new TranslatableText("options.difficulty." + this.name, new Object[0]);
     }
 
-    public static Difficulty getDifficulty(int i) {
-        return DIFFICULTIES[i % DIFFICULTIES.length];
+    public static Difficulty byOrdinal(int i) {
+        return BY_NAME[i % BY_NAME.length];
     }
 
     @Nullable
-    public static Difficulty getDifficulty(String string) {
+    public static Difficulty byName(String string) {
         for (Difficulty difficulty : Difficulty.values()) {
-            if (!difficulty.translationKey.equals(string)) continue;
+            if (!difficulty.name.equals(string)) continue;
             return difficulty;
         }
         return null;
     }
 
-    public String getTranslationKey() {
-        return this.translationKey;
+    public String getName() {
+        return this.name;
     }
 
     static {
-        DIFFICULTIES = (Difficulty[])Arrays.stream(Difficulty.values()).sorted(Comparator.comparingInt(Difficulty::getId)).toArray(Difficulty[]::new);
+        BY_NAME = (Difficulty[])Arrays.stream(Difficulty.values()).sorted(Comparator.comparingInt(Difficulty::getId)).toArray(Difficulty[]::new);
     }
 }
 

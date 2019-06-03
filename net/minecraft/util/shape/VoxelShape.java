@@ -15,7 +15,7 @@ import net.minecraft.util.OffsetDoubleList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -50,11 +50,11 @@ public abstract class VoxelShape {
         return this.getPointPosition(axis, i);
     }
 
-    public BoundingBox getBoundingBox() {
+    public Box getBoundingBox() {
         if (this.isEmpty()) {
             throw new UnsupportedOperationException("No bounds for empty shape.");
         }
-        return new BoundingBox(this.getMinimum(Direction.Axis.X), this.getMinimum(Direction.Axis.Y), this.getMinimum(Direction.Axis.Z), this.getMaximum(Direction.Axis.X), this.getMaximum(Direction.Axis.Y), this.getMaximum(Direction.Axis.Z));
+        return new Box(this.getMinimum(Direction.Axis.X), this.getMinimum(Direction.Axis.Y), this.getMinimum(Direction.Axis.Z), this.getMaximum(Direction.Axis.X), this.getMaximum(Direction.Axis.Y), this.getMaximum(Direction.Axis.Z));
     }
 
     protected double getPointPosition(Direction.Axis axis, int i) {
@@ -91,9 +91,9 @@ public abstract class VoxelShape {
         this.voxels.forEachBox((i, j, k, l, m, n) -> boxConsumer.consume(this.getPointPosition(Direction.Axis.X, i), this.getPointPosition(Direction.Axis.Y, j), this.getPointPosition(Direction.Axis.Z, k), this.getPointPosition(Direction.Axis.X, l), this.getPointPosition(Direction.Axis.Y, m), this.getPointPosition(Direction.Axis.Z, n)), true);
     }
 
-    public List<BoundingBox> getBoundingBoxes() {
-        ArrayList<BoundingBox> list = Lists.newArrayList();
-        this.forEachBox((d, e, f, g, h, i) -> list.add(new BoundingBox(d, e, f, g, h, i)));
+    public List<Box> getBoundingBoxes() {
+        ArrayList<Box> list = Lists.newArrayList();
+        this.forEachBox((d, e, f, g, h, i) -> list.add(new Box(d, e, f, g, h, i)));
         return list;
     }
 
@@ -152,7 +152,7 @@ public abstract class VoxelShape {
         if (this.contains(vec3d4.x - (double)blockPos.getX(), vec3d4.y - (double)blockPos.getY(), vec3d4.z - (double)blockPos.getZ())) {
             return new BlockHitResult(vec3d4, Direction.getFacing(vec3d3.x, vec3d3.y, vec3d3.z).getOpposite(), blockPos, true);
         }
-        return BoundingBox.rayTrace(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
+        return Box.rayTrace(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
     }
 
     public VoxelShape getFace(Direction direction) {
@@ -183,11 +183,11 @@ public abstract class VoxelShape {
         return new SliceVoxelShape(this, axis, i);
     }
 
-    public double method_1108(Direction.Axis axis, BoundingBox boundingBox, double d) {
-        return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), boundingBox, d);
+    public double method_1108(Direction.Axis axis, Box box, double d) {
+        return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
     }
 
-    protected double method_1103(AxisCycleDirection axisCycleDirection, BoundingBox boundingBox, double d) {
+    protected double method_1103(AxisCycleDirection axisCycleDirection, Box box, double d) {
         block11: {
             int n;
             int l;
@@ -205,14 +205,14 @@ public abstract class VoxelShape {
                 axis = axisCycleDirection2.cycle(Direction.Axis.X);
                 Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
                 Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
-                double e = boundingBox.getMax(axis);
-                f = boundingBox.getMin(axis);
+                double e = box.getMax(axis);
+                f = box.getMin(axis);
                 int i = this.getCoordIndex(axis, f + 1.0E-7);
                 int j = this.getCoordIndex(axis, e - 1.0E-7);
-                int k = Math.max(0, this.getCoordIndex(axis2, boundingBox.getMin(axis2) + 1.0E-7));
-                l = Math.min(this.voxels.getSize(axis2), this.getCoordIndex(axis2, boundingBox.getMax(axis2) - 1.0E-7) + 1);
-                int m = Math.max(0, this.getCoordIndex(axis3, boundingBox.getMin(axis3) + 1.0E-7));
-                n = Math.min(this.voxels.getSize(axis3), this.getCoordIndex(axis3, boundingBox.getMax(axis3) - 1.0E-7) + 1);
+                int k = Math.max(0, this.getCoordIndex(axis2, box.getMin(axis2) + 1.0E-7));
+                l = Math.min(this.voxels.getSize(axis2), this.getCoordIndex(axis2, box.getMax(axis2) - 1.0E-7) + 1);
+                int m = Math.max(0, this.getCoordIndex(axis3, box.getMin(axis3) + 1.0E-7));
+                n = Math.min(this.voxels.getSize(axis3), this.getCoordIndex(axis3, box.getMax(axis3) - 1.0E-7) + 1);
                 int o = this.voxels.getSize(axis);
                 if (!(d > 0.0)) break block10;
                 for (int p = j + 1; p < o; ++p) {

@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -85,8 +85,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Component component) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(component);
+    public void sendMessage(Text text) {
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
     }
 }
 

@@ -18,8 +18,8 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 import net.minecraft.client.gui.hud.spectator.TeleportToSpecificPlayerSpectatorCommand;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
@@ -46,8 +46,8 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public Component getPrompt() {
-        return new TranslatableComponent("spectatorMenu.teleport.prompt", new Object[0]);
+    public Text getPrompt() {
+        return new TranslatableText("spectatorMenu.teleport.prompt", new Object[0]);
     }
 
     @Override
@@ -56,8 +56,8 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public Component getName() {
-        return new TranslatableComponent("spectatorMenu.teleport", new Object[0]);
+    public Text getName() {
+        return new TranslatableText("spectatorMenu.teleport", new Object[0]);
     }
 
     @Override

@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.Set;
 import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class ServerBossBar
@@ -21,8 +21,8 @@ extends BossBar {
     private final Set<ServerPlayerEntity> unmodifiablePlayers = Collections.unmodifiableSet(this.players);
     private boolean visible = true;
 
-    public ServerBossBar(Component component, BossBar.Color color, BossBar.Style style) {
-        super(MathHelper.randomUUID(), component, color, style);
+    public ServerBossBar(Text text, BossBar.Color color, BossBar.Style style) {
+        super(MathHelper.randomUUID(), text, color, style);
     }
 
     @Override
@@ -77,9 +77,9 @@ extends BossBar {
     }
 
     @Override
-    public void setName(Component component) {
-        if (!Objects.equal(component, this.name)) {
-            super.setName(component);
+    public void setName(Text text) {
+        if (!Objects.equal(text, this.name)) {
+            super.setName(text);
             this.sendPacket(BossBarS2CPacket.Type.UPDATE_NAME);
         }
     }

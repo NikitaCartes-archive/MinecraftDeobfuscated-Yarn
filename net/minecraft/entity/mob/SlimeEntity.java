@@ -4,6 +4,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -257,22 +258,20 @@ implements Monster {
         return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        BlockPos blockPos = new BlockPos(this.x, 0.0, this.z);
-        if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && this.random.nextInt(4) != 1) {
+    public static boolean method_20685(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
             return false;
         }
         if (iWorld.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
             Biome biome = iWorld.getBiome(blockPos);
-            if (biome == Biomes.SWAMP && this.y > 50.0 && this.y < 70.0 && this.random.nextFloat() < 0.5f && this.random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(new BlockPos(this)) <= this.random.nextInt(8)) {
-                return super.canSpawn(iWorld, spawnType);
+            if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
+                return SlimeEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
             }
             ChunkPos chunkPos = new ChunkPos(blockPos);
             boolean bl2 = bl = ChunkRandom.create(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
-            if (this.random.nextInt(10) == 0 && bl && this.y < 40.0) {
-                return super.canSpawn(iWorld, spawnType);
+            if (random.nextInt(10) == 0 && bl && blockPos.getY() < 40) {
+                return SlimeEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
             }
         }
         return false;

@@ -5,13 +5,10 @@ package net.minecraft.resource;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.profiler.Profiler;
 
-@Environment(value=EnvType.CLIENT)
 public abstract class SinglePreparationResourceReloadListener<T>
 implements ResourceReloadListener {
     @Override

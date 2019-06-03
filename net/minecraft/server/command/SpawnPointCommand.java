@@ -10,10 +10,10 @@ import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SpawnPointCommand {
@@ -26,9 +26,9 @@ public class SpawnPointCommand {
             serverPlayerEntity.setPlayerSpawn(blockPos, true);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.spawnpoint.success.single", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.spawnpoint.success.single", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true);
         }
         return collection.size();
     }

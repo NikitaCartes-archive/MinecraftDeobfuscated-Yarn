@@ -13,16 +13,16 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 public class Scoreboard {
@@ -48,14 +48,14 @@ public class Scoreboard {
         return this.objectives.get(string);
     }
 
-    public ScoreboardObjective addObjective(String string, ScoreboardCriterion scoreboardCriterion2, Component component, ScoreboardCriterion.RenderType renderType) {
+    public ScoreboardObjective addObjective(String string, ScoreboardCriterion scoreboardCriterion2, Text text, ScoreboardCriterion.RenderType renderType) {
         if (string.length() > 16) {
             throw new IllegalArgumentException("The objective name '" + string + "' is too long!");
         }
         if (this.objectives.containsKey(string)) {
             throw new IllegalArgumentException("An objective with the name '" + string + "' already exists!");
         }
-        ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, string, scoreboardCriterion2, component, renderType);
+        ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, string, scoreboardCriterion2, text, renderType);
         this.objectivesByCriterion.computeIfAbsent(scoreboardCriterion2, scoreboardCriterion -> Lists.newArrayList()).add(scoreboardObjective);
         this.objectives.put(string, scoreboardObjective);
         this.updateObjective(scoreboardObjective);
@@ -260,7 +260,7 @@ public class Scoreboard {
     }
 
     public static String getDisplaySlotName(int i) {
-        ChatFormat chatFormat;
+        Formatting formatting;
         switch (i) {
             case 0: {
                 return "list";
@@ -272,15 +272,15 @@ public class Scoreboard {
                 return "belowName";
             }
         }
-        if (i >= 3 && i <= 18 && (chatFormat = ChatFormat.byId(i - 3)) != null && chatFormat != ChatFormat.RESET) {
-            return "sidebar.team." + chatFormat.getName();
+        if (i >= 3 && i <= 18 && (formatting = Formatting.byColorIndex(i - 3)) != null && formatting != Formatting.RESET) {
+            return "sidebar.team." + formatting.getName();
         }
         return null;
     }
 
     public static int getDisplaySlotId(String string) {
         String string2;
-        ChatFormat chatFormat;
+        Formatting formatting;
         if ("list".equalsIgnoreCase(string)) {
             return 0;
         }
@@ -290,8 +290,8 @@ public class Scoreboard {
         if ("belowName".equalsIgnoreCase(string)) {
             return 2;
         }
-        if (string.startsWith("sidebar.team.") && (chatFormat = ChatFormat.getFormatByName(string2 = string.substring("sidebar.team.".length()))) != null && chatFormat.getId() >= 0) {
-            return chatFormat.getId() + 3;
+        if (string.startsWith("sidebar.team.") && (formatting = Formatting.byName(string2 = string.substring("sidebar.team.".length()))) != null && formatting.getColorIndex() >= 0) {
+            return formatting.getColorIndex() + 3;
         }
         return -1;
     }

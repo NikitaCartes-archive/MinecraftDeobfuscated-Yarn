@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +23,8 @@ public class CartographyTableScreen
 extends AbstractContainerScreen<CartographyTableContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
-    public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, Component component) {
-        super(cartographyTableContainer, playerInventory, component);
+    public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, Text text) {
+        super(cartographyTableContainer, playerInventory, text);
     }
 
     @Override
@@ -35,8 +35,8 @@ extends AbstractContainerScreen<CartographyTableContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 8.0f, 4.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 8.0f, 4.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

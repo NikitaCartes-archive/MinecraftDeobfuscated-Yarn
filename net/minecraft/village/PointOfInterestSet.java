@@ -25,6 +25,7 @@ import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Supplier;
 
 public class PointOfInterestSet
 implements DynamicSerializable {
@@ -57,7 +58,7 @@ implements DynamicSerializable {
 
     public void add(BlockPos blockPos, PointOfInterestType pointOfInterestType) {
         if (this.add(new PointOfInterest(blockPos, pointOfInterestType, this.updateListener))) {
-            LOGGER.debug(String.format("Added POI of type %s @ %s", pointOfInterestType, blockPos));
+            LOGGER.debug("Added POI of type {} @ {}", () -> pointOfInterestType, () -> blockPos);
             this.updateListener.run();
         }
     }
@@ -85,7 +86,10 @@ implements DynamicSerializable {
             return;
         }
         this.pointsOfInterestByType.get(pointOfInterest.getType()).remove(pointOfInterest);
-        LOGGER.debug(String.format("Removed POI of type %s @ %s", pointOfInterest.getType(), pointOfInterest.getPos()));
+        Supplier[] supplierArray = new Supplier[2];
+        supplierArray[0] = pointOfInterest::getType;
+        supplierArray[1] = pointOfInterest::getPos;
+        LOGGER.debug("Removed POI of type {} @ {}", supplierArray);
         this.updateListener.run();
     }
 

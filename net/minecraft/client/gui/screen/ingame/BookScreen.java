@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -22,10 +21,11 @@ import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -41,14 +41,14 @@ extends Screen {
         }
 
         @Override
-        public Component getLine(int i) {
-            return new TextComponent("");
+        public Text getLine(int i) {
+            return new LiteralText("");
         }
     };
     public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
     private Contents contents;
     private int pageIndex;
-    private List<Component> cachedPage = Collections.emptyList();
+    private List<Text> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
     private PageTurnWidget lastPageButton;
     private PageTurnWidget nextPageButton;
@@ -159,20 +159,20 @@ extends Screen {
         this.blit(k, 2, 0, 0, 192, 192);
         String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         if (this.cachedPageIndex != this.pageIndex) {
-            Component component = this.contents.getLineOrDefault(this.pageIndex);
-            this.cachedPage = TextComponentUtil.wrapLines(component, 114, this.font, true, true);
+            Text text = this.contents.getLineOrDefault(this.pageIndex);
+            this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
         }
         this.cachedPageIndex = this.pageIndex;
         int m = this.getStringWidth(string);
         this.font.draw(string, k - m + 192 - 44, 18.0f, 0);
         int n = Math.min(128 / this.font.fontHeight, this.cachedPage.size());
         for (int o = 0; o < n; ++o) {
-            Component component2 = this.cachedPage.get(o);
-            this.font.draw(component2.getFormattedText(), k + 36, 32 + o * this.font.fontHeight, 0);
+            Text text2 = this.cachedPage.get(o);
+            this.font.draw(text2.asFormattedString(), k + 36, 32 + o * this.font.fontHeight, 0);
         }
-        Component component3 = this.getLineAt(i, j);
-        if (component3 != null) {
-            this.renderComponentHoverEffect(component3, i, j);
+        Text text3 = this.getLineAt(i, j);
+        if (text3 != null) {
+            this.renderComponentHoverEffect(text3, i, j);
         }
         super.render(i, j, f);
     }
@@ -183,16 +183,16 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double d, double e, int i) {
-        Component component;
-        if (i == 0 && (component = this.getLineAt(d, e)) != null && this.handleComponentClicked(component)) {
+        Text text;
+        if (i == 0 && (text = this.getLineAt(d, e)) != null && this.handleComponentClicked(text)) {
             return true;
         }
         return super.mouseClicked(d, e, i);
     }
 
     @Override
-    public boolean handleComponentClicked(Component component) {
-        ClickEvent clickEvent = component.getStyle().getClickEvent();
+    public boolean handleComponentClicked(Text text) {
+        ClickEvent clickEvent = text.getStyle().getClickEvent();
         if (clickEvent == null) {
             return false;
         }
@@ -205,7 +205,7 @@ extends Screen {
                 return false;
             }
         }
-        boolean bl = super.handleComponentClicked(component);
+        boolean bl = super.handleComponentClicked(text);
         if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
             this.minecraft.openScreen(null);
         }
@@ -213,7 +213,7 @@ extends Screen {
     }
 
     @Nullable
-    public Component getLineAt(double d, double e) {
+    public Text getLineAt(double d, double e) {
         if (this.cachedPage == null) {
             return null;
         }
@@ -226,11 +226,11 @@ extends Screen {
         if (i <= 114 && j < this.minecraft.textRenderer.fontHeight * k + k) {
             int l = j / this.minecraft.textRenderer.fontHeight;
             if (l >= 0 && l < this.cachedPage.size()) {
-                Component component = this.cachedPage.get(l);
+                Text text = this.cachedPage.get(l);
                 int m = 0;
-                for (Component component2 : component) {
-                    if (!(component2 instanceof TextComponent) || (m += this.minecraft.textRenderer.getStringWidth(component2.getFormattedText())) <= i) continue;
-                    return component2;
+                for (Text text2 : text) {
+                    if (!(text2 instanceof LiteralText) || (m += this.minecraft.textRenderer.getStringWidth(text2.asFormattedString())) <= i) continue;
+                    return text2;
                 }
             }
             return null;
@@ -267,8 +267,8 @@ extends Screen {
         }
 
         @Override
-        public Component getLine(int i) {
-            return new TextComponent(this.lines.get(i));
+        public Text getLine(int i) {
+            return new LiteralText(this.lines.get(i));
         }
     }
 
@@ -286,7 +286,7 @@ extends Screen {
             if (compoundTag != null && WrittenBookItem.isValid(compoundTag)) {
                 return BookScreen.getLines(compoundTag);
             }
-            return ImmutableList.of(new TranslatableComponent("book.invalid.tag", new Object[0]).applyFormat(ChatFormat.DARK_RED).getFormattedText());
+            return ImmutableList.of(new TranslatableText("book.invalid.tag", new Object[0]).formatted(Formatting.DARK_RED).asFormattedString());
         }
 
         @Override
@@ -295,17 +295,17 @@ extends Screen {
         }
 
         @Override
-        public Component getLine(int i) {
+        public Text getLine(int i) {
             String string = this.lines.get(i);
             try {
-                Component component = Component.Serializer.fromJsonString(string);
-                if (component != null) {
-                    return component;
+                Text text = Text.Serializer.fromJson(string);
+                if (text != null) {
+                    return text;
                 }
             } catch (Exception exception) {
                 // empty catch block
             }
-            return new TextComponent(string);
+            return new LiteralText(string);
         }
     }
 
@@ -313,13 +313,13 @@ extends Screen {
     public static interface Contents {
         public int getLineCount();
 
-        public Component getLine(int var1);
+        public Text getLine(int var1);
 
-        default public Component getLineOrDefault(int i) {
+        default public Text getLineOrDefault(int i) {
             if (i >= 0 && i < this.getLineCount()) {
                 return this.getLine(i);
             }
-            return new TextComponent("");
+            return new LiteralText("");
         }
 
         public static Contents create(ItemStack itemStack) {

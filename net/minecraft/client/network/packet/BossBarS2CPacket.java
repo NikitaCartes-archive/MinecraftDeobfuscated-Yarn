@@ -9,15 +9,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class BossBarS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private UUID uuid;
     private Type type;
-    private Component name;
+    private Text name;
     private float percent;
     private BossBar.Color color;
     private BossBar.Style overlay;
@@ -46,7 +46,7 @@ implements Packet<ClientPlayPacketListener> {
         this.type = packetByteBuf.readEnumConstant(Type.class);
         switch (this.type) {
             case ADD: {
-                this.name = packetByteBuf.readTextComponent();
+                this.name = packetByteBuf.readText();
                 this.percent = packetByteBuf.readFloat();
                 this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
                 this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
@@ -61,7 +61,7 @@ implements Packet<ClientPlayPacketListener> {
                 break;
             }
             case UPDATE_NAME: {
-                this.name = packetByteBuf.readTextComponent();
+                this.name = packetByteBuf.readText();
                 break;
             }
             case UPDATE_STYLE: {
@@ -87,7 +87,7 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeEnumConstant(this.type);
         switch (this.type) {
             case ADD: {
-                packetByteBuf.writeTextComponent(this.name);
+                packetByteBuf.writeText(this.name);
                 packetByteBuf.writeFloat(this.percent);
                 packetByteBuf.writeEnumConstant(this.color);
                 packetByteBuf.writeEnumConstant(this.overlay);
@@ -102,7 +102,7 @@ implements Packet<ClientPlayPacketListener> {
                 break;
             }
             case UPDATE_NAME: {
-                packetByteBuf.writeTextComponent(this.name);
+                packetByteBuf.writeText(this.name);
                 break;
             }
             case UPDATE_STYLE: {
@@ -145,7 +145,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getName() {
+    public Text getName() {
         return this.name;
     }
 

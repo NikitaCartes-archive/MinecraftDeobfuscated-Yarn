@@ -12,7 +12,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class DirectConnectScreen
@@ -23,7 +23,7 @@ extends Screen {
     private final BooleanConsumer callback;
 
     public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
-        super(new TranslatableComponent("selectServer.direct", new Object[0]));
+        super(new TranslatableText("selectServer.direct", new Object[0]));
         this.serverEntry = serverEntry;
         this.callback = booleanConsumer;
     }
@@ -74,7 +74,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 100, 0xA0A0A0);
         this.addressField.render(i, j, f);
         super.render(i, j, f);

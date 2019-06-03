@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -31,8 +30,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
-import net.minecraft.network.chat.Components;
 import net.minecraft.server.command.CommandSource;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.CommandBlockExecutor;
@@ -224,7 +224,7 @@ extends Screen {
         this.field_2757 = 0;
         this.field_2756 = this.width;
         if (this.exceptions.isEmpty()) {
-            this.method_2356(ChatFormat.GRAY);
+            this.method_2356(Formatting.GRAY);
         }
         this.suggestionWindow = null;
         if (this.minecraft.options.autoSuggestions) {
@@ -239,7 +239,7 @@ extends Screen {
         return string;
     }
 
-    private void method_2356(ChatFormat chatFormat) {
+    private void method_2356(Formatting formatting) {
         CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
         SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
         Map<CommandNode<CommandSource>, String> map = this.minecraft.player.networkHandler.getCommandDispatcher().getSmartUsage(suggestionContext.parent, this.minecraft.player.networkHandler.getCommandSource());
@@ -247,7 +247,7 @@ extends Screen {
         int i = 0;
         for (Map.Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
             if (entry.getKey() instanceof LiteralCommandNode) continue;
-            list.add((Object)((Object)chatFormat) + entry.getValue());
+            list.add((Object)((Object)formatting) + entry.getValue());
             i = Math.max(i, this.font.getStringWidth(entry.getValue()));
         }
         if (!list.isEmpty()) {
@@ -365,7 +365,7 @@ extends Screen {
                 AbstractCommandBlockScreen.this.font.drawWithShadow(suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * o, o + this.inWindowIndex == this.selection ? -256 : -5592406);
             }
             if (bl52 && (message = this.suggestions.getList().get(this.selection).getTooltip()) != null) {
-                AbstractCommandBlockScreen.this.renderTooltip(Components.message(message).getFormattedText(), i, j);
+                AbstractCommandBlockScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), i, j);
             }
         }
 

@@ -10,19 +10,19 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Map;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 
 public class HelpCommand {
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.help.failed", new Object[0]));
+    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.help.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("help").executes(commandContext -> {
             Map map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), (ServerCommandSource)commandContext.getSource());
             for (String string : map.values()) {
-                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TextComponent("/" + string), false);
+                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + string), false);
             }
             return map.size();
         })).then(CommandManager.argument("command", StringArgumentType.greedyString()).executes(commandContext -> {
@@ -32,7 +32,7 @@ public class HelpCommand {
             }
             Map map = commandDispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (ServerCommandSource)commandContext.getSource());
             for (String string : map.values()) {
-                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TextComponent("/" + parseResults.getReader().getString() + " " + string), false);
+                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
             }
             return map.size();
         })));

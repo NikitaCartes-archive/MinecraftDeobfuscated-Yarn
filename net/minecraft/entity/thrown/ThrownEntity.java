@@ -20,7 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -112,8 +112,8 @@ implements Projectile {
             this.inGround = false;
             this.setVelocity(this.getVelocity().multiply(this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f));
         }
-        BoundingBox boundingBox = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
-        for (Entity entity2 : this.world.getEntities(this, boundingBox, entity -> !entity.isSpectator() && entity.collides())) {
+        Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
+        for (Entity entity2 : this.world.getEntities(this, box, entity -> !entity.isSpectator() && entity.collides())) {
             if (entity2 == this.field_7637) {
                 ++this.field_7638;
                 break;
@@ -123,7 +123,7 @@ implements Projectile {
             this.field_7638 = 3;
             break;
         }
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, boundingBox, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true);
+        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true);
         if (this.field_7637 != null && this.field_7638-- <= 0) {
             this.field_7637 = null;
         }

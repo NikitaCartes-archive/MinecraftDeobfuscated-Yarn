@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -239,9 +240,8 @@ extends AnimalEntity {
         return TAMING_INGREDIENT.method_8093(itemStack);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.random.nextInt(3) != 0;
+    public static boolean method_20666(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return random.nextInt(3) != 0;
     }
 
     @Override

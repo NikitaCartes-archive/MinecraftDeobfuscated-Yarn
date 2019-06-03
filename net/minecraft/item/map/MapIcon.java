@@ -6,7 +6,7 @@ package net.minecraft.item.map;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,14 +15,14 @@ public class MapIcon {
     private byte x;
     private byte z;
     private byte rotation;
-    private final Component text;
+    private final Text text;
 
-    public MapIcon(Type type, byte b, byte c, byte d, @Nullable Component component) {
+    public MapIcon(Type type, byte b, byte c, byte d, @Nullable Text text) {
         this.type = type;
         this.x = b;
         this.z = c;
         this.rotation = d;
-        this.text = component;
+        this.text = text;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -52,7 +52,7 @@ public class MapIcon {
     }
 
     @Nullable
-    public Component getText() {
+    public Text getText() {
         return this.text;
     }
 

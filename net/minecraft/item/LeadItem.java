@@ -13,7 +13,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class LeadItem
@@ -44,7 +44,7 @@ extends Item {
         int i = blockPos.getX();
         int j = blockPos.getY();
         int k = blockPos.getZ();
-        List<MobEntity> list = world.getEntities(MobEntity.class, new BoundingBox((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0));
+        List<MobEntity> list = world.getEntities(MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0));
         for (MobEntity mobEntity : list) {
             if (mobEntity.getHoldingEntity() != playerEntity) continue;
             if (leadKnotEntity == null) {

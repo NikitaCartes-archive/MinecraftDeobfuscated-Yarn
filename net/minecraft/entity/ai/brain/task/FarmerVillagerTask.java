@@ -3,15 +3,14 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
+import net.minecraft.block.FarmlandBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -25,7 +24,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +36,7 @@ extends Task<VillagerEntity> {
     private boolean field_18860;
     private long field_18861;
     private int field_19239;
+    private List<BlockPos> field_19351 = Lists.newArrayList();
 
     public FarmerVillagerTask() {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
@@ -50,22 +49,40 @@ extends Task<VillagerEntity> {
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
             return false;
         }
-        Set set = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.SECONDARY_JOB_SITE).get().stream().map(GlobalPos::getPos).collect(Collectors.toSet());
-        BlockPos blockPos2 = new BlockPos(villagerEntity);
-        List list = ImmutableList.of(blockPos2.down(), blockPos2.south(), blockPos2.north(), blockPos2.east(), blockPos2.west()).stream().filter(set::contains).collect(Collectors.toList());
         this.field_18859 = villagerEntity.hasSeedToPlant();
-        this.field_18860 = villagerEntity.canBreed();
-        List list2 = list.stream().map(BlockPos::up).filter(blockPos -> this.method_20391(serverWorld.getBlockState((BlockPos)blockPos))).collect(Collectors.toList());
-        if (!list2.isEmpty()) {
-            this.field_18858 = (BlockPos)list2.get(serverWorld.getRandom().nextInt(list2.size()));
-            return true;
+        this.field_18860 = false;
+        BasicInventory basicInventory = villagerEntity.getInventory();
+        int i = basicInventory.getInvSize();
+        for (int j = 0; j < i; ++j) {
+            if (!basicInventory.getInvStack(j).isEmpty()) continue;
+            this.field_18860 = true;
+            break;
         }
-        return false;
+        BlockPos.Mutable mutable = new BlockPos.Mutable(villagerEntity.x, villagerEntity.y, villagerEntity.z);
+        this.field_19351.clear();
+        for (int k = -1; k <= 1; ++k) {
+            for (int l = -1; l <= 1; ++l) {
+                for (int m = -1; m <= 1; ++m) {
+                    mutable.set(villagerEntity.x + (double)k, villagerEntity.y + (double)l, villagerEntity.z + (double)m);
+                    if (!this.method_20640(mutable, serverWorld)) continue;
+                    this.field_19351.add(new BlockPos(mutable));
+                }
+            }
+        }
+        this.field_18858 = this.method_20641(serverWorld);
+        return (this.field_18859 || this.field_18860) && this.field_18858 != null;
     }
 
-    private boolean method_20391(BlockState blockState) {
+    @Nullable
+    private BlockPos method_20641(ServerWorld serverWorld) {
+        return this.field_19351.isEmpty() ? null : this.field_19351.get(serverWorld.getRandom().nextInt(this.field_19351.size()));
+    }
+
+    private boolean method_20640(BlockPos blockPos, ServerWorld serverWorld) {
+        BlockState blockState = serverWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
-        return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860 || blockState.isAir() && this.field_18859;
+        Block block2 = serverWorld.getBlockState(blockPos.down()).getBlock();
+        return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860 || blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
     }
 
     protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -83,12 +100,14 @@ extends Task<VillagerEntity> {
     }
 
     protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        if (this.field_19239 > 15 && this.field_18858 != null && l > this.field_18861) {
+        if (this.field_18858 != null && l > this.field_18861) {
             BlockState blockState = serverWorld.getBlockState(this.field_18858);
             Block block = blockState.getBlock();
+            Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
             if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
                 serverWorld.breakBlock(this.field_18858, true);
-            } else if (blockState.isAir() && this.field_18859) {
+            }
+            if (blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859) {
                 BasicInventory basicInventory = villagerEntity.getInventory();
                 for (int i = 0; i < basicInventory.getInvSize(); ++i) {
                     ItemStack itemStack = basicInventory.getInvStack(i);
@@ -116,12 +135,21 @@ extends Task<VillagerEntity> {
                     break;
                 }
             }
+            if (block instanceof CropBlock && !((CropBlock)block).isMature(blockState)) {
+                this.field_19351.remove(this.field_18858);
+                this.field_18858 = this.method_20641(serverWorld);
+                if (this.field_18858 != null) {
+                    this.field_18861 = l + 20L;
+                    villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5f, 1));
+                    villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
+                }
+            }
         }
         ++this.field_19239;
     }
 
     protected boolean method_20394(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        return this.field_19239 < 30;
+        return this.field_19239 < 200;
     }
 
     @Override

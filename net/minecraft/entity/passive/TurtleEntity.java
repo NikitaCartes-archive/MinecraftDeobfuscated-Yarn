@@ -75,7 +75,6 @@ extends AnimalEntity {
     public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.moveControl = new TurtleMoveControl(this);
-        this.spawningGround = Blocks.SAND;
         this.stepHeight = 1.0f;
     }
 
@@ -173,10 +172,8 @@ extends AnimalEntity {
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-        return blockPos.getY() < iWorld.getSeaLevel() + 4 && super.canSpawn(iWorld, spawnType);
+    public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.getLightLevel(blockPos, 0) > 8;
     }
 
     @Override
@@ -298,7 +295,10 @@ extends AnimalEntity {
         if (!this.isLandBound() && viewableWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        return super.getPathfindingFavor(blockPos, viewableWorld);
+        if (viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
+            return 10.0f;
+        }
+        return viewableWorld.getBrightness(blockPos) - 0.5f;
     }
 
     @Override

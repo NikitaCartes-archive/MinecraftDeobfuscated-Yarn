@@ -33,13 +33,13 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ReplaceItemCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -54,8 +54,8 @@ public class LootCommand {
         LootManager lootManager = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getLootManager();
         return CommandSource.suggestIdentifiers(lootManager.getSupplierNames(), suggestionsBuilder);
     };
-    private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("commands.drop.no_held_items", object));
-    private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("commands.drop.no_loot_table", object));
+    private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.drop.no_held_items", object));
+    private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.drop.no_loot_table", object));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)LootCommand.addTargetArguments(CommandManager.literal("loot").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)), (argumentBuilder, target) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)argumentBuilder.then(CommandManager.literal("fish").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("loot_table", IdentifierArgumentType.create()).suggests(SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("pos", BlockPosArgumentType.create()).executes(commandContext -> LootCommand.executeFish(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStack.EMPTY, target))).then(CommandManager.argument("tool", ItemStackArgumentType.create()).executes(commandContext -> LootCommand.executeFish(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false), target)))).then(CommandManager.literal("mainhand").executes(commandContext -> LootCommand.executeFish(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), LootCommand.getHeldItem((ServerCommandSource)commandContext.getSource(), EquipmentSlot.MAINHAND), target)))).then(CommandManager.literal("offhand").executes(commandContext -> LootCommand.executeFish(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), LootCommand.getHeldItem((ServerCommandSource)commandContext.getSource(), EquipmentSlot.OFFHAND), target))))))).then(CommandManager.literal("loot").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("loot_table", IdentifierArgumentType.create()).suggests(SUGGESTION_PROVIDER).executes(commandContext -> LootCommand.executeLoot(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), target))))).then(CommandManager.literal("kill").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", EntityArgumentType.entity()).executes(commandContext -> LootCommand.executeKill(commandContext, EntityArgumentType.getEntity(commandContext, "target"), target))))).then(CommandManager.literal("mine").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("pos", BlockPosArgumentType.create()).executes(commandContext -> LootCommand.executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStack.EMPTY, target))).then(CommandManager.argument("tool", ItemStackArgumentType.create()).executes(commandContext -> LootCommand.executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false), target)))).then(CommandManager.literal("mainhand").executes(commandContext -> LootCommand.executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), LootCommand.getHeldItem((ServerCommandSource)commandContext.getSource(), EquipmentSlot.MAINHAND), target)))).then(CommandManager.literal("offhand").executes(commandContext -> LootCommand.executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), LootCommand.getHeldItem((ServerCommandSource)commandContext.getSource(), EquipmentSlot.OFFHAND), target)))))));
@@ -179,18 +179,18 @@ public class LootCommand {
     private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
         if (list.size() == 1) {
             ItemStack itemStack = list.get(0);
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple", list.size()), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.multiple", list.size()), false);
         }
     }
 
     private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list, Identifier identifier) {
         if (list.size() == 1) {
             ItemStack itemStack = list.get(0);
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), identifier), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), identifier), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.drop.success.multiple_with_table", list.size(), identifier), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.multiple_with_table", list.size(), identifier), false);
         }
     }
 

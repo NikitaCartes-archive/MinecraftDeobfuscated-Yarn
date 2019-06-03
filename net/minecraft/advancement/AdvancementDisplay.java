@@ -16,7 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
@@ -24,8 +24,8 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class AdvancementDisplay {
-    private final Component title;
-    private final Component description;
+    private final Text title;
+    private final Text description;
     private final ItemStack icon;
     private final Identifier background;
     private final AdvancementFrame frame;
@@ -35,9 +35,9 @@ public class AdvancementDisplay {
     private float xPos;
     private float yPos;
 
-    public AdvancementDisplay(ItemStack itemStack, Component component, Component component2, @Nullable Identifier identifier, AdvancementFrame advancementFrame, boolean bl, boolean bl2, boolean bl3) {
-        this.title = component;
-        this.description = component2;
+    public AdvancementDisplay(ItemStack itemStack, Text text, Text text2, @Nullable Identifier identifier, AdvancementFrame advancementFrame, boolean bl, boolean bl2, boolean bl3) {
+        this.title = text;
+        this.description = text2;
         this.icon = itemStack;
         this.background = identifier;
         this.frame = advancementFrame;
@@ -51,11 +51,11 @@ public class AdvancementDisplay {
         this.yPos = g;
     }
 
-    public Component getTitle() {
+    public Text getTitle() {
         return this.title;
     }
 
-    public Component getDescription() {
+    public Text getDescription() {
         return this.description;
     }
 
@@ -98,9 +98,9 @@ public class AdvancementDisplay {
     }
 
     public static AdvancementDisplay fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        Component component = JsonHelper.deserialize(jsonObject, "title", jsonDeserializationContext, Component.class);
-        Component component2 = JsonHelper.deserialize(jsonObject, "description", jsonDeserializationContext, Component.class);
-        if (component == null || component2 == null) {
+        Text text = JsonHelper.deserialize(jsonObject, "title", jsonDeserializationContext, Text.class);
+        Text text2 = JsonHelper.deserialize(jsonObject, "description", jsonDeserializationContext, Text.class);
+        if (text == null || text2 == null) {
             throw new JsonSyntaxException("Both title and description must be set");
         }
         ItemStack itemStack = AdvancementDisplay.iconFromJson(JsonHelper.getObject(jsonObject, "icon"));
@@ -109,7 +109,7 @@ public class AdvancementDisplay {
         boolean bl = JsonHelper.getBoolean(jsonObject, "show_toast", true);
         boolean bl2 = JsonHelper.getBoolean(jsonObject, "announce_to_chat", true);
         boolean bl3 = JsonHelper.getBoolean(jsonObject, "hidden", false);
-        return new AdvancementDisplay(itemStack, component, component2, identifier, advancementFrame, bl, bl2, bl3);
+        return new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, bl2, bl3);
     }
 
     private static ItemStack iconFromJson(JsonObject jsonObject) {
@@ -133,8 +133,8 @@ public class AdvancementDisplay {
     }
 
     public void toPacket(PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeTextComponent(this.title);
-        packetByteBuf.writeTextComponent(this.description);
+        packetByteBuf.writeText(this.title);
+        packetByteBuf.writeText(this.description);
         packetByteBuf.writeItemStack(this.icon);
         packetByteBuf.writeEnumConstant(this.frame);
         int i = 0;
@@ -156,15 +156,15 @@ public class AdvancementDisplay {
     }
 
     public static AdvancementDisplay fromPacket(PacketByteBuf packetByteBuf) {
-        Component component = packetByteBuf.readTextComponent();
-        Component component2 = packetByteBuf.readTextComponent();
+        Text text = packetByteBuf.readText();
+        Text text2 = packetByteBuf.readText();
         ItemStack itemStack = packetByteBuf.readItemStack();
         AdvancementFrame advancementFrame = packetByteBuf.readEnumConstant(AdvancementFrame.class);
         int i = packetByteBuf.readInt();
         Identifier identifier = (i & 1) != 0 ? packetByteBuf.readIdentifier() : null;
         boolean bl = (i & 2) != 0;
         boolean bl2 = (i & 4) != 0;
-        AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, component, component2, identifier, advancementFrame, bl, false, bl2);
+        AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, false, bl2);
         advancementDisplay.setPosition(packetByteBuf.readFloat(), packetByteBuf.readFloat());
         return advancementDisplay;
     }
@@ -172,8 +172,8 @@ public class AdvancementDisplay {
     public JsonElement toJson() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("icon", this.iconToJson());
-        jsonObject.add("title", Component.Serializer.toJson(this.title));
-        jsonObject.add("description", Component.Serializer.toJson(this.description));
+        jsonObject.add("title", Text.Serializer.toJsonTree(this.title));
+        jsonObject.add("description", Text.Serializer.toJsonTree(this.description));
         jsonObject.addProperty("frame", this.frame.getId());
         jsonObject.addProperty("show_toast", this.showToast);
         jsonObject.addProperty("announce_to_chat", this.announceToChat);

@@ -17,8 +17,8 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.realms.RealmsBridge;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(value=EnvType.CLIENT)
@@ -27,7 +27,7 @@ extends Screen {
     private final boolean field_19319;
 
     public PauseScreen(boolean bl) {
-        super(bl ? new TranslatableComponent("menu.game", new Object[0]) : new TranslatableComponent("menu.paused", new Object[0]));
+        super(bl ? new TranslatableText("menu.game", new Object[0]) : new TranslatableText("menu.paused", new Object[0]));
         this.field_19319 = bl;
     }
 
@@ -69,7 +69,7 @@ extends Screen {
             buttonWidget.active = false;
             this.minecraft.world.disconnect();
             if (bl) {
-                this.minecraft.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel", new Object[0])));
+                this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
             } else {
                 this.minecraft.disconnect();
             }
@@ -96,9 +96,9 @@ extends Screen {
     public void render(int i, int j, float f) {
         if (this.field_19319) {
             this.renderBackground();
-            this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 0xFFFFFF);
+            this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
         } else {
-            this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 10, 0xFFFFFF);
+            this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 0xFFFFFF);
         }
         super.render(i, j, f);
     }

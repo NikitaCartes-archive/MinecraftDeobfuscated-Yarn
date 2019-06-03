@@ -14,8 +14,8 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.fixes.BlockEntitySignTextStrictJsonFix;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,39 +31,39 @@ extends DataFix {
                 return dynamic;
             }
             String string = dynamic.asString("");
-            Component component = null;
+            Text text = null;
             if ("null".equals(string) || StringUtils.isEmpty(string)) {
-                component = new TextComponent("");
+                text = new LiteralText("");
             } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
                 try {
-                    component = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Component.class, true);
-                    if (component == null) {
-                        component = new TextComponent("");
+                    text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
+                    if (text == null) {
+                        text = new LiteralText("");
                     }
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block
                 }
-                if (component == null) {
+                if (text == null) {
                     try {
-                        component = Component.Serializer.fromJsonString(string);
+                        text = Text.Serializer.fromJson(string);
                     } catch (JsonParseException jsonParseException) {
                         // empty catch block
                     }
                 }
-                if (component == null) {
+                if (text == null) {
                     try {
-                        component = Component.Serializer.fromLenientJsonString(string);
+                        text = Text.Serializer.fromLenientJson(string);
                     } catch (JsonParseException jsonParseException) {
                         // empty catch block
                     }
                 }
-                if (component == null) {
-                    component = new TextComponent(string);
+                if (text == null) {
+                    text = new LiteralText(string);
                 }
             } else {
-                component = new TextComponent(string);
+                text = new LiteralText(string);
             }
-            return dynamic.createString(Component.Serializer.toJsonString(component));
+            return dynamic.createString(Text.Serializer.toJson(text));
         })).map(dynamic::createList), dynamic.emptyList()));
     }
 

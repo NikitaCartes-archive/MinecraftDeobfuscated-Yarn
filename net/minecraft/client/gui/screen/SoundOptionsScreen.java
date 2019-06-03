@@ -12,8 +12,8 @@ import net.minecraft.client.gui.widget.SoundSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundOptionsScreen
@@ -22,7 +22,7 @@ extends Screen {
     private final GameOptions options;
 
     public SoundOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(new TranslatableComponent("options.sounds.title", new Object[0]));
+        super(new TranslatableText("options.sounds.title", new Object[0]));
         this.parent = screen;
         this.options = gameOptions;
     }
@@ -53,7 +53,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 15, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 15, 0xFFFFFF);
         super.render(i, j, f);
     }
 }

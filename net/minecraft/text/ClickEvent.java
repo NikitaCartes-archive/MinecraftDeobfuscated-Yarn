@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -55,29 +55,29 @@ public class ClickEvent {
         SUGGEST_COMMAND("suggest_command", true),
         CHANGE_PAGE("change_page", true);
 
-        private static final Map<String, Action> ACTIONS;
-        private final boolean safe;
+        private static final Map<String, Action> BY_NAME;
+        private final boolean userDefinable;
         private final String name;
 
         private Action(String string2, boolean bl) {
             this.name = string2;
-            this.safe = bl;
+            this.userDefinable = bl;
         }
 
-        public boolean isSafe() {
-            return this.safe;
+        public boolean isUserDefinable() {
+            return this.userDefinable;
         }
 
         public String getName() {
             return this.name;
         }
 
-        public static Action get(String string) {
-            return ACTIONS.get(string);
+        public static Action byName(String string) {
+            return BY_NAME.get(string);
         }
 
         static {
-            ACTIONS = Arrays.stream(Action.values()).collect(Collectors.toMap(Action::getName, action -> action));
+            BY_NAME = Arrays.stream(Action.values()).collect(Collectors.toMap(Action::getName, action -> action));
         }
     }
 }

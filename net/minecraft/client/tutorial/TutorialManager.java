@@ -5,7 +5,6 @@ package net.minecraft.client.tutorial;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
@@ -13,8 +12,9 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.KeybindComponent;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
@@ -113,8 +113,8 @@ public class TutorialManager {
         return this.client.interactionManager.getCurrentGameMode();
     }
 
-    public static Component getKeybindName(String string) {
-        return new KeybindComponent("key." + string).applyFormat(ChatFormat.BOLD);
+    public static Text getKeybindName(String string) {
+        return new KeybindText("key." + string).formatted(Formatting.BOLD);
     }
 }
 

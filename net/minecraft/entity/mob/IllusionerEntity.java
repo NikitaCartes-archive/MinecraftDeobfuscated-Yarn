@@ -39,7 +39,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -102,7 +102,7 @@ implements RangedAttackMob {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public BoundingBox getVisibilityBoundingBox() {
+    public Box getVisibilityBoundingBox() {
         return this.getBoundingBox().expand(3.0, 0.0, 3.0);
     }
 

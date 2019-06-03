@@ -49,13 +49,13 @@ import net.minecraft.network.PacketEncoderException;
 import net.minecraft.network.PacketInflater;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -79,7 +79,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     private Channel channel;
     private SocketAddress address;
     private PacketListener packetListener;
-    private Component disconnectReason;
+    private Text disconnectReason;
     private boolean encrypted;
     private boolean disconnected;
     private int packetsReceivedCounter;
@@ -113,7 +113,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     public void channelInactive(ChannelHandlerContext channelHandlerContext) throws Exception {
-        this.disconnect(new TranslatableComponent("disconnect.endOfStream", new Object[0]));
+        this.disconnect(new TranslatableText("disconnect.endOfStream", new Object[0]));
     }
 
     @Override
@@ -129,16 +129,16 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
         if (throwable instanceof TimeoutException) {
             LOGGER.debug("Timeout", throwable);
-            this.disconnect(new TranslatableComponent("disconnect.timeout", new Object[0]));
+            this.disconnect(new TranslatableText("disconnect.timeout", new Object[0]));
         } else {
-            TranslatableComponent component = new TranslatableComponent("disconnect.genericReason", "Internal Exception: " + throwable);
+            TranslatableText text = new TranslatableText("disconnect.genericReason", "Internal Exception: " + throwable);
             if (bl) {
                 LOGGER.debug("Failed to sent packet", throwable);
-                this.send(new DisconnectS2CPacket(component), future -> this.disconnect(component));
+                this.send(new DisconnectS2CPacket(text), future -> this.disconnect(text));
                 this.disableAutoRead();
             } else {
                 LOGGER.debug("Double fault", throwable);
-                this.disconnect(component);
+                this.disconnect(text);
             }
         }
     }
@@ -251,10 +251,10 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         return this.address;
     }
 
-    public void disconnect(Component component) {
+    public void disconnect(Text text) {
         if (this.channel.isOpen()) {
             this.channel.close().awaitUninterruptibly();
-            this.disconnectReason = component;
+            this.disconnectReason = text;
         }
     }
 
@@ -326,7 +326,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     }
 
     @Nullable
-    public Component getDisconnectReason() {
+    public Text getDisconnectReason() {
         return this.disconnectReason;
     }
 
@@ -367,7 +367,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             if (this.getDisconnectReason() != null) {
                 this.getPacketListener().onDisconnected(this.getDisconnectReason());
             } else if (this.getPacketListener() != null) {
-                this.getPacketListener().onDisconnected(new TranslatableComponent("multiplayer.disconnect.generic", new Object[0]));
+                this.getPacketListener().onDisconnected(new TranslatableText("multiplayer.disconnect.generic", new Object[0]));
             }
         }
     }

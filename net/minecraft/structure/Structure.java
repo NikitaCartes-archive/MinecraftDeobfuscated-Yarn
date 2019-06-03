@@ -33,7 +33,7 @@ import net.minecraft.util.Clearable;
 import net.minecraft.util.IdList;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
@@ -105,7 +105,7 @@ public class Structure {
     }
 
     private void method_15164(World world, BlockPos blockPos, BlockPos blockPos2) {
-        List<Entity> list = world.getEntities(Entity.class, new BoundingBox(blockPos, blockPos2), entity -> !(entity instanceof PlayerEntity));
+        List<Entity> list = world.getEntities(Entity.class, new Box(blockPos, blockPos2), entity -> !(entity instanceof PlayerEntity));
         this.entities.clear();
         for (Entity entity2 : list) {
             Vec3d vec3d = new Vec3d(entity2.x - (double)blockPos.getX(), entity2.y - (double)blockPos.getY(), entity2.z - (double)blockPos.getZ());
@@ -179,7 +179,7 @@ public class Structure {
             if (structureBlockInfo.tag != null) {
                 blockEntity = iWorld.getBlockEntity(blockPos2);
                 Clearable.clear(blockEntity);
-                iWorld.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 4);
+                iWorld.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
             }
             if (!iWorld.setBlockState(blockPos2, blockState, i)) continue;
             j = Math.min(j, blockPos2.getX());

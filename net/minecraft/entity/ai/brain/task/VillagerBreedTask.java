@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
@@ -50,26 +51,27 @@ extends Task<VillagerEntity> {
         }
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
         if (l >= this.field_18368) {
-            Optional<BlockPos> optional = this.method_19573(serverWorld, villagerEntity);
-            if (!optional.isPresent()) {
-                serverWorld.sendEntityStatus(villagerEntity2, (byte)13);
-                serverWorld.sendEntityStatus(villagerEntity, (byte)13);
-                return;
-            }
-            villagerEntity.consumeAvailableFood();
-            villagerEntity2.consumeAvailableFood();
+            villagerEntity.method_20697();
+            villagerEntity2.method_20697();
+            this.method_20643(serverWorld, villagerEntity, villagerEntity2);
+        } else if (villagerEntity.getRand().nextInt(35) == 0) {
+            serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
+            serverWorld.sendEntityStatus(villagerEntity, (byte)12);
+        }
+    }
+
+    private void method_20643(ServerWorld serverWorld, VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
+        Optional<BlockPos> optional = this.method_19573(serverWorld, villagerEntity);
+        if (!optional.isPresent()) {
+            serverWorld.sendEntityStatus(villagerEntity2, (byte)13);
+            serverWorld.sendEntityStatus(villagerEntity, (byte)13);
+        } else {
             Optional<VillagerEntity> optional2 = this.method_18970(villagerEntity, villagerEntity2);
             if (optional2.isPresent()) {
-                villagerEntity.depleteFood(12);
-                villagerEntity2.depleteFood(12);
                 this.method_19572(serverWorld, optional2.get(), optional.get());
             } else {
                 serverWorld.getPointOfInterestStorage().releaseTicket(optional.get());
             }
-        }
-        if (villagerEntity.getRand().nextInt(35) == 0) {
-            serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
-            serverWorld.sendEntityStatus(villagerEntity, (byte)12);
         }
     }
 
@@ -91,7 +93,12 @@ extends Task<VillagerEntity> {
     }
 
     private Optional<BlockPos> method_19573(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        return serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> true, new BlockPos(villagerEntity), 48);
+        return serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.method_20642(villagerEntity, (BlockPos)blockPos), new BlockPos(villagerEntity), 48);
+    }
+
+    private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
+        Path path = villagerEntity.getNavigation().findPathTo(blockPos);
+        return path != null && path.method_19313(blockPos);
     }
 
     private Optional<VillagerEntity> method_18970(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {

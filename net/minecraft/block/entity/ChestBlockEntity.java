@@ -26,15 +26,15 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -74,8 +74,8 @@ Tickable {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.chest", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.chest", new Object[0]);
     }
 
     @Override
@@ -134,7 +134,7 @@ Tickable {
     public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
         int l = 0;
         float f = 5.0f;
-        List<PlayerEntity> list = world.getEntities(PlayerEntity.class, new BoundingBox((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f));
+        List<PlayerEntity> list = world.getEntities(PlayerEntity.class, new Box((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f));
         for (PlayerEntity playerEntity : list) {
             Inventory inventory;
             if (!(playerEntity.container instanceof GenericContainer) || (inventory = ((GenericContainer)playerEntity.container).getInventory()) != lockableContainerBlockEntity && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(lockableContainerBlockEntity))) continue;

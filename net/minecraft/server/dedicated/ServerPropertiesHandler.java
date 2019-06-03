@@ -26,7 +26,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
     public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
     public final boolean generateStructures = this.parseBoolean("generate-structures", true);
-    public final Difficulty difficulty = this.get("difficulty", ServerPropertiesHandler.wrapIntParsingFunction(Difficulty::getDifficulty, Difficulty::getDifficulty), Difficulty::getTranslationKey, Difficulty.EASY);
+    public final Difficulty difficulty = this.get("difficulty", ServerPropertiesHandler.wrapIntParsingFunction(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
     public final GameMode gameMode = this.get("gamemode", ServerPropertiesHandler.wrapIntParsingFunction(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
     public final String levelName = this.getString("level-name", "world");
     public final String levelSeed = this.getString("level-seed", "");

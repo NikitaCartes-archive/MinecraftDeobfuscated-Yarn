@@ -10,8 +10,8 @@ import net.minecraft.container.BlockContext;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CartographyTableBlock
 extends Block {
-    private static final TranslatableComponent CONTAINER_NAME = new TranslatableComponent("container.cartography_table", new Object[0]);
+    private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.cartography_table", new Object[0]);
 
     protected CartographyTableBlock(Block.Settings settings) {
         super(settings);

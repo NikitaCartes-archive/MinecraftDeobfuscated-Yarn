@@ -21,7 +21,7 @@ import net.minecraft.client.network.ServerEntryNetworkPart;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +43,7 @@ extends Screen {
     private boolean initialized;
 
     public MultiplayerScreen(Screen screen) {
-        super(new TranslatableComponent("multiplayer.title", new Object[0]));
+        super(new TranslatableText("multiplayer.title", new Object[0]));
         this.parent = screen;
     }
 
@@ -90,11 +90,11 @@ extends Screen {
             String string;
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelected();
             if (entry instanceof MultiplayerServerListWidget.ServerItem && (string = ((MultiplayerServerListWidget.ServerItem)entry).getServer().name) != null) {
-                TranslatableComponent component = new TranslatableComponent("selectServer.deleteQuestion", new Object[0]);
-                TranslatableComponent component2 = new TranslatableComponent("selectServer.deleteWarning", string);
+                TranslatableText text = new TranslatableText("selectServer.deleteQuestion", new Object[0]);
+                TranslatableText text2 = new TranslatableText("selectServer.deleteWarning", string);
                 String string2 = I18n.translate("selectServer.deleteButton", new Object[0]);
                 String string3 = I18n.translate("gui.cancel", new Object[0]);
-                this.minecraft.openScreen(new ConfirmScreen(this::removeEntry, component, component2, string2, string3));
+                this.minecraft.openScreen(new ConfirmScreen(this::removeEntry, text, text2, string2, string3));
             }
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, I18n.translate("selectServer.refresh", new Object[0]), buttonWidget -> this.refresh()));
@@ -190,7 +190,7 @@ extends Screen {
         this.tooltipText = null;
         this.renderBackground();
         this.serverListWidget.render(i, j, f);
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         super.render(i, j, f);
         if (this.tooltipText != null) {
             this.renderTooltip(Lists.newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);

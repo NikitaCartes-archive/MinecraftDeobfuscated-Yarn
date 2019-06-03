@@ -12,14 +12,14 @@ import java.util.Date;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourceImpl;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -29,11 +29,11 @@ public class ScreenshotUtils {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-    public static void method_1659(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Component> consumer) {
+    public static void method_1659(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
         ScreenshotUtils.method_1662(file, null, i, j, glFramebuffer, consumer);
     }
 
-    public static void method_1662(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Component> consumer) {
+    public static void method_1662(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
         NativeImage nativeImage = ScreenshotUtils.method_1663(i, j, glFramebuffer);
         File file2 = new File(file, "screenshots");
         file2.mkdir();
@@ -41,11 +41,11 @@ public class ScreenshotUtils {
         ResourceImpl.RESOURCE_IO_EXECUTOR.execute(() -> {
             try {
                 nativeImage.writeFile(file3);
-                Component component = new TextComponent(file3.getName()).applyFormat(ChatFormat.UNDERLINE).modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
-                consumer.accept(new TranslatableComponent("screenshot.success", component));
+                Text text = new LiteralText(file3.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
+                consumer.accept(new TranslatableText("screenshot.success", text));
             } catch (Exception exception) {
                 LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
-                consumer.accept(new TranslatableComponent("screenshot.failure", exception.getMessage()));
+                consumer.accept(new TranslatableText("screenshot.failure", exception.getMessage()));
             } finally {
                 nativeImage.close();
             }

@@ -17,20 +17,20 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import org.jetbrains.annotations.Nullable;
 
 public interface EntityView {
-    public List<Entity> getEntities(@Nullable Entity var1, BoundingBox var2, @Nullable Predicate<? super Entity> var3);
+    public List<Entity> getEntities(@Nullable Entity var1, Box var2, @Nullable Predicate<? super Entity> var3);
 
-    public <T extends Entity> List<T> getEntities(Class<? extends T> var1, BoundingBox var2, @Nullable Predicate<? super T> var3);
+    public <T extends Entity> List<T> getEntities(Class<? extends T> var1, Box var2, @Nullable Predicate<? super T> var3);
 
     public List<? extends PlayerEntity> getPlayers();
 
-    default public List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox) {
-        return this.getEntities(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
+    default public List<Entity> getEntities(@Nullable Entity entity, Box box) {
+        return this.getEntities(entity, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
     default public boolean intersectsEntities(@Nullable Entity entity3, VoxelShape voxelShape) {
@@ -40,16 +40,16 @@ public interface EntityView {
         return this.getEntities(entity3, voxelShape.getBoundingBox()).stream().filter(entity2 -> !entity2.removed && entity2.field_6033 && (entity3 == null || !entity2.isConnectedThroughVehicle(entity3))).noneMatch(entity -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND));
     }
 
-    default public <T extends Entity> List<T> getEntities(Class<? extends T> class_, BoundingBox boundingBox) {
-        return this.getEntities(class_, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
+    default public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
+        return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
     default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
         if (voxelShape.isEmpty()) {
             return Stream.empty();
         }
-        BoundingBox boundingBox = voxelShape.getBoundingBox();
-        return this.getEntities(entity, boundingBox.expand(0.25)).stream().filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.isConnectedThroughVehicle((Entity)entity2))).flatMap(entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.method_5708((Entity)entity2)).filter(Objects::nonNull).filter(boundingBox2 -> boundingBox2.intersects(boundingBox)).map(VoxelShapes::cuboid));
+        Box box = voxelShape.getBoundingBox();
+        return this.getEntities(entity, box.expand(0.25)).stream().filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.isConnectedThroughVehicle((Entity)entity2))).flatMap(entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.method_5708((Entity)entity2)).filter(Objects::nonNull).filter(box2 -> box2.intersects(box)).map(VoxelShapes::cuboid));
     }
 
     @Nullable
@@ -117,8 +117,8 @@ public interface EntityView {
     }
 
     @Nullable
-    default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, BoundingBox boundingBox) {
-        return this.getClosestEntity(this.getEntities(class_, boundingBox, null), targetPredicate, livingEntity, d, e, f);
+    default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box) {
+        return this.getClosestEntity(this.getEntities(class_, box, null), targetPredicate, livingEntity, d, e, f);
     }
 
     @Nullable
@@ -135,17 +135,17 @@ public interface EntityView {
         return (T)livingEntity2;
     }
 
-    default public List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, BoundingBox boundingBox) {
+    default public List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
         ArrayList<PlayerEntity> list = Lists.newArrayList();
         for (PlayerEntity playerEntity : this.getPlayers()) {
-            if (!boundingBox.contains(playerEntity.x, playerEntity.y, playerEntity.z) || !targetPredicate.test(livingEntity, playerEntity)) continue;
+            if (!box.contains(playerEntity.x, playerEntity.y, playerEntity.z) || !targetPredicate.test(livingEntity, playerEntity)) continue;
             list.add(playerEntity);
         }
         return list;
     }
 
-    default public <T extends LivingEntity> List<T> getTargets(Class<? extends T> class_, TargetPredicate targetPredicate, LivingEntity livingEntity, BoundingBox boundingBox) {
-        List<T> list = this.getEntities(class_, boundingBox, null);
+    default public <T extends LivingEntity> List<T> getTargets(Class<? extends T> class_, TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+        List<T> list = this.getEntities(class_, box, null);
         ArrayList<LivingEntity> list2 = Lists.newArrayList();
         for (LivingEntity livingEntity2 : list) {
             if (!targetPredicate.test(livingEntity, livingEntity2)) continue;

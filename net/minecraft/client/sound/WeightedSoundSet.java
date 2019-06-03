@@ -12,8 +12,8 @@ import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,11 +23,11 @@ implements SoundContainer<Sound> {
     private final List<SoundContainer<Sound>> sounds = Lists.newArrayList();
     private final Random random = new Random();
     private final Identifier id;
-    private final Component subtitle;
+    private final Text subtitle;
 
     public WeightedSoundSet(Identifier identifier, @Nullable String string) {
         this.id = identifier;
-        this.subtitle = string == null ? null : new TranslatableComponent(string, new Object[0]);
+        this.subtitle = string == null ? null : new TranslatableText(string, new Object[0]);
     }
 
     @Override
@@ -57,7 +57,7 @@ implements SoundContainer<Sound> {
     }
 
     @Nullable
-    public Component getSubtitle() {
+    public Text getSubtitle() {
         return this.subtitle;
     }
 

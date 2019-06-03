@@ -14,17 +14,17 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
-import net.minecraft.ChatFormat;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -34,14 +34,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class ServerCommandSource
 implements CommandSource {
-    public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.player", new Object[0]));
-    public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.entity", new Object[0]));
+    public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player", new Object[0]));
+    public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.entity", new Object[0]));
     private final CommandOutput output;
     private final Vec3d position;
     private final ServerWorld world;
     private final int level;
     private final String simpleName;
-    private final Component name;
+    private final Text name;
     private final MinecraftServer minecraftServer;
     private final boolean silent;
     @Nullable
@@ -50,11 +50,11 @@ implements CommandSource {
     private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
     private final Vec2f rotation;
 
-    public ServerCommandSource(CommandOutput commandOutput, Vec3d vec3d, Vec2f vec2f, ServerWorld serverWorld, int i2, String string, Component component, MinecraftServer minecraftServer, @Nullable Entity entity) {
-        this(commandOutput, vec3d, vec2f, serverWorld, i2, string, component, minecraftServer, entity, false, (commandContext, bl, i) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET);
+    public ServerCommandSource(CommandOutput commandOutput, Vec3d vec3d, Vec2f vec2f, ServerWorld serverWorld, int i2, String string, Text text, MinecraftServer minecraftServer, @Nullable Entity entity) {
+        this(commandOutput, vec3d, vec2f, serverWorld, i2, string, text, minecraftServer, entity, false, (commandContext, bl, i) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET);
     }
 
-    protected ServerCommandSource(CommandOutput commandOutput, Vec3d vec3d, Vec2f vec2f, ServerWorld serverWorld, int i, String string, Component component, MinecraftServer minecraftServer, @Nullable Entity entity, boolean bl, ResultConsumer<ServerCommandSource> resultConsumer, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
+    protected ServerCommandSource(CommandOutput commandOutput, Vec3d vec3d, Vec2f vec2f, ServerWorld serverWorld, int i, String string, Text text, MinecraftServer minecraftServer, @Nullable Entity entity, boolean bl, ResultConsumer<ServerCommandSource> resultConsumer, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
         this.output = commandOutput;
         this.position = vec3d;
         this.world = serverWorld;
@@ -62,7 +62,7 @@ implements CommandSource {
         this.entity = entity;
         this.level = i;
         this.simpleName = string;
-        this.name = component;
+        this.name = text;
         this.minecraftServer = minecraftServer;
         this.resultConsumer = resultConsumer;
         this.entityAnchor = entityAnchor;
@@ -152,7 +152,7 @@ implements CommandSource {
         return this.withRotation(new Vec2f(h, i));
     }
 
-    public Component getDisplayName() {
+    public Text getDisplayName() {
         return this.name;
     }
 
@@ -204,31 +204,31 @@ implements CommandSource {
         return this.entityAnchor;
     }
 
-    public void sendFeedback(Component component, boolean bl) {
+    public void sendFeedback(Text text, boolean bl) {
         if (this.output.sendCommandFeedback() && !this.silent) {
-            this.output.sendMessage(component);
+            this.output.sendMessage(text);
         }
         if (bl && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-            this.sendToOps(component);
+            this.sendToOps(text);
         }
     }
 
-    private void sendToOps(Component component) {
-        Component component2 = new TranslatableComponent("chat.type.admin", this.getDisplayName(), component).applyFormat(ChatFormat.GRAY, ChatFormat.ITALIC);
+    private void sendToOps(Text text) {
+        Text text2 = new TranslatableText("chat.type.admin", this.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC);
         if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
             for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
                 if (serverPlayerEntity == this.output || !this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) continue;
-                serverPlayerEntity.sendMessage(component2);
+                serverPlayerEntity.sendMessage(text2);
             }
         }
         if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean("logAdminCommands")) {
-            this.minecraftServer.sendMessage(component2);
+            this.minecraftServer.sendMessage(text2);
         }
     }
 
-    public void sendError(Component component) {
+    public void sendError(Text text) {
         if (this.output.shouldTrackOutput() && !this.silent) {
-            this.output.sendMessage(new TextComponent("").append(component).applyFormat(ChatFormat.RED));
+            this.output.sendMessage(new LiteralText("").append(text).formatted(Formatting.RED));
         }
     }
 

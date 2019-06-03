@@ -22,14 +22,14 @@ import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.LoginKeyC2SPacket;
 import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -67,27 +67,27 @@ implements ServerLoginPacketListener {
             this.clientEntity = null;
         }
         if (this.loginTicks++ == 600) {
-            this.disconnect(new TranslatableComponent("multiplayer.disconnect.slow_login", new Object[0]));
+            this.disconnect(new TranslatableText("multiplayer.disconnect.slow_login", new Object[0]));
         }
     }
 
-    public void disconnect(Component component) {
+    public void disconnect(Text text) {
         try {
-            LOGGER.info("Disconnecting {}: {}", (Object)this.method_14383(), (Object)component.getString());
-            this.client.send(new LoginDisconnectS2CPacket(component));
-            this.client.disconnect(component);
+            LOGGER.info("Disconnecting {}: {}", (Object)this.method_14383(), (Object)text.getString());
+            this.client.send(new LoginDisconnectS2CPacket(text));
+            this.client.disconnect(text);
         } catch (Exception exception) {
             LOGGER.error("Error whilst disconnecting player", (Throwable)exception);
         }
     }
 
     public void method_14384() {
-        Component component;
+        Text text;
         if (!this.profile.isComplete()) {
             this.profile = this.toOfflineProfile(this.profile);
         }
-        if ((component = this.server.getPlayerManager().checkCanJoin(this.client.getAddress(), this.profile)) != null) {
-            this.disconnect(component);
+        if ((text = this.server.getPlayerManager().checkCanJoin(this.client.getAddress(), this.profile)) != null) {
+            this.disconnect(text);
         } else {
             this.state = State.ACCEPTED;
             if (this.server.getNetworkCompressionThreshold() >= 0 && !this.client.isLocal()) {
@@ -105,8 +105,8 @@ implements ServerLoginPacketListener {
     }
 
     @Override
-    public void onDisconnected(Component component) {
-        LOGGER.info("{} lost connection: {}", (Object)this.method_14383(), (Object)component.getString());
+    public void onDisconnected(Text text) {
+        LOGGER.info("{} lost connection: {}", (Object)this.method_14383(), (Object)text.getString());
     }
 
     public String method_14383() {
@@ -154,7 +154,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     } else {
-                        ServerLoginNetworkHandler.this.disconnect(new TranslatableComponent("multiplayer.disconnect.unverified_username", new Object[0]));
+                        ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.unverified_username", new Object[0]));
                         LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameProfile.getName());
                     }
                 } catch (AuthenticationUnavailableException authenticationUnavailableException) {
@@ -163,7 +163,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     }
-                    ServerLoginNetworkHandler.this.disconnect(new TranslatableComponent("multiplayer.disconnect.authservers_down", new Object[0]));
+                    ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.authservers_down", new Object[0]));
                     LOGGER.error("Couldn't verify username because servers are unavailable");
                 }
             }
@@ -180,7 +180,7 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onQueryResponse(LoginQueryResponseC2SPacket loginQueryResponseC2SPacket) {
-        this.disconnect(new TranslatableComponent("multiplayer.disconnect.unexpected_query_response", new Object[0]));
+        this.disconnect(new TranslatableText("multiplayer.disconnect.unexpected_query_response", new Object[0]));
     }
 
     protected GameProfile toOfflineProfile(GameProfile gameProfile) {

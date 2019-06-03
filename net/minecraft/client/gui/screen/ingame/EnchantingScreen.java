@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
@@ -22,7 +21,8 @@ import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -42,14 +42,14 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
     public float pageTurningSpeed;
     private ItemStack field_2913 = ItemStack.EMPTY;
 
-    public EnchantingScreen(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, Component component) {
-        super(enchantingTableContainer, playerInventory, component);
+    public EnchantingScreen(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, Text text) {
+        super(enchantingTableContainer, playerInventory, text);
     }
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 12.0f, 5.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 12.0f, 5.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override
@@ -185,17 +185,17 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
             int o = l + 1;
             if (!this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, i, j) || m <= 0 || n < 0 || enchantment == null) continue;
             ArrayList<String> list = Lists.newArrayList();
-            list.add("" + (Object)((Object)ChatFormat.WHITE) + (Object)((Object)ChatFormat.ITALIC) + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
+            list.add("" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.ITALIC) + I18n.translate("container.enchant.clue", enchantment.getName(n).asFormattedString()));
             if (!bl) {
                 list.add("");
                 if (this.minecraft.player.experienceLevel < m) {
-                    list.add((Object)((Object)ChatFormat.RED) + I18n.translate("container.enchant.level.requirement", ((EnchantingTableContainer)this.container).enchantmentPower[l]));
+                    list.add((Object)((Object)Formatting.RED) + I18n.translate("container.enchant.level.requirement", ((EnchantingTableContainer)this.container).enchantmentPower[l]));
                 } else {
                     String string = o == 1 ? I18n.translate("container.enchant.lapis.one", new Object[0]) : I18n.translate("container.enchant.lapis.many", o);
-                    ChatFormat chatFormat = k >= o ? ChatFormat.GRAY : ChatFormat.RED;
-                    list.add((Object)((Object)chatFormat) + "" + string);
+                    Formatting formatting = k >= o ? Formatting.GRAY : Formatting.RED;
+                    list.add((Object)((Object)formatting) + "" + string);
                     string = o == 1 ? I18n.translate("container.enchant.level.one", new Object[0]) : I18n.translate("container.enchant.level.many", o);
-                    list.add((Object)((Object)ChatFormat.GRAY) + "" + string);
+                    list.add((Object)((Object)Formatting.GRAY) + "" + string);
                 }
             }
             this.renderTooltip(list, i, j);

@@ -16,7 +16,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerRotation;
 import net.minecraft.util.math.MathHelper;
@@ -44,7 +44,7 @@ extends Item {
             return ActionResult.FAIL;
         }
         double d = blockPos.getX();
-        List<Entity> list = world.getEntities((Entity)null, new BoundingBox(d, e = (double)blockPos.getY(), f = (double)blockPos.getZ(), d + 1.0, e + 2.0, f + 1.0));
+        List<Entity> list = world.getEntities((Entity)null, new Box(d, e = (double)blockPos.getY(), f = (double)blockPos.getZ(), d + 1.0, e + 2.0, f + 1.0));
         if (!list.isEmpty()) {
             return ActionResult.FAIL;
         }

@@ -12,30 +12,30 @@ import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.MessageType;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class NarratorManager
 implements ClientChatListener {
-    public static final Component EMPTY = new TextComponent("");
+    public static final Text EMPTY = new LiteralText("");
     private static final Logger LOGGER = LogManager.getLogger();
     public static final NarratorManager INSTANCE = new NarratorManager();
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(ChatMessageType chatMessageType, Component component) {
+    public void onChatMessage(MessageType messageType, Text text) {
         NarratorOption narratorOption = NarratorManager.method_20602();
         if (narratorOption == NarratorOption.OFF || !this.narrator.active()) {
             return;
         }
-        if (narratorOption == NarratorOption.ALL || narratorOption == NarratorOption.CHAT && chatMessageType == ChatMessageType.CHAT || narratorOption == NarratorOption.SYSTEM && chatMessageType == ChatMessageType.SYSTEM) {
-            Component component2 = component instanceof TranslatableComponent && "chat.type.text".equals(((TranslatableComponent)component).getKey()) ? new TranslatableComponent("chat.type.text.narrate", ((TranslatableComponent)component).getParams()) : component;
-            this.narrate(chatMessageType.interruptsNarration(), component2.getString());
+        if (narratorOption == NarratorOption.ALL || narratorOption == NarratorOption.CHAT && messageType == MessageType.CHAT || narratorOption == NarratorOption.SYSTEM && messageType == MessageType.SYSTEM) {
+            Text text2 = text instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)text).getKey()) ? new TranslatableText("chat.type.text.narrate", ((TranslatableText)text).getArgs()) : text;
+            this.narrate(messageType.interruptsNarration(), text2.getString());
         }
     }
 
@@ -60,16 +60,16 @@ implements ClientChatListener {
 
     public void addToast(NarratorOption narratorOption) {
         this.clear();
-        this.narrator.say(new TranslatableComponent("options.narrator", new Object[0]).getString() + " : " + new TranslatableComponent(narratorOption.getTranslationKey(), new Object[0]).getString(), true);
+        this.narrator.say(new TranslatableText("options.narrator", new Object[0]).getString() + " : " + new TranslatableText(narratorOption.getTranslationKey(), new Object[0]).getString(), true);
         ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
         if (this.narrator.active()) {
             if (narratorOption == NarratorOption.OFF) {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableComponent("narrator.toast.disabled", new Object[0]), null);
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled", new Object[0]), null);
             } else {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableComponent("narrator.toast.enabled", new Object[0]), new TranslatableComponent(narratorOption.getTranslationKey(), new Object[0]));
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled", new Object[0]), new TranslatableText(narratorOption.getTranslationKey(), new Object[0]));
             }
         } else {
-            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableComponent("narrator.toast.disabled", new Object[0]), new TranslatableComponent("options.narrator.notavailable", new Object[0]));
+            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled", new Object[0]), new TranslatableText("options.narrator.notavailable", new Object[0]));
         }
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPose;
@@ -62,13 +63,8 @@ extends WaterCreatureEntity {
         return this.isFromBucket();
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        BlockPos blockPos = new BlockPos(this);
-        if (iWorld.getBlockState(blockPos).getBlock() == Blocks.WATER && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.WATER) {
-            return super.canSpawn(iWorld, spawnType);
-        }
-        return false;
+    public static boolean method_20662(EntityType<? extends FishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return iWorld.getBlockState(blockPos).getBlock() == Blocks.WATER && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.WATER;
     }
 
     @Override

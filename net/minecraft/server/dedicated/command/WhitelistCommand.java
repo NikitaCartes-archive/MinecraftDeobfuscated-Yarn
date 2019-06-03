@@ -11,20 +11,20 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class WhitelistCommand {
-    private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.whitelist.alreadyOn", new Object[0]));
-    private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.whitelist.alreadyOff", new Object[0]));
-    private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.whitelist.add.failed", new Object[0]));
-    private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.whitelist.remove.failed", new Object[0]));
+    private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.alreadyOn", new Object[0]));
+    private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.alreadyOff", new Object[0]));
+    private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.add.failed", new Object[0]));
+    private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.whitelist.remove.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("whitelist").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.literal("on").executes(commandContext -> WhitelistCommand.executeOn((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("off").executes(commandContext -> WhitelistCommand.executeOff((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("list").executes(commandContext -> WhitelistCommand.executeList((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", GameProfileArgumentType.create()).suggests((commandContext, suggestionsBuilder) -> {
@@ -35,7 +35,7 @@ public class WhitelistCommand {
 
     private static int executeReload(ServerCommandSource serverCommandSource) {
         serverCommandSource.getMinecraftServer().getPlayerManager().reloadWhitelist();
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.reloaded", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.reloaded", new Object[0]), true);
         serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
         return 1;
     }
@@ -47,7 +47,7 @@ public class WhitelistCommand {
             if (whitelist.isAllowed(gameProfile)) continue;
             WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
             whitelist.add(whitelistEntry);
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.add.success", Components.profile(gameProfile)), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
             ++i;
         }
         if (i == 0) {
@@ -63,7 +63,7 @@ public class WhitelistCommand {
             if (!whitelist.isAllowed(gameProfile)) continue;
             WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
             whitelist.removeEntry(whitelistEntry);
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.remove.success", Components.profile(gameProfile)), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
             ++i;
         }
         if (i == 0) {
@@ -79,7 +79,7 @@ public class WhitelistCommand {
             throw ALREADY_ON_EXCEPTION.create();
         }
         playerManager.setWhitelistEnabled(true);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.enabled", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.enabled", new Object[0]), true);
         serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
         return 1;
     }
@@ -90,16 +90,16 @@ public class WhitelistCommand {
             throw ALREADY_OFF_EXCEPTION.create();
         }
         playerManager.setWhitelistEnabled(false);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.disabled", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.disabled", new Object[0]), true);
         return 1;
     }
 
     private static int executeList(ServerCommandSource serverCommandSource) {
         CharSequence[] strings = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelistedNames();
         if (strings.length == 0) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.none", new Object[0]), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.none", new Object[0]), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.whitelist.list", strings.length, String.join((CharSequence)", ", strings)), false);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.list", strings.length, String.join((CharSequence)", ", strings)), false);
         }
         return strings.length;
     }

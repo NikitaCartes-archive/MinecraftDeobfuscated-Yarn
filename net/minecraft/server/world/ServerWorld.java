@@ -67,7 +67,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.Scoreboard;
@@ -84,12 +83,13 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
@@ -160,7 +160,7 @@ extends World {
     private final WanderingTraderManager wanderingTraderManager;
 
     public ServerWorld(MinecraftServer minecraftServer, Executor executor, WorldSaveHandler worldSaveHandler, LevelProperties levelProperties, DimensionType dimensionType, Profiler profiler, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(levelProperties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), executor, dimension.createChunkGenerator(), minecraftServer.getPlayerManager().getViewDistance(), minecraftServer.getPlayerManager().getViewDistance() - 2, worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), profiler, false);
+        super(levelProperties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), executor, dimension.createChunkGenerator(), minecraftServer.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), profiler, false);
         this.worldSaveHandler = worldSaveHandler;
         this.server = minecraftServer;
         this.portalForcer = new PortalForcer(this);
@@ -394,8 +394,8 @@ extends World {
 
     protected BlockPos method_18210(BlockPos blockPos) {
         BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
-        BoundingBox boundingBox = new BoundingBox(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
-        List<LivingEntity> list = this.getEntities(LivingEntity.class, boundingBox, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos()));
+        Box box = new Box(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
+        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos()));
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
@@ -614,11 +614,11 @@ extends World {
             return;
         }
         if (progressListener != null) {
-            progressListener.method_15412(new TranslatableComponent("menu.savingLevel", new Object[0]));
+            progressListener.method_15412(new TranslatableText("menu.savingLevel", new Object[0]));
         }
         this.saveLevel();
         if (progressListener != null) {
-            progressListener.method_15414(new TranslatableComponent("menu.savingChunks", new Object[0]));
+            progressListener.method_15414(new TranslatableText("menu.savingChunks", new Object[0]));
         }
         serverChunkManager.save(bl);
     }
@@ -669,9 +669,9 @@ extends World {
     public Object2IntMap<EntityCategory> getMobCountsByCategory() {
         Object2IntOpenHashMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<EntityCategory>();
         for (Entity entity : this.entitiesById.values()) {
-            EntityCategory entityCategory2;
-            if (entity instanceof MobEntity && ((MobEntity)entity).isPersistent() || (entityCategory2 = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().shouldTickEntity(entity)) continue;
-            object2IntMap.computeInt(entityCategory2, (entityCategory, integer) -> 1 + (integer == null ? 0 : integer));
+            EntityCategory entityCategory;
+            if (entity instanceof MobEntity && ((MobEntity)entity).isPersistent() || (entityCategory = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().method_20727(entity)) continue;
+            object2IntMap.mergeInt(entityCategory, 1, Integer::sum);
         }
         return object2IntMap;
     }
@@ -1131,8 +1131,7 @@ extends World {
 
     @Nullable
     public Raid getRaidAt(BlockPos blockPos) {
-        Raid raid = this.raidManager.getRaidAt(blockPos, 9216);
-        return this.isNearOccupiedPointOfInterest(blockPos) ? raid : null;
+        return this.raidManager.getRaidAt(blockPos, 9216);
     }
 
     public boolean hasRaidAt(BlockPos blockPos) {

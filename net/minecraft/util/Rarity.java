@@ -3,18 +3,18 @@
  */
 package net.minecraft.util;
 
-import net.minecraft.ChatFormat;
+import net.minecraft.util.Formatting;
 
 public enum Rarity {
-    COMMON(ChatFormat.WHITE),
-    UNCOMMON(ChatFormat.YELLOW),
-    RARE(ChatFormat.AQUA),
-    EPIC(ChatFormat.LIGHT_PURPLE);
+    COMMON(Formatting.WHITE),
+    UNCOMMON(Formatting.YELLOW),
+    RARE(Formatting.AQUA),
+    EPIC(Formatting.LIGHT_PURPLE);
 
-    public final ChatFormat formatting;
+    public final Formatting formatting;
 
-    private Rarity(ChatFormat chatFormat) {
-        this.formatting = chatFormat;
+    private Rarity(Formatting formatting) {
+        this.formatting = formatting;
     }
 }
 

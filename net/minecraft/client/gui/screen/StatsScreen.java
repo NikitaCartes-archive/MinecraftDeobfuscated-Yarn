@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,14 +26,15 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -54,7 +54,7 @@ implements StatsListener {
     private boolean field_2645 = true;
 
     public StatsScreen(Screen screen, StatHandler statHandler) {
-        super(new TranslatableComponent("gui.stats", new Object[0]));
+        super(new TranslatableText("gui.stats", new Object[0]));
         this.parent = screen;
         this.statHandler = statHandler;
     }
@@ -92,7 +92,7 @@ implements StatsListener {
             this.drawCenteredString(this.font, PROGRESS_BAR_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.font.fontHeight * 2, 0xFFFFFF);
         } else {
             this.method_19399().render(i, j, f);
-            this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 0xFFFFFF);
+            this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
             super.render(i, j, f);
         }
     }
@@ -329,23 +329,23 @@ implements StatsListener {
                 Item item = this.field_18757.get(this.children().indexOf(itemStatItem));
                 this.method_19407(this.method_19406(item), i, j);
             } else {
-                TranslatableComponent component = null;
+                TranslatableText text = null;
                 int l = i - k;
                 for (int m = 0; m < this.field_18753.length; ++m) {
                     int n = StatsScreen.this.method_2285(m);
                     if (l < n - 18 || l > n) continue;
-                    component = new TranslatableComponent(this.method_19410(m).getTranslationKey(), new Object[0]);
+                    text = new TranslatableText(this.method_19410(m).getTranslationKey(), new Object[0]);
                     break;
                 }
-                this.method_19407(component, i, j);
+                this.method_19407(text, i, j);
             }
         }
 
-        protected void method_19407(@Nullable Component component, int i, int j) {
-            if (component == null) {
+        protected void method_19407(@Nullable Text text, int i, int j) {
+            if (text == null) {
                 return;
             }
-            String string = component.getFormattedText();
+            String string = text.asFormattedString();
             int k = i + 12;
             int l = j - 12;
             int m = StatsScreen.this.font.getStringWidth(string);
@@ -353,7 +353,7 @@ implements StatsListener {
             StatsScreen.this.font.drawWithShadow(string, k, l, -1);
         }
 
-        protected Component method_19406(Item item) {
+        protected Text method_19406(Item item) {
             return item.getName();
         }
 
@@ -456,8 +456,8 @@ implements StatsListener {
 
             @Override
             public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-                Component component = new TranslatableComponent("stat." + this.field_18749.getValue().toString().replace(':', '.'), new Object[0]).applyFormat(ChatFormat.GRAY);
-                CustomStatsListWidget.this.drawString(StatsScreen.this.font, component.getString(), k + 2, j + 1, i % 2 == 0 ? 0xFFFFFF : 0x909090);
+                Text text = new TranslatableText("stat." + this.field_18749.getValue().toString().replace(':', '.'), new Object[0]).formatted(Formatting.GRAY);
+                CustomStatsListWidget.this.drawString(StatsScreen.this.font, text.getString(), k + 2, j + 1, i % 2 == 0 ? 0xFFFFFF : 0x909090);
                 String string = this.field_18749.format(StatsScreen.this.statHandler.getStat(this.field_18749));
                 CustomStatsListWidget.this.drawString(StatsScreen.this.font, string, k + 2 + 213 - StatsScreen.this.font.getStringWidth(string), j + 1, i % 2 == 0 ? 0xFFFFFF : 0x909090);
             }

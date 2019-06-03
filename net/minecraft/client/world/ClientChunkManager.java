@@ -151,7 +151,7 @@ extends ChunkManager {
 
     @Override
     public String getStatus() {
-        return "MultiplayerChunkCache: " + this.chunks.chunks.length() + ", " + this.method_20182();
+        return "Client Chunk Cache: " + this.chunks.chunks.length() + ", " + this.method_20182();
     }
 
     @Override

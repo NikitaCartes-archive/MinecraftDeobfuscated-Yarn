@@ -21,7 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -73,9 +73,9 @@ extends BlockEntityRenderer<SignBlockEntity> {
         int k = signBlockEntity.getTextColor().getSignColor();
         if (i < 0) {
             for (int l = 0; l < 4; ++l) {
-                String string = signBlockEntity.getTextBeingEditedOnRow(l, component -> {
-                    List<Component> list = TextComponentUtil.wrapLines(component, 90, textRenderer, false, true);
-                    return list.isEmpty() ? "" : list.get(0).getFormattedText();
+                String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
+                    List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
+                    return list.isEmpty() ? "" : list.get(0).asFormattedString();
                 });
                 if (string == null) continue;
                 textRenderer.draw(string, -textRenderer.getStringWidth(string) / 2, l * 10 - signBlockEntity.text.length * 5, k);

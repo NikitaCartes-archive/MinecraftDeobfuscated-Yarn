@@ -7,16 +7,16 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
 public class ScoreboardObjectiveUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private String name;
-    private Component displayName;
+    private Text displayName;
     private ScoreboardCriterion.RenderType type;
     private int mode;
 
@@ -35,7 +35,7 @@ implements Packet<ClientPlayPacketListener> {
         this.name = packetByteBuf.readString(16);
         this.mode = packetByteBuf.readByte();
         if (this.mode == 0 || this.mode == 2) {
-            this.displayName = packetByteBuf.readTextComponent();
+            this.displayName = packetByteBuf.readText();
             this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.RenderType.class);
         }
     }
@@ -45,7 +45,7 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeString(this.name);
         packetByteBuf.writeByte(this.mode);
         if (this.mode == 0 || this.mode == 2) {
-            packetByteBuf.writeTextComponent(this.displayName);
+            packetByteBuf.writeText(this.displayName);
             packetByteBuf.writeEnumConstant(this.type);
         }
     }
@@ -60,7 +60,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Component getDisplayName() {
+    public Text getDisplayName() {
         return this.displayName;
     }
 

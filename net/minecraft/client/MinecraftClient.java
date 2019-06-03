@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
-import net.minecraft.ChatFormat;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -154,8 +153,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.chat.KeybindComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.FileResourcePackCreator;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
@@ -171,8 +168,11 @@ import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
@@ -351,7 +351,7 @@ AutoCloseable {
         }
         Bootstrap.initialize();
         Bootstrap.logMissingTranslations();
-        KeybindComponent.field_11766 = KeyBinding::getLocalizedName;
+        KeybindText.i18n = KeyBinding::getLocalizedName;
         this.dataFixer = Schemas.getFixer();
         this.toastManager = new ToastManager(this);
         this.tutorialManager = new TutorialManager(this);
@@ -526,7 +526,7 @@ AutoCloseable {
     }
 
     private void initializeSearchableContainers() {
-        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
+        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
         IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getContainer().getTagsFor(itemStack.getItem()).stream());
         DefaultedList<ItemStack> defaultedList = DefaultedList.create();
         for (Item item : Registry.ITEM) {
@@ -536,7 +536,7 @@ AutoCloseable {
             textSearchableContainer.add((ItemStack)itemStack);
             identifierSearchableContainer.add((ItemStack)itemStack);
         });
-        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(component -> ChatFormat.stripFormatting(component.getString()).trim()).filter(string -> !string.isEmpty()), recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
+        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
         this.searchManager.put(SearchManager.ITEM_TOOLTIP, textSearchableContainer);
         this.searchManager.put(SearchManager.ITEM_TAG, identifierSearchableContainer);
         this.searchManager.put(SearchManager.RECIPE_OUTPUT, textSearchableContainer2);
@@ -659,7 +659,7 @@ AutoCloseable {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
             for (ItemStack itemStack : defaultedList) {
                 String string = itemStack.getTranslationKey();
-                String string2 = new TranslatableComponent(string, new Object[0]).getString();
+                String string2 = new TranslatableText(string, new Object[0]).getString();
                 if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
                 LOGGER.debug("Missing translation for: {} {} {}", (Object)itemStack, (Object)string, (Object)itemStack.getItem());
             }
@@ -903,7 +903,7 @@ AutoCloseable {
             if (this.isIntegratedServerRunning()) {
                 this.server.stop(true);
             }
-            this.disconnect(new SaveLevelScreen(new TranslatableComponent("menu.savingLevel", new Object[0])));
+            this.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
         } catch (Throwable throwable) {
             // empty catch block
         }
@@ -1389,7 +1389,7 @@ AutoCloseable {
         }
         SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
         ClientConnection clientConnection = ClientConnection.connect(socketAddress);
-        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, component -> {}));
+        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
         this.clientConnection = clientConnection;
@@ -1397,7 +1397,7 @@ AutoCloseable {
 
     public void joinWorld(ClientWorld clientWorld) {
         ProgressScreen progressScreen = new ProgressScreen();
-        progressScreen.method_15412(new TranslatableComponent("connect.joining", new Object[0]));
+        progressScreen.method_15412(new TranslatableText("connect.joining", new Object[0]));
         this.reset(progressScreen);
         this.world = clientWorld;
         this.setWorld(clientWorld);

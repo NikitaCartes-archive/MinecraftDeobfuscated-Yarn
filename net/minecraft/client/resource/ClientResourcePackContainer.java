@@ -11,11 +11,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +38,8 @@ extends ResourcePackContainer {
         this.icon = nativeImage;
     }
 
-    public ClientResourcePackContainer(String string, boolean bl, Supplier<ResourcePack> supplier, Component component, Component component2, ResourcePackCompatibility resourcePackCompatibility, ResourcePackContainer.InsertionPosition insertionPosition, boolean bl2, @Nullable NativeImage nativeImage) {
-        super(string, bl, supplier, component, component2, resourcePackCompatibility, insertionPosition, bl2);
+    public ClientResourcePackContainer(String string, boolean bl, Supplier<ResourcePack> supplier, Text text, Text text2, ResourcePackCompatibility resourcePackCompatibility, ResourcePackContainer.InsertionPosition insertionPosition, boolean bl2, @Nullable NativeImage nativeImage) {
+        super(string, bl, supplier, text, text2, resourcePackCompatibility, insertionPosition, bl2);
         this.icon = nativeImage;
     }
 

@@ -7,9 +7,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Map;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameRules;
 
 public class GameRuleCommand {
@@ -24,13 +24,13 @@ public class GameRuleCommand {
     private static int executeSet(ServerCommandSource serverCommandSource, String string, CommandContext<ServerCommandSource> commandContext) {
         GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
         value.getType().set(commandContext, "value", value);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamerule.set", string, value.getString()), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.gamerule.set", string, value.getString()), true);
         return value.getInteger();
     }
 
     private static int executeQuery(ServerCommandSource serverCommandSource, String string) {
         GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.gamerule.query", string, value.getString()), false);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.gamerule.query", string, value.getString()), false);
         return value.getInteger();
     }
 }

@@ -26,7 +26,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.difficulty = Difficulty.getDifficulty(packetByteBuf.readUnsignedByte());
+        this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
     }
 
     @Override

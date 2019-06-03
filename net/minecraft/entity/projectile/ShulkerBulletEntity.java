@@ -28,7 +28,7 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -221,7 +221,7 @@ extends Entity {
         if (!this.world.isClient) {
             List<LivingEntity> list;
             if (this.target == null && this.targetUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new BoundingBox(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
+                list = this.world.getEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.targetUuid)) continue;
                     this.target = livingEntity;
@@ -230,7 +230,7 @@ extends Entity {
                 this.targetUuid = null;
             }
             if (this.owner == null && this.ownerUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new BoundingBox(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
+                list = this.world.getEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.ownerUuid)) continue;
                     this.owner = livingEntity;

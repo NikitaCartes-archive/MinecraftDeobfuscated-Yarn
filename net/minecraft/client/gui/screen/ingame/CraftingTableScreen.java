@@ -15,7 +15,7 @@ import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -27,8 +27,8 @@ implements RecipeBookProvider {
     private final RecipeBookWidget recipeBookGui = new RecipeBookWidget();
     private boolean isNarrow;
 
-    public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Component component) {
-        super(craftingTableContainer, playerInventory, component);
+    public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Text text) {
+        super(craftingTableContainer, playerInventory, text);
     }
 
     @Override
@@ -71,8 +71,8 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), 28.0f, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 28.0f, 6.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

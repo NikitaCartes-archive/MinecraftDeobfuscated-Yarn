@@ -123,7 +123,7 @@ extends EntityRenderer<ItemFrameEntity> {
         if (g >= (double)(h * h)) {
             return;
         }
-        String string = itemFrameEntity.getHeldItemStack().getCustomName().getFormattedText();
+        String string = itemFrameEntity.getHeldItemStack().getName().asFormattedString();
         this.renderLabel(itemFrameEntity, string, d, e, f, 64);
     }
 }

@@ -39,7 +39,7 @@ extends DrawableHelper {
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(BAR_TEX);
             this.drawBossBar(k, l, clientBossBar);
-            String string = clientBossBar.getName().getFormattedText();
+            String string = clientBossBar.getName().asFormattedString();
             int m = this.client.textRenderer.getStringWidth(string);
             int n = i / 2 - m / 2;
             int o = l - 9;

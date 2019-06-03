@@ -18,7 +18,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 @Environment(value=EnvType.CLIENT)
 public class NeighborUpdateDebugRenderer
@@ -73,7 +73,7 @@ implements DebugRenderer.Renderer {
                 BlockPos blockPos = entry2.getKey();
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
-                WorldRenderer.drawBoxOutline(new BoundingBox(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)n).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)n).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }
         }

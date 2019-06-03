@@ -12,9 +12,9 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +49,7 @@ implements Packet<ClientPlayPacketListener> {
             GameProfile gameProfile = null;
             int k = 0;
             GameMode gameMode = null;
-            Component component = null;
+            Text text = null;
             switch (this.action) {
                 case ADD_PLAYER: {
                     gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
@@ -66,7 +66,7 @@ implements Packet<ClientPlayPacketListener> {
                     gameMode = GameMode.byId(packetByteBuf.readVarInt());
                     k = packetByteBuf.readVarInt();
                     if (!packetByteBuf.readBoolean()) break;
-                    component = packetByteBuf.readTextComponent();
+                    text = packetByteBuf.readText();
                     break;
                 }
                 case UPDATE_GAME_MODE: {
@@ -82,14 +82,14 @@ implements Packet<ClientPlayPacketListener> {
                 case UPDATE_DISPLAY_NAME: {
                     gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
                     if (!packetByteBuf.readBoolean()) break;
-                    component = packetByteBuf.readTextComponent();
+                    text = packetByteBuf.readText();
                     break;
                 }
                 case REMOVE_PLAYER: {
                     gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
                 }
             }
-            this.entries.add(new Entry(gameProfile, k, gameMode, component));
+            this.entries.add(new Entry(gameProfile, k, gameMode, text));
         }
     }
 
@@ -120,7 +120,7 @@ implements Packet<ClientPlayPacketListener> {
                         break;
                     }
                     packetByteBuf.writeBoolean(true);
-                    packetByteBuf.writeTextComponent(entry.getDisplayName());
+                    packetByteBuf.writeText(entry.getDisplayName());
                     break;
                 }
                 case UPDATE_GAME_MODE: {
@@ -140,7 +140,7 @@ implements Packet<ClientPlayPacketListener> {
                         break;
                     }
                     packetByteBuf.writeBoolean(true);
-                    packetByteBuf.writeTextComponent(entry.getDisplayName());
+                    packetByteBuf.writeText(entry.getDisplayName());
                     break;
                 }
                 case REMOVE_PLAYER: {
@@ -172,13 +172,13 @@ implements Packet<ClientPlayPacketListener> {
         private final int latency;
         private final GameMode gameMode;
         private final GameProfile profile;
-        private final Component displayName;
+        private final Text displayName;
 
-        public Entry(GameProfile gameProfile, @Nullable int i, @Nullable GameMode gameMode, Component component) {
+        public Entry(GameProfile gameProfile, @Nullable int i, @Nullable GameMode gameMode, Text text) {
             this.profile = gameProfile;
             this.latency = i;
             this.gameMode = gameMode;
-            this.displayName = component;
+            this.displayName = text;
         }
 
         public GameProfile getProfile() {
@@ -194,12 +194,12 @@ implements Packet<ClientPlayPacketListener> {
         }
 
         @Nullable
-        public Component getDisplayName() {
+        public Text getDisplayName() {
             return this.displayName;
         }
 
         public String toString() {
-            return MoreObjects.toStringHelper(this).add("latency", this.latency).add("gameMode", (Object)this.gameMode).add("profile", this.profile).add("displayName", this.displayName == null ? null : Component.Serializer.toJsonString(this.displayName)).toString();
+            return MoreObjects.toStringHelper(this).add("latency", this.latency).add("gameMode", (Object)this.gameMode).add("profile", this.profile).add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName)).toString();
         }
     }
 

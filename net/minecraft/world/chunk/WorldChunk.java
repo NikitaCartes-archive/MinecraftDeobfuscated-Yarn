@@ -45,7 +45,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -427,48 +427,48 @@ implements Chunk {
         this.shouldSave = true;
     }
 
-    public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+    public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
             if (this.entitySections[k].isEmpty()) continue;
             for (Entity entity2 : this.entitySections[k]) {
-                if (!entity2.getBoundingBox().intersects(boundingBox) || entity2 == entity) continue;
+                if (!entity2.getBoundingBox().intersects(box) || entity2 == entity) continue;
                 if (predicate == null || predicate.test(entity2)) {
                     list.add(entity2);
                 }
                 if (!(entity2 instanceof EnderDragonEntity)) continue;
                 for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).method_5690()) {
-                    if (enderDragonPart == entity || !enderDragonPart.getBoundingBox().intersects(boundingBox) || predicate != null && !predicate.test(enderDragonPart)) continue;
+                    if (enderDragonPart == entity || !enderDragonPart.getBoundingBox().intersects(box) || predicate != null && !predicate.test(enderDragonPart)) continue;
                     list.add(enderDragonPart);
                 }
             }
         }
     }
 
-    public void appendEntities(@Nullable EntityType<?> entityType, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+    public void appendEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
             for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
-                if (entityType != null && entity.getType() != entityType || !entity.getBoundingBox().intersects(boundingBox) || !predicate.test(entity)) continue;
+                if (entityType != null && entity.getType() != entityType || !entity.getBoundingBox().intersects(box) || !predicate.test(entity)) continue;
                 list.add(entity);
             }
         }
     }
 
-    public <T extends Entity> void appendEntities(Class<? extends T> class_, BoundingBox boundingBox, List<T> list, @Nullable Predicate<? super T> predicate) {
-        int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+    public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
             for (Entity entity : this.entitySections[k].getAllOfType(class_)) {
-                if (!entity.getBoundingBox().intersects(boundingBox) || predicate != null && !predicate.test(entity)) continue;
+                if (!entity.getBoundingBox().intersects(box) || predicate != null && !predicate.test(entity)) continue;
                 list.add(entity);
             }
         }

@@ -52,10 +52,10 @@ extends OcelotEntityModel<T> {
             this.tail1.pitch = 1.7278761f;
             this.tail2.pitch = 2.670354f;
             this.backLegLeft.pitch = -0.15707964f;
-            this.backLegLeft.rotationPointY = 15.8f;
+            this.backLegLeft.rotationPointY = 16.1f;
             this.backLegLeft.rotationPointZ = -7.0f;
             this.backLegRight.pitch = -0.15707964f;
-            this.backLegRight.rotationPointY = 15.8f;
+            this.backLegRight.rotationPointY = 16.1f;
             this.backLegRight.rotationPointZ = -7.0f;
             this.frontLegLeft.pitch = -1.5707964f;
             this.frontLegLeft.rotationPointY = 21.0f;

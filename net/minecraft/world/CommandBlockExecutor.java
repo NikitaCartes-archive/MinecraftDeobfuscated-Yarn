@@ -9,12 +9,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -30,9 +30,9 @@ implements CommandOutput {
     private boolean updateLastExecution = true;
     private int successCount;
     private boolean trackOutput = true;
-    private Component lastOutput;
+    private Text lastOutput;
     private String command = "";
-    private Component customName = new TextComponent("@");
+    private Text customName = new LiteralText("@");
 
     public int getSuccessCount() {
         return this.successCount;
@@ -42,17 +42,17 @@ implements CommandOutput {
         this.successCount = i;
     }
 
-    public Component getLastOutput() {
-        return this.lastOutput == null ? new TextComponent("") : this.lastOutput;
+    public Text getLastOutput() {
+        return this.lastOutput == null ? new LiteralText("") : this.lastOutput;
     }
 
     public CompoundTag serialize(CompoundTag compoundTag) {
         compoundTag.putString("Command", this.command);
         compoundTag.putInt("SuccessCount", this.successCount);
-        compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+        compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
         compoundTag.putBoolean("TrackOutput", this.trackOutput);
         if (this.lastOutput != null && this.trackOutput) {
-            compoundTag.putString("LastOutput", Component.Serializer.toJsonString(this.lastOutput));
+            compoundTag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
         }
         compoundTag.putBoolean("UpdateLastExecution", this.updateLastExecution);
         if (this.updateLastExecution && this.lastExecution > 0L) {
@@ -65,16 +65,16 @@ implements CommandOutput {
         this.command = compoundTag.getString("Command");
         this.successCount = compoundTag.getInt("SuccessCount");
         if (compoundTag.containsKey("CustomName", 8)) {
-            this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         if (compoundTag.containsKey("TrackOutput", 1)) {
             this.trackOutput = compoundTag.getBoolean("TrackOutput");
         }
         if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
             try {
-                this.lastOutput = Component.Serializer.fromJsonString(compoundTag.getString("LastOutput"));
+                this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
             } catch (Throwable throwable) {
-                this.lastOutput = new TextComponent(throwable.getMessage());
+                this.lastOutput = new LiteralText(throwable.getMessage());
             }
         } else {
             this.lastOutput = null;
@@ -99,7 +99,7 @@ implements CommandOutput {
             return false;
         }
         if ("Searge".equalsIgnoreCase(this.command)) {
-            this.lastOutput = new TextComponent("#itzlipofutzli");
+            this.lastOutput = new LiteralText("#itzlipofutzli");
             this.successCount = 1;
             return true;
         }
@@ -126,18 +126,18 @@ implements CommandOutput {
         return true;
     }
 
-    public Component getCustomName() {
+    public Text getCustomName() {
         return this.customName;
     }
 
-    public void setCustomName(Component component) {
-        this.customName = component;
+    public void setCustomName(Text text) {
+        this.customName = text;
     }
 
     @Override
-    public void sendMessage(Component component) {
+    public void sendMessage(Text text) {
         if (this.trackOutput) {
-            this.lastOutput = new TextComponent("[" + DATE_FORMAT.format(new Date()) + "] ").append(component);
+            this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
             this.markDirty();
         }
     }
@@ -146,8 +146,8 @@ implements CommandOutput {
 
     public abstract void markDirty();
 
-    public void setLastOutput(@Nullable Component component) {
-        this.lastOutput = component;
+    public void setLastOutput(@Nullable Text text) {
+        this.lastOutput = text;
     }
 
     public void shouldTrackOutput(boolean bl) {

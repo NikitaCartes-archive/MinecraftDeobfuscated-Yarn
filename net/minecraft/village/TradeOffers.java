@@ -34,10 +34,10 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -130,7 +130,7 @@ public class TradeOffers {
                 ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
                 FilledMapItem.fillExplorationMap(world, itemStack);
                 MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-                itemStack.setCustomName(new TranslatableComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT), new Object[0]));
+                itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT), new Object[0]));
                 return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2f);
             }
             return null;

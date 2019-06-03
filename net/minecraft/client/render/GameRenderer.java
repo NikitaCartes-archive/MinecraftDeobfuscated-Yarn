@@ -70,7 +70,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -291,8 +291,8 @@ SynchronousResourceReloadListener {
         Vec3d vec3d2 = entity2.getRotationVec(1.0f);
         Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
         float g = 1.0f;
-        BoundingBox boundingBox = entity2.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-        EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity2, vec3d, vec3d3, boundingBox, entity -> !entity.isSpectator() && entity.collides(), e);
+        Box box = entity2.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
+        EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity2, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.collides(), e);
         if (entityHitResult != null) {
             Entity entity22 = entityHitResult.getEntity();
             Vec3d vec3d4 = entityHitResult.getPos();

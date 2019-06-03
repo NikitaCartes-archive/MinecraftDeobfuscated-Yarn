@@ -13,8 +13,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.TradeOffer;
@@ -30,8 +30,8 @@ extends AbstractContainerScreen<MerchantContainer> {
     private int field_19163;
     private boolean field_19164;
 
-    public MerchantScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Component component) {
-        super(merchantContainer, playerInventory, component);
+    public MerchantScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Text text) {
+        super(merchantContainer, playerInventory, text);
         this.containerWidth = 276;
     }
 
@@ -64,19 +64,19 @@ extends AbstractContainerScreen<MerchantContainer> {
         int k = ((MerchantContainer)this.container).getLevelProgress();
         int l = this.containerHeight - 94;
         if (k > 0 && k <= 5 && ((MerchantContainer)this.container).isLevelled()) {
-            string = this.title.getFormattedText();
+            string = this.title.asFormattedString();
             String string2 = "- " + I18n.translate("merchant.level." + k, new Object[0]);
             int m = this.font.getStringWidth(string);
             int n = this.font.getStringWidth(string2);
             int o = m + n + 3;
             int p = 49 + this.containerWidth / 2 - o / 2;
             this.font.draw(string, p, 6.0f, 0x404040);
-            this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 107.0f, l, 0x404040);
+            this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0f, l, 0x404040);
             this.font.draw(string2, p + m + 3, 6.0f, 0x404040);
         } else {
-            string = this.title.getFormattedText();
+            string = this.title.asFormattedString();
             this.font.draw(string, 49 + this.containerWidth / 2 - this.font.getStringWidth(string) / 2, 6.0f, 0x404040);
-            this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 107.0f, l, 0x404040);
+            this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0f, l, 0x404040);
         }
         string = I18n.translate("merchant.trades", new Object[0]);
         int q = this.font.getStringWidth(string);
@@ -195,7 +195,7 @@ extends AbstractContainerScreen<MerchantContainer> {
             if (((MerchantContainer)this.container).isLevelled()) {
                 this.method_19413(k, l, tradeOffer2);
             }
-            if (tradeOffer2.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, i, j)) {
+            if (tradeOffer2.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, i, j) && ((MerchantContainer)this.container).canRefreshTrades()) {
                 this.renderTooltip(I18n.translate("merchant.deprecated", new Object[0]), i, j);
             }
             for (WidgetButtonPage widgetButtonPage : this.field_19162) {

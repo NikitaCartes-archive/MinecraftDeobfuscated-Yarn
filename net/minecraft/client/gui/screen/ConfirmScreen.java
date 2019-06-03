@@ -12,26 +12,26 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ConfirmScreen
 extends Screen {
-    private final Component message;
+    private final Text message;
     private final List<String> messageSplit = Lists.newArrayList();
     protected String yesTranslated;
     protected String noTranslated;
     private int buttonEnableTimer;
     protected final BooleanConsumer callback;
 
-    public ConfirmScreen(BooleanConsumer booleanConsumer, Component component, Component component2) {
-        this(booleanConsumer, component, component2, I18n.translate("gui.yes", new Object[0]), I18n.translate("gui.no", new Object[0]));
+    public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2) {
+        this(booleanConsumer, text, text2, I18n.translate("gui.yes", new Object[0]), I18n.translate("gui.no", new Object[0]));
     }
 
-    public ConfirmScreen(BooleanConsumer booleanConsumer, Component component, Component component2, String string, String string2) {
-        super(component);
+    public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2, String string, String string2) {
+        super(text);
         this.callback = booleanConsumer;
-        this.message = component2;
+        this.message = text2;
         this.yesTranslated = string;
         this.noTranslated = string2;
     }
@@ -47,13 +47,13 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
         this.messageSplit.clear();
-        this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.message.getFormattedText(), this.width - 50));
+        this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
     }
 
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 70, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
         int k = 90;
         for (String string : this.messageSplit) {
             this.drawCenteredString(this.font, string, this.width / 2, k, 0xFFFFFF);

@@ -26,15 +26,15 @@ public class Camera {
     private Entity focusedEntity;
     private Vec3d pos = Vec3d.ZERO;
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-    private Vec3d field_18714;
-    private Vec3d field_18715;
-    private Vec3d field_18716;
+    private Vec3d horizontalPlane;
+    private Vec3d verticalPlane;
+    private Vec3d diagonalPlane;
     private float pitch;
     private float yaw;
     private boolean thirdPerson;
     private boolean inverseView;
-    private float field_18721;
-    private float field_18722;
+    private float cameraY;
+    private float lastCameraY;
 
     public void update(BlockView blockView, Entity entity, boolean bl, boolean bl2, float f) {
         this.ready = true;
@@ -43,14 +43,14 @@ public class Camera {
         this.thirdPerson = bl;
         this.inverseView = bl2;
         this.setRotation(entity.getYaw(f), entity.getPitch(f));
-        this.setPos(MathHelper.lerp((double)f, entity.prevX, entity.x), MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.field_18722, this.field_18721), MathHelper.lerp((double)f, entity.prevZ, entity.z));
+        this.setPos(MathHelper.lerp((double)f, entity.prevX, entity.x), MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.lastCameraY, this.cameraY), MathHelper.lerp((double)f, entity.prevZ, entity.z));
         if (bl) {
             if (bl2) {
                 this.yaw += 180.0f;
                 this.pitch += -this.pitch * 2.0f;
                 this.updateRotation();
             }
-            this.moveBy(-this.method_19318(4.0), 0.0, 0.0);
+            this.moveBy(-this.clipToSpace(4.0), 0.0, 0.0);
         } else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
             this.setRotation(direction != null ? direction.asRotation() - 180.0f : 0.0f, 0.0f);
@@ -64,12 +64,12 @@ public class Camera {
 
     public void updateEyeHeight() {
         if (this.focusedEntity != null) {
-            this.field_18722 = this.field_18721;
-            this.field_18721 += (this.focusedEntity.getStandingEyeHeight() - this.field_18721) * 0.5f;
+            this.lastCameraY = this.cameraY;
+            this.cameraY += (this.focusedEntity.getStandingEyeHeight() - this.cameraY) * 0.5f;
         }
     }
 
-    private double method_19318(double d) {
+    private double clipToSpace(double d) {
         for (int i = 0; i < 8; ++i) {
             double e;
             Vec3d vec3d2;
@@ -78,16 +78,16 @@ public class Camera {
             float g = (i >> 1 & 1) * 2 - 1;
             float h = (i >> 2 & 1) * 2 - 1;
             Vec3d vec3d = this.pos.add(f *= 0.1f, g *= 0.1f, h *= 0.1f);
-            if (((HitResult)(hitResult = this.area.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(this.pos.x - this.field_18714.x * d + (double)f + (double)h, this.pos.y - this.field_18714.y * d + (double)g, this.pos.z - this.field_18714.z * d + (double)h), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.focusedEntity)))).getType() == HitResult.Type.MISS || !((e = hitResult.getPos().distanceTo(this.pos)) < d)) continue;
+            if (((HitResult)(hitResult = this.area.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(this.pos.x - this.horizontalPlane.x * d + (double)f + (double)h, this.pos.y - this.horizontalPlane.y * d + (double)g, this.pos.z - this.horizontalPlane.z * d + (double)h), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.focusedEntity)))).getType() == HitResult.Type.MISS || !((e = hitResult.getPos().distanceTo(this.pos)) < d)) continue;
             d = e;
         }
         return d;
     }
 
     protected void moveBy(double d, double e, double f) {
-        double g = this.field_18714.x * d + this.field_18715.x * e + this.field_18716.x * f;
-        double h = this.field_18714.y * d + this.field_18715.y * e + this.field_18716.y * f;
-        double i = this.field_18714.z * d + this.field_18715.z * e + this.field_18716.z * f;
+        double g = this.horizontalPlane.x * d + this.verticalPlane.x * e + this.diagonalPlane.x * f;
+        double h = this.horizontalPlane.y * d + this.verticalPlane.y * e + this.diagonalPlane.y * f;
+        double i = this.horizontalPlane.z * d + this.verticalPlane.z * e + this.diagonalPlane.z * f;
         this.setPos(new Vec3d(this.pos.x + g, this.pos.y + h, this.pos.z + i));
     }
 
@@ -98,9 +98,9 @@ public class Camera {
         float i = MathHelper.sin(-this.pitch * ((float)Math.PI / 180));
         float j = MathHelper.cos((-this.pitch + 90.0f) * ((float)Math.PI / 180));
         float k = MathHelper.sin((-this.pitch + 90.0f) * ((float)Math.PI / 180));
-        this.field_18714 = new Vec3d(f * h, i, g * h);
-        this.field_18715 = new Vec3d(f * j, k, g * j);
-        this.field_18716 = this.field_18714.crossProduct(this.field_18715).multiply(-1.0);
+        this.horizontalPlane = new Vec3d(f * h, i, g * h);
+        this.verticalPlane = new Vec3d(f * j, k, g * j);
+        this.diagonalPlane = this.horizontalPlane.crossProduct(this.verticalPlane).multiply(-1.0);
     }
 
     protected void setRotation(float f, float g) {
@@ -157,12 +157,12 @@ public class Camera {
         return fluidState;
     }
 
-    public final Vec3d method_19335() {
-        return this.field_18714;
+    public final Vec3d getHorizontalPlane() {
+        return this.horizontalPlane;
     }
 
-    public final Vec3d method_19336() {
-        return this.field_18715;
+    public final Vec3d getVerticalPlane() {
+        return this.verticalPlane;
     }
 
     public void reset() {

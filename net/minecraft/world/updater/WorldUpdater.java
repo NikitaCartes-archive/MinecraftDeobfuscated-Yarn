@@ -22,8 +22,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
@@ -52,7 +52,7 @@ public class WorldUpdater {
     private volatile int upgradedChunkCount;
     private volatile int skippedChunkCount;
     private final Object2FloatMap<DimensionType> dimensionProgress = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(SystemUtil.identityHashStrategy()));
-    private volatile Component status = new TranslatableComponent("optimizeWorld.stage.counting", new Object[0]);
+    private volatile Text status = new TranslatableText("optimizeWorld.stage.counting", new Object[0]);
     private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
     private final PersistentStateManager persistentStateManager;
 
@@ -66,7 +66,7 @@ public class WorldUpdater {
         this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
         this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
             LOGGER.error("Error upgrading world", throwable);
-            this.status = new TranslatableComponent("optimizeWorld.stage.failed", new Object[0]);
+            this.status = new TranslatableText("optimizeWorld.stage.failed", new Object[0]);
         });
         this.updateThread.start();
     }
@@ -102,7 +102,7 @@ public class WorldUpdater {
         }
         ImmutableMap immutableMap2 = builder2.build();
         long l = SystemUtil.getMeasuringTimeMs();
-        this.status = new TranslatableComponent("optimizeWorld.stage.upgrading", new Object[0]);
+        this.status = new TranslatableText("optimizeWorld.stage.upgrading", new Object[0]);
         while (this.keepUpgradingChunks) {
             boolean bl = false;
             float g = 0.0f;
@@ -155,7 +155,7 @@ public class WorldUpdater {
             if (bl) continue;
             this.keepUpgradingChunks = false;
         }
-        this.status = new TranslatableComponent("optimizeWorld.stage.finished", new Object[0]);
+        this.status = new TranslatableText("optimizeWorld.stage.finished", new Object[0]);
         for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
             try {
                 versionedChunkStorage2.close();
@@ -223,7 +223,7 @@ public class WorldUpdater {
         return this.skippedChunkCount;
     }
 
-    public Component getStatus() {
+    public Text getStatus() {
         return this.status;
     }
 }

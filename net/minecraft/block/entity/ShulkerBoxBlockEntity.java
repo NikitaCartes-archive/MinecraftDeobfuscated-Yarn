@@ -23,14 +23,14 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Tickable;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -102,16 +102,16 @@ Tickable {
         return this.animationStage;
     }
 
-    public BoundingBox getBoundingBox(BlockState blockState) {
+    public Box getBoundingBox(BlockState blockState) {
         return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
     }
 
-    public BoundingBox getBoundingBox(Direction direction) {
+    public Box getBoundingBox(Direction direction) {
         float f = this.getAnimationProgress(1.0f);
         return VoxelShapes.fullCube().getBoundingBox().stretch(0.5f * f * (float)direction.getOffsetX(), 0.5f * f * (float)direction.getOffsetY(), 0.5f * f * (float)direction.getOffsetZ());
     }
 
-    private BoundingBox getCollisionBox(Direction direction) {
+    private Box getCollisionBox(Direction direction) {
         Direction direction2 = direction.getOpposite();
         return this.getBoundingBox(direction).shrink(direction2.getOffsetX(), direction2.getOffsetY(), direction2.getOffsetZ());
     }
@@ -122,8 +122,8 @@ Tickable {
             return;
         }
         Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-        BoundingBox boundingBox = this.getCollisionBox(direction).offset(this.pos);
-        List<Entity> list = this.world.getEntities((Entity)null, boundingBox);
+        Box box = this.getCollisionBox(direction).offset(this.pos);
+        List<Entity> list = this.world.getEntities((Entity)null, box);
         if (list.isEmpty()) {
             return;
         }
@@ -133,20 +133,20 @@ Tickable {
             double d = 0.0;
             double e = 0.0;
             double f = 0.0;
-            BoundingBox boundingBox2 = entity.getBoundingBox();
+            Box box2 = entity.getBoundingBox();
             switch (direction.getAxis()) {
                 case X: {
-                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxX - boundingBox2.minX : boundingBox2.maxX - boundingBox.minX;
+                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxX - box2.minX : box2.maxX - box.minX;
                     d += 0.01;
                     break;
                 }
                 case Y: {
-                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxY - boundingBox2.minY : boundingBox2.maxY - boundingBox.minY;
+                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxY - box2.minY : box2.maxY - box.minY;
                     e += 0.01;
                     break;
                 }
                 case Z: {
-                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxZ - boundingBox2.minZ : boundingBox2.maxZ - boundingBox.minZ;
+                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxZ - box2.minZ : box2.maxZ - box.minZ;
                     f += 0.01;
                 }
             }
@@ -206,8 +206,8 @@ Tickable {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.shulkerBox", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.shulkerBox", new Object[0]);
     }
 
     @Override

@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -99,14 +99,14 @@ public class ServerEntry {
         DISABLED("disabled"),
         PROMPT("prompt");
 
-        private final Component component;
+        private final Text name;
 
         private ResourcePackState(String string2) {
-            this.component = new TranslatableComponent("addServer.resourcePack." + string2, new Object[0]);
+            this.name = new TranslatableText("addServer.resourcePack." + string2, new Object[0]);
         }
 
-        public Component getComponent() {
-            return this.component;
+        public Text getName() {
+            return this.name;
         }
     }
 }

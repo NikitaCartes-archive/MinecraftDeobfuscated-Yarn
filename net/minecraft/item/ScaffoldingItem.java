@@ -3,7 +3,6 @@
  */
 package net.minecraft.item;
 
-import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ScaffoldingBlock;
@@ -12,9 +11,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.network.chat.ChatMessageType;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -42,7 +42,7 @@ extends BlockItem {
                     PlayerEntity playerEntity = itemPlacementContext.getPlayer();
                     int j = world.getHeight();
                     if (!(playerEntity instanceof ServerPlayerEntity) || mutable.getY() < j) break;
-                    ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(new TranslatableComponent("build.tooHigh", j).applyFormat(ChatFormat.RED), ChatMessageType.GAME_INFO);
+                    ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO);
                     ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(chatMessageS2CPacket);
                     break;
                 }

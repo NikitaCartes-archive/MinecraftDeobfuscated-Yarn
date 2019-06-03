@@ -9,14 +9,14 @@ import java.util.function.Predicate;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemStackArgument
 implements Predicate<ItemStack> {
-    private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("arguments.item.overstacked", object, object2));
+    private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("arguments.item.overstacked", object, object2));
     private final Item item;
     @Nullable
     private final CompoundTag tag;

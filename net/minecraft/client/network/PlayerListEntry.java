@@ -13,8 +13,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public class PlayerListEntry {
     private int latency;
     private boolean texturesLoaded;
     private String model;
-    private Component displayName;
+    private Text displayName;
     private int field_3738;
     private int field_3736;
     private long field_3737;
@@ -128,12 +128,12 @@ public class PlayerListEntry {
         }
     }
 
-    public void setDisplayName(@Nullable Component component) {
-        this.displayName = component;
+    public void setDisplayName(@Nullable Text text) {
+        this.displayName = text;
     }
 
     @Nullable
-    public Component getDisplayName() {
+    public Text getDisplayName() {
         return this.displayName;
     }
 

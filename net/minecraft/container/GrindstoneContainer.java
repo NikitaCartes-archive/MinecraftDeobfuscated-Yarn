@@ -201,7 +201,7 @@ extends Container {
         if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
             itemStack2 = new ItemStack(Items.BOOK);
             if (itemStack.hasCustomName()) {
-                itemStack2.setCustomName(itemStack.getCustomName());
+                itemStack2.setCustomName(itemStack.getName());
             }
         }
         for (int k = 0; k < map.size(); ++k) {

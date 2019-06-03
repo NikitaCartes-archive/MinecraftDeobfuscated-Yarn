@@ -12,6 +12,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -163,6 +164,11 @@ implements Waterloggable {
             iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    }
+
+    @Override
+    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+        return false;
     }
 }
 

@@ -59,7 +59,7 @@ public class ChunkBatcher {
         int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 0xA00000 - 1);
         int j = Runtime.getRuntime().availableProcessors();
         int k = bl ? j : Math.min(j, 4);
-        int l = Math.max(1, Math.min(k * 3, i));
+        int l = Math.max(1, Math.min(k * 2, i));
         this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
         ArrayList<BlockLayeredBufferBuilder> list = Lists.newArrayListWithExpectedSize(l);
         try {
@@ -121,12 +121,16 @@ public class ChunkBatcher {
                     LOGGER.warn("Skipped task due to interrupt");
                 }
             }
+            int i = 0;
             Queue<ChunkUploadTask> queue = this.pendingUploads;
             synchronized (queue) {
-                if (!this.pendingUploads.isEmpty()) {
-                    this.pendingUploads.poll().task.run();
+                ChunkUploadTask chunkUploadTask;
+                while (i < 10 && (chunkUploadTask = this.pendingUploads.poll()) != null) {
+                    if (chunkUploadTask.task.isDone()) continue;
+                    chunkUploadTask.task.run();
                     bl2 = true;
                     bl = true;
+                    ++i;
                 }
             }
         } while (l != 0L && bl2 && l >= SystemUtil.getMeasuringTimeNano());
@@ -217,7 +221,7 @@ public class ChunkBatcher {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public ListenableFuture<Object> upload(BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d) {
+    public ListenableFuture<Void> upload(BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d) {
         if (MinecraftClient.getInstance().isOnThread()) {
             if (GLX.useVbo()) {
                 this.uploadVbo(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
@@ -277,10 +281,10 @@ public class ChunkBatcher {
     @Environment(value=EnvType.CLIENT)
     class ChunkUploadTask
     implements Comparable<ChunkUploadTask> {
-        private final ListenableFutureTask<Object> task;
+        private final ListenableFutureTask<Void> task;
         private final double priority;
 
-        public ChunkUploadTask(ListenableFutureTask<Object> listenableFutureTask, double d) {
+        public ChunkUploadTask(ListenableFutureTask<Void> listenableFutureTask, double d) {
             this.task = listenableFutureTask;
             this.priority = d;
         }

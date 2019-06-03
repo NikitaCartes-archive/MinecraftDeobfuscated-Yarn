@@ -37,10 +37,10 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.IntegratedServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -154,8 +154,8 @@ public class ServerNetworkIo {
                             throw new CrashException(crashReport);
                         }
                         LOGGER.warn("Failed to handle packet for {}", (Object)clientConnection.getAddress(), (Object)exception);
-                        TextComponent component = new TextComponent("Internal server error");
-                        clientConnection.send(new DisconnectS2CPacket(component), future -> clientConnection.disconnect(component));
+                        LiteralText text = new LiteralText("Internal server error");
+                        clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
                         clientConnection.disableAutoRead();
                     }
                     continue;

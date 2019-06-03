@@ -8,10 +8,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.arguments.TimeArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 
 public class TimeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -23,7 +23,7 @@ public class TimeCommand {
     }
 
     private static int executeQuery(ServerCommandSource serverCommandSource, int i) {
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.query", i), false);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.time.query", i), false);
         return i;
     }
 
@@ -31,7 +31,7 @@ public class TimeCommand {
         for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
             serverWorld.setTimeOfDay(i);
         }
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.set", i), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.time.set", i), true);
         return TimeCommand.getDayTime(serverCommandSource.getWorld());
     }
 
@@ -40,7 +40,7 @@ public class TimeCommand {
             serverWorld.setTimeOfDay(serverWorld.getTimeOfDay() + (long)i);
         }
         int j = TimeCommand.getDayTime(serverCommandSource.getWorld());
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.time.set", j), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.time.set", j), true);
         return j;
     }
 }

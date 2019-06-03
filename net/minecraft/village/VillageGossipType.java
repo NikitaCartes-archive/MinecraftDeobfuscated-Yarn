@@ -10,17 +10,16 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 public enum VillageGossipType {
-    MAJOR_NEGATIVE("major_negative", -5, 100, 1, 10),
-    MINOR_NEGATIVE("minor_negative", -1, 200, 2, 20),
-    MINOR_POSITIVE("minor_positive", 1, 200, 2, 20),
-    MAJOR_POSITIVE("major_positive", 5, 100, 1, 10),
-    TRADING("trading", 1, 25, 2, 20),
-    GOLEM("golem", 1, 100, 1, 1);
+    MAJOR_NEGATIVE("major_negative", -5, 100, 10, 10),
+    MINOR_NEGATIVE("minor_negative", -1, 200, 20, 20),
+    MINOR_POSITIVE("minor_positive", 1, 200, 10, 20),
+    MAJOR_POSITIVE("major_positive", 5, 100, 5, 10),
+    TRADING("trading", 1, 25, 2, 20);
 
     public final String key;
     public final int multiplier;
     public final int maxReputation;
-    public final int field_18433;
+    public final int field_19354;
     public final int value;
     private static final Map<String, VillageGossipType> BY_KEY;
 
@@ -28,7 +27,7 @@ public enum VillageGossipType {
         this.key = string2;
         this.multiplier = j;
         this.maxReputation = k;
-        this.field_18433 = l;
+        this.field_19354 = l;
         this.value = m;
     }
 

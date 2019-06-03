@@ -16,9 +16,9 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen
@@ -29,7 +29,7 @@ extends Screen {
     private SelectionManager selectionManager;
 
     public SignEditScreen(SignBlockEntity signBlockEntity) {
-        super(new TranslatableComponent("sign.edit", new Object[0]));
+        super(new TranslatableText("sign.edit", new Object[0]));
         this.sign = signBlockEntity;
     }
 
@@ -38,7 +38,7 @@ extends Screen {
         this.minecraft.keyboard.enableRepeatEvents(true);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.finishEditing()));
         this.sign.setEditable(false);
-        this.selectionManager = new SelectionManager(this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new TextComponent((String)string)), 90);
+        this.selectionManager = new SelectionManager(this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string)), 90);
     }
 
     @Override
@@ -96,7 +96,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.pushMatrix();
         GlStateManager.translatef(this.width / 2, 0.0f, 50.0f);

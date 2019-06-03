@@ -19,7 +19,7 @@ import net.minecraft.item.map.MapIcon;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -189,7 +189,7 @@ extends PersistentState {
         }
     }
 
-    private void addIcon(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Component component) {
+    private void addIcon(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Text text) {
         byte k;
         int i = 1 << this.scale;
         float g = (float)(d - (double)this.xCenter) / (float)i;
@@ -230,7 +230,7 @@ extends PersistentState {
             this.icons.remove(string);
             return;
         }
-        this.icons.put(string, new MapIcon(type, b, c, k, component));
+        this.icons.put(string, new MapIcon(type, b, c, k, text));
     }
 
     @Nullable

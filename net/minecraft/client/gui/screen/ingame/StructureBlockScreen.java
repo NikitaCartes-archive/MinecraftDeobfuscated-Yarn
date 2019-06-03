@@ -16,8 +16,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -59,7 +59,7 @@ extends Screen {
     private final DecimalFormat decimalFormat = new DecimalFormat("0.0###");
 
     public StructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-        super(new TranslatableComponent(Blocks.STRUCTURE_BLOCK.getTranslationKey(), new Object[0]));
+        super(new TranslatableText(Blocks.STRUCTURE_BLOCK.getTranslationKey(), new Object[0]));
         this.structureBlock = structureBlockBlockEntity;
         this.decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     }
@@ -452,7 +452,7 @@ extends Screen {
         String string;
         this.renderBackground();
         StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 10, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 0xFFFFFF);
         if (structureBlockMode != StructureBlockMode.DATA) {
             this.drawString(this.font, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
             this.inputName.render(i, j, f);

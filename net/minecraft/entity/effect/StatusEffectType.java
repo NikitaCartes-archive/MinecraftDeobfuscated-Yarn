@@ -5,21 +5,21 @@ package net.minecraft.entity.effect;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
+import net.minecraft.util.Formatting;
 
 public enum StatusEffectType {
-    BENEFICIAL(ChatFormat.BLUE),
-    HARMFUL(ChatFormat.RED),
-    NEUTRAL(ChatFormat.BLUE);
+    BENEFICIAL(Formatting.BLUE),
+    HARMFUL(Formatting.RED),
+    NEUTRAL(Formatting.BLUE);
 
-    private final ChatFormat formatting;
+    private final Formatting formatting;
 
-    private StatusEffectType(ChatFormat chatFormat) {
-        this.formatting = chatFormat;
+    private StatusEffectType(Formatting formatting) {
+        this.formatting = formatting;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ChatFormat getFormatting() {
+    public Formatting getFormatting() {
         return this.formatting;
     }
 }

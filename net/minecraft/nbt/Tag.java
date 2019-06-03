@@ -6,7 +6,6 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.ChatFormat;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
@@ -21,14 +20,15 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public interface Tag {
     public static final String[] TYPES = new String[]{"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
-    public static final ChatFormat AQUA = ChatFormat.AQUA;
-    public static final ChatFormat GREEN = ChatFormat.GREEN;
-    public static final ChatFormat GOLD = ChatFormat.GOLD;
-    public static final ChatFormat RED = ChatFormat.RED;
+    public static final Formatting AQUA = Formatting.AQUA;
+    public static final Formatting GREEN = Formatting.GREEN;
+    public static final Formatting GOLD = Formatting.GOLD;
+    public static final Formatting RED = Formatting.RED;
 
     public void write(DataOutput var1) throws IOException;
 
@@ -137,10 +137,10 @@ public interface Tag {
         return this.toString();
     }
 
-    default public Component toTextComponent() {
-        return this.toTextComponent("", 0);
+    default public Text toText() {
+        return this.toText("", 0);
     }
 
-    public Component toTextComponent(String var1, int var2);
+    public Text toText(String var1, int var2);
 }
 

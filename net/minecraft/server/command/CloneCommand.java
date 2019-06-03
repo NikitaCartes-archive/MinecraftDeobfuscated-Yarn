@@ -23,19 +23,19 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 public class CloneCommand {
-    private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.clone.overlap", new Object[0]));
-    private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableComponent("commands.clone.toobig", object, object2));
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.clone.failed", new Object[0]));
+    private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.overlap", new Object[0]));
+    private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.clone.toobig", object, object2));
+    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed", new Object[0]));
     public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = cachedBlockPosition -> !cachedBlockPosition.getBlockState().isAir();
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -130,7 +130,7 @@ public class CloneCommand {
         if (l == 0) {
             throw FAILED_EXCEPTION.create();
         }
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.clone.success", l), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.clone.success", l), true);
         return l;
     }
 

@@ -11,8 +11,8 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 import net.minecraft.client.gui.hud.spectator.TeamTeleportSpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.TeleportSpectatorMenu;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class RootSpectatorCommandGroup
@@ -30,8 +30,8 @@ implements SpectatorMenuCommandGroup {
     }
 
     @Override
-    public Component getPrompt() {
-        return new TranslatableComponent("spectatorMenu.root.prompt", new Object[0]);
+    public Text getPrompt() {
+        return new TranslatableText("spectatorMenu.root.prompt", new Object[0]);
     }
 }
 

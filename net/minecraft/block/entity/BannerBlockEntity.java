@@ -18,8 +18,8 @@ import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class BannerBlockEntity
 extends BlockEntity
 implements Nameable {
-    private Component customName;
+    private Text customName;
     private DyeColor baseColor = DyeColor.WHITE;
     private ListTag patternListTag;
     private boolean patternListTagRead;
@@ -56,25 +56,25 @@ implements Nameable {
         this.patternColors = null;
         this.patternCacheKey = "";
         this.patternListTagRead = true;
-        this.customName = itemStack.hasCustomName() ? itemStack.getCustomName() : null;
+        this.customName = itemStack.hasCustomName() ? itemStack.getName() : null;
     }
 
     @Override
-    public Component getName() {
+    public Text getName() {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableComponent("block.minecraft.banner", new Object[0]);
+        return new TranslatableText("block.minecraft.banner", new Object[0]);
     }
 
     @Override
     @Nullable
-    public Component getCustomName() {
+    public Text getCustomName() {
         return this.customName;
     }
 
-    public void setCustomName(Component component) {
-        this.customName = component;
+    public void setCustomName(Text text) {
+        this.customName = text;
     }
 
     @Override
@@ -84,7 +84,7 @@ implements Nameable {
             compoundTag.put("Patterns", this.patternListTag);
         }
         if (this.customName != null) {
-            compoundTag.putString("CustomName", Component.Serializer.toJsonString(this.customName));
+            compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
         return compoundTag;
     }
@@ -93,7 +93,7 @@ implements Nameable {
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
         if (compoundTag.containsKey("CustomName", 8)) {
-            this.customName = Component.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         this.baseColor = this.hasWorld() ? ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor() : null;
         this.patternListTag = compoundTag.getList("Patterns", 10);

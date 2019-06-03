@@ -27,17 +27,17 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -106,12 +106,12 @@ implements BlockEntityProvider {
             return true;
         }
         if (blockState.get(OCCUPIED).booleanValue()) {
-            playerEntity.addChatMessage(new TranslatableComponent("block.minecraft.bed.occupied", new Object[0]), true);
+            playerEntity.addChatMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
             return true;
         }
         playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
             if (sleepFailureReason != null) {
-                playerEntity.addChatMessage(sleepFailureReason.getText(), true);
+                playerEntity.addChatMessage(sleepFailureReason.toText(), true);
             }
         });
         return true;
@@ -254,7 +254,7 @@ implements BlockEntityProvider {
         }
         float f = entityType.getWidth() / 2.0f;
         Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-        if (viewableWorld.doesNotCollide(new BoundingBox(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f))) {
+        if (viewableWorld.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f))) {
             return Optional.of(vec3d);
         }
         return Optional.empty();

@@ -5,26 +5,26 @@ package net.minecraft.client.gui.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatHudLine {
-    private final int tickCreated;
-    private final Component contents;
+    private final int timestamp;
+    private final Text text;
     private final int id;
 
-    public ChatHudLine(int i, Component component, int j) {
-        this.contents = component;
-        this.tickCreated = i;
+    public ChatHudLine(int i, Text text, int j) {
+        this.text = text;
+        this.timestamp = i;
         this.id = j;
     }
 
-    public Component getContents() {
-        return this.contents;
+    public Text getText() {
+        return this.text;
     }
 
-    public int getTickCreated() {
-        return this.tickCreated;
+    public int getTimestamp() {
+        return this.timestamp;
     }
 
     public int getId() {

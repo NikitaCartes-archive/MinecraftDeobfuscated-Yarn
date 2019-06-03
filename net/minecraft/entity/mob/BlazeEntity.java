@@ -155,11 +155,6 @@ extends HostileEntity {
         this.dataTracker.set(BLAZE_FLAGS, b);
     }
 
-    @Override
-    protected boolean checkLightLevelForSpawn() {
-        return true;
-    }
-
     static class ShootFireballGoal
     extends Goal {
         private final BlazeEntity blaze;

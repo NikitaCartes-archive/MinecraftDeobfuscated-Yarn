@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class EntityAnchorArgumentType
 implements ArgumentType<EntityAnchor> {
     private static final Collection<String> EXAMPLES = Arrays.asList("eyes", "feet");
-    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableComponent("argument.anchor.invalid", object));
+    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.anchor.invalid", object));
 
     public static EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> commandContext, String string) {
         return commandContext.getArgument(string, EntityAnchor.class);

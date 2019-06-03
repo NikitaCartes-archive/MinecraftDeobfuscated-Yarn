@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -38,6 +39,7 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
 
     @Override
     protected int getPropagatedLevel(long l, long m, int i) {
+        VoxelShape voxelShape2;
         int n;
         int k;
         if (m == Long.MAX_VALUE) {
@@ -55,12 +57,13 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
             return 15;
         }
         AtomicInteger atomicInteger = new AtomicInteger();
-        VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+        BlockState blockState = this.method_20479(m, atomicInteger);
         if (atomicInteger.get() >= 15) {
             return 15;
         }
-        VoxelShape voxelShape2 = this.method_20479(l, null);
-        if (VoxelShapes.method_1080(voxelShape2, voxelShape, direction)) {
+        BlockState blockState2 = this.method_20479(l, null);
+        VoxelShape voxelShape = this.method_20710(blockState2, l, direction);
+        if (VoxelShapes.method_20713(voxelShape, voxelShape2 = this.method_20710(blockState, m, direction.getOpposite()))) {
             return 15;
         }
         return i + Math.max(1, atomicInteger.get());

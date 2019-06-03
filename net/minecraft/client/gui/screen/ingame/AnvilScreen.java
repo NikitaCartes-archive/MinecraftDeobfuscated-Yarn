@@ -16,8 +16,8 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.packet.RenameItemC2SPacket;
+import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
@@ -28,8 +28,8 @@ implements ContainerListener {
     private static final Identifier BG_TEX = new Identifier("textures/gui/container/anvil.png");
     private TextFieldWidget nameField;
 
-    public AnvilScreen(AnvilContainer anvilContainer, PlayerInventory playerInventory, Component component) {
-        super(anvilContainer, playerInventory, component);
+    public AnvilScreen(AnvilContainer anvilContainer, PlayerInventory playerInventory, Text text) {
+        super(anvilContainer, playerInventory, text);
     }
 
     @Override
@@ -80,7 +80,7 @@ implements ContainerListener {
     protected void drawForeground(int i, int j) {
         GlStateManager.disableLighting();
         GlStateManager.disableBlend();
-        this.font.draw(this.title.getFormattedText(), 60.0f, 6.0f, 0x404040);
+        this.font.draw(this.title.asFormattedString(), 60.0f, 6.0f, 0x404040);
         int k = ((AnvilContainer)this.container).getLevelCost();
         if (k > 0) {
             int l = 8453920;
@@ -110,7 +110,7 @@ implements ContainerListener {
         }
         String string2 = string;
         Slot slot = ((AnvilContainer)this.container).getSlot(0);
-        if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string2.equals(slot.getStack().getCustomName().getString())) {
+        if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string2.equals(slot.getStack().getName().getString())) {
             string2 = "";
         }
         ((AnvilContainer)this.container).setNewItemName(string2);
@@ -148,7 +148,7 @@ implements ContainerListener {
     @Override
     public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
         if (i == 0) {
-            this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getCustomName().getString());
+            this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
             this.nameField.setIsEditable(!itemStack.isEmpty());
         }
     }

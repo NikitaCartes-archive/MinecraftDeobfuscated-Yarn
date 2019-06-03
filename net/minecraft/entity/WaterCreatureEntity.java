@@ -5,13 +5,9 @@ package net.minecraft.entity;
 
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
@@ -29,11 +25,6 @@ extends MobEntityWithAi {
     @Override
     public EntityGroup getGroup() {
         return EntityGroup.AQUATIC;
-    }
-
-    @Override
-    protected boolean canSpawnAt(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
-        return iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
     @Override

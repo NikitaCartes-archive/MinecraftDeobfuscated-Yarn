@@ -63,7 +63,7 @@ extends BlockWithEntity {
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
         if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof AbstractFurnaceBlockEntity) {
-            ((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+            ((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -19,11 +18,12 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
@@ -144,14 +144,14 @@ public class PotionUtil {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void buildTooltip(ItemStack itemStack, List<Component> list, float f) {
+    public static void buildTooltip(ItemStack itemStack, List<Text> list, float f) {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(itemStack);
         ArrayList<Pair<String, EntityAttributeModifier>> list3 = Lists.newArrayList();
         if (list2.isEmpty()) {
-            list.add(new TranslatableComponent("effect.none", new Object[0]).applyFormat(ChatFormat.GRAY));
+            list.add(new TranslatableText("effect.none", new Object[0]).formatted(Formatting.GRAY));
         } else {
             for (StatusEffectInstance statusEffectInstance : list2) {
-                TranslatableComponent component = new TranslatableComponent(statusEffectInstance.getTranslationKey(), new Object[0]);
+                TranslatableText text = new TranslatableText(statusEffectInstance.getTranslationKey(), new Object[0]);
                 StatusEffect statusEffect = statusEffectInstance.getEffectType();
                 Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
                 if (!map.isEmpty()) {
@@ -162,27 +162,27 @@ public class PotionUtil {
                     }
                 }
                 if (statusEffectInstance.getAmplifier() > 0) {
-                    component.append(" ").append(new TranslatableComponent("potion.potency." + statusEffectInstance.getAmplifier(), new Object[0]));
+                    text.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier(), new Object[0]));
                 }
                 if (statusEffectInstance.getDuration() > 20) {
-                    component.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+                    text.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
                 }
-                list.add(component.applyFormat(statusEffect.getType().getFormatting()));
+                list.add(text.formatted(statusEffect.getType().getFormatting()));
             }
         }
         if (!list3.isEmpty()) {
-            list.add(new TextComponent(""));
-            list.add(new TranslatableComponent("potion.whenDrank", new Object[0]).applyFormat(ChatFormat.DARK_PURPLE));
+            list.add(new LiteralText(""));
+            list.add(new TranslatableText("potion.whenDrank", new Object[0]).formatted(Formatting.DARK_PURPLE));
             for (Pair pair : list3) {
                 EntityAttributeModifier entityAttributeModifier3 = (EntityAttributeModifier)pair.getRight();
                 double d = entityAttributeModifier3.getAmount();
                 double e = entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier3.getAmount() * 100.0 : entityAttributeModifier3.getAmount();
                 if (d > 0.0) {
-                    list.add(new TranslatableComponent("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableComponent("attribute.name." + (String)pair.getLeft(), new Object[0])).applyFormat(ChatFormat.BLUE));
+                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableText("attribute.name." + (String)pair.getLeft(), new Object[0])).formatted(Formatting.BLUE));
                     continue;
                 }
                 if (!(d < 0.0)) continue;
-                list.add(new TranslatableComponent("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableComponent("attribute.name." + (String)pair.getLeft(), new Object[0])).applyFormat(ChatFormat.RED));
+                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText("attribute.name." + (String)pair.getLeft(), new Object[0])).formatted(Formatting.RED));
             }
         }
     }

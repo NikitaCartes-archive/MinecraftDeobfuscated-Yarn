@@ -37,7 +37,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -120,7 +120,7 @@ extends Entity {
 
     @Override
     @Nullable
-    public BoundingBox method_5708(Entity entity) {
+    public Box method_5708(Entity entity) {
         if (entity.isPushable()) {
             return entity.getBoundingBox();
         }
@@ -534,12 +534,12 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public BoundingBox getVisibilityBoundingBox() {
-        BoundingBox boundingBox = this.getBoundingBox();
+    public Box getVisibilityBoundingBox() {
+        Box box = this.getBoundingBox();
         if (this.hasCustomBlock()) {
-            return boundingBox.expand((double)Math.abs(this.getBlockOffset()) / 16.0);
+            return box.expand((double)Math.abs(this.getBlockOffset()) / 16.0);
         }
-        return boundingBox;
+        return box;
     }
 
     @Override

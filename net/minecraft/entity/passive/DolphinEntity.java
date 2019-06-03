@@ -5,6 +5,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -308,9 +309,8 @@ extends WaterCreatureEntity {
         return super.interactMob(playerEntity, hand);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.y > 45.0 && this.y < (double)iWorld.getSeaLevel() && iWorld.getBiome(new BlockPos(this)) != Biomes.OCEAN || iWorld.getBiome(new BlockPos(this)) != Biomes.DEEP_OCEAN && super.canSpawn(iWorld, spawnType);
+    public static boolean method_20664(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.getBiome(blockPos) != Biomes.OCEAN || iWorld.getBiome(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
     @Override

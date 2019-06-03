@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
 
@@ -41,7 +41,7 @@ extends Item {
             return ActionResult.FAIL;
         }
         double d = blockPos2.getX();
-        List<Entity> list = world.getEntities((Entity)null, new BoundingBox(d, e = (double)blockPos2.getY(), f = (double)blockPos2.getZ(), d + 1.0, e + 2.0, f + 1.0));
+        List<Entity> list = world.getEntities((Entity)null, new Box(d, e = (double)blockPos2.getY(), f = (double)blockPos2.getZ(), d + 1.0, e + 2.0, f + 1.0));
         if (!list.isEmpty()) {
             return ActionResult.FAIL;
         }

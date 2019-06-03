@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.BrewingStandContainer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,8 +19,8 @@ extends AbstractContainerScreen<BrewingStandContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
     private static final int[] field_2824 = new int[]{29, 24, 20, 16, 11, 6, 0};
 
-    public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, Component component) {
-        super(brewingStandContainer, playerInventory, component);
+    public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, Text text) {
+        super(brewingStandContainer, playerInventory, text);
     }
 
     @Override
@@ -32,8 +32,8 @@ extends AbstractContainerScreen<BrewingStandContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        this.font.draw(this.title.getFormattedText(), this.containerWidth / 2 - this.font.getStringWidth(this.title.getFormattedText()) / 2, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.title.asFormattedString(), this.containerWidth / 2 - this.font.getStringWidth(this.title.asFormattedString()) / 2, 6.0f, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

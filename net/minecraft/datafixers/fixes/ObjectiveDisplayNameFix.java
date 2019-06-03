@@ -13,8 +13,8 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class ObjectiveDisplayNameFix
 extends DataFix {
@@ -28,7 +28,7 @@ extends DataFix {
         if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.OBJECTIVE))) {
             throw new IllegalStateException("Objective type is not what was expected.");
         }
-        return this.fixTypeEverywhere("ObjectiveDisplayNameFix", type, dynamicOps -> pair -> pair.mapSecond(dynamic -> dynamic.update("DisplayName", dynamic2 -> DataFixUtils.orElse(dynamic2.asString().map(string -> Component.Serializer.toJsonString(new TextComponent((String)string))).map(dynamic::createString), dynamic2))));
+        return this.fixTypeEverywhere("ObjectiveDisplayNameFix", type, dynamicOps -> pair -> pair.mapSecond(dynamic -> dynamic.update("DisplayName", dynamic2 -> DataFixUtils.orElse(dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText((String)string))).map(dynamic::createString), dynamic2))));
     }
 }
 

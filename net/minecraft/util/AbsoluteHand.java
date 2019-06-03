@@ -5,17 +5,17 @@ package net.minecraft.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public enum AbsoluteHand {
-    LEFT(new TranslatableComponent("options.mainHand.left", new Object[0])),
-    RIGHT(new TranslatableComponent("options.mainHand.right", new Object[0]));
+    LEFT(new TranslatableText("options.mainHand.left", new Object[0])),
+    RIGHT(new TranslatableText("options.mainHand.right", new Object[0]));
 
-    private final Component name;
+    private final Text name;
 
-    private AbsoluteHand(Component component) {
-        this.name = component;
+    private AbsoluteHand(Text text) {
+        this.name = text;
     }
 
     @Environment(value=EnvType.CLIENT)

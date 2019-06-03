@@ -23,7 +23,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -149,7 +149,7 @@ extends PathNodeMaker {
     private PathNode getPathNode(int i, int j, int k, int l, double d, Direction direction) {
         double m;
         double h;
-        BoundingBox boundingBox;
+        Box box;
         PathNode pathNode = null;
         BlockPos blockPos = new BlockPos(i, j, k);
         double e = LandPathNodeMaker.method_60(this.blockView, blockPos);
@@ -167,7 +167,7 @@ extends PathNodeMaker {
         if (pathNodeType == PathNodeType.WALKABLE) {
             return pathNode;
         }
-        if (!(pathNode != null && !(pathNode.field_43 < 0.0f) || l <= 0 || pathNodeType == PathNodeType.FENCE || pathNodeType == PathNodeType.TRAPDOOR || (pathNode = this.getPathNode(i, j + 1, k, l - 1, d, direction)) == null || pathNode.type != PathNodeType.OPEN && pathNode.type != PathNodeType.WALKABLE || !(this.entity.getWidth() < 1.0f) || this.blockView.doesNotCollide(this.entity, boundingBox = new BoundingBox((h = (double)(i - direction.getOffsetX()) + 0.5) - g, LandPathNodeMaker.method_60(this.blockView, new BlockPos(h, (double)(j + 1), m = (double)(k - direction.getOffsetZ()) + 0.5)) + 0.001, m - g, h + g, (double)this.entity.getHeight() + LandPathNodeMaker.method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002, m + g)))) {
+        if (!(pathNode != null && !(pathNode.field_43 < 0.0f) || l <= 0 || pathNodeType == PathNodeType.FENCE || pathNodeType == PathNodeType.TRAPDOOR || (pathNode = this.getPathNode(i, j + 1, k, l - 1, d, direction)) == null || pathNode.type != PathNodeType.OPEN && pathNode.type != PathNodeType.WALKABLE || !(this.entity.getWidth() < 1.0f) || this.blockView.doesNotCollide(this.entity, box = new Box((h = (double)(i - direction.getOffsetX()) + 0.5) - g, LandPathNodeMaker.method_60(this.blockView, new BlockPos(h, (double)(j + 1), m = (double)(k - direction.getOffsetZ()) + 0.5)) + 0.001, m - g, h + g, (double)this.entity.getHeight() + LandPathNodeMaker.method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002, m + g)))) {
             pathNode = null;
         }
         if (pathNodeType == PathNodeType.WATER && !this.canSwim()) {
@@ -186,8 +186,8 @@ extends PathNodeMaker {
         }
         if (pathNodeType == PathNodeType.OPEN) {
             PathNodeType pathNodeType2;
-            BoundingBox boundingBox2 = new BoundingBox((double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (float)j + this.entity.getHeight(), (double)k + g + 0.5);
-            if (!this.blockView.doesNotCollide(this.entity, boundingBox2)) {
+            Box box2 = new Box((double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (float)j + this.entity.getHeight(), (double)k + g + 0.5);
+            if (!this.blockView.doesNotCollide(this.entity, box2)) {
                 return null;
             }
             if (this.entity.getWidth() >= 1.0f && (pathNodeType2 = this.getPathNodeType(this.entity, i, j - 1, k)) == PathNodeType.BLOCKED) {

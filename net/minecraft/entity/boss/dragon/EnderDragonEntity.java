@@ -44,7 +44,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -363,13 +363,13 @@ implements Monster {
         return (float)MathHelper.wrapDegrees(d);
     }
 
-    private boolean method_6821(BoundingBox boundingBox) {
-        int i = MathHelper.floor(boundingBox.minX);
-        int j = MathHelper.floor(boundingBox.minY);
-        int k = MathHelper.floor(boundingBox.minZ);
-        int l = MathHelper.floor(boundingBox.maxX);
-        int m = MathHelper.floor(boundingBox.maxY);
-        int n = MathHelper.floor(boundingBox.maxZ);
+    private boolean method_6821(Box box) {
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.floor(box.minY);
+        int k = MathHelper.floor(box.minZ);
+        int l = MathHelper.floor(box.maxX);
+        int m = MathHelper.floor(box.maxY);
+        int n = MathHelper.floor(box.maxZ);
         boolean bl = false;
         boolean bl2 = false;
         for (int o = i; o <= l; ++o) {

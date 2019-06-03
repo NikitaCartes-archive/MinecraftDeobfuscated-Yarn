@@ -6,7 +6,6 @@ package net.minecraft.item;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -19,14 +18,15 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -63,25 +63,25 @@ extends Item {
     }
 
     @Override
-    public Component getName(ItemStack itemStack) {
+    public Text getName(ItemStack itemStack) {
         CompoundTag compoundTag;
         String string;
         if (itemStack.hasTag() && !ChatUtil.isEmpty(string = (compoundTag = itemStack.getTag()).getString("title"))) {
-            return new TextComponent(string);
+            return new LiteralText(string);
         }
         return super.getName(itemStack);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         if (itemStack.hasTag()) {
             CompoundTag compoundTag = itemStack.getTag();
             String string = compoundTag.getString("author");
             if (!ChatUtil.isEmpty(string)) {
-                list.add(new TranslatableComponent("book.byAuthor", string).applyFormat(ChatFormat.GRAY));
+                list.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
             }
-            list.add(new TranslatableComponent("book.generation." + compoundTag.getInt("generation"), new Object[0]).applyFormat(ChatFormat.GRAY));
+            list.add(new TranslatableText("book.generation." + compoundTag.getInt("generation"), new Object[0]).formatted(Formatting.GRAY));
         }
     }
 
@@ -115,15 +115,15 @@ extends Item {
         }
         ListTag listTag = compoundTag.getList("pages", 8);
         for (int i = 0; i < listTag.size(); ++i) {
-            Component component;
+            Text text;
             String string = listTag.getString(i);
             try {
-                component = Component.Serializer.fromLenientJsonString(string);
-                component = Components.resolveAndStyle(serverCommandSource, component, playerEntity, 0);
+                text = Text.Serializer.fromLenientJson(string);
+                text = Texts.parse(serverCommandSource, text, playerEntity, 0);
             } catch (Exception exception) {
-                component = new TextComponent(string);
+                text = new LiteralText(string);
             }
-            listTag.method_10606(i, new StringTag(Component.Serializer.toJsonString(component)));
+            listTag.method_10606(i, new StringTag(Text.Serializer.toJson(text)));
         }
         compoundTag.put("pages", listTag);
         return true;

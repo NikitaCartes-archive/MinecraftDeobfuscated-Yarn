@@ -16,7 +16,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
@@ -47,16 +47,16 @@ implements DebugRenderer.Renderer {
             BlockState blockState = blockView.getBlockState(blockPos2);
             if (blockState.getBlock() == Blocks.AIR) continue;
             VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
-            for (BoundingBox boundingBox : voxelShape.getBoundingBoxes()) {
+            for (Box box : voxelShape.getBoundingBoxes()) {
                 BufferBuilder bufferBuilder;
                 Tessellator tessellator;
-                BoundingBox boundingBox2 = boundingBox.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
-                double g = boundingBox2.minX;
-                double h = boundingBox2.minY;
-                double i = boundingBox2.minZ;
-                double j = boundingBox2.maxX;
-                double k = boundingBox2.maxY;
-                double m = boundingBox2.maxZ;
+                Box box2 = box.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
+                double g = box2.minX;
+                double h = box2.minY;
+                double i = box2.minZ;
+                double j = box2.maxX;
+                double k = box2.maxY;
+                double m = box2.maxZ;
                 float n = 1.0f;
                 float o = 0.0f;
                 float p = 0.0f;

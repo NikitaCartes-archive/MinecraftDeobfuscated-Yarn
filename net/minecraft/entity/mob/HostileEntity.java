@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.mob;
 
+import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -100,18 +101,20 @@ implements Monster {
         return 0.5f - viewableWorld.getBrightness(blockPos);
     }
 
-    protected boolean checkLightLevelForSpawn() {
-        BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-        if (this.world.getLightLevel(LightType.SKY, blockPos) > this.random.nextInt(32)) {
+    public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
+        if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
             return false;
         }
-        int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.getLightLevel(blockPos);
-        return i <= this.random.nextInt(8);
+        int i = iWorld.getWorld().isThundering() ? iWorld.method_8603(blockPos, 10) : iWorld.getLightLevel(blockPos);
+        return i <= random.nextInt(8);
     }
 
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.checkLightLevelForSpawn() && super.canSpawn(iWorld, spawnType);
+    public static boolean method_20680(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return iWorld.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.method_20679(iWorld, blockPos, random) && HostileEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
+    }
+
+    public static boolean method_20681(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return iWorld.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override

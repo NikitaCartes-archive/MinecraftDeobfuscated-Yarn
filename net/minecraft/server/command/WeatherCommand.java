@@ -6,9 +6,9 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class WeatherCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -21,7 +21,7 @@ public class WeatherCommand {
         serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
         serverCommandSource.getWorld().getLevelProperties().setRaining(false);
         serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.clear", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.clear", new Object[0]), true);
         return i;
     }
 
@@ -31,7 +31,7 @@ public class WeatherCommand {
         serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
         serverCommandSource.getWorld().getLevelProperties().setRaining(true);
         serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.rain", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.rain", new Object[0]), true);
         return i;
     }
 
@@ -41,7 +41,7 @@ public class WeatherCommand {
         serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
         serverCommandSource.getWorld().getLevelProperties().setRaining(true);
         serverCommandSource.getWorld().getLevelProperties().setThundering(true);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.weather.set.thunder", new Object[0]), true);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.thunder", new Object[0]), true);
         return i;
     }
 }

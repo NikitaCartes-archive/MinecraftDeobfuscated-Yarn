@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -16,34 +15,35 @@ import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidg
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.ClientResourcePackContainer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resource.ResourcePackCompatibility;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class ResourcePackListWidget
 extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
-    private static final Component INCOMPATIBLE = new TranslatableComponent("resourcePack.incompatible", new Object[0]);
-    private static final Component INCOMPATIBLE_CONFIRM = new TranslatableComponent("resourcePack.incompatible.confirm.title", new Object[0]);
+    private static final Text INCOMPATIBLE = new TranslatableText("resourcePack.incompatible", new Object[0]);
+    private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("resourcePack.incompatible.confirm.title", new Object[0]);
     protected final MinecraftClient client;
-    private final Component title;
+    private final Text title;
 
-    public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Component component) {
+    public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Text text) {
         super(minecraftClient, i, j, 32, j - 55 + 4, 36);
         this.client = minecraftClient;
         this.centerListVertically = false;
         minecraftClient.textRenderer.getClass();
         this.setRenderHeader(true, (int)(9.0f * 1.5f));
-        this.title = component;
+        this.title = text;
     }
 
     @Override
     protected void renderHeader(int i, int j, Tessellator tessellator) {
-        Component component = new TextComponent("").append(this.title).applyFormat(ChatFormat.UNDERLINE, ChatFormat.BOLD);
-        this.client.textRenderer.draw(component.getFormattedText(), i + this.width / 2 - this.client.textRenderer.getStringWidth(component.getFormattedText()) / 2, Math.min(this.top + 3, j), 0xFFFFFF);
+        Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
+        this.client.textRenderer.draw(text.asFormattedString(), i + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2, Math.min(this.top + 3, j), 0xFFFFFF);
     }
 
     @Override
@@ -90,11 +90,11 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         protected String getDescription() {
-            return this.packContainer.getDescription().getFormattedText();
+            return this.packContainer.getDescription().asFormattedString();
         }
 
         protected String getDisplayName() {
-            return this.packContainer.getDisplayName().getFormattedText();
+            return this.packContainer.getDisplayName().asFormattedString();
         }
 
         public ClientResourcePackContainer getPackContainer() {
@@ -121,8 +121,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 p = n - k;
                 int q = o - j;
                 if (!resourcePackCompatibility.isCompatible()) {
-                    string = INCOMPATIBLE.getFormattedText();
-                    string2 = resourcePackCompatibility.getNotification().getFormattedText();
+                    string = INCOMPATIBLE.asFormattedString();
+                    string2 = resourcePackCompatibility.getNotification().asFormattedString();
                 }
                 if (this.method_20152()) {
                     if (p < 32) {
@@ -199,13 +199,13 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     if (resourcePackCompatibility.isCompatible()) {
                         this.getScreen().select(this);
                     } else {
-                        Component component = resourcePackCompatibility.getConfirmMessage();
+                        Text text = resourcePackCompatibility.getConfirmMessage();
                         this.client.openScreen(new ConfirmScreen(bl -> {
                             this.client.openScreen(this.getScreen());
                             if (bl) {
                                 this.getScreen().select(this);
                             }
-                        }, INCOMPATIBLE_CONFIRM, component));
+                        }, INCOMPATIBLE_CONFIRM, text));
                     }
                     return true;
                 }

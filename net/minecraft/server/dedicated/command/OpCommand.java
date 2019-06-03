@@ -10,14 +10,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 
 public class OpCommand {
-    private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.op.failed", new Object[0]));
+    private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.op.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("op").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.argument("targets", GameProfileArgumentType.create()).suggests((commandContext, suggestionsBuilder) -> {
@@ -33,7 +33,7 @@ public class OpCommand {
             if (playerManager.isOperator(gameProfile)) continue;
             playerManager.addToOperators(gameProfile);
             ++i;
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.op.success", collection.iterator().next().getName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.op.success", collection.iterator().next().getName()), true);
         }
         if (i == 0) {
             throw ALREADY_OPPED_EXCEPTION.create();

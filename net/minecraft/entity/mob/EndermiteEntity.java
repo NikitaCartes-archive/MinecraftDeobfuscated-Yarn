@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.mob;
 
+import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -146,15 +147,9 @@ extends HostileEntity {
         }
     }
 
-    @Override
-    protected boolean checkLightLevelForSpawn() {
-        return true;
-    }
-
-    @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        if (super.canSpawn(iWorld, spawnType)) {
-            PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this);
+    public static boolean method_20674(EntityType<EndermiteEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        if (EndermiteEntity.method_20681(entityType, iWorld, spawnType, blockPos, random)) {
+            PlayerEntity playerEntity = iWorld.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
             return playerEntity == null;
         }
         return false;

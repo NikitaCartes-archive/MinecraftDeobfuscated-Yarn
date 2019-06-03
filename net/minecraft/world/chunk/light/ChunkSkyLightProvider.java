@@ -6,6 +6,7 @@ package net.minecraft.world.chunk.light;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -29,6 +30,7 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
     @Override
     protected int getPropagatedLevel(long l, long m, int i) {
         boolean bl2;
+        VoxelShape voxelShape;
         if (m == Long.MAX_VALUE) {
             return 15;
         }
@@ -43,7 +45,7 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
             return i;
         }
         AtomicInteger atomicInteger = new AtomicInteger();
-        VoxelShape voxelShape = this.method_20479(m, atomicInteger);
+        BlockState blockState = this.method_20479(m, atomicInteger);
         if (atomicInteger.get() >= 15) {
             return 15;
         }
@@ -58,13 +60,16 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
         int s = Integer.signum(p - k);
         int t = Integer.signum(q - n);
         Direction direction = l == Long.MAX_VALUE ? Direction.DOWN : Direction.fromVector(r, s, t);
-        VoxelShape voxelShape2 = this.method_20479(l, null);
+        BlockState blockState2 = this.method_20479(l, null);
         if (direction != null) {
-            if (VoxelShapes.method_1080(voxelShape2, voxelShape, direction)) {
+            VoxelShape voxelShape2;
+            voxelShape = this.method_20710(blockState2, l, direction);
+            if (VoxelShapes.method_20713(voxelShape, voxelShape2 = this.method_20710(blockState, m, direction.getOpposite()))) {
                 return 15;
             }
         } else {
-            if (VoxelShapes.method_1080(voxelShape2, VoxelShapes.empty(), Direction.DOWN)) {
+            voxelShape = this.method_20710(blockState2, l, Direction.DOWN);
+            if (VoxelShapes.method_20713(voxelShape, VoxelShapes.empty())) {
                 return 15;
             }
             int u = bl ? -1 : 0;
@@ -72,7 +77,8 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
             if (direction2 == null) {
                 return 15;
             }
-            if (VoxelShapes.method_1080(VoxelShapes.empty(), voxelShape, direction2)) {
+            VoxelShape voxelShape3 = this.method_20710(blockState, m, direction2.getOpposite());
+            if (VoxelShapes.method_20713(VoxelShapes.empty(), voxelShape3)) {
                 return 15;
             }
         }

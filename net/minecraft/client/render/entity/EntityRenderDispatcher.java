@@ -214,7 +214,7 @@ import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -516,15 +516,15 @@ public class EntityRenderDispatcher {
         GlStateManager.disableCull();
         GlStateManager.disableBlend();
         float i = entity.getWidth() / 2.0f;
-        BoundingBox boundingBox = entity.getBoundingBox();
-        WorldRenderer.drawBoxOutline(boundingBox.minX - entity.x + d, boundingBox.minY - entity.y + e, boundingBox.minZ - entity.z + f, boundingBox.maxX - entity.x + d, boundingBox.maxY - entity.y + e, boundingBox.maxZ - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
+        Box box = entity.getBoundingBox();
+        WorldRenderer.drawBoxOutline(box.minX - entity.x + d, box.minY - entity.y + e, box.minZ - entity.z + f, box.maxX - entity.x + d, box.maxY - entity.y + e, box.maxZ - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
                 double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
                 double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
                 double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
-                BoundingBox boundingBox2 = enderDragonPart.getBoundingBox();
-                WorldRenderer.drawBoxOutline(boundingBox2.minX - this.renderPosX + j, boundingBox2.minY - this.renderPosY + k, boundingBox2.minZ - this.renderPosZ + l, boundingBox2.maxX - this.renderPosX + j, boundingBox2.maxY - this.renderPosY + k, boundingBox2.maxZ - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
+                Box box2 = enderDragonPart.getBoundingBox();
+                WorldRenderer.drawBoxOutline(box2.minX - this.renderPosX + j, box2.minY - this.renderPosY + k, box2.minZ - this.renderPosZ + l, box2.maxX - this.renderPosX + j, box2.maxY - this.renderPosY + k, box2.maxZ - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
             }
         }
         if (entity instanceof LivingEntity) {

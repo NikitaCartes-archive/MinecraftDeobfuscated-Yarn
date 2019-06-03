@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.chat;
+package net.minecraft.text;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,64 +25,64 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.KeybindComponent;
-import net.minecraft.network.chat.NbtComponent;
-import net.minecraft.network.chat.ScoreComponent;
-import net.minecraft.network.chat.SelectorComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.NbtText;
+import net.minecraft.text.ScoreText;
+import net.minecraft.text.SelectorText;
+import net.minecraft.text.Style;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.SystemUtil;
 import org.jetbrains.annotations.Nullable;
 
-public interface Component
+public interface Text
 extends Message,
-Iterable<Component> {
-    public Component setStyle(Style var1);
+Iterable<Text> {
+    public Text setStyle(Style var1);
 
     public Style getStyle();
 
-    default public Component append(String string) {
-        return this.append(new TextComponent(string));
+    default public Text append(String string) {
+        return this.append(new LiteralText(string));
     }
 
-    public Component append(Component var1);
+    public Text append(Text var1);
 
-    public String getText();
+    public String asString();
 
     @Override
     default public String getString() {
         StringBuilder stringBuilder = new StringBuilder();
-        this.stream().forEach(component -> stringBuilder.append(component.getText()));
+        this.stream().forEach(text -> stringBuilder.append(text.asString()));
         return stringBuilder.toString();
     }
 
-    default public String getStringTruncated(int i) {
+    default public String asTruncatedString(int i) {
         int j;
         StringBuilder stringBuilder = new StringBuilder();
         Iterator iterator = this.stream().iterator();
         while (iterator.hasNext() && (j = i - stringBuilder.length()) > 0) {
-            String string = ((Component)iterator.next()).getText();
+            String string = ((Text)iterator.next()).asString();
             stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
         }
         return stringBuilder.toString();
     }
 
-    default public String getFormattedText() {
+    default public String asFormattedString() {
         StringBuilder stringBuilder = new StringBuilder();
         String string = "";
         Iterator iterator = this.stream().iterator();
         while (iterator.hasNext()) {
-            Component component = (Component)iterator.next();
-            String string2 = component.getText();
+            Text text = (Text)iterator.next();
+            String string2 = text.asString();
             if (string2.isEmpty()) continue;
-            String string3 = component.getStyle().getFormatString();
+            String string3 = text.getStyle().asString();
             if (!string3.equals(string)) {
                 if (!string.isEmpty()) {
-                    stringBuilder.append((Object)ChatFormat.RESET);
+                    stringBuilder.append((Object)Formatting.RESET);
                 }
                 stringBuilder.append(string3);
                 string = string3;
@@ -90,54 +90,54 @@ Iterable<Component> {
             stringBuilder.append(string2);
         }
         if (!string.isEmpty()) {
-            stringBuilder.append((Object)ChatFormat.RESET);
+            stringBuilder.append((Object)Formatting.RESET);
         }
         return stringBuilder.toString();
     }
 
-    public List<Component> getSiblings();
+    public List<Text> getSiblings();
 
-    public Stream<Component> stream();
+    public Stream<Text> stream();
 
-    default public Stream<Component> streamCopied() {
-        return this.stream().map(Component::copyWithoutChildren);
+    default public Stream<Text> streamCopied() {
+        return this.stream().map(Text::copyWithoutChildren);
     }
 
     @Override
-    default public Iterator<Component> iterator() {
+    default public Iterator<Text> iterator() {
         return this.streamCopied().iterator();
     }
 
-    public Component copyShallow();
+    public Text copy();
 
-    default public Component copy() {
-        Component component = this.copyShallow();
-        component.setStyle(this.getStyle().clone());
-        for (Component component2 : this.getSiblings()) {
-            component.append(component2.copy());
+    default public Text deepCopy() {
+        Text text = this.copy();
+        text.setStyle(this.getStyle().deepCopy());
+        for (Text text2 : this.getSiblings()) {
+            text.append(text2.deepCopy());
         }
-        return component;
+        return text;
     }
 
-    default public Component modifyStyle(Consumer<Style> consumer) {
+    default public Text styled(Consumer<Style> consumer) {
         consumer.accept(this.getStyle());
         return this;
     }
 
-    default public Component applyFormat(ChatFormat ... chatFormats) {
-        for (ChatFormat chatFormat : chatFormats) {
-            this.applyFormat(chatFormat);
+    default public Text formatted(Formatting ... formattings) {
+        for (Formatting formatting : formattings) {
+            this.formatted(formatting);
         }
         return this;
     }
 
-    default public Component applyFormat(ChatFormat chatFormat) {
+    default public Text formatted(Formatting formatting) {
         Style style = this.getStyle();
-        if (chatFormat.isColor()) {
-            style.setColor(chatFormat);
+        if (formatting.isColor()) {
+            style.setColor(formatting);
         }
-        if (chatFormat.isModifier()) {
-            switch (chatFormat) {
+        if (formatting.isModifier()) {
+            switch (formatting) {
                 case OBFUSCATED: {
                     style.setObfuscated(true);
                     break;
@@ -163,24 +163,24 @@ Iterable<Component> {
         return this;
     }
 
-    public static Component copyWithoutChildren(Component component) {
-        Component component2 = component.copyShallow();
-        component2.setStyle(component.getStyle().copy());
-        return component2;
+    public static Text copyWithoutChildren(Text text) {
+        Text text2 = text.copy();
+        text2.setStyle(text.getStyle().copy());
+        return text2;
     }
 
     public static class Serializer
-    implements JsonDeserializer<Component>,
-    JsonSerializer<Component> {
+    implements JsonDeserializer<Text>,
+    JsonSerializer<Text> {
         private static final Gson GSON = SystemUtil.get(() -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.disableHtmlEscaping();
-            gsonBuilder.registerTypeHierarchyAdapter(Component.class, new Serializer());
+            gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Serializer());
             gsonBuilder.registerTypeHierarchyAdapter(Style.class, new Style.Serializer());
             gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
             return gsonBuilder.create();
         });
-        private static final Field POS_FIELD = SystemUtil.get(() -> {
+        private static final Field JSON_READER_POS = SystemUtil.get(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("pos");
@@ -190,7 +190,7 @@ Iterable<Component> {
                 throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", noSuchFieldException);
             }
         });
-        private static final Field LINE_START_FIELD = SystemUtil.get(() -> {
+        private static final Field JSON_READER_LINE_START = SystemUtil.get(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("lineStart");
@@ -206,52 +206,52 @@ Iterable<Component> {
          * Enabled force condition propagation
          * Lifted jumps to return sites
          */
-        public Component method_10871(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public Text method_10871(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             void var5_18;
             if (jsonElement.isJsonPrimitive()) {
-                return new TextComponent(jsonElement.getAsString());
+                return new LiteralText(jsonElement.getAsString());
             }
             if (jsonElement.isJsonObject()) {
                 void var5_16;
                 String string;
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has("text")) {
-                    TextComponent textComponent = new TextComponent(jsonObject.get("text").getAsString());
+                    LiteralText literalText = new LiteralText(jsonObject.get("text").getAsString());
                 } else if (jsonObject.has("translate")) {
                     string = jsonObject.get("translate").getAsString();
                     if (jsonObject.has("with")) {
                         JsonArray jsonArray = jsonObject.getAsJsonArray("with");
                         Object[] objects = new Object[jsonArray.size()];
                         for (int i = 0; i < objects.length; ++i) {
-                            TextComponent textComponent;
+                            LiteralText literalText;
                             objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
-                            if (!(objects[i] instanceof TextComponent) || !(textComponent = (TextComponent)objects[i]).getStyle().isEmpty() || !textComponent.getSiblings().isEmpty()) continue;
-                            objects[i] = textComponent.getTextField();
+                            if (!(objects[i] instanceof LiteralText) || !(literalText = (LiteralText)objects[i]).getStyle().isEmpty() || !literalText.getSiblings().isEmpty()) continue;
+                            objects[i] = literalText.getRawString();
                         }
-                        TranslatableComponent translatableComponent = new TranslatableComponent(string, objects);
+                        TranslatableText translatableText = new TranslatableText(string, objects);
                     } else {
-                        TranslatableComponent translatableComponent = new TranslatableComponent(string, new Object[0]);
+                        TranslatableText translatableText = new TranslatableText(string, new Object[0]);
                     }
                 } else if (jsonObject.has("score")) {
                     JsonObject jsonObject2 = jsonObject.getAsJsonObject("score");
                     if (!jsonObject2.has("name") || !jsonObject2.has("objective")) throw new JsonParseException("A score component needs a least a name and an objective");
-                    ScoreComponent scoreComponent = new ScoreComponent(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
+                    ScoreText scoreText = new ScoreText(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
                     if (jsonObject2.has("value")) {
-                        scoreComponent.setText(JsonHelper.getString(jsonObject2, "value"));
+                        scoreText.setScore(JsonHelper.getString(jsonObject2, "value"));
                     }
                 } else if (jsonObject.has("selector")) {
-                    SelectorComponent selectorComponent = new SelectorComponent(JsonHelper.getString(jsonObject, "selector"));
+                    SelectorText selectorText = new SelectorText(JsonHelper.getString(jsonObject, "selector"));
                 } else if (jsonObject.has("keybind")) {
-                    KeybindComponent keybindComponent = new KeybindComponent(JsonHelper.getString(jsonObject, "keybind"));
+                    KeybindText keybindText = new KeybindText(JsonHelper.getString(jsonObject, "keybind"));
                 } else {
                     if (!jsonObject.has("nbt")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                     string = JsonHelper.getString(jsonObject, "nbt");
                     boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
                     if (jsonObject.has("block")) {
-                        NbtComponent.BlockPosArgument blockPosArgument = new NbtComponent.BlockPosArgument(string, bl, JsonHelper.getString(jsonObject, "block"));
+                        NbtText.BlockNbtText blockNbtText = new NbtText.BlockNbtText(string, bl, JsonHelper.getString(jsonObject, "block"));
                     } else {
                         if (!jsonObject.has("entity")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
-                        NbtComponent.EntityNbtComponent entityNbtComponent = new NbtComponent.EntityNbtComponent(string, bl, JsonHelper.getString(jsonObject, "entity"));
+                        NbtText.EntityNbtText entityNbtText = new NbtText.EntityNbtText(string, bl, JsonHelper.getString(jsonObject, "entity"));
                     }
                 }
                 if (jsonObject.has("extra")) {
@@ -268,12 +268,12 @@ Iterable<Component> {
             JsonArray jsonArray3 = jsonElement.getAsJsonArray();
             Object var5_17 = null;
             for (JsonElement jsonElement2 : jsonArray3) {
-                Component component2 = this.method_10871(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+                Text text2 = this.method_10871(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
                 if (var5_18 == null) {
-                    Component component = component2;
+                    Text text = text2;
                     continue;
                 }
-                var5_18.append(component2);
+                var5_18.append(text2);
             }
             return var5_18;
         }
@@ -292,107 +292,107 @@ Iterable<Component> {
          * Enabled force condition propagation
          * Lifted jumps to return sites
          */
-        public JsonElement method_10874(Component component, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement method_10874(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
-            if (!component.getStyle().isEmpty()) {
-                this.addStyle(component.getStyle(), jsonObject, jsonSerializationContext);
+            if (!text.getStyle().isEmpty()) {
+                this.addStyle(text.getStyle(), jsonObject, jsonSerializationContext);
             }
-            if (!component.getSiblings().isEmpty()) {
+            if (!text.getSiblings().isEmpty()) {
                 JsonArray jsonArray = new JsonArray();
-                for (Component component2 : component.getSiblings()) {
-                    jsonArray.add(this.method_10874(component2, component2.getClass(), jsonSerializationContext));
+                for (Text text2 : text.getSiblings()) {
+                    jsonArray.add(this.method_10874(text2, text2.getClass(), jsonSerializationContext));
                 }
                 jsonObject.add("extra", jsonArray);
             }
-            if (component instanceof TextComponent) {
-                jsonObject.addProperty("text", ((TextComponent)component).getTextField());
+            if (text instanceof LiteralText) {
+                jsonObject.addProperty("text", ((LiteralText)text).getRawString());
                 return jsonObject;
-            } else if (component instanceof TranslatableComponent) {
-                TranslatableComponent translatableComponent = (TranslatableComponent)component;
-                jsonObject.addProperty("translate", translatableComponent.getKey());
-                if (translatableComponent.getParams() == null || translatableComponent.getParams().length <= 0) return jsonObject;
+            } else if (text instanceof TranslatableText) {
+                TranslatableText translatableText = (TranslatableText)text;
+                jsonObject.addProperty("translate", translatableText.getKey());
+                if (translatableText.getArgs() == null || translatableText.getArgs().length <= 0) return jsonObject;
                 JsonArray jsonArray2 = new JsonArray();
-                for (Object object : translatableComponent.getParams()) {
-                    if (object instanceof Component) {
-                        jsonArray2.add(this.method_10874((Component)object, object.getClass(), jsonSerializationContext));
+                for (Object object : translatableText.getArgs()) {
+                    if (object instanceof Text) {
+                        jsonArray2.add(this.method_10874((Text)object, object.getClass(), jsonSerializationContext));
                         continue;
                     }
                     jsonArray2.add(new JsonPrimitive(String.valueOf(object)));
                 }
                 jsonObject.add("with", jsonArray2);
                 return jsonObject;
-            } else if (component instanceof ScoreComponent) {
-                ScoreComponent scoreComponent = (ScoreComponent)component;
+            } else if (text instanceof ScoreText) {
+                ScoreText scoreText = (ScoreText)text;
                 JsonObject jsonObject2 = new JsonObject();
-                jsonObject2.addProperty("name", scoreComponent.getName());
-                jsonObject2.addProperty("objective", scoreComponent.getObjective());
-                jsonObject2.addProperty("value", scoreComponent.getText());
+                jsonObject2.addProperty("name", scoreText.getName());
+                jsonObject2.addProperty("objective", scoreText.getObjective());
+                jsonObject2.addProperty("value", scoreText.asString());
                 jsonObject.add("score", jsonObject2);
                 return jsonObject;
-            } else if (component instanceof SelectorComponent) {
-                SelectorComponent selectorComponent = (SelectorComponent)component;
-                jsonObject.addProperty("selector", selectorComponent.getPattern());
+            } else if (text instanceof SelectorText) {
+                SelectorText selectorText = (SelectorText)text;
+                jsonObject.addProperty("selector", selectorText.getPattern());
                 return jsonObject;
-            } else if (component instanceof KeybindComponent) {
-                KeybindComponent keybindComponent = (KeybindComponent)component;
-                jsonObject.addProperty("keybind", keybindComponent.getKeybind());
+            } else if (text instanceof KeybindText) {
+                KeybindText keybindText = (KeybindText)text;
+                jsonObject.addProperty("keybind", keybindText.getKey());
                 return jsonObject;
             } else {
-                if (!(component instanceof NbtComponent)) throw new IllegalArgumentException("Don't know how to serialize " + component + " as a Component");
-                NbtComponent nbtComponent = (NbtComponent)component;
-                jsonObject.addProperty("nbt", nbtComponent.getPath());
-                jsonObject.addProperty("interpret", nbtComponent.isComponentJson());
-                if (component instanceof NbtComponent.BlockPosArgument) {
-                    NbtComponent.BlockPosArgument blockPosArgument = (NbtComponent.BlockPosArgument)component;
-                    jsonObject.addProperty("block", blockPosArgument.getPos());
+                if (!(text instanceof NbtText)) throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
+                NbtText nbtText = (NbtText)text;
+                jsonObject.addProperty("nbt", nbtText.getPath());
+                jsonObject.addProperty("interpret", nbtText.shouldInterpret());
+                if (text instanceof NbtText.BlockNbtText) {
+                    NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
+                    jsonObject.addProperty("block", blockNbtText.getPos());
                     return jsonObject;
                 } else {
-                    if (!(component instanceof NbtComponent.EntityNbtComponent)) throw new IllegalArgumentException("Don't know how to serialize " + component + " as a Component");
-                    NbtComponent.EntityNbtComponent entityNbtComponent = (NbtComponent.EntityNbtComponent)component;
-                    jsonObject.addProperty("entity", entityNbtComponent.getSelector());
+                    if (!(text instanceof NbtText.EntityNbtText)) throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
+                    NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)text;
+                    jsonObject.addProperty("entity", entityNbtText.getSelector());
                 }
             }
             return jsonObject;
         }
 
-        public static String toJsonString(Component component) {
-            return GSON.toJson(component);
+        public static String toJson(Text text) {
+            return GSON.toJson(text);
         }
 
-        public static JsonElement toJson(Component component) {
-            return GSON.toJsonTree(component);
-        }
-
-        @Nullable
-        public static Component fromJsonString(String string) {
-            return JsonHelper.deserialize(GSON, string, Component.class, false);
+        public static JsonElement toJsonTree(Text text) {
+            return GSON.toJsonTree(text);
         }
 
         @Nullable
-        public static Component fromJson(JsonElement jsonElement) {
-            return GSON.fromJson(jsonElement, Component.class);
+        public static Text fromJson(String string) {
+            return JsonHelper.deserialize(GSON, string, Text.class, false);
         }
 
         @Nullable
-        public static Component fromLenientJsonString(String string) {
-            return JsonHelper.deserialize(GSON, string, Component.class, true);
+        public static Text fromJson(JsonElement jsonElement) {
+            return GSON.fromJson(jsonElement, Text.class);
         }
 
-        public static Component fromJsonString(com.mojang.brigadier.StringReader stringReader) {
+        @Nullable
+        public static Text fromLenientJson(String string) {
+            return JsonHelper.deserialize(GSON, string, Text.class, true);
+        }
+
+        public static Text fromJson(com.mojang.brigadier.StringReader stringReader) {
             try {
                 JsonReader jsonReader = new JsonReader(new StringReader(stringReader.getRemaining()));
                 jsonReader.setLenient(false);
-                Component component = GSON.getAdapter(Component.class).read(jsonReader);
-                stringReader.setCursor(stringReader.getCursor() + Serializer.getReaderPosition(jsonReader));
-                return component;
+                Text text = GSON.getAdapter(Text.class).read(jsonReader);
+                stringReader.setCursor(stringReader.getCursor() + Serializer.getPosition(jsonReader));
+                return text;
             } catch (IOException iOException) {
                 throw new JsonParseException(iOException);
             }
         }
 
-        private static int getReaderPosition(JsonReader jsonReader) {
+        private static int getPosition(JsonReader jsonReader) {
             try {
-                return POS_FIELD.getInt(jsonReader) - LINE_START_FIELD.getInt(jsonReader) + 1;
+                return JSON_READER_POS.getInt(jsonReader) - JSON_READER_LINE_START.getInt(jsonReader) + 1;
             } catch (IllegalAccessException illegalAccessException) {
                 throw new IllegalStateException("Couldn't read position of JsonReader", illegalAccessException);
             }
@@ -400,7 +400,7 @@ Iterable<Component> {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_10874((Component)object, type, jsonSerializationContext);
+            return this.method_10874((Text)object, type, jsonSerializationContext);
         }
 
         @Override

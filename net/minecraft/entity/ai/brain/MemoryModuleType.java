@@ -44,6 +44,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<GlobalPos> HIDING_PLACE = MemoryModuleType.register("hiding_place", Optional.empty());
     public static final MemoryModuleType<Long> HEARD_BELL_TIME = MemoryModuleType.register("heard_bell_time", Optional.empty());
     public static final MemoryModuleType<Long> CANT_REACH_WALK_TARGET_SINCE = MemoryModuleType.register("cant_reach_walk_target_since", Optional.empty());
+    public static final MemoryModuleType<Long> GOLEM_LAST_SEEN_TIME = MemoryModuleType.register("golem_last_seen_time", Optional.empty());
     private final Optional<Function<Dynamic<?>, U>> factory;
 
     private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {

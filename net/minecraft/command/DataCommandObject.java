@@ -7,17 +7,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public interface DataCommandObject {
     public void setTag(CompoundTag var1) throws CommandSyntaxException;
 
     public CompoundTag getTag() throws CommandSyntaxException;
 
-    public Component getModifiedFeedback();
+    public Text getModifiedFeedback();
 
-    public Component getQueryFeedback(Tag var1);
+    public Text getQueryFeedback(Tag var1);
 
-    public Component getGetFeedback(NbtPathArgumentType.NbtPath var1, double var2, int var4);
+    public Text getGetFeedback(NbtPathArgumentType.NbtPath var1, double var2, int var4);
 }
 

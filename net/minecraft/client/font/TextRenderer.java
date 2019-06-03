@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.Glyph;
@@ -23,6 +22,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -110,9 +110,9 @@ implements AutoCloseable {
             float s;
             char c = string.charAt(q);
             if (c == '\u00a7' && q + 1 < string.length()) {
-                ChatFormat chatFormat = ChatFormat.bySectionSignCode(string.charAt(q + 1));
-                if (chatFormat != null) {
-                    if (chatFormat.affectsGlyphWidth()) {
+                Formatting formatting = Formatting.byCode(string.charAt(q + 1));
+                if (formatting != null) {
+                    if (formatting.affectsGlyphWidth()) {
                         bl2 = false;
                         bl3 = false;
                         bl6 = false;
@@ -122,20 +122,20 @@ implements AutoCloseable {
                         n = k;
                         o = l;
                     }
-                    if (chatFormat.getColor() != null) {
-                        int r = chatFormat.getColor();
+                    if (formatting.getColorValue() != null) {
+                        int r = formatting.getColorValue();
                         m = (float)(r >> 16 & 0xFF) / 255.0f * h;
                         n = (float)(r >> 8 & 0xFF) / 255.0f * h;
                         o = (float)(r & 0xFF) / 255.0f * h;
-                    } else if (chatFormat == ChatFormat.OBFUSCATED) {
+                    } else if (formatting == Formatting.OBFUSCATED) {
                         bl2 = true;
-                    } else if (chatFormat == ChatFormat.BOLD) {
+                    } else if (formatting == Formatting.BOLD) {
                         bl3 = true;
-                    } else if (chatFormat == ChatFormat.STRIKETHROUGH) {
+                    } else if (formatting == Formatting.STRIKETHROUGH) {
                         bl6 = true;
-                    } else if (chatFormat == ChatFormat.UNDERLINE) {
+                    } else if (formatting == Formatting.UNDERLINE) {
                         bl5 = true;
-                    } else if (chatFormat == ChatFormat.ITALIC) {
+                    } else if (formatting == Formatting.ITALIC) {
                         bl4 = true;
                     }
                 }
@@ -195,12 +195,12 @@ implements AutoCloseable {
         for (int i = 0; i < string.length(); ++i) {
             char c = string.charAt(i);
             if (c == '\u00a7' && i < string.length() - 1) {
-                ChatFormat chatFormat;
-                if ((chatFormat = ChatFormat.bySectionSignCode(string.charAt(++i))) == ChatFormat.BOLD) {
+                Formatting formatting;
+                if ((formatting = Formatting.byCode(string.charAt(++i))) == Formatting.BOLD) {
                     bl = true;
                     continue;
                 }
-                if (chatFormat == null || !chatFormat.affectsGlyphWidth()) continue;
+                if (formatting == null || !formatting.affectsGlyphWidth()) continue;
                 bl = false;
                 continue;
             }
@@ -231,10 +231,10 @@ implements AutoCloseable {
             char c = string.charAt(l);
             if (bl2) {
                 bl2 = false;
-                ChatFormat chatFormat = ChatFormat.bySectionSignCode(c);
-                if (chatFormat == ChatFormat.BOLD) {
+                Formatting formatting = Formatting.byCode(c);
+                if (formatting == Formatting.BOLD) {
                     bl3 = true;
-                } else if (chatFormat != null && chatFormat.affectsGlyphWidth()) {
+                } else if (formatting != null && formatting.affectsGlyphWidth()) {
                     bl3 = false;
                 }
             } else if (c == '\u00a7') {
@@ -302,7 +302,7 @@ implements AutoCloseable {
             String string3 = string.substring(0, j);
             char c = string.charAt(j);
             boolean bl = c == ' ' || c == '\n';
-            string = ChatFormat.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
+            string = Formatting.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
             string2 = string2 + string3 + "\n";
         }
         return string2;
@@ -320,13 +320,13 @@ implements AutoCloseable {
             char c = string.charAt(l);
             switch (c) {
                 case '\u00a7': {
-                    ChatFormat chatFormat;
+                    Formatting formatting;
                     if (l >= k - 1) break;
-                    if ((chatFormat = ChatFormat.bySectionSignCode(string.charAt(++l))) == ChatFormat.BOLD) {
+                    if ((formatting = Formatting.byCode(string.charAt(++l))) == Formatting.BOLD) {
                         bl = true;
                         break;
                     }
-                    if (chatFormat == null || !chatFormat.affectsGlyphWidth()) break;
+                    if (formatting == null || !formatting.affectsGlyphWidth()) break;
                     bl = false;
                     break;
                 }

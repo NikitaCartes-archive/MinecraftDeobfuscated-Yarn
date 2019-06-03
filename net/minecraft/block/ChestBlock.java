@@ -30,8 +30,6 @@ import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -39,6 +37,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -46,7 +46,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -103,8 +103,8 @@ implements Waterloggable {
                 }
 
                 @Override
-                public Component getDisplayName() {
-                    return new TranslatableComponent("container.chestDouble", new Object[0]);
+                public Text getDisplayName() {
+                    return new TranslatableText("container.chestDouble", new Object[0]);
                 }
             };
         }
@@ -221,7 +221,7 @@ implements Waterloggable {
     public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
         BlockEntity blockEntity;
         if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof ChestBlockEntity) {
-            ((ChestBlockEntity)blockEntity).setCustomName(itemStack.getCustomName());
+            ((ChestBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 
@@ -312,7 +312,7 @@ implements Waterloggable {
     }
 
     private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
-        List<CatEntity> list = iWorld.getEntities(CatEntity.class, new BoundingBox(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
+        List<CatEntity> list = iWorld.getEntities(CatEntity.class, new Box(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {
                 if (!catEntity.isSitting()) continue;

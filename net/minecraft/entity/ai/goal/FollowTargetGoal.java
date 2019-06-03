@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.Nullable;
 
 public class FollowTargetGoal<T extends LivingEntity>
@@ -47,7 +47,7 @@ extends TrackTargetGoal {
         return this.targetEntity != null;
     }
 
-    protected BoundingBox getSearchBox(double d) {
+    protected Box getSearchBox(double d) {
         return this.mob.getBoundingBox().expand(d, 4.0, d);
     }
 

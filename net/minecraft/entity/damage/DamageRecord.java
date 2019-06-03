@@ -5,7 +5,7 @@ package net.minecraft.entity.damage;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageRecord {
@@ -43,7 +43,7 @@ public class DamageRecord {
     }
 
     @Nullable
-    public Component getAttackerName() {
+    public Text getAttackerName() {
         return this.getDamageSource().getAttacker() == null ? null : this.getDamageSource().getAttacker().getDisplayName();
     }
 

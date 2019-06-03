@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractTeam {
@@ -24,7 +24,7 @@ public abstract class AbstractTeam {
 
     public abstract String getName();
 
-    public abstract Component modifyText(Component var1);
+    public abstract Text modifyText(Text var1);
 
     @Environment(value=EnvType.CLIENT)
     public abstract boolean shouldShowFriendlyInvisibles();
@@ -34,7 +34,7 @@ public abstract class AbstractTeam {
     @Environment(value=EnvType.CLIENT)
     public abstract VisibilityRule getNameTagVisibilityRule();
 
-    public abstract ChatFormat getColor();
+    public abstract Formatting getColor();
 
     public abstract Collection<String> getPlayerList();
 
@@ -62,8 +62,8 @@ public abstract class AbstractTeam {
             this.value = j;
         }
 
-        public Component getTranslationKey() {
-            return new TranslatableComponent("team.collision." + this.name, new Object[0]);
+        public Text getTranslationKey() {
+            return new TranslatableText("team.collision." + this.name, new Object[0]);
         }
 
         static {
@@ -91,8 +91,8 @@ public abstract class AbstractTeam {
             this.value = j;
         }
 
-        public Component getTranslationKey() {
-            return new TranslatableComponent("team.visibility." + this.name, new Object[0]);
+        public Text getTranslationKey() {
+            return new TranslatableText("team.visibility." + this.name, new Object[0]);
         }
 
         static {

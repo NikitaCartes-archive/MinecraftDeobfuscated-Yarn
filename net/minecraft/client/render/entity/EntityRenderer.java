@@ -26,7 +26,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.ViewableWorld;
@@ -55,11 +55,11 @@ public abstract class EntityRenderer<T extends Entity> {
         if (((Entity)entity).ignoreCameraFrustum) {
             return true;
         }
-        BoundingBox boundingBox = ((Entity)entity).getVisibilityBoundingBox().expand(0.5);
-        if (boundingBox.isValid() || boundingBox.averageDimension() == 0.0) {
-            boundingBox = new BoundingBox(((Entity)entity).x - 2.0, ((Entity)entity).y - 2.0, ((Entity)entity).z - 2.0, ((Entity)entity).x + 2.0, ((Entity)entity).y + 2.0, ((Entity)entity).z + 2.0);
+        Box box = ((Entity)entity).getVisibilityBoundingBox().expand(0.5);
+        if (box.isValid() || box.averageDimension() == 0.0) {
+            box = new Box(((Entity)entity).x - 2.0, ((Entity)entity).y - 2.0, ((Entity)entity).z - 2.0, ((Entity)entity).x + 2.0, ((Entity)entity).y + 2.0, ((Entity)entity).z + 2.0);
         }
-        return visibleRegion.intersects(boundingBox);
+        return visibleRegion.intersects(box);
     }
 
     public void render(T entity, double d, double e, double f, float g, float h) {
@@ -70,8 +70,8 @@ public abstract class EntityRenderer<T extends Entity> {
 
     protected int getOutlineColor(T entity) {
         Team team = (Team)((Entity)entity).getScoreboardTeam();
-        if (team != null && team.getColor().getColor() != null) {
-            return team.getColor().getColor();
+        if (team != null && team.getColor().getColorValue() != null) {
+            return team.getColor().getColorValue();
         }
         return 0xFFFFFF;
     }
@@ -80,7 +80,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (!this.hasLabel(entity)) {
             return;
         }
-        this.renderLabel(entity, ((Entity)entity).getDisplayName().getFormattedText(), d, e, f, 64);
+        this.renderLabel(entity, ((Entity)entity).getDisplayName().asFormattedString(), d, e, f, 64);
     }
 
     protected boolean hasLabel(T entity) {
@@ -214,12 +214,12 @@ public abstract class EntityRenderer<T extends Entity> {
         if (l > 1.0) {
             l = 1.0;
         }
-        BoundingBox boundingBox = voxelShape.getBoundingBox();
-        double m = (double)blockPos2.getX() + boundingBox.minX + i;
-        double n = (double)blockPos2.getX() + boundingBox.maxX + i;
-        double o = (double)blockPos2.getY() + boundingBox.minY + j + 0.015625;
-        double p = (double)blockPos2.getZ() + boundingBox.minZ + k;
-        double q = (double)blockPos2.getZ() + boundingBox.maxZ + k;
+        Box box = voxelShape.getBoundingBox();
+        double m = (double)blockPos2.getX() + box.minX + i;
+        double n = (double)blockPos2.getX() + box.maxX + i;
+        double o = (double)blockPos2.getY() + box.minY + j + 0.015625;
+        double p = (double)blockPos2.getZ() + box.minZ + k;
+        double q = (double)blockPos2.getZ() + box.maxZ + k;
         float r = (float)((d - m) / 2.0 / (double)h + 0.5);
         float s = (float)((d - n) / 2.0 / (double)h + 0.5);
         float t = (float)((f - p) / 2.0 / (double)h + 0.5);
@@ -230,37 +230,37 @@ public abstract class EntityRenderer<T extends Entity> {
         bufferBuilder.vertex(n, o, p).texture(s, t).color(1.0f, 1.0f, 1.0f, (float)l).next();
     }
 
-    public static void renderBox(BoundingBox boundingBox, double d, double e, double f) {
+    public static void renderBox(Box box, double d, double e, double f) {
         GlStateManager.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         bufferBuilder.setOffset(d, e, f);
         bufferBuilder.begin(7, VertexFormats.POSITION_NORMAL);
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(1.0f, 0.0f, 0.0f).next();
         tessellator.draw();
         bufferBuilder.setOffset(0.0, 0.0, 0.0);
         GlStateManager.enableTexture();

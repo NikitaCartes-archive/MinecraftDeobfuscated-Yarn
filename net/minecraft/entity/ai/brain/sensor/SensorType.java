@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
 import net.minecraft.entity.ai.brain.sensor.DummySensor;
+import net.minecraft.entity.ai.brain.sensor.GolemLastSeenSensor;
 import net.minecraft.entity.ai.brain.sensor.HurtBySensor;
 import net.minecraft.entity.ai.brain.sensor.InteractableDoorsSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestBedSensor;
@@ -27,6 +28,7 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<VillagerHostilesSensor> VILLAGER_HOSTILES = SensorType.register("villager_hostiles", VillagerHostilesSensor::new);
     public static final SensorType<VillagerBabiesSensor> VILLAGER_BABIES = SensorType.register("villager_babies", VillagerBabiesSensor::new);
     public static final SensorType<SecondaryPointsOfInterestSensor> SECONDARY_POIS = SensorType.register("secondary_pois", SecondaryPointsOfInterestSensor::new);
+    public static final SensorType<GolemLastSeenSensor> GOLEM_LAST_SEEN = SensorType.register("golem_last_seen", GolemLastSeenSensor::new);
     private final Supplier<U> factory;
 
     private SensorType(Supplier<U> supplier) {

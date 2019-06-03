@@ -17,14 +17,14 @@ import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public class ExperienceCommand {
-    private static final SimpleCommandExceptionType SET_POINT_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("commands.experience.set.points.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType SET_POINT_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.experience.set.points.invalid", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("experience").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("amount", IntegerArgumentType.integer()).executes(commandContext -> ExperienceCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.POINTS))).then(CommandManager.literal("points").executes(commandContext -> ExperienceCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.POINTS)))).then(CommandManager.literal("levels").executes(commandContext -> ExperienceCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.LEVELS))))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("amount", IntegerArgumentType.integer(0)).executes(commandContext -> ExperienceCommand.executeSet((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.POINTS))).then(CommandManager.literal("points").executes(commandContext -> ExperienceCommand.executeSet((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.POINTS)))).then(CommandManager.literal("levels").executes(commandContext -> ExperienceCommand.executeSet((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "amount"), Component.LEVELS))))))).then(CommandManager.literal("query").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.player()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("points").executes(commandContext -> ExperienceCommand.executeQuery((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), Component.POINTS)))).then(CommandManager.literal("levels").executes(commandContext -> ExperienceCommand.executeQuery((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), Component.LEVELS))))));
@@ -33,7 +33,7 @@ public class ExperienceCommand {
 
     private static int executeQuery(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, Component component) {
         int i = component.getter.applyAsInt(serverPlayerEntity);
-        serverCommandSource.sendFeedback(new TranslatableComponent("commands.experience.query." + component.name, serverPlayerEntity.getDisplayName(), i), false);
+        serverCommandSource.sendFeedback(new TranslatableText("commands.experience.query." + component.name, serverPlayerEntity.getDisplayName(), i), false);
         return i;
     }
 
@@ -42,9 +42,9 @@ public class ExperienceCommand {
             component.adder.accept(serverPlayerEntity, i);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.experience.add." + component.name + ".success.single", i, collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.experience.add." + component.name + ".success.single", i, collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true);
         }
         return collection.size();
     }
@@ -59,9 +59,9 @@ public class ExperienceCommand {
             throw SET_POINT_INVALID_EXCEPTION.create();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.experience.set." + component.name + ".success.single", i, collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.experience.set." + component.name + ".success.single", i, collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true);
         }
         return collection.size();
     }

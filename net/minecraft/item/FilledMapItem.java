@@ -9,7 +9,6 @@ import com.google.common.collect.Multisets;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,10 +25,11 @@ import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -329,19 +329,19 @@ extends NetworkSyncedItem {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Component> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         MapState mapState;
         MapState mapState2 = mapState = world == null ? null : FilledMapItem.getOrCreateMapState(itemStack, world);
         if (mapState != null && mapState.locked) {
-            list.add(new TranslatableComponent("filled_map.locked", FilledMapItem.getMapId(itemStack)).applyFormat(ChatFormat.GRAY));
+            list.add(new TranslatableText("filled_map.locked", FilledMapItem.getMapId(itemStack)).formatted(Formatting.GRAY));
         }
         if (tooltipContext.isAdvanced()) {
             if (mapState != null) {
-                list.add(new TranslatableComponent("filled_map.id", FilledMapItem.getMapId(itemStack)).applyFormat(ChatFormat.GRAY));
-                list.add(new TranslatableComponent("filled_map.scale", 1 << mapState.scale).applyFormat(ChatFormat.GRAY));
-                list.add(new TranslatableComponent("filled_map.level", mapState.scale, 4).applyFormat(ChatFormat.GRAY));
+                list.add(new TranslatableText("filled_map.id", FilledMapItem.getMapId(itemStack)).formatted(Formatting.GRAY));
+                list.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
+                list.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
             } else {
-                list.add(new TranslatableComponent("filled_map.unknown", new Object[0]).applyFormat(ChatFormat.GRAY));
+                list.add(new TranslatableText("filled_map.unknown", new Object[0]).formatted(Formatting.GRAY));
             }
         }
     }

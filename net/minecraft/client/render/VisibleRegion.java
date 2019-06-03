@@ -5,11 +5,11 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 @Environment(value=EnvType.CLIENT)
 public interface VisibleRegion {
-    public boolean intersects(BoundingBox var1);
+    public boolean intersects(Box var1);
 
     public void setOrigin(double var1, double var3, double var5);
 }

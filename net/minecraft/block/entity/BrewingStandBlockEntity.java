@@ -19,9 +19,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Tickable;
@@ -80,8 +80,8 @@ Tickable {
     }
 
     @Override
-    protected Component getContainerName() {
-        return new TranslatableComponent("container.brewing", new Object[0]);
+    protected Text getContainerName() {
+        return new TranslatableText("container.brewing", new Object[0]);
     }
 
     @Override

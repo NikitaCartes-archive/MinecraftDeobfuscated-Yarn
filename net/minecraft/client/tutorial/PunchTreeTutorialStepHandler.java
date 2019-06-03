@@ -14,18 +14,18 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Component TITLE = new TranslatableComponent("tutorial.punch_tree.title", new Object[0]);
-    private static final Component DESCRIPTION = new TranslatableComponent("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
+    private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title", new Object[0]);
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
     private final TutorialManager manager;
     private TutorialToast field_5637;
     private int ticks;

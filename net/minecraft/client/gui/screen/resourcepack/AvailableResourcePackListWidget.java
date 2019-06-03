@@ -7,13 +7,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackListWidget;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class AvailableResourcePackListWidget
 extends ResourcePackListWidget {
     public AvailableResourcePackListWidget(MinecraftClient minecraftClient, int i, int j) {
-        super(minecraftClient, i, j, new TranslatableComponent("resourcePack.available.title", new Object[0]));
+        super(minecraftClient, i, j, new TranslatableText("resourcePack.available.title", new Object[0]));
     }
 }
 

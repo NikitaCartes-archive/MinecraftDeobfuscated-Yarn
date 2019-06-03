@@ -85,6 +85,10 @@ public class ChunkHolder {
         return this.entityTickingFuture;
     }
 
+    public CompletableFuture<Either<WorldChunk, Unloaded>> method_20725() {
+        return this.borderFuture;
+    }
+
     @Nullable
     public WorldChunk getWorldChunk() {
         CompletableFuture<Either<WorldChunk, Unloaded>> completableFuture = this.getTickingFuture();

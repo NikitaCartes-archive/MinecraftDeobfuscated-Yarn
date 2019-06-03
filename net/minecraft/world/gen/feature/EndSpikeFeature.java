@@ -24,7 +24,7 @@ import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -130,7 +130,7 @@ extends Feature<EndSpikeFeatureConfig> {
         private final int radius;
         private final int height;
         private final boolean guarded;
-        private final BoundingBox boundingBox;
+        private final Box boundingBox;
 
         public Spike(int i, int j, int k, int l, boolean bl) {
             this.centerX = i;
@@ -138,7 +138,7 @@ extends Feature<EndSpikeFeatureConfig> {
             this.radius = k;
             this.height = l;
             this.guarded = bl;
-            this.boundingBox = new BoundingBox(i - k, 0.0, j - k, i + k, 256.0, j + k);
+            this.boundingBox = new Box(i - k, 0.0, j - k, i + k, 256.0, j + k);
         }
 
         public boolean isInChunk(BlockPos blockPos) {
@@ -165,7 +165,7 @@ extends Feature<EndSpikeFeatureConfig> {
             return this.guarded;
         }
 
-        public BoundingBox getBoundingBox() {
+        public Box getBoundingBox() {
             return this.boundingBox;
         }
 

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class MouseOptionsScreen
@@ -20,7 +20,7 @@ extends Screen {
     private static final Option[] OPTIONS = new Option[]{Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN};
 
     public MouseOptionsScreen(Screen screen) {
-        super(new TranslatableComponent("options.mouse_settings.title", new Object[0]));
+        super(new TranslatableText("options.mouse_settings.title", new Object[0]));
         this.parent = screen;
     }
 
@@ -44,7 +44,7 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.buttonList.render(i, j, f);
-        this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 5, 0xFFFFFF);
+        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
         super.render(i, j, f);
     }
 }

@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.MobSpawnerEntry;
 import net.minecraft.world.World;
@@ -105,7 +106,7 @@ public abstract class MobSpawnerLogic {
                 double g = j >= 1 ? listTag.getDouble(0) : (double)blockPos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
                 double h = j >= 2 ? listTag.getDouble(1) : (double)(blockPos.getY() + world.random.nextInt(3) - 1);
                 double d = k = j >= 3 ? listTag.getDouble(2) : (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-                if (!world.doesNotCollide(optional.get().createSimpleBoundingBox(g, h, k))) continue;
+                if (!world.doesNotCollide(optional.get().createSimpleBoundingBox(g, h, k)) || !SpawnRestriction.method_20638(optional.get(), world.getWorld(), SpawnType.SPAWNER, new BlockPos(g, h, k), world.getRandom())) continue;
                 Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
                     entity.setPositionAndAngles(g, h, k, entity.yaw, entity.pitch);
                     return entity;
@@ -114,7 +115,7 @@ public abstract class MobSpawnerLogic {
                     this.updateSpawns();
                     return;
                 }
-                int l = world.getEntities(entity2.getClass(), new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1).expand(this.spawnRange)).size();
+                int l = world.getEntities(entity2.getClass(), new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1).expand(this.spawnRange)).size();
                 if (l >= this.maxNearbyEntities) {
                     this.updateSpawns();
                     return;

@@ -16,7 +16,7 @@ import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -28,8 +28,8 @@ implements RecipeBookProvider {
     private boolean narrow;
     private final Identifier field_18975;
 
-    public AbstractFurnaceScreen(T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, Component component, Identifier identifier) {
-        super(abstractFurnaceContainer, playerInventory, component);
+    public AbstractFurnaceScreen(T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, Text text, Identifier identifier) {
+        super(abstractFurnaceContainer, playerInventory, text);
         this.recipeBook = abstractFurnaceRecipeBookScreen;
         this.field_18975 = identifier;
     }
@@ -71,9 +71,9 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(int i, int j) {
-        String string = this.title.getFormattedText();
+        String string = this.title.asFormattedString();
         this.font.draw(string, this.containerWidth / 2 - this.font.getStringWidth(string) / 2, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override

@@ -147,7 +147,7 @@ implements AutoCloseable {
                 GlStateManager.popMatrix();
                 if (mapIcon.getText() != null) {
                     TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-                    String string = mapIcon.getText().getFormattedText();
+                    String string = mapIcon.getText().asFormattedString();
                     float o = textRenderer.getStringWidth(string);
                     float f2 = 25.0f / o;
                     textRenderer.getClass();

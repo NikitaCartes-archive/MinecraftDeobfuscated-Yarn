@@ -12,18 +12,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.Locale;
 import net.minecraft.client.network.packet.TitleS2CPacket;
-import net.minecraft.command.arguments.ComponentArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.command.arguments.TextArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 
 public class TitleCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("title").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("clear").executes(commandContext -> TitleCommand.executeClear((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"))))).then(CommandManager.literal("reset").executes(commandContext -> TitleCommand.executeReset((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"))))).then(CommandManager.literal("title").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", ComponentArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ComponentArgumentType.getComponent(commandContext, "title"), TitleS2CPacket.Action.TITLE))))).then(CommandManager.literal("subtitle").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", ComponentArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ComponentArgumentType.getComponent(commandContext, "title"), TitleS2CPacket.Action.SUBTITLE))))).then(CommandManager.literal("actionbar").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", ComponentArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ComponentArgumentType.getComponent(commandContext, "title"), TitleS2CPacket.Action.ACTIONBAR))))).then(CommandManager.literal("times").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("fadeIn", IntegerArgumentType.integer(0)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("stay", IntegerArgumentType.integer(0)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("fadeOut", IntegerArgumentType.integer(0)).executes(commandContext -> TitleCommand.executeTimes((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "fadeIn"), IntegerArgumentType.getInteger(commandContext, "stay"), IntegerArgumentType.getInteger(commandContext, "fadeOut")))))))));
+        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("title").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("clear").executes(commandContext -> TitleCommand.executeClear((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"))))).then(CommandManager.literal("reset").executes(commandContext -> TitleCommand.executeReset((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"))))).then(CommandManager.literal("title").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", TextArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), TextArgumentType.getTextArgument(commandContext, "title"), TitleS2CPacket.Action.TITLE))))).then(CommandManager.literal("subtitle").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", TextArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), TextArgumentType.getTextArgument(commandContext, "title"), TitleS2CPacket.Action.SUBTITLE))))).then(CommandManager.literal("actionbar").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("title", TextArgumentType.create()).executes(commandContext -> TitleCommand.executeTitle((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), TextArgumentType.getTextArgument(commandContext, "title"), TitleS2CPacket.Action.ACTIONBAR))))).then(CommandManager.literal("times").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("fadeIn", IntegerArgumentType.integer(0)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("stay", IntegerArgumentType.integer(0)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("fadeOut", IntegerArgumentType.integer(0)).executes(commandContext -> TitleCommand.executeTimes((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "fadeIn"), IntegerArgumentType.getInteger(commandContext, "stay"), IntegerArgumentType.getInteger(commandContext, "fadeOut")))))))));
     }
 
     private static int executeClear(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
@@ -32,9 +32,9 @@ public class TitleCommand {
             serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.cleared.single", collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.cleared.single", collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.cleared.multiple", collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.cleared.multiple", collection.size()), true);
         }
         return collection.size();
     }
@@ -45,21 +45,21 @@ public class TitleCommand {
             serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.reset.single", collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.reset.single", collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.reset.multiple", collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.reset.multiple", collection.size()), true);
         }
         return collection.size();
     }
 
-    private static int executeTitle(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Component component, TitleS2CPacket.Action action) throws CommandSyntaxException {
+    private static int executeTitle(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text, TitleS2CPacket.Action action) throws CommandSyntaxException {
         for (ServerPlayerEntity serverPlayerEntity : collection) {
-            serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Components.resolveAndStyle(serverCommandSource, component, serverPlayerEntity, 0)));
+            serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Texts.parse(serverCommandSource, text, serverPlayerEntity, 0)));
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true);
         }
         return collection.size();
     }
@@ -70,9 +70,9 @@ public class TitleCommand {
             serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.times.single", collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.times.single", collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.title.times.multiple", collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.title.times.multiple", collection.size()), true);
         }
         return collection.size();
     }

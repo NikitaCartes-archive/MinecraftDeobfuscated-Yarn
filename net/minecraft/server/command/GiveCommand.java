@@ -15,12 +15,12 @@ import net.minecraft.command.arguments.ItemStackArgument;
 import net.minecraft.command.arguments.ItemStackArgumentType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.TranslatableText;
 
 public class GiveCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -53,9 +53,9 @@ public class GiveCommand {
             }
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true);
         }
         return collection.size();
     }

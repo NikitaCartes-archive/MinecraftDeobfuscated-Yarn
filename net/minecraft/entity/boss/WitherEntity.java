@@ -40,12 +40,12 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -116,8 +116,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void setCustomName(@Nullable Component component) {
-        super.setCustomName(component);
+    public void setCustomName(@Nullable Text text) {
+        super.setCustomName(text);
         this.bossBar.setName(this.getDisplayName());
     }
 
