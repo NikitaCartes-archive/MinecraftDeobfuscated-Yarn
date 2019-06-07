@@ -127,25 +127,25 @@ extends ExtendedBlockView {
         return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
     }
 
-    default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+    default public Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
         return Stream.empty();
     }
 
     default public Stream<VoxelShape> getCollisionShapes(final @Nullable Entity entity, Box box, Set<Entity> set) {
-        final VoxelShape voxelShape = VoxelShapes.cuboid(box);
-        final int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X) - 1.0E-7) - 1;
-        final int j = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.X) + 1.0E-7) + 1;
-        final int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y) - 1.0E-7) - 1;
-        final int l = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Y) + 1.0E-7) + 1;
-        final int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z) - 1.0E-7) - 1;
-        final int n = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Z) + 1.0E-7) + 1;
+        int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
+        int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
+        int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
+        int l = MathHelper.floor(box.maxY + 1.0E-7) + 1;
+        int m = MathHelper.floor(box.minZ - 1.0E-7) - 1;
+        int n = MathHelper.floor(box.maxZ + 1.0E-7) + 1;
         final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
         final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
         final BlockPos.Mutable mutable = new BlockPos.Mutable();
-        return Streams.concat(StreamSupport.stream(new Spliterators.AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 0){
+        final VoxelShape voxelShape = VoxelShapes.cuboid(box);
+        return Streams.concat(StreamSupport.stream(new Spliterators.AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280){
             boolean field_19296;
             {
-                super(l2, i2);
+                super(l, i);
                 this.field_19296 = entity == null;
             }
 
@@ -164,32 +164,23 @@ extends ExtendedBlockView {
                 while (cuboidBlockIterator.step()) {
                     VoxelShape voxelShape2;
                     VoxelShape voxelShape3;
-                    int n2;
-                    int m2;
+                    int n;
+                    int m;
                     Chunk chunk;
-                    int i2 = cuboidBlockIterator.getX();
-                    int j2 = cuboidBlockIterator.getY();
-                    int k2 = cuboidBlockIterator.getZ();
-                    int l2 = 0;
-                    if (i2 == i || i2 == j) {
-                        ++l2;
-                    }
-                    if (j2 == k || j2 == l) {
-                        ++l2;
-                    }
-                    if (k2 == m || k2 == n) {
-                        ++l2;
-                    }
-                    if (l2 >= 3 || (chunk = ViewableWorld.this.getChunk(m2 = i2 >> 4, n2 = k2 >> 4, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false)) == null) continue;
-                    mutable.set(i2, j2, k2);
+                    int i = cuboidBlockIterator.getX();
+                    int j = cuboidBlockIterator.getY();
+                    int k = cuboidBlockIterator.getZ();
+                    int l = cuboidBlockIterator.method_20789();
+                    if (l == 3 || (chunk = ViewableWorld.this.getChunk(m = i >> 4, n = k >> 4, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false)) == null) continue;
+                    mutable.set(i, j, k);
                     BlockState blockState = chunk.getBlockState(mutable);
-                    if (l2 == 1 && !blockState.method_17900() || l2 == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i2, j2, k2), BooleanBiFunction.AND)) continue;
+                    if (l == 1 && !blockState.method_17900() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
                     consumer.accept(voxelShape3);
                     return true;
                 }
                 return false;
             }
-        }, false), this.getCollisionShapes(entity, voxelShape, set));
+        }, false), this.method_20743(entity, box, set));
     }
 
     default public boolean isWaterAt(BlockPos blockPos) {

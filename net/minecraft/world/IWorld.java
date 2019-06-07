@@ -16,6 +16,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityView;
@@ -87,8 +88,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-        return EntityView.super.getCollisionShapes(entity, voxelShape, set);
+    default public Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
+        return EntityView.super.method_20743(entity, box, set);
     }
 
     @Override

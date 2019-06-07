@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.Biomes;
@@ -55,7 +56,7 @@ public class WanderingTraderManager {
             return;
         }
         this.field_17729 = 24000;
-        if (!this.world.getGameRules().getBoolean("doMobSpawning")) {
+        if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return;
         }
         int i = this.field_17730;

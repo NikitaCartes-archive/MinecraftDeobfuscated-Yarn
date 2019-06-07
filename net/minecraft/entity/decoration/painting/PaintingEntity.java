@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,7 +76,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.motive = Registry.MOTIVE.get(Identifier.ofNullable(compoundTag.getString("Motive")));
+        this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
         super.readCustomDataFromTag(compoundTag);
     }
 
@@ -91,7 +92,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void onBreak(@Nullable Entity entity) {
-        if (!this.world.getGameRules().getBoolean("doEntityDrops")) {
+        if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             return;
         }
         this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0f, 1.0f);
@@ -116,7 +117,7 @@ extends AbstractDecorationEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
         this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }

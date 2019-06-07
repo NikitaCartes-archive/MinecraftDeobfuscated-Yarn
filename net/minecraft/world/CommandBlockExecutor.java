@@ -20,6 +20,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -176,7 +177,7 @@ implements CommandOutput {
 
     @Override
     public boolean sendCommandFeedback() {
-        return this.getWorld().getGameRules().getBoolean("sendCommandFeedback") && this.trackOutput;
+        return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK) && this.trackOutput;
     }
 
     @Override
@@ -186,7 +187,7 @@ implements CommandOutput {
 
     @Override
     public boolean shouldBroadcastConsoleToOps() {
-        return this.getWorld().getGameRules().getBoolean("commandBlockOutput");
+        return this.getWorld().getGameRules().getBoolean(GameRules.COMMAND_BLOCK_OUTPUT);
     }
 }
 

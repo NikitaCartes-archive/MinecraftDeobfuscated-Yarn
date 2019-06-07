@@ -20,6 +20,11 @@ extends Enchantment {
     }
 
     @Override
+    public int method_20742(int i) {
+        return 50;
+    }
+
+    @Override
     public int getMaximumLevel() {
         return 4;
     }

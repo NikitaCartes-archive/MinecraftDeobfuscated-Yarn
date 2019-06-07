@@ -60,13 +60,14 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -448,7 +449,7 @@ extends LivingEntity {
     public void tickMovement() {
         super.tickMovement();
         this.world.getProfiler().push("looting");
-        if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing")) {
+        if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0));
             for (ItemEntity itemEntity : list) {
                 if (itemEntity.removed || itemEntity.getStack().isEmpty() || itemEntity.cannotPickup()) continue;
@@ -1115,8 +1116,8 @@ extends LivingEntity {
     }
 
     @Override
-    public AbsoluteHand getMainHand() {
-        return this.isLeftHanded() ? AbsoluteHand.LEFT : AbsoluteHand.RIGHT;
+    public Arm getMainArm() {
+        return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
     }
 
     @Override

@@ -43,6 +43,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,7 +83,7 @@ extends Entity {
 
     public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
         super(entityType, world);
-        this.field_6033 = true;
+        this.inanimate = true;
     }
 
     public BoatEntity(World world, double d, double e, double f) {
@@ -112,7 +113,7 @@ extends Entity {
 
     @Override
     @Nullable
-    public Box method_5708(Entity entity) {
+    public Box getHardCollisionBox(Entity entity) {
         if (entity.isPushable()) {
             return entity.getBoundingBox();
         }
@@ -153,7 +154,7 @@ extends Entity {
         this.scheduleVelocityUpdate();
         boolean bl2 = bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
-            if (!bl && this.world.getGameRules().getBoolean("doEntityDrops")) {
+            if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                 this.dropItem(this.asItem());
             }
             this.remove();
@@ -224,7 +225,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.field_7686 = d;
         this.field_7700 = e;
         this.field_7685 = f;
@@ -654,7 +655,7 @@ extends Entity {
                 this.handleFallDamage(this.fallDistance, 1.0f);
                 if (!this.world.isClient && !this.removed) {
                     this.remove();
-                    if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+                    if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                         int i;
                         for (i = 0; i < 3; ++i) {
                             this.dropItem(this.getBoatType().getBaseBlock());

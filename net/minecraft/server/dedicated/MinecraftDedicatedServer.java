@@ -58,6 +58,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -212,7 +213,7 @@ implements DedicatedServer {
         String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
         LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
         if (serverPropertiesHandler.announcePlayerAchievements != null) {
-            this.getGameRules().put("announceAdvancements", serverPropertiesHandler.announcePlayerAchievements != false ? "true" : "false", this);
+            this.getGameRules().get(GameRules.ANNOUNCE_ADVANCEMENTS).set(serverPropertiesHandler.announcePlayerAchievements, this);
         }
         if (serverPropertiesHandler.enableQuery) {
             LOGGER.info("Starting GS4 status listener");
@@ -527,7 +528,7 @@ implements DedicatedServer {
     @Override
     public String executeRconCommand(String string) {
         this.rconCommandOutput.clear();
-        this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string);
+        this.executeSync(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
         return this.rconCommandOutput.asString();
     }
 

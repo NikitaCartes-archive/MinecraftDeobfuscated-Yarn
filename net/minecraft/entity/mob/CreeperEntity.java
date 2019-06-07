@@ -37,6 +37,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -215,7 +216,7 @@ extends HostileEntity {
 
     private void explode() {
         if (!this.world.isClient) {
-            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
+            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
             float f = this.isCharged() ? 2.0f : 1.0f;
             this.dead = true;
             this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);

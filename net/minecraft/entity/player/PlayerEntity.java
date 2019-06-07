@@ -35,9 +35,9 @@ import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -95,8 +95,8 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -109,18 +109,19 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PlayerEntity
 extends LivingEntity {
-    public static final EntitySize STANDING_SIZE = EntitySize.resizeable(0.6f, 1.8f);
-    private static final Map<EntityPose, EntitySize> SIZES = ImmutableMap.builder().put(EntityPose.STANDING, STANDING_SIZE).put(EntityPose.SLEEPING, SLEEPING_SIZE).put(EntityPose.FALL_FLYING, EntitySize.resizeable(0.6f, 0.6f)).put(EntityPose.SWIMMING, EntitySize.resizeable(0.6f, 0.6f)).put(EntityPose.SPIN_ATTACK, EntitySize.resizeable(0.6f, 0.6f)).put(EntityPose.SNEAKING, EntitySize.resizeable(0.6f, 1.5f)).put(EntityPose.DYING, EntitySize.constant(0.2f, 0.2f)).build();
+    public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6f, 1.8f);
+    private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.builder().put(EntityPose.STANDING, STANDING_DIMENSIONS).put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SWIMMING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SNEAKING, EntityDimensions.changing(0.6f, 1.5f)).put(EntityPose.DYING, EntityDimensions.fixed(0.2f, 0.2f)).build();
     private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     protected static final TrackedData<Byte> PLAYER_MODEL_BIT_MASK = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
-    protected static final TrackedData<Byte> MAIN_HAND = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
+    protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     public final PlayerInventory inventory = new PlayerInventory(this);
@@ -183,7 +184,7 @@ extends LivingEntity {
         this.dataTracker.startTracking(ABSORPTION_AMOUNT, Float.valueOf(0.0f));
         this.dataTracker.startTracking(SCORE, 0);
         this.dataTracker.startTracking(PLAYER_MODEL_BIT_MASK, (byte)0);
-        this.dataTracker.startTracking(MAIN_HAND, (byte)1);
+        this.dataTracker.startTracking(MAIN_ARM, (byte)1);
         this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new CompoundTag());
         this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new CompoundTag());
     }
@@ -254,7 +255,7 @@ extends LivingEntity {
     }
 
     protected boolean updateInWater() {
-        this.isInWater = this.isInFluid(FluidTags.WATER, true);
+        this.isInWater = this.isSubmergedIn(FluidTags.WATER, true);
         return this.isInWater;
     }
 
@@ -348,7 +349,7 @@ extends LivingEntity {
     }
 
     @Override
-    protected int method_5676() {
+    protected int getBurningDuration() {
         return 20;
     }
 
@@ -426,7 +427,7 @@ extends LivingEntity {
         if (this.field_7489 > 0) {
             --this.field_7489;
         }
-        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.world.getGameRules().getBoolean("naturalRegeneration")) {
+        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
             if (this.getHealth() < this.getHealthMaximum() && this.age % 20 == 0) {
                 this.heal(1.0f);
             }
@@ -510,7 +511,7 @@ extends LivingEntity {
     @Override
     protected void dropInventory() {
         super.dropInventory();
-        if (!this.world.getGameRules().getBoolean("keepInventory")) {
+        if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.vanishCursedItems();
             this.inventory.dropAll();
         }
@@ -862,10 +863,10 @@ extends LivingEntity {
     }
 
     public void attack(Entity entity) {
-        if (!entity.canPlayerAttack()) {
+        if (!entity.isAttackable()) {
             return;
         }
-        if (entity.handlePlayerAttack(this)) {
+        if (entity.handleAttack(this)) {
             return;
         }
         float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
@@ -891,7 +892,7 @@ extends LivingEntity {
             }
             f += g;
             boolean bl42 = false;
-            double d = this.field_5973 - this.field_6039;
+            double d = this.horizontalSpeed - this.prevHorizontalSpeed;
             if (bl && !bl3 && !bl2 && this.onGround && d < (double)this.getMovementSpeed() && (itemStack = this.getStackInHand(Hand.MAIN_HAND)).getItem() instanceof SwordItem) {
                 bl42 = true;
             }
@@ -1252,7 +1253,7 @@ extends LivingEntity {
                 this.increaseStat(Stats.SWIM_ONE_CM, i);
                 this.addExhaustion(0.01f * (float)i * 0.01f);
             }
-        } else if (this.isInFluid(FluidTags.WATER, true)) {
+        } else if (this.isSubmergedIn(FluidTags.WATER, true)) {
             int i = Math.round(MathHelper.sqrt(d * d + e * e + f * f) * 100.0f);
             if (i > 0) {
                 this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
@@ -1441,7 +1442,7 @@ extends LivingEntity {
 
     @Override
     protected int getCurrentExperience(PlayerEntity playerEntity) {
-        if (this.world.getGameRules().getBoolean("keepInventory") || this.isSpectator()) {
+        if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || this.isSpectator()) {
             return 0;
         }
         int i = this.experienceLevel * 7;
@@ -1612,7 +1613,7 @@ extends LivingEntity {
     }
 
     @Override
-    public float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    public float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         switch (entityPose) {
             case SWIMMING: 
             case FALL_FLYING: 
@@ -1697,12 +1698,12 @@ extends LivingEntity {
     }
 
     @Override
-    public AbsoluteHand getMainHand() {
-        return this.dataTracker.get(MAIN_HAND) == 0 ? AbsoluteHand.LEFT : AbsoluteHand.RIGHT;
+    public Arm getMainArm() {
+        return this.dataTracker.get(MAIN_ARM) == 0 ? Arm.LEFT : Arm.RIGHT;
     }
 
-    public void setMainHand(AbsoluteHand absoluteHand) {
-        this.dataTracker.set(MAIN_HAND, (byte)(absoluteHand != AbsoluteHand.LEFT ? 1 : 0));
+    public void setMainArm(Arm arm) {
+        this.dataTracker.set(MAIN_ARM, (byte)(arm != Arm.LEFT ? 1 : 0));
     }
 
     public CompoundTag getShoulderEntityLeft() {
@@ -1752,8 +1753,8 @@ extends LivingEntity {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
-        return SIZES.getOrDefault((Object)entityPose, STANDING_SIZE);
+    public EntityDimensions getDimensions(EntityPose entityPose) {
+        return POSE_DIMENSIONS.getOrDefault((Object)entityPose, STANDING_DIMENSIONS);
     }
 
     @Override

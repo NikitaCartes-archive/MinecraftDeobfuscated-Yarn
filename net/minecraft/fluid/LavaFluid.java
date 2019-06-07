@@ -25,6 +25,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -73,7 +74,7 @@ extends BaseFluid {
 
     @Override
     public void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-        if (!world.getGameRules().getBoolean("doFireTick")) {
+        if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
         int i = random.nextInt(3);

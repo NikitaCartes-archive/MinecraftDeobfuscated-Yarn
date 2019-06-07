@@ -20,6 +20,7 @@ import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity
@@ -128,7 +129,7 @@ implements Hopper {
     @Override
     public void dropItems(DamageSource damageSource) {
         super.dropItems(damageSource);
-        if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+        if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             this.dropItem(Blocks.HOPPER);
         }
     }

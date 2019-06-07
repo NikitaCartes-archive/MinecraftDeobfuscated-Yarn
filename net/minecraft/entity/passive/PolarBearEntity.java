@@ -11,8 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -143,7 +143,7 @@ extends AnimalEntity {
         super.tick();
         if (this.world.isClient) {
             if (this.warningAnimationProgress != this.lastWarningAnimationProgress) {
-                this.refreshSize();
+                this.calculateDimensions();
             }
             this.lastWarningAnimationProgress = this.warningAnimationProgress;
             this.warningAnimationProgress = this.isWarning() ? MathHelper.clamp(this.warningAnimationProgress + 1.0f, 0.0f, 6.0f) : MathHelper.clamp(this.warningAnimationProgress - 1.0f, 0.0f, 6.0f);
@@ -154,13 +154,13 @@ extends AnimalEntity {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
+    public EntityDimensions getDimensions(EntityPose entityPose) {
         if (this.warningAnimationProgress > 0.0f) {
             float f = this.warningAnimationProgress / 6.0f;
             float g = 1.0f + f;
-            return super.getSize(entityPose).scaled(1.0f, g);
+            return super.getDimensions(entityPose).scaled(1.0f, g);
         }
-        return super.getSize(entityPose);
+        return super.getDimensions(entityPose);
     }
 
     @Override

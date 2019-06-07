@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import net.fabricmc.api.EnvType;
@@ -227,7 +228,10 @@ public class DataTracker {
     }
 
     @Environment(value=EnvType.CLIENT)
-    protected <T> void copyToFrom(Entry<T> entry, Entry<?> entry2) {
+    private <T> void copyToFrom(Entry<T> entry, Entry<?> entry2) {
+        if (!Objects.equals(((Entry)entry2).data.getType(), ((Entry)entry).data.getType())) {
+            throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", ((Entry)entry).data.getId(), this.trackedEntity, ((Entry)entry).value, ((Entry)entry).value.getClass(), ((Entry)entry2).value, ((Entry)entry2).value.getClass()));
+        }
         entry.set(entry2.get());
     }
 

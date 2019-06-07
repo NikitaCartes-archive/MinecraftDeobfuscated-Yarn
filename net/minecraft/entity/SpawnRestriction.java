@@ -17,7 +17,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.StrayEntity;
@@ -95,7 +95,7 @@ public class SpawnRestriction {
         SpawnRestriction.method_20637(EntityType.OCELOT, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING, OcelotEntity::method_20666);
         SpawnRestriction.method_20637(EntityType.PARROT, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING, ParrotEntity::method_20667);
         SpawnRestriction.method_20637(EntityType.PIG, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::method_20663);
-        SpawnRestriction.method_20637(EntityType.PILLAGER, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PillagerEntity::method_20683);
+        SpawnRestriction.method_20637(EntityType.PILLAGER, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PatrolEntity::method_20739);
         SpawnRestriction.method_20637(EntityType.POLAR_BEAR, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PolarBearEntity::method_20668);
         SpawnRestriction.method_20637(EntityType.RABBIT, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, RabbitEntity::method_20669);
         SpawnRestriction.method_20637(EntityType.SHEEP, Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::method_20663);

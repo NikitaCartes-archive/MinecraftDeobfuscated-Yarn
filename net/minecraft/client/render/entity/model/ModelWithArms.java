@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelWithArms {
-    public void setArmAngle(float var1, AbsoluteHand var2);
+    public void setArmAngle(float var1, Arm var2);
 }
 

@@ -378,8 +378,8 @@ public enum Direction implements StringIdentifiable
         }
     }
 
-    public static enum Axis implements Predicate<Direction>,
-    StringIdentifiable
+    public static enum Axis implements StringIdentifiable,
+    Predicate<Direction>
     {
         X("x"){
 

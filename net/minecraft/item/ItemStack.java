@@ -613,7 +613,7 @@ public final class ItemStack {
     public static void appendEnchantments(List<Text> list, ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompoundTag(i);
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id"))).ifPresent(enchantment -> list.add(enchantment.getName(compoundTag.getInt("lvl"))));
+            Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> list.add(enchantment.getName(compoundTag.getInt("lvl"))));
         }
     }
 
@@ -772,7 +772,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastDestroyResult = true;
                         return true;
@@ -797,7 +797,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastPlaceOnResult = true;
                         return true;

@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.ai.goal.DoorInteractGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 
 public class BreakDoorGoal
 extends DoorInteractGoal {
@@ -35,7 +36,7 @@ extends DoorInteractGoal {
         if (!super.canStart()) {
             return false;
         }
-        if (!this.mob.world.getGameRules().getBoolean("mobGriefing")) {
+        if (!this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             return false;
         }
         return this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.method_6256();

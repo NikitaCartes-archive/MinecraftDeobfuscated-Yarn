@@ -16,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -35,7 +36,7 @@ extends MoveToTargetPosGoal {
 
     @Override
     public boolean canStart() {
-        if (!this.stepAndDestroyMob.world.getGameRules().getBoolean("mobGriefing")) {
+        if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             return false;
         }
         if (this.cooldown > 0) {

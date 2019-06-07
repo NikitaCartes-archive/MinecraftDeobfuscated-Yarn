@@ -4,6 +4,7 @@
 package net.minecraft.util.profiler;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -11,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,56 +27,64 @@ public class ProfileResultImpl
 implements ProfileResult {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, Long> timings;
+    private final Map<String, Long> field_19382;
     private final long startTime;
     private final int startTick;
     private final long endTime;
     private final int endTick;
+    private final int field_19383;
 
-    public ProfileResultImpl(Map<String, Long> map, long l, int i, long m, int j) {
+    public ProfileResultImpl(Map<String, Long> map, Map<String, Long> map2, long l, int i, long m, int j) {
         this.timings = map;
+        this.field_19382 = map2;
         this.startTime = l;
         this.startTick = i;
         this.endTime = m;
         this.endTick = j;
+        this.field_19383 = j - i;
     }
 
     @Override
     public List<ProfilerTiming> getTimings(String string) {
         String string2 = string;
         long l = this.timings.containsKey("root") ? this.timings.get("root") : 0L;
-        long m = this.timings.containsKey(string) ? this.timings.get(string) : -1L;
+        long m = this.timings.getOrDefault(string, -1L);
+        long n = this.field_19382.getOrDefault(string, 0L);
         ArrayList<ProfilerTiming> list = Lists.newArrayList();
         if (!string.isEmpty()) {
             string = string + ".";
         }
-        long n = 0L;
+        long o = 0L;
         for (String string3 : this.timings.keySet()) {
             if (string3.length() <= string.length() || !string3.startsWith(string) || string3.indexOf(".", string.length() + 1) >= 0) continue;
-            n += this.timings.get(string3).longValue();
+            o += this.timings.get(string3).longValue();
         }
-        float f = n;
-        if (n < m) {
-            n = m;
+        float f = o;
+        if (o < m) {
+            o = m;
         }
-        if (l < n) {
-            l = n;
+        if (l < o) {
+            l = o;
         }
-        for (String string4 : this.timings.keySet()) {
+        HashSet<String> set = Sets.newHashSet(this.timings.keySet());
+        set.addAll(this.field_19382.keySet());
+        for (String string4 : set) {
             if (string4.length() <= string.length() || !string4.startsWith(string) || string4.indexOf(".", string.length() + 1) >= 0) continue;
-            long o = this.timings.get(string4);
-            double d = (double)o * 100.0 / (double)n;
-            double e = (double)o * 100.0 / (double)l;
+            long p = this.timings.getOrDefault(string4, 0L);
+            double d = (double)p * 100.0 / (double)o;
+            double e = (double)p * 100.0 / (double)l;
             String string5 = string4.substring(string.length());
-            list.add(new ProfilerTiming(string5, d, e));
+            long q = this.field_19382.getOrDefault(string4, 0L);
+            list.add(new ProfilerTiming(string5, d, e, q));
         }
         for (String string4 : this.timings.keySet()) {
             this.timings.put(string4, this.timings.get(string4) * 999L / 1000L);
         }
-        if ((float)n > f) {
-            list.add(new ProfilerTiming("unspecified", (double)((float)n - f) * 100.0 / (double)n, (double)((float)n - f) * 100.0 / (double)l));
+        if ((float)o > f) {
+            list.add(new ProfilerTiming("unspecified", (double)((float)o - f) * 100.0 / (double)o, (double)((float)o - f) * 100.0 / (double)l, n));
         }
         Collections.sort(list);
-        list.add(0, new ProfilerTiming(string2, 100.0, (double)n * 100.0 / (double)l));
+        list.add(0, new ProfilerTiming(string2, 100.0, (double)o * 100.0 / (double)l, n));
         return list;
     }
 
@@ -159,7 +169,7 @@ implements ProfileResult {
             for (int k = 0; k < i; ++k) {
                 stringBuilder.append("|   ");
             }
-            stringBuilder.append(profilerTiming.name).append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
+            stringBuilder.append(profilerTiming.name).append('(').append(profilerTiming.field_19384).append('/').append(String.format(Locale.ROOT, "%.0f", Float.valueOf((float)profilerTiming.field_19384 / (float)this.field_19383))).append(')').append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
             if ("unspecified".equals(profilerTiming.name)) continue;
             try {
                 this.appendTiming(i + 1, string + "." + profilerTiming.name, stringBuilder);
@@ -177,6 +187,11 @@ implements ProfileResult {
         } catch (Throwable throwable) {
             return "Witty comment unavailable :(";
         }
+    }
+
+    @Override
+    public int getTickSpan() {
+        return this.field_19383;
     }
 }
 

@@ -104,6 +104,12 @@ implements Waterloggable {
 
                 @Override
                 public Text getDisplayName() {
+                    if (chestBlockEntity.hasCustomName()) {
+                        return chestBlockEntity.getDisplayName();
+                    }
+                    if (chestBlockEntity2.hasCustomName()) {
+                        return chestBlockEntity2.getDisplayName();
+                    }
                     return new TranslatableText("container.chestDouble", new Object[0]);
                 }
             };

@@ -31,6 +31,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -103,7 +104,7 @@ extends Block {
     @Override
     public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
         boolean bl2;
-        if (!world.getGameRules().getBoolean("doFireTick")) {
+        if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
         if (!blockState.canPlaceAt(world, blockPos)) {

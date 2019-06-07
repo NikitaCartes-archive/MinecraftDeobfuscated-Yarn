@@ -7,9 +7,9 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -178,7 +178,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 0.65f;
     }
 

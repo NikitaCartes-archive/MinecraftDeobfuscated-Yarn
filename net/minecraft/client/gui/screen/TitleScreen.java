@@ -74,8 +74,6 @@ extends Screen {
         boolean bl2 = this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
         if (!GLX.supportsOpenGL2() && !GLX.isNextGen()) {
             this.warning = new Warning(new TranslatableText("title.oldgl.eol.line1", new Object[0]).formatted(Formatting.RED).formatted(Formatting.BOLD), new TranslatableText("title.oldgl.eol.line2", new Object[0]).formatted(Formatting.RED).formatted(Formatting.BOLD), "https://help.mojang.com/customer/portal/articles/325948?ref=game");
-        } else if (!GLX.supportsOpenGL32()) {
-            this.warning = new Warning(new TranslatableText("title.oldgl.deprecation.line1", new Object[0]), new TranslatableText("title.oldgl.deprecation.line2", new Object[0]), "https://help.mojang.com/customer/portal/articles/325948?ref=game");
         }
     }
 

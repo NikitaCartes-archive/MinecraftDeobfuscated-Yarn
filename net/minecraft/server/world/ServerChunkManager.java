@@ -5,9 +5,7 @@ package net.minecraft.server.world;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -42,6 +40,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SpawnHelper;
@@ -289,10 +288,10 @@ extends ChunkManager {
         this.lastMobSpawningTime = l;
         LevelProperties levelProperties = this.world.getLevelProperties();
         boolean bl = levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
-        boolean bl2 = this.world.getGameRules().getBoolean("doMobSpawning");
+        boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
         if (!bl) {
             this.world.getProfiler().push("pollingChunks");
-            int i = this.world.getGameRules().getInteger("randomTickSpeed");
+            int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
             BlockPos blockPos = this.world.getSpawnPos();
             boolean bl3 = levelProperties.getTime() % 400L == 0L;
             this.world.getProfiler().push("naturalSpawnCount");
@@ -300,18 +299,19 @@ extends ChunkManager {
             EntityCategory[] entityCategorys = EntityCategory.values();
             Object2IntMap<EntityCategory> object2IntMap = this.world.getMobCountsByCategory();
             this.world.getProfiler().pop();
-            ObjectBidirectionalIterator<Long2ObjectMap.Entry<ChunkHolder>> objectBidirectionalIterator = this.threadedAnvilChunkStorage.entryIterator();
-            while (objectBidirectionalIterator.hasNext()) {
-                Long2ObjectMap.Entry entry = (Long2ObjectMap.Entry)objectBidirectionalIterator.next();
-                ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
+            this.threadedAnvilChunkStorage.entryIterator().forEach(chunkHolder -> {
                 Optional<WorldChunk> optional = chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left();
-                if (!optional.isPresent()) continue;
+                if (!optional.isPresent()) {
+                    return;
+                }
                 WorldChunk worldChunk = optional.get();
                 this.world.getProfiler().push("broadcast");
                 chunkHolder.flushUpdates(worldChunk);
                 this.world.getProfiler().pop();
                 ChunkPos chunkPos = chunkHolder.getPos();
-                if (this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) continue;
+                if (this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
+                    return;
+                }
                 worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
                 if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
                     this.world.getProfiler().push("spawner");
@@ -324,7 +324,7 @@ extends ChunkManager {
                     this.world.getProfiler().pop();
                 }
                 this.world.tickChunk(worldChunk, i);
-            }
+            });
             this.world.getProfiler().push("customSpawners");
             if (bl2) {
                 this.chunkGenerator.spawnEntities(this.world, this.spawnMonsters, this.spawnAnimals);

@@ -7,6 +7,7 @@ import java.util.Collections;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,7 @@ public interface RecipeUnlocker {
     }
 
     default public boolean shouldCraftRecipe(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-        if (recipe.isIgnoredInRecipeBook() || !world.getGameRules().getBoolean("doLimitedCrafting") || serverPlayerEntity.getRecipeBook().contains(recipe)) {
+        if (recipe.isIgnoredInRecipeBook() || !world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) || serverPlayerEntity.getRecipeBook().contains(recipe)) {
             this.setLastRecipe(recipe);
             return true;
         }

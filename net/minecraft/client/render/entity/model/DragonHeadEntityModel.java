@@ -35,7 +35,7 @@ extends SkullEntityModel {
     }
 
     @Override
-    public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
+    public void render(float f, float g, float h, float i, float j, float k) {
         this.jaw.pitch = (float)(Math.sin(f * (float)Math.PI * 0.2f) + 1.0) * 0.2f;
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = j * ((float)Math.PI / 180);

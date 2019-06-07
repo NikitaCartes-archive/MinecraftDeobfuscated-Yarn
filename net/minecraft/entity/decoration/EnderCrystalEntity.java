@@ -33,7 +33,7 @@ extends Entity {
 
     public EnderCrystalEntity(EntityType<? extends EnderCrystalEntity> entityType, World world) {
         super(entityType, world);
-        this.field_6033 = true;
+        this.inanimate = true;
         this.field_7034 = this.random.nextInt(100000);
     }
 

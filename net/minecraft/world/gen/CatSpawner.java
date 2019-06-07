@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
@@ -24,7 +25,7 @@ public class CatSpawner {
 
     public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
         int j;
-        if (!bl2 || !serverWorld.getGameRules().getBoolean("doMobSpawning")) {
+        if (!bl2 || !serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
         --this.ticksUntilNextSpawn;

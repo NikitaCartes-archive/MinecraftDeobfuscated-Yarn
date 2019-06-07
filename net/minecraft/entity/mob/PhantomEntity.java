@@ -9,9 +9,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -91,7 +91,7 @@ implements Monster {
     }
 
     private void onSizeChanged() {
-        this.refreshSize();
+        this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6 + this.getPhantomSize());
     }
 
@@ -100,8 +100,8 @@ implements Monster {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entitySize.height * 0.35f;
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return entityDimensions.height * 0.35f;
     }
 
     @Override
@@ -213,11 +213,11 @@ implements Monster {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
+    public EntityDimensions getDimensions(EntityPose entityPose) {
         int i = this.getPhantomSize();
-        EntitySize entitySize = super.getSize(entityPose);
-        float f = (entitySize.width + 0.2f * (float)i) / entitySize.width;
-        return entitySize.scaled(f);
+        EntityDimensions entityDimensions = super.getDimensions(entityPose);
+        float f = (entityDimensions.width + 0.2f * (float)i) / entityDimensions.width;
+        return entityDimensions.scaled(f);
     }
 
     class FindTargetGoal

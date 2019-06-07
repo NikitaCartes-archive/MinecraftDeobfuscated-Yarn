@@ -40,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -62,7 +63,7 @@ extends Entity {
     public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
         this((EntityType<? extends FallingBlockEntity>)EntityType.FALLING_BLOCK, world);
         this.block = blockState;
-        this.field_6033 = true;
+        this.inanimate = true;
         this.setPosition(d, e + (double)((1.0f - this.getHeight()) / 2.0f), f);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = d;
@@ -72,7 +73,7 @@ extends Entity {
     }
 
     @Override
-    public boolean canPlayerAttack() {
+    public boolean isAttackable() {
         return false;
     }
 
@@ -159,10 +160,10 @@ extends Entity {
                                     blockEntity.fromTag(compoundTag);
                                     blockEntity.markDirty();
                                 }
-                            } else if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+                            } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                                 this.dropItem(block);
                             }
-                        } else if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+                        } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                             this.dropItem(block);
                         }
                     } else if (block instanceof FallingBlock) {
@@ -170,7 +171,7 @@ extends Entity {
                     }
                 }
             } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() >= 1 && blockPos.getY() <= 256) && this.timeFalling <= 600)) {
-                if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+                if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                     this.dropItem(block);
                 }
                 this.remove();

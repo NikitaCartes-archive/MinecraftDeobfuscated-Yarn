@@ -30,6 +30,11 @@ extends Enchantment {
     }
 
     @Override
+    public int method_20742(int i) {
+        return this.getMinimumPower(i) + this.type.getPowerPerLevel();
+    }
+
+    @Override
     public int getMaximumLevel() {
         return 4;
     }
@@ -61,7 +66,10 @@ extends Enchantment {
     public boolean differs(Enchantment enchantment) {
         if (enchantment instanceof ProtectionEnchantment) {
             ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)enchantment;
-            return this.type != protectionEnchantment.type;
+            if (this.type == protectionEnchantment.type) {
+                return false;
+            }
+            return this.type == Type.FALL || protectionEnchantment.type == Type.FALL;
         }
         return super.differs(enchantment);
     }

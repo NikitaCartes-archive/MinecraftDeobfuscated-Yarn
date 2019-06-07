@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -69,7 +69,7 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return -0.0625f;
     }
 

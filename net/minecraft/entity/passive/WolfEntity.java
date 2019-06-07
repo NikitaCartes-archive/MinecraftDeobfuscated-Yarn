@@ -9,8 +9,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -279,8 +279,8 @@ extends TameableEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entitySize.height * 0.8f;
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return entityDimensions.height * 0.8f;
     }
 
     @Override
@@ -334,7 +334,7 @@ extends TameableEntity {
             if (!itemStack.isEmpty()) {
                 DyeColor dyeColor;
                 if (item.isFood()) {
-                    if (item.getFoodComponent().isWolfFood() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 20.0f) {
+                    if (item.getFoodComponent().isMeat() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 20.0f) {
                         if (!playerEntity.abilities.creativeMode) {
                             itemStack.decrement(1);
                         }
@@ -404,7 +404,7 @@ extends TameableEntity {
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
         Item item = itemStack.getItem();
-        return item.isFood() && item.getFoodComponent().isWolfFood();
+        return item.isFood() && item.getFoodComponent().isMeat();
     }
 
     @Override

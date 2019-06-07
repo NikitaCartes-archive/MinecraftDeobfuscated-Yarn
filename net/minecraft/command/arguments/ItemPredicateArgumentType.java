@@ -30,7 +30,7 @@ implements ArgumentType<ItemPredicateArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
     private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.item.tag.unknown", object));
 
-    public static ItemPredicateArgumentType create() {
+    public static ItemPredicateArgumentType itemPredicate() {
         return new ItemPredicateArgumentType();
     }
 

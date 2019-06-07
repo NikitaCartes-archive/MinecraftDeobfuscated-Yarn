@@ -29,6 +29,11 @@ extends Enchantment {
     }
 
     @Override
+    public int method_20742(int i) {
+        return this.getMinimumPower(i) + 15;
+    }
+
+    @Override
     public boolean isTreasure() {
         return true;
     }

@@ -78,7 +78,7 @@ public final class ProjectileUtil {
         for (Entity entity3 : world.getEntities(entity, box, predicate)) {
             Vec3d vec3d4;
             double f;
-            Box box2 = entity3.getBoundingBox().expand(entity3.getBoundingBoxMarginForTargeting());
+            Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
             Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
             if (box2.contains(vec3d)) {
                 if (!(e >= 0.0)) continue;
@@ -88,7 +88,7 @@ public final class ProjectileUtil {
                 continue;
             }
             if (!optional.isPresent() || !((f = vec3d.squaredDistanceTo(vec3d4 = optional.get())) < e) && e != 0.0) continue;
-            if (entity3.getTopmostVehicle() == entity.getTopmostVehicle()) {
+            if (entity3.getRootVehicle() == entity.getRootVehicle()) {
                 if (e != 0.0) continue;
                 entity2 = entity3;
                 vec3d3 = vec3d4;

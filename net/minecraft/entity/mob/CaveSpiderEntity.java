@@ -5,8 +5,8 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -59,7 +59,7 @@ extends SpiderEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 0.45f;
     }
 }

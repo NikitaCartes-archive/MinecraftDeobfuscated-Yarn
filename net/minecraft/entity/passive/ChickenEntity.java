@@ -5,8 +5,8 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -64,8 +64,8 @@ extends AnimalEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entitySize.height * 0.95f;
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return this.isBaby() ? entityDimensions.height * 0.85f : entityDimensions.height * 0.92f;
     }
 
     @Override

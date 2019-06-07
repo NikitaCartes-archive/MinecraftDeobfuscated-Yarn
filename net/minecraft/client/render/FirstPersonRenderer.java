@@ -35,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -122,23 +122,23 @@ public class FirstPersonRenderer {
         GlStateManager.disableCull();
         GlStateManager.pushMatrix();
         GlStateManager.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
-        this.renderArm(AbsoluteHand.RIGHT);
-        this.renderArm(AbsoluteHand.LEFT);
+        this.renderArm(Arm.RIGHT);
+        this.renderArm(Arm.LEFT);
         GlStateManager.popMatrix();
         GlStateManager.enableCull();
     }
 
-    private void renderArm(AbsoluteHand absoluteHand) {
+    private void renderArm(Arm arm) {
         this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
         Object entityRenderer = this.renderManager.getRenderer(this.client.player);
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)entityRenderer;
         GlStateManager.pushMatrix();
-        float f = absoluteHand == AbsoluteHand.RIGHT ? 1.0f : -1.0f;
+        float f = arm == Arm.RIGHT ? 1.0f : -1.0f;
         GlStateManager.rotatef(92.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(45.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef(f * -41.0f, 0.0f, 0.0f, 1.0f);
         GlStateManager.translatef(f * 0.3f, -1.1f, 0.45f);
-        if (absoluteHand == AbsoluteHand.RIGHT) {
+        if (arm == Arm.RIGHT) {
             playerEntityRenderer.renderRightArm(this.client.player);
         } else {
             playerEntityRenderer.renderLeftArm(this.client.player);
@@ -146,13 +146,13 @@ public class FirstPersonRenderer {
         GlStateManager.popMatrix();
     }
 
-    private void renderMapInOneHand(float f, AbsoluteHand absoluteHand, float g, ItemStack itemStack) {
-        float h = absoluteHand == AbsoluteHand.RIGHT ? 1.0f : -1.0f;
+    private void renderMapInOneHand(float f, Arm arm, float g, ItemStack itemStack) {
+        float h = arm == Arm.RIGHT ? 1.0f : -1.0f;
         GlStateManager.translatef(h * 0.125f, -0.125f, 0.0f);
         if (!this.client.player.isInvisible()) {
             GlStateManager.pushMatrix();
             GlStateManager.rotatef(h * 10.0f, 0.0f, 0.0f, 1.0f);
-            this.renderArmHoldingItem(f, g, absoluteHand);
+            this.renderArmHoldingItem(f, g, arm);
             GlStateManager.popMatrix();
         }
         GlStateManager.pushMatrix();
@@ -207,8 +207,8 @@ public class FirstPersonRenderer {
         GlStateManager.enableLighting();
     }
 
-    private void renderArmHoldingItem(float f, float g, AbsoluteHand absoluteHand) {
-        boolean bl = absoluteHand != AbsoluteHand.LEFT;
+    private void renderArmHoldingItem(float f, float g, Arm arm) {
+        boolean bl = arm != Arm.LEFT;
         float h = bl ? 1.0f : -1.0f;
         float i = MathHelper.sqrt(g);
         float j = -0.3f * MathHelper.sin(i * (float)Math.PI);
@@ -237,7 +237,7 @@ public class FirstPersonRenderer {
         GlStateManager.enableCull();
     }
 
-    private void applyEatOrDrinkTransformation(float f, AbsoluteHand absoluteHand, ItemStack itemStack) {
+    private void applyEatOrDrinkTransformation(float f, Arm arm, ItemStack itemStack) {
         float i;
         float g = (float)this.client.player.getItemUseTimeLeft() - f + 1.0f;
         float h = g / (float)itemStack.getMaxUseTime();
@@ -246,15 +246,15 @@ public class FirstPersonRenderer {
             GlStateManager.translatef(0.0f, i, 0.0f);
         }
         i = 1.0f - (float)Math.pow(h, 27.0);
-        int j = absoluteHand == AbsoluteHand.RIGHT ? 1 : -1;
+        int j = arm == Arm.RIGHT ? 1 : -1;
         GlStateManager.translatef(i * 0.6f * (float)j, i * -0.5f, i * 0.0f);
         GlStateManager.rotatef((float)j * i * 90.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(i * 10.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef((float)j * i * 30.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    private void method_3217(AbsoluteHand absoluteHand, float f) {
-        int i = absoluteHand == AbsoluteHand.RIGHT ? 1 : -1;
+    private void method_3217(Arm arm, float f) {
+        int i = arm == Arm.RIGHT ? 1 : -1;
         float g = MathHelper.sin(f * f * (float)Math.PI);
         GlStateManager.rotatef((float)i * (45.0f + g * -20.0f), 0.0f, 1.0f, 0.0f);
         float h = MathHelper.sin(MathHelper.sqrt(f) * (float)Math.PI);
@@ -263,8 +263,8 @@ public class FirstPersonRenderer {
         GlStateManager.rotatef((float)i * -45.0f, 0.0f, 1.0f, 0.0f);
     }
 
-    private void applyHandOffset(AbsoluteHand absoluteHand, float f) {
-        int i = absoluteHand == AbsoluteHand.RIGHT ? 1 : -1;
+    private void applyHandOffset(Arm arm, float f) {
+        int i = arm == Arm.RIGHT ? 1 : -1;
         GlStateManager.translatef((float)i * 0.56f, -0.52f + f * -0.6f, -0.72f);
     }
 
@@ -319,25 +319,25 @@ public class FirstPersonRenderer {
 
     public void renderFirstPersonItem(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, Hand hand, float h, ItemStack itemStack, float i) {
         boolean bl = hand == Hand.MAIN_HAND;
-        AbsoluteHand absoluteHand = bl ? abstractClientPlayerEntity.getMainHand() : abstractClientPlayerEntity.getMainHand().getOpposite();
+        Arm arm = bl ? abstractClientPlayerEntity.getMainArm() : abstractClientPlayerEntity.getMainArm().getOpposite();
         GlStateManager.pushMatrix();
         if (itemStack.isEmpty()) {
             if (bl && !abstractClientPlayerEntity.isInvisible()) {
-                this.renderArmHoldingItem(i, h, absoluteHand);
+                this.renderArmHoldingItem(i, h, arm);
             }
         } else if (itemStack.getItem() == Items.FILLED_MAP) {
             if (bl && this.offHand.isEmpty()) {
                 this.renderMapInBothHands(g, i, h);
             } else {
-                this.renderMapInOneHand(i, absoluteHand, h, itemStack);
+                this.renderMapInOneHand(i, arm, h, itemStack);
             }
         } else if (itemStack.getItem() == Items.CROSSBOW) {
             int j;
             boolean bl2 = CrossbowItem.isCharged(itemStack);
-            boolean bl3 = absoluteHand == AbsoluteHand.RIGHT;
+            boolean bl3 = arm == Arm.RIGHT;
             int n = j = bl3 ? 1 : -1;
             if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.getItemUseTimeLeft() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
-                this.applyHandOffset(absoluteHand, i);
+                this.applyHandOffset(arm, i);
                 GlStateManager.translatef((float)j * -0.4785682f, -0.094387f, 0.05731531f);
                 GlStateManager.rotatef(-11.935f, 1.0f, 0.0f, 0.0f);
                 GlStateManager.rotatef((float)j * 65.3f, 0.0f, 1.0f, 0.0f);
@@ -361,8 +361,8 @@ public class FirstPersonRenderer {
                 float l = 0.2f * MathHelper.sin(MathHelper.sqrt(h) * ((float)Math.PI * 2));
                 float m = -0.2f * MathHelper.sin(h * (float)Math.PI);
                 GlStateManager.translatef((float)j * k, l, m);
-                this.applyHandOffset(absoluteHand, i);
-                this.method_3217(absoluteHand, h);
+                this.applyHandOffset(arm, i);
+                this.method_3217(arm, h);
                 if (bl2 && h < 0.001f) {
                     GlStateManager.translatef((float)j * -0.641864f, 0.0f, 0.0f);
                     GlStateManager.rotatef((float)j * 10.0f, 0.0f, 1.0f, 0.0f);
@@ -371,26 +371,26 @@ public class FirstPersonRenderer {
             this.renderItemFromSide(abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3);
         } else {
             boolean bl2;
-            boolean bl3 = bl2 = absoluteHand == AbsoluteHand.RIGHT;
+            boolean bl3 = bl2 = arm == Arm.RIGHT;
             if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.getItemUseTimeLeft() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
                 int p = bl2 ? 1 : -1;
                 switch (itemStack.getUseAction()) {
                     case NONE: {
-                        this.applyHandOffset(absoluteHand, i);
+                        this.applyHandOffset(arm, i);
                         break;
                     }
                     case EAT: 
                     case DRINK: {
-                        this.applyEatOrDrinkTransformation(f, absoluteHand, itemStack);
-                        this.applyHandOffset(absoluteHand, i);
+                        this.applyEatOrDrinkTransformation(f, arm, itemStack);
+                        this.applyHandOffset(arm, i);
                         break;
                     }
                     case BLOCK: {
-                        this.applyHandOffset(absoluteHand, i);
+                        this.applyHandOffset(arm, i);
                         break;
                     }
                     case BOW: {
-                        this.applyHandOffset(absoluteHand, i);
+                        this.applyHandOffset(arm, i);
                         GlStateManager.translatef((float)p * -0.2785682f, 0.18344387f, 0.15731531f);
                         GlStateManager.rotatef(-13.935f, 1.0f, 0.0f, 0.0f);
                         GlStateManager.rotatef((float)p * 35.3f, 0.0f, 1.0f, 0.0f);
@@ -413,7 +413,7 @@ public class FirstPersonRenderer {
                         break;
                     }
                     case SPEAR: {
-                        this.applyHandOffset(absoluteHand, i);
+                        this.applyHandOffset(arm, i);
                         GlStateManager.translatef((float)p * -0.5f, 0.7f, 0.1f);
                         GlStateManager.rotatef(-55.0f, 1.0f, 0.0f, 0.0f);
                         GlStateManager.rotatef((float)p * 35.3f, 0.0f, 1.0f, 0.0f);
@@ -436,7 +436,7 @@ public class FirstPersonRenderer {
                     }
                 }
             } else if (abstractClientPlayerEntity.isUsingRiptide()) {
-                this.applyHandOffset(absoluteHand, i);
+                this.applyHandOffset(arm, i);
                 int p = bl2 ? 1 : -1;
                 GlStateManager.translatef((float)p * -0.4f, 0.8f, 0.3f);
                 GlStateManager.rotatef((float)p * 65.0f, 0.0f, 1.0f, 0.0f);
@@ -447,8 +447,8 @@ public class FirstPersonRenderer {
                 float k = -0.2f * MathHelper.sin(h * (float)Math.PI);
                 int s = bl2 ? 1 : -1;
                 GlStateManager.translatef((float)s * r, q, k);
-                this.applyHandOffset(absoluteHand, i);
-                this.method_3217(absoluteHand, h);
+                this.applyHandOffset(arm, i);
+                this.method_3217(arm, h);
             }
             this.renderItemFromSide(abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2);
         }

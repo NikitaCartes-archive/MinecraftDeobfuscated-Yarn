@@ -36,9 +36,9 @@ import net.minecraft.enchantment.FrostWalkerEnchantment;
 import net.minecraft.entity.Bird;
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -93,7 +93,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -104,6 +104,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
@@ -123,7 +124,7 @@ extends Entity {
     private static final TrackedData<Boolean> POTION_SWIRLS_AMBIENT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> STUCK_ARROWS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS);
-    protected static final EntitySize SLEEPING_SIZE = EntitySize.constant(0.2f, 0.2f);
+    protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2f, 0.2f);
     private AbstractEntityAttributeContainer attributeContainer;
     private final DamageTracker damageTracker = new DamageTracker(this);
     private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.newHashMap();
@@ -199,7 +200,7 @@ extends Entity {
         super(entityType, world);
         this.initAttributes();
         this.setHealth(this.getHealthMaximum());
-        this.field_6033 = true;
+        this.inanimate = true;
         this.field_6262 = (float)((Math.random() + 1.0) * (double)0.01f);
         this.setPosition(this.x, this.y, this.z);
         this.field_6244 = (float)Math.random() * 12398.0f;
@@ -246,7 +247,7 @@ extends Entity {
     @Override
     protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
         if (!this.isInsideWater()) {
-            this.method_5713();
+            this.checkWaterState();
         }
         if (!this.world.isClient && this.fallDistance > 3.0f && bl) {
             float f = MathHelper.ceil(this.fallDistance - 3.0f);
@@ -272,7 +273,7 @@ extends Entity {
     public void baseTick() {
         boolean bl2;
         this.lastHandSwingProgress = this.handSwingProgress;
-        if (this.field_5953) {
+        if (this.firstUpdate) {
             this.getSleepingPosition().ifPresent(this::setPositionInBed);
         }
         super.baseTick();
@@ -325,8 +326,8 @@ extends Entity {
         if (this.hurtTime > 0) {
             --this.hurtTime;
         }
-        if (this.field_6008 > 0 && !(this instanceof ServerPlayerEntity)) {
-            --this.field_6008;
+        if (this.timeUntilRegen > 0 && !(this instanceof ServerPlayerEntity)) {
+            --this.timeUntilRegen;
         }
         if (this.getHealth() <= 0.0f) {
             this.updatePostDeath();
@@ -379,7 +380,7 @@ extends Entity {
         ++this.deathTime;
         if (this.deathTime == 20) {
             int i;
-            if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean("doMobLoot"))) {
+            if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
                 int j;
                 for (i = this.getCurrentExperience(this.attackingPlayer); i > 0; i -= j) {
                     j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -546,7 +547,7 @@ extends Entity {
             BlockPos blockPos = new BlockPos(compoundTag.getInt("SleepingX"), compoundTag.getInt("SleepingY"), compoundTag.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
-            if (!this.field_5953) {
+            if (!this.firstUpdate) {
                 this.setPositionInBed(blockPos);
             }
         }
@@ -798,7 +799,7 @@ extends Entity {
         }
         this.limbDistance = 1.5f;
         boolean bl2 = true;
-        if ((float)this.field_6008 > 10.0f) {
+        if ((float)this.timeUntilRegen > 10.0f) {
             if (f <= this.field_6253) {
                 return false;
             }
@@ -807,7 +808,7 @@ extends Entity {
             bl2 = false;
         } else {
             this.field_6253 = f;
-            this.field_6008 = 20;
+            this.timeUntilRegen = 20;
             this.applyDamage(damageSource, f);
             this.hurtTime = this.field_6254 = 10;
         }
@@ -980,7 +981,7 @@ extends Entity {
             this.drop(damageSource);
             boolean bl = false;
             if (livingEntity instanceof WitherEntity) {
-                if (this.world.getGameRules().getBoolean("mobGriefing")) {
+                if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                     BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
                     BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                     if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1003,7 +1004,7 @@ extends Entity {
         Entity entity = damageSource.getAttacker();
         int i = entity instanceof PlayerEntity ? EnchantmentHelper.getLooting((LivingEntity)entity) : 0;
         boolean bl2 = bl = this.playerHitTimer > 0;
-        if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean("doMobLoot")) {
+        if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.dropLoot(damageSource, bl);
             this.dropEquipment(damageSource, i, bl);
         }
@@ -1256,7 +1257,7 @@ extends Entity {
                 boolean bl3 = b == 37;
                 boolean bl4 = b == 44;
                 this.limbDistance = 1.5f;
-                this.field_6008 = 20;
+                this.timeUntilRegen = 20;
                 this.hurtTime = this.field_6254 = 10;
                 this.field_6271 = 0.0f;
                 if (bl) {
@@ -1453,7 +1454,7 @@ extends Entity {
     public void method_6038(Entity entity) {
         if (entity instanceof BoatEntity || entity instanceof HorseBaseEntity) {
             double d = (double)(this.getWidth() / 2.0f + entity.getWidth() / 2.0f) + 0.4;
-            float f = entity instanceof BoatEntity ? 0.0f : 1.5707964f * (float)(this.getMainHand() == AbsoluteHand.RIGHT ? -1 : 1);
+            float f = entity instanceof BoatEntity ? 0.0f : 1.5707964f * (float)(this.getMainArm() == Arm.RIGHT ? -1 : 1);
             float g = -MathHelper.sin(-this.yaw * ((float)Math.PI / 180) - (float)Math.PI + f);
             float h = -MathHelper.cos(-this.yaw * ((float)Math.PI / 180) - (float)Math.PI + f);
             double e = Math.abs(g) > Math.abs(h) ? d / (double)Math.abs(g) : d / (double)Math.abs(h);
@@ -1959,7 +1960,7 @@ extends Entity {
         List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
         if (!list.isEmpty()) {
             int j;
-            int i = this.world.getGameRules().getInteger("maxEntityCramming");
+            int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
             if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
                 j = 0;
                 for (int k = 0; k < list.size(); ++k) {
@@ -2034,7 +2035,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.field_6224 = d;
         this.field_6245 = e;
         this.field_6263 = f;
@@ -2045,7 +2046,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void method_5683(float f, int i) {
+    public void updateTrackedHeadRotation(float f, int i) {
         this.field_6242 = f;
         this.field_6265 = i;
     }
@@ -2138,7 +2139,7 @@ extends Entity {
         this.field_6285 = true;
     }
 
-    public abstract AbsoluteHand getMainHand();
+    public abstract Arm getMainArm();
 
     public boolean isUsingItem() {
         return (this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
@@ -2372,8 +2373,8 @@ extends Entity {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
-        return entityPose == EntityPose.SLEEPING ? SLEEPING_SIZE : super.getSize(entityPose).scaled(this.getScaleFactor());
+    public EntityDimensions getDimensions(EntityPose entityPose) {
+        return entityPose == EntityPose.SLEEPING ? SLEEPING_DIMENSIONS : super.getDimensions(entityPose).scaled(this.getScaleFactor());
     }
 
     public Optional<BlockPos> getSleepingPosition() {
@@ -2444,12 +2445,12 @@ extends Entity {
     }
 
     @Override
-    protected final float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entityPose == EntityPose.SLEEPING ? 0.2f : this.getActiveEyeHeight(entityPose, entitySize);
+    protected final float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return entityPose == EntityPose.SLEEPING ? 0.2f : this.getActiveEyeHeight(entityPose, entityDimensions);
     }
 
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return super.getEyeHeight(entityPose, entitySize);
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return super.getEyeHeight(entityPose, entityDimensions);
     }
 
     public ItemStack getArrowType(ItemStack itemStack) {

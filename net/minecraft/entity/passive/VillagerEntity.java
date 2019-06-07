@@ -17,6 +17,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4316;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
@@ -88,6 +89,7 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerEntity
@@ -107,7 +109,7 @@ VillagerDataContainer {
     private long field_19357;
     private int experience;
     private long lastRestock;
-    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, new MemoryModuleType[]{MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.GOLEM_SPAWN_CONDITIONS, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
+    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, new MemoryModuleType[]{MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
     private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
 
@@ -204,6 +206,9 @@ VillagerDataContainer {
         }
         if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(new BlockPos(this))) != null && raid.isActive() && !raid.isFinished()) {
             this.world.sendEntityStatus(this, (byte)42);
+        }
+        if (!this.brain.getOptionalMemory(MemoryModuleType.JOB_SITE).isPresent() && this.hasCustomer()) {
+            this.resetCustomer();
         }
         super.mobTick();
     }
@@ -438,6 +443,7 @@ VillagerDataContainer {
         this.releaseTicketFor(MemoryModuleType.HOME);
         this.releaseTicketFor(MemoryModuleType.JOB_SITE);
         this.releaseTicketFor(MemoryModuleType.MEETING_POINT);
+        this.resetCustomer();
         super.onDeath(damageSource);
     }
 
@@ -451,6 +457,13 @@ VillagerDataContainer {
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
         optional.get().stream().filter(livingEntity -> livingEntity instanceof InteractionObserver).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, entity, (InteractionObserver)((Object)livingEntity)));
+    }
+
+    @Override
+    @Nullable
+    public Entity changeDimension(DimensionType dimensionType) {
+        this.resetCustomer();
+        return super.changeDimension(dimensionType);
     }
 
     public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
@@ -668,7 +681,7 @@ VillagerDataContainer {
         this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
         this.gossipStartTime = l;
         villagerEntity.gossipStartTime = l;
-        this.method_20688(l, 5, false);
+        this.method_20688(l, 5);
     }
 
     private void method_20696() {
@@ -684,13 +697,13 @@ VillagerDataContainer {
         this.field_19357 = l;
     }
 
-    public void method_20688(long l, int i, boolean bl) {
-        if (bl && this.method_20694(l) && !this.method_20687(l)) {
+    public void method_20688(long l, int i) {
+        if (!this.method_20687(l)) {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
         List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
-        List list2 = list.stream().filter(villagerEntity -> villagerEntity.method_20687(l) || villagerEntity.getBrain().hasActivity(Activity.PANIC) && !villagerEntity.method_20694(l)).limit(5L).collect(Collectors.toList());
+        List list2 = list.stream().filter(villagerEntity -> villagerEntity.method_20687(l)).limit(5L).collect(Collectors.toList());
         if (list2.size() < i) {
             return;
         }
@@ -719,11 +732,7 @@ VillagerDataContainer {
         if (villagerData.getProfession() == VillagerProfession.NONE || villagerData.getProfession() == VillagerProfession.NITWIT) {
             return false;
         }
-        Optional<GolemSpawnCondition> optional = this.getBrain().getOptionalMemory(MemoryModuleType.GOLEM_SPAWN_CONDITIONS);
-        if (!optional.isPresent()) {
-            return false;
-        }
-        if (!optional.get().canSpawn(l)) {
+        if (!this.method_20741(this.world.getTime())) {
             return false;
         }
         return !this.method_20694(l);
@@ -789,35 +798,21 @@ VillagerDataContainer {
     @Override
     public void sleep(BlockPos blockPos) {
         super.sleep(blockPos);
-        GolemSpawnCondition golemSpawnCondition = this.getBrain().getOptionalMemory(MemoryModuleType.GOLEM_SPAWN_CONDITIONS).orElseGet(GolemSpawnCondition::new);
-        golemSpawnCondition.setLastSlept(this.world.getTime());
-        this.brain.putMemory(MemoryModuleType.GOLEM_SPAWN_CONDITIONS, golemSpawnCondition);
+        this.brain.putMemory(MemoryModuleType.LAST_SLEPT, class_4316.method_20791(this.world.getTime()));
+    }
+
+    private boolean method_20741(long l) {
+        Optional<class_4316> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+        Optional<class_4316> optional2 = this.brain.getOptionalMemory(MemoryModuleType.LAST_WORKED_AT_POI);
+        if (optional.isPresent() && optional2.isPresent()) {
+            return l - optional.get().method_20790() < 24000L && l - optional2.get().method_20790() < 36000L;
+        }
+        return false;
     }
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
         return this.method_7225(passiveEntity);
-    }
-
-    public static final class GolemSpawnCondition {
-        private long lastWorked;
-        private long lastSlept;
-
-        public void setLastWorked(long l) {
-            this.lastWorked = l;
-        }
-
-        public void setLastSlept(long l) {
-            this.lastSlept = l;
-        }
-
-        private boolean canSpawn(long l) {
-            return l - this.lastSlept < 24000L && l - this.lastWorked < 36000L;
-        }
-
-        public String toString() {
-            return "lastWorked: " + this.lastWorked + ", lastSlept: " + this.lastSlept;
-        }
     }
 }
 

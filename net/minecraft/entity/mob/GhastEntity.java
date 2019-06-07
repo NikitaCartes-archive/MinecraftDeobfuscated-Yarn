@@ -7,8 +7,8 @@ import java.util.EnumSet;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -151,7 +151,7 @@ implements Monster {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 2.6f;
     }
 

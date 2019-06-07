@@ -186,7 +186,7 @@ extends AbstractClientPlayerEntity {
         if (this.hasVehicle()) {
             this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
             this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
-            Entity entity = this.getTopmostVehicle();
+            Entity entity = this.getRootVehicle();
             if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
                 this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
             }
@@ -300,12 +300,12 @@ extends AbstractClientPlayerEntity {
             if (g <= 0.0f) {
                 this.setHealth(f);
                 if (g < 0.0f) {
-                    this.field_6008 = 10;
+                    this.timeUntilRegen = 10;
                 }
             } else {
                 this.field_6253 = g;
                 this.setHealth(this.getHealth());
-                this.field_6008 = 20;
+                this.timeUntilRegen = 20;
                 this.applyDamage(DamageSource.GENERIC, g);
                 this.hurtTime = this.field_6254 = 10;
             }
@@ -870,7 +870,7 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
-        Iterator iterator = this.world.getCollisionShapes((Entity)this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterator iterator = this.world.getCollisionShapes(this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
         float s = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();

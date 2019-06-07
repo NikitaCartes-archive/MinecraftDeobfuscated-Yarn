@@ -159,7 +159,7 @@ extends BlockWithEntity {
         }
         if (!world.isClient) {
             if (itemStack.getSubTag("BlockEntityTag") == null) {
-                commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean("sendCommandFeedback"));
+                commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
                 commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
             }
             if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.SEQUENCE) {
@@ -197,7 +197,7 @@ extends BlockWithEntity {
     private static void executeCommandChain(World world, BlockPos blockPos, Direction direction) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
         GameRules gameRules = world.getGameRules();
-        int i = gameRules.getInteger("maxCommandChainLength");
+        int i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
         while (i-- > 0) {
             CommandBlockBlockEntity commandBlockBlockEntity;
             BlockEntity blockEntity;
@@ -217,7 +217,7 @@ extends BlockWithEntity {
             direction = blockState.get(FACING);
         }
         if (i <= 0) {
-            int j = Math.max(gameRules.getInteger("maxCommandChainLength"), 0);
+            int j = Math.max(gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH), 0);
             LOGGER.warn("Command Block chain tried to execute more than {} steps!", (Object)j);
         }
     }

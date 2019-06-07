@@ -59,6 +59,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -457,7 +458,7 @@ extends AnimalEntity {
             if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isInsideWater() || !pandaEntity.method_18442()) continue;
             pandaEntity.jump();
         }
-        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean("doMobLoot")) {
+        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.dropItem(Items.SLIME_BALL);
         }
     }

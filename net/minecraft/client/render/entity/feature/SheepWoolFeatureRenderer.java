@@ -16,11 +16,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class SheepWoolFeatureRenderer
-extends FeatureRenderer<SheepEntity, SheepWoolEntityModel<SheepEntity>> {
+extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
-    private final SheepEntityModel<SheepEntity> model = new SheepEntityModel();
+    private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel();
 
-    public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepWoolEntityModel<SheepEntity>> featureRendererContext) {
+    public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
         super(featureRendererContext);
     }
 
@@ -43,7 +43,7 @@ extends FeatureRenderer<SheepEntity, SheepWoolEntityModel<SheepEntity>> {
             float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
             GlStateManager.color3f(hs[0], hs[1], hs[2]);
         }
-        ((SheepWoolEntityModel)this.getModel()).copyStateTo(this.model);
+        ((SheepEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.method_17118(sheepEntity, f, g, h);
         this.model.render(sheepEntity, f, g, i, j, k, l);
     }

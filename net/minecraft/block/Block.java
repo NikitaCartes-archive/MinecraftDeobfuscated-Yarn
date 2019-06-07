@@ -70,6 +70,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -554,7 +555,7 @@ implements ItemConvertible {
     }
 
     public static void dropStack(World world, BlockPos blockPos, ItemStack itemStack) {
-        if (world.isClient || itemStack.isEmpty() || !world.getGameRules().getBoolean("doTileDrops")) {
+        if (world.isClient || itemStack.isEmpty() || !world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             return;
         }
         float f = 0.5f;
@@ -567,7 +568,7 @@ implements ItemConvertible {
     }
 
     protected void dropExperience(World world, BlockPos blockPos, int i) {
-        if (!world.isClient && world.getGameRules().getBoolean("doTileDrops")) {
+        if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             while (i > 0) {
                 int j = ExperienceOrbEntity.roundToOrbSize(i);
                 i -= j;

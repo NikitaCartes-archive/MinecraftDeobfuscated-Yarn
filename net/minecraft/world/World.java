@@ -987,7 +987,7 @@ AutoCloseable {
 
     protected void tickTime() {
         this.setTime(this.properties.getTime() + 1L);
-        if (this.properties.getGameRules().getBoolean("doDaylightCycle")) {
+        if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
             this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
         }
     }
@@ -1103,9 +1103,9 @@ AutoCloseable {
 
     public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
         CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
-        crashReportSection.add("Level name", this.properties == null ? "????" : this.properties.getLevelName());
         crashReportSection.add("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
         crashReportSection.add("Chunk stats", this.chunkManager::getStatus);
+        crashReportSection.add("Level dimension", () -> this.dimension.getType().toString());
         try {
             this.properties.populateCrashReport(crashReportSection);
         } catch (Throwable throwable) {

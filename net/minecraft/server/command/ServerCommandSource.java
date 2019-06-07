@@ -30,6 +30,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerCommandSource
@@ -215,13 +216,13 @@ implements CommandSource {
 
     private void sendToOps(Text text) {
         Text text2 = new TranslatableText("chat.type.admin", this.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC);
-        if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
+        if (this.minecraftServer.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
                 if (serverPlayerEntity == this.output || !this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) continue;
                 serverPlayerEntity.sendMessage(text2);
             }
         }
-        if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean("logAdminCommands")) {
+        if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
             this.minecraftServer.sendMessage(text2);
         }
     }

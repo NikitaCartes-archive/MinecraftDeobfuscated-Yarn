@@ -21,8 +21,8 @@ import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Bird;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.ParrotMoveControl;
@@ -171,8 +171,8 @@ implements Bird {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entitySize.height * 0.6f;
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return entityDimensions.height * 0.6f;
     }
 
     @Override
@@ -340,7 +340,7 @@ implements Bird {
     }
 
     @Override
-    protected float method_5801(float f) {
+    protected float calculateAerialStepDelta(float f) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
         return f + this.field_6819 / 2.0f;
     }

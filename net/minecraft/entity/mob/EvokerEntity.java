@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -178,7 +179,7 @@ extends SpellcastingIllagerEntity {
             if (EvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!EvokerEntity.this.world.getGameRules().getBoolean("mobGriefing")) {
+            if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
             List<SheepEntity> list = EvokerEntity.this.world.getTargets(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));

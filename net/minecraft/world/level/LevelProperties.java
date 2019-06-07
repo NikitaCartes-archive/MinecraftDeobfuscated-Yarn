@@ -56,7 +56,6 @@ public class LevelProperties {
     private final int playerWorldId;
     private boolean playerDataLoaded;
     private CompoundTag playerData;
-    private int dimension;
     private String levelName;
     private int version;
     private int clearWeatherTime;
@@ -149,7 +148,7 @@ public class LevelProperties {
             this.playerData = compoundTag2;
         }
         if (compoundTag.containsKey("GameRules", 10)) {
-            this.gameRules.deserialize(compoundTag.getCompound("GameRules"));
+            this.gameRules.fromNbt(compoundTag.getCompound("GameRules"));
         }
         if (compoundTag.containsKey("Difficulty", 99)) {
             this.difficulty = Difficulty.byOrdinal(compoundTag.getByte("Difficulty"));
@@ -295,7 +294,7 @@ public class LevelProperties {
             compoundTag.putByte("Difficulty", (byte)this.difficulty.getId());
         }
         compoundTag.putBoolean("DifficultyLocked", this.difficultyLocked);
-        compoundTag.put("GameRules", this.gameRules.serialize());
+        compoundTag.put("GameRules", this.gameRules.toNbt());
         CompoundTag compoundTag4 = new CompoundTag();
         for (Map.Entry<DimensionType, CompoundTag> entry : this.worldData.entrySet()) {
             compoundTag4.put(String.valueOf(entry.getKey().getRawId()), entry.getValue());
@@ -361,19 +360,12 @@ public class LevelProperties {
             }
             this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
         }
-        this.dimension = this.playerData.getInt("Dimension");
         this.playerDataLoaded = true;
     }
 
     public CompoundTag getPlayerData() {
         this.loadPlayerData();
         return this.playerData;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getDimension() {
-        this.loadPlayerData();
-        return this.dimension;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -619,12 +611,12 @@ public class LevelProperties {
     }
 
     public void populateCrashReport(CrashReportSection crashReportSection) {
-        crashReportSection.add("Level seed", () -> String.valueOf(this.getSeed()));
+        crashReportSection.add("Level name", () -> this.levelName);
+        crashReportSection.add("Level seed", () -> String.valueOf(this.randomSeed));
         crashReportSection.add("Level generator", () -> String.format("ID %02d - %s, ver %d. Features enabled: %b", this.generatorType.getId(), this.generatorType.getName(), this.generatorType.getVersion(), this.structures));
         crashReportSection.add("Level generator options", () -> this.generatorOptions.toString());
         crashReportSection.add("Level spawn location", () -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ));
         crashReportSection.add("Level time", () -> String.format("%d game time, %d day time", this.time, this.timeOfDay));
-        crashReportSection.add("Level dimension", () -> String.valueOf(this.dimension));
         crashReportSection.add("Level storage version", () -> {
             String string = "Unknown?";
             try {

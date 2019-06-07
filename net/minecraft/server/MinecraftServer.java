@@ -21,7 +21,6 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.invoke.LambdaMetafactory;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -43,7 +42,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
-import java.util.function.Function;
 import javax.imageio.ImageIO;
 import joptsimple.AbstractOptionSpec;
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -175,7 +173,6 @@ Runnable {
     private int worldHeight;
     private int playerIdleTimeout;
     public final long[] lastTickLengths = new long[100];
-    protected final Map<DimensionType, long[]> field_4600 = Maps.newIdentityHashMap();
     @Nullable
     private KeyPair keyPair;
     @Nullable
@@ -401,7 +398,7 @@ Runnable {
         levelProperties.setHardcore(false);
         levelProperties.setDifficulty(Difficulty.PEACEFUL);
         levelProperties.setDifficultyLocked(true);
-        levelProperties.getGameRules().put("doDaylightCycle", "false", this);
+        levelProperties.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, this);
     }
 
     protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
@@ -439,7 +436,7 @@ Runnable {
         this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (DimensionType dimensionType : DimensionType.getAll()) {
-            ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+            ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
             if (forcedChunkState == null) continue;
             ServerWorld serverWorld2 = this.getWorld(dimensionType);
             LongIterator longIterator = forcedChunkState.getChunks().iterator();
@@ -745,26 +742,23 @@ Runnable {
         this.getCommandFunctionManager().tick();
         this.profiler.swap("levels");
         for (ServerWorld serverWorld : this.getWorlds()) {
-            long l = SystemUtil.getMeasuringTimeNano();
-            if (serverWorld.dimension.getType() == DimensionType.OVERWORLD || this.isNetherAllowed()) {
-                this.profiler.push(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType()));
-                if (this.ticks % 20 == 0) {
-                    this.profiler.push("timeSync");
-                    this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")), serverWorld.dimension.getType());
-                    this.profiler.pop();
-                }
-                this.profiler.push("tick");
-                try {
-                    serverWorld.tick(booleanSupplier);
-                } catch (Throwable throwable) {
-                    CrashReport crashReport = CrashReport.create(throwable, "Exception ticking world");
-                    serverWorld.addDetailsToCrashReport(crashReport);
-                    throw new CrashException(crashReport);
-                }
-                this.profiler.pop();
+            if (serverWorld.dimension.getType() != DimensionType.OVERWORLD && !this.isNetherAllowed()) continue;
+            this.profiler.push(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType()));
+            if (this.ticks % 20 == 0) {
+                this.profiler.push("timeSync");
+                this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)), serverWorld.dimension.getType());
                 this.profiler.pop();
             }
-            this.field_4600.computeIfAbsent((DimensionType)serverWorld.dimension.getType(), (Function<DimensionType, long[]>)LambdaMetafactory.metafactory(null, null, null, (Ljava/lang/Object;)Ljava/lang/Object;, method_3757(net.minecraft.world.dimension.DimensionType ), (Lnet/minecraft/world/dimension/DimensionType;)[J)())[this.ticks % 100] = SystemUtil.getMeasuringTimeNano() - l;
+            this.profiler.push("tick");
+            try {
+                serverWorld.tick(booleanSupplier);
+            } catch (Throwable throwable) {
+                CrashReport crashReport = CrashReport.create(throwable, "Exception ticking world");
+                serverWorld.addDetailsToCrashReport(crashReport);
+                throw new CrashException(crashReport);
+            }
+            this.profiler.pop();
+            this.profiler.pop();
         }
         this.profiler.swap("connection");
         this.getNetworkIo().tick();
@@ -1290,7 +1284,7 @@ Runnable {
 
     public int getSpawnRadius(@Nullable ServerWorld serverWorld) {
         if (serverWorld != null) {
-            return serverWorld.getGameRules().getInteger("spawnRadius");
+            return serverWorld.getGameRules().getInt(GameRules.SPAWN_RADIUS);
         }
         return 10;
     }
@@ -1326,6 +1320,11 @@ Runnable {
         this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
         CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(Unit.INSTANCE));
         this.waitFor(completableFuture::isDone);
+        try {
+            completableFuture.get();
+        } catch (Exception exception) {
+            LOGGER.error("Failed to reload data packs", (Throwable)exception);
+        }
         levelProperties.getEnabledDataPacks().clear();
         levelProperties.getDisabledDataPacks().clear();
         this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> levelProperties.getEnabledDataPacks().add(resourcePackContainer.getName()));
@@ -1455,10 +1454,6 @@ Runnable {
     @Override
     public /* synthetic */ Runnable prepareRunnable(Runnable runnable) {
         return this.method_16209(runnable);
-    }
-
-    private static /* synthetic */ long[] method_3757(DimensionType dimensionType) {
-        return new long[100];
     }
 }
 

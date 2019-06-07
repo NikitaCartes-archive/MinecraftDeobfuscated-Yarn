@@ -285,10 +285,6 @@ public class GLX {
         return GL.getCapabilities().OpenGL20;
     }
 
-    public static boolean supportsOpenGL32() {
-        return GL.getCapabilities().OpenGL32;
-    }
-
     public static void withTextureRestore(Runnable runnable) {
         GL11.glPushAttrib(270336);
         try {
@@ -403,6 +399,8 @@ public class GLX {
             GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 36054;
             GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER = 36059;
             GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
+        } else {
+            throw new IllegalStateException("The driver does not appear to support framebuffer objects");
         }
         isOpenGl21 = gLCapabilities.OpenGL21;
         hasShaders = isOpenGl21 || gLCapabilities.GL_ARB_vertex_shader && gLCapabilities.GL_ARB_fragment_shader && gLCapabilities.GL_ARB_shader_objects;

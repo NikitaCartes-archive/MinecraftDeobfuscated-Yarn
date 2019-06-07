@@ -7,8 +7,8 @@ import java.util.EnumSet;
 import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -79,7 +79,7 @@ implements Monster {
     protected void setSize(int i, boolean bl) {
         this.dataTracker.set(SLIME_SIZE, i);
         this.setPosition(this.x, this.y, this.z);
-        this.refreshSize();
+        this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(i * i);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);
         if (bl) {
@@ -155,7 +155,7 @@ implements Monster {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (SLIME_SIZE.equals(trackedData)) {
-            this.refreshSize();
+            this.calculateDimensions();
             this.yaw = this.headYaw;
             this.field_6283 = this.headYaw;
             if (this.isInsideWater() && this.random.nextInt(20) == 0) {
@@ -218,8 +218,8 @@ implements Monster {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return 0.625f * entitySize.height;
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return 0.625f * entityDimensions.height;
     }
 
     protected boolean isBig() {
@@ -315,8 +315,8 @@ implements Monster {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
-        return super.getSize(entityPose).scaled(0.255f * (float)this.getSize());
+    public EntityDimensions getDimensions(EntityPose entityPose) {
+        return super.getDimensions(entityPose).scaled(0.255f * (float)this.getSize());
     }
 
     static class class_1624

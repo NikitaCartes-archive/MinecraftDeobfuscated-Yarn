@@ -22,10 +22,15 @@ import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.TagContainer;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +65,7 @@ implements SynchronousResourceReloadListener {
     }
 
     public int getMaxCommandChainLength() {
-        return this.server.getGameRules().getInteger("maxCommandChainLength");
+        return this.server.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
     }
 
     public Map<Identifier, CommandFunction> getFunctions() {
@@ -183,6 +188,10 @@ implements SynchronousResourceReloadListener {
 
     public ServerCommandSource getFunctionCommandSource() {
         return this.server.getCommandSource().withLevel(2).withSilent();
+    }
+
+    public ServerCommandSource method_20796() {
+        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, 4, "", new LiteralText(""), this.server, null);
     }
 
     public TagContainer<CommandFunction> getTags() {

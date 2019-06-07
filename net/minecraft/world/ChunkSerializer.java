@@ -122,8 +122,8 @@ public class ChunkSerializer {
         long n = compoundTag2.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
-            TickScheduler<Block> tickScheduler = compoundTag2.containsKey("TileTicks", 9) ? SimpleTickScheduler.method_20512(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
-            TickScheduler<Fluid> tickScheduler2 = compoundTag2.containsKey("LiquidTicks", 9) ? SimpleTickScheduler.method_20512(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
+            TickScheduler<Block> tickScheduler = compoundTag2.containsKey("TileTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
+            TickScheduler<Fluid> tickScheduler2 = compoundTag2.containsKey("LiquidTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
             chunk = new WorldChunk(serverWorld.getWorld(), chunkPos, biomes, upgradeData, tickScheduler, tickScheduler2, n, chunkSections, worldChunk -> ChunkSerializer.writeEntities(compoundTag2, worldChunk));
         } else {
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
@@ -255,12 +255,12 @@ public class ChunkSerializer {
         ListTag listTag3 = new ListTag();
         if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
             WorldChunk worldChunk = (WorldChunk)chunk;
-            worldChunk.method_12232(false);
+            worldChunk.setUnsaved(false);
             for (int l = 0; l < worldChunk.getEntitySectionArray().length; ++l) {
                 for (Entity entity : worldChunk.getEntitySectionArray()[l]) {
                     CompoundTag compoundTag4;
                     if (!entity.saveToTag(compoundTag4 = new CompoundTag())) continue;
-                    worldChunk.method_12232(true);
+                    worldChunk.setUnsaved(true);
                     listTag3.add(compoundTag4);
                 }
             }
@@ -279,7 +279,7 @@ public class ChunkSerializer {
         if (tickScheduler instanceof ChunkTickScheduler) {
             compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)tickScheduler).toNbt());
         } else if (tickScheduler instanceof SimpleTickScheduler) {
-            compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toTag(serverWorld.getTime()));
+            compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt(serverWorld.getTime()));
         } else {
             compoundTag2.put("TileTicks", serverWorld.method_14196().toTag(chunkPos));
         }
@@ -287,7 +287,7 @@ public class ChunkSerializer {
         if (tickScheduler2 instanceof ChunkTickScheduler) {
             compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)tickScheduler2).toNbt());
         } else if (tickScheduler2 instanceof SimpleTickScheduler) {
-            compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toTag(serverWorld.getTime()));
+            compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt(serverWorld.getTime()));
         } else {
             compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
         }
@@ -319,7 +319,7 @@ public class ChunkSerializer {
                 worldChunk.addEntity((Entity)entity);
                 return entity;
             });
-            worldChunk.method_12232(true);
+            worldChunk.setUnsaved(true);
         }
         ListTag listTag2 = compoundTag.getList("TileEntities", 10);
         for (int j = 0; j < listTag2.size(); ++j) {

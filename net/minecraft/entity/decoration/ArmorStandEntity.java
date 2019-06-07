@@ -11,8 +11,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -34,8 +34,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -83,11 +83,11 @@ extends LivingEntity {
     }
 
     @Override
-    public void refreshSize() {
+    public void calculateDimensions() {
         double d = this.x;
         double e = this.y;
         double f = this.z;
-        super.refreshSize();
+        super.calculateDimensions();
         this.setPosition(d, e, f);
     }
 
@@ -526,8 +526,8 @@ extends LivingEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-        return entitySize.height * (this.isBaby() ? 0.5f : 0.9f);
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+        return entityDimensions.height * (this.isBaby() ? 0.5f : 0.9f);
     }
 
     @Override
@@ -719,8 +719,8 @@ extends LivingEntity {
     }
 
     @Override
-    public AbsoluteHand getMainHand() {
-        return AbsoluteHand.RIGHT;
+    public Arm getMainArm() {
+        return Arm.RIGHT;
     }
 
     @Override
@@ -752,8 +752,8 @@ extends LivingEntity {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (ARMOR_STAND_FLAGS.equals(trackedData)) {
-            this.refreshSize();
-            this.field_6033 = !this.isMarker();
+            this.calculateDimensions();
+            this.inanimate = !this.isMarker();
         }
         super.onTrackedDataSet(trackedData);
     }
@@ -764,9 +764,9 @@ extends LivingEntity {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
+    public EntityDimensions getDimensions(EntityPose entityPose) {
         float f = this.isMarker() ? 0.0f : (this.isBaby() ? 0.5f : 1.0f);
-        return this.getType().getDefaultSize().scaled(f);
+        return this.getType().getDimensions().scaled(f);
     }
 }
 

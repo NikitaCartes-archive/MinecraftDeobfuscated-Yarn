@@ -11,8 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -31,6 +31,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -54,7 +55,7 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 0.0f;
     }
 
@@ -122,7 +123,7 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public float getBoundingBoxMarginForTargeting() {
+    public float getTargetingMargin() {
         return 0.0f;
     }
 
@@ -176,7 +177,7 @@ extends AbstractDecorationEntity {
     }
 
     public void method_6936(@Nullable Entity entity, boolean bl) {
-        if (!this.world.getGameRules().getBoolean("doEntityDrops")) {
+        if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             if (entity == null) {
                 this.removeFromFrame(this.getHeldItemStack());
             }

@@ -207,6 +207,11 @@ public abstract class ChunkTicketManager {
         return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.size();
     }
 
+    public boolean method_20800(long l) {
+        this.distanceFromNearestPlayerTracker.updateLevels();
+        return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.containsKey(l);
+    }
+
     class class_4077
     extends ChunkPosLevelPropagator {
         public class_4077() {

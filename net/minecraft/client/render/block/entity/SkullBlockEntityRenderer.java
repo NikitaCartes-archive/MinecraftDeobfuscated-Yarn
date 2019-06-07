@@ -91,7 +91,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         if (skullType == SkullBlock.Type.PLAYER) {
             GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
         }
-        skullEntityModel.setRotationAngles(k, 0.0f, 0.0f, i, 0.0f, 0.0625f);
+        skullEntityModel.render(k, 0.0f, 0.0f, i, 0.0f, 0.0625f);
         GlStateManager.popMatrix();
         if (j >= 0) {
             GlStateManager.matrixMode(5890);

@@ -33,7 +33,7 @@ implements ArgumentType<EntityAnchor> {
         return commandContext.getArgument(string, EntityAnchor.class);
     }
 
-    public static EntityAnchorArgumentType create() {
+    public static EntityAnchorArgumentType entityAnchor() {
         return new EntityAnchorArgumentType();
     }
 

@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +58,7 @@ extends Block {
 
     @Override
     public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean("doMobSpawning") && random.nextInt(2000) < world.getDifficulty().getId()) {
+        if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
             ZombiePigmanEntity entity;
             while (world.getBlockState(blockPos).getBlock() == this) {
                 blockPos = blockPos.down();

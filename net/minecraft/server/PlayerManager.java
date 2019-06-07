@@ -75,6 +75,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.border.WorldBorder;
@@ -136,7 +137,7 @@ public abstract class PlayerManager {
         LevelProperties levelProperties = serverWorld.getLevelProperties();
         this.setGameMode(serverPlayerEntity, null, serverWorld);
         ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, clientConnection, serverPlayerEntity);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(serverPlayerEntity.getEntityId(), serverPlayerEntity.interactionManager.getGameMode(), levelProperties.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), levelProperties.getGeneratorType(), this.viewDistance, serverWorld.getGameRules().getBoolean("reducedDebugInfo")));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(serverPlayerEntity.getEntityId(), serverPlayerEntity.interactionManager.getGameMode(), levelProperties.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), levelProperties.getGeneratorType(), this.viewDistance, serverWorld.getGameRules().getBoolean(GameRules.REDUCED_DEBUG_INFO)));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(serverPlayerEntity.abilities));
@@ -279,7 +280,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
         serverPlayerEntity.incrementStat(Stats.LEAVE_GAME);
         this.savePlayerData(serverPlayerEntity);
-        if (serverPlayerEntity.hasVehicle() && (entity = serverPlayerEntity.getTopmostVehicle()).method_5817()) {
+        if (serverPlayerEntity.hasVehicle() && (entity = serverPlayerEntity.getRootVehicle()).hasPlayerRider()) {
             LOGGER.debug("Removing player mount");
             serverPlayerEntity.stopRiding();
             serverWorld.removeEntity(entity);
@@ -360,7 +361,7 @@ public abstract class PlayerManager {
         serverPlayerEntity2.networkHandler = serverPlayerEntity.networkHandler;
         serverPlayerEntity2.copyFrom(serverPlayerEntity, bl);
         serverPlayerEntity2.setEntityId(serverPlayerEntity.getEntityId());
-        serverPlayerEntity2.setMainHand(serverPlayerEntity.getMainHand());
+        serverPlayerEntity2.setMainArm(serverPlayerEntity.getMainArm());
         for (String string : serverPlayerEntity.getScoreboardTags()) {
             serverPlayerEntity2.addScoreboardTag(string);
         }
@@ -545,7 +546,7 @@ public abstract class PlayerManager {
     public void sendWorldInfo(ServerPlayerEntity serverPlayerEntity, ServerWorld serverWorld) {
         WorldBorder worldBorder = this.server.getWorld(DimensionType.OVERWORLD).getWorldBorder();
         serverPlayerEntity.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
-        serverPlayerEntity.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
+        serverPlayerEntity.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
         BlockPos blockPos = serverWorld.getSpawnPos();
         serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos));
         if (serverWorld.isRaining()) {

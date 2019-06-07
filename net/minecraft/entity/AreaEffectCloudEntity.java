@@ -16,8 +16,8 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -86,11 +86,11 @@ extends Entity {
     }
 
     @Override
-    public void refreshSize() {
+    public void calculateDimensions() {
         double d = this.x;
         double e = this.y;
         double f = this.z;
-        super.refreshSize();
+        super.calculateDimensions();
         this.setPosition(d, e, f);
     }
 
@@ -366,7 +366,7 @@ extends Entity {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (RADIUS.equals(trackedData)) {
-            this.refreshSize();
+            this.calculateDimensions();
         }
         super.onTrackedDataSet(trackedData);
     }
@@ -382,8 +382,8 @@ extends Entity {
     }
 
     @Override
-    public EntitySize getSize(EntityPose entityPose) {
-        return EntitySize.resizeable(this.getRadius() * 2.0f, 0.5f);
+    public EntityDimensions getDimensions(EntityPose entityPose) {
+        return EntityDimensions.changing(this.getRadius() * 2.0f, 0.5f);
     }
 }
 

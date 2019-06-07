@@ -34,11 +34,11 @@ implements ArgumentType<PosArgument> {
         this.centerIntegers = bl;
     }
 
-    public static Vec3ArgumentType create() {
+    public static Vec3ArgumentType vec3() {
         return new Vec3ArgumentType(true);
     }
 
-    public static Vec3ArgumentType create(boolean bl) {
+    public static Vec3ArgumentType vec3(boolean bl) {
         return new Vec3ArgumentType(bl);
     }
 

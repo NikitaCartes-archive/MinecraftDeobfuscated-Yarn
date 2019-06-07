@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
+import net.minecraft.class_4316;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
@@ -22,7 +23,7 @@ extends Task<VillagerEntity> {
     private boolean field_18403;
 
     public VillagerWorkTask() {
-        super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.GOLEM_SPAWN_CONDITIONS, MemoryModuleState.REGISTERED));
+        super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
     }
 
     protected boolean method_19037(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -37,9 +38,7 @@ extends Task<VillagerEntity> {
 
     protected void method_19039(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
-        VillagerEntity.GolemSpawnCondition golemSpawnCondition = brain.getOptionalMemory(MemoryModuleType.GOLEM_SPAWN_CONDITIONS).orElseGet(VillagerEntity.GolemSpawnCondition::new);
-        golemSpawnCondition.setLastWorked(l);
-        brain.putMemory(MemoryModuleType.GOLEM_SPAWN_CONDITIONS, golemSpawnCondition);
+        brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, class_4316.method_20791(l));
         if (!this.field_18403) {
             villagerEntity.restock();
             this.field_18403 = true;

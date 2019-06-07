@@ -13,6 +13,7 @@ import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -41,7 +42,7 @@ extends AbstractFireballEntity {
                 entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0f);
                 this.dealDamage(this.owner, entity);
             }
-            boolean bl = this.world.getGameRules().getBoolean("mobGriefing");
+            boolean bl = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
             this.world.createExplosion(null, this.x, this.y, this.z, this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
             this.remove();
         }

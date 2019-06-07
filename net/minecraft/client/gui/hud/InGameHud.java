@@ -64,7 +64,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -438,7 +438,7 @@ extends DrawableHelper {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(WIDGETS_TEX);
         ItemStack itemStack = playerEntity.getOffHandStack();
-        AbsoluteHand absoluteHand = playerEntity.getMainHand().getOpposite();
+        Arm arm = playerEntity.getMainArm().getOpposite();
         int i = this.scaledWidth / 2;
         int j = this.blitOffset;
         int k = 182;
@@ -447,7 +447,7 @@ extends DrawableHelper {
         this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
         this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
         if (!itemStack.isEmpty()) {
-            if (absoluteHand == AbsoluteHand.LEFT) {
+            if (arm == Arm.LEFT) {
                 this.blit(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
             } else {
                 this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
@@ -465,7 +465,7 @@ extends DrawableHelper {
         }
         if (!itemStack.isEmpty()) {
             m = this.scaledHeight - 16 - 3;
-            if (absoluteHand == AbsoluteHand.LEFT) {
+            if (arm == Arm.LEFT) {
                 this.renderHotbarItem(i - 91 - 26, m, f, playerEntity, itemStack);
             } else {
                 this.renderHotbarItem(i + 91 + 10, m, f, playerEntity, itemStack);
@@ -474,7 +474,7 @@ extends DrawableHelper {
         if (this.client.options.attackIndicator == AttackIndicator.HOTBAR && (g = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
             n = this.scaledHeight - 20;
             o = i + 91 + 6;
-            if (absoluteHand == AbsoluteHand.RIGHT) {
+            if (arm == Arm.RIGHT) {
                 o = i - 91 - 22;
             }
             this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
@@ -659,10 +659,10 @@ extends DrawableHelper {
         int i = MathHelper.ceil(playerEntity.getHealth());
         boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
         long l = SystemUtil.getMeasuringTimeMs();
-        if (i < this.field_2014 && playerEntity.field_6008 > 0) {
+        if (i < this.field_2014 && playerEntity.timeUntilRegen > 0) {
             this.field_2012 = l;
             this.field_2032 = this.ticks + 20;
-        } else if (i > this.field_2014 && playerEntity.field_6008 > 0) {
+        } else if (i > this.field_2014 && playerEntity.timeUntilRegen > 0) {
             this.field_2012 = l;
             this.field_2032 = this.ticks + 10;
         }

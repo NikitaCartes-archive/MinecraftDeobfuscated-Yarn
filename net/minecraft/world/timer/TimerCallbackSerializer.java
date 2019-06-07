@@ -46,7 +46,7 @@ public class TimerCallbackSerializer<C> {
 
     @Nullable
     public TimerCallback<C> deserialize(CompoundTag compoundTag) {
-        Identifier identifier = Identifier.ofNullable(compoundTag.getString("Type"));
+        Identifier identifier = Identifier.tryParse(compoundTag.getString("Type"));
         TimerCallback.Serializer<C, ?> serializer = this.serializersByType.get(identifier);
         if (serializer == null) {
             LOGGER.error("Failed to deserialize timer callback: " + compoundTag);

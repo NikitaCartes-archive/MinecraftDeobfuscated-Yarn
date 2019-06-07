@@ -5,7 +5,6 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.Maps;
 import java.util.HashMap;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -61,7 +60,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -164,13 +162,6 @@ RangedAttackMob {
             return 10.0f;
         }
         return 0.5f - viewableWorld.getBrightness(blockPos);
-    }
-
-    public static boolean method_20683(EntityType<PillagerEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        if (iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8) {
-            return false;
-        }
-        return PillagerEntity.method_20681(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override

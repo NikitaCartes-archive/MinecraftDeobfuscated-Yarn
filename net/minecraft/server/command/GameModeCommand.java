@@ -14,6 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 
 public class GameModeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -30,7 +31,7 @@ public class GameModeCommand {
         if (serverCommandSource.getEntity() == serverPlayerEntity) {
             serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
         } else {
-            if (serverCommandSource.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
+            if (serverCommandSource.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 serverPlayerEntity.sendMessage(new TranslatableText("gameMode.changed", text));
             }
             serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), text), true);

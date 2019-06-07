@@ -67,7 +67,7 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.field_2387 = this.minecraft.inGameHud.getChatHud().method_1809().size();
+        this.field_2387 = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
         this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox", new Object[0]));
         this.chatField.setMaxLength(256);
         this.chatField.setHasBorder(false);
@@ -318,7 +318,7 @@ extends Screen {
 
     public void method_2114(int i) {
         int j = this.field_2387 + i;
-        int k = this.minecraft.inGameHud.getChatHud().method_1809().size();
+        int k = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
         if ((j = MathHelper.clamp(j, 0, k)) == this.field_2387) {
             return;
         }
@@ -330,7 +330,7 @@ extends Screen {
         if (this.field_2387 == k) {
             this.field_2389 = this.chatField.getText();
         }
-        this.chatField.setText(this.minecraft.inGameHud.getChatHud().method_1809().get(j));
+        this.chatField.setText(this.minecraft.inGameHud.getChatHud().getMessageHistory().get(j));
         this.suggestionsWindow = null;
         this.field_2387 = j;
         this.field_2380 = false;

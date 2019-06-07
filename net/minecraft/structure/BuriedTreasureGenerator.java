@@ -56,7 +56,8 @@ public class BuriedTreasureGenerator {
                         }
                         iWorld.setBlockState(blockPos, blockState3, 3);
                     }
-                    return this.addChest(iWorld, mutableIntBoundingBox, random, new BlockPos(this.boundingBox.minX, mutable.getY(), this.boundingBox.minZ), LootTables.BURIED_TREASURE_CHEST, null);
+                    this.boundingBox = new MutableIntBoundingBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
+                    return this.addChest(iWorld, mutableIntBoundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
                 }
                 mutable.setOffset(0, -1, 0);
             }

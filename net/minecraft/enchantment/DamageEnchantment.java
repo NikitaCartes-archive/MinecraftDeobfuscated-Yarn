@@ -33,6 +33,11 @@ extends Enchantment {
     }
 
     @Override
+    public int method_20742(int i) {
+        return this.getMinimumPower(i) + field_9064[this.typeIndex];
+    }
+
+    @Override
     public int getMaximumLevel() {
         return 5;
     }

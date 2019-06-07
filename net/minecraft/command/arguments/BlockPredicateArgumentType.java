@@ -36,7 +36,7 @@ implements ArgumentType<BlockPredicate> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
     private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.block.tag.unknown", object));
 
-    public static BlockPredicateArgumentType create() {
+    public static BlockPredicateArgumentType blockPredicate() {
         return new BlockPredicateArgumentType();
     }
 

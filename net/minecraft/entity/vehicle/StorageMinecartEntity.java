@@ -21,6 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.loot.LootSupplier;
@@ -50,7 +51,7 @@ NameableContainerProvider {
     @Override
     public void dropItems(DamageSource damageSource) {
         super.dropItems(damageSource);
-        if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+        if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             ItemScatterer.spawn(this.world, this, (Inventory)this);
         }
     }

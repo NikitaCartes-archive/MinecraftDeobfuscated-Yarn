@@ -51,6 +51,10 @@ extends JsonDataLoader {
 
     protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder<Identifier, LootSupplier> builder = ImmutableMap.builder();
+        JsonObject jsonObject2 = map.remove(LootTables.EMPTY);
+        if (jsonObject2 != null) {
+            LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", (Object)LootTables.EMPTY);
+        }
         map.forEach((identifier, jsonObject) -> {
             try {
                 LootSupplier lootSupplier = GSON.fromJson((JsonElement)jsonObject, LootSupplier.class);

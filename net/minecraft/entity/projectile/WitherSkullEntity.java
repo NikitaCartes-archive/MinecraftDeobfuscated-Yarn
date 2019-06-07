@@ -23,6 +23,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -89,7 +90,7 @@ extends ExplosiveProjectileEntity {
                     }
                 }
             }
-            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
+            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
             this.world.createExplosion(this, this.x, this.y, this.z, 1.0f, false, destructionType);
             this.remove();
         }

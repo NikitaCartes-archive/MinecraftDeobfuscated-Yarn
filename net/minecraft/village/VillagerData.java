@@ -26,7 +26,7 @@ public class VillagerData {
     }
 
     public VillagerData(Dynamic<?> dynamic) {
-        this(Registry.VILLAGER_TYPE.get(Identifier.ofNullable(dynamic.get("type").asString(""))), Registry.VILLAGER_PROFESSION.get(Identifier.ofNullable(dynamic.get("profession").asString(""))), dynamic.get("level").asInt(1));
+        this(Registry.VILLAGER_TYPE.get(Identifier.tryParse(dynamic.get("type").asString(""))), Registry.VILLAGER_PROFESSION.get(Identifier.tryParse(dynamic.get("profession").asString(""))), dynamic.get("level").asInt(1));
     }
 
     public VillagerType getType() {

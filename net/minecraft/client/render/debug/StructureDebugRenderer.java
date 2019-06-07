@@ -19,14 +19,15 @@ import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.dimension.DimensionType;
 
 @Environment(value=EnvType.CLIENT)
 public class StructureDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient field_4624;
-    private final Map<Integer, Map<String, MutableIntBoundingBox>> field_4626 = Maps.newHashMap();
-    private final Map<Integer, Map<String, MutableIntBoundingBox>> field_4627 = Maps.newHashMap();
-    private final Map<Integer, Map<String, Boolean>> field_4625 = Maps.newHashMap();
+    private final Map<DimensionType, Map<String, MutableIntBoundingBox>> field_4626 = Maps.newIdentityHashMap();
+    private final Map<DimensionType, Map<String, MutableIntBoundingBox>> field_4627 = Maps.newIdentityHashMap();
+    private final Map<DimensionType, Map<String, Boolean>> field_4625 = Maps.newIdentityHashMap();
 
     public StructureDebugRenderer(MinecraftClient minecraftClient) {
         this.field_4624 = minecraftClient;
@@ -36,7 +37,7 @@ implements DebugRenderer.Renderer {
     public void render(long l) {
         Camera camera = this.field_4624.gameRenderer.getCamera();
         ClientWorld iWorld = this.field_4624.world;
-        int i = iWorld.getLevelProperties().getDimension();
+        DimensionType dimensionType = iWorld.getDimension().getType();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;
@@ -50,17 +51,17 @@ implements DebugRenderer.Renderer {
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         GlStateManager.lineWidth(1.0f);
-        if (this.field_4626.containsKey(i)) {
-            for (MutableIntBoundingBox mutableIntBoundingBox : this.field_4626.get(i).values()) {
+        if (this.field_4626.containsKey(dimensionType)) {
+            for (MutableIntBoundingBox mutableIntBoundingBox : this.field_4626.get(dimensionType).values()) {
                 if (!blockPos.isWithinDistance(mutableIntBoundingBox.method_19635(), 500.0)) continue;
                 WorldRenderer.buildBoxOutline(bufferBuilder, (double)mutableIntBoundingBox.minX - d, (double)mutableIntBoundingBox.minY - e, (double)mutableIntBoundingBox.minZ - f, (double)(mutableIntBoundingBox.maxX + 1) - d, (double)(mutableIntBoundingBox.maxY + 1) - e, (double)(mutableIntBoundingBox.maxZ + 1) - f, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
-        if (this.field_4627.containsKey(i)) {
-            for (Map.Entry entry : this.field_4627.get(i).entrySet()) {
+        if (this.field_4627.containsKey(dimensionType)) {
+            for (Map.Entry entry : this.field_4627.get(dimensionType).entrySet()) {
                 String string = (String)entry.getKey();
                 MutableIntBoundingBox mutableIntBoundingBox2 = (MutableIntBoundingBox)entry.getValue();
-                Boolean boolean_ = this.field_4625.get(i).get(string);
+                Boolean boolean_ = this.field_4625.get(dimensionType).get(string);
                 if (!blockPos.isWithinDistance(mutableIntBoundingBox2.method_19635(), 500.0)) continue;
                 if (boolean_.booleanValue()) {
                     WorldRenderer.buildBoxOutline(bufferBuilder, (double)mutableIntBoundingBox2.minX - d, (double)mutableIntBoundingBox2.minY - e, (double)mutableIntBoundingBox2.minZ - f, (double)(mutableIntBoundingBox2.maxX + 1) - d, (double)(mutableIntBoundingBox2.maxY + 1) - e, (double)(mutableIntBoundingBox2.maxZ + 1) - f, 0.0f, 1.0f, 0.0f, 1.0f);
@@ -75,21 +76,28 @@ implements DebugRenderer.Renderer {
         GlStateManager.popMatrix();
     }
 
-    public void method_3871(MutableIntBoundingBox mutableIntBoundingBox, List<MutableIntBoundingBox> list, List<Boolean> list2, int i) {
-        if (!this.field_4626.containsKey(i)) {
-            this.field_4626.put(i, Maps.newHashMap());
+    public void method_3871(MutableIntBoundingBox mutableIntBoundingBox, List<MutableIntBoundingBox> list, List<Boolean> list2, DimensionType dimensionType) {
+        if (!this.field_4626.containsKey(dimensionType)) {
+            this.field_4626.put(dimensionType, Maps.newHashMap());
         }
-        if (!this.field_4627.containsKey(i)) {
-            this.field_4627.put(i, Maps.newHashMap());
-            this.field_4625.put(i, Maps.newHashMap());
+        if (!this.field_4627.containsKey(dimensionType)) {
+            this.field_4627.put(dimensionType, Maps.newHashMap());
+            this.field_4625.put(dimensionType, Maps.newHashMap());
         }
-        this.field_4626.get(i).put(mutableIntBoundingBox.toString(), mutableIntBoundingBox);
-        for (int j = 0; j < list.size(); ++j) {
-            MutableIntBoundingBox mutableIntBoundingBox2 = list.get(j);
-            Boolean boolean_ = list2.get(j);
-            this.field_4627.get(i).put(mutableIntBoundingBox2.toString(), mutableIntBoundingBox2);
-            this.field_4625.get(i).put(mutableIntBoundingBox2.toString(), boolean_);
+        this.field_4626.get(dimensionType).put(mutableIntBoundingBox.toString(), mutableIntBoundingBox);
+        for (int i = 0; i < list.size(); ++i) {
+            MutableIntBoundingBox mutableIntBoundingBox2 = list.get(i);
+            Boolean boolean_ = list2.get(i);
+            this.field_4627.get(dimensionType).put(mutableIntBoundingBox2.toString(), mutableIntBoundingBox2);
+            this.field_4625.get(dimensionType).put(mutableIntBoundingBox2.toString(), boolean_);
         }
+    }
+
+    @Override
+    public void method_20414() {
+        this.field_4626.clear();
+        this.field_4627.clear();
+        this.field_4625.clear();
     }
 }
 

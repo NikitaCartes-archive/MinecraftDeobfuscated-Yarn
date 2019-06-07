@@ -38,7 +38,7 @@ public class PersistentStateManager {
     }
 
     public <T extends PersistentState> T getOrCreate(Supplier<T> supplier, String string) {
-        T persistentState = this.get(supplier, string);
+        T persistentState = this.method_20786(supplier, string);
         if (persistentState != null) {
             return persistentState;
         }
@@ -48,22 +48,29 @@ public class PersistentStateManager {
     }
 
     @Nullable
-    public <T extends PersistentState> T get(Supplier<T> supplier, String string) {
+    public <T extends PersistentState> T method_20786(Supplier<T> supplier, String string) {
         PersistentState persistentState = this.loadedStates.get(string);
-        if (persistentState == null) {
-            try {
-                File file = this.getFile(string);
-                if (file.exists()) {
-                    persistentState = (PersistentState)supplier.get();
-                    CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
-                    persistentState.fromTag(compoundTag.getCompound("data"));
-                    this.loadedStates.put(string, persistentState);
-                }
-            } catch (Exception exception) {
-                LOGGER.error("Error loading saved data: {}", (Object)string, (Object)exception);
-            }
+        if (persistentState == null && !this.loadedStates.containsKey(string)) {
+            persistentState = this.get(supplier, string);
+            this.loadedStates.put(string, persistentState);
         }
         return (T)persistentState;
+    }
+
+    @Nullable
+    private <T extends PersistentState> T get(Supplier<T> supplier, String string) {
+        try {
+            File file = this.getFile(string);
+            if (file.exists()) {
+                PersistentState persistentState = (PersistentState)supplier.get();
+                CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
+                persistentState.fromTag(compoundTag.getCompound("data"));
+                return (T)persistentState;
+            }
+        } catch (Exception exception) {
+            LOGGER.error("Error loading saved data: {}", (Object)string, (Object)exception);
+        }
+        return null;
     }
 
     public void set(PersistentState persistentState) {
@@ -121,6 +128,7 @@ public class PersistentStateManager {
 
     public void save() {
         for (PersistentState persistentState : this.loadedStates.values()) {
+            if (persistentState == null) continue;
             persistentState.method_17919(this.getFile(persistentState.getId()));
         }
     }

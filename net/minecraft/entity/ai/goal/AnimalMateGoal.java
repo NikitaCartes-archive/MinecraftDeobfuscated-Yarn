@@ -13,6 +13,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +103,7 @@ extends Goal {
         passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0f, 0.0f);
         this.world.spawnEntity(passiveEntity);
         this.world.sendEntityStatus(this.animal, (byte)18);
-        if (this.world.getGameRules().getBoolean("doMobLoot")) {
+        if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
         }
     }

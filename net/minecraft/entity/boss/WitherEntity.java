@@ -50,6 +50,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -209,7 +210,7 @@ implements RangedAttackMob {
         if (this.getInvulTimer() > 0) {
             int i2 = this.getInvulTimer() - 1;
             if (i2 <= 0) {
-                Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
+                Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0f, false, destructionType);
                 this.world.playGlobalEvent(1023, new BlockPos(this), 0);
             }
@@ -274,7 +275,7 @@ implements RangedAttackMob {
         }
         if (this.field_7082 > 0) {
             --this.field_7082;
-            if (this.field_7082 == 0 && this.world.getGameRules().getBoolean("mobGriefing")) {
+            if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 i = MathHelper.floor(this.y);
                 j = MathHelper.floor(this.x);
                 int l = MathHelper.floor(this.z);

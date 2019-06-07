@@ -189,7 +189,7 @@ public final class VoxelShapes {
         return d;
     }
 
-    public static double method_17945(Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+    public static double calculateSoftOffset(Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
         return VoxelShapes.method_17944(box, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
     }
 

@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -91,7 +92,7 @@ extends Block {
 
     @Override
     public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-        if (!world.isClient && world.random.nextFloat() < f - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean("mobGriefing")) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
+        if (!world.isClient && world.random.nextFloat() < f - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
             FarmlandBlock.setToDirt(world.getBlockState(blockPos), world, blockPos);
         }
         super.onLandedUpon(world, blockPos, entity, f);

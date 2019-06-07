@@ -68,6 +68,10 @@ public abstract class Enchantment {
         return 1 + i * 10;
     }
 
+    public int method_20742(int i) {
+        return this.getMinimumPower(i) + 5;
+    }
+
     public int getProtectionAmount(int i, DamageSource damageSource) {
         return 0;
     }
@@ -127,9 +131,9 @@ public abstract class Enchantment {
     }
 
     public static enum Weight {
-        COMMON(30),
-        UNCOMMON(10),
-        RARE(3),
+        COMMON(10),
+        UNCOMMON(5),
+        RARE(2),
         VERY_RARE(1);
 
         private final int weight;

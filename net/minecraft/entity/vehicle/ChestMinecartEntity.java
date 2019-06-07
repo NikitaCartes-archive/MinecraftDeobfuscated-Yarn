@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class ChestMinecartEntity
@@ -29,7 +30,7 @@ extends StorageMinecartEntity {
     @Override
     public void dropItems(DamageSource damageSource) {
         super.dropItems(damageSource);
-        if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+        if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             this.dropItem(Blocks.CHEST);
         }
     }

@@ -18,8 +18,8 @@ import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
@@ -134,7 +134,7 @@ implements Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.setPosition(d, e, f);
         this.setRotation(g, h);
     }
@@ -506,12 +506,12 @@ implements Projectile {
     }
 
     @Override
-    public boolean canPlayerAttack() {
+    public boolean isAttackable() {
         return false;
     }
 
     @Override
-    protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 0.0f;
     }
 

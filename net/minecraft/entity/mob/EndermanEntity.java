@@ -12,8 +12,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -52,6 +52,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -173,7 +174,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 2.55f;
     }
 
@@ -303,7 +304,7 @@ extends HostileEntity {
             if (this.enderman.getCarriedBlock() != null) {
                 return false;
             }
-            if (!this.enderman.world.getGameRules().getBoolean("mobGriefing")) {
+            if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
             return this.enderman.getRand().nextInt(20) == 0;
@@ -344,7 +345,7 @@ extends HostileEntity {
             if (this.enderman.getCarriedBlock() == null) {
                 return false;
             }
-            if (!this.enderman.world.getGameRules().getBoolean("mobGriefing")) {
+            if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
             return this.enderman.getRand().nextInt(2000) == 0;

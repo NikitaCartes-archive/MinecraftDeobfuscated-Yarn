@@ -13,7 +13,7 @@ import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -194,11 +194,11 @@ ModelWithHead {
             this.leftArm.yaw = 0.0f;
         }
         if (this.handSwingProgress > 0.0f) {
-            AbsoluteHand absoluteHand = this.getPreferedHand(livingEntity);
-            Cuboid cuboid = this.getArm(absoluteHand);
+            Arm arm = this.getPreferredArm(livingEntity);
+            Cuboid cuboid = this.getArm(arm);
             m = this.handSwingProgress;
             this.body.yaw = MathHelper.sin(MathHelper.sqrt(m) * ((float)Math.PI * 2)) * 0.2f;
-            if (absoluteHand == AbsoluteHand.LEFT) {
+            if (arm == Arm.LEFT) {
                 this.body.yaw *= -1.0f;
             }
             this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0f;
@@ -345,12 +345,12 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, AbsoluteHand absoluteHand) {
-        this.getArm(absoluteHand).applyTransform(f);
+    public void setArmAngle(float f, Arm arm) {
+        this.getArm(arm).applyTransform(f);
     }
 
-    protected Cuboid getArm(AbsoluteHand absoluteHand) {
-        if (absoluteHand == AbsoluteHand.LEFT) {
+    protected Cuboid getArm(Arm arm) {
+        if (arm == Arm.LEFT) {
             return this.leftArm;
         }
         return this.rightArm;
@@ -361,9 +361,9 @@ ModelWithHead {
         return this.head;
     }
 
-    protected AbsoluteHand getPreferedHand(T livingEntity) {
-        AbsoluteHand absoluteHand = ((LivingEntity)livingEntity).getMainHand();
-        return ((LivingEntity)livingEntity).preferredHand == Hand.MAIN_HAND ? absoluteHand : absoluteHand.getOpposite();
+    protected Arm getPreferredArm(T livingEntity) {
+        Arm arm = ((LivingEntity)livingEntity).getMainArm();
+        return ((LivingEntity)livingEntity).preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
     }
 
     @Environment(value=EnvType.CLIENT)

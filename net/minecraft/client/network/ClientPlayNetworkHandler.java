@@ -423,7 +423,7 @@ implements ClientPlayPacketListener {
         }
         if (entity != null) {
             int i = entitySpawnS2CPacket.getId();
-            entity.method_18003(d, e, f);
+            entity.updateTrackedPosition(d, e, f);
             entity.pitch = (float)(entitySpawnS2CPacket.getPitch() * 360) / 256.0f;
             entity.yaw = (float)(entitySpawnS2CPacket.getYaw() * 360) / 256.0f;
             entity.setEntityId(i);
@@ -442,7 +442,7 @@ implements ClientPlayPacketListener {
         double e = experienceOrbSpawnS2CPacket.getY();
         double f = experienceOrbSpawnS2CPacket.getZ();
         ExperienceOrbEntity entity = new ExperienceOrbEntity(this.world, d, e, f, experienceOrbSpawnS2CPacket.getExperience());
-        entity.method_18003(d, e, f);
+        entity.updateTrackedPosition(d, e, f);
         entity.yaw = 0.0f;
         entity.pitch = 0.0f;
         entity.setEntityId(experienceOrbSpawnS2CPacket.getId());
@@ -457,7 +457,7 @@ implements ClientPlayPacketListener {
         double f = entitySpawnGlobalS2CPacket.getZ();
         if (entitySpawnGlobalS2CPacket.getEntityTypeId() == 1) {
             LightningEntity lightningEntity = new LightningEntity(this.world, d, e, f, false);
-            lightningEntity.method_18003(d, e, f);
+            lightningEntity.updateTrackedPosition(d, e, f);
             lightningEntity.yaw = 0.0f;
             lightningEntity.pitch = 0.0f;
             lightningEntity.setEntityId(entitySpawnGlobalS2CPacket.getId());
@@ -510,7 +510,7 @@ implements ClientPlayPacketListener {
         otherClientPlayerEntity.prevRenderY = e;
         otherClientPlayerEntity.prevZ = f;
         otherClientPlayerEntity.prevRenderZ = f;
-        otherClientPlayerEntity.method_18003(d, e, f);
+        otherClientPlayerEntity.updateTrackedPosition(d, e, f);
         otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
         this.world.addPlayer(i, otherClientPlayerEntity);
         List<DataTracker.Entry<?>> list = playerSpawnS2CPacket.getTrackedValues();
@@ -529,14 +529,14 @@ implements ClientPlayPacketListener {
         double d = entityPositionS2CPacket.getX();
         double e = entityPositionS2CPacket.getY();
         double f = entityPositionS2CPacket.getZ();
-        entity.method_18003(d, e, f);
+        entity.updateTrackedPosition(d, e, f);
         if (!entity.isLogicalSideForUpdatingMovement()) {
             float g = (float)(entityPositionS2CPacket.getYaw() * 360) / 256.0f;
             float h = (float)(entityPositionS2CPacket.getPitch() * 360) / 256.0f;
             if (Math.abs(entity.x - d) >= 0.03125 || Math.abs(entity.y - e) >= 0.015625 || Math.abs(entity.z - f) >= 0.03125) {
-                entity.setPositionAndRotations(d, e, f, g, h, 3, true);
+                entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
             } else {
-                entity.setPositionAndRotations(entity.x, entity.y, entity.z, g, h, 0, true);
+                entity.updateTrackedPositionAndAngles(entity.x, entity.y, entity.z, g, h, 0, true);
             }
             entity.onGround = entityPositionS2CPacket.isOnGround();
         }
@@ -557,14 +557,14 @@ implements ClientPlayPacketListener {
         if (entity == null) {
             return;
         }
-        entity.field_6001 += (long)entityS2CPacket.getDeltaXShort();
-        entity.field_6023 += (long)entityS2CPacket.getDeltaYShort();
-        entity.field_5954 += (long)entityS2CPacket.getDeltaZShort();
-        Vec3d vec3d = EntityS2CPacket.method_18695(entity.field_6001, entity.field_6023, entity.field_5954);
+        entity.trackedX += (long)entityS2CPacket.getDeltaXShort();
+        entity.trackedY += (long)entityS2CPacket.getDeltaYShort();
+        entity.trackedZ += (long)entityS2CPacket.getDeltaZShort();
+        Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
         if (!entity.isLogicalSideForUpdatingMovement()) {
             float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0f : entity.yaw;
             float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0f : entity.pitch;
-            entity.setPositionAndRotations(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+            entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
             entity.onGround = entityS2CPacket.isOnGround();
         }
     }
@@ -577,7 +577,7 @@ implements ClientPlayPacketListener {
             return;
         }
         float f = (float)(entitySetHeadYawS2CPacket.getHeadYaw() * 360) / 256.0f;
-        entity.method_5683(f, 3);
+        entity.updateTrackedHeadRotation(f, 3);
     }
 
     @Override
@@ -773,7 +773,7 @@ implements ClientPlayPacketListener {
         float h = (float)(mobSpawnS2CPacket.getVelocityY() * 360) / 256.0f;
         LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(mobSpawnS2CPacket.getEntityTypeId(), this.client.world);
         if (livingEntity != null) {
-            livingEntity.method_18003(d, e, f);
+            livingEntity.updateTrackedPosition(d, e, f);
             livingEntity.field_6283 = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0f;
             livingEntity.headYaw = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0f;
             if (livingEntity instanceof EnderDragonEntity) {
@@ -1547,7 +1547,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onVehicleMove(VehicleMoveS2CPacket vehicleMoveS2CPacket) {
         NetworkThreadUtils.forceMainThread(vehicleMoveS2CPacket, this, this.client);
-        Entity entity = this.client.player.getTopmostVehicle();
+        Entity entity = this.client.player.getRootVehicle();
         if (entity != this.client.player && entity.isLogicalSideForUpdatingMovement()) {
             entity.setPositionAnglesAndUpdate(vehicleMoveS2CPacket.getX(), vehicleMoveS2CPacket.getY(), vehicleMoveS2CPacket.getZ(), vehicleMoveS2CPacket.getYaw(), vehicleMoveS2CPacket.getPitch());
             this.connection.send(new VehicleMoveC2SPacket(entity));
@@ -1595,7 +1595,7 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
             } else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-                int i = packetByteBuf.readInt();
+                DimensionType dimensionType = DimensionType.byRawId(packetByteBuf.readInt());
                 MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
                 int m = packetByteBuf.readInt();
                 ArrayList<MutableIntBoundingBox> list2 = Lists.newArrayList();
@@ -1604,7 +1604,7 @@ implements ClientPlayPacketListener {
                     list2.add(new MutableIntBoundingBox(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()));
                     list3.add(packetByteBuf.readBoolean());
                 }
-                this.client.debugRenderer.structureDebugRenderer.method_3871(mutableIntBoundingBox, list2, list3, i);
+                this.client.debugRenderer.structureDebugRenderer.method_3871(mutableIntBoundingBox, list2, list3, dimensionType);
             } else if (CustomPayloadS2CPacket.DEBUG_WORLDGEN_ATTEMPT.equals(identifier)) {
                 ((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer).method_3872(packetByteBuf.readBlockPos(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
             } else if (CustomPayloadS2CPacket.DEBUG_VILLAGE_SECTIONS.equals(identifier)) {
@@ -1631,18 +1631,17 @@ implements ClientPlayPacketListener {
                 int j = packetByteBuf.readInt();
                 this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19702(blockPos2, j);
             } else if (CustomPayloadS2CPacket.DEBUG_GOAL_SELECTOR.equals(identifier)) {
-                int i = packetByteBuf.readInt();
-                BlockPos blockPos3 = packetByteBuf.readBlockPos();
+                BlockPos blockPos2 = packetByteBuf.readBlockPos();
+                int j = packetByteBuf.readInt();
                 int m = packetByteBuf.readInt();
-                int o = packetByteBuf.readInt();
-                ArrayList<GoalSelectorDebugRenderer.class_4206> list3 = Lists.newArrayList();
-                for (int n = 0; n < o; ++n) {
-                    int p = packetByteBuf.readInt();
+                ArrayList<GoalSelectorDebugRenderer.class_4206> list2 = Lists.newArrayList();
+                for (int k = 0; k < m; ++k) {
+                    int n = packetByteBuf.readInt();
                     boolean bl = packetByteBuf.readBoolean();
                     String string2 = packetByteBuf.readString(255);
-                    list3.add(new GoalSelectorDebugRenderer.class_4206(blockPos3, p, string2, bl));
+                    list2.add(new GoalSelectorDebugRenderer.class_4206(blockPos2, n, string2, bl));
                 }
-                this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(m, list3);
+                this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(j, list2);
             } else if (CustomPayloadS2CPacket.DEBUG_RAIDS.equals(identifier)) {
                 int i = packetByteBuf.readInt();
                 ArrayList<BlockPos> collection = Lists.newArrayList();
@@ -1651,46 +1650,46 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.raidCenterDebugRenderer.setRaidCenters(collection);
             } else if (CustomPayloadS2CPacket.DEBUG_BRAIN.equals(identifier)) {
-                int w;
-                int v;
                 int u;
                 int t;
+                int s;
+                int r;
                 double d = packetByteBuf.readDouble();
                 double e = packetByteBuf.readDouble();
                 double g = packetByteBuf.readDouble();
                 PositionImpl position = new PositionImpl(d, e, g);
                 UUID uUID = packetByteBuf.readUuid();
-                int q = packetByteBuf.readInt();
+                int o = packetByteBuf.readInt();
                 String string3 = packetByteBuf.readString();
                 String string4 = packetByteBuf.readString();
-                int r = packetByteBuf.readInt();
+                int p = packetByteBuf.readInt();
                 String string5 = packetByteBuf.readString();
                 boolean bl2 = packetByteBuf.readBoolean();
                 Path path2 = bl2 ? Path.fromBuffer(packetByteBuf) : null;
                 boolean bl3 = packetByteBuf.readBoolean();
-                PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string3, string4, r, position, string5, path2, bl3);
-                int s = packetByteBuf.readInt();
-                for (t = 0; t < s; ++t) {
+                PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, o, string3, string4, p, position, string5, path2, bl3);
+                int q = packetByteBuf.readInt();
+                for (r = 0; r < q; ++r) {
                     String string6 = packetByteBuf.readString();
                     lv2.field_18927.add(string6);
                 }
-                t = packetByteBuf.readInt();
-                for (u = 0; u < t; ++u) {
+                r = packetByteBuf.readInt();
+                for (s = 0; s < r; ++s) {
                     String string7 = packetByteBuf.readString();
                     lv2.field_18928.add(string7);
                 }
-                u = packetByteBuf.readInt();
-                for (v = 0; v < u; ++v) {
+                s = packetByteBuf.readInt();
+                for (t = 0; t < s; ++t) {
                     String string8 = packetByteBuf.readString();
                     lv2.field_19374.add(string8);
                 }
-                v = packetByteBuf.readInt();
-                for (w = 0; w < v; ++w) {
-                    BlockPos blockPos4 = packetByteBuf.readBlockPos();
-                    lv2.field_18930.add(blockPos4);
+                t = packetByteBuf.readInt();
+                for (u = 0; u < t; ++u) {
+                    BlockPos blockPos3 = packetByteBuf.readBlockPos();
+                    lv2.field_18930.add(blockPos3);
                 }
-                w = packetByteBuf.readInt();
-                for (int x = 0; x < w; ++x) {
+                u = packetByteBuf.readInt();
+                for (int v = 0; v < u; ++v) {
                     String string9 = packetByteBuf.readString();
                     lv2.field_19375.add(string9);
                 }

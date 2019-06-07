@@ -19,7 +19,7 @@ implements ArgumentType<CompoundTag> {
     private NbtCompoundTagArgumentType() {
     }
 
-    public static NbtCompoundTagArgumentType create() {
+    public static NbtCompoundTagArgumentType nbtCompound() {
         return new NbtCompoundTagArgumentType();
     }
 

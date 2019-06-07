@@ -31,7 +31,7 @@ implements ArgumentType<ScoreboardCriterion> {
     private ObjectiveCriteriaArgumentType() {
     }
 
-    public static ObjectiveCriteriaArgumentType create() {
+    public static ObjectiveCriteriaArgumentType objectiveCriteria() {
         return new ObjectiveCriteriaArgumentType();
     }
 

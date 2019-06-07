@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -63,12 +64,6 @@ extends LevelProperties {
     @Override
     public CompoundTag getPlayerData() {
         return this.properties.getPlayerData();
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getDimension() {
-        return this.properties.getDimension();
     }
 
     @Override
@@ -236,6 +231,12 @@ extends LevelProperties {
     @Override
     public CompoundTag getWorldData(DimensionType dimensionType) {
         return this.properties.getWorldData(dimensionType);
+    }
+
+    @Override
+    public void populateCrashReport(CrashReportSection crashReportSection) {
+        crashReportSection.add("Derived", true);
+        this.properties.populateCrashReport(crashReportSection);
     }
 }
 

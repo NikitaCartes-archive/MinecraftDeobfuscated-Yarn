@@ -57,7 +57,7 @@ implements ArgumentType<Integer> {
         hashMap.put("horse.chest", 499);
     });
 
-    public static ItemSlotArgumentType create() {
+    public static ItemSlotArgumentType itemSlot() {
         return new ItemSlotArgumentType();
     }
 

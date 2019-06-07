@@ -23,6 +23,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +83,7 @@ extends ThrownItemEntity {
             if (livingEntity instanceof ServerPlayerEntity) {
                 ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
                 if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
-                    if (this.random.nextFloat() < 0.05f && this.world.getGameRules().getBoolean("doMobSpawning")) {
+                    if (this.random.nextFloat() < 0.05f && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
                         EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
                         endermiteEntity.setPlayerSpawned(true);
                         endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);

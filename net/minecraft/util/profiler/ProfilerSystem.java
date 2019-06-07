@@ -28,6 +28,7 @@ implements ReadableProfiler {
     private final List<String> nameList = Lists.newArrayList();
     private final LongList timeList = new LongArrayList();
     private final Object2LongMap<String> nameDurationMap = new Object2LongOpenHashMap<String>();
+    private final Object2LongMap<String> field_19381 = new Object2LongOpenHashMap<String>();
     private final IntSupplier field_16266;
     private final long field_15732;
     private final int field_15729;
@@ -99,6 +100,7 @@ implements ReadableProfiler {
         this.nameList.remove(this.nameList.size() - 1);
         long n = l - m;
         this.nameDurationMap.put(this.location, this.nameDurationMap.getLong(this.location) + n);
+        this.field_19381.put(this.location, this.field_19381.getLong(this.location) + 1L);
         if (n > TIMEOUT_NANOSECONDS) {
             LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", (Object)this.location, (Object)((double)n / 1000000.0));
         }
@@ -120,7 +122,7 @@ implements ReadableProfiler {
 
     @Override
     public ProfileResult getResults() {
-        return new ProfileResultImpl(this.nameDurationMap, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt());
+        return new ProfileResultImpl(this.nameDurationMap, this.field_19381, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt());
     }
 }
 

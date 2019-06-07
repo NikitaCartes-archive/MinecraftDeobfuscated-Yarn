@@ -54,6 +54,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -435,7 +436,7 @@ extends AnimalEntity {
         @Override
         public boolean canStart() {
             if (this.cooldown <= 0) {
-                if (!this.rabbit.world.getGameRules().getBoolean("mobGriefing")) {
+                if (!this.rabbit.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                     return false;
                 }
                 this.field_6861 = false;

@@ -64,6 +64,11 @@ extends Fluid {
     }
 
     @Override
+    public float method_20784(FluidState fluidState) {
+        return 0.0f;
+    }
+
+    @Override
     protected BlockState toBlockState(FluidState fluidState) {
         return Blocks.AIR.getDefaultState();
     }

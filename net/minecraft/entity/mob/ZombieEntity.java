@@ -12,9 +12,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -61,6 +61,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -181,7 +182,7 @@ extends HostileEntity {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (BABY.equals(trackedData)) {
-            this.refreshSize();
+            this.calculateDimensions();
         }
         super.onTrackedDataSet(trackedData);
     }
@@ -283,7 +284,7 @@ extends HostileEntity {
             if (livingEntity == null && damageSource.getAttacker() instanceof LivingEntity) {
                 livingEntity = (LivingEntity)damageSource.getAttacker();
             }
-            if (livingEntity != null && this.world.getDifficulty() == Difficulty.HARD && (double)this.random.nextFloat() < this.getAttributeInstance(SPAWN_REINFORCEMENTS).getValue() && this.world.getGameRules().getBoolean("doMobSpawning")) {
+            if (livingEntity != null && this.world.getDifficulty() == Difficulty.HARD && (double)this.random.nextFloat() < this.getAttributeInstance(SPAWN_REINFORCEMENTS).getValue() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
                 int i = MathHelper.floor(this.x);
                 int j = MathHelper.floor(this.y);
                 int k = MathHelper.floor(this.z);
@@ -416,7 +417,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return this.isBaby() ? 0.93f : 1.74f;
     }
 

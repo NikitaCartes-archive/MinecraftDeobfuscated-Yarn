@@ -293,7 +293,7 @@ implements Drawable {
 
     public void sendMessage(String string, boolean bl) {
         if (bl) {
-            this.minecraft.inGameHud.getChatHud().method_1803(string);
+            this.minecraft.inGameHud.getChatHud().addToMessageHistory(string);
         }
         this.minecraft.player.sendChatMessage(string);
     }

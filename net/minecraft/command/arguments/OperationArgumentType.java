@@ -25,7 +25,7 @@ implements ArgumentType<Operation> {
     private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid", new Object[0]));
     private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0", new Object[0]));
 
-    public static OperationArgumentType create() {
+    public static OperationArgumentType operation() {
         return new OperationArgumentType();
     }
 

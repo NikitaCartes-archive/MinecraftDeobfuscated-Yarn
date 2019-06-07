@@ -49,7 +49,7 @@ extends EntityRenderer<WitherSkullEntity> {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(witherSkullEntity));
         }
-        this.model.setRotationAngles(0.0f, 0.0f, 0.0f, i, j, 0.0625f);
+        this.model.render(0.0f, 0.0f, 0.0f, i, j, 0.0625f);
         if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();

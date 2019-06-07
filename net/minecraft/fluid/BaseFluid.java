@@ -66,16 +66,16 @@ extends Fluid {
                 pooledMutable.method_10114(blockPos).method_10118(direction);
                 FluidState fluidState2 = blockView.getFluidState(pooledMutable);
                 if (!this.method_15748(fluidState2)) continue;
-                float f = fluidState2.getHeight(blockView, pooledMutable);
+                float f = fluidState2.method_20785();
                 float g = 0.0f;
                 if (f == 0.0f) {
                     BlockPos blockPos2;
                     FluidState fluidState3;
-                    if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement() && this.method_15748(fluidState3 = blockView.getFluidState(blockPos2 = pooledMutable.down())) && (f = fluidState3.getHeight(blockView, blockPos2)) > 0.0f) {
-                        g = fluidState.getHeight(blockView, blockPos) - (f - 0.8888889f);
+                    if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement() && this.method_15748(fluidState3 = blockView.getFluidState(blockPos2 = pooledMutable.down())) && (f = fluidState3.method_20785()) > 0.0f) {
+                        g = fluidState.method_20785() - (f - 0.8888889f);
                     }
                 } else if (f > 0.0f) {
-                    g = fluidState.getHeight(blockView, blockPos) - f;
+                    g = fluidState.method_20785() - f;
                 }
                 if (g == 0.0f) continue;
                 d += (double)((float)direction.getOffsetX() * g);
@@ -393,6 +393,11 @@ extends Fluid {
         if (BaseFluid.isFluidAboveEqual(fluidState, blockView, blockPos)) {
             return 1.0f;
         }
+        return fluidState.method_20785();
+    }
+
+    @Override
+    public float method_20784(FluidState fluidState) {
         return (float)fluidState.getLevel() / 9.0f;
     }
 

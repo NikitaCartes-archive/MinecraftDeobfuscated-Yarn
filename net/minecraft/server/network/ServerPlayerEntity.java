@@ -102,7 +102,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -119,6 +119,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -162,7 +163,7 @@ implements ContainerListener {
     private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
     private int containerSyncId;
     public boolean field_13991;
-    public int field_13967;
+    public int pingMilliseconds;
     public boolean notInAnyWorld;
 
     public ServerPlayerEntity(MinecraftServer minecraftServer, ServerWorld serverWorld, GameProfile gameProfile, ServerPlayerInteractionManager serverPlayerInteractionManager) {
@@ -252,9 +253,9 @@ implements ContainerListener {
             compoundTag2.putDouble("z", this.enteredNetherPos.z);
             compoundTag.put("enteredNetherPosition", compoundTag2);
         }
-        Entity entity = this.getTopmostVehicle();
+        Entity entity = this.getRootVehicle();
         Entity entity2 = this.getVehicle();
-        if (entity2 != null && entity != this && entity.method_5817()) {
+        if (entity2 != null && entity != this && entity.hasPlayerRider()) {
             CompoundTag compoundTag3 = new CompoundTag();
             CompoundTag compoundTag4 = new CompoundTag();
             entity.saveToTag(compoundTag4);
@@ -319,8 +320,8 @@ implements ContainerListener {
     public void tick() {
         this.interactionManager.update();
         --this.field_13998;
-        if (this.field_6008 > 0) {
-            --this.field_6008;
+        if (this.timeUntilRegen > 0) {
+            --this.timeUntilRegen;
         }
         this.container.sendContentUpdates();
         if (!this.world.isClient && !this.container.canUse(this)) {
@@ -419,7 +420,7 @@ implements ContainerListener {
 
     @Override
     public void onDeath(DamageSource damageSource) {
-        boolean bl = this.world.getGameRules().getBoolean("showDeathMessages");
+        boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
             Text text = this.getDamageTracker().getDeathMessage();
             this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text), future -> {
@@ -453,7 +454,7 @@ implements ContainerListener {
             livingEntity.updateKilledAdvancementCriterion(this, this.field_6232, damageSource);
             if (!this.world.isClient && livingEntity instanceof WitherEntity) {
                 boolean bl2 = false;
-                if (this.world.getGameRules().getBoolean("mobGriefing")) {
+                if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                     BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
                     BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                     if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -966,9 +967,9 @@ implements ContainerListener {
             this.experienceProgress = serverPlayerEntity.experienceProgress;
             this.setScore(serverPlayerEntity.getScore());
             this.lastPortalPosition = serverPlayerEntity.lastPortalPosition;
-            this.field_6020 = serverPlayerEntity.field_6020;
-            this.field_6028 = serverPlayerEntity.field_6028;
-        } else if (this.world.getGameRules().getBoolean("keepInventory") || serverPlayerEntity.isSpectator()) {
+            this.lastPortalDirectionVector = serverPlayerEntity.lastPortalDirectionVector;
+            this.lastPortalDirection = serverPlayerEntity.lastPortalDirection;
+        } else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || serverPlayerEntity.isSpectator()) {
             this.inventory.clone(serverPlayerEntity.inventory);
             this.experienceLevel = serverPlayerEntity.experienceLevel;
             this.totalExperience = serverPlayerEntity.totalExperience;
@@ -1097,7 +1098,7 @@ implements ContainerListener {
         this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
         this.field_13971 = clientSettingsC2SPacket.method_12135();
         this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-        this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() != AbsoluteHand.LEFT ? 1 : 0));
+        this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() != Arm.LEFT ? 1 : 0));
     }
 
     public ChatVisibility getClientChatVisibility() {

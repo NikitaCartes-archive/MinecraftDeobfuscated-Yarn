@@ -27,7 +27,7 @@ public class ChatHud
 extends DrawableHelper {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftClient client;
-    private final List<String> field_2063 = Lists.newArrayList();
+    private final List<String> messageHistory = Lists.newArrayList();
     private final List<ChatHudLine> messages = Lists.newArrayList();
     private final List<ChatHudLine> visibleMessages = Lists.newArrayList();
     private int field_2066;
@@ -109,7 +109,7 @@ extends DrawableHelper {
         this.visibleMessages.clear();
         this.messages.clear();
         if (bl) {
-            this.field_2063.clear();
+            this.messageHistory.clear();
         }
     }
 
@@ -156,13 +156,13 @@ extends DrawableHelper {
         }
     }
 
-    public List<String> method_1809() {
-        return this.field_2063;
+    public List<String> getMessageHistory() {
+        return this.messageHistory;
     }
 
-    public void method_1803(String string) {
-        if (this.field_2063.isEmpty() || !this.field_2063.get(this.field_2063.size() - 1).equals(string)) {
-            this.field_2063.add(string);
+    public void addToMessageHistory(String string) {
+        if (this.messageHistory.isEmpty() || !this.messageHistory.get(this.messageHistory.size() - 1).equals(string)) {
+            this.messageHistory.add(string);
         }
     }
 

@@ -120,7 +120,7 @@ extends MobEntityWithAi {
     @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (CHILD.equals(trackedData)) {
-            this.refreshSize();
+            this.calculateDimensions();
         }
         super.onTrackedDataSet(trackedData);
     }

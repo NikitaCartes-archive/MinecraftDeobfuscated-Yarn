@@ -5,8 +5,8 @@ package net.minecraft.entity;
 
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -29,7 +29,7 @@ extends Entity {
 
     public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
         super(entityType, world);
-        this.field_6033 = true;
+        this.inanimate = true;
     }
 
     public TntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
@@ -79,7 +79,7 @@ extends Entity {
                 this.explode();
             }
         } else {
-            this.method_5713();
+            this.checkWaterState();
             this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
         }
     }
@@ -105,7 +105,7 @@ extends Entity {
     }
 
     @Override
-    protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+    protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         return 0.0f;
     }
 

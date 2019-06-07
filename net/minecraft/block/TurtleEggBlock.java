@@ -26,6 +26,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,7 +167,7 @@ extends Block {
             return false;
         }
         if (entity instanceof LivingEntity && !(entity instanceof PlayerEntity)) {
-            return world.getGameRules().getBoolean("mobGriefing");
+            return world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         }
         return true;
     }

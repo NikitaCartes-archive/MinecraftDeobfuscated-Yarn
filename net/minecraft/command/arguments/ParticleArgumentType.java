@@ -26,7 +26,7 @@ implements ArgumentType<ParticleEffect> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
     public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("particle.notFound", object));
 
-    public static ParticleArgumentType create() {
+    public static ParticleArgumentType particle() {
         return new ParticleArgumentType();
     }
 

@@ -67,7 +67,12 @@ extends PersistentState {
 
     @Override
     public void fromTag(CompoundTag compoundTag) {
-        this.dimension = DimensionType.byRawId(compoundTag.getInt("dimension"));
+        int i = compoundTag.getInt("dimension");
+        DimensionType dimensionType = DimensionType.byRawId(i);
+        if (dimensionType == null) {
+            throw new IllegalArgumentException("Invalid map dimension: " + i);
+        }
+        this.dimension = dimensionType;
         this.xCenter = compoundTag.getInt("xCenter");
         this.zCenter = compoundTag.getInt("zCenter");
         this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
@@ -79,14 +84,14 @@ extends PersistentState {
             this.colors = new byte[16384];
         }
         ListTag listTag = compoundTag.getList("banners", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(i));
+        for (int j = 0; j < listTag.size(); ++j) {
+            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(j));
             this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
             this.addIcon(mapBannerMarker.getIconType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
         }
         ListTag listTag2 = compoundTag.getList("frames", 10);
-        for (int j = 0; j < listTag2.size(); ++j) {
-            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(j));
+        for (int k = 0; k < listTag2.size(); ++k) {
+            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(k));
             this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
             this.addIcon(MapIcon.Type.FRAME, null, "frame-" + mapFrameMarker.getEntityId(), mapFrameMarker.getPos().getX(), mapFrameMarker.getPos().getZ(), mapFrameMarker.getRotation(), null);
         }
