@@ -8,7 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class FoodComponent {
 	private final int hunger;
 	private final float saturationModifier;
-	private final boolean wolfFood;
+	private final boolean meat;
 	private final boolean alwaysEdible;
 	private final boolean snack;
 	private final List<Pair<StatusEffectInstance, Float>> statusEffects;
@@ -16,7 +16,7 @@ public class FoodComponent {
 	private FoodComponent(int i, float f, boolean bl, boolean bl2, boolean bl3, List<Pair<StatusEffectInstance, Float>> list) {
 		this.hunger = i;
 		this.saturationModifier = f;
-		this.wolfFood = bl;
+		this.meat = bl;
 		this.alwaysEdible = bl2;
 		this.snack = bl3;
 		this.statusEffects = list;
@@ -30,8 +30,8 @@ public class FoodComponent {
 		return this.saturationModifier;
 	}
 
-	public boolean isWolfFood() {
-		return this.wolfFood;
+	public boolean isMeat() {
+		return this.meat;
 	}
 
 	public boolean isAlwaysEdible() {
@@ -49,7 +49,7 @@ public class FoodComponent {
 	public static class Builder {
 		private int hunger;
 		private float saturationModifier;
-		private boolean wolfFood;
+		private boolean meat;
 		private boolean alwaysEdible;
 		private boolean snack;
 		private final List<Pair<StatusEffectInstance, Float>> statusEffects = Lists.<Pair<StatusEffectInstance, Float>>newArrayList();
@@ -64,8 +64,8 @@ public class FoodComponent {
 			return this;
 		}
 
-		public FoodComponent.Builder wolfFood() {
-			this.wolfFood = true;
+		public FoodComponent.Builder meat() {
+			this.meat = true;
 			return this;
 		}
 
@@ -85,7 +85,7 @@ public class FoodComponent {
 		}
 
 		public FoodComponent build() {
-			return new FoodComponent(this.hunger, this.saturationModifier, this.wolfFood, this.alwaysEdible, this.snack, this.statusEffects);
+			return new FoodComponent(this.hunger, this.saturationModifier, this.meat, this.alwaysEdible, this.snack, this.statusEffects);
 		}
 	}
 }

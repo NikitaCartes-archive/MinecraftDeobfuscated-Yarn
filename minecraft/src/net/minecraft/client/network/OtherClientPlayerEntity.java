@@ -92,7 +92,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_9203(Text text) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().method_1812(text);
+	public void sendMessage(Text text) {
+		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
 	}
 }

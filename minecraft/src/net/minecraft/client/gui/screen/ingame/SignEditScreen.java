@@ -36,7 +36,7 @@ public class SignEditScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
-			this.minecraft, () -> this.sign.method_11302(this.currentRow).getString(), string -> this.sign.method_11299(this.currentRow, new LiteralText(string)), 90
+			this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new LiteralText(string)), 90
 		);
 	}
 
@@ -46,7 +46,7 @@ public class SignEditScreen extends Screen {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.method_11302(0), this.sign.method_11302(1), this.sign.method_11302(2), this.sign.method_11302(3))
+				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
 			);
 		}
 

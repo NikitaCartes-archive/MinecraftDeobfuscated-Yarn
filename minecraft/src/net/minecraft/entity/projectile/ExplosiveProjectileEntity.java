@@ -162,7 +162,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public float getBoundingBoxMarginForTargeting() {
+	public float getTargetingMargin() {
 		return 1.0F;
 	}
 

@@ -10,6 +10,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class SmallFireballEntity extends AbstractFireballEntity {
@@ -37,7 +38,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 						this.dealDamage(this.owner, entity);
 					}
 				}
-			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean("mobGriefing")) {
+			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.world.isAir(blockPos)) {

@@ -52,7 +52,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public AbstractCommandBlockScreen() {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected void updateTrackedOutput() {
 		if (this.getCommandExecutor().isTrackingOutput()) {
 			this.toggleTrackingOutputButton.setMessage("O");
-			this.previousOutputTextField.setText(this.getCommandExecutor().method_8292().getString());
+			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
 		} else {
 			this.toggleTrackingOutputButton.setMessage("X");
 			this.previousOutputTextField.setText("-");
@@ -115,7 +115,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 		this.syncSettingsToServer(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
-			commandBlockExecutor.method_8291(null);
+			commandBlockExecutor.setLastOutput(null);
 		}
 
 		this.minecraft.openScreen(null);

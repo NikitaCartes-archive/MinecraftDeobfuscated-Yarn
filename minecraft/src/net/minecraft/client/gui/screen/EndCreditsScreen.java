@@ -36,7 +36,7 @@ public class EndCreditsScreen extends Screen {
 	private float field_2635 = 0.5F;
 
 	public EndCreditsScreen(boolean bl, Runnable runnable) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.inGame = bl;
 		this.respawn = runnable;
 		if (!bl) {

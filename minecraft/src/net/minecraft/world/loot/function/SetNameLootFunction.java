@@ -23,13 +23,13 @@ import org.apache.logging.log4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Text field_16228;
+	private final Text name;
 	@Nullable
 	private final LootContext.EntityTarget entity;
 
 	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
 		super(lootConditions);
-		this.field_16228 = text;
+		this.name = text;
 		this.entity = entityTarget;
 	}
 
@@ -59,8 +59,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (this.field_16228 != null) {
-			itemStack.method_7977((Text)applySourceEntity(lootContext, this.entity).apply(this.field_16228));
+		if (this.name != null) {
+			itemStack.setCustomName((Text)applySourceEntity(lootContext, this.entity).apply(this.name));
 		}
 
 		return itemStack;
@@ -73,8 +73,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 		public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
-			if (setNameLootFunction.field_16228 != null) {
-				jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.field_16228));
+			if (setNameLootFunction.name != null) {
+				jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.name));
 			}
 
 			if (setNameLootFunction.entity != null) {

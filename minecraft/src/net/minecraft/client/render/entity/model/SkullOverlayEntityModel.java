@@ -15,10 +15,10 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
-		super.setRotationAngles(f, g, h, i, j, k);
-		this.field_3377.yaw = this.field_3564.yaw;
-		this.field_3377.pitch = this.field_3564.pitch;
+	public void render(float f, float g, float h, float i, float j, float k) {
+		super.render(f, g, h, i, j, k);
+		this.field_3377.yaw = this.skull.yaw;
+		this.field_3377.pitch = this.skull.pitch;
 		this.field_3377.render(k);
 	}
 }

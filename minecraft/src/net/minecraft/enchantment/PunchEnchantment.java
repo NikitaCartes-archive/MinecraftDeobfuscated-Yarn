@@ -13,6 +13,11 @@ public class PunchEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 25;
+	}
+
+	@Override
 	public int getMaximumLevel() {
 		return 2;
 	}

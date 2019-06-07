@@ -121,7 +121,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
 			float h = itemFrameEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
-				String string = itemFrameEntity.getHeldItemStack().method_7964().asFormattedString();
+				String string = itemFrameEntity.getHeldItemStack().getName().asFormattedString();
 				this.renderLabel(itemFrameEntity, string, d, e, f, 64);
 			}
 		}

@@ -331,7 +331,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

@@ -116,7 +116,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			} else {
 				if (!this.world.isClient) {
 					this.setCurrentCustomer(playerEntity);
-					this.method_17449(playerEntity, this.method_5476(), 1);
+					this.sendOffers(playerEntity, this.getDisplayName(), 1);
 				}
 
 				return true;

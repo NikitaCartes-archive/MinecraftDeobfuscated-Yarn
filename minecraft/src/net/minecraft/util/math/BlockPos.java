@@ -361,8 +361,16 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			return this.set(this.x + i, this.y + j, this.z + k);
 		}
 
+		public void method_20787(int i) {
+			this.x = i;
+		}
+
 		public void setY(int i) {
 			this.y = i;
+		}
+
+		public void method_20788(int i) {
+			this.z = i;
 		}
 
 		@Override

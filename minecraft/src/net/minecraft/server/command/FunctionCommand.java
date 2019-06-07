@@ -22,7 +22,7 @@ public class FunctionCommand {
 			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", FunctionArgumentType.create())
+					CommandManager.argument("name", FunctionArgumentType.function())
 						.suggests(SUGGESTION_PROVIDER)
 						.executes(commandContext -> execute(commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))
 				)
@@ -37,9 +37,9 @@ public class FunctionCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.function.success.multiple", i, collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.multiple", i, collection.size()), true);
 		}
 
 		return i;

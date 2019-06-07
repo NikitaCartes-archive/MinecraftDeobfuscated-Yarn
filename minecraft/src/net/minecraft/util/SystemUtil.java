@@ -155,6 +155,10 @@ public class SystemUtil {
 		return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
 	}
 
+	public static <T> T method_20793(List<T> list) {
+		return (T)list.get(list.size() - 1);
+	}
+
 	public static <T> T next(Iterable<T> iterable, @Nullable T object) {
 		Iterator<T> iterator = iterable.iterator();
 		T object2 = (T)iterator.next();

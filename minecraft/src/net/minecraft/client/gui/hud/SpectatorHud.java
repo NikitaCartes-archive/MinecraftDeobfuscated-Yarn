@@ -105,8 +105,8 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		if (i > 3 && this.spectatorMenu != null) {
 			SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
 			String string = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND
-				? this.spectatorMenu.getCurrentGroup().method_2781().asFormattedString()
-				: spectatorMenuCommand.method_16892().asFormattedString();
+				? this.spectatorMenu.getCurrentGroup().getPrompt().asFormattedString()
+				: spectatorMenuCommand.getName().asFormattedString();
 			if (string != null) {
 				int j = (this.client.window.getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
 				int k = this.client.window.getScaledHeight() - 35;

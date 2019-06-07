@@ -41,8 +41,8 @@ public class PortalForcer {
 	}
 
 	public boolean usePortal(Entity entity, float f) {
-		Vec3d vec3d = entity.method_5656();
-		Direction direction = entity.method_5843();
+		Vec3d vec3d = entity.getLastPortalDirectionVector();
+		Direction direction = entity.getLastPortalDirection();
 		BlockPattern.TeleportTarget teleportTarget = this.getPortal(
 			new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
 		);

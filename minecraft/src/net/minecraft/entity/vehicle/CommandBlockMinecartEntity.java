@@ -45,7 +45,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		super.readCustomDataFromTag(compoundTag);
 		this.commandExecutor.deserialize(compoundTag);
 		this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
-		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().method_8292());
+		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		super.onTrackedDataSet(trackedData);
 		if (LAST_OUTPUT.equals(trackedData)) {
 			try {
-				this.commandExecutor.method_8291(this.getDataTracker().get(LAST_OUTPUT));
+				this.commandExecutor.setLastOutput(this.getDataTracker().get(LAST_OUTPUT));
 			} catch (Throwable var3) {
 			}
 		} else if (COMMAND.equals(trackedData)) {
@@ -109,7 +109,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		@Override
 		public void markDirty() {
 			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.COMMAND, this.getCommand());
-			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.LAST_OUTPUT, this.method_8292());
+			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.LAST_OUTPUT, this.getLastOutput());
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -131,8 +131,8 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 				CommandBlockMinecartEntity.this.getRotationClient(),
 				this.getWorld(),
 				2,
-				this.method_8299().getString(),
-				CommandBlockMinecartEntity.this.method_5476(),
+				this.getCustomName().getString(),
+				CommandBlockMinecartEntity.this.getDisplayName(),
 				this.getWorld().getServer(),
 				CommandBlockMinecartEntity.this
 			);

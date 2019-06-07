@@ -67,12 +67,6 @@ public class TitleScreen extends Screen {
 				new TranslatableText("title.oldgl.eol.line2").formatted(Formatting.field_1061).formatted(Formatting.field_1067),
 				"https://help.mojang.com/customer/portal/articles/325948?ref=game"
 			);
-		} else if (!GLX.supportsOpenGL32()) {
-			this.warning = new TitleScreen.Warning(
-				new TranslatableText("title.oldgl.deprecation.line1"),
-				new TranslatableText("title.oldgl.deprecation.line2"),
-				"https://help.mojang.com/customer/portal/articles/325948?ref=game"
-			);
 		}
 	}
 
@@ -360,19 +354,19 @@ public class TitleScreen extends Screen {
 		private int startY;
 		private int endX;
 		private int endY;
-		private final Text field_19368;
-		private final Text field_19369;
+		private final Text line1;
+		private final Text line2;
 		private final String helpUrl;
 
 		public Warning(Text text, Text text2, String string) {
-			this.field_19368 = text;
-			this.field_19369 = text2;
+			this.line1 = text;
+			this.line2 = text2;
 			this.helpUrl = string;
 		}
 
 		public void init(int i) {
-			int j = TitleScreen.this.font.getStringWidth(this.field_19368.getString());
-			this.line2Width = TitleScreen.this.font.getStringWidth(this.field_19369.getString());
+			int j = TitleScreen.this.font.getStringWidth(this.line1.getString());
+			this.line2Width = TitleScreen.this.font.getStringWidth(this.line2.getString());
 			int k = Math.max(j, this.line2Width);
 			this.startX = (TitleScreen.this.width - k) / 2;
 			this.startY = i - 24;
@@ -382,9 +376,9 @@ public class TitleScreen extends Screen {
 
 		public void render(int i) {
 			DrawableHelper.fill(this.startX - 2, this.startY - 2, this.endX + 2, this.endY - 1, 1428160512);
-			TitleScreen.this.drawString(TitleScreen.this.font, this.field_19368.asFormattedString(), this.startX, this.startY, 16777215 | i);
+			TitleScreen.this.drawString(TitleScreen.this.font, this.line1.asFormattedString(), this.startX, this.startY, 16777215 | i);
 			TitleScreen.this.drawString(
-				TitleScreen.this.font, this.field_19369.asFormattedString(), (TitleScreen.this.width - this.line2Width) / 2, this.startY + 12, 16777215 | i
+				TitleScreen.this.font, this.line2.asFormattedString(), (TitleScreen.this.width - this.line2Width) / 2, this.startY + 12, 16777215 | i
 			);
 		}
 

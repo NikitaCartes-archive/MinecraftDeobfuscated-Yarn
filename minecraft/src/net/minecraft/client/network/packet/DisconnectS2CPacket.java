@@ -20,12 +20,12 @@ public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.reason = packetByteBuf.method_10808();
+		this.reason = packetByteBuf.readText();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.method_10805(this.reason);
+		packetByteBuf.writeText(this.reason);
 	}
 
 	public void method_11467(ClientPlayPacketListener clientPlayPacketListener) {

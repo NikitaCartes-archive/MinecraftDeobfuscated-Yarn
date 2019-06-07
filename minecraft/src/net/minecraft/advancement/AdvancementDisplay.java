@@ -137,8 +137,8 @@ public class AdvancementDisplay {
 	}
 
 	public void toPacket(PacketByteBuf packetByteBuf) {
-		packetByteBuf.method_10805(this.title);
-		packetByteBuf.method_10805(this.description);
+		packetByteBuf.writeText(this.title);
+		packetByteBuf.writeText(this.description);
 		packetByteBuf.writeItemStack(this.icon);
 		packetByteBuf.writeEnumConstant(this.frame);
 		int i = 0;
@@ -164,8 +164,8 @@ public class AdvancementDisplay {
 	}
 
 	public static AdvancementDisplay fromPacket(PacketByteBuf packetByteBuf) {
-		Text text = packetByteBuf.method_10808();
-		Text text2 = packetByteBuf.method_10808();
+		Text text = packetByteBuf.readText();
+		Text text2 = packetByteBuf.readText();
 		ItemStack itemStack = packetByteBuf.readItemStack();
 		AdvancementFrame advancementFrame = packetByteBuf.readEnumConstant(AdvancementFrame.class);
 		int i = packetByteBuf.readInt();

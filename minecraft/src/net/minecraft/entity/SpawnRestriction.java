@@ -12,7 +12,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.StrayEntity;
@@ -91,7 +91,7 @@ public class SpawnRestriction {
 		method_20637(EntityType.field_6081, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13197, OcelotEntity::method_20666);
 		method_20637(EntityType.field_6104, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13197, ParrotEntity::method_20667);
 		method_20637(EntityType.field_6093, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::method_20663);
-		method_20637(EntityType.field_6105, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PillagerEntity::method_20683);
+		method_20637(EntityType.field_6105, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PatrolEntity::method_20739);
 		method_20637(EntityType.field_6042, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PolarBearEntity::method_20668);
 		method_20637(EntityType.field_6140, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, RabbitEntity::method_20669);
 		method_20637(EntityType.field_6115, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::method_20663);

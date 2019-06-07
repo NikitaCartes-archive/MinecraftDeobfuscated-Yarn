@@ -71,14 +71,14 @@ public class AddServerScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().method_2997().asFormattedString(),
+				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString(),
 				buttonWidget -> {
 					this.serverEntry
 						.setResourcePackState(
 							ServerEntry.ResourcePackState.values()[(this.serverEntry.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
 						);
 					this.resourcePackOptionButton
-						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().method_2997().asFormattedString());
+						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString());
 				}
 			)
 		);

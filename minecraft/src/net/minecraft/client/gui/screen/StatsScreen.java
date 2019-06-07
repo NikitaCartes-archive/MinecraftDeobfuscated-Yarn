@@ -404,7 +404,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		protected Text method_19406(Item item) {
-			return item.method_7848();
+			return item.getName();
 		}
 
 		protected void method_19408(StatType<?> statType) {

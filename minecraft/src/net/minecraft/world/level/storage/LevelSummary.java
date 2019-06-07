@@ -81,7 +81,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.commandsAllowed;
 	}
 
-	public Text method_258() {
+	public Text getVersion() {
 		return (Text)(ChatUtil.isEmpty(this.versionName) ? new TranslatableText("selectWorld.versionUnknown") : new LiteralText(this.versionName));
 	}
 

@@ -16,7 +16,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	private boolean done;
 
 	public ProgressScreen() {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 	}
 
 	@Override

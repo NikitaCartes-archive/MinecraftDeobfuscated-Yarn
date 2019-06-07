@@ -11,12 +11,12 @@ public enum AdvancementFrame {
 
 	private final String id;
 	private final int texV;
-	private final Formatting field_1255;
+	private final Formatting titleFormat;
 
 	private AdvancementFrame(String string2, int j, Formatting formatting) {
 		this.id = string2;
 		this.texV = j;
-		this.field_1255 = formatting;
+		this.titleFormat = formatting;
 	}
 
 	public String getId() {
@@ -38,7 +38,7 @@ public enum AdvancementFrame {
 		throw new IllegalArgumentException("Unknown frame type '" + string + "'");
 	}
 
-	public Formatting method_830() {
-		return this.field_1255;
+	public Formatting getTitleFormat() {
+		return this.titleFormat;
 	}
 }

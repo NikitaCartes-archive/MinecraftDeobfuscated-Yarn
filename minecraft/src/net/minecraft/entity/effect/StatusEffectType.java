@@ -9,14 +9,14 @@ public enum StatusEffectType {
 	field_18272(Formatting.field_1061),
 	field_18273(Formatting.field_1078);
 
-	private final Formatting field_18274;
+	private final Formatting formatting;
 
 	private StatusEffectType(Formatting formatting) {
-		this.field_18274 = formatting;
+		this.formatting = formatting;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Formatting method_18793() {
-		return this.field_18274;
+	public Formatting getFormatting() {
+		return this.formatting;
 	}
 }

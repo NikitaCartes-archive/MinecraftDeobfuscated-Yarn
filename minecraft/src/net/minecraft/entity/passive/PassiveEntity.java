@@ -43,7 +43,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 					passiveEntity.setPositionAndAngles(this.x, this.y, this.z, 0.0F, 0.0F);
 					this.world.spawnEntity(passiveEntity);
 					if (itemStack.hasCustomName()) {
-						passiveEntity.method_5665(itemStack.method_7964());
+						passiveEntity.setCustomName(itemStack.getName());
 					}
 
 					this.onPlayerSpawnedChild(playerEntity, passiveEntity);
@@ -124,7 +124,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (CHILD.equals(trackedData)) {
-			this.refreshSize();
+			this.calculateDimensions();
 		}
 
 		super.onTrackedDataSet(trackedData);

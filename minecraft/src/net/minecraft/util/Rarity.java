@@ -6,9 +6,9 @@ public enum Rarity {
 	field_8903(Formatting.field_1075),
 	field_8904(Formatting.field_1076);
 
-	public final Formatting field_8908;
+	public final Formatting formatting;
 
 	private Rarity(Formatting formatting) {
-		this.field_8908 = formatting;
+		this.formatting = formatting;
 	}
 }

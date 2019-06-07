@@ -55,7 +55,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Nullable
 	private StatusEffect secondary;
 	@Nullable
-	private Text field_11793;
+	private Text customName;
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
@@ -280,7 +280,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
 		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_11793 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
 		this.lock = ContainerLock.deserialize(compoundTag);
@@ -292,29 +292,29 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
 		compoundTag.putInt("Levels", this.level);
-		if (this.field_11793 != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_11793));
+		if (this.customName != null) {
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
 		this.lock.serialize(compoundTag);
 		return compoundTag;
 	}
 
-	public void method_10936(@Nullable Text text) {
-		this.field_11793 = text;
+	public void setCustomName(@Nullable Text text) {
+		this.customName = text;
 	}
 
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return LockableContainerBlockEntity.method_17487(playerEntity, this.lock, this.method_5476())
+		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
 			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 
 	@Override
-	public Text method_5476() {
-		return (Text)(this.field_11793 != null ? this.field_11793 : new TranslatableText("container.beacon"));
+	public Text getDisplayName() {
+		return (Text)(this.customName != null ? this.customName : new TranslatableText("container.beacon"));
 	}
 
 	public static class BeamSegment {

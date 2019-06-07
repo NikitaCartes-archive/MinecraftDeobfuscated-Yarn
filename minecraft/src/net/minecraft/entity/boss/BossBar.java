@@ -6,7 +6,7 @@ import net.minecraft.util.Formatting;
 
 public abstract class BossBar {
 	private final UUID uuid;
-	protected Text field_5777;
+	protected Text name;
 	protected float percent;
 	protected BossBar.Color color;
 	protected BossBar.Style style;
@@ -16,7 +16,7 @@ public abstract class BossBar {
 
 	public BossBar(UUID uUID, Text text, BossBar.Color color, BossBar.Style style) {
 		this.uuid = uUID;
-		this.field_5777 = text;
+		this.name = text;
 		this.color = color;
 		this.style = style;
 		this.percent = 1.0F;
@@ -26,12 +26,12 @@ public abstract class BossBar {
 		return this.uuid;
 	}
 
-	public Text method_5414() {
-		return this.field_5777;
+	public Text getName() {
+		return this.name;
 	}
 
-	public void method_5413(Text text) {
-		this.field_5777 = text;
+	public void setName(Text text) {
+		this.name = text;
 	}
 
 	public float getPercent() {
@@ -95,15 +95,15 @@ public abstract class BossBar {
 		field_5786("white", Formatting.field_1068);
 
 		private final String name;
-		private final Formatting field_5787;
+		private final Formatting format;
 
 		private Color(String string2, Formatting formatting) {
 			this.name = string2;
-			this.field_5787 = formatting;
+			this.format = formatting;
 		}
 
-		public Formatting method_5423() {
-			return this.field_5787;
+		public Formatting getTextFormat() {
+			return this.format;
 		}
 
 		public String getName() {

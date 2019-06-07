@@ -31,6 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class EvokerEntity extends SpellcastingIllagerEntity {
@@ -314,7 +315,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.world.getGameRules().getBoolean("mobGriefing")) {
+			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				return false;
 			} else {
 				List<SheepEntity> list = EvokerEntity.this.world

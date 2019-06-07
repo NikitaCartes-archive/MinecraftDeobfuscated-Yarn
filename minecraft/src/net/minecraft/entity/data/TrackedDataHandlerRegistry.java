@@ -76,11 +76,11 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<Text> TEXT_COMPONENT = new TrackedDataHandler<Text>() {
 		public void method_12727(PacketByteBuf packetByteBuf, Text text) {
-			packetByteBuf.method_10805(text);
+			packetByteBuf.writeText(text);
 		}
 
 		public Text method_12725(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.method_10808();
+			return packetByteBuf.readText();
 		}
 
 		public Text method_12726(Text text) {
@@ -91,14 +91,14 @@ public class TrackedDataHandlerRegistry {
 		public void method_12728(PacketByteBuf packetByteBuf, Optional<Text> optional) {
 			if (optional.isPresent()) {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.method_10805((Text)optional.get());
+				packetByteBuf.writeText((Text)optional.get());
 			} else {
 				packetByteBuf.writeBoolean(false);
 			}
 		}
 
 		public Optional<Text> method_12729(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.method_10808()) : Optional.empty();
+			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readText()) : Optional.empty();
 		}
 
 		public Optional<Text> method_12730(Optional<Text> optional) {

@@ -47,7 +47,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			this.entityId = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
-			this.deathMessage = packetByteBuf.method_10808();
+			this.deathMessage = packetByteBuf.readText();
 		}
 	}
 
@@ -60,7 +60,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
 			packetByteBuf.writeVarInt(this.entityId);
 			packetByteBuf.writeInt(this.attackerEntityId);
-			packetByteBuf.method_10805(this.deathMessage);
+			packetByteBuf.writeText(this.deathMessage);
 		}
 	}
 

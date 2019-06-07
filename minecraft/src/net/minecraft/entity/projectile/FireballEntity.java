@@ -9,6 +9,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -37,7 +38,7 @@ public class FireballEntity extends AbstractFireballEntity {
 				this.dealDamage(this.owner, entity);
 			}
 
-			boolean bl = this.world.getGameRules().getBoolean("mobGriefing");
+			boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19388);
 			this.world
 				.createExplosion(
 					null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685

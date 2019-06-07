@@ -66,12 +66,12 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 			int o = m + n + 3;
 			int p = 49 + this.containerWidth / 2 - o / 2;
 			this.font.draw(string, (float)p, 6.0F, 4210752);
-			this.font.draw(this.playerInventory.method_5476().asFormattedString(), 107.0F, (float)l, 4210752);
+			this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)l, 4210752);
 			this.font.draw(string2, (float)(p + m + 3), 6.0F, 4210752);
 		} else {
 			String string = this.title.asFormattedString();
 			this.font.draw(string, (float)(49 + this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
-			this.font.draw(this.playerInventory.method_5476().asFormattedString(), 107.0F, (float)l, 4210752);
+			this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)l, 4210752);
 		}
 
 		String string = I18n.translate("merchant.trades");

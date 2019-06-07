@@ -95,9 +95,9 @@ public interface Tag {
 		return this.toString();
 	}
 
-	default Text method_10715() {
-		return this.method_10710("", 0);
+	default Text toText() {
+		return this.toText("", 0);
 	}
 
-	Text method_10710(String string, int i);
+	Text toText(String string, int i);
 }

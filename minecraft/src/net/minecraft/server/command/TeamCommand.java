@@ -68,7 +68,7 @@ public class TeamCommand {
 					CommandManager.literal("list")
 						.executes(commandContext -> executeListTeams(commandContext.getSource()))
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeListMembers(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
@@ -78,10 +78,10 @@ public class TeamCommand {
 							((RequiredArgumentBuilder)CommandManager.argument("team", StringArgumentType.word())
 									.executes(commandContext -> executeAdd((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "team"))))
 								.then(
-									CommandManager.argument("displayName", TextArgumentType.create())
+									CommandManager.argument("displayName", TextArgumentType.text())
 										.executes(
 											commandContext -> executeAdd(
-													commandContext.getSource(), StringArgumentType.getString(commandContext, "team"), TextArgumentType.method_9280(commandContext, "displayName")
+													commandContext.getSource(), StringArgumentType.getString(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "displayName")
 												)
 										)
 								)
@@ -90,21 +90,21 @@ public class TeamCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeRemove(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("empty")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeEmpty(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("join")
 						.then(
-							((RequiredArgumentBuilder)CommandManager.argument("team", TeamArgumentType.create())
+							((RequiredArgumentBuilder)CommandManager.argument("team", TeamArgumentType.team())
 									.executes(
 										commandContext -> executeJoin(
 												(ServerCommandSource)commandContext.getSource(),
@@ -137,17 +137,17 @@ public class TeamCommand {
 					CommandManager.literal("modify")
 						.then(
 							((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument(
-																	"team", TeamArgumentType.create()
+																	"team", TeamArgumentType.team()
 																)
 																.then(
 																	CommandManager.literal("displayName")
 																		.then(
-																			CommandManager.argument("displayName", TextArgumentType.create())
+																			CommandManager.argument("displayName", TextArgumentType.text())
 																				.executes(
 																					commandContext -> executeModifyDisplayName(
 																							commandContext.getSource(),
 																							TeamArgumentType.getTeam(commandContext, "team"),
-																							TextArgumentType.method_9280(commandContext, "displayName")
+																							TextArgumentType.getTextArgument(commandContext, "displayName")
 																						)
 																				)
 																		)
@@ -155,7 +155,7 @@ public class TeamCommand {
 															.then(
 																CommandManager.literal("color")
 																	.then(
-																		CommandManager.argument("value", ColorArgumentType.create())
+																		CommandManager.argument("value", ColorArgumentType.color())
 																			.executes(
 																				commandContext -> executeModifyColor(
 																						commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), ColorArgumentType.getColor(commandContext, "value")
@@ -293,10 +293,10 @@ public class TeamCommand {
 									.then(
 										CommandManager.literal("prefix")
 											.then(
-												CommandManager.argument("prefix", TextArgumentType.create())
+												CommandManager.argument("prefix", TextArgumentType.text())
 													.executes(
 														commandContext -> executeModifyPrefix(
-																commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.method_9280(commandContext, "prefix")
+																commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "prefix")
 															)
 													)
 											)
@@ -304,10 +304,10 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("suffix")
 										.then(
-											CommandManager.argument("suffix", TextArgumentType.create())
+											CommandManager.argument("suffix", TextArgumentType.text())
 												.executes(
 													commandContext -> executeModifySuffix(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.method_9280(commandContext, "suffix")
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "suffix")
 														)
 												)
 										)
@@ -325,9 +325,9 @@ public class TeamCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.leave.success.single", collection.iterator().next()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.leave.success.single", collection.iterator().next()), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.leave.success.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.leave.success.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -341,9 +341,9 @@ public class TeamCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.join.success.single", collection.iterator().next(), team.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.join.success.single", collection.iterator().next(), team.getFormattedName()), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.join.success.multiple", collection.size(), team.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.join.success.multiple", collection.size(), team.getFormattedName()), true);
 		}
 
 		return collection.size();
@@ -354,8 +354,8 @@ public class TeamCommand {
 			throw OPTION_NAMETAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setNameTagVisibilityRule(visibilityRule);
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.team.option.nametagVisibility.success", team.method_1148(), visibilityRule.method_1214()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibilityRule.getTranslationKey()), true
 			);
 			return 0;
 		}
@@ -366,8 +366,8 @@ public class TeamCommand {
 			throw OPTION_DEATHMESSAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setDeathMessageVisibilityRule(visibilityRule);
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.team.option.deathMessageVisibility.success", team.method_1148(), visibilityRule.method_1214()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.option.deathMessageVisibility.success", team.getFormattedName(), visibilityRule.getTranslationKey()), true
 			);
 			return 0;
 		}
@@ -378,7 +378,9 @@ public class TeamCommand {
 			throw OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setCollisionRule(collisionRule);
-			serverCommandSource.method_9226(new TranslatableText("commands.team.option.collisionRule.success", team.method_1148(), collisionRule.method_1209()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getTranslationKey()), true
+			);
 			return 0;
 		}
 	}
@@ -392,8 +394,8 @@ public class TeamCommand {
 			}
 		} else {
 			team.setShowFriendlyInvisibles(bl);
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.team.option.seeFriendlyInvisibles." + (bl ? "enabled" : "disabled"), team.method_1148()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.option.seeFriendlyInvisibles." + (bl ? "enabled" : "disabled"), team.getFormattedName()), true
 			);
 			return 0;
 		}
@@ -408,17 +410,17 @@ public class TeamCommand {
 			}
 		} else {
 			team.setFriendlyFireAllowed(bl);
-			serverCommandSource.method_9226(new TranslatableText("commands.team.option.friendlyfire." + (bl ? "enabled" : "disabled"), team.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.option.friendlyfire." + (bl ? "enabled" : "disabled"), team.getFormattedName()), true);
 			return 0;
 		}
 	}
 
 	private static int executeModifyDisplayName(ServerCommandSource serverCommandSource, Team team, Text text) throws CommandSyntaxException {
-		if (team.method_1140().equals(text)) {
+		if (team.getDisplayName().equals(text)) {
 			throw OPTION_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
-			team.method_1137(text);
-			serverCommandSource.method_9226(new TranslatableText("commands.team.option.name.success", team.method_1148()), true);
+			team.setDisplayName(text);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.option.name.success", team.getFormattedName()), true);
 			return 0;
 		}
 	}
@@ -428,7 +430,7 @@ public class TeamCommand {
 			throw OPTION_COLOR_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setColor(formatting);
-			serverCommandSource.method_9226(new TranslatableText("commands.team.option.color.success", team.method_1148(), formatting.getName()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.option.color.success", team.getFormattedName(), formatting.getName()), true);
 			return 0;
 		}
 	}
@@ -443,7 +445,7 @@ public class TeamCommand {
 				scoreboard.removePlayerFromTeam(string, team);
 			}
 
-			serverCommandSource.method_9226(new TranslatableText("commands.team.empty.success", collection.size(), team.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.empty.success", collection.size(), team.getFormattedName()), true);
 			return collection.size();
 		}
 	}
@@ -451,7 +453,7 @@ public class TeamCommand {
 	private static int executeRemove(ServerCommandSource serverCommandSource, Team team) {
 		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		scoreboard.removeTeam(team);
-		serverCommandSource.method_9226(new TranslatableText("commands.team.remove.success", team.method_1148()), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.team.remove.success", team.getFormattedName()), true);
 		return scoreboard.getTeams().size();
 	}
 
@@ -467,8 +469,8 @@ public class TeamCommand {
 			throw ADD_LONGNAME_EXCEPTION.create(16);
 		} else {
 			Team team = scoreboard.addTeam(string);
-			team.method_1137(text);
-			serverCommandSource.method_9226(new TranslatableText("commands.team.add.success", team.method_1148()), true);
+			team.setDisplayName(text);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.add.success", team.getFormattedName()), true);
 			return scoreboard.getTeams().size();
 		}
 	}
@@ -476,10 +478,10 @@ public class TeamCommand {
 	private static int executeListMembers(ServerCommandSource serverCommandSource, Team team) {
 		Collection<String> collection = team.getPlayerList();
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.list.members.empty", team.method_1148()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.list.members.empty", team.getFormattedName()), false);
 		} else {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.team.list.members.success", team.method_1148(), collection.size(), Texts.joinOrdered(collection)), false
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.list.members.success", team.getFormattedName(), collection.size(), Texts.joinOrdered(collection)), false
 			);
 		}
 
@@ -489,10 +491,10 @@ public class TeamCommand {
 	private static int executeListTeams(ServerCommandSource serverCommandSource) {
 		Collection<Team> collection = serverCommandSource.getMinecraftServer().getScoreboard().getTeams();
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.team.list.teams.empty"), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.team.list.teams.empty"), false);
 		} else {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.team.list.teams.success", collection.size(), Texts.join(collection, Team::method_1148)), false
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.team.list.teams.success", collection.size(), Texts.join(collection, Team::getFormattedName)), false
 			);
 		}
 
@@ -500,14 +502,14 @@ public class TeamCommand {
 	}
 
 	private static int executeModifyPrefix(ServerCommandSource serverCommandSource, Team team, Text text) {
-		team.method_1138(text);
-		serverCommandSource.method_9226(new TranslatableText("commands.team.option.prefix.success", text), false);
+		team.setPrefix(text);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.team.option.prefix.success", text), false);
 		return 1;
 	}
 
 	private static int executeModifySuffix(ServerCommandSource serverCommandSource, Team team, Text text) {
-		team.method_1139(text);
-		serverCommandSource.method_9226(new TranslatableText("commands.team.option.suffix.success", text), false);
+		team.setSuffix(text);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.team.option.suffix.success", text), false);
 		return 1;
 	}
 }

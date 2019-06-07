@@ -32,6 +32,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -216,7 +217,7 @@ public class CreeperEntity extends HostileEntity {
 
 	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.field_18687
 				: Explosion.DestructionType.field_18685;
 			float f = this.isCharged() ? 2.0F : 1.0F;

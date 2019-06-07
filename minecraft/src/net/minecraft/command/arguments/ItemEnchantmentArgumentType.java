@@ -23,7 +23,7 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 		object -> new TranslatableText("enchantment.unknown", object)
 	);
 
-	public static ItemEnchantmentArgumentType create() {
+	public static ItemEnchantmentArgumentType itemEnchantment() {
 		return new ItemEnchantmentArgumentType();
 	}
 

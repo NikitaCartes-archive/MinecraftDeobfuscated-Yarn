@@ -26,11 +26,11 @@ public class BannerPatternItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		list.add(this.method_7703().formatted(Formatting.field_1080));
+		list.add(this.getDescription().formatted(Formatting.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_7703() {
+	public Text getDescription() {
 		return new TranslatableText(this.getTranslationKey() + ".desc");
 	}
 }

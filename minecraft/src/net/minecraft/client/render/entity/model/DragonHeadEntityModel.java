@@ -30,7 +30,7 @@ public class DragonHeadEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
+	public void render(float f, float g, float h, float i, float j, float k) {
 		this.jaw.pitch = (float)(Math.sin((double)(f * (float) Math.PI * 0.2F)) + 1.0) * 0.2F;
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);

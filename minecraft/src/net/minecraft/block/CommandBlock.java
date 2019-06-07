@@ -140,12 +140,12 @@ public class CommandBlock extends BlockWithEntity {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			if (itemStack.hasCustomName()) {
-				commandBlockExecutor.method_8290(itemStack.method_7964());
+				commandBlockExecutor.setCustomName(itemStack.getName());
 			}
 
 			if (!world.isClient) {
 				if (itemStack.getSubTag("BlockEntityTag") == null) {
-					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean("sendCommandFeedback"));
+					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.field_19400));
 					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
 				}
 
@@ -188,7 +188,7 @@ public class CommandBlock extends BlockWithEntity {
 
 		int i;
 		BlockState blockState;
-		for(i = gameRules.getInteger("maxCommandChainLength"); i-- > 0; direction = blockState.get(FACING)) {
+		for(i = gameRules.getInt(GameRules.field_19408); i-- > 0; direction = blockState.get(FACING)) {
 			mutable.setOffset(direction);
 			blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
@@ -221,7 +221,7 @@ public class CommandBlock extends BlockWithEntity {
 		}
 
 		if (i <= 0) {
-			int j = Math.max(gameRules.getInteger("maxCommandChainLength"), 0);
+			int j = Math.max(gameRules.getInt(GameRules.field_19408), 0);
 			LOGGER.warn("Command Block chain tried to execute more than {} steps!", j);
 		}
 	}

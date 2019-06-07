@@ -32,7 +32,7 @@ public class TriggerCommand {
 		commandDispatcher.register(
 			CommandManager.literal("trigger")
 				.then(
-					((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.create())
+					((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.objective())
 								.suggests((commandContext, suggestionsBuilder) -> suggestObjectives((ServerCommandSource)commandContext.getSource(), suggestionsBuilder))
 								.executes(
 									commandContext -> executeSimple(
@@ -92,19 +92,19 @@ public class TriggerCommand {
 
 	private static int executeAdd(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.incrementScore(i);
-		serverCommandSource.method_9226(new TranslatableText("commands.trigger.add.success", scoreboardPlayerScore.getObjective().method_1120(), i), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.add.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
 		return scoreboardPlayerScore.getScore();
 	}
 
 	private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.setScore(i);
-		serverCommandSource.method_9226(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().method_1120(), i), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
 		return i;
 	}
 
 	private static int executeSimple(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore) {
 		scoreboardPlayerScore.incrementScore(1);
-		serverCommandSource.method_9226(new TranslatableText("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().method_1120()), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().toHoverableText()), true);
 		return scoreboardPlayerScore.getScore();
 	}
 

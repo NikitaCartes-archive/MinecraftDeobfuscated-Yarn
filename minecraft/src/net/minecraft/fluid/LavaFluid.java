@@ -19,6 +19,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -75,7 +76,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-		if (world.getGameRules().getBoolean("doFireTick")) {
+		if (world.getGameRules().getBoolean(GameRules.field_19387)) {
 			int i = random.nextInt(3);
 			if (i > 0) {
 				BlockPos blockPos2 = blockPos;

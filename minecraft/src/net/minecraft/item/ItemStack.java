@@ -448,7 +448,7 @@ public final class ItemStack {
 		this.tag = compoundTag;
 	}
 
-	public Text method_7964() {
+	public Text getName() {
 		CompoundTag compoundTag = this.getSubTag("display");
 		if (compoundTag != null && compoundTag.containsKey("Name", 8)) {
 			try {
@@ -463,10 +463,10 @@ public final class ItemStack {
 			}
 		}
 
-		return this.getItem().method_7864(this);
+		return this.getItem().getName(this);
 	}
 
-	public ItemStack method_7977(@Nullable Text text) {
+	public ItemStack setCustomName(@Nullable Text text) {
 		CompoundTag compoundTag = this.getOrCreateSubTag("display");
 		if (text != null) {
 			compoundTag.putString("Name", Text.Serializer.toJson(text));
@@ -499,7 +499,7 @@ public final class ItemStack {
 	@Environment(EnvType.CLIENT)
 	public List<Text> getTooltip(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
 		List<Text> list = Lists.<Text>newArrayList();
-		Text text = new LiteralText("").append(this.method_7964()).formatted(this.getRarity().field_8908);
+		Text text = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
 		if (this.hasCustomName()) {
 			text.formatted(Formatting.field_1056);
 		}
@@ -542,7 +542,7 @@ public final class ItemStack {
 						try {
 							Text text2 = Text.Serializer.fromJson(string);
 							if (text2 != null) {
-								list.add(Texts.method_10889(text2, new Style().setColor(Formatting.field_1064).setItalic(true)));
+								list.add(Texts.setStyleIfAbsent(text2, new Style().setColor(Formatting.field_1064).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -664,8 +664,8 @@ public final class ItemStack {
 		for(int i = 0; i < listTag.size(); ++i) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT
-				.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id")))
-				.ifPresent(enchantment -> list.add(enchantment.method_8179(compoundTag.getInt("lvl"))));
+				.getOrEmpty(Identifier.tryParse(compoundTag.getString("id")))
+				.ifPresent(enchantment -> list.add(enchantment.getName(compoundTag.getInt("lvl"))));
 		}
 	}
 
@@ -679,14 +679,14 @@ public final class ItemStack {
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {
 				if (bl) {
-					return Lists.<Text>newArrayList(blockState.getBlock().method_9518().formatted(Formatting.field_1063));
+					return Lists.<Text>newArrayList(blockState.getBlock().getName().formatted(Formatting.field_1063));
 				}
 
 				Tag<Block> tag = BlockTags.getContainer().get(identifier);
 				if (tag != null) {
 					Collection<Block> collection = tag.values();
 					if (!collection.isEmpty()) {
-						return (Collection<Text>)collection.stream().map(Block::method_9518).map(text -> text.formatted(Formatting.field_1063)).collect(Collectors.toList());
+						return (Collection<Text>)collection.stream().map(Block::getName).map(text -> text.formatted(Formatting.field_1063)).collect(Collectors.toList());
 					}
 				}
 			}
@@ -798,8 +798,8 @@ public final class ItemStack {
 		listTag.add(compoundTag);
 	}
 
-	public Text method_7954() {
-		Text text = new LiteralText("").append(this.method_7964());
+	public Text toHoverableText() {
+		Text text = new LiteralText("").append(this.getName());
 		if (this.hasCustomName()) {
 			text.formatted(Formatting.field_1056);
 		}
@@ -807,7 +807,7 @@ public final class ItemStack {
 		Text text2 = Texts.bracketed(text);
 		if (!this.empty) {
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			text2.formatted(this.getRarity().field_8908)
+			text2.formatted(this.getRarity().formatting)
 				.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11757, new LiteralText(compoundTag.toString()))));
 		}
 
@@ -838,7 +838,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
 						if (predicate.test(cachedBlockPosition)) {
 							this.lastDestroyResult = true;
 							return true;
@@ -865,7 +865,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.create().method_9642(new StringReader(string)).create(registryTagManager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
 						if (predicate.test(cachedBlockPosition)) {
 							this.lastPlaceOnResult = true;
 							return true;

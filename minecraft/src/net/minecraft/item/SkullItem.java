@@ -15,7 +15,7 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public Text method_7864(ItemStack itemStack) {
+	public Text getName(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
 			String string = null;
 			CompoundTag compoundTag = itemStack.getTag();
@@ -33,7 +33,7 @@ public class SkullItem extends WallStandingBlockItem {
 			}
 		}
 
-		return super.method_7864(itemStack);
+		return super.getName(itemStack);
 	}
 
 	@Override

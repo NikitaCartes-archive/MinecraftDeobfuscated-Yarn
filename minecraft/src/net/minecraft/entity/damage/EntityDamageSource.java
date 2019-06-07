@@ -35,12 +35,12 @@ public class EntityDamageSource extends DamageSource {
 	}
 
 	@Override
-	public Text method_5506(LivingEntity livingEntity) {
+	public Text getDeathMessage(LivingEntity livingEntity) {
 		ItemStack itemStack = this.source instanceof LivingEntity ? ((LivingEntity)this.source).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableText(string + ".item", livingEntity.method_5476(), this.source.method_5476(), itemStack.method_7954())
-			: new TranslatableText(string, livingEntity.method_5476(), this.source.method_5476());
+			? new TranslatableText(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText())
+			: new TranslatableText(string, livingEntity.getDisplayName(), this.source.getDisplayName());
 	}
 
 	@Override

@@ -13,6 +13,11 @@ public class MendingEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 50;
+	}
+
+	@Override
 	public boolean isTreasure() {
 		return true;
 	}

@@ -37,11 +37,11 @@ public class CloneCommand {
 			CommandManager.literal("clone")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("begin", BlockPosArgumentType.create())
+					CommandManager.argument("begin", BlockPosArgumentType.blockPos())
 						.then(
-							CommandManager.argument("end", BlockPosArgumentType.create())
+							CommandManager.argument("end", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("destination", BlockPosArgumentType.create())
+									CommandManager.argument("destination", BlockPosArgumentType.blockPos())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -159,7 +159,7 @@ public class CloneCommand {
 										.then(
 											CommandManager.literal("filtered")
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.create())
+													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
 														.executes(
 															commandContext -> execute(
 																	commandContext.getSource(),
@@ -325,7 +325,7 @@ public class CloneCommand {
 					if (l == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
-						serverCommandSource.method_9226(new TranslatableText("commands.clone.success", l), true);
+						serverCommandSource.sendFeedback(new TranslatableText("commands.clone.success", l), true);
 						return l;
 					}
 				} else {

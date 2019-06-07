@@ -10,9 +10,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -53,6 +53,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -175,7 +176,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (BABY.equals(trackedData)) {
-			this.refreshSize();
+			this.calculateDimensions();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -264,7 +265,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			if (this.hasCustomName()) {
-				zombieEntity.method_5665(this.method_5797());
+				zombieEntity.setCustomName(this.getCustomName());
 				zombieEntity.setCustomNameVisible(this.isCustomNameVisible());
 			}
 
@@ -288,7 +289,7 @@ public class ZombieEntity extends HostileEntity {
 			if (livingEntity != null
 				&& this.world.getDifficulty() == Difficulty.field_5807
 				&& (double)this.random.nextFloat() < this.getAttributeInstance(SPAWN_REINFORCEMENTS).getValue()
-				&& this.world.getGameRules().getBoolean("doMobSpawning")) {
+				&& this.world.getGameRules().getBoolean(GameRules.field_19390)) {
 				int i = MathHelper.floor(this.x);
 				int j = MathHelper.floor(this.y);
 				int k = MathHelper.floor(this.z);
@@ -426,7 +427,7 @@ public class ZombieEntity extends HostileEntity {
 			zombieVillagerEntity.setChild(villagerEntity.isBaby());
 			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
 			if (villagerEntity.hasCustomName()) {
-				zombieVillagerEntity.method_5665(villagerEntity.method_5797());
+				zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
 				zombieVillagerEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
 			}
 
@@ -436,7 +437,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return this.isBaby() ? 0.93F : 1.74F;
 	}
 

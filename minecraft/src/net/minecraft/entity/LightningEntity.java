@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class LightningEntity extends Entity {
@@ -89,7 +90,7 @@ public class LightningEntity extends Entity {
 	}
 
 	private void spawnFire(int i) {
-		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean("doFireTick")) {
+		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19387)) {
 			BlockState blockState = Blocks.field_10036.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {

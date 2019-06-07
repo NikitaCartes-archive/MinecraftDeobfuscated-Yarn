@@ -18,13 +18,13 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class NarratorManager implements ClientChatListener {
-	public static final Text field_18967 = new LiteralText("");
+	public static final Text EMPTY = new LiteralText("");
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final NarratorManager INSTANCE = new NarratorManager();
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void method_1794(MessageType messageType, Text text) {
+	public void onChatMessage(MessageType messageType, Text text) {
 		NarratorOption narratorOption = method_20602();
 		if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
 			if (narratorOption == NarratorOption.ALL
@@ -68,14 +68,14 @@ public class NarratorManager implements ClientChatListener {
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
 			if (narratorOption == NarratorOption.OFF) {
-				SystemToast.method_1990(toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), null);
+				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), null);
 			} else {
-				SystemToast.method_1990(
+				SystemToast.show(
 					toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.enabled"), new TranslatableText(narratorOption.getTranslationKey())
 				);
 			}
 		} else {
-			SystemToast.method_1990(
+			SystemToast.show(
 				toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable")
 			);
 		}

@@ -8,17 +8,17 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
 public final class ClientDummyContainerProvider implements NameableContainerProvider {
-	private final Text field_3947;
+	private final Text name;
 	private final ContainerProvider containerProvider;
 
 	public ClientDummyContainerProvider(ContainerProvider containerProvider, Text text) {
 		this.containerProvider = containerProvider;
-		this.field_3947 = text;
+		this.name = text;
 	}
 
 	@Override
-	public Text method_5476() {
-		return this.field_3947;
+	public Text getDisplayName() {
+		return this.name;
 	}
 
 	@Override

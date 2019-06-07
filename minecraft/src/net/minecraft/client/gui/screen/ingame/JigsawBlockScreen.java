@@ -21,7 +21,7 @@ public class JigsawBlockScreen extends Screen {
 	private ButtonWidget field_19103;
 
 	public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.jigsaw = jigsawBlockEntity;
 	}
 

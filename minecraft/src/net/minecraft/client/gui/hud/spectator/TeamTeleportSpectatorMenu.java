@@ -36,7 +36,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public Text method_2781() {
+	public Text getPrompt() {
 		return new TranslatableText("spectatorMenu.team_teleport.prompt");
 	}
 
@@ -46,7 +46,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public Text method_16892() {
+	public Text getName() {
 		return new TranslatableText("spectatorMenu.team_teleport");
 	}
 
@@ -99,8 +99,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public Text method_16892() {
-			return this.team.method_1140();
+		public Text getName() {
+			return this.team.getDisplayName();
 		}
 
 		@Override

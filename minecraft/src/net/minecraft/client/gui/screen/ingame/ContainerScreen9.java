@@ -27,7 +27,7 @@ public class ContainerScreen9 extends AbstractContainerScreen<Generic3x3Containe
 	protected void drawForeground(int i, int j) {
 		String string = this.title.asFormattedString();
 		this.font.draw(string, (float)(this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
-		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

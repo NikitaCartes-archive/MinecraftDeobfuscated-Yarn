@@ -130,7 +130,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								new Date(levelSummary.getLastPlayed()),
 								levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore") : I18n.translate("gameMode." + levelSummary.getGameMode().getName()),
 								levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats") : "",
-								levelSummary.method_258()
+								levelSummary.getVersion()
 							)
 						)
 						.getString()
@@ -197,7 +197,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					string3 = string3 + ", " + I18n.translate("selectWorld.cheats");
 				}
 
-				String string4 = this.level.method_258().asFormattedString();
+				String string4 = this.level.getVersion().asFormattedString();
 				if (this.level.isDifferentVersion()) {
 					if (this.level.isFutureLevel()) {
 						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.field_1061 + string4 + Formatting.field_1070;
@@ -228,7 +228,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					if (this.level.isLegacyCustomizedWorld()) {
 						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
 						if (p < 32) {
-							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.method_258()).formatted(Formatting.field_1061);
+							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.field_1061);
 							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
 						}
 					} else if (this.level.isFutureLevel()) {
@@ -281,7 +281,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		public void play() {
 			if (this.level.isOutdatedLevel() || this.level.isLegacyCustomizedWorld()) {
 				Text text = new TranslatableText("selectWorld.backupQuestion");
-				Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.method_258().asFormattedString(), SharedConstants.getGameVersion().getName());
+				Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion().asFormattedString(), SharedConstants.getGameVersion().getName());
 				if (this.level.isLegacyCustomizedWorld()) {
 					text = new TranslatableText("selectWorld.backupQuestion.customized");
 					text2 = new TranslatableText("selectWorld.backupWarning.customized");
@@ -319,7 +319,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								}
 							},
 							new TranslatableText("selectWorld.versionQuestion"),
-							new TranslatableText("selectWorld.versionWarning", this.level.method_258().asFormattedString()),
+							new TranslatableText("selectWorld.versionWarning", this.level.getVersion().asFormattedString()),
 							I18n.translate("selectWorld.versionJoinButton"),
 							I18n.translate("gui.cancel")
 						)

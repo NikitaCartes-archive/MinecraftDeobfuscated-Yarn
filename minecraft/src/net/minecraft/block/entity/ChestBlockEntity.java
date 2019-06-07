@@ -68,7 +68,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected Text method_17823() {
+	protected Text getContainerName() {
 		return new TranslatableText("container.chest");
 	}
 

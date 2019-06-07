@@ -169,13 +169,13 @@ public class DamageSource {
 		return this;
 	}
 
-	public Text method_5506(LivingEntity livingEntity) {
+	public Text getDeathMessage(LivingEntity livingEntity) {
 		LivingEntity livingEntity2 = livingEntity.method_6124();
 		String string = "death.attack." + this.name;
 		String string2 = string + ".player";
 		return livingEntity2 != null
-			? new TranslatableText(string2, livingEntity.method_5476(), livingEntity2.method_5476())
-			: new TranslatableText(string, livingEntity.method_5476());
+			? new TranslatableText(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName())
+			: new TranslatableText(string, livingEntity.getDisplayName());
 	}
 
 	public boolean isFire() {

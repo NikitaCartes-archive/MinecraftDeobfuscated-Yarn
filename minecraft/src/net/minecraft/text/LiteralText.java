@@ -34,6 +34,6 @@ public class LiteralText extends BaseText {
 
 	@Override
 	public String toString() {
-		return "TextComponent{text='" + this.string + '\'' + ", siblings=" + this.siblings + ", style=" + this.method_10866() + '}';
+		return "TextComponent{text='" + this.string + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 	}
 }

@@ -217,7 +217,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

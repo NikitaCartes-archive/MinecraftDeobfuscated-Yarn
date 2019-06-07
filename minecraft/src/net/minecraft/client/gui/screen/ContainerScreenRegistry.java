@@ -40,7 +40,7 @@ public class ContainerScreenRegistry {
 		
 	);
 
-	public static <T extends Container> void method_17541(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Text text) {
+	public static <T extends Container> void openScreen(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Text text) {
 		if (containerType == null) {
 			LOGGER.warn("Trying to open invalid screen with name: {}", text.getString());
 		} else {
@@ -48,7 +48,7 @@ public class ContainerScreenRegistry {
 			if (guiFactory == null) {
 				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
 			} else {
-				guiFactory.method_17543(text, containerType, minecraftClient, i);
+				guiFactory.openScreen(text, containerType, minecraftClient, i);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ public class ContainerScreenRegistry {
 
 	@Environment(EnvType.CLIENT)
 	interface GuiFactory<T extends Container, U extends Screen & ContainerProvider<T>> {
-		default void method_17543(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
+		default void openScreen(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
 			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, text);
 			minecraftClient.player.container = screen.getContainer();
 			minecraftClient.openScreen(screen);

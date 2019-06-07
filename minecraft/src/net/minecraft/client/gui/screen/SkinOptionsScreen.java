@@ -81,6 +81,6 @@ public class SkinOptionsScreen extends Screen {
 			string = I18n.translate("options.off");
 		}
 
-		return playerModelPart.method_7428().asFormattedString() + ": " + string;
+		return playerModelPart.getOptionName().asFormattedString() + ": " + string;
 	}
 }

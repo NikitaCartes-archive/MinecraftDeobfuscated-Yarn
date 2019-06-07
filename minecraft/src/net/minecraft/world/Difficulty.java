@@ -27,7 +27,7 @@ public enum Difficulty {
 		return this.id;
 	}
 
-	public Text method_5463() {
+	public Text getTranslatableName() {
 		return new TranslatableText("options.difficulty." + this.name);
 	}
 

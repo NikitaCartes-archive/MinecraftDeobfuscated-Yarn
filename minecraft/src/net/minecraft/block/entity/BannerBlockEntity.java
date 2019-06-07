@@ -19,7 +19,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
-	private Text field_11772;
+	private Text customName;
 	private DyeColor baseColor = DyeColor.field_7952;
 	private ListTag patternListTag;
 	private boolean patternListTagRead;
@@ -49,22 +49,22 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		this.patternColors = null;
 		this.patternCacheKey = "";
 		this.patternListTagRead = true;
-		this.field_11772 = itemStack.hasCustomName() ? itemStack.method_7964() : null;
+		this.customName = itemStack.hasCustomName() ? itemStack.getName() : null;
 	}
 
 	@Override
-	public Text method_5477() {
-		return (Text)(this.field_11772 != null ? this.field_11772 : new TranslatableText("block.minecraft.banner"));
+	public Text getName() {
+		return (Text)(this.customName != null ? this.customName : new TranslatableText("block.minecraft.banner"));
 	}
 
 	@Nullable
 	@Override
-	public Text method_5797() {
-		return this.field_11772;
+	public Text getCustomName() {
+		return this.customName;
 	}
 
-	public void method_16842(Text text) {
-		this.field_11772 = text;
+	public void setCustomName(Text text) {
+		this.customName = text;
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			compoundTag.put("Patterns", this.patternListTag);
 		}
 
-		if (this.field_11772 != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_11772));
+		if (this.customName != null) {
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
 		return compoundTag;
@@ -85,7 +85,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_11772 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
 		if (this.hasWorld()) {
@@ -187,8 +187,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
 		}
 
-		if (this.field_11772 != null) {
-			itemStack.method_7977(this.field_11772);
+		if (this.customName != null) {
+			itemStack.setCustomName(this.customName);
 		}
 
 		return itemStack;

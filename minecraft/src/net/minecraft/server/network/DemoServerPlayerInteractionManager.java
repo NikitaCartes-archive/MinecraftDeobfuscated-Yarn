@@ -43,7 +43,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				if (m == 6L) {
 					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
-					this.player.method_9203(new TranslatableText("demo.day." + m));
+					this.player.sendMessage(new TranslatableText("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
@@ -55,13 +55,13 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.method_9203(new TranslatableText("demo.day.warning"));
+			this.player.sendMessage(new TranslatableText("demo.day.warning"));
 		}
 	}
 
 	private void sendDemoReminder() {
 		if (this.field_13888 > 100) {
-			this.player.method_9203(new TranslatableText("demo.reminder"));
+			this.player.sendMessage(new TranslatableText("demo.reminder"));
 			this.field_13888 = 0;
 		}
 	}

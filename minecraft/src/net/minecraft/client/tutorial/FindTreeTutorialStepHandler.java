@@ -40,8 +40,8 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 		Blocks.field_10098,
 		Blocks.field_10035
 	);
-	private static final Text field_5631 = new TranslatableText("tutorial.find_tree.title");
-	private static final Text field_5628 = new TranslatableText("tutorial.find_tree.description");
+	private static final Text TITLE = new TranslatableText("tutorial.find_tree.title");
+	private static final Text DESCRIPTION = new TranslatableText("tutorial.find_tree.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -74,7 +74,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 6000 && this.toast == null) {
-				this.toast = new TutorialToast(TutorialToast.Type.field_2235, field_5631, field_5628, false);
+				this.toast = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}

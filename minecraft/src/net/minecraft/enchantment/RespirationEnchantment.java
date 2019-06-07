@@ -13,6 +13,11 @@ public class RespirationEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 30;
+	}
+
+	@Override
 	public int getMaximumLevel() {
 		return 3;
 	}

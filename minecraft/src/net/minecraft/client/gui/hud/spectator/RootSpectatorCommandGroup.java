@@ -22,7 +22,7 @@ public class RootSpectatorCommandGroup implements SpectatorMenuCommandGroup {
 	}
 
 	@Override
-	public Text method_2781() {
+	public Text getPrompt() {
 		return new TranslatableText("spectatorMenu.root.prompt");
 	}
 }

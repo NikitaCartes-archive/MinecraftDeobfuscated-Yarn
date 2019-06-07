@@ -304,7 +304,7 @@ public enum Direction implements StringIdentifiable {
 		return this.vector;
 	}
 
-	public static enum Axis implements Predicate<Direction>, StringIdentifiable {
+	public static enum Axis implements StringIdentifiable, Predicate<Direction> {
 		X("x") {
 			@Override
 			public int choose(int i, int j, int k) {

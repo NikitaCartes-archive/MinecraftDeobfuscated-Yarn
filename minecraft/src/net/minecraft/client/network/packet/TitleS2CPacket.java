@@ -41,7 +41,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627
 			)
 		 {
-			this.text = packetByteBuf.method_10808();
+			this.text = packetByteBuf.readText();
 		}
 
 		if (this.action == TitleS2CPacket.Action.field_12629) {
@@ -57,7 +57,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627
 			)
 		 {
-			packetByteBuf.method_10805(this.text);
+			packetByteBuf.writeText(this.text);
 		}
 
 		if (this.action == TitleS2CPacket.Action.field_12629) {

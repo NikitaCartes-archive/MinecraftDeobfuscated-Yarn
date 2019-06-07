@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,7 +56,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -156,10 +154,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
 		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
-	}
-
-	public static boolean method_20683(EntityType<PillagerEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getLightLevel(LightType.field_9282, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override

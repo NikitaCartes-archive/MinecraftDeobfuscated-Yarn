@@ -306,7 +306,7 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_8693() {
+	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 

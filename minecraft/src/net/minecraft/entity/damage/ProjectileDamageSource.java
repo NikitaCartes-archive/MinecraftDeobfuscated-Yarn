@@ -28,13 +28,13 @@ public class ProjectileDamageSource extends EntityDamageSource {
 	}
 
 	@Override
-	public Text method_5506(LivingEntity livingEntity) {
-		Text text = this.attacker == null ? this.source.method_5476() : this.attacker.method_5476();
+	public Text getDeathMessage(LivingEntity livingEntity) {
+		Text text = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
 		ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		String string2 = string + ".item";
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableText(string2, livingEntity.method_5476(), text, itemStack.method_7954())
-			: new TranslatableText(string, livingEntity.method_5476(), text);
+			? new TranslatableText(string2, livingEntity.getDisplayName(), text, itemStack.toHoverableText())
+			: new TranslatableText(string, livingEntity.getDisplayName(), text);
 	}
 }

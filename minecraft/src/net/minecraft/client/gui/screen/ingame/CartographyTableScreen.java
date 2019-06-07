@@ -31,7 +31,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
-		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

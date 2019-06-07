@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -84,7 +85,7 @@ public class FarmlandBlock extends Block {
 		if (!world.isClient
 			&& world.random.nextFloat() < f - 0.5F
 			&& entity instanceof LivingEntity
-			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean("mobGriefing"))
+			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
 			setToDirt(world.getBlockState(blockPos), world, blockPos);
 		}

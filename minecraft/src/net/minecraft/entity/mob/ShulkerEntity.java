@@ -13,8 +13,8 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -391,7 +391,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_6210 = 0;
 	}
 
@@ -472,7 +472,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.5F;
 	}
 
@@ -491,7 +491,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public float getBoundingBoxMarginForTargeting() {
+	public float getTargetingMargin() {
 		return 0.0F;
 	}
 

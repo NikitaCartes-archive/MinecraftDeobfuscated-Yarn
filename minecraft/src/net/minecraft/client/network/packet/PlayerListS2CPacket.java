@@ -31,7 +31,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.field_13967,
+						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)
@@ -47,7 +47,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.field_13967,
+						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)
@@ -84,7 +84,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					k = packetByteBuf.readVarInt();
 					if (packetByteBuf.readBoolean()) {
-						text = packetByteBuf.method_10808();
+						text = packetByteBuf.readText();
 					}
 					break;
 				case field_12375:
@@ -98,7 +98,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				case field_12374:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					if (packetByteBuf.readBoolean()) {
-						text = packetByteBuf.method_10808();
+						text = packetByteBuf.readText();
 					}
 					break;
 				case field_12376:
@@ -138,7 +138,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.method_10805(entry.getDisplayName());
+						packetByteBuf.writeText(entry.getDisplayName());
 					}
 					break;
 				case field_12375:
@@ -155,7 +155,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.method_10805(entry.getDisplayName());
+						packetByteBuf.writeText(entry.getDisplayName());
 					}
 					break;
 				case field_12376:

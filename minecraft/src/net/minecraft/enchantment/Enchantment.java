@@ -66,6 +66,10 @@ public abstract class Enchantment {
 		return 1 + i * 10;
 	}
 
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 5;
+	}
+
 	public int getProtectionAmount(int i, DamageSource damageSource) {
 		return 0;
 	}
@@ -94,7 +98,7 @@ public abstract class Enchantment {
 		return this.getOrCreateTranslationKey();
 	}
 
-	public Text method_8179(int i) {
+	public Text getName(int i) {
 		Text text = new TranslatableText(this.getTranslationKey());
 		if (this.isCursed()) {
 			text.formatted(Formatting.field_1061);
@@ -128,9 +132,9 @@ public abstract class Enchantment {
 	}
 
 	public static enum Weight {
-		field_9087(30),
-		field_9090(10),
-		field_9088(3),
+		field_9087(10),
+		field_9090(5),
+		field_9088(2),
 		field_9091(1);
 
 		private final int weight;

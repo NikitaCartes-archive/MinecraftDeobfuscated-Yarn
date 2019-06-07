@@ -85,7 +85,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	private boolean method_20502() {
-		return !this.isTame() && !this.leashedByPlayer() && !this.method_5817();
+		return !this.isTame() && !this.leashedByPlayer() && !this.hasPlayerRider();
 	}
 
 	private boolean heldByTrader() {

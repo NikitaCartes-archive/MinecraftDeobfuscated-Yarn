@@ -40,7 +40,7 @@ public class SystemToast implements Toast {
 		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
 	}
 
-	public void method_1991(Text text, @Nullable Text text2) {
+	public void setContent(Text text, @Nullable Text text2) {
 		this.field_2215 = text.getString();
 		this.field_2217 = text2 == null ? null : text2.getString();
 		this.justUpdated = true;
@@ -50,12 +50,12 @@ public class SystemToast implements Toast {
 		return this.field_2213;
 	}
 
-	public static void method_1990(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
+	public static void show(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
 			toastManager.add(new SystemToast(type, text, text2));
 		} else {
-			systemToast.method_1991(text, text2);
+			systemToast.setContent(text, text2);
 		}
 	}
 

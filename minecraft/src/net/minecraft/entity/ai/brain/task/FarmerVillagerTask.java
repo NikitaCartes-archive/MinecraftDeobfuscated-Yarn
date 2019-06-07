@@ -22,6 +22,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
+import net.minecraft.world.GameRules;
 
 public class FarmerVillagerTask extends Task<VillagerEntity> {
 	@Nullable
@@ -46,7 +47,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean method_19564(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		if (!serverWorld.getGameRules().getBoolean("mobGriefing")) {
+		if (!serverWorld.getGameRules().getBoolean(GameRules.field_19388)) {
 			return false;
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.field_17056) {
 			return false;

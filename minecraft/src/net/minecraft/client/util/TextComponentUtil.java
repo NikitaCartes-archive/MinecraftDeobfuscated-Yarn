@@ -16,7 +16,7 @@ public class TextComponentUtil {
 		return !bl && !MinecraftClient.getInstance().options.chatColors ? Formatting.strip(string) : string;
 	}
 
-	public static List<Text> method_1850(Text text, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
+	public static List<Text> wrapLines(Text text, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
 		int j = 0;
 		Text text2 = new LiteralText("");
 		List<Text> list = Lists.<Text>newArrayList();
@@ -30,15 +30,15 @@ public class TextComponentUtil {
 				int l = string.indexOf(10);
 				String string2 = string.substring(l + 1);
 				string = string.substring(0, l + 1);
-				Text text4 = new LiteralText(string2).method_10862(text3.method_10866().deepCopy());
+				Text text4 = new LiteralText(string2).setStyle(text3.getStyle().deepCopy());
 				list2.add(k + 1, text4);
 				bl3 = true;
 			}
 
-			String string3 = method_1849(text3.method_10866().asString() + string, bl2);
+			String string3 = method_1849(text3.getStyle().asString() + string, bl2);
 			String string2 = string3.endsWith("\n") ? string3.substring(0, string3.length() - 1) : string3;
 			int m = textRenderer.getStringWidth(string2);
-			Text text5 = new LiteralText(string2).method_10862(text3.method_10866().deepCopy());
+			Text text5 = new LiteralText(string2).setStyle(text3.getStyle().deepCopy());
 			if (j + m > i) {
 				String string4 = textRenderer.trimToWidth(string3, i - j, false);
 				String string5 = string4.length() < string3.length() ? string3.substring(string4.length()) : null;
@@ -56,13 +56,13 @@ public class TextComponentUtil {
 						string5 = string3;
 					}
 
-					Text text6 = new LiteralText(string5).method_10862(text3.method_10866().deepCopy());
+					Text text6 = new LiteralText(string5).setStyle(text3.getStyle().deepCopy());
 					list2.add(k + 1, text6);
 				}
 
 				m = textRenderer.getStringWidth(string4);
 				text5 = new LiteralText(string4);
-				text5.method_10862(text3.method_10866().deepCopy());
+				text5.setStyle(text3.getStyle().deepCopy());
 				bl3 = true;
 			}
 

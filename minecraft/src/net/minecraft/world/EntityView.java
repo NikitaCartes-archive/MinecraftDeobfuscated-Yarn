@@ -34,7 +34,7 @@ public interface EntityView {
 			? true
 			: this.getEntities(entity, voxelShape.getBoundingBox())
 				.stream()
-				.filter(entity2 -> !entity2.removed && entity2.field_6033 && (entity == null || !entity2.isConnectedThroughVehicle(entity)))
+				.filter(entity2 -> !entity2.removed && entity2.inanimate && (entity == null || !entity2.isConnectedThroughVehicle(entity)))
 				.noneMatch(entityx -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entityx.getBoundingBox()), BooleanBiFunction.AND));
 	}
 
@@ -42,20 +42,19 @@ public interface EntityView {
 		return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-		if (voxelShape.isEmpty()) {
+	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
+		if (box.averageDimension() < 1.0E-7) {
 			return Stream.empty();
 		} else {
-			Box box = voxelShape.getBoundingBox();
-			return this.getEntities(entity, box.expand(0.25))
+			Box box2 = box.expand(1.0E-7);
+			return this.getEntities(entity, box2)
 				.stream()
-				.filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.isConnectedThroughVehicle(entity2)))
-				.flatMap(
-					entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.method_5708(entity2))
-							.filter(Objects::nonNull)
-							.filter(box2 -> box2.intersects(box))
-							.map(VoxelShapes::cuboid)
-				);
+				.filter(entityx -> !set.contains(entityx))
+				.filter(entity2 -> entity == null || !entity.isConnectedThroughVehicle(entity2))
+				.flatMap(entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.getHardCollisionBox(entity2)))
+				.filter(Objects::nonNull)
+				.filter(box2::intersects)
+				.map(VoxelShapes::cuboid);
 		}
 	}
 

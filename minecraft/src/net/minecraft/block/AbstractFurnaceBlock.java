@@ -54,7 +54,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
-				((AbstractFurnaceBlockEntity)blockEntity).method_17488(itemStack.method_7964());
+				((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}

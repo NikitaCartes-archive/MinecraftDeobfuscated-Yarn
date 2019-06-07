@@ -33,7 +33,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -65,7 +65,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -80,7 +80,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -95,7 +95,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -127,7 +127,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -159,7 +159,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -174,7 +174,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -189,7 +189,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -236,7 +236,7 @@ public class AdvancementCommand {
 						new TranslatableText(
 							operation.getCommandPrefix() + ".one.to.one.failure",
 							((Advancement)collection2.iterator().next()).toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).method_5476()
+							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						)
 					);
 				} else {
@@ -249,7 +249,7 @@ public class AdvancementCommand {
 			} else if (collection.size() == 1) {
 				throw new CommandException(
 					new TranslatableText(
-						operation.getCommandPrefix() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+						operation.getCommandPrefix() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
@@ -258,16 +258,16 @@ public class AdvancementCommand {
 		} else {
 			if (collection2.size() == 1) {
 				if (collection.size() == 1) {
-					serverCommandSource.method_9226(
+					serverCommandSource.sendFeedback(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".one.to.one.success",
 							((Advancement)collection2.iterator().next()).toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).method_5476()
+							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						),
 						true
 					);
 				} else {
-					serverCommandSource.method_9226(
+					serverCommandSource.sendFeedback(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)collection2.iterator().next()).toHoverableText(), collection.size()
 						),
@@ -275,14 +275,14 @@ public class AdvancementCommand {
 					);
 				}
 			} else if (collection.size() == 1) {
-				serverCommandSource.method_9226(
+				serverCommandSource.sendFeedback(
 					new TranslatableText(
-						operation.getCommandPrefix() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+						operation.getCommandPrefix() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true);
 			}
 
 			return i;
@@ -313,7 +313,7 @@ public class AdvancementCommand {
 							operation.getCommandPrefix() + ".criterion.to.one.failure",
 							string,
 							advancement.toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).method_5476()
+							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						)
 					);
 				} else {
@@ -323,17 +323,17 @@ public class AdvancementCommand {
 				}
 			} else {
 				if (collection.size() == 1) {
-					serverCommandSource.method_9226(
+					serverCommandSource.sendFeedback(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".criterion.to.one.success",
 							string,
 							advancement.toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).method_5476()
+							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						),
 						true
 					);
 				} else {
-					serverCommandSource.method_9226(
+					serverCommandSource.sendFeedback(
 						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.success", string, advancement.toHoverableText(), collection.size()), true
 					);
 				}

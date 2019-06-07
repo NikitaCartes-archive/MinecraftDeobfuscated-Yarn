@@ -18,7 +18,7 @@ public class HorseScreen extends AbstractContainerScreen<HorseContainer> {
 	private float mouseY;
 
 	public HorseScreen(HorseContainer horseContainer, PlayerInventory playerInventory, HorseBaseEntity horseBaseEntity) {
-		super(horseContainer, playerInventory, horseBaseEntity.method_5476());
+		super(horseContainer, playerInventory, horseBaseEntity.getDisplayName());
 		this.entity = horseBaseEntity;
 		this.passEvents = false;
 	}
@@ -26,7 +26,7 @@ public class HorseScreen extends AbstractContainerScreen<HorseContainer> {
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.font.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
-		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override

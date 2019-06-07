@@ -394,8 +394,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private void bobView(float f) {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-			float g = playerEntity.field_5973 - playerEntity.field_6039;
-			float h = -(playerEntity.field_5973 + g * f);
+			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
+			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
 			GlStateManager.translatef(MathHelper.sin(h * (float) Math.PI) * i * 0.5F, -Math.abs(MathHelper.cos(h * (float) Math.PI) * i), 0.0F);
 			GlStateManager.rotatef(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, 0.0F, 0.0F, 1.0F);

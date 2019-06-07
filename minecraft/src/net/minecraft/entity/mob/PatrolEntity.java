@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
@@ -88,6 +89,10 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+	}
+
+	public static boolean method_20739(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getLightLevel(LightType.field_9282, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override

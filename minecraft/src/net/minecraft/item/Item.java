@@ -22,8 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -46,7 +46,7 @@ public class Item implements ItemConvertible {
 			(float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0F, 1.0F
 		);
 	private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity != null
-				&& livingEntity.getMainHand() != AbsoluteHand.field_6183
+				&& livingEntity.getMainArm() != Arm.field_6183
 			? 1.0F
 			: 0.0F;
 	private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity
@@ -184,7 +184,7 @@ public class Item implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_7848() {
+	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
@@ -250,7 +250,7 @@ public class Item implements ItemConvertible {
 	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 	}
 
-	public Text method_7864(ItemStack itemStack) {
+	public Text getName(ItemStack itemStack) {
 		return new TranslatableText(this.getTranslationKey(itemStack));
 	}
 

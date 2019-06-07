@@ -32,7 +32,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		return commandContext.getArgument(string, EntityAnchorArgumentType.EntityAnchor.class);
 	}
 
-	public static EntityAnchorArgumentType create() {
+	public static EntityAnchorArgumentType entityAnchor() {
 		return new EntityAnchorArgumentType();
 	}
 

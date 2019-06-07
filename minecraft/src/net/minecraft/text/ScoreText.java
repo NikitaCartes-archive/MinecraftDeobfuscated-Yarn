@@ -125,7 +125,7 @@ public class ScoreText extends BaseText implements ParsableText {
 			+ ", siblings="
 			+ this.siblings
 			+ ", style="
-			+ this.method_10866()
+			+ this.getStyle()
 			+ '}';
 	}
 }

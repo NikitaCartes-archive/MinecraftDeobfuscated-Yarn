@@ -103,7 +103,7 @@ public class HopperBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				((HopperBlockEntity)blockEntity).method_17488(itemStack.method_7964());
+				((HopperBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}
