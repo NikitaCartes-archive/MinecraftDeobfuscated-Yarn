@@ -32,6 +32,6 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_20470(Stream<ScheduledTick<T>> stream) {
+	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
 	}
 }

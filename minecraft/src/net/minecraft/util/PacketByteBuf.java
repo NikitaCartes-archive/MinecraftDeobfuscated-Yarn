@@ -148,11 +148,11 @@ public class PacketByteBuf extends ByteBuf {
 		return ChunkSectionPos.from(this.readLong());
 	}
 
-	public Text method_10808() {
+	public Text readText() {
 		return Text.Serializer.fromJson(this.readString(262144));
 	}
 
-	public PacketByteBuf method_10805(Text text) {
+	public PacketByteBuf writeText(Text text) {
 		return this.writeString(Text.Serializer.toJson(text), 262144);
 	}
 

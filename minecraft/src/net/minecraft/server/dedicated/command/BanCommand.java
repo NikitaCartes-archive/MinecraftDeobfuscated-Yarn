@@ -28,15 +28,15 @@ public class BanCommand {
 							&& serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.create())
+					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.executes(commandContext -> ban(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets"), null))
 						.then(
-							CommandManager.argument("reason", MessageArgumentType.create())
+							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(
 									commandContext -> ban(
 											commandContext.getSource(),
 											GameProfileArgumentType.getProfileArgument(commandContext, "targets"),
-											MessageArgumentType.method_9339(commandContext, "reason")
+											MessageArgumentType.getMessage(commandContext, "reason")
 										)
 								)
 						)
@@ -53,7 +53,7 @@ public class BanCommand {
 				BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(gameProfile, null, serverCommandSource.getName(), null, text == null ? null : text.getString());
 				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
-				serverCommandSource.method_9226(new TranslatableText("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
 				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
 					serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.banned"));

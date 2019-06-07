@@ -113,34 +113,34 @@
 		"url": "https://libraries.minecraft.net/org/apache/logging/log4j/log4j-core/2.8.1/log4j-core-2.8.1.jar"
 	},
 	{
-		"sha1sum": "2bb514e444994c6fece99a21f76e0c90438e377f",
-		"name": "lwjgl-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl/3.2.1/lwjgl-3.2.1.jar"
+		"sha1sum": "8ad6294407e15780b43e84929c40e4c5e997972e",
+		"name": "lwjgl-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl/3.2.2/lwjgl-3.2.2.jar"
 	},
 	{
-		"sha1sum": "027abb7f64894b61cad163791acd8113f0b21296",
-		"name": "lwjgl-glfw-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.2.1/lwjgl-glfw-3.2.1.jar"
+		"sha1sum": "d3ad4df38e400b8afba1de63f84338809399df5b",
+		"name": "lwjgl-glfw-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.2.2/lwjgl-glfw-3.2.2.jar"
 	},
 	{
-		"sha1sum": "7a0c583fcbec32b15784f846df536e1837d83666",
-		"name": "lwjgl-jemalloc-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.2.1/lwjgl-jemalloc-3.2.1.jar"
+		"sha1sum": "ee8e57a79300f78294576d87c4a587f8c99402e2",
+		"name": "lwjgl-jemalloc-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.2.2/lwjgl-jemalloc-3.2.2.jar"
 	},
 	{
-		"sha1sum": "dc7ff2dabb40a141ee9bf2e326d9b1b19f3278fb",
-		"name": "lwjgl-openal-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.2.1/lwjgl-openal-3.2.1.jar"
+		"sha1sum": "2b772a102b0a11ee5f2109a5b136f4dc7c630827",
+		"name": "lwjgl-openal-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.2.2/lwjgl-openal-3.2.2.jar"
 	},
 	{
-		"sha1sum": "57008c2374c5bc434b18adfef3f3653ee450ee18",
-		"name": "lwjgl-opengl-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.2.1/lwjgl-opengl-3.2.1.jar"
+		"sha1sum": "6ac5bb88b44c43ea195a570aab059f63da004cd8",
+		"name": "lwjgl-opengl-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.2.2/lwjgl-opengl-3.2.2.jar"
 	},
 	{
-		"sha1sum": "31f5eb5fce3791d58ec898bc5c1867d76d781ba1",
-		"name": "lwjgl-stb-3.2.1.jar",
-		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.2.1/lwjgl-stb-3.2.1.jar"
+		"sha1sum": "3b8e6ebc5851dd3d17e37e5cadce2eff2a429f0f",
+		"name": "lwjgl-stb-3.2.2.jar",
+		"url": "https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.2.2/lwjgl-stb-3.2.2.jar"
 	},
 	{
 		"sha1sum": "d0626cd3108294d1d58c05859add27b4ef21f83b",

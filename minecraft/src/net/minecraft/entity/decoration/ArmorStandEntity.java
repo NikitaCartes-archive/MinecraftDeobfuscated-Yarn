@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -32,8 +32,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -88,11 +88,11 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void refreshSize() {
+	public void calculateDimensions() {
 		double d = this.x;
 		double e = this.y;
 		double f = this.z;
-		super.refreshSize();
+		super.calculateDimensions();
 		this.setPosition(d, e, f);
 	}
 
@@ -542,8 +542,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entitySize.height * (this.isBaby() ? 0.5F : 0.9F);
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * (this.isBaby() ? 0.5F : 0.9F);
 	}
 
 	@Override
@@ -741,8 +741,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public AbsoluteHand getMainHand() {
-		return AbsoluteHand.field_6183;
+	public Arm getMainArm() {
+		return Arm.field_6183;
 	}
 
 	@Override
@@ -774,8 +774,8 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
-			this.refreshSize();
-			this.field_6033 = !this.isMarker();
+			this.calculateDimensions();
+			this.inanimate = !this.isMarker();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -787,8 +787,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		float f = this.isMarker() ? 0.0F : (this.isBaby() ? 0.5F : 1.0F);
-		return this.getType().getDefaultSize().scaled(f);
+		return this.getType().getDimensions().scaled(f);
 	}
 }

@@ -43,7 +43,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.font.draw(this.title.asFormattedString(), 12.0F, 5.0F, 4210752);
-		this.font.draw(this.playerInventory.method_5476().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 			int o = l + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, (double)i, (double)j) && m > 0 && n >= 0 && enchantment != null) {
 				List<String> list = Lists.<String>newArrayList();
-				list.add("" + Formatting.field_1068 + Formatting.field_1056 + I18n.translate("container.enchant.clue", enchantment.method_8179(n).asFormattedString()));
+				list.add("" + Formatting.field_1068 + Formatting.field_1056 + I18n.translate("container.enchant.clue", enchantment.getName(n).asFormattedString()));
 				if (!bl) {
 					list.add("");
 					if (this.minecraft.player.experienceLevel < m) {

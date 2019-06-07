@@ -35,7 +35,7 @@ public class TeleportCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("location", Vec3ArgumentType.create())
+							CommandManager.argument("location", Vec3ArgumentType.vec3())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -47,7 +47,7 @@ public class TeleportCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("rotation", RotationArgumentType.create())
+									CommandManager.argument("rotation", RotationArgumentType.rotation())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -76,7 +76,7 @@ public class TeleportCommand {
 																)
 														)
 														.then(
-															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.create())
+															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.entityAnchor())
 																.executes(
 																	commandContext -> execute(
 																			commandContext.getSource(),
@@ -93,7 +93,7 @@ public class TeleportCommand {
 												)
 										)
 										.then(
-											CommandManager.argument("facingLocation", Vec3ArgumentType.create())
+											CommandManager.argument("facingLocation", Vec3ArgumentType.vec3())
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
@@ -117,7 +117,7 @@ public class TeleportCommand {
 						)
 				)
 				.then(
-					CommandManager.argument("location", Vec3ArgumentType.create())
+					CommandManager.argument("location", Vec3ArgumentType.vec3())
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
@@ -162,11 +162,11 @@ public class TeleportCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).method_5476(), entity.method_5476()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).getDisplayName(), entity.getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.teleport.success.entity.multiple", collection.size(), entity.method_5476()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true);
 		}
 
 		return collection.size();
@@ -217,11 +217,11 @@ public class TeleportCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.teleport.success.location.single", ((Entity)collection.iterator().next()).method_5476(), vec3d.x, vec3d.y, vec3d.z), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.teleport.success.location.single", ((Entity)collection.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true);
 		}
 
 		return collection.size();
@@ -270,7 +270,7 @@ public class TeleportCommand {
 					return;
 				}
 
-				entity.method_5878(entity2);
+				entity.copyFrom(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 				serverWorld.method_18769(entity);

@@ -41,7 +41,7 @@ public interface Trader {
 		return false;
 	}
 
-	default void method_17449(PlayerEntity playerEntity, Text text, int i) {
+	default void sendOffers(PlayerEntity playerEntity, Text text, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
 			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), text)
 		);

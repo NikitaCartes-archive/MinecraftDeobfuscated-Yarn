@@ -38,7 +38,7 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
+							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.itemEnchantment())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -78,13 +78,13 @@ public class EnchantCommand {
 							itemStack.addEnchantment(enchantment, i);
 							j++;
 						} else if (collection.size() == 1) {
-							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().method_7864(itemStack).getString());
+							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());
 						}
 					} else if (collection.size() == 1) {
-						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.method_5477().getString());
+						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.getName().getString());
 					}
 				} else if (collection.size() == 1) {
-					throw FAILED_ENTITY_EXCEPTION.create(entity.method_5477().getString());
+					throw FAILED_ENTITY_EXCEPTION.create(entity.getName().getString());
 				}
 			}
 
@@ -92,11 +92,11 @@ public class EnchantCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (collection.size() == 1) {
-					serverCommandSource.method_9226(
-						new TranslatableText("commands.enchant.success.single", enchantment.method_8179(i), ((Entity)collection.iterator().next()).method_5476()), true
+					serverCommandSource.sendFeedback(
+						new TranslatableText("commands.enchant.success.single", enchantment.getName(i), ((Entity)collection.iterator().next()).getDisplayName()), true
 					);
 				} else {
-					serverCommandSource.method_9226(new TranslatableText("commands.enchant.success.multiple", enchantment.method_8179(i), collection.size()), true);
+					serverCommandSource.sendFeedback(new TranslatableText("commands.enchant.success.multiple", enchantment.getName(i), collection.size()), true);
 				}
 
 				return j;

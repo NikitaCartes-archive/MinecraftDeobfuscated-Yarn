@@ -36,7 +36,7 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text method_17561(int i) {
+		public Text getLine(int i) {
 			return new LiteralText("");
 		}
 	};
@@ -58,7 +58,7 @@ public class BookScreen extends Screen {
 	}
 
 	private BookScreen(BookScreen.Contents contents, boolean bl) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.contents = contents;
 		this.pageTurnSound = bl;
 	}
@@ -157,8 +157,8 @@ public class BookScreen extends Screen {
 		this.blit(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
-			Text text = this.contents.method_17563(this.pageIndex);
-			this.cachedPage = TextComponentUtil.method_1850(text, 114, this.font, true, true);
+			Text text = this.contents.getLineOrDefault(this.pageIndex);
+			this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
 		}
 
 		this.cachedPageIndex = this.pageIndex;
@@ -171,7 +171,7 @@ public class BookScreen extends Screen {
 			this.font.draw(text2.asFormattedString(), (float)(k + 36), (float)(32 + o * 9), 0);
 		}
 
-		Text text3 = this.method_17048((double)i, (double)j);
+		Text text3 = this.getLineAt((double)i, (double)j);
 		if (text3 != null) {
 			this.renderComponentHoverEffect(text3, i, j);
 		}
@@ -186,7 +186,7 @@ public class BookScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			Text text = this.method_17048(d, e);
+			Text text = this.getLineAt(d, e);
 			if (text != null && this.handleComponentClicked(text)) {
 				return true;
 			}
@@ -197,7 +197,7 @@ public class BookScreen extends Screen {
 
 	@Override
 	public boolean handleComponentClicked(Text text) {
-		ClickEvent clickEvent = text.method_10866().getClickEvent();
+		ClickEvent clickEvent = text.getStyle().getClickEvent();
 		if (clickEvent == null) {
 			return false;
 		} else if (clickEvent.getAction() == ClickEvent.Action.field_11748) {
@@ -220,7 +220,7 @@ public class BookScreen extends Screen {
 	}
 
 	@Nullable
-	public Text method_17048(double d, double e) {
+	public Text getLineAt(double d, double e) {
 		if (this.cachedPage == null) {
 			return null;
 		} else {
@@ -269,10 +269,10 @@ public class BookScreen extends Screen {
 	public interface Contents {
 		int getLineCount();
 
-		Text method_17561(int i);
+		Text getLine(int i);
 
-		default Text method_17563(int i) {
-			return (Text)(i >= 0 && i < this.getLineCount() ? this.method_17561(i) : new LiteralText(""));
+		default Text getLineOrDefault(int i) {
+			return (Text)(i >= 0 && i < this.getLineCount() ? this.getLine(i) : new LiteralText(""));
 		}
 
 		static BookScreen.Contents create(ItemStack itemStack) {
@@ -304,7 +304,7 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text method_17561(int i) {
+		public Text getLine(int i) {
 			return new LiteralText((String)this.lines.get(i));
 		}
 	}
@@ -330,7 +330,7 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text method_17561(int i) {
+		public Text getLine(int i) {
 			String string = (String)this.lines.get(i);
 
 			try {

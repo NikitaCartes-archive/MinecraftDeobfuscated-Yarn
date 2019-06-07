@@ -32,7 +32,7 @@ public class PublishCommand {
 		} else if (!serverCommandSource.getMinecraftServer().openToLan(serverCommandSource.getMinecraftServer().getDefaultGameMode(), false, i)) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.publish.success", i), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.publish.success", i), true);
 			return i;
 		}
 	}

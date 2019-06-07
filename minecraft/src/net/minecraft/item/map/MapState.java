@@ -60,48 +60,54 @@ public class MapState extends PersistentState {
 
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
-		this.dimension = DimensionType.byRawId(compoundTag.getInt("dimension"));
-		this.xCenter = compoundTag.getInt("xCenter");
-		this.zCenter = compoundTag.getInt("zCenter");
-		this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
-		this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
-		this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
-		this.locked = compoundTag.getBoolean("locked");
-		this.colors = compoundTag.getByteArray("colors");
-		if (this.colors.length != 16384) {
-			this.colors = new byte[16384];
-		}
+		int i = compoundTag.getInt("dimension");
+		DimensionType dimensionType = DimensionType.byRawId(i);
+		if (dimensionType == null) {
+			throw new IllegalArgumentException("Invalid map dimension: " + i);
+		} else {
+			this.dimension = dimensionType;
+			this.xCenter = compoundTag.getInt("xCenter");
+			this.zCenter = compoundTag.getInt("zCenter");
+			this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
+			this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
+			this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
+			this.locked = compoundTag.getBoolean("locked");
+			this.colors = compoundTag.getByteArray("colors");
+			if (this.colors.length != 16384) {
+				this.colors = new byte[16384];
+			}
 
-		ListTag listTag = compoundTag.getList("banners", 10);
+			ListTag listTag = compoundTag.getList("banners", 10);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(i));
-			this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-			this.method_107(
-				mapBannerMarker.getIconType(),
-				null,
-				mapBannerMarker.getKey(),
-				(double)mapBannerMarker.getPos().getX(),
-				(double)mapBannerMarker.getPos().getZ(),
-				180.0,
-				mapBannerMarker.method_68()
-			);
-		}
+			for (int j = 0; j < listTag.size(); j++) {
+				MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(j));
+				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
+				this.addIcon(
+					mapBannerMarker.getIconType(),
+					null,
+					mapBannerMarker.getKey(),
+					(double)mapBannerMarker.getPos().getX(),
+					(double)mapBannerMarker.getPos().getZ(),
+					180.0,
+					mapBannerMarker.getName()
+				);
+			}
 
-		ListTag listTag2 = compoundTag.getList("frames", 10);
+			ListTag listTag2 = compoundTag.getList("frames", 10);
 
-		for (int j = 0; j < listTag2.size(); j++) {
-			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(j));
-			this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
-			this.method_107(
-				MapIcon.Type.field_95,
-				null,
-				"frame-" + mapFrameMarker.getEntityId(),
-				(double)mapFrameMarker.getPos().getX(),
-				(double)mapFrameMarker.getPos().getZ(),
-				(double)mapFrameMarker.getRotation(),
-				null
-			);
+			for (int k = 0; k < listTag2.size(); k++) {
+				MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(k));
+				this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
+				this.addIcon(
+					MapIcon.Type.field_95,
+					null,
+					"frame-" + mapFrameMarker.getEntityId(),
+					(double)mapFrameMarker.getPos().getX(),
+					(double)mapFrameMarker.getPos().getZ(),
+					(double)mapFrameMarker.getRotation(),
+					null
+				);
+			}
 		}
 	}
 
@@ -150,15 +156,15 @@ public class MapState extends PersistentState {
 		}
 
 		if (!playerEntity.inventory.contains(itemStack)) {
-			this.icons.remove(playerEntity.method_5477().getString());
+			this.icons.remove(playerEntity.getName().getString());
 		}
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
-			String string = playerUpdateTracker2.player.method_5477().getString();
+			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isInFrame())) {
 				if (!itemStack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
-					this.method_107(
+					this.addIcon(
 						MapIcon.Type.field_91,
 						playerUpdateTracker2.player.world,
 						string,
@@ -184,7 +190,7 @@ public class MapState extends PersistentState {
 			}
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
-			this.method_107(
+			this.addIcon(
 				MapIcon.Type.field_95,
 				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
@@ -203,7 +209,7 @@ public class MapState extends PersistentState {
 			for (int j = 0; j < listTag.size(); j++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(j);
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
-					this.method_107(
+					this.addIcon(
 						MapIcon.Type.byId(compoundTag2.getByte("type")),
 						playerEntity.world,
 						compoundTag2.getString("id"),
@@ -239,7 +245,7 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void method_107(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Text text) {
+	private void addIcon(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable Text text) {
 		int i = 1 << this.scale;
 		float g = (float)(d - (double)this.xCenter) / (float)i;
 		float h = (float)(e - (double)this.zCenter) / (float)i;
@@ -342,7 +348,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.method_107(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.method_68());
+				this.addIcon(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
 				bl = true;
 			}
 

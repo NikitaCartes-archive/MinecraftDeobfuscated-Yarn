@@ -108,7 +108,7 @@ public class MooshroomEntity extends CowEntity {
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.field_6283 = this.field_6283;
 				if (this.hasCustomName()) {
-					cowEntity.method_5665(this.method_5797());
+					cowEntity.setCustomName(this.getCustomName());
 				}
 
 				this.world.spawnEntity(cowEntity);

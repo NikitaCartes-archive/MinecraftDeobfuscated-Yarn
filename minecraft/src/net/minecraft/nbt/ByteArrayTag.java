@@ -85,7 +85,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("B").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 

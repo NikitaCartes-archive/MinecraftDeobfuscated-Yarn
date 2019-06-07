@@ -190,7 +190,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.remove();
 		villagerEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			villagerEntity.method_5665(this.method_5797());
+			villagerEntity.setCustomName(this.getCustomName());
 			villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 

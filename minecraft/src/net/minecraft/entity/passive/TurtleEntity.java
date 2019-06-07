@@ -51,6 +51,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -254,8 +255,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float method_5867() {
-		return this.field_5994 + 0.15F;
+	protected float calculateStepDelta() {
+		return this.distanceWalked + 0.15F;
 	}
 
 	@Override
@@ -302,7 +303,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	protected void onGrowUp() {
 		super.onGrowUp();
-		if (!this.isBaby() && this.world.getGameRules().getBoolean("doMobLoot")) {
+		if (!this.isBaby() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 			this.dropItem(Items.field_8161, 1);
 		}
 	}
@@ -537,7 +538,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			Random random = this.animal.getRand();
-			if (this.world.getGameRules().getBoolean("doMobLoot")) {
+			if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, random.nextInt(7) + 1));
 			}
 		}

@@ -32,6 +32,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class AbstractMinecartEntity extends Entity {
@@ -69,7 +70,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
-		this.field_6033 = true;
+		this.inanimate = true;
 	}
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world, double d, double e, double f) {
@@ -116,7 +117,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Box method_5708(Entity entity) {
+	public Box getHardCollisionBox(Entity entity) {
 		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
@@ -157,10 +158,10 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	public void dropItems(DamageSource damageSource) {
 		this.remove();
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 			ItemStack itemStack = new ItemStack(Items.field_8045);
 			if (this.hasCustomName()) {
-				itemStack.method_7977(this.method_5797());
+				itemStack.setCustomName(this.getCustomName());
 			}
 
 			this.dropStack(itemStack);
@@ -283,7 +284,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				}
 			}
 
-			this.method_5713();
+			this.checkWaterState();
 		}
 	}
 
@@ -650,7 +651,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_7665 = d;
 		this.field_7666 = e;
 		this.field_7662 = f;

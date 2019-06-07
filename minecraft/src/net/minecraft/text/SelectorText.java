@@ -37,7 +37,7 @@ public class SelectorText extends BaseText implements ParsableText {
 	@Override
 	public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		return (Text)(serverCommandSource != null && this.selector != null
-			? EntitySelector.method_9822(this.selector.getEntities(serverCommandSource))
+			? EntitySelector.getNames(this.selector.getEntities(serverCommandSource))
 			: new LiteralText(""));
 	}
 
@@ -64,6 +64,6 @@ public class SelectorText extends BaseText implements ParsableText {
 
 	@Override
 	public String toString() {
-		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.method_10866() + '}';
+		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 	}
 }

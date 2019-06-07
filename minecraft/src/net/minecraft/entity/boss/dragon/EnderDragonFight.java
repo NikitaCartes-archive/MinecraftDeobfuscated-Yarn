@@ -417,7 +417,7 @@ public class EnderDragonFight {
 			this.bossBar.setPercent(enderDragonEntity.getHealth() / enderDragonEntity.getHealthMaximum());
 			this.dragonSeenTimer = 0;
 			if (enderDragonEntity.hasCustomName()) {
-				this.bossBar.method_5413(enderDragonEntity.method_5476());
+				this.bossBar.setName(enderDragonEntity.getDisplayName());
 			}
 		}
 	}

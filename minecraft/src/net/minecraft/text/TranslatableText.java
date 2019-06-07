@@ -34,7 +34,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 			if (object instanceof Text) {
 				Text text = ((Text)object).deepCopy();
 				this.args[i] = text;
-				text.method_10866().setParent(this.method_10866());
+				text.getStyle().setParent(this.getStyle());
 			} else if (object == null) {
 				this.args[i] = "null";
 			}
@@ -78,7 +78,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 				int l = matcher.end();
 				if (k > j) {
 					Text text = new LiteralText(String.format(string.substring(j, k)));
-					text.method_10866().setParent(this.method_10866());
+					text.getStyle().setParent(this.getStyle());
 					this.translations.add(text);
 				}
 
@@ -86,7 +86,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 				String string3 = string.substring(k, l);
 				if ("%".equals(string2) && "%%".equals(string3)) {
 					Text text2 = new LiteralText("%");
-					text2.method_10866().setParent(this.method_10866());
+					text2.getStyle().setParent(this.getStyle());
 					this.translations.add(text2);
 				} else {
 					if (!"s".equals(string2)) {
@@ -105,7 +105,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 			if (j < string.length()) {
 				Text text3 = new LiteralText(String.format(string.substring(j)));
-				text3.method_10866().setParent(this.method_10866());
+				text3.getStyle().setParent(this.getStyle());
 				this.translations.add(text3);
 			}
 		} catch (IllegalFormatException var11) {
@@ -123,7 +123,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 				text = (Text)object;
 			} else {
 				text = new LiteralText(object == null ? "null" : object.toString());
-				text.method_10866().setParent(this.method_10866());
+				text.getStyle().setParent(this.getStyle());
 			}
 
 			return text;
@@ -131,18 +131,18 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public Text method_10862(Style style) {
-		super.method_10862(style);
+	public Text setStyle(Style style) {
+		super.setStyle(style);
 
 		for (Object object : this.args) {
 			if (object instanceof Text) {
-				((Text)object).method_10866().setParent(this.method_10866());
+				((Text)object).getStyle().setParent(this.getStyle());
 			}
 		}
 
 		if (this.languageReloadTimestamp > -1L) {
 			for (Text text : this.translations) {
-				text.method_10866().setParent(style);
+				text.getStyle().setParent(style);
 			}
 		}
 
@@ -226,7 +226,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 			+ ", siblings="
 			+ this.siblings
 			+ ", style="
-			+ this.method_10866()
+			+ this.getStyle()
 			+ '}';
 	}
 

@@ -26,7 +26,7 @@ public class SaveOnCommand {
 				if (!bl) {
 					throw ALREADY_ON_EXCEPTION.create();
 				} else {
-					serverCommandSource.method_9226(new TranslatableText("commands.save.enabled"), true);
+					serverCommandSource.sendFeedback(new TranslatableText("commands.save.enabled"), true);
 					return 1;
 				}
 			})

@@ -23,7 +23,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
-	private static final TranslatableText field_17650 = new TranslatableText("container.stonecutter");
+	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.stonecutter");
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
@@ -48,7 +48,7 @@ public class StonecutterBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17650
+			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 

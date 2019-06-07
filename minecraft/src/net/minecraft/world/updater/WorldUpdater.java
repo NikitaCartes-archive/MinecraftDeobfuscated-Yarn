@@ -51,7 +51,7 @@ public class WorldUpdater {
 	private final Object2FloatMap<DimensionType> dimensionProgress = Object2FloatMaps.synchronize(
 		new Object2FloatOpenCustomHashMap<>(SystemUtil.identityHashStrategy())
 	);
-	private volatile Text field_5765 = new TranslatableText("optimizeWorld.stage.counting");
+	private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
@@ -67,7 +67,7 @@ public class WorldUpdater {
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
-			this.field_5765 = new TranslatableText("optimizeWorld.stage.failed");
+			this.status = new TranslatableText("optimizeWorld.stage.failed");
 		});
 		this.updateThread.start();
 	}
@@ -106,7 +106,7 @@ public class WorldUpdater {
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
 			long l = SystemUtil.getMeasuringTimeMs();
-			this.field_5765 = new TranslatableText("optimizeWorld.stage.upgrading");
+			this.status = new TranslatableText("optimizeWorld.stage.upgrading");
 
 			while (this.keepUpgradingChunks) {
 				boolean bl = false;
@@ -169,7 +169,7 @@ public class WorldUpdater {
 				}
 			}
 
-			this.field_5765 = new TranslatableText("optimizeWorld.stage.finished");
+			this.status = new TranslatableText("optimizeWorld.stage.finished");
 
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {
@@ -245,7 +245,7 @@ public class WorldUpdater {
 		return this.skippedChunkCount;
 	}
 
-	public Text method_5394() {
-		return this.field_5765;
+	public Text getStatus() {
+		return this.status;
 	}
 }

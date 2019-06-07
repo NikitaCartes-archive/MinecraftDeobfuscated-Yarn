@@ -94,7 +94,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("I").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 

@@ -11,14 +11,14 @@ public class SayCommand {
 			CommandManager.literal("say")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("message", MessageArgumentType.create())
+					CommandManager.argument("message", MessageArgumentType.message())
 						.executes(
 							commandContext -> {
-								Text text = MessageArgumentType.method_9339(commandContext, "message");
+								Text text = MessageArgumentType.getMessage(commandContext, "message");
 								commandContext.getSource()
 									.getMinecraftServer()
 									.getPlayerManager()
-									.sendToAll(new TranslatableText("chat.type.announcement", commandContext.getSource().method_9223(), text));
+									.sendToAll(new TranslatableText("chat.type.announcement", commandContext.getSource().getDisplayName(), text));
 								return 1;
 							}
 						)

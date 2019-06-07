@@ -27,11 +27,11 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 				if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
 					Text text = new TranslatableText("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
 					this.client.send(new LoginDisconnectS2CPacket(text));
-					this.client.method_10747(text);
+					this.client.disconnect(text);
 				} else if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
 					Text text = new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
 					this.client.send(new LoginDisconnectS2CPacket(text));
-					this.client.method_10747(text);
+					this.client.disconnect(text);
 				} else {
 					this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
 				}
@@ -46,6 +46,6 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void method_10839(Text text) {
+	public void onDisconnected(Text text) {
 	}
 }

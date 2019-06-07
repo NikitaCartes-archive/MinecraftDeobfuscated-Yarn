@@ -40,7 +40,7 @@ public class Scoreboard {
 		return (ScoreboardObjective)this.objectives.get(string);
 	}
 
-	public ScoreboardObjective method_1168(String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
+	public ScoreboardObjective addObjective(String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
 		if (string.length() > 16) {
 			throw new IllegalArgumentException("The objective name '" + string + "' is too long!");
 		} else if (this.objectives.containsKey(string)) {

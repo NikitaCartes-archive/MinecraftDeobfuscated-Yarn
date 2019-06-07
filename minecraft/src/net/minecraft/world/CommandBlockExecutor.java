@@ -26,9 +26,9 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	private boolean updateLastExecution = true;
 	private int successCount;
 	private boolean trackOutput = true;
-	private Text field_9165;
+	private Text lastOutput;
 	private String command = "";
-	private Text field_9162 = new LiteralText("@");
+	private Text customName = new LiteralText("@");
 
 	public int getSuccessCount() {
 		return this.successCount;
@@ -38,17 +38,17 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.successCount = i;
 	}
 
-	public Text method_8292() {
-		return (Text)(this.field_9165 == null ? new LiteralText("") : this.field_9165);
+	public Text getLastOutput() {
+		return (Text)(this.lastOutput == null ? new LiteralText("") : this.lastOutput);
 	}
 
 	public CompoundTag serialize(CompoundTag compoundTag) {
 		compoundTag.putString("Command", this.command);
 		compoundTag.putInt("SuccessCount", this.successCount);
-		compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_9162));
+		compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		compoundTag.putBoolean("TrackOutput", this.trackOutput);
-		if (this.field_9165 != null && this.trackOutput) {
-			compoundTag.putString("LastOutput", Text.Serializer.toJson(this.field_9165));
+		if (this.lastOutput != null && this.trackOutput) {
+			compoundTag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
 		}
 
 		compoundTag.putBoolean("UpdateLastExecution", this.updateLastExecution);
@@ -63,7 +63,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_9162 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
 		if (compoundTag.containsKey("TrackOutput", 1)) {
@@ -72,12 +72,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 		if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
 			try {
-				this.field_9165 = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
+				this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
 			} catch (Throwable var3) {
-				this.field_9165 = new LiteralText(var3.getMessage());
+				this.lastOutput = new LiteralText(var3.getMessage());
 			}
 		} else {
-			this.field_9165 = null;
+			this.lastOutput = null;
 		}
 
 		if (compoundTag.containsKey("UpdateLastExecution")) {
@@ -104,7 +104,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
-			this.field_9165 = new LiteralText("#itzlipofutzli");
+			this.lastOutput = new LiteralText("#itzlipofutzli");
 			this.successCount = 1;
 			return true;
 		} else {
@@ -112,7 +112,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			MinecraftServer minecraftServer = this.getWorld().getServer();
 			if (minecraftServer != null && minecraftServer.method_3814() && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
 				try {
-					this.field_9165 = null;
+					this.lastOutput = null;
 					ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {
 						if (bl) {
 							this.successCount++;
@@ -123,7 +123,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
 					CrashReportSection crashReportSection = crashReport.addElement("Command to be executed");
 					crashReportSection.add("Command", this::getCommand);
-					crashReportSection.add("Name", (CrashCallable<String>)(() -> this.method_8299().getString()));
+					crashReportSection.add("Name", (CrashCallable<String>)(() -> this.getCustomName().getString()));
 					throw new CrashException(crashReport);
 				}
 			}
@@ -138,18 +138,18 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		}
 	}
 
-	public Text method_8299() {
-		return this.field_9162;
+	public Text getCustomName() {
+		return this.customName;
 	}
 
-	public void method_8290(Text text) {
-		this.field_9162 = text;
+	public void setCustomName(Text text) {
+		this.customName = text;
 	}
 
 	@Override
-	public void method_9203(Text text) {
+	public void sendMessage(Text text) {
 		if (this.trackOutput) {
-			this.field_9165 = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
+			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
 			this.markDirty();
 		}
 	}
@@ -158,8 +158,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	public abstract void markDirty();
 
-	public void method_8291(@Nullable Text text) {
-		this.field_9165 = text;
+	public void setLastOutput(@Nullable Text text) {
+		this.lastOutput = text;
 	}
 
 	public void shouldTrackOutput(boolean bl) {
@@ -190,7 +190,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean sendCommandFeedback() {
-		return this.getWorld().getGameRules().getBoolean("sendCommandFeedback") && this.trackOutput;
+		return this.getWorld().getGameRules().getBoolean(GameRules.field_19400) && this.trackOutput;
 	}
 
 	@Override
@@ -200,6 +200,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean shouldBroadcastConsoleToOps() {
-		return this.getWorld().getGameRules().getBoolean("commandBlockOutput");
+		return this.getWorld().getGameRules().getBoolean(GameRules.field_19394);
 	}
 }

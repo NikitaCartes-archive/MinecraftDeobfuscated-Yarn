@@ -18,14 +18,14 @@ public class TimeCommand {
 						.then(CommandManager.literal("night").executes(commandContext -> executeSet(commandContext.getSource(), 13000)))
 						.then(CommandManager.literal("midnight").executes(commandContext -> executeSet(commandContext.getSource(), 18000)))
 						.then(
-							CommandManager.argument("time", TimeArgumentType.create())
+							CommandManager.argument("time", TimeArgumentType.time())
 								.executes(commandContext -> executeSet(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("time", TimeArgumentType.create())
+							CommandManager.argument("time", TimeArgumentType.time())
 								.executes(commandContext -> executeAdd(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)
@@ -54,7 +54,7 @@ public class TimeCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.method_9226(new TranslatableText("commands.time.query", i), false);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.time.query", i), false);
 		return i;
 	}
 
@@ -63,7 +63,7 @@ public class TimeCommand {
 			serverWorld.setTimeOfDay((long)i);
 		}
 
-		serverCommandSource.method_9226(new TranslatableText("commands.time.set", i), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.time.set", i), true);
 		return getDayTime(serverCommandSource.getWorld());
 	}
 
@@ -73,7 +73,7 @@ public class TimeCommand {
 		}
 
 		int j = getDayTime(serverCommandSource.getWorld());
-		serverCommandSource.method_9226(new TranslatableText("commands.time.set", j), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.time.set", j), true);
 		return j;
 	}
 }

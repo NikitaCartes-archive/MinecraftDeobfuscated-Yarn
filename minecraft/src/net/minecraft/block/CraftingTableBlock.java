@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableBlock extends Block {
-	private static final Text field_17362 = new TranslatableText("container.crafting");
+	private static final Text CONTAINER_NAME = new TranslatableText("container.crafting");
 
 	protected CraftingTableBlock(Block.Settings settings) {
 		super(settings);
@@ -30,7 +30,7 @@ public class CraftingTableBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17362
+			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 }

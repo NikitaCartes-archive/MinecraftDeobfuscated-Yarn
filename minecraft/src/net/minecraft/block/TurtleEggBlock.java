@@ -20,6 +20,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class TurtleEggBlock extends Block {
@@ -150,7 +151,7 @@ public class TurtleEggBlock extends Block {
 		if (entity instanceof TurtleEntity) {
 			return false;
 		} else {
-			return entity instanceof LivingEntity && !(entity instanceof PlayerEntity) ? world.getGameRules().getBoolean("mobGriefing") : true;
+			return entity instanceof LivingEntity && !(entity instanceof PlayerEntity) ? world.getGameRules().getBoolean(GameRules.field_19388) : true;
 		}
 	}
 }

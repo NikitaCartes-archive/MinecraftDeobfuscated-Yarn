@@ -30,7 +30,7 @@ public class ClearCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))
 						.then(
-							CommandManager.argument("item", ItemPredicateArgumentType.create())
+							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -66,25 +66,25 @@ public class ClearCommand {
 
 		if (j == 0) {
 			if (collection.size() == 1) {
-				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).method_5477().asFormattedString());
+				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).getName().asFormattedString());
 			} else {
 				throw FAILED_MULTIPLE_EXCEPTION.create(collection.size());
 			}
 		} else {
 			if (i == 0) {
 				if (collection.size() == 1) {
-					serverCommandSource.method_9226(
-						new TranslatableText("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+					serverCommandSource.sendFeedback(
+						new TranslatableText("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 					);
 				} else {
-					serverCommandSource.method_9226(new TranslatableText("commands.clear.test.multiple", j, collection.size()), true);
+					serverCommandSource.sendFeedback(new TranslatableText("commands.clear.test.multiple", j, collection.size()), true);
 				}
 			} else if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.clear.success.multiple", j, collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.clear.success.multiple", j, collection.size()), true);
 			}
 
 			return j;

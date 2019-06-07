@@ -56,39 +56,39 @@ public class DamageTracker {
 		}
 	}
 
-	public Text method_5548() {
+	public Text getDeathMessage() {
 		if (this.recentDamage.isEmpty()) {
-			return new TranslatableText("death.attack.generic", this.entity.method_5476());
+			return new TranslatableText("death.attack.generic", this.entity.getDisplayName());
 		} else {
 			DamageRecord damageRecord = this.getBiggestFall();
 			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-			Text text = damageRecord2.method_5498();
+			Text text = damageRecord2.getAttackerName();
 			Entity entity = damageRecord2.getDamageSource().getAttacker();
 			Text text3;
 			if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
-				Text text2 = damageRecord.method_5498();
+				Text text2 = damageRecord.getAttackerName();
 				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
-					text3 = new TranslatableText("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.method_5476());
+					text3 = new TranslatableText("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
 				} else if (text2 != null && (text == null || !text2.equals(text))) {
 					Entity entity2 = damageRecord.getDamageSource().getAttacker();
 					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-						text3 = new TranslatableText("death.fell.assist.item", this.entity.method_5476(), text2, itemStack.method_7954());
+						text3 = new TranslatableText("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText());
 					} else {
-						text3 = new TranslatableText("death.fell.assist", this.entity.method_5476(), text2);
+						text3 = new TranslatableText("death.fell.assist", this.entity.getDisplayName(), text2);
 					}
 				} else if (text != null) {
 					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
-						text3 = new TranslatableText("death.fell.finish.item", this.entity.method_5476(), text, itemStack2.method_7954());
+						text3 = new TranslatableText("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText());
 					} else {
-						text3 = new TranslatableText("death.fell.finish", this.entity.method_5476(), text);
+						text3 = new TranslatableText("death.fell.finish", this.entity.getDisplayName(), text);
 					}
 				} else {
-					text3 = new TranslatableText("death.fell.killer", this.entity.method_5476());
+					text3 = new TranslatableText("death.fell.killer", this.entity.getDisplayName());
 				}
 			} else {
-				text3 = damageRecord2.getDamageSource().method_5506(this.entity);
+				text3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
 			}
 
 			return text3;

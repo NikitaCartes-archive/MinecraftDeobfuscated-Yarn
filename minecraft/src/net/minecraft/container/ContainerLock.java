@@ -14,7 +14,7 @@ public class ContainerLock {
 	}
 
 	public boolean isEmpty(ItemStack itemStack) {
-		return this.key.isEmpty() || !itemStack.isEmpty() && itemStack.hasCustomName() && this.key.equals(itemStack.method_7964().getString());
+		return this.key.isEmpty() || !itemStack.isEmpty() && itemStack.hasCustomName() && this.key.equals(itemStack.getName().getString());
 	}
 
 	public void serialize(CompoundTag compoundTag) {

@@ -35,11 +35,11 @@ public class FillCommand {
 			CommandManager.literal("fill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("from", BlockPosArgumentType.create())
+					CommandManager.argument("from", BlockPosArgumentType.blockPos())
 						.then(
-							CommandManager.argument("to", BlockPosArgumentType.create())
+							CommandManager.argument("to", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("block", BlockStateArgumentType.create())
+									CommandManager.argument("block", BlockStateArgumentType.blockState())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -65,7 +65,7 @@ public class FillCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.create())
+													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
 														.executes(
 															commandContext -> execute(
 																	commandContext.getSource(),
@@ -185,7 +185,7 @@ public class FillCommand {
 			if (j == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.fill.success", j), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.fill.success", j), true);
 				return j;
 			}
 		}

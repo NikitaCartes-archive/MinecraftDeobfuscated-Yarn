@@ -903,7 +903,7 @@ public class TradeOffers {
 				ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 				FilledMapItem.fillExplorationMap(world, itemStack);
 				MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-				itemStack.method_7977(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+				itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
 				return new TradeOffer(new ItemStack(Items.field_8687, this.price), new ItemStack(Items.field_8251), itemStack, this.maxUses, this.experience, 0.2F);
 			} else {
 				return null;

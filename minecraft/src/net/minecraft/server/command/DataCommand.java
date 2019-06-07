@@ -67,7 +67,7 @@ public class DataCommand {
 					objectType.addArgumentsToBuilder(
 						CommandManager.literal("merge"),
 						argumentBuilder -> argumentBuilder.then(
-								CommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
+								CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
 									.executes(
 										commandContext -> executeMerge(
 												commandContext.getSource(), objectType.getObject(commandContext), NbtCompoundTagArgumentType.getCompoundTag(commandContext, "nbt")
@@ -83,7 +83,7 @@ public class DataCommand {
 									commandContext -> executeGet((ServerCommandSource)commandContext.getSource(), objectType.getObject(commandContext))
 								)
 								.then(
-									CommandManager.argument("path", NbtPathArgumentType.create())
+									CommandManager.argument("path", NbtPathArgumentType.nbtPath())
 										.executes(
 											commandContext -> executeGet(
 													commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")
@@ -107,7 +107,7 @@ public class DataCommand {
 					objectType.addArgumentsToBuilder(
 						CommandManager.literal("remove"),
 						argumentBuilder -> argumentBuilder.then(
-								CommandManager.argument("path", NbtPathArgumentType.create())
+								CommandManager.argument("path", NbtPathArgumentType.nbtPath())
 									.executes(
 										commandContext -> executeRemove(
 												commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")
@@ -210,7 +210,7 @@ public class DataCommand {
 			objectType.addArgumentsToBuilder(
 				literalArgumentBuilder,
 				argumentBuilder -> {
-					ArgumentBuilder<ServerCommandSource, ?> argumentBuilder2 = CommandManager.argument("targetPath", NbtPathArgumentType.create());
+					ArgumentBuilder<ServerCommandSource, ?> argumentBuilder2 = CommandManager.argument("targetPath", NbtPathArgumentType.nbtPath());
 
 					for (DataCommand.ObjectType objectType2 : SOURCE_OBJECT_TYPES) {
 						biConsumer.accept(
@@ -219,7 +219,7 @@ public class DataCommand {
 									CommandManager.literal("from"), argumentBuilderx -> argumentBuilderx.executes(commandContext -> {
 											List<Tag> list = Collections.singletonList(objectType2.getObject(commandContext).getTag());
 											return executeModify(commandContext, objectType, modifyOperation, list);
-										}).then(CommandManager.argument("sourcePath", NbtPathArgumentType.create()).executes(commandContext -> {
+										}).then(CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath()).executes(commandContext -> {
 											DataCommandObject dataCommandObject = objectType2.getObject(commandContext);
 											NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(commandContext, "sourcePath");
 											List<Tag> list = nbtPath.get(dataCommandObject.getTag());
@@ -232,7 +232,7 @@ public class DataCommand {
 					biConsumer.accept(
 						argumentBuilder2,
 						(DataCommand.ModifyArgumentCreator)modifyOperation -> (LiteralArgumentBuilder)CommandManager.literal("value")
-								.then(CommandManager.argument("value", NbtTagArgumentType.create()).executes(commandContext -> {
+								.then(CommandManager.argument("value", NbtTagArgumentType.nbtTag()).executes(commandContext -> {
 									List<Tag> list = Collections.singletonList(NbtTagArgumentType.getTag(commandContext, "value"));
 									return executeModify(commandContext, objectType, modifyOperation, list);
 								}))
@@ -256,7 +256,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag);
-			commandContext.getSource().method_9226(dataCommandObject.getModifiedFeedback(), true);
+			commandContext.getSource().sendFeedback(dataCommandObject.getModifiedFeedback(), true);
 			return i;
 		}
 	}
@@ -268,7 +268,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag);
-			serverCommandSource.method_9226(dataCommandObject.getModifiedFeedback(), true);
+			serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
 			return i;
 		}
 	}
@@ -301,7 +301,7 @@ public class DataCommand {
 			i = tag.asString().length();
 		}
 
-		serverCommandSource.method_9226(dataCommandObject.getQueryFeedback(tag), false);
+		serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(tag), false);
 		return i;
 	}
 
@@ -311,13 +311,13 @@ public class DataCommand {
 			throw GET_INVALID_EXCEPTION.create(nbtPath.toString());
 		} else {
 			int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-			serverCommandSource.method_9226(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
+			serverCommandSource.sendFeedback(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
 			return i;
 		}
 	}
 
 	private static int executeGet(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
-		serverCommandSource.method_9226(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
+		serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
 		return 1;
 	}
 
@@ -328,7 +328,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setTag(compoundTag3);
-			serverCommandSource.method_9226(dataCommandObject.getModifiedFeedback(), true);
+			serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
 			return 1;
 		}
 	}

@@ -15,12 +15,12 @@ public class MapBannerMarker {
 	private final BlockPos pos;
 	private final DyeColor color;
 	@Nullable
-	private final Text field_67;
+	private final Text name;
 
 	public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Text text) {
 		this.pos = blockPos;
 		this.color = dyeColor;
-		this.field_67 = text;
+		this.name = text;
 	}
 
 	public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
@@ -36,7 +36,7 @@ public class MapBannerMarker {
 		if (blockEntity instanceof BannerBlockEntity) {
 			BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
 			DyeColor dyeColor = bannerBlockEntity.getColorForState(() -> blockView.getBlockState(blockPos));
-			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.method_5797() : null;
+			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
 			return new MapBannerMarker(blockPos, dyeColor, text);
 		} else {
 			return null;
@@ -86,8 +86,8 @@ public class MapBannerMarker {
 	}
 
 	@Nullable
-	public Text method_68() {
-		return this.field_67;
+	public Text getName() {
+		return this.name;
 	}
 
 	public boolean equals(Object object) {
@@ -95,22 +95,22 @@ public class MapBannerMarker {
 			return true;
 		} else if (object != null && this.getClass() == object.getClass()) {
 			MapBannerMarker mapBannerMarker = (MapBannerMarker)object;
-			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.field_67, mapBannerMarker.field_67);
+			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.name, mapBannerMarker.name);
 		} else {
 			return false;
 		}
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.pos, this.color, this.field_67});
+		return Objects.hash(new Object[]{this.pos, this.color, this.name});
 	}
 
 	public CompoundTag getNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
 		compoundTag.putString("Color", this.color.getName());
-		if (this.field_67 != null) {
-			compoundTag.putString("Name", Text.Serializer.toJson(this.field_67));
+		if (this.name != null) {
+			compoundTag.putString("Name", Text.Serializer.toJson(this.name));
 		}
 
 		return compoundTag;

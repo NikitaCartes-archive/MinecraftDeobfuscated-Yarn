@@ -34,7 +34,7 @@ public class OpenToLanScreen extends Screen {
 				text = new TranslatableText("commands.publish.failed");
 			}
 
-			this.minecraft.inGameHud.getChatHud().method_1812(text);
+			this.minecraft.inGameHud.getChatHud().addMessage(text);
 		}));
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))

@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class SignBlockEntity extends BlockEntity {
-	public final Text[] field_12050 = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
+	public final Text[] text = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
 	@Environment(EnvType.CLIENT)
 	private boolean caretVisible;
 	private int currentRow = -1;
@@ -42,7 +42,7 @@ public class SignBlockEntity extends BlockEntity {
 		super.toTag(compoundTag);
 
 		for (int i = 0; i < 4; i++) {
-			String string = Text.Serializer.toJson(this.field_12050[i]);
+			String string = Text.Serializer.toJson(this.text[i]);
 			compoundTag.putString("Text" + (i + 1), string);
 		}
 
@@ -61,12 +61,12 @@ public class SignBlockEntity extends BlockEntity {
 			Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
 			if (this.world instanceof ServerWorld) {
 				try {
-					this.field_12050[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
+					this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
 				} catch (CommandSyntaxException var6) {
-					this.field_12050[i] = text;
+					this.text[i] = text;
 				}
 			} else {
-				this.field_12050[i] = text;
+				this.text[i] = text;
 			}
 
 			this.textBeingEdited[i] = null;
@@ -74,20 +74,20 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_11302(int i) {
-		return this.field_12050[i];
+	public Text getTextOnRow(int i) {
+		return this.text[i];
 	}
 
-	public void method_11299(int i, Text text) {
-		this.field_12050[i] = text;
+	public void setTextOnRow(int i, Text text) {
+		this.text[i] = text;
 		this.textBeingEdited[i] = null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public String getTextBeingEditedOnRow(int i, Function<Text, String> function) {
-		if (this.textBeingEdited[i] == null && this.field_12050[i] != null) {
-			this.textBeingEdited[i] = (String)function.apply(this.field_12050[i]);
+		if (this.textBeingEdited[i] == null && this.text[i] != null) {
+			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
 		}
 
 		return this.textBeingEdited[i];
@@ -130,8 +130,8 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	public boolean onActivate(PlayerEntity playerEntity) {
-		for (Text text : this.field_12050) {
-			Style style = text == null ? null : text.method_10866();
+		for (Text text : this.text) {
+			Style style = text == null ? null : text.getStyle();
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
 				if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
@@ -144,8 +144,8 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.method_5477().getString();
-		Text text = (Text)(serverPlayerEntity == null ? new LiteralText("Sign") : serverPlayerEntity.method_5476());
+		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
+		Text text = (Text)(serverPlayerEntity == null ? new LiteralText("Sign") : serverPlayerEntity.getDisplayName());
 		return new ServerCommandSource(
 			CommandOutput.DUMMY,
 			new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5),

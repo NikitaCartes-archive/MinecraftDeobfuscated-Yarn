@@ -37,7 +37,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 
 		for (int l = 0; l < k; l++) {
 			String string = packetByteBuf.readString(32767);
-			Text text = packetByteBuf.readBoolean() ? packetByteBuf.method_10808() : null;
+			Text text = packetByteBuf.readBoolean() ? packetByteBuf.readText() : null;
 			list.add(new Suggestion(stringRange, string, text));
 		}
 
@@ -55,7 +55,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 			packetByteBuf.writeString(suggestion.getText());
 			packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
 			if (suggestion.getTooltip() != null) {
-				packetByteBuf.method_10805(Texts.toText(suggestion.getTooltip()));
+				packetByteBuf.writeText(Texts.toText(suggestion.getTooltip()));
 			}
 		}
 	}

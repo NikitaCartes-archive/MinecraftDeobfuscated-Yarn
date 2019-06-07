@@ -292,10 +292,6 @@ public class GLX {
 		return GL.getCapabilities().OpenGL20;
 	}
 
-	public static boolean supportsOpenGL32() {
-		return GL.getCapabilities().OpenGL32;
-	}
-
 	public static void withTextureRestore(Runnable runnable) {
 		GL11.glPushAttrib(270336);
 
@@ -401,7 +397,11 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 36054;
 			GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER = 36059;
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
-		} else if (gLCapabilities.GL_EXT_framebuffer_object) {
+		} else {
+			if (!gLCapabilities.GL_EXT_framebuffer_object) {
+				throw new IllegalStateException("The driver does not appear to support framebuffer objects");
+			}
+
 			capsString = capsString + "EXT_framebuffer_object is supported.\n";
 			fboMode = GLX.FBOMode.field_4984;
 			GL_FRAMEBUFFER = 36160;

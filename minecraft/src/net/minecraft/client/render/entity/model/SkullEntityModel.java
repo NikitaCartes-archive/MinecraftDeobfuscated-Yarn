@@ -7,7 +7,7 @@ import net.minecraft.client.model.Model;
 
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends Model {
-	protected final Cuboid field_3564;
+	protected final Cuboid skull;
 
 	public SkullEntityModel() {
 		this(0, 35, 64, 64);
@@ -16,14 +16,14 @@ public class SkullEntityModel extends Model {
 	public SkullEntityModel(int i, int j, int k, int l) {
 		this.textureWidth = k;
 		this.textureHeight = l;
-		this.field_3564 = new Cuboid(this, i, j);
-		this.field_3564.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
-		this.field_3564.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.skull = new Cuboid(this, i, j);
+		this.skull.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
+		this.skull.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
-		this.field_3564.yaw = i * (float) (Math.PI / 180.0);
-		this.field_3564.pitch = j * (float) (Math.PI / 180.0);
-		this.field_3564.render(k);
+	public void render(float f, float g, float h, float i, float j, float k) {
+		this.skull.yaw = i * (float) (Math.PI / 180.0);
+		this.skull.pitch = j * (float) (Math.PI / 180.0);
+		this.skull.render(k);
 	}
 }

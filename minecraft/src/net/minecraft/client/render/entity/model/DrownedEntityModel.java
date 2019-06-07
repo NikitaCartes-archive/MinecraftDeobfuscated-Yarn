@@ -6,7 +6,7 @@ import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -31,7 +31,7 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		this.leftArmPose = BipedEntityModel.ArmPose.field_3409;
 		ItemStack itemStack = zombieEntity.getStackInHand(Hand.field_5808);
 		if (itemStack.getItem() == Items.field_8547 && zombieEntity.isAttacking()) {
-			if (zombieEntity.getMainHand() == AbsoluteHand.field_6183) {
+			if (zombieEntity.getMainArm() == Arm.field_6183) {
 				this.rightArmPose = BipedEntityModel.ArmPose.field_3407;
 			} else {
 				this.leftArmPose = BipedEntityModel.ArmPose.field_3407;

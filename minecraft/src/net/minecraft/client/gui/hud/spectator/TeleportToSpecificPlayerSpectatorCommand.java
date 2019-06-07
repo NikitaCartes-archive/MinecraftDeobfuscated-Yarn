@@ -38,7 +38,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public Text method_16892() {
+	public Text getName() {
 		return new LiteralText(this.gameProfile.getName());
 	}
 

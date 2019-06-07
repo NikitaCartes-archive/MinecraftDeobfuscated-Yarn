@@ -65,7 +65,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Text method_17823() {
+	protected Text getContainerName() {
 		return new TranslatableText("container.dispenser");
 	}
 

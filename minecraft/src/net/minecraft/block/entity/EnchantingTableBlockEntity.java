@@ -22,7 +22,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public float field_11963;
 	public float field_11962;
 	private static final Random RANDOM = new Random();
-	private Text field_11959;
+	private Text customName;
 
 	public EnchantingTableBlockEntity() {
 		super(BlockEntityType.field_11912);
@@ -32,7 +32,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		if (this.hasCustomName()) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_11959));
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
 		return compoundTag;
@@ -42,7 +42,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_11959 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -107,17 +107,17 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	}
 
 	@Override
-	public Text method_5477() {
-		return (Text)(this.field_11959 != null ? this.field_11959 : new TranslatableText("container.enchant"));
+	public Text getName() {
+		return (Text)(this.customName != null ? this.customName : new TranslatableText("container.enchant"));
 	}
 
-	public void method_11179(@Nullable Text text) {
-		this.field_11959 = text;
+	public void setCustomName(@Nullable Text text) {
+		this.customName = text;
 	}
 
 	@Nullable
 	@Override
-	public Text method_5797() {
-		return this.field_11959;
+	public Text getCustomName() {
+		return this.customName;
 	}
 }

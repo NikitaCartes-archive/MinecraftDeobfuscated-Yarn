@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
@@ -146,7 +147,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean("mobGriefing")) {
+		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.field_19388)) {
 			world.breakBlock(blockPos, true);
 		}
 

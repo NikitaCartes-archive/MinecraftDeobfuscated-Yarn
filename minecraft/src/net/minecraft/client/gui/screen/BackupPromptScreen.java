@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 public class BackupPromptScreen extends Screen {
 	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
-	private final Text field_2364;
+	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
 	private final List<String> wrappedText = Lists.<String>newArrayList();
 	private final String eraseCacheText;
@@ -26,7 +26,7 @@ public class BackupPromptScreen extends Screen {
 		super(text);
 		this.parent = screen;
 		this.callback = callback;
-		this.field_2364 = text2;
+		this.subtitle = text2;
 		this.showEraseCacheCheckbox = bl;
 		this.eraseCacheText = I18n.translate("selectWorld.backupEraseCache");
 		this.confirmText = I18n.translate("selectWorld.backupJoinConfirmButton");
@@ -38,7 +38,7 @@ public class BackupPromptScreen extends Screen {
 	protected void init() {
 		super.init();
 		this.wrappedText.clear();
-		this.wrappedText.addAll(this.font.wrapStringToWidthAsList(this.field_2364.asFormattedString(), this.width - 50));
+		this.wrappedText.addAll(this.font.wrapStringToWidthAsList(this.subtitle.asFormattedString(), this.width - 50));
 		int i = (this.wrappedText.size() + 1) * 9;
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, this.confirmText, buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked()))

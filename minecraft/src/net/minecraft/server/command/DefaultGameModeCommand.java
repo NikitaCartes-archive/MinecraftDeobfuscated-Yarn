@@ -34,7 +34,7 @@ public class DefaultGameModeCommand {
 			}
 		}
 
-		serverCommandSource.method_9226(new TranslatableText("commands.defaultgamemode.success", gameMode.method_8383()), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.defaultgamemode.success", gameMode.getTranslatableName()), true);
 		return i;
 	}
 }

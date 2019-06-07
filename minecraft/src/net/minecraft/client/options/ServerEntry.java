@@ -100,14 +100,14 @@ public class ServerEntry {
 		field_3764("disabled"),
 		field_3767("prompt");
 
-		private final Text field_3765;
+		private final Text name;
 
 		private ResourcePackState(String string2) {
-			this.field_3765 = new TranslatableText("addServer.resourcePack." + string2);
+			this.name = new TranslatableText("addServer.resourcePack." + string2);
 		}
 
-		public Text method_2997() {
-			return this.field_3765;
+		public Text getName() {
+			return this.name;
 		}
 	}
 }

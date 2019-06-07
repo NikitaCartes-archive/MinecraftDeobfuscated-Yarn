@@ -15,7 +15,7 @@ public class GameInfoChatListener implements ClientChatListener {
 	}
 
 	@Override
-	public void method_1794(MessageType messageType, Text text) {
-		this.client.inGameHud.method_1758(text, false);
+	public void onChatMessage(MessageType messageType, Text text) {
+		this.client.inGameHud.setOverlayMessage(text, false);
 	}
 }

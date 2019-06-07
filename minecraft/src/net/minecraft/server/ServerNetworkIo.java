@@ -164,7 +164,7 @@ public class ServerNetworkIo {
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
 							Text text = new LiteralText("Internal server error");
-							clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.method_10747(text));
+							clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
 							clientConnection.disableAutoRead();
 						}
 					} else {

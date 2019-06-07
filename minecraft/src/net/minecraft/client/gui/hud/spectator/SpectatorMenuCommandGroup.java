@@ -9,5 +9,5 @@ import net.minecraft.text.Text;
 public interface SpectatorMenuCommandGroup {
 	List<SpectatorMenuCommand> getCommands();
 
-	Text method_2781();
+	Text getPrompt();
 }

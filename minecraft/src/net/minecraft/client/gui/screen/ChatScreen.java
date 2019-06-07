@@ -55,14 +55,14 @@ public class ChatScreen extends Screen {
 	private boolean completingSuggestion;
 
 	public ChatScreen(String string) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.field_18973 = string;
 	}
 
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.field_2387 = this.minecraft.inGameHud.getChatHud().method_1809().size();
+		this.field_2387 = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
 		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox"));
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
@@ -315,7 +315,7 @@ public class ChatScreen extends Screen {
 			return true;
 		} else {
 			if (i == 0) {
-				Text text = this.minecraft.inGameHud.getChatHud().method_1816(d, e);
+				Text text = this.minecraft.inGameHud.getChatHud().getText(d, e);
 				if (text != null && this.handleComponentClicked(text)) {
 					return true;
 				}
@@ -336,7 +336,7 @@ public class ChatScreen extends Screen {
 
 	public void method_2114(int i) {
 		int j = this.field_2387 + i;
-		int k = this.minecraft.inGameHud.getChatHud().method_1809().size();
+		int k = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
 		j = MathHelper.clamp(j, 0, k);
 		if (j != this.field_2387) {
 			if (j == k) {
@@ -347,7 +347,7 @@ public class ChatScreen extends Screen {
 					this.field_2389 = this.chatField.getText();
 				}
 
-				this.chatField.setText((String)this.minecraft.inGameHud.getChatHud().method_1809().get(j));
+				this.chatField.setText((String)this.minecraft.inGameHud.getChatHud().getMessageHistory().get(j));
 				this.suggestionsWindow = null;
 				this.field_2387 = j;
 				this.field_2380 = false;
@@ -379,8 +379,8 @@ public class ChatScreen extends Screen {
 			}
 		}
 
-		Text text = this.minecraft.inGameHud.getChatHud().method_1816((double)i, (double)j);
-		if (text != null && text.method_10866().getHoverEvent() != null) {
+		Text text = this.minecraft.inGameHud.getChatHud().getText((double)i, (double)j);
+		if (text != null && text.getStyle().getHoverEvent() != null) {
 			this.renderComponentHoverEffect(text, i, j);
 		}
 

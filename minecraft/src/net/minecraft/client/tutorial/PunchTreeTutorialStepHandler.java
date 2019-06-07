@@ -16,8 +16,8 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
-	private static final Text field_5638 = new TranslatableText("tutorial.punch_tree.title");
-	private static final Text field_5639 = new TranslatableText("tutorial.punch_tree.description", TutorialManager.method_4913("attack"));
+	private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
+	private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
 	private final TutorialManager manager;
 	private TutorialToast field_5637;
 	private int ticks;
@@ -49,7 +49,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, field_5638, field_5639, true);
+				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5637);
 			}
 		}

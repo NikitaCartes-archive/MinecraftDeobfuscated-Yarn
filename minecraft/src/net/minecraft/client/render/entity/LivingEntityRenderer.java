@@ -370,7 +370,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = Formatting.strip(livingEntity.method_5477().getString());
+			String string = Formatting.strip(livingEntity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.field_7559))) {
@@ -414,7 +414,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
 			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
-				String string = livingEntity.method_5476().asFormattedString();
+				String string = livingEntity.getDisplayName().asFormattedString();
 				GlStateManager.alphaFunc(516, 0.1F);
 				this.renderLabel(livingEntity, d, e, f, string, g);
 			}

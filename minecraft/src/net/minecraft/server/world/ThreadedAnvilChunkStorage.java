@@ -1,6 +1,7 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
@@ -12,8 +13,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
-import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -67,6 +66,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.ChunkSerializer;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.VersionedChunkStorage;
@@ -706,8 +706,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.ticketManager;
 	}
 
-	protected ObjectBidirectionalIterator<Entry<ChunkHolder>> entryIterator() {
-		return this.chunkHolders.long2ObjectEntrySet().fastIterator();
+	protected Iterable<ChunkHolder> entryIterator() {
+		return Iterables.unmodifiableIterable(this.chunkHolders.values());
 	}
 
 	@Nullable
@@ -717,13 +717,16 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
-		return this.playerChunkWatchingManager
-			.getPlayersWatchingChunk(chunkPos.toLong())
-			.noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
+		long l = chunkPos.toLong();
+		return !this.ticketManager.method_20800(l)
+			? true
+			: this.playerChunkWatchingManager
+				.getPlayersWatchingChunk(l)
+				.noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
 	}
 
 	private boolean doesNotGenerateChunks(ServerPlayerEntity serverPlayerEntity) {
-		return serverPlayerEntity.isSpectator() && !this.world.getGameRules().getBoolean("spectatorsGenerateChunks");
+		return serverPlayerEntity.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.field_19402);
 	}
 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity serverPlayerEntity, boolean bl) {

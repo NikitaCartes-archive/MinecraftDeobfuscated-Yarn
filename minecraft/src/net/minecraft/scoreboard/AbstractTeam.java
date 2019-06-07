@@ -18,7 +18,7 @@ public abstract class AbstractTeam {
 
 	public abstract String getName();
 
-	public abstract Text method_1198(Text text);
+	public abstract Text modifyText(Text text);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();
@@ -57,7 +57,7 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public Text method_1209() {
+		public Text getTranslationKey() {
 			return new TranslatableText("team.collision." + this.name);
 		}
 	}
@@ -83,7 +83,7 @@ public abstract class AbstractTeam {
 			this.value = j;
 		}
 
-		public Text method_1214() {
+		public Text getTranslationKey() {
 			return new TranslatableText("team.visibility." + this.name);
 		}
 	}

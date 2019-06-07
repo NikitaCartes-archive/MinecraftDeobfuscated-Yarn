@@ -208,7 +208,7 @@ public class GrindstoneContainer extends Container {
 		if (itemStack2.getItem() == Items.field_8598 && map.size() == 0) {
 			itemStack2 = new ItemStack(Items.field_8529);
 			if (itemStack.hasCustomName()) {
-				itemStack2.method_7977(itemStack.method_7964());
+				itemStack2.setCustomName(itemStack.getName());
 			}
 		}
 

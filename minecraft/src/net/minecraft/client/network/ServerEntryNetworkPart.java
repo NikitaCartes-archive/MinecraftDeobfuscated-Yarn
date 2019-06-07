@@ -66,7 +66,7 @@ public class ServerEntryNetworkPart {
 				@Override
 				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
 					if (this.field_3773) {
-						clientConnection.method_10747(new TranslatableText("multiplayer.status.unrequested"));
+						clientConnection.disconnect(new TranslatableText("multiplayer.status.unrequested"));
 					} else {
 						this.field_3773 = true;
 						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
@@ -142,11 +142,11 @@ public class ServerEntryNetworkPart {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
-					clientConnection.method_10747(new TranslatableText("multiplayer.status.finished"));
+					clientConnection.disconnect(new TranslatableText("multiplayer.status.finished"));
 				}
 
 				@Override
-				public void method_10839(Text text) {
+				public void onDisconnected(Text text) {
 					if (!this.field_3775) {
 						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, text.getString());
 						serverEntry.label = Formatting.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
@@ -262,7 +262,7 @@ public class ServerEntryNetworkPart {
 				ClientConnection clientConnection = (ClientConnection)iterator.next();
 				if (clientConnection.isOpen()) {
 					iterator.remove();
-					clientConnection.method_10747(new TranslatableText("multiplayer.status.cancelled"));
+					clientConnection.disconnect(new TranslatableText("multiplayer.status.cancelled"));
 				}
 			}
 		}

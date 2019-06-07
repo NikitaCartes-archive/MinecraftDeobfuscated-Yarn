@@ -42,6 +42,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameRules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -259,11 +260,11 @@ public class PlayerAdvancementTracker {
 				advancement.getRewards().apply(this.owner);
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
-					&& this.owner.world.getGameRules().getBoolean("announceAdvancements")) {
+					&& this.owner.world.getGameRules().getBoolean(GameRules.field_19409)) {
 					this.server
 						.getPlayerManager()
 						.sendToAll(
-							new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.method_5476(), advancement.toHoverableText())
+							new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText())
 						);
 				}
 			}

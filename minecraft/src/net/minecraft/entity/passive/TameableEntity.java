@@ -21,6 +21,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class TameableEntity extends AnimalEntity {
@@ -224,8 +225,8 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.world.isClient && this.world.getGameRules().getBoolean("showDeathMessages") && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().method_9203(this.getDamageTracker().method_5548());
+		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19398) && this.getOwner() instanceof ServerPlayerEntity) {
+			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
 		}
 
 		super.onDeath(damageSource);

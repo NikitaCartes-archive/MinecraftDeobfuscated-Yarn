@@ -13,6 +13,11 @@ public class LureEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return super.getMinimumPower(i) + 50;
+	}
+
+	@Override
 	public int getMaximumLevel() {
 		return 3;
 	}

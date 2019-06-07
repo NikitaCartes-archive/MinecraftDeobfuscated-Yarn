@@ -70,13 +70,13 @@ public class EntitySelectorOptions {
 		object -> new TranslatableText("argument.entity.options.type.invalid", object)
 	);
 
-	private static void method_9961(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
+	private static void putOption(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
 		options.put(string, new EntitySelectorOptions.SelectorOption(selectorHandler, predicate, text));
 	}
 
 	public static void register() {
 		if (options.isEmpty()) {
-			method_9961("name", entitySelectorReader -> {
+			putOption("name", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				boolean bl = entitySelectorReader.readNegationCharacter();
 				String string = entitySelectorReader.getReader().readString();
@@ -90,10 +90,10 @@ public class EntitySelectorOptions {
 						entitySelectorReader.method_9899(true);
 					}
 
-					entitySelectorReader.setPredicate(entity -> entity.method_5477().asString().equals(string) != bl);
+					entitySelectorReader.setPredicate(entity -> entity.getName().asString().equals(string) != bl);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9912(), new TranslatableText("argument.entity.options.name.description"));
-			method_9961("distance", entitySelectorReader -> {
+			putOption("distance", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(entitySelectorReader.getReader());
 				if ((floatRange.getMin() == null || !((Float)floatRange.getMin() < 0.0F)) && (floatRange.getMax() == null || !((Float)floatRange.getMax() < 0.0F))) {
@@ -104,7 +104,7 @@ public class EntitySelectorOptions {
 					throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
 			}, entitySelectorReader -> entitySelectorReader.getDistance().isDummy(), new TranslatableText("argument.entity.options.distance.description"));
-			method_9961("level", entitySelectorReader -> {
+			putOption("level", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				NumberRange.IntRange intRange = NumberRange.IntRange.parse(entitySelectorReader.getReader());
 				if ((intRange.getMin() == null || (Integer)intRange.getMin() >= 0) && (intRange.getMax() == null || (Integer)intRange.getMax() >= 0)) {
@@ -115,43 +115,43 @@ public class EntitySelectorOptions {
 					throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
 			}, entitySelectorReader -> entitySelectorReader.getExperienceRange().isDummy(), new TranslatableText("argument.entity.options.level.description"));
-			method_9961("x", entitySelectorReader -> {
+			putOption("x", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setOffsetX(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getOffsetX() == null, new TranslatableText("argument.entity.options.x.description"));
-			method_9961("y", entitySelectorReader -> {
+			putOption("y", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setOffsetY(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getOffsetY() == null, new TranslatableText("argument.entity.options.y.description"));
-			method_9961("z", entitySelectorReader -> {
+			putOption("z", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setOffsetZ(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getOffsetZ() == null, new TranslatableText("argument.entity.options.z.description"));
-			method_9961("dx", entitySelectorReader -> {
+			putOption("dx", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setBoxX(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getBoxX() == null, new TranslatableText("argument.entity.options.dx.description"));
-			method_9961("dy", entitySelectorReader -> {
+			putOption("dy", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setBoxY(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getBoxY() == null, new TranslatableText("argument.entity.options.dy.description"));
-			method_9961("dz", entitySelectorReader -> {
+			putOption("dz", entitySelectorReader -> {
 				entitySelectorReader.setLocalWorldOnly();
 				entitySelectorReader.setBoxZ(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.getBoxZ() == null, new TranslatableText("argument.entity.options.dz.description"));
-			method_9961(
+			putOption(
 				"x_rotation",
 				entitySelectorReader -> entitySelectorReader.setPitchRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)),
 				entitySelectorReader -> entitySelectorReader.getPitchRange() == FloatRange.ANY,
 				new TranslatableText("argument.entity.options.x_rotation.description")
 			);
-			method_9961(
+			putOption(
 				"y_rotation",
 				entitySelectorReader -> entitySelectorReader.setYawRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)),
 				entitySelectorReader -> entitySelectorReader.getYawRange() == FloatRange.ANY,
 				new TranslatableText("argument.entity.options.y_rotation.description")
 			);
-			method_9961(
+			putOption(
 				"limit",
 				entitySelectorReader -> {
 					int i = entitySelectorReader.getReader().getCursor();
@@ -167,7 +167,7 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.method_9866(),
 				new TranslatableText("argument.entity.options.limit.description")
 			);
-			method_9961(
+			putOption(
 				"sort",
 				entitySelectorReader -> {
 					int i = entitySelectorReader.getReader().getCursor();
@@ -200,7 +200,7 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.method_9889(),
 				new TranslatableText("argument.entity.options.sort.description")
 			);
-			method_9961("gamemode", entitySelectorReader -> {
+			putOption("gamemode", entitySelectorReader -> {
 				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
 					String stringx = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 					boolean blx = !entitySelectorReader.method_9837();
@@ -257,7 +257,7 @@ public class EntitySelectorOptions {
 					}
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9839(), new TranslatableText("argument.entity.options.gamemode.description"));
-			method_9961("team", entitySelectorReader -> {
+			putOption("team", entitySelectorReader -> {
 				boolean bl = entitySelectorReader.readNegationCharacter();
 				String string = entitySelectorReader.getReader().readUnquotedString();
 				entitySelectorReader.setPredicate(entity -> {
@@ -275,7 +275,7 @@ public class EntitySelectorOptions {
 					entitySelectorReader.method_9865(true);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9904(), new TranslatableText("argument.entity.options.team.description"));
-			method_9961("type", entitySelectorReader -> {
+			putOption("type", entitySelectorReader -> {
 				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
 					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
 					CommandSource.suggestIdentifiers(EntityTypeTags.getContainer().getKeys(), suggestionsBuilder, "!#");
@@ -322,7 +322,7 @@ public class EntitySelectorOptions {
 					}
 				}
 			}, entitySelectorReader -> !entitySelectorReader.hasEntityType(), new TranslatableText("argument.entity.options.type.description"));
-			method_9961(
+			putOption(
 				"tag",
 				entitySelectorReader -> {
 					boolean bl = entitySelectorReader.readNegationCharacter();
@@ -334,7 +334,7 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> true,
 				new TranslatableText("argument.entity.options.tag.description")
 			);
-			method_9961("nbt", entitySelectorReader -> {
+			putOption("nbt", entitySelectorReader -> {
 				boolean bl = entitySelectorReader.readNegationCharacter();
 				CompoundTag compoundTag = new StringNbtReader(entitySelectorReader.getReader()).parseCompoundTag();
 				entitySelectorReader.setPredicate(entity -> {
@@ -349,7 +349,7 @@ public class EntitySelectorOptions {
 					return TagHelper.areTagsEqual(compoundTag, compoundTag2, true) != bl;
 				});
 			}, entitySelectorReader -> true, new TranslatableText("argument.entity.options.nbt.description"));
-			method_9961("scores", entitySelectorReader -> {
+			putOption("scores", entitySelectorReader -> {
 				StringReader stringReader = entitySelectorReader.getReader();
 				Map<String, NumberRange.IntRange> map = Maps.<String, NumberRange.IntRange>newHashMap();
 				stringReader.expect('{');
@@ -398,7 +398,7 @@ public class EntitySelectorOptions {
 
 				entitySelectorReader.method_9848(true);
 			}, entitySelectorReader -> !entitySelectorReader.method_9843(), new TranslatableText("argument.entity.options.scores.description"));
-			method_9961("advancements", entitySelectorReader -> {
+			putOption("advancements", entitySelectorReader -> {
 				StringReader stringReader = entitySelectorReader.getReader();
 				Map<Identifier, Predicate<AdvancementProgress>> map = Maps.<Identifier, Predicate<AdvancementProgress>>newHashMap();
 				stringReader.expect('{');
@@ -502,7 +502,7 @@ public class EntitySelectorOptions {
 		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : options.entrySet()) {
 			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).applicable.test(entitySelectorReader)
 				&& ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
-				suggestionsBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).field_10894);
+				suggestionsBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}
 	}
@@ -514,12 +514,12 @@ public class EntitySelectorOptions {
 	static class SelectorOption {
 		public final EntitySelectorOptions.SelectorHandler handler;
 		public final Predicate<EntitySelectorReader> applicable;
-		public final Text field_10894;
+		public final Text description;
 
 		private SelectorOption(EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
 			this.handler = selectorHandler;
 			this.applicable = predicate;
-			this.field_10894 = text;
+			this.description = text;
 		}
 	}
 }

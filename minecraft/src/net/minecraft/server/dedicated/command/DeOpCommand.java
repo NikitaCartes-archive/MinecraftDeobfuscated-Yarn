@@ -20,7 +20,7 @@ public class DeOpCommand {
 			CommandManager.literal("deop")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.create())
+					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder
@@ -39,7 +39,7 @@ public class DeOpCommand {
 			if (playerManager.isOperator(gameProfile)) {
 				playerManager.removeFromOperators(gameProfile);
 				i++;
-				serverCommandSource.method_9226(new TranslatableText("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
 			}
 		}
 

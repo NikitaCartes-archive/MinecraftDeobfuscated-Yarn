@@ -42,7 +42,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(false);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.method_9226(new TranslatableText("commands.weather.set.clear"), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
 		return i;
 	}
 
@@ -52,7 +52,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.method_9226(new TranslatableText("commands.weather.set.rain"), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
 		return i;
 	}
 
@@ -62,7 +62,7 @@ public class WeatherCommand {
 		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
 		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
 		serverCommandSource.getWorld().getLevelProperties().setThundering(true);
-		serverCommandSource.method_9226(new TranslatableText("commands.weather.set.thunder"), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
 		return i;
 	}
 }

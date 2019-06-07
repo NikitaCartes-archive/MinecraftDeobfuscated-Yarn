@@ -24,7 +24,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Text method_16892() {
+		public Text getName() {
 			return new LiteralText("");
 		}
 
@@ -127,7 +127,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Text method_16892() {
+		public Text getName() {
 			return this.direction < 0 ? new TranslatableText("spectatorMenu.previous_page") : new TranslatableText("spectatorMenu.next_page");
 		}
 
@@ -158,7 +158,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public Text method_16892() {
+		public Text getName() {
 			return new TranslatableText("spectatorMenu.close");
 		}
 

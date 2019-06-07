@@ -29,9 +29,9 @@ import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.SystemUtil;
 
 public interface Text extends Message, Iterable<Text> {
-	Text method_10862(Style style);
+	Text setStyle(Style style);
 
-	Style method_10866();
+	Style getStyle();
 
 	default Text append(String string) {
 		return this.append(new LiteralText(string));
@@ -74,7 +74,7 @@ public interface Text extends Message, Iterable<Text> {
 			Text text = (Text)iterator.next();
 			String string2 = text.asString();
 			if (!string2.isEmpty()) {
-				String string3 = text.method_10866().asString();
+				String string3 = text.getStyle().asString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
 						stringBuilder.append(Formatting.field_1070);
@@ -111,7 +111,7 @@ public interface Text extends Message, Iterable<Text> {
 
 	default Text deepCopy() {
 		Text text = this.copy();
-		text.method_10862(this.method_10866().deepCopy());
+		text.setStyle(this.getStyle().deepCopy());
 
 		for (Text text2 : this.getSiblings()) {
 			text.append(text2.deepCopy());
@@ -121,7 +121,7 @@ public interface Text extends Message, Iterable<Text> {
 	}
 
 	default Text styled(Consumer<Style> consumer) {
-		consumer.accept(this.method_10866());
+		consumer.accept(this.getStyle());
 		return this;
 	}
 
@@ -134,7 +134,7 @@ public interface Text extends Message, Iterable<Text> {
 	}
 
 	default Text formatted(Formatting formatting) {
-		Style style = this.method_10866();
+		Style style = this.getStyle();
 		if (formatting.isColor()) {
 			style.setColor(formatting);
 		}
@@ -163,7 +163,7 @@ public interface Text extends Message, Iterable<Text> {
 
 	static Text copyWithoutChildren(Text text) {
 		Text text2 = text.copy();
-		text2.method_10862(text.method_10866().copy());
+		text2.setStyle(text.getStyle().copy());
 		return text2;
 	}
 
@@ -233,7 +233,7 @@ public interface Text extends Message, Iterable<Text> {
 							objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
 							if (objects[i] instanceof LiteralText) {
 								LiteralText literalText = (LiteralText)objects[i];
-								if (literalText.method_10866().isEmpty() && literalText.getSiblings().isEmpty()) {
+								if (literalText.getStyle().isEmpty() && literalText.getSiblings().isEmpty()) {
 									objects[i] = literalText.getRawString();
 								}
 							}
@@ -286,12 +286,12 @@ public interface Text extends Message, Iterable<Text> {
 					}
 				}
 
-				text.method_10862(jsonDeserializationContext.deserialize(jsonElement, Style.class));
+				text.setStyle(jsonDeserializationContext.deserialize(jsonElement, Style.class));
 				return text;
 			}
 		}
 
-		private void method_10875(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
+		private void addStyle(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
 			JsonElement jsonElement = jsonSerializationContext.serialize(style);
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject2 = (JsonObject)jsonElement;
@@ -304,8 +304,8 @@ public interface Text extends Message, Iterable<Text> {
 
 		public JsonElement method_10874(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			if (!text.method_10866().isEmpty()) {
-				this.method_10875(text.method_10866(), jsonObject, jsonSerializationContext);
+			if (!text.getStyle().isEmpty()) {
+				this.addStyle(text.getStyle(), jsonObject, jsonSerializationContext);
 			}
 
 			if (!text.getSiblings().isEmpty()) {

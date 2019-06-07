@@ -27,7 +27,7 @@ public enum GameMode {
 		return this.name;
 	}
 
-	public Text method_8383() {
+	public Text getTranslatableName() {
 		return new TranslatableText("gameMode." + this.name);
 	}
 

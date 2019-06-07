@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -76,7 +77,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		double d = squaredHorizontalLength(this.getVelocity());
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
-			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {
+			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 				this.dropItem(Blocks.field_10375);
 			}
 		} else {

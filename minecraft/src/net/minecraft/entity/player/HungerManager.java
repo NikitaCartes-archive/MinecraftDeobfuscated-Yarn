@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 
 public class HungerManager {
 	private int foodLevel = 20;
@@ -44,7 +45,7 @@ public class HungerManager {
 			}
 		}
 
-		boolean bl = playerEntity.world.getGameRules().getBoolean("naturalRegeneration");
+		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.field_19395);
 		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 10) {

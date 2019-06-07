@@ -60,21 +60,21 @@ public abstract class BaseFluid extends Fluid {
 				pooledMutable.method_10114(blockPos).method_10118(direction);
 				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
 				if (this.method_15748(fluidState2)) {
-					float f = fluidState2.getHeight(blockView, pooledMutable);
+					float f = fluidState2.method_20785();
 					float g = 0.0F;
 					if (f == 0.0F) {
 						if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement()) {
 							BlockPos blockPos2 = pooledMutable.down();
 							FluidState fluidState3 = blockView.getFluidState(blockPos2);
 							if (this.method_15748(fluidState3)) {
-								f = fluidState3.getHeight(blockView, blockPos2);
+								f = fluidState3.method_20785();
 								if (f > 0.0F) {
-									g = fluidState.getHeight(blockView, blockPos) - (f - 0.8888889F);
+									g = fluidState.method_20785() - (f - 0.8888889F);
 								}
 							}
 						}
 					} else if (f > 0.0F) {
-						g = fluidState.getHeight(blockView, blockPos) - f;
+						g = fluidState.method_20785() - f;
 					}
 
 					if (g != 0.0F) {
@@ -460,7 +460,12 @@ public abstract class BaseFluid extends Fluid {
 
 	@Override
 	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return isFluidAboveEqual(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
+		return isFluidAboveEqual(fluidState, blockView, blockPos) ? 1.0F : fluidState.method_20785();
+	}
+
+	@Override
+	public float method_20784(FluidState fluidState) {
+		return (float)fluidState.getLevel() / 9.0F;
 	}
 
 	@Override

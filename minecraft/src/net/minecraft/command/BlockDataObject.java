@@ -40,7 +40,7 @@ public class BlockDataObject implements DataCommandObject {
 			) {
 				return argumentBuilder.then(
 					CommandManager.literal("block")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.create())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.blockPos())))
 				);
 			}
 		};
@@ -75,7 +75,7 @@ public class BlockDataObject implements DataCommandObject {
 
 	@Override
 	public Text getQueryFeedback(Tag tag) {
-		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.method_10715());
+		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toText());
 	}
 
 	@Override

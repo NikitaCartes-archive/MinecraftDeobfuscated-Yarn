@@ -103,12 +103,12 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				);
 				return true;
 			} else if ((Boolean)blockState.get(OCCUPIED)) {
-				playerEntity.method_7353(new TranslatableText("block.minecraft.bed.occupied"), true);
+				playerEntity.addChatMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
 				return true;
 			} else {
 				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
 					if (sleepFailureReason != null) {
-						playerEntity.method_7353(sleepFailureReason.method_19206(), true);
+						playerEntity.addChatMessage(sleepFailureReason.toText(), true);
 					}
 				});
 				return true;

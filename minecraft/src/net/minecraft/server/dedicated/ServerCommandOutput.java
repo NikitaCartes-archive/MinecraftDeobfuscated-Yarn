@@ -32,7 +32,7 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	@Override
-	public void method_9203(Text text) {
+	public void sendMessage(Text text) {
 		this.buffer.append(text.getString());
 	}
 

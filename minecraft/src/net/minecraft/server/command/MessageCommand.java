@@ -17,10 +17,10 @@ public class MessageCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("message", MessageArgumentType.create())
+							CommandManager.argument("message", MessageArgumentType.message())
 								.executes(
 									commandContext -> execute(
-											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.method_9339(commandContext, "message")
+											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message")
 										)
 								)
 						)
@@ -32,12 +32,12 @@ public class MessageCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.method_9203(
-				new TranslatableText("commands.message.display.incoming", serverCommandSource.method_9223(), text.deepCopy())
+			serverPlayerEntity.sendMessage(
+				new TranslatableText("commands.message.display.incoming", serverCommandSource.getDisplayName(), text.deepCopy())
 					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056})
 			);
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.method_5476(), text.deepCopy())
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text.deepCopy())
 					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}),
 				false
 			);

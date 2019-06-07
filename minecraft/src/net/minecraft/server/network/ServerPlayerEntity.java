@@ -95,7 +95,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -112,6 +112,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -152,7 +153,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
 	private int containerSyncId;
 	public boolean field_13991;
-	public int field_13967;
+	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
 	public ServerPlayerEntity(
@@ -252,9 +253,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			compoundTag.put("enteredNetherPosition", compoundTag2);
 		}
 
-		Entity entity = this.getTopmostVehicle();
+		Entity entity = this.getRootVehicle();
 		Entity entity2 = this.getVehicle();
-		if (entity2 != null && entity != this && entity.method_5817()) {
+		if (entity2 != null && entity != this && entity.hasPlayerRider()) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			CompoundTag compoundTag4 = new CompoundTag();
 			entity.saveToTag(compoundTag4);
@@ -320,8 +321,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void tick() {
 		this.interactionManager.update();
 		this.field_13998--;
-		if (this.field_6008 > 0) {
-			this.field_6008--;
+		if (this.timeUntilRegen > 0) {
+			this.timeUntilRegen--;
 		}
 
 		this.container.sendContentUpdates();
@@ -442,9 +443,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		boolean bl = this.world.getGameRules().getBoolean("showDeathMessages");
+		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19398);
 		if (bl) {
-			Text text = this.getDamageTracker().method_5548();
+			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
 					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text),
@@ -453,7 +454,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							int i = 256;
 							String string = text.asTruncatedString(256);
 							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.field_1054));
-							Text text3 = new TranslatableText("death.attack.even_more_magic", this.method_5476())
+							Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text2)));
 							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text3));
 						}
@@ -483,7 +484,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			livingEntity.updateKilledAdvancementCriterion(this, this.field_6232, damageSource);
 			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
 				boolean bl2 = false;
-				if (this.world.getGameRules().getBoolean("mobGriefing")) {
+				if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 					BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 					BlockState blockState = Blocks.field_10606.getDefaultState();
 					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -826,12 +827,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
 			if (container == null) {
 				if (this.isSpectator()) {
-					this.method_7353(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.field_1061), true);
+					this.addChatMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.field_1061), true);
 				}
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.method_5476()));
+				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
 				container.addListener(this);
 				this.container = container;
 				return OptionalInt.of(this.containerSyncId);
@@ -990,7 +991,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_7353(Text text, boolean bl) {
+	public void addChatMessage(Text text, boolean bl) {
 		this.networkHandler.sendPacket(new ChatMessageS2CPacket(text, bl ? MessageType.field_11733 : MessageType.field_11737));
 	}
 
@@ -1024,9 +1025,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.experienceProgress = serverPlayerEntity.experienceProgress;
 			this.setScore(serverPlayerEntity.getScore());
 			this.lastPortalPosition = serverPlayerEntity.lastPortalPosition;
-			this.field_6020 = serverPlayerEntity.field_6020;
-			this.field_6028 = serverPlayerEntity.field_6028;
-		} else if (this.world.getGameRules().getBoolean("keepInventory") || serverPlayerEntity.isSpectator()) {
+			this.lastPortalDirectionVector = serverPlayerEntity.lastPortalDirectionVector;
+			this.lastPortalDirection = serverPlayerEntity.lastPortalDirection;
+		} else if (this.world.getGameRules().getBoolean(GameRules.field_19389) || serverPlayerEntity.isSpectator()) {
 			this.inventory.clone(serverPlayerEntity.inventory);
 			this.experienceLevel = serverPlayerEntity.experienceLevel;
 			this.totalExperience = serverPlayerEntity.totalExperience;
@@ -1131,7 +1132,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_9203(Text text) {
+	public void sendMessage(Text text) {
 		this.sendChatMessage(text, MessageType.field_11735);
 	}
 
@@ -1164,7 +1165,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.method_12135();
 		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() == AbsoluteHand.field_6182 ? 0 : 1));
+		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.field_6182 ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {

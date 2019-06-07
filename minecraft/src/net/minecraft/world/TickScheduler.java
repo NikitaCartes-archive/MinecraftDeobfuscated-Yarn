@@ -15,5 +15,5 @@ public interface TickScheduler<T> {
 
 	boolean isTicking(BlockPos blockPos, T object);
 
-	void method_20470(Stream<ScheduledTick<T>> stream);
+	void scheduleAll(Stream<ScheduledTick<T>> stream);
 }

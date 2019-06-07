@@ -46,6 +46,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -62,7 +63,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private final int[] field_7091 = new int[2];
 	private final int[] field_7092 = new int[2];
 	private int field_7082;
-	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.method_5476(), BossBar.Color.field_5783, BossBar.Style.field_5795)
+	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
 		.setDarkenSky(true);
 	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
 			&& livingEntity.method_6102();
@@ -106,14 +107,14 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		super.readCustomDataFromTag(compoundTag);
 		this.setInvulTimer(compoundTag.getInt("Invul"));
 		if (this.hasCustomName()) {
-			this.bossBar.method_5413(this.method_5476());
+			this.bossBar.setName(this.getDisplayName());
 		}
 	}
 
 	@Override
-	public void method_5665(@Nullable Text text) {
-		super.method_5665(text);
-		this.bossBar.method_5413(this.method_5476());
+	public void setCustomName(@Nullable Text text) {
+		super.setCustomName(text);
+		this.bossBar.setName(this.getDisplayName());
 	}
 
 	@Override
@@ -239,7 +240,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 					? Explosion.DestructionType.field_18687
 					: Explosion.DestructionType.field_18685;
 				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
@@ -308,7 +309,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 			if (this.field_7082 > 0) {
 				this.field_7082--;
-				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean("mobGriefing")) {
+				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 					int ixx = MathHelper.floor(this.y);
 					int j = MathHelper.floor(this.x);
 					int l = MathHelper.floor(this.z);

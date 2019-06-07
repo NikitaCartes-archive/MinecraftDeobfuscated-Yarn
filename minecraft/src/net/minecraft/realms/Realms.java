@@ -168,7 +168,7 @@ public class Realms {
 	public static void narrateNow(String string) {
 		NarratorManager narratorManager = NarratorManager.INSTANCE;
 		narratorManager.clear();
-		narratorManager.method_1794(MessageType.field_11735, new LiteralText(fixNarrationNewlines(string)));
+		narratorManager.onChatMessage(MessageType.field_11735, new LiteralText(fixNarrationNewlines(string)));
 	}
 
 	private static String fixNarrationNewlines(String string) {

@@ -253,7 +253,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		if (this.isEmpty()) {
 			return new LiteralText("[]");
 		} else {
@@ -264,7 +264,7 @@ public class ListTag extends AbstractListTag<Tag> {
 
 			for (int j = 0; j < this.value.size(); j++) {
 				Text text2 = new LiteralText(Strings.repeat(string, i + 1));
-				text2.append(((Tag)this.value.get(j)).method_10710(string, i + 1));
+				text2.append(((Tag)this.value.get(j)).toText(string, i + 1));
 				if (j != this.value.size() - 1) {
 					text2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}

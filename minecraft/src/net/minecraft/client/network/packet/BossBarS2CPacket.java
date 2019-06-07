@@ -27,7 +27,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	public BossBarS2CPacket(BossBarS2CPacket.Type type, BossBar bossBar) {
 		this.type = type;
 		this.uuid = bossBar.getUuid();
-		this.name = bossBar.method_5414();
+		this.name = bossBar.getName();
 		this.percent = bossBar.getPercent();
 		this.color = bossBar.getColor();
 		this.overlay = bossBar.getOverlay();
@@ -42,7 +42,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = packetByteBuf.readEnumConstant(BossBarS2CPacket.Type.class);
 		switch (this.type) {
 			case field_12078:
-				this.name = packetByteBuf.method_10808();
+				this.name = packetByteBuf.readText();
 				this.percent = packetByteBuf.readFloat();
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
 				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
@@ -54,7 +54,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				this.percent = packetByteBuf.readFloat();
 				break;
 			case field_12084:
-				this.name = packetByteBuf.method_10808();
+				this.name = packetByteBuf.readText();
 				break;
 			case field_12081:
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
@@ -77,7 +77,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeEnumConstant(this.type);
 		switch (this.type) {
 			case field_12078:
-				packetByteBuf.method_10805(this.name);
+				packetByteBuf.writeText(this.name);
 				packetByteBuf.writeFloat(this.percent);
 				packetByteBuf.writeEnumConstant(this.color);
 				packetByteBuf.writeEnumConstant(this.overlay);
@@ -89,7 +89,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				packetByteBuf.writeFloat(this.percent);
 				break;
 			case field_12084:
-				packetByteBuf.method_10805(this.name);
+				packetByteBuf.writeText(this.name);
 				break;
 			case field_12081:
 				packetByteBuf.writeEnumConstant(this.color);

@@ -101,7 +101,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
-			Text text = ((Nameable)blockEntity).method_5476();
+			Text text = ((Nameable)blockEntity).getDisplayName();
 			return new ClientDummyContainerProvider(
 				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), text
 			);
@@ -115,7 +115,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof EnchantingTableBlockEntity) {
-				((EnchantingTableBlockEntity)blockEntity).method_11179(itemStack.method_7964());
+				((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}

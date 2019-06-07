@@ -46,12 +46,12 @@ public class BanListCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.banlist.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.none"), false);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.banlist.list", collection.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.list", collection.size()), false);
 
 			for (BanEntry<?> banEntry : collection) {
-				serverCommandSource.method_9226(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
 			}
 		}
 

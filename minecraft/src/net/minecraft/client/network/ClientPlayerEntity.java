@@ -184,7 +184,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
-				Entity entity = this.getTopmostVehicle();
+				Entity entity = this.getRootVehicle();
 				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
 					this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
 				}
@@ -304,12 +304,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (g <= 0.0F) {
 				this.setHealth(f);
 				if (g < 0.0F) {
-					this.field_6008 = 10;
+					this.timeUntilRegen = 10;
 				}
 			} else {
 				this.field_6253 = g;
 				this.setHealth(this.getHealth());
-				this.field_6008 = 20;
+				this.timeUntilRegen = 20;
 				this.applyDamage(DamageSource.GENERIC, g);
 				this.field_6254 = 10;
 				this.hurtTime = this.field_6254;
@@ -371,11 +371,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_7353(Text text, boolean bl) {
+	public void addChatMessage(Text text, boolean bl) {
 		if (bl) {
-			this.client.inGameHud.method_1758(text, false);
+			this.client.inGameHud.setOverlayMessage(text, false);
 		} else {
-			this.client.inGameHud.getChatHud().method_1812(text);
+			this.client.inGameHud.getChatHud().addMessage(text);
 		}
 	}
 
@@ -453,8 +453,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_9203(Text text) {
-		this.client.inGameHud.getChatHud().method_1812(text);
+	public void sendMessage(Text text) {
+		this.client.inGameHud.getChatHud().addMessage(text);
 	}
 
 	@Override

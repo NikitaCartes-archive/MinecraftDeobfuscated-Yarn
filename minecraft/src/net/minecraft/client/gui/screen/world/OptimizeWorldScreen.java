@@ -63,7 +63,7 @@ public class OptimizeWorldScreen extends Screen {
 		int l = this.width / 2 + 150;
 		int m = this.height / 4 + 100;
 		int n = m + 10;
-		this.drawCenteredString(this.font, this.updater.method_5394().asFormattedString(), this.width / 2, m - 9 - 2, 10526880);
+		this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, m - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			fill(k - 1, m - 1, l + 1, n + 1, -16777216);
 			this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 10526880);

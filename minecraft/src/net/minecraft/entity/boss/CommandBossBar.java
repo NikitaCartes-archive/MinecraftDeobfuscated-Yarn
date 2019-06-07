@@ -72,9 +72,9 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	public final Text toHoverableText() {
-		return Texts.bracketed(this.method_5414())
+		return Texts.bracketed(this.getName())
 			.styled(
-				style -> style.setColor(this.getColor().method_5423())
+				style -> style.setColor(this.getColor().getTextFormat())
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getId().toString())))
 						.setInsertion(this.getId().toString())
 			);
@@ -134,7 +134,7 @@ public class CommandBossBar extends ServerBossBar {
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Text.Serializer.toJson(this.field_5777));
+		compoundTag.putString("Name", Text.Serializer.toJson(this.name));
 		compoundTag.putBoolean("Visible", this.isVisible());
 		compoundTag.putInt("Value", this.value);
 		compoundTag.putInt("Max", this.maxValue);

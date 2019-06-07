@@ -5,8 +5,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -72,7 +72,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	protected void setSize(int i, boolean bl) {
 		this.dataTracker.set(SLIME_SIZE, i);
 		this.setPosition(this.x, this.y, this.z);
-		this.refreshSize();
+		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(i * i));
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
 		if (bl) {
@@ -158,7 +158,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (SLIME_SIZE.equals(trackedData)) {
-			this.refreshSize();
+			this.calculateDimensions();
 			this.yaw = this.headYaw;
 			this.field_6283 = this.headYaw;
 			if (this.isInsideWater() && this.random.nextInt(20) == 0) {
@@ -185,7 +185,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 				float g = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
 				SlimeEntity slimeEntity = this.getType().create(this.world);
 				if (this.hasCustomName()) {
-					slimeEntity.method_5665(this.method_5797());
+					slimeEntity.setCustomName(this.getCustomName());
 				}
 
 				if (this.isPersistent()) {
@@ -229,8 +229,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return 0.625F * entitySize.height;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return 0.625F * entityDimensions.height;
 	}
 
 	protected boolean isBig() {
@@ -327,8 +327,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
-		return super.getSize(entityPose).scaled(0.255F * (float)this.getSize());
+	public EntityDimensions getDimensions(EntityPose entityPose) {
+		return super.getDimensions(entityPose).scaled(0.255F * (float)this.getSize());
 	}
 
 	static class SlimeMoveControl extends MoveControl {

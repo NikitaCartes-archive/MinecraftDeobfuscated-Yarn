@@ -165,7 +165,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public void setStructureName(@Nullable String string) {
-		this.setStructureName(ChatUtil.isEmpty(string) ? null : Identifier.ofNullable(string));
+		this.setStructureName(ChatUtil.isEmpty(string) ? null : Identifier.tryParse(string));
 	}
 
 	public void setStructureName(@Nullable Identifier identifier) {
@@ -173,7 +173,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public void setAuthor(LivingEntity livingEntity) {
-		this.author = livingEntity.method_5477().getString();
+		this.author = livingEntity.getName().getString();
 	}
 
 	@Environment(EnvType.CLIENT)

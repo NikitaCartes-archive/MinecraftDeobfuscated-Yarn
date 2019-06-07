@@ -261,7 +261,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

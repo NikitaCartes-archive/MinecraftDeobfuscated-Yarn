@@ -102,8 +102,8 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 
 		for (Identifier identifier : this.sounds.keySet()) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-			if (weightedSoundSet.method_4886() instanceof TranslatableText) {
-				String string = ((TranslatableText)weightedSoundSet.method_4886()).getKey();
+			if (weightedSoundSet.getSubtitle() instanceof TranslatableText) {
+				String string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey();
 				if (!I18n.hasTranslation(string)) {
 					LOGGER.debug("Missing subtitle {} for event: {}", string, identifier);
 				}

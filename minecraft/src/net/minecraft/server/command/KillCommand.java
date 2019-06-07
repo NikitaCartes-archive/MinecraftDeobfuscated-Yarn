@@ -24,9 +24,9 @@ public class KillCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.kill.success.single", ((Entity)collection.iterator().next()).method_5476()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.kill.success.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.multiple", collection.size()), true);
 		}
 
 		return collection.size();

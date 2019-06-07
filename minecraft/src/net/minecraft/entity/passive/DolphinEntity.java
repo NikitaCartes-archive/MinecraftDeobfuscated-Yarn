@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -66,7 +66,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	private static final TrackedData<BlockPos> TREASURE_POS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> HAS_FISH = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> MOISTNESS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(10.0).includeTeammates().includeInvulnerable();
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate()
+		.setBaseMaxDistance(10.0)
+		.includeTeammates()
+		.includeInvulnerable()
+		.includeHidden();
 	public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isInsideWater();
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
@@ -201,7 +205,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.3F;
 	}
 

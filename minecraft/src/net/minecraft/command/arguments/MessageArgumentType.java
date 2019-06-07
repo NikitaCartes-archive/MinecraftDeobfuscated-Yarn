@@ -18,13 +18,13 @@ import net.minecraft.text.Text;
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
 
-	public static MessageArgumentType create() {
+	public static MessageArgumentType message() {
 		return new MessageArgumentType();
 	}
 
-	public static Text method_9339(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Text getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<MessageArgumentType.MessageFormat>getArgument(string, MessageArgumentType.MessageFormat.class)
-			.method_9341(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
+			.format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
 	}
 
 	public MessageArgumentType.MessageFormat method_9338(StringReader stringReader) throws CommandSyntaxException {
@@ -45,13 +45,13 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			this.selectors = messageSelectors;
 		}
 
-		public Text method_9341(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+		public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && bl) {
 				Text text = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
-					Text text2 = messageSelector.method_9345(serverCommandSource);
+					Text text2 = messageSelector.format(serverCommandSource);
 					if (i < messageSelector.getStart()) {
 						text.append(this.contents.substring(i, messageSelector.getStart()));
 					}
@@ -137,8 +137,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		}
 
 		@Nullable
-		public Text method_9345(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			return EntitySelector.method_9822(this.selector.getEntities(serverCommandSource));
+		public Text format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+			return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
 		}
 	}
 }

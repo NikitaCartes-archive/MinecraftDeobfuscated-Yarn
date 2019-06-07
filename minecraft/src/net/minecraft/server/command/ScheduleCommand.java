@@ -24,10 +24,10 @@ public class ScheduleCommand {
 				.then(
 					CommandManager.literal("function")
 						.then(
-							CommandManager.argument("function", FunctionArgumentType.create())
+							CommandManager.argument("function", FunctionArgumentType.function())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 								.then(
-									CommandManager.argument("time", TimeArgumentType.create())
+									CommandManager.argument("time", TimeArgumentType.time())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -49,7 +49,7 @@ public class ScheduleCommand {
 			either.ifLeft(commandFunction -> {
 					Identifier identifier = commandFunction.getId();
 					serverCommandSource.getWorld().getLevelProperties().getScheduledEvents().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
-					serverCommandSource.method_9226(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
+					serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
 				})
 				.ifRight(
 					tag -> {
@@ -58,7 +58,7 @@ public class ScheduleCommand {
 							.getLevelProperties()
 							.getScheduledEvents()
 							.replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
-						serverCommandSource.method_9226(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
+						serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
 					}
 				);
 			return (int)Math.floorMod(l, 2147483647L);

@@ -14,14 +14,14 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.header = packetByteBuf.method_10808();
-		this.footer = packetByteBuf.method_10808();
+		this.header = packetByteBuf.readText();
+		this.footer = packetByteBuf.readText();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.method_10805(this.header);
-		packetByteBuf.method_10805(this.footer);
+		packetByteBuf.writeText(this.header);
+		packetByteBuf.writeText(this.footer);
 	}
 
 	public void method_11907(ClientPlayPacketListener clientPlayPacketListener) {

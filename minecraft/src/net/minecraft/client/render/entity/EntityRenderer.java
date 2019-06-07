@@ -72,7 +72,7 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	protected void renderLabelIfPresent(T entity, double d, double e, double f) {
 		if (this.hasLabel(entity)) {
-			this.renderLabel(entity, entity.method_5476().asFormattedString(), d, e, f, 64);
+			this.renderLabel(entity, entity.getDisplayName().asFormattedString(), d, e, f, 64);
 		}
 	}
 

@@ -421,7 +421,7 @@ public class CompoundTag implements Tag {
 		return PATTERN.matcher(string).matches() ? string : StringTag.escape(string);
 	}
 
-	protected static Text method_10557(String string) {
+	protected static Text prettyPrintTagKey(String string) {
 		if (PATTERN.matcher(string).matches()) {
 			return new LiteralText(string).formatted(AQUA);
 		} else {
@@ -433,7 +433,7 @@ public class CompoundTag implements Tag {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		if (this.tags.isEmpty()) {
 			return new LiteralText("{}");
 		} else {
@@ -454,10 +454,10 @@ public class CompoundTag implements Tag {
 			while (iterator.hasNext()) {
 				String string2 = (String)iterator.next();
 				Text text2 = new LiteralText(Strings.repeat(string, i + 1))
-					.append(method_10557(string2))
+					.append(prettyPrintTagKey(string2))
 					.append(String.valueOf(':'))
 					.append(" ")
-					.append(((Tag)this.tags.get(string2)).method_10710(string, i + 1));
+					.append(((Tag)this.tags.get(string2)).toText(string, i + 1));
 				if (iterator.hasNext()) {
 					text2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}

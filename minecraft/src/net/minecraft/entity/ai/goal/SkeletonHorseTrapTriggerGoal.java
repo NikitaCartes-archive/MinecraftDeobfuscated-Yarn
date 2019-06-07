@@ -49,7 +49,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.create(this.skeletonHorse.world);
 		skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z);
-		skeletonHorseEntity.field_6008 = 60;
+		skeletonHorseEntity.timeUntilRegen = 60;
 		skeletonHorseEntity.setPersistent();
 		skeletonHorseEntity.setTame(true);
 		skeletonHorseEntity.setBreedingAge(0);
@@ -61,7 +61,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		SkeletonEntity skeletonEntity = EntityType.field_6137.create(horseBaseEntity.world);
 		skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
-		skeletonEntity.field_6008 = 60;
+		skeletonEntity.timeUntilRegen = 60;
 		skeletonEntity.setPersistent();
 		if (skeletonEntity.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
 			skeletonEntity.setEquippedStack(EquipmentSlot.field_6169, new ItemStack(Items.field_8743));

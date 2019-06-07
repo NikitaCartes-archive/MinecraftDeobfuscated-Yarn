@@ -57,4 +57,21 @@ public class CuboidBlockIterator {
 	public int getZ() {
 		return this.z;
 	}
+
+	public int method_20789() {
+		int i = 0;
+		if (this.x == this.startX || this.x == this.endX) {
+			i++;
+		}
+
+		if (this.y == this.startY || this.y == this.endY) {
+			i++;
+		}
+
+		if (this.z == this.startZ || this.z == this.endZ) {
+			i++;
+		}
+
+		return i;
+	}
 }

@@ -14,6 +14,11 @@ public class ImpalingEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 20;
+	}
+
+	@Override
 	public int getMaximumLevel() {
 		return 5;
 	}

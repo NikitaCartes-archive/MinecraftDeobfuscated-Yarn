@@ -7,7 +7,7 @@ public class ReloadCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
 			CommandManager.literal("reload").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3)).executes(commandContext -> {
-				commandContext.getSource().method_9226(new TranslatableText("commands.reload.success"), true);
+				commandContext.getSource().sendFeedback(new TranslatableText("commands.reload.success"), true);
 				commandContext.getSource().getMinecraftServer().reload();
 				return 0;
 			})

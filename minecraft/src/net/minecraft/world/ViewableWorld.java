@@ -122,22 +122,22 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
 		return Stream.empty();
 	}
 
 	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, Box box, Set<Entity> set) {
-		final VoxelShape voxelShape = VoxelShapes.cuboid(box);
-		final int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X) - 1.0E-7) - 1;
-		final int j = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.X) + 1.0E-7) + 1;
-		final int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y) - 1.0E-7) - 1;
-		final int l = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Y) + 1.0E-7) + 1;
-		final int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z) - 1.0E-7) - 1;
-		final int n = MathHelper.floor(voxelShape.getMaximum(Direction.Axis.Z) + 1.0E-7) + 1;
+		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
+		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
+		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
+		int l = MathHelper.floor(box.maxY + 1.0E-7) + 1;
+		int m = MathHelper.floor(box.minZ - 1.0E-7) - 1;
+		int n = MathHelper.floor(box.maxZ + 1.0E-7) + 1;
 		final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
 		final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
 		final BlockPos.Mutable mutable = new BlockPos.Mutable();
-		return Streams.concat(StreamSupport.stream(new AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 0) {
+		final VoxelShape voxelShape = VoxelShapes.cuboid(box);
+		return Streams.concat(StreamSupport.stream(new AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280) {
 			boolean field_19296 = entity == null;
 
 			public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
@@ -156,20 +156,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 					int i = cuboidBlockIterator.getX();
 					int j = cuboidBlockIterator.getY();
 					int k = cuboidBlockIterator.getZ();
-					int l = 0;
-					if (i == i || i == j) {
-						l++;
-					}
-
-					if (j == k || j == l) {
-						l++;
-					}
-
-					if (k == m || k == n) {
-						l++;
-					}
-
-					if (l < 3) {
+					int l = cuboidBlockIterator.method_20789();
+					if (l != 3) {
 						int m = i >> 4;
 						int n = k >> 4;
 						Chunk chunk = ViewableWorld.this.getChunk(m, n, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false);
@@ -190,7 +178,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 				return false;
 			}
-		}, false), this.getCollisionShapes(entity, voxelShape, set));
+		}, false), this.method_20743(entity, box, set));
 	}
 
 	default boolean isWaterAt(BlockPos blockPos) {

@@ -156,8 +156,8 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void method_5665(@Nullable Text text) {
-		super.method_5665(text);
+	public void setCustomName(@Nullable Text text) {
+		super.setCustomName(text);
 		if (!this.isJohnny && text != null && text.getString().equals("Johnny")) {
 			this.isJohnny = true;
 		}

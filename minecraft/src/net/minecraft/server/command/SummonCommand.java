@@ -27,7 +27,7 @@ public class SummonCommand {
 			CommandManager.literal("summon")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("entity", EntitySummonArgumentType.create())
+					CommandManager.argument("entity", EntitySummonArgumentType.entitySummon())
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
 							commandContext -> execute(
@@ -39,7 +39,7 @@ public class SummonCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -50,7 +50,7 @@ public class SummonCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
+									CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -72,7 +72,7 @@ public class SummonCommand {
 		if (EntityType.getId(EntityType.field_6112).equals(identifier)) {
 			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
 			serverCommandSource.getWorld().addLightning(lightningEntity);
-			serverCommandSource.method_9226(new TranslatableText("commands.summon.success", lightningEntity.method_5476()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
 			ServerWorld serverWorld = serverCommandSource.getWorld();
@@ -88,7 +88,7 @@ public class SummonCommand {
 						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
 				}
 
-				serverCommandSource.method_9226(new TranslatableText("commands.summon.success", entity.method_5476()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.summon.success", entity.getDisplayName()), true);
 				return 1;
 			}
 		}

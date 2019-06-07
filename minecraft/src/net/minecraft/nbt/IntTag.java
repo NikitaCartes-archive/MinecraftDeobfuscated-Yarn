@@ -50,7 +50,7 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
 	}
 

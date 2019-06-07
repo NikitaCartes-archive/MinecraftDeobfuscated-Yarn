@@ -50,7 +50,7 @@ public class EnchantedBookItem extends Item {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Identifier identifier2 = Identifier.ofNullable(compoundTag.getString("id"));
+			Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
 			if (identifier2 != null && identifier2.equals(identifier)) {
 				if (compoundTag.getInt("lvl") < infoEnchantment.level) {
 					compoundTag.putShort("lvl", (short)infoEnchantment.level);

@@ -80,9 +80,11 @@ public class TagCommand {
 			throw ADD_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(new TranslatableText("commands.tag.add.success.single", string, ((Entity)collection.iterator().next()).method_5476()), true);
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.add.success.single", string, ((Entity)collection.iterator().next()).getDisplayName()), true
+				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.tag.add.success.multiple", string, collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", string, collection.size()), true);
 			}
 
 			return i;
@@ -102,11 +104,11 @@ public class TagCommand {
 			throw REMOVE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.tag.remove.success.single", string, ((Entity)collection.iterator().next()).method_5476()), true
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.remove.success.single", string, ((Entity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.tag.remove.success.multiple", string, collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", string, collection.size()), true);
 			}
 
 			return i;
@@ -123,14 +125,16 @@ public class TagCommand {
 		if (collection.size() == 1) {
 			Entity entity2 = (Entity)collection.iterator().next();
 			if (set.isEmpty()) {
-				serverCommandSource.method_9226(new TranslatableText("commands.tag.list.single.empty", entity2.method_5476()), false);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.tag.list.single.success", entity2.method_5476(), set.size(), Texts.joinOrdered(set)), false);
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false
+				);
 			}
 		} else if (set.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.tag.list.multiple.empty", collection.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", collection.size()), false);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.tag.list.multiple.success", collection.size(), set.size(), Texts.joinOrdered(set)), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", collection.size(), set.size(), Texts.joinOrdered(set)), false);
 		}
 
 		return set.size();

@@ -21,7 +21,7 @@ public class StopSoundCommand {
 			.then(
 				CommandManager.literal("*")
 					.then(
-						CommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> execute(
@@ -39,7 +39,7 @@ public class StopSoundCommand {
 				CommandManager.literal(soundCategory.getName())
 					.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), soundCategory, null))
 					.then(
-						CommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> execute(
@@ -69,14 +69,14 @@ public class StopSoundCommand {
 
 		if (soundCategory != null) {
 			if (identifier != null) {
-				serverCommandSource.method_9226(new TranslatableText("commands.stopsound.success.source.sound", identifier, soundCategory.getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.stopsound.success.source.sound", identifier, soundCategory.getName()), true);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.stopsound.success.source.any", soundCategory.getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.stopsound.success.source.any", soundCategory.getName()), true);
 			}
 		} else if (identifier != null) {
-			serverCommandSource.method_9226(new TranslatableText("commands.stopsound.success.sourceless.sound", identifier), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.stopsound.success.sourceless.sound", identifier), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.stopsound.success.sourceless.any"), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.stopsound.success.sourceless.any"), true);
 		}
 
 		return collection.size();

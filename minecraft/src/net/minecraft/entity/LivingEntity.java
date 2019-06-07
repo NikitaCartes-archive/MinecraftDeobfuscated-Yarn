@@ -81,7 +81,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -92,6 +92,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
@@ -114,7 +115,7 @@ public abstract class LivingEntity extends Entity {
 	private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(
 		LivingEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS
 	);
-	protected static final EntitySize SLEEPING_SIZE = EntitySize.constant(0.2F, 0.2F);
+	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F);
 	private AbstractEntityAttributeContainer attributeContainer;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
@@ -190,7 +191,7 @@ public abstract class LivingEntity extends Entity {
 		super(entityType, world);
 		this.initAttributes();
 		this.setHealth(this.getHealthMaximum());
-		this.field_6033 = true;
+		this.inanimate = true;
 		this.field_6262 = (float)((Math.random() + 1.0) * 0.01F);
 		this.setPosition(this.x, this.y, this.z);
 		this.field_6244 = (float)Math.random() * 12398.0F;
@@ -238,7 +239,7 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 		if (!this.isInsideWater()) {
-			this.method_5713();
+			this.checkWaterState();
 		}
 
 		if (!this.world.isClient && this.fallDistance > 3.0F && bl) {
@@ -266,7 +267,7 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public void baseTick() {
 		this.lastHandSwingProgress = this.handSwingProgress;
-		if (this.field_5953) {
+		if (this.firstUpdate) {
 			this.getSleepingPosition().ifPresent(this::setPositionInBed);
 		}
 
@@ -336,8 +337,8 @@ public abstract class LivingEntity extends Entity {
 			this.hurtTime--;
 		}
 
-		if (this.field_6008 > 0 && !(this instanceof ServerPlayerEntity)) {
-			this.field_6008--;
+		if (this.timeUntilRegen > 0 && !(this instanceof ServerPlayerEntity)) {
+			this.timeUntilRegen--;
 		}
 
 		if (this.getHealth() <= 0.0F) {
@@ -395,7 +396,7 @@ public abstract class LivingEntity extends Entity {
 		this.deathTime++;
 		if (this.deathTime == 20) {
 			if (!this.world.isClient
-				&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean("doMobLoot"))) {
+				&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.field_19391))) {
 				int i = this.getCurrentExperience(this.attackingPlayer);
 
 				while (i > 0) {
@@ -591,7 +592,7 @@ public abstract class LivingEntity extends Entity {
 			BlockPos blockPos = new BlockPos(compoundTag.getInt("SleepingX"), compoundTag.getInt("SleepingY"), compoundTag.getInt("SleepingZ"));
 			this.setSleepingPosition(blockPos);
 			this.dataTracker.set(POSE, EntityPose.field_18078);
-			if (!this.field_5953) {
+			if (!this.firstUpdate) {
 				this.setPositionInBed(blockPos);
 			}
 		}
@@ -884,7 +885,7 @@ public abstract class LivingEntity extends Entity {
 
 			this.limbDistance = 1.5F;
 			boolean bl2 = true;
-			if ((float)this.field_6008 > 10.0F) {
+			if ((float)this.timeUntilRegen > 10.0F) {
 				if (f <= this.field_6253) {
 					return false;
 				}
@@ -894,7 +895,7 @@ public abstract class LivingEntity extends Entity {
 				bl2 = false;
 			} else {
 				this.field_6253 = f;
-				this.field_6008 = 20;
+				this.timeUntilRegen = 20;
 				this.applyDamage(damageSource, f);
 				this.field_6254 = 10;
 				this.hurtTime = this.field_6254;
@@ -1112,7 +1113,7 @@ public abstract class LivingEntity extends Entity {
 				this.drop(damageSource);
 				boolean bl = false;
 				if (livingEntity instanceof WitherEntity) {
-					if (this.world.getGameRules().getBoolean("mobGriefing")) {
+					if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 						BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 						BlockState blockState = Blocks.field_10606.getDefaultState();
 						if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1143,7 +1144,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		boolean bl = this.playerHitTimer > 0;
-		if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean("doMobLoot")) {
+		if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 			this.dropLoot(damageSource, bl);
 			this.dropEquipment(damageSource, i, bl);
 		}
@@ -1407,7 +1408,7 @@ public abstract class LivingEntity extends Entity {
 				boolean bl3 = b == 37;
 				boolean bl4 = b == 44;
 				this.limbDistance = 1.5F;
-				this.field_6008 = 20;
+				this.timeUntilRegen = 20;
 				this.field_6254 = 10;
 				this.hurtTime = this.field_6254;
 				this.field_6271 = 0.0F;
@@ -1702,7 +1703,7 @@ public abstract class LivingEntity extends Entity {
 			if (entity instanceof BoatEntity) {
 				f = 0.0F;
 			} else {
-				f = (float) (Math.PI / 2) * (float)(this.getMainHand() == AbsoluteHand.field_6183 ? -1 : 1);
+				f = (float) (Math.PI / 2) * (float)(this.getMainArm() == Arm.field_6183 ? -1 : 1);
 			}
 
 			float g = -MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0) - (float) Math.PI + f);
@@ -2241,7 +2242,7 @@ public abstract class LivingEntity extends Entity {
 	protected void tickPushing() {
 		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
-			int i = this.world.getGameRules().getInteger("maxEntityCramming");
+			int i = this.world.getGameRules().getInt(GameRules.field_19405);
 			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
 				int j = 0;
 
@@ -2322,7 +2323,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_6224 = d;
 		this.field_6245 = e;
 		this.field_6263 = f;
@@ -2333,7 +2334,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5683(float f, int i) {
+	public void updateTrackedHeadRotation(float f, int i) {
 		this.field_6242 = (double)f;
 		this.field_6265 = i;
 	}
@@ -2428,7 +2429,7 @@ public abstract class LivingEntity extends Entity {
 		this.field_6285 = true;
 	}
 
-	public abstract AbsoluteHand getMainHand();
+	public abstract Arm getMainArm();
 
 	public boolean isUsingItem() {
 		return (this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
@@ -2675,8 +2676,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
-		return entityPose == EntityPose.field_18078 ? SLEEPING_SIZE : super.getSize(entityPose).scaled(this.getScaleFactor());
+	public EntityDimensions getDimensions(EntityPose entityPose) {
+		return entityPose == EntityPose.field_18078 ? SLEEPING_DIMENSIONS : super.getDimensions(entityPose).scaled(this.getScaleFactor());
 	}
 
 	public Optional<BlockPos> getSleepingPosition() {
@@ -2749,12 +2750,12 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	protected final float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entityPose == EntityPose.field_18078 ? 0.2F : this.getActiveEyeHeight(entityPose, entitySize);
+	protected final float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityPose == EntityPose.field_18078 ? 0.2F : this.getActiveEyeHeight(entityPose, entityDimensions);
 	}
 
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return super.getEyeHeight(entityPose, entitySize);
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return super.getEyeHeight(entityPose, entityDimensions);
 	}
 
 	public ItemStack getArrowType(ItemStack itemStack) {

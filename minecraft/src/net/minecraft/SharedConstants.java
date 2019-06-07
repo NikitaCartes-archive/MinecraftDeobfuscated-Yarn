@@ -7,7 +7,7 @@ import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.command.TextComponentBuiltInExceptionProvider;
+import net.minecraft.command.TranslatableBuiltInExceptions;
 import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
 public class SharedConstants {
@@ -62,7 +62,7 @@ public class SharedConstants {
 	static {
 		ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);
 		CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = false;
-		CommandSyntaxException.BUILT_IN_EXCEPTIONS = new TextComponentBuiltInExceptionProvider();
+		CommandSyntaxException.BUILT_IN_EXCEPTIONS = new TranslatableBuiltInExceptions();
 		NamespacedStringType.ENSURE_NAMESPACE = SchemaIdentifierNormalize::normalize;
 	}
 }

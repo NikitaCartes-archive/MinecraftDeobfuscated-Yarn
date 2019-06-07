@@ -55,11 +55,11 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 
 public class Raid {
-	private static final TranslatableText field_19016 = new TranslatableText("event.minecraft.raid");
-	private static final TranslatableText field_19017 = new TranslatableText("event.minecraft.raid.victory");
-	private static final TranslatableText field_19018 = new TranslatableText("event.minecraft.raid.defeat");
-	private static final Text field_19019 = field_19016.method_11020().append(" - ").append(field_19017);
-	private static final Text field_19020 = field_19016.method_11020().append(" - ").append(field_19018);
+	private static final TranslatableText EVENT_TEXT = new TranslatableText("event.minecraft.raid");
+	private static final TranslatableText VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory");
+	private static final TranslatableText DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
+	private static final Text VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
+	private static final Text DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();
@@ -72,7 +72,7 @@ public class Raid {
 	private int badOmenLevel;
 	private boolean active;
 	private int wavesSpawned;
-	private final ServerBossBar bar = new ServerBossBar(field_19016, BossBar.Color.field_5784, BossBar.Style.field_5791);
+	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.field_5784, BossBar.Style.field_5791);
 	private int postRaidTicks;
 	private int preRaidTicks;
 	private final Random random = new Random();
@@ -251,7 +251,7 @@ public class Raid {
 					if (this.preRaidTicks <= 0) {
 						if (this.preRaidTicks == 0 && this.wavesSpawned > 0) {
 							this.preRaidTicks = 300;
-							this.bar.method_5413(field_19016);
+							this.bar.setName(EVENT_TEXT);
 							return;
 						}
 					} else {
@@ -286,12 +286,12 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.method_5413(field_19016.method_11020().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
 						} else {
-							this.bar.method_5413(field_19016);
+							this.bar.setName(EVENT_TEXT);
 						}
 					} else {
-						this.bar.method_5413(field_19016);
+						this.bar.setName(EVENT_TEXT);
 					}
 				}
 
@@ -353,9 +353,9 @@ public class Raid {
 					this.bar.setVisible(true);
 					if (this.hasWon()) {
 						this.bar.setPercent(0.0F);
-						this.bar.method_5413(field_19019);
+						this.bar.setName(VICTORY_TITLE);
 					} else {
-						this.bar.method_5413(field_19020);
+						this.bar.setName(DEFEAT_TITLE);
 					}
 				}
 			}
@@ -574,7 +574,7 @@ public class Raid {
 			.with(BannerPattern.BORDER, DyeColor.field_7963)
 			.build();
 		compoundTag.put("Patterns", listTag);
-		itemStack.method_7977(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.field_1065));
+		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.field_1065));
 		return itemStack;
 	}
 

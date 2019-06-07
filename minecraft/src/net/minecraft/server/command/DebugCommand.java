@@ -35,7 +35,7 @@ public class DebugCommand {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.enableProfiler();
-			serverCommandSource.method_9226(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
 			return 0;
 		}
 	}
@@ -51,7 +51,7 @@ public class DebugCommand {
 			profileResult.saveToFile(file);
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
 			float g = (float)profileResult.getTickSpan() / f;
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), profileResult.getTickSpan(), String.format("%.2f", g)), true
 			);
 			return MathHelper.floor(g);

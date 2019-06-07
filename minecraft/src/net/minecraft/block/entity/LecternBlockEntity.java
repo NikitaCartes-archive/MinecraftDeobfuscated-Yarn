@@ -190,8 +190,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 			string = "Lectern";
 			text = new LiteralText("Lectern");
 		} else {
-			string = playerEntity.method_5477().getString();
-			text = playerEntity.method_5476();
+			string = playerEntity.getName().getString();
+			text = playerEntity.getDisplayName();
 		}
 
 		Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
@@ -233,7 +233,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
-	public Text method_5476() {
+	public Text getDisplayName() {
 		return new TranslatableText("container.lectern");
 	}
 }

@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -82,7 +82,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	private void onSizeChanged() {
-		this.refreshSize();
+		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
 	}
 
@@ -91,8 +91,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entitySize.height * 0.35F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * 0.35F;
 	}
 
 	@Override
@@ -221,11 +221,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntitySize entitySize = super.getSize(entityPose);
-		float f = (entitySize.width + 0.2F * (float)i) / entitySize.width;
-		return entitySize.scaled(f);
+		EntityDimensions entityDimensions = super.getDimensions(entityPose);
+		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
+		return entityDimensions.scaled(f);
 	}
 
 	class CircleMovementGoal extends PhantomEntity.MovementGoal {

@@ -20,18 +20,18 @@ public class ListCommand {
 	}
 
 	private static int executeNames(ServerCommandSource serverCommandSource) {
-		return execute(serverCommandSource, PlayerEntity::method_5476);
+		return execute(serverCommandSource, PlayerEntity::getDisplayName);
 	}
 
 	private static int executeUuids(ServerCommandSource serverCommandSource) {
-		return execute(serverCommandSource, PlayerEntity::method_7306);
+		return execute(serverCommandSource, PlayerEntity::getNameAndUuid);
 	}
 
 	private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, Text> function) {
 		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		Text text = Texts.join(list, function);
-		serverCommandSource.method_9226(new TranslatableText("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
 		return list.size();
 	}
 }

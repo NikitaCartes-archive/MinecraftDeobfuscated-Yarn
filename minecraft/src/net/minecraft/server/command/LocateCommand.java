@@ -50,7 +50,7 @@ public class LocateCommand {
 							.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
 							.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableText("chat.coordinates.tooltip")))
 				);
-			serverCommandSource.method_9226(new TranslatableText("commands.locate.success", string, text, i), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.locate.success", string, text, i), false);
 			return i;
 		}
 	}

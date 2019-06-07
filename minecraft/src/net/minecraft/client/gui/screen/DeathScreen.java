@@ -17,12 +17,12 @@ import net.minecraft.util.Formatting;
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
-	private final Text field_2450;
+	private final Text message;
 	private final boolean isHardcore;
 
 	public DeathScreen(@Nullable Text text, boolean bl) {
 		super(new TranslatableText(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
-		this.field_2450 = text;
+		this.message = text;
 		this.isHardcore = bl;
 	}
 
@@ -102,16 +102,16 @@ public class DeathScreen extends Screen {
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2 / 2, 30, 16777215);
 		GlStateManager.popMatrix();
-		if (this.field_2450 != null) {
-			this.drawCenteredString(this.font, this.field_2450.asFormattedString(), this.width / 2, 85, 16777215);
+		if (this.message != null) {
+			this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 16777215);
 		}
 
 		this.drawCenteredString(
 			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
-		if (this.field_2450 != null && j > 85 && j < 85 + 9) {
+		if (this.message != null && j > 85 && j < 85 + 9) {
 			Text text = this.method_2164(i);
-			if (text != null && text.method_10866().getHoverEvent() != null) {
+			if (text != null && text.getStyle().getHoverEvent() != null) {
 				this.renderComponentHoverEffect(text, i, j);
 			}
 		}
@@ -121,15 +121,15 @@ public class DeathScreen extends Screen {
 
 	@Nullable
 	public Text method_2164(int i) {
-		if (this.field_2450 == null) {
+		if (this.message == null) {
 			return null;
 		} else {
-			int j = this.minecraft.textRenderer.getStringWidth(this.field_2450.asFormattedString());
+			int j = this.minecraft.textRenderer.getStringWidth(this.message.asFormattedString());
 			int k = this.width / 2 - j / 2;
 			int l = this.width / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
-				for (Text text : this.field_2450) {
+				for (Text text : this.message) {
 					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(text.asString(), false));
 					if (m > i) {
 						return text;
@@ -145,9 +145,9 @@ public class DeathScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.field_2450 != null && e > 85.0 && e < (double)(85 + 9)) {
+		if (this.message != null && e > 85.0 && e < (double)(85 + 9)) {
 			Text text = this.method_2164((int)d);
-			if (text != null && text.method_10866().getClickEvent() != null && text.method_10866().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
+			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
 				this.handleComponentClicked(text);
 				return false;
 			}

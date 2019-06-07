@@ -24,7 +24,7 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 		object -> new TranslatableText("arguments.function.unknown", object)
 	);
 
-	public static FunctionArgumentType create() {
+	public static FunctionArgumentType function() {
 		return new FunctionArgumentType();
 	}
 

@@ -54,6 +54,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -496,7 +497,7 @@ public class PandaEntity extends AnimalEntity {
 			}
 		}
 
-		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean("doMobLoot")) {
+		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 			this.dropItem(Items.field_8777);
 		}
 	}

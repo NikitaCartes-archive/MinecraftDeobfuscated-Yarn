@@ -31,12 +31,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("title")
 								.then(
-									CommandManager.argument("title", TextArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.method_9280(commandContext, "title"),
+													TextArgumentType.getTextArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12630
 												)
 										)
@@ -45,12 +45,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("subtitle")
 								.then(
-									CommandManager.argument("title", TextArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.method_9280(commandContext, "title"),
+													TextArgumentType.getTextArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12632
 												)
 										)
@@ -59,12 +59,12 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("actionbar")
 								.then(
-									CommandManager.argument("title", TextArgumentType.create())
+									CommandManager.argument("title", TextArgumentType.text())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													TextArgumentType.method_9280(commandContext, "title"),
+													TextArgumentType.getTextArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12627
 												)
 										)
@@ -103,11 +103,11 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.cleared.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.title.cleared.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -121,9 +121,11 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.reset.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.title.reset.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -135,14 +137,16 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
+			);
 		}
 
 		return collection.size();
@@ -156,9 +160,11 @@ public class TitleCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.title.times.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.title.times.multiple", collection.size()), true);
 		}
 
 		return collection.size();

@@ -76,7 +76,7 @@ public class WorldChunk implements Chunk {
 	private final ShortList[] postProcessingLists = new ShortList[16];
 	private TickScheduler<Block> blockTickScheduler;
 	private TickScheduler<Fluid> fluidTickScheduler;
-	private boolean field_12837;
+	private boolean unsaved;
 	private long lastSaveTime;
 	private volatile boolean shouldSave;
 	private long inhabitedTime;
@@ -329,7 +329,7 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public void addEntity(Entity entity) {
-		this.field_12837 = true;
+		this.unsaved = true;
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.z / 16.0);
 		if (i != this.pos.x || j != this.pos.z) {
@@ -346,7 +346,7 @@ public class WorldChunk implements Chunk {
 			k = this.entitySections.length - 1;
 		}
 
-		entity.field_6016 = true;
+		entity.updateNeeded = true;
 		entity.chunkX = this.pos.x;
 		entity.chunkY = k;
 		entity.chunkZ = this.pos.z;
@@ -642,11 +642,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public boolean needsSaving() {
-		return this.shouldSave || this.field_12837 && this.world.getTime() != this.lastSaveTime;
+		return this.shouldSave || this.unsaved && this.world.getTime() != this.lastSaveTime;
 	}
 
-	public void method_12232(boolean bl) {
-		this.field_12837 = bl;
+	public void setUnsaved(boolean bl) {
+		this.unsaved = bl;
 	}
 
 	@Override
@@ -773,7 +773,7 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
+			this.world.getBlockTickScheduler().scheduleAll(((SimpleTickScheduler)this.blockTickScheduler).stream());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		}
 
@@ -781,7 +781,7 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState(blockPos).getFluid());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+			this.world.getFluidTickScheduler().scheduleAll(((SimpleTickScheduler)this.fluidTickScheduler).stream());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		}
 	}

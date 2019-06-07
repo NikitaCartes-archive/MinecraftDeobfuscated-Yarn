@@ -72,16 +72,16 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
-					List<Text> list = TextComponentUtil.method_1850(text, 90, textRenderer, false, true);
+					List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 				});
 				if (string != null) {
-					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.field_12050.length * 5), k);
+					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
 					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
 						int m = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
 						int n = textRenderer.isRightToLeft() ? -1 : 1;
 						int o = (m - textRenderer.getStringWidth(string) / 2) * n;
-						int p = l * 10 - signBlockEntity.field_12050.length * 5;
+						int p = l * 10 - signBlockEntity.text.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
 								DrawableHelper.fill(o, p - 1, o + 1, p + 9, 0xFF000000 | k);

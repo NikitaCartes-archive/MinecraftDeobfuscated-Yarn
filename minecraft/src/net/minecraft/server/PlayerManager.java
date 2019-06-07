@@ -63,6 +63,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.border.WorldBorder;
@@ -120,7 +121,7 @@ public abstract class PlayerManager {
 
 		LOGGER.info(
 			"{}[{}] logged in with entity id {} at ({}, {}, {})",
-			serverPlayerEntity.method_5477().getString(),
+			serverPlayerEntity.getName().getString(),
 			string2,
 			serverPlayerEntity.getEntityId(),
 			serverPlayerEntity.x,
@@ -139,7 +140,7 @@ public abstract class PlayerManager {
 				this.getMaxPlayerCount(),
 				levelProperties.getGeneratorType(),
 				this.viewDistance,
-				serverWorld.getGameRules().getBoolean("reducedDebugInfo")
+				serverWorld.getGameRules().getBoolean(GameRules.field_19401)
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
@@ -157,9 +158,9 @@ public abstract class PlayerManager {
 		this.server.forcePlayerSampleUpdate();
 		Text text;
 		if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string)) {
-			text = new TranslatableText("multiplayer.player.joined", serverPlayerEntity.method_5476());
+			text = new TranslatableText("multiplayer.player.joined", serverPlayerEntity.getDisplayName());
 		} else {
-			text = new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.method_5476(), string);
+			text = new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
 		}
 
 		this.sendToAll(text.formatted(Formatting.field_1054));
@@ -276,7 +277,7 @@ public abstract class PlayerManager {
 	public CompoundTag loadPlayerData(ServerPlayerEntity serverPlayerEntity) {
 		CompoundTag compoundTag = this.server.getWorld(DimensionType.field_13072).getLevelProperties().getPlayerData();
 		CompoundTag compoundTag2;
-		if (serverPlayerEntity.method_5477().getString().equals(this.server.getUserName()) && compoundTag != null) {
+		if (serverPlayerEntity.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
 			compoundTag2 = compoundTag;
 			serverPlayerEntity.fromTag(compoundTag);
 			LOGGER.debug("loading single player");
@@ -305,8 +306,8 @@ public abstract class PlayerManager {
 		serverPlayerEntity.incrementStat(Stats.field_15389);
 		this.savePlayerData(serverPlayerEntity);
 		if (serverPlayerEntity.hasVehicle()) {
-			Entity entity = serverPlayerEntity.getTopmostVehicle();
-			if (entity.method_5817()) {
+			Entity entity = serverPlayerEntity.getRootVehicle();
+			if (entity.hasPlayerRider()) {
 				LOGGER.debug("Removing player mount");
 				serverPlayerEntity.stopRiding();
 				serverWorld.removeEntity(entity);
@@ -409,7 +410,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity2.networkHandler = serverPlayerEntity.networkHandler;
 		serverPlayerEntity2.copyFrom(serverPlayerEntity, bl);
 		serverPlayerEntity2.setEntityId(serverPlayerEntity.getEntityId());
-		serverPlayerEntity2.setMainHand(serverPlayerEntity.getMainHand());
+		serverPlayerEntity2.setMainArm(serverPlayerEntity.getMainArm());
 
 		for (String string : serverPlayerEntity.getScoreboardTags()) {
 			serverPlayerEntity2.addScoreboardTag(string);
@@ -490,7 +491,7 @@ public abstract class PlayerManager {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
 				if (serverPlayerEntity != null && serverPlayerEntity != playerEntity) {
-					serverPlayerEntity.method_9203(text);
+					serverPlayerEntity.sendMessage(text);
 				}
 			}
 		}
@@ -504,7 +505,7 @@ public abstract class PlayerManager {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
-					serverPlayerEntity.method_9203(text);
+					serverPlayerEntity.sendMessage(text);
 				}
 			}
 		}
@@ -625,7 +626,7 @@ public abstract class PlayerManager {
 		WorldBorder worldBorder = this.server.getWorld(DimensionType.field_13072).getWorldBorder();
 		serverPlayerEntity.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.field_12454));
 		serverPlayerEntity.networkHandler
-			.sendPacket(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
+			.sendPacket(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.field_19396)));
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos));
 		if (serverWorld.isRaining()) {
@@ -708,7 +709,7 @@ public abstract class PlayerManager {
 	}
 
 	public void broadcastChatMessage(Text text, boolean bl) {
-		this.server.method_9203(text);
+		this.server.sendMessage(text);
 		MessageType messageType = bl ? MessageType.field_11735 : MessageType.field_11737;
 		this.sendToAll(new ChatMessageS2CPacket(text, messageType));
 	}
@@ -724,7 +725,7 @@ public abstract class PlayerManager {
 			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "stats");
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
-				File file3 = new File(file, playerEntity.method_5477().getString() + ".json");
+				File file3 = new File(file, playerEntity.getName().getString() + ".json");
 				if (file3.exists() && file3.isFile()) {
 					file3.renameTo(file2);
 				}

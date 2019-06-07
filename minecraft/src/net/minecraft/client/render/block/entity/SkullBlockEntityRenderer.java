@@ -107,7 +107,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 
-		skullEntityModel.setRotationAngles(k, 0.0F, 0.0F, i, 0.0F, 0.0625F);
+		skullEntityModel.render(k, 0.0F, 0.0F, i, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 		if (j >= 0) {
 			GlStateManager.matrixMode(5890);

@@ -86,7 +86,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
 	public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
 	public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-	private static final TranslatableText field_17364 = new TranslatableText("container.grindstone_title");
+	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.grindstone_title");
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
@@ -154,7 +154,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17364
+			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 

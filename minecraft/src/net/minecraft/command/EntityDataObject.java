@@ -63,16 +63,16 @@ public class EntityDataObject implements DataCommandObject {
 
 	@Override
 	public Text getModifiedFeedback() {
-		return new TranslatableText("commands.data.entity.modified", this.field_13801.method_5476());
+		return new TranslatableText("commands.data.entity.modified", this.field_13801.getDisplayName());
 	}
 
 	@Override
 	public Text getQueryFeedback(Tag tag) {
-		return new TranslatableText("commands.data.entity.query", this.field_13801.method_5476(), tag.method_10715());
+		return new TranslatableText("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toText());
 	}
 
 	@Override
 	public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-		return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.method_5476(), String.format(Locale.ROOT, "%.2f", d), i);
+		return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

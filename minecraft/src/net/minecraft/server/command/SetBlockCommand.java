@@ -24,9 +24,9 @@ public class SetBlockCommand {
 			CommandManager.literal("setblock")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("pos", BlockPosArgumentType.create())
+					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 						.then(
-							CommandManager.argument("block", BlockStateArgumentType.create())
+							CommandManager.argument("block", BlockStateArgumentType.blockState())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -102,7 +102,7 @@ public class SetBlockCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				serverWorld.updateNeighbors(blockPos, blockStateArgument.getBlockState().getBlock());
-				serverCommandSource.method_9226(new TranslatableText("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 				return 1;
 			}
 		}

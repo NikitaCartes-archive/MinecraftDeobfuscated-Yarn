@@ -21,11 +21,11 @@ public class TextArgumentType implements ArgumentType<Text> {
 	private TextArgumentType() {
 	}
 
-	public static Text method_9280(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static Text getTextArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, Text.class);
 	}
 
-	public static TextArgumentType create() {
+	public static TextArgumentType text() {
 		return new TextArgumentType();
 	}
 

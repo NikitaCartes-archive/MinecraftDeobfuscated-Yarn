@@ -34,7 +34,7 @@ public class LevelLoadingScreen extends Screen {
 	});
 
 	public LevelLoadingScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.progressProvider = worldGenerationProgressTracker;
 	}
 

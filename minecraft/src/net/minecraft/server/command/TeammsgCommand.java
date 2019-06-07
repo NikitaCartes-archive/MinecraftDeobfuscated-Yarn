@@ -23,8 +23,8 @@ public class TeammsgCommand {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			CommandManager.literal("teammsg")
 				.then(
-					CommandManager.argument("message", MessageArgumentType.create())
-						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.method_9339(commandContext, "message")))
+					CommandManager.argument("message", MessageArgumentType.message())
+						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))
 				)
 		);
 		commandDispatcher.register(CommandManager.literal("tm").redirect(literalCommandNode));
@@ -38,7 +38,7 @@ public class TeammsgCommand {
 		} else {
 			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableText("chat.type.team.hover")))
 					.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/teammsg "));
-			Text text2 = team.method_1148().styled(consumer);
+			Text text2 = team.getFormattedName().styled(consumer);
 
 			for (Text text3 : text2.getSiblings()) {
 				text3.styled(consumer);
@@ -48,9 +48,9 @@ public class TeammsgCommand {
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.method_9203(new TranslatableText("chat.type.team.sent", text2, serverCommandSource.method_9223(), text.deepCopy()));
+					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.sent", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
 				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
-					serverPlayerEntity.method_9203(new TranslatableText("chat.type.team.text", text2, serverCommandSource.method_9223(), text.deepCopy()));
+					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.text", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
 				}
 			}
 

@@ -3,9 +3,9 @@ package net.minecraft.entity.passive;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -60,7 +60,7 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (PUFF_STATE.equals(trackedData)) {
-			this.refreshSize();
+			this.calculateDimensions();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -168,8 +168,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
-		return super.getSize(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
+	public EntityDimensions getDimensions(EntityPose entityPose) {
+		return super.getDimensions(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
 	}
 
 	private static float getScaleForPuffState(int i) {

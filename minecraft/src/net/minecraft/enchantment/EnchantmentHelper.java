@@ -22,6 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +39,7 @@ public class EnchantmentHelper {
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompoundTag(i);
-				Identifier identifier2 = Identifier.ofNullable(compoundTag.getString("id"));
+				Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
 				if (identifier2 != null && identifier2.equals(identifier)) {
 					return compoundTag.getInt("lvl");
 				}
@@ -54,7 +55,7 @@ public class EnchantmentHelper {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(compoundTag.getString("id"))).ifPresent(enchantment -> {
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> {
 				Integer var10000 = (Integer)map.put(enchantment, compoundTag.getInt("lvl"));
 			});
 		}
@@ -93,7 +94,7 @@ public class EnchantmentHelper {
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getCompoundTag(i).getString("id");
 				int j = listTag.getCompoundTag(i).getInt("lvl");
-				Registry.ENCHANTMENT.getOrEmpty(Identifier.ofNullable(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
+				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
 	}
@@ -292,13 +293,7 @@ public class EnchantmentHelper {
 				list.add(WeightedPicker.getRandom(random, list2));
 
 				while (random.nextInt(50) <= i) {
-					i = i * 4 / 5 + 1;
-					list2 = getHighestApplicableEnchantmentsAtPower(i, itemStack, bl);
-
-					for (InfoEnchantment infoEnchantment : list) {
-						remove(list2, infoEnchantment);
-					}
-
+					remove(list2, SystemUtil.method_20793(list));
 					if (list2.isEmpty()) {
 						break;
 					}
@@ -340,7 +335,7 @@ public class EnchantmentHelper {
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
 			if ((!enchantment.isTreasure() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {
 				for (int j = enchantment.getMaximumLevel(); j > enchantment.getMinimumLevel() - 1; j--) {
-					if (i >= enchantment.getMinimumPower(j)) {
+					if (i >= enchantment.getMinimumPower(j) && i <= enchantment.method_20742(j)) {
 						list.add(new InfoEnchantment(enchantment, j));
 						break;
 					}

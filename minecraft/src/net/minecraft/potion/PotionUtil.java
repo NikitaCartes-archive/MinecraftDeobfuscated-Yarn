@@ -178,7 +178,7 @@ public class PotionUtil {
 					text.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(text.formatted(statusEffect.getType().method_18793()));
+				list.add(text.formatted(statusEffect.getType().getFormatting()));
 			}
 		}
 

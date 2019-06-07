@@ -23,7 +23,7 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	}
 
 	protected Identifier method_4102(RabbitEntity rabbitEntity) {
-		String string = Formatting.strip(rabbitEntity.method_5477().getString());
+		String string = Formatting.strip(rabbitEntity.getName().getString());
 		if (string != null && "Toast".equals(string)) {
 			return TOAST_SKIN;
 		} else {

@@ -58,10 +58,10 @@ public class LootCommand {
 				(argumentBuilder, target) -> argumentBuilder.then(
 							CommandManager.literal("fish")
 								.then(
-									CommandManager.argument("loot_table", IdentifierArgumentType.create())
+									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
 										.suggests(SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("pos", BlockPosArgumentType.create())
+											CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 												.executes(
 													commandContext -> executeFish(
 															commandContext,
@@ -72,7 +72,7 @@ public class LootCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("tool", ItemStackArgumentType.create())
+													CommandManager.argument("tool", ItemStackArgumentType.itemStack())
 														.executes(
 															commandContext -> executeFish(
 																	commandContext,
@@ -113,7 +113,7 @@ public class LootCommand {
 						.then(
 							CommandManager.literal("loot")
 								.then(
-									CommandManager.argument("loot_table", IdentifierArgumentType.create())
+									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
 										.suggests(SUGGESTION_PROVIDER)
 										.executes(commandContext -> executeLoot(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), target))
 								)
@@ -128,10 +128,10 @@ public class LootCommand {
 						.then(
 							CommandManager.literal("mine")
 								.then(
-									CommandManager.argument("pos", BlockPosArgumentType.create())
+									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(commandContext -> executeMine(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStack.EMPTY, target))
 										.then(
-											CommandManager.argument("tool", ItemStackArgumentType.create())
+											CommandManager.argument("tool", ItemStackArgumentType.itemStack())
 												.executes(
 													commandContext -> executeMine(
 															commandContext,
@@ -178,7 +178,7 @@ public class LootCommand {
 								CommandManager.argument("entities", EntityArgumentType.entities())
 									.then(
 										sourceConstructor.construct(
-												CommandManager.argument("slot", ItemSlotArgumentType.create()),
+												CommandManager.argument("slot", ItemSlotArgumentType.itemSlot()),
 												(commandContext, list, feedbackMessage) -> executeReplace(
 														EntityArgumentType.getEntities(commandContext, "entities"),
 														ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
@@ -205,10 +205,10 @@ public class LootCommand {
 					.then(
 						CommandManager.literal("block")
 							.then(
-								CommandManager.argument("targetPos", BlockPosArgumentType.create())
+								CommandManager.argument("targetPos", BlockPosArgumentType.blockPos())
 									.then(
 										sourceConstructor.construct(
-												CommandManager.argument("slot", ItemSlotArgumentType.create()),
+												CommandManager.argument("slot", ItemSlotArgumentType.itemSlot()),
 												(commandContext, list, feedbackMessage) -> executeBlock(
 														commandContext.getSource(),
 														BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"),
@@ -239,7 +239,7 @@ public class LootCommand {
 				CommandManager.literal("insert")
 					.then(
 						sourceConstructor.construct(
-							CommandManager.argument("targetPos", BlockPosArgumentType.create()),
+							CommandManager.argument("targetPos", BlockPosArgumentType.blockPos()),
 							(commandContext, list, feedbackMessage) -> executeInsert(
 									commandContext.getSource(), BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"), list, feedbackMessage
 								)
@@ -259,7 +259,7 @@ public class LootCommand {
 				CommandManager.literal("spawn")
 					.then(
 						sourceConstructor.construct(
-							CommandManager.argument("targetPos", Vec3ArgumentType.create()),
+							CommandManager.argument("targetPos", Vec3ArgumentType.vec3()),
 							(commandContext, list, feedbackMessage) -> executeSpawn(
 									commandContext.getSource(), Vec3ArgumentType.getVec3(commandContext, "targetPos"), list, feedbackMessage
 								)
@@ -404,20 +404,20 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.single", itemStack.getCount(), itemStack.method_7954()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.multiple", list.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.multiple", list.size()), false);
 		}
 	}
 
 	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list, Identifier identifier) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.method_7954(), identifier), false
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), identifier), false
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.drop.success.multiple_with_table", list.size(), identifier), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.drop.success.multiple_with_table", list.size(), identifier), false);
 		}
 	}
 
@@ -426,7 +426,7 @@ public class LootCommand {
 		if (entity instanceof LivingEntity) {
 			return ((LivingEntity)entity).getEquippedStack(equipmentSlot);
 		} else {
-			throw NO_HELD_ITEMS_EXCEPTION.create(entity.method_5476());
+			throw NO_HELD_ITEMS_EXCEPTION.create(entity.getDisplayName());
 		}
 	}
 
@@ -447,7 +447,7 @@ public class LootCommand {
 
 	private static int executeKill(CommandContext<ServerCommandSource> commandContext, Entity entity, LootCommand.Target target) throws CommandSyntaxException {
 		if (!(entity instanceof LivingEntity)) {
-			throw NO_LOOT_TABLE_EXCEPTION.create(entity.method_5476());
+			throw NO_LOOT_TABLE_EXCEPTION.create(entity.getDisplayName());
 		} else {
 			Identifier identifier = ((LivingEntity)entity).getLootTable();
 			ServerCommandSource serverCommandSource = commandContext.getSource();

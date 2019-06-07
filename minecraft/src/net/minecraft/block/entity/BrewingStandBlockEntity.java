@@ -68,7 +68,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected Text method_17823() {
+	protected Text getContainerName() {
 		return new TranslatableText("container.brewing");
 	}
 

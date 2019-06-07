@@ -36,7 +36,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("add")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -46,7 +46,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -62,7 +62,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("remove")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -72,7 +72,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -89,7 +89,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("query")
 						.executes(commandContext -> executeQuery(commandContext.getSource()))
 						.then(
-							CommandManager.argument("pos", ColumnPosArgumentType.create())
+							CommandManager.argument("pos", ColumnPosArgumentType.columnPos())
 								.executes(commandContext -> executeQuery(commandContext.getSource(), ColumnPosArgumentType.getColumnPos(commandContext, "pos")))
 						)
 				)
@@ -101,7 +101,7 @@ public class ForceLoadCommand {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			serverCommandSource.method_9226(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
 			return 1;
 		} else {
 			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, dimensionType);
@@ -115,12 +115,12 @@ public class ForceLoadCommand {
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				serverCommandSource.method_9226(new TranslatableText("commands.forceload.list.single", dimensionType, string), false);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.forceload.list.single", dimensionType, string), false);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.forceload.list.multiple", i, dimensionType, string), false);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, dimensionType, string), false);
 			}
 		} else {
-			serverCommandSource.method_9213(new TranslatableText("commands.forceload.added.none", dimensionType));
+			serverCommandSource.sendError(new TranslatableText("commands.forceload.added.none", dimensionType));
 		}
 
 		return i;
@@ -131,7 +131,7 @@ public class ForceLoadCommand {
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
-		serverCommandSource.method_9226(new TranslatableText("commands.forceload.removed.all", dimensionType), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.forceload.removed.all", dimensionType), true);
 		return 0;
 	}
 
@@ -170,11 +170,11 @@ public class ForceLoadCommand {
 					throw (bl ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
 					if (r == 1) {
-						serverCommandSource.method_9226(new TranslatableText("commands.forceload." + (bl ? "added" : "removed") + ".single", chunkPos, dimensionType), true);
+						serverCommandSource.sendFeedback(new TranslatableText("commands.forceload." + (bl ? "added" : "removed") + ".single", chunkPos, dimensionType), true);
 					} else {
 						ChunkPos chunkPos2 = new ChunkPos(m, n);
 						ChunkPos chunkPos3 = new ChunkPos(o, p);
-						serverCommandSource.method_9226(
+						serverCommandSource.sendFeedback(
 							new TranslatableText("commands.forceload." + (bl ? "added" : "removed") + ".multiple", r, dimensionType, chunkPos2, chunkPos3), true
 						);
 					}

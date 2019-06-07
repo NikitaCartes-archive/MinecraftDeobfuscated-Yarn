@@ -75,9 +75,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public void method_5413(Text text) {
-		if (!Objects.equal(text, this.field_5777)) {
-			super.method_5413(text);
+	public void setName(Text text) {
+		if (!Objects.equal(text, this.name)) {
+			super.setName(text);
 			this.sendPacket(BossBarS2CPacket.Type.field_12084);
 		}
 	}

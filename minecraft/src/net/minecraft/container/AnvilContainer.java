@@ -252,10 +252,10 @@ public class AnvilContainer extends Container {
 					i += k;
 					itemStack2.removeCustomName();
 				}
-			} else if (!this.newItemName.equals(itemStack.method_7964().getString())) {
+			} else if (!this.newItemName.equals(itemStack.getName().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.method_7977(new LiteralText(this.newItemName));
+				itemStack2.setCustomName(new LiteralText(this.newItemName));
 			}
 
 			this.levelCost.set(j + i);
@@ -355,7 +355,7 @@ public class AnvilContainer extends Container {
 			if (StringUtils.isBlank(string)) {
 				itemStack.removeCustomName();
 			} else {
-				itemStack.method_7977(new LiteralText(this.newItemName));
+				itemStack.setCustomName(new LiteralText(this.newItemName));
 			}
 		}
 

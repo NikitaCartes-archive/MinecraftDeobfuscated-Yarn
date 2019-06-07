@@ -20,8 +20,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -70,6 +70,7 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -331,8 +332,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return this.isBaby() ? entitySize.height * 0.95F : 0.4F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return this.isBaby() ? entityDimensions.height * 0.85F : 0.4F;
 	}
 
 	public FoxEntity.Type getFoxType() {
@@ -912,7 +913,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		protected void eatSweetBerry() {
-			if (FoxEntity.this.world.getGameRules().getBoolean("mobGriefing")) {
+			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.getBlock() == Blocks.field_16999) {
 					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
@@ -1219,7 +1220,7 @@ public class FoxEntity extends AnimalEntity {
 				foxEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
 				this.world.spawnEntity(foxEntity);
 				this.world.sendEntityStatus(this.animal, (byte)18);
-				if (this.world.getGameRules().getBoolean("doMobLoot")) {
+				if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 					this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
 				}
 			}

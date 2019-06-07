@@ -15,7 +15,7 @@ public class NbtTagArgumentType implements ArgumentType<Tag> {
 	private NbtTagArgumentType() {
 	}
 
-	public static NbtTagArgumentType create() {
+	public static NbtTagArgumentType nbtTag() {
 		return new NbtTagArgumentType();
 	}
 

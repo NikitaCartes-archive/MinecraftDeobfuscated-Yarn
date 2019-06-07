@@ -98,6 +98,7 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IdCountsState;
 import net.minecraft.world.LocalDifficulty;
@@ -203,7 +204,7 @@ public class ServerWorld extends World {
 		profiler.swap("weather");
 		boolean bl = this.isRaining();
 		if (this.dimension.hasSkyLight()) {
-			if (this.getGameRules().getBoolean("doWeatherCycle")) {
+			if (this.getGameRules().getBoolean(GameRules.field_19406)) {
 				int i = this.properties.getClearWeatherTime();
 				int j = this.properties.getThunderTime();
 				int k = this.properties.getRainTime();
@@ -288,13 +289,13 @@ public class ServerWorld extends World {
 		if (this.allPlayersSleeping
 			&& this.players.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
 			this.allPlayersSleeping = false;
-			if (this.getGameRules().getBoolean("doDaylightCycle")) {
+			if (this.getGameRules().getBoolean(GameRules.field_19396)) {
 				long l = this.properties.getTimeOfDay() + 24000L;
 				this.setTimeOfDay(l - l % 24000L);
 			}
 
 			this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false, true));
-			if (this.getGameRules().getBoolean("doWeatherCycle")) {
+			if (this.getGameRules().getBoolean(GameRules.field_19406)) {
 				this.resetWeather();
 			}
 		}
@@ -408,7 +409,7 @@ public class ServerWorld extends World {
 			BlockPos blockPos = this.method_18210(this.getRandomPosInChunk(j, 0, k, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
-				boolean bl2 = this.getGameRules().getBoolean("doMobSpawning") && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
+				boolean bl2 = this.getGameRules().getBoolean(GameRules.field_19390) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
 				if (bl2) {
 					SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.create(this);
 					skeletonHorseEntity.setTrapped(true);
@@ -565,7 +566,7 @@ public class ServerWorld extends World {
 			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
-			if (entity.field_6016) {
+			if (entity.updateNeeded) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.tick();
@@ -573,7 +574,7 @@ public class ServerWorld extends World {
 			}
 
 			this.checkChunk(entity);
-			if (entity.field_6016) {
+			if (entity.updateNeeded) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.method_18763(entity, entity2);
 				}
@@ -590,13 +591,13 @@ public class ServerWorld extends World {
 			entity2.prevRenderZ = entity2.z;
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				entity2.age++;
 				entity2.tickRiding();
 			}
 
 			this.checkChunk(entity2);
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				for (Entity entity3 : entity2.getPassengerList()) {
 					this.method_18763(entity2, entity3);
 				}
@@ -609,13 +610,13 @@ public class ServerWorld extends World {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
 		int k = MathHelper.floor(entity.z / 16.0);
-		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
+		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
+			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
 				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
-			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
-				entity.field_6016 = false;
+			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
+				entity.updateNeeded = false;
 			} else {
 				this.method_8497(i, k).addEntity(entity);
 			}
@@ -1214,7 +1215,7 @@ public class ServerWorld extends World {
 	@Nullable
 	@Override
 	public MapState getMapState(String string) {
-		return this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().get(() -> new MapState(string), string);
+		return this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().method_20786(() -> new MapState(string), string);
 	}
 
 	@Override
@@ -1240,7 +1241,7 @@ public class ServerWorld extends World {
 	}
 
 	public LongSet getForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 

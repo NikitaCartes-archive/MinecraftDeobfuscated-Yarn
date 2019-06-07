@@ -45,7 +45,7 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	@Nullable
-	public static Identifier ofNullable(String string) {
+	public static Identifier tryParse(String string) {
 		try {
 			return new Identifier(string);
 		} catch (InvalidIdentifierException var2) {

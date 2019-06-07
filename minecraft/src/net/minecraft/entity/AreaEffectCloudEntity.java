@@ -77,11 +77,11 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public void refreshSize() {
+	public void calculateDimensions() {
 		double d = this.x;
 		double e = this.y;
 		double f = this.z;
-		super.refreshSize();
+		super.calculateDimensions();
 		this.setPosition(d, e, f);
 	}
 
@@ -400,7 +400,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (RADIUS.equals(trackedData)) {
-			this.refreshSize();
+			this.calculateDimensions();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -417,7 +417,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
-		return EntitySize.resizeable(this.getRadius() * 2.0F, 0.5F);
+	public EntityDimensions getDimensions(EntityPose entityPose) {
+		return EntityDimensions.changing(this.getRadius() * 2.0F, 0.5F);
 	}
 }

@@ -102,7 +102,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String string) {
 			try {
-				return BlockPosArgumentType.create().method_9699(new StringReader(string));
+				return BlockPosArgumentType.blockPos().method_9699(new StringReader(string));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}
@@ -154,17 +154,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 		@Override
 		public String toString() {
-			return "BlockPosArgument{pos='"
-				+ this.rawPos
-				+ '\''
-				+ "path='"
-				+ this.rawPath
-				+ '\''
-				+ ", siblings="
-				+ this.siblings
-				+ ", style="
-				+ this.method_10866()
-				+ '}';
+			return "BlockPosArgument{pos='" + this.rawPos + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 		}
 	}
 
@@ -237,7 +227,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				+ ", siblings="
 				+ this.siblings
 				+ ", style="
-				+ this.method_10866()
+				+ this.getStyle()
 				+ '}';
 		}
 	}

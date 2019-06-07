@@ -48,7 +48,7 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(witherSkullEntity));
 		}
 
-		this.model.setRotationAngles(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
+		this.model.render(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();

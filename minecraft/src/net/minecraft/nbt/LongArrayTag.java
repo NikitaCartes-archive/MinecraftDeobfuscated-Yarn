@@ -95,7 +95,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("L").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 

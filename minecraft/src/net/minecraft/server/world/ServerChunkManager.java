@@ -2,9 +2,7 @@ package net.minecraft.server.world;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -33,6 +31,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SpawnHelper;
@@ -315,10 +314,10 @@ public class ServerChunkManager extends ChunkManager {
 		this.lastMobSpawningTime = l;
 		LevelProperties levelProperties = this.world.getLevelProperties();
 		boolean bl = levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
-		boolean bl2 = this.world.getGameRules().getBoolean("doMobSpawning");
+		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.field_19390);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
-			int i = this.world.getGameRules().getInteger("randomTickSpeed");
+			int i = this.world.getGameRules().getInt(GameRules.field_19399);
 			BlockPos blockPos = this.world.getSpawnPos();
 			boolean bl3 = levelProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
@@ -326,43 +325,42 @@ public class ServerChunkManager extends ChunkManager {
 			EntityCategory[] entityCategorys = EntityCategory.values();
 			Object2IntMap<EntityCategory> object2IntMap = this.world.getMobCountsByCategory();
 			this.world.getProfiler().pop();
-			ObjectBidirectionalIterator<Entry<ChunkHolder>> objectBidirectionalIterator = this.threadedAnvilChunkStorage.entryIterator();
-
-			while (objectBidirectionalIterator.hasNext()) {
-				Entry<ChunkHolder> entry = (Entry<ChunkHolder>)objectBidirectionalIterator.next();
-				ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
-				Optional<WorldChunk> optional = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
-				if (optional.isPresent()) {
-					WorldChunk worldChunk = (WorldChunk)optional.get();
-					this.world.getProfiler().push("broadcast");
-					chunkHolder.flushUpdates(worldChunk);
-					this.world.getProfiler().pop();
-					ChunkPos chunkPos = chunkHolder.getPos();
-					if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
-						worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-						if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
-							this.world.getProfiler().push("spawner");
-
-							for (EntityCategory entityCategory : entityCategorys) {
-								if (entityCategory != EntityCategory.field_17715
-									&& (!entityCategory.isPeaceful() || this.spawnAnimals)
-									&& (entityCategory.isPeaceful() || this.spawnMonsters)
-									&& (!entityCategory.isAnimal() || bl3)) {
-									int k = entityCategory.getSpawnCap() * j / CHUNKS_ELIGIBLE_FOR_SPAWNING;
-									if (object2IntMap.getInt(entityCategory) <= k) {
-										SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk, blockPos);
-									}
-								}
-							}
-
+			this.threadedAnvilChunkStorage
+				.entryIterator()
+				.forEach(
+					chunkHolder -> {
+						Optional<WorldChunk> optional = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
+						if (optional.isPresent()) {
+							WorldChunk worldChunk = (WorldChunk)optional.get();
+							this.world.getProfiler().push("broadcast");
+							chunkHolder.flushUpdates(worldChunk);
 							this.world.getProfiler().pop();
+							ChunkPos chunkPos = chunkHolder.getPos();
+							if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
+								worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
+								if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
+									this.world.getProfiler().push("spawner");
+
+									for (EntityCategory entityCategory : entityCategorys) {
+										if (entityCategory != EntityCategory.field_17715
+											&& (!entityCategory.isPeaceful() || this.spawnAnimals)
+											&& (entityCategory.isPeaceful() || this.spawnMonsters)
+											&& (!entityCategory.isAnimal() || bl3)) {
+											int k = entityCategory.getSpawnCap() * j / CHUNKS_ELIGIBLE_FOR_SPAWNING;
+											if (object2IntMap.getInt(entityCategory) <= k) {
+												SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk, blockPos);
+											}
+										}
+									}
+
+									this.world.getProfiler().pop();
+								}
+
+								this.world.tickChunk(worldChunk, i);
+							}
 						}
-
-						this.world.tickChunk(worldChunk, i);
 					}
-				}
-			}
-
+				);
 			this.world.getProfiler().push("customSpawners");
 			if (bl2) {
 				this.chunkGenerator.spawnEntities(this.world, this.spawnMonsters, this.spawnAnimals);

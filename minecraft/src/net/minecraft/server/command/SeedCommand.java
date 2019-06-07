@@ -24,7 +24,7 @@ public class SeedCommand {
 											.setInsertion(String.valueOf(l))
 								)
 						);
-						commandContext.getSource().method_9226(new TranslatableText("commands.seed.success", text), false);
+						commandContext.getSource().sendFeedback(new TranslatableText("commands.seed.success", text), false);
 						return (int)l;
 					}
 				)

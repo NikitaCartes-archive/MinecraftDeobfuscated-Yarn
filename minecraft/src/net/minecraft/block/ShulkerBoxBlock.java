@@ -133,7 +133,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				}
 
 				if (shulkerBoxBlockEntity.hasCustomName()) {
-					itemStack.method_7977(shulkerBoxBlockEntity.method_5797());
+					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
 
 				ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
@@ -167,7 +167,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				((ShulkerBoxBlockEntity)blockEntity).method_17488(itemStack.method_7964());
+				((ShulkerBoxBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}
@@ -205,7 +205,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							Text text = itemStack2.method_7964().deepCopy();
+							Text text = itemStack2.getName().deepCopy();
 							text.append(" x").append(String.valueOf(itemStack2.getCount()));
 							list.add(text);
 						}

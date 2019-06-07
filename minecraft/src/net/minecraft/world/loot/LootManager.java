@@ -51,9 +51,14 @@ public class LootManager extends JsonDataLoader {
 
 	protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootSupplier> builder = ImmutableMap.builder();
-		map.forEach((identifier, jsonObject) -> {
+		JsonObject jsonObject = (JsonObject)map.remove(LootTables.EMPTY);
+		if (jsonObject != null) {
+			LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", LootTables.EMPTY);
+		}
+
+		map.forEach((identifier, jsonObjectx) -> {
 			try {
-				LootSupplier lootSupplier = GSON.fromJson(jsonObject, LootSupplier.class);
+				LootSupplier lootSupplier = GSON.fromJson(jsonObjectx, LootSupplier.class);
 				builder.put(identifier, lootSupplier);
 			} catch (Exception var4x) {
 				LOGGER.error("Couldn't parse loot table {}", identifier, var4x);

@@ -59,6 +59,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -573,7 +574,7 @@ public class Block implements ItemConvertible {
 	}
 
 	public static void dropStack(World world, BlockPos blockPos, ItemStack itemStack) {
-		if (!world.isClient && !itemStack.isEmpty() && world.getGameRules().getBoolean("doTileDrops")) {
+		if (!world.isClient && !itemStack.isEmpty() && world.getGameRules().getBoolean(GameRules.field_19392)) {
 			float f = 0.5F;
 			double d = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
@@ -585,7 +586,7 @@ public class Block implements ItemConvertible {
 	}
 
 	protected void dropExperience(World world, BlockPos blockPos, int i) {
-		if (!world.isClient && world.getGameRules().getBoolean("doTileDrops")) {
+		if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392)) {
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
 				i -= j;
@@ -662,7 +663,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_9518() {
+	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 

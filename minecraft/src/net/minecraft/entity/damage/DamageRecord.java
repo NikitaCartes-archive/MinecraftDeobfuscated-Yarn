@@ -39,8 +39,8 @@ public class DamageRecord {
 	}
 
 	@Nullable
-	public Text method_5498() {
-		return this.getDamageSource().getAttacker() == null ? null : this.getDamageSource().getAttacker().method_5476();
+	public Text getAttackerName() {
+		return this.getDamageSource().getAttacker() == null ? null : this.getDamageSource().getAttacker().getDisplayName();
 	}
 
 	public float getFallDistance() {

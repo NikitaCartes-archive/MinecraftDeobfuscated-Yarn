@@ -33,7 +33,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
@@ -77,7 +77,7 @@ public class GameOptions {
 	public boolean advancedItemTooltips;
 	public boolean pauseOnLostFocus = true;
 	private final Set<PlayerModelPart> enabledPlayerModelParts = Sets.<PlayerModelPart>newHashSet(PlayerModelPart.values());
-	public AbsoluteHand mainHand = AbsoluteHand.field_6183;
+	public Arm mainArm = Arm.field_6183;
 	public int overrideWidth;
 	public int overrideHeight;
 	public boolean heldItemTooltips = true;
@@ -473,7 +473,7 @@ public class GameOptions {
 					}
 
 					if ("mainHand".equals(string)) {
-						this.mainHand = "left".equals(string2) ? AbsoluteHand.field_6182 : AbsoluteHand.field_6183;
+						this.mainArm = "left".equals(string2) ? Arm.field_6182 : Arm.field_6183;
 					}
 
 					if ("narrator".equals(string)) {
@@ -609,7 +609,7 @@ public class GameOptions {
 				printWriter.println("chatWidth:" + this.chatWidth);
 				printWriter.println("mipmapLevels:" + this.mipmapLevels);
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
-				printWriter.println("mainHand:" + (this.mainHand == AbsoluteHand.field_6182 ? "left" : "right"));
+				printWriter.println("mainHand:" + (this.mainArm == Arm.field_6182 ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
@@ -670,7 +670,7 @@ public class GameOptions {
 			this.client
 				.player
 				.networkHandler
-				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm));
 		}
 	}
 

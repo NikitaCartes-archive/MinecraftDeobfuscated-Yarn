@@ -47,6 +47,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
@@ -332,7 +333,7 @@ public class RabbitEntity extends AnimalEntity {
 			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new FollowTargetGoal(this, WolfEntity.class, true));
 			if (!this.hasCustomName()) {
-				this.method_5665(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY)));
+				this.setCustomName(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		}
 
@@ -408,7 +409,7 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			if (this.cooldown <= 0) {
-				if (!this.rabbit.world.getGameRules().getBoolean("mobGriefing")) {
+				if (!this.rabbit.world.getGameRules().getBoolean(GameRules.field_19388)) {
 					return false;
 				}
 

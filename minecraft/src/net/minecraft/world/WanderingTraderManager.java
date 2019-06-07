@@ -46,7 +46,7 @@ public class WanderingTraderManager {
 			levelProperties.setWanderingTraderSpawnDelay(this.field_17729);
 			if (this.field_17729 <= 0) {
 				this.field_17729 = 24000;
-				if (this.world.getGameRules().getBoolean("doMobSpawning")) {
+				if (this.world.getGameRules().getBoolean(GameRules.field_19390)) {
 					int i = this.field_17730;
 					this.field_17730 = MathHelper.clamp(this.field_17730 + 25, 25, 75);
 					levelProperties.setWanderingTraderSpawnChance(this.field_17730);
@@ -80,8 +80,7 @@ public class WanderingTraderManager {
 					return false;
 				}
 
-				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713
-					.method_5899(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
 						this.method_18016(wanderingTraderEntity, 4);
@@ -102,7 +101,7 @@ public class WanderingTraderManager {
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.method_5899(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 			}

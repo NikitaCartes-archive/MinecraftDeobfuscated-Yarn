@@ -59,10 +59,10 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, loginHelloS2CPacket.getNonce());
 		this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
-			Text text = this.method_2892(string);
+			Text text = this.joinServerSession(string);
 			if (text != null) {
 				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
-					this.connection.method_10747(text);
+					this.connection.disconnect(text);
 					return;
 				}
 
@@ -75,7 +75,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Nullable
-	private Text method_2892(String string) {
+	private Text joinServerSession(String string) {
 		try {
 			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), string);
 			return null;
@@ -101,7 +101,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void method_10839(Text text) {
+	public void onDisconnected(Text text) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
 			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", text).getProxy());
 		} else {
@@ -111,7 +111,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onDisconnect(LoginDisconnectS2CPacket loginDisconnectS2CPacket) {
-		this.connection.method_10747(loginDisconnectS2CPacket.getReason());
+		this.connection.disconnect(loginDisconnectS2CPacket.getReason());
 	}
 
 	@Override

@@ -57,7 +57,7 @@ public class Keyboard {
 		this.client
 			.inGameHud
 			.getChatHud()
-			.method_1812(
+			.addMessage(
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1054, Formatting.field_1067}))
 					.append(" ")
@@ -69,7 +69,7 @@ public class Keyboard {
 		this.client
 			.inGameHud
 			.getChatHud()
-			.method_1812(
+			.addMessage(
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1067}))
 					.append(" ")
@@ -169,19 +169,19 @@ public class Keyboard {
 				case 81:
 					this.debugWarn("debug.help.message");
 					ChatHud chatHud = this.client.inGameHud.getChatHud();
-					chatHud.method_1812(new TranslatableText("debug.reload_chunks.help"));
-					chatHud.method_1812(new TranslatableText("debug.show_hitboxes.help"));
-					chatHud.method_1812(new TranslatableText("debug.copy_location.help"));
-					chatHud.method_1812(new TranslatableText("debug.clear_chat.help"));
-					chatHud.method_1812(new TranslatableText("debug.cycle_renderdistance.help"));
-					chatHud.method_1812(new TranslatableText("debug.chunk_boundaries.help"));
-					chatHud.method_1812(new TranslatableText("debug.advanced_tooltips.help"));
-					chatHud.method_1812(new TranslatableText("debug.inspect.help"));
-					chatHud.method_1812(new TranslatableText("debug.creative_spectator.help"));
-					chatHud.method_1812(new TranslatableText("debug.pause_focus.help"));
-					chatHud.method_1812(new TranslatableText("debug.help.help"));
-					chatHud.method_1812(new TranslatableText("debug.reload_resourcepacks.help"));
-					chatHud.method_1812(new TranslatableText("debug.pause.help"));
+					chatHud.addMessage(new TranslatableText("debug.reload_chunks.help"));
+					chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help"));
+					chatHud.addMessage(new TranslatableText("debug.copy_location.help"));
+					chatHud.addMessage(new TranslatableText("debug.clear_chat.help"));
+					chatHud.addMessage(new TranslatableText("debug.cycle_renderdistance.help"));
+					chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help"));
+					chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help"));
+					chatHud.addMessage(new TranslatableText("debug.inspect.help"));
+					chatHud.addMessage(new TranslatableText("debug.creative_spectator.help"));
+					chatHud.addMessage(new TranslatableText("debug.pause_focus.help"));
+					chatHud.addMessage(new TranslatableText("debug.help.help"));
+					chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
+					chatHud.addMessage(new TranslatableText("debug.pause.help"));
 					return true;
 				case 84:
 					this.debugWarn("debug.reload_resourcepacks.message");
@@ -262,7 +262,7 @@ public class Keyboard {
 			compoundTag.remove("UUIDLeast");
 			compoundTag.remove("Pos");
 			compoundTag.remove("Dimension");
-			String string = compoundTag.method_10715().getString();
+			String string = compoundTag.toText().getString();
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", identifier.toString(), vec3d.x, vec3d.y, vec3d.z, string);
 		} else {
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", identifier.toString(), vec3d.x, vec3d.y, vec3d.z);
@@ -304,7 +304,7 @@ public class Keyboard {
 						this.client.window.getFramebufferWidth(),
 						this.client.window.getFramebufferHeight(),
 						this.client.getFramebuffer(),
-						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().method_1812(text))
+						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(text))
 					);
 					return;
 				}

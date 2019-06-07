@@ -4,18 +4,18 @@ import javax.annotation.Nullable;
 import net.minecraft.text.Text;
 
 public interface Nameable {
-	Text method_5477();
+	Text getName();
 
 	default boolean hasCustomName() {
-		return this.method_5797() != null;
+		return this.getCustomName() != null;
 	}
 
-	default Text method_5476() {
-		return this.method_5477();
+	default Text getDisplayName() {
+		return this.getName();
 	}
 
 	@Nullable
-	default Text method_5797() {
+	default Text getCustomName() {
 		return null;
 	}
 }

@@ -21,7 +21,7 @@ public class HelpCommand {
 					Map<CommandNode<ServerCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), commandContext.getSource());
 
 					for (String string : map.values()) {
-						commandContext.getSource().method_9226(new LiteralText("/" + string), false);
+						commandContext.getSource().sendFeedback(new LiteralText("/" + string), false);
 					}
 
 					return map.size();
@@ -41,7 +41,7 @@ public class HelpCommand {
 									);
 
 									for (String string : map.values()) {
-										commandContext.getSource().method_9226(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
+										commandContext.getSource().sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
 									}
 
 									return map.size();

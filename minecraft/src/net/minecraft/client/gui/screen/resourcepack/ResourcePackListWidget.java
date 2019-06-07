@@ -20,22 +20,22 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackEntry> {
 	private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
-	private static final Text field_19126 = new TranslatableText("resourcePack.incompatible");
-	private static final Text field_19127 = new TranslatableText("resourcePack.incompatible.confirm.title");
+	private static final Text INCOMPATIBLE = new TranslatableText("resourcePack.incompatible");
+	private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("resourcePack.incompatible.confirm.title");
 	protected final MinecraftClient client;
-	private final Text field_18978;
+	private final Text title;
 
 	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Text text) {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.client = minecraftClient;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
-		this.field_18978 = text;
+		this.title = text;
 	}
 
 	@Override
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
-		Text text = new LiteralText("").append(this.field_18978).formatted(Formatting.field_1073, Formatting.field_1067);
+		Text text = new LiteralText("").append(this.title).formatted(Formatting.field_1073, Formatting.field_1067);
 		this.client
 			.textRenderer
 			.draw(
@@ -124,7 +124,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				int p = n - k;
 				int q = o - j;
 				if (!resourcePackCompatibility.isCompatible()) {
-					string = ResourcePackListWidget.field_19126.asFormattedString();
+					string = ResourcePackListWidget.INCOMPATIBLE.asFormattedString();
 					string2 = resourcePackCompatibility.getNotification().asFormattedString();
 				}
 
@@ -215,7 +215,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 							if (bl) {
 								this.getScreen().select(this);
 							}
-						}, ResourcePackListWidget.field_19127, text));
+						}, ResourcePackListWidget.INCOMPATIBLE_CONFIRM, text));
 					}
 
 					return true;

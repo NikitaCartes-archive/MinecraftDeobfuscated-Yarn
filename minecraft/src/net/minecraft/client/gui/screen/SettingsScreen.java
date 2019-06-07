@@ -180,7 +180,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	public String getDifficultyButtonText(Difficulty difficulty) {
-		return new TranslatableText("options.difficulty").append(": ").append(difficulty.method_5463()).asFormattedString();
+		return new TranslatableText("options.difficulty").append(": ").append(difficulty.getTranslatableName()).asFormattedString();
 	}
 
 	private void lockDifficulty(boolean bl) {

@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -49,13 +50,13 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean("doMobSpawning") && random.nextInt(2000) < world.getDifficulty().getId()) {
+		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.field_19390) && random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(blockPos).getBlock() == this) {
 				blockPos = blockPos.down();
 			}
 
 			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
-				Entity entity = EntityType.field_6050.method_5899(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
+				Entity entity = EntityType.field_6050.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}

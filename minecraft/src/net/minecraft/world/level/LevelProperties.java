@@ -54,7 +54,6 @@ public class LevelProperties {
 	private final int playerWorldId;
 	private boolean playerDataLoaded;
 	private CompoundTag playerData;
-	private int dimension;
 	private String levelName;
 	private int version;
 	private int clearWeatherTime;
@@ -172,7 +171,7 @@ public class LevelProperties {
 		}
 
 		if (compoundTag.containsKey("GameRules", 10)) {
-			this.gameRules.deserialize(compoundTag.getCompound("GameRules"));
+			this.gameRules.fromNbt(compoundTag.getCompound("GameRules"));
 		}
 
 		if (compoundTag.containsKey("Difficulty", 99)) {
@@ -344,7 +343,7 @@ public class LevelProperties {
 		}
 
 		compoundTag.putBoolean("DifficultyLocked", this.difficultyLocked);
-		compoundTag.put("GameRules", this.gameRules.serialize());
+		compoundTag.put("GameRules", this.gameRules.toNbt());
 		CompoundTag compoundTag4 = new CompoundTag();
 
 		for (Entry<DimensionType, CompoundTag> entry : this.worldData.entrySet()) {
@@ -418,7 +417,6 @@ public class LevelProperties {
 				this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.field_19213, this.playerData, this.playerWorldId);
 			}
 
-			this.dimension = this.playerData.getInt("Dimension");
 			this.playerDataLoaded = true;
 		}
 	}
@@ -426,12 +424,6 @@ public class LevelProperties {
 	public CompoundTag getPlayerData() {
 		this.loadPlayerData();
 		return this.playerData;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public int getDimension() {
-		this.loadPlayerData();
-		return this.dimension;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -677,7 +669,8 @@ public class LevelProperties {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Level seed", (CrashCallable<String>)(() -> String.valueOf(this.getSeed())));
+		crashReportSection.add("Level name", (CrashCallable<String>)(() -> this.levelName));
+		crashReportSection.add("Level seed", (CrashCallable<String>)(() -> String.valueOf(this.randomSeed)));
 		crashReportSection.add(
 			"Level generator",
 			(CrashCallable<String>)(() -> String.format(
@@ -687,7 +680,6 @@ public class LevelProperties {
 		crashReportSection.add("Level generator options", (CrashCallable<String>)(() -> this.generatorOptions.toString()));
 		crashReportSection.add("Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
 		crashReportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
-		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> String.valueOf(this.dimension)));
 		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			String string = "Unknown?";
 

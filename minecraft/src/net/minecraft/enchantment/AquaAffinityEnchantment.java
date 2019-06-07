@@ -13,6 +13,11 @@ public class AquaAffinityEnchantment extends Enchantment {
 	}
 
 	@Override
+	public int method_20742(int i) {
+		return this.getMinimumPower(i) + 40;
+	}
+
+	@Override
 	public int getMaximumLevel() {
 		return 1;
 	}

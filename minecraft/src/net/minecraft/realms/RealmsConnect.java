@@ -95,7 +95,7 @@ public class RealmsConnect {
 	public void abort() {
 		this.aborted = true;
 		if (this.connection != null && this.connection.isOpen()) {
-			this.connection.method_10747(new TranslatableText("disconnect.genericReason"));
+			this.connection.disconnect(new TranslatableText("disconnect.genericReason"));
 			this.connection.handleDisconnection();
 		}
 	}

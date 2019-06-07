@@ -22,13 +22,13 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void method_10839(Text text) {
+	public void onDisconnected(Text text) {
 	}
 
 	@Override
 	public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
 		if (this.responseSent) {
-			this.client.method_10747(REQUEST_HANDLED);
+			this.client.disconnect(REQUEST_HANDLED);
 		} else {
 			this.responseSent = true;
 			this.client.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
@@ -38,6 +38,6 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	@Override
 	public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
 		this.client.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
-		this.client.method_10747(REQUEST_HANDLED);
+		this.client.disconnect(REQUEST_HANDLED);
 	}
 }

@@ -19,7 +19,7 @@ public class TntEntity extends Entity {
 
 	public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6033 = true;
+		this.inanimate = true;
 	}
 
 	public TntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
@@ -71,7 +71,7 @@ public class TntEntity extends Entity {
 				this.explode();
 			}
 		} else {
-			this.method_5713();
+			this.checkWaterState();
 			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 		}
 	}
@@ -97,7 +97,7 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.0F;
 	}
 

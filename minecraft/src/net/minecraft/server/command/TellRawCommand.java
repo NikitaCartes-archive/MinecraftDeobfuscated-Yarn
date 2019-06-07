@@ -13,16 +13,23 @@ public class TellRawCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.then(CommandManager.argument("message", TextArgumentType.create()).executes(commandContext -> {
-							int i = 0;
+						.then(
+							CommandManager.argument("message", TextArgumentType.text())
+								.executes(
+									commandContext -> {
+										int i = 0;
 
-							for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
-								serverPlayerEntity.method_9203(Texts.parse(commandContext.getSource(), TextArgumentType.method_9280(commandContext, "message"), serverPlayerEntity, 0));
-								i++;
-							}
+										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
+											serverPlayerEntity.sendMessage(
+												Texts.parse(commandContext.getSource(), TextArgumentType.getTextArgument(commandContext, "message"), serverPlayerEntity, 0)
+											);
+											i++;
+										}
 
-							return i;
-						}))
+										return i;
+									}
+								)
+						)
 				)
 		);
 	}

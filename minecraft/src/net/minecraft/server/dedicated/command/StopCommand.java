@@ -9,7 +9,7 @@ public class StopCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
 			CommandManager.literal("stop").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4)).executes(commandContext -> {
-				commandContext.getSource().method_9226(new TranslatableText("commands.stop.stopping"), true);
+				commandContext.getSource().sendFeedback(new TranslatableText("commands.stop.stopping"), true);
 				commandContext.getSource().getMinecraftServer().stop(false);
 				return 1;
 			})

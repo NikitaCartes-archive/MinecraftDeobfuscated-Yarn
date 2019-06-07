@@ -43,7 +43,7 @@ public class NbtProvider implements DataProvider {
 	private void method_10493(Path path, String string, Path path2) {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path));
-			Text text = compoundTag.method_10710("    ", 0);
+			Text text = compoundTag.toText("    ", 0);
 			String string2 = text.getString() + "\n";
 			Path path3 = path2.resolve(string + ".snbt");
 			Files.createDirectories(path3.getParent());

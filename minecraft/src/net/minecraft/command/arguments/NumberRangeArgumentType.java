@@ -13,7 +13,7 @@ import net.minecraft.util.NumberRange;
 import net.minecraft.util.PacketByteBuf;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>> extends ArgumentType<T> {
-	static NumberRangeArgumentType.IntRangeArgumentType create() {
+	static NumberRangeArgumentType.IntRangeArgumentType numberRange() {
 		return new NumberRangeArgumentType.IntRangeArgumentType();
 	}
 

@@ -132,7 +132,7 @@ public class ExperienceCommand {
 
 	private static int executeQuery(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, ExperienceCommand.Component component) {
 		int i = component.getter.applyAsInt(serverPlayerEntity);
-		serverCommandSource.method_9226(new TranslatableText("commands.experience.query." + component.name, serverPlayerEntity.method_5476(), i), false);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.experience.query." + component.name, serverPlayerEntity.getDisplayName(), i), false);
 		return i;
 	}
 
@@ -144,12 +144,14 @@ public class ExperienceCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.experience.add." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
+			serverCommandSource.sendFeedback(
+				new TranslatableText(
+					"commands.experience.add." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true);
 		}
 
 		return collection.size();
@@ -170,12 +172,14 @@ public class ExperienceCommand {
 			throw SET_POINT_INVALID_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.experience.set." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
+				serverCommandSource.sendFeedback(
+					new TranslatableText(
+						"commands.experience.set." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true);
 			}
 
 			return collection.size();

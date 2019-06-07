@@ -1,6 +1,7 @@
 package net.minecraft.util.profiler;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,53 +20,62 @@ import org.apache.logging.log4j.Logger;
 public class ProfileResultImpl implements ProfileResult {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, Long> timings;
+	private final Map<String, Long> field_19382;
 	private final long startTime;
 	private final int startTick;
 	private final long endTime;
 	private final int endTick;
+	private final int field_19383;
 
-	public ProfileResultImpl(Map<String, Long> map, long l, int i, long m, int j) {
+	public ProfileResultImpl(Map<String, Long> map, Map<String, Long> map2, long l, int i, long m, int j) {
 		this.timings = map;
+		this.field_19382 = map2;
 		this.startTime = l;
 		this.startTick = i;
 		this.endTime = m;
 		this.endTick = j;
+		this.field_19383 = j - i;
 	}
 
 	@Override
 	public List<ProfilerTiming> getTimings(String string) {
 		String string2 = string;
 		long l = this.timings.containsKey("root") ? (Long)this.timings.get("root") : 0L;
-		long m = this.timings.containsKey(string) ? (Long)this.timings.get(string) : -1L;
+		long m = (Long)this.timings.getOrDefault(string, -1L);
+		long n = (Long)this.field_19382.getOrDefault(string, 0L);
 		List<ProfilerTiming> list = Lists.<ProfilerTiming>newArrayList();
 		if (!string.isEmpty()) {
 			string = string + ".";
 		}
 
-		long n = 0L;
+		long o = 0L;
 
 		for (String string3 : this.timings.keySet()) {
 			if (string3.length() > string.length() && string3.startsWith(string) && string3.indexOf(".", string.length() + 1) < 0) {
-				n += this.timings.get(string3);
+				o += this.timings.get(string3);
 			}
 		}
 
-		float f = (float)n;
-		if (n < m) {
-			n = m;
+		float f = (float)o;
+		if (o < m) {
+			o = m;
 		}
 
-		if (l < n) {
-			l = n;
+		if (l < o) {
+			l = o;
 		}
 
-		for (String string4 : this.timings.keySet()) {
+		Set<String> set = Sets.<String>newHashSet(this.timings.keySet());
+		set.addAll(this.field_19382.keySet());
+
+		for (String string4 : set) {
 			if (string4.length() > string.length() && string4.startsWith(string) && string4.indexOf(".", string.length() + 1) < 0) {
-				long o = (Long)this.timings.get(string4);
-				double d = (double)o * 100.0 / (double)n;
-				double e = (double)o * 100.0 / (double)l;
+				long p = (Long)this.timings.getOrDefault(string4, 0L);
+				double d = (double)p * 100.0 / (double)o;
+				double e = (double)p * 100.0 / (double)l;
 				String string5 = string4.substring(string.length());
-				list.add(new ProfilerTiming(string5, d, e));
+				long q = (Long)this.field_19382.getOrDefault(string4, 0L);
+				list.add(new ProfilerTiming(string5, d, e, q));
 			}
 		}
 
@@ -72,12 +83,12 @@ public class ProfileResultImpl implements ProfileResult {
 			this.timings.put(string4x, (Long)this.timings.get(string4x) * 999L / 1000L);
 		}
 
-		if ((float)n > f) {
-			list.add(new ProfilerTiming("unspecified", (double)((float)n - f) * 100.0 / (double)n, (double)((float)n - f) * 100.0 / (double)l));
+		if ((float)o > f) {
+			list.add(new ProfilerTiming("unspecified", (double)((float)o - f) * 100.0 / (double)o, (double)((float)o - f) * 100.0 / (double)l, n));
 		}
 
 		Collections.sort(list);
-		list.add(0, new ProfilerTiming(string2, 100.0, (double)n * 100.0 / (double)l));
+		list.add(0, new ProfilerTiming(string2, 100.0, (double)o * 100.0 / (double)l, n));
 		return list;
 	}
 
@@ -159,6 +170,11 @@ public class ProfileResultImpl implements ProfileResult {
 				}
 
 				stringBuilder.append(profilerTiming.name)
+					.append('(')
+					.append(profilerTiming.field_19384)
+					.append('/')
+					.append(String.format(Locale.ROOT, "%.0f", (float)profilerTiming.field_19384 / (float)this.field_19383))
+					.append(')')
 					.append(" - ")
 					.append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage))
 					.append("%/")
@@ -198,5 +214,10 @@ public class ProfileResultImpl implements ProfileResult {
 		} catch (Throwable var2) {
 			return "Witty comment unavailable :(";
 		}
+	}
+
+	@Override
+	public int getTickSpan() {
+		return this.field_19383;
 	}
 }

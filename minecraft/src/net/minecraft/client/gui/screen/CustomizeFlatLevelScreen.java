@@ -150,7 +150,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1);
 				Item item = flatChunkGeneratorLayer.getBlockState().getBlock().asItem();
 				if (item != Items.AIR) {
-					NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", item.method_7864(new ItemStack(item))).getString());
+					NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", item.getName(new ItemStack(item))).getString());
 				}
 			}
 		}
@@ -207,7 +207,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 
 				ItemStack itemStack = new ItemStack(item);
-				String string = item.method_7864(itemStack).asFormattedString();
+				String string = item.getName(itemStack).asFormattedString();
 				this.method_19375(k, j, itemStack);
 				CustomizeFlatLevelScreen.this.font.draw(string, (float)(k + 18 + 5), (float)(j + 3), 16777215);
 				String string2;

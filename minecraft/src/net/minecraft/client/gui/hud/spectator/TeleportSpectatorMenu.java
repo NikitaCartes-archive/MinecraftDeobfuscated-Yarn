@@ -40,7 +40,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public Text method_2781() {
+	public Text getPrompt() {
 		return new TranslatableText("spectatorMenu.teleport.prompt");
 	}
 
@@ -50,7 +50,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public Text method_16892() {
+	public Text getName() {
 		return new TranslatableText("spectatorMenu.teleport");
 	}
 

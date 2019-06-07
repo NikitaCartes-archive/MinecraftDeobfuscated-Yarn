@@ -59,7 +59,7 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		String string2 = escape(this.value);
 		String string3 = string2.substring(0, 1);
 		Text text = new LiteralText(string2.substring(1, string2.length() - 1)).formatted(GREEN);

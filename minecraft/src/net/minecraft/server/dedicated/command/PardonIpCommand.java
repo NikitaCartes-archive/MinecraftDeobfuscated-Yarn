@@ -43,7 +43,7 @@ public class PardonIpCommand {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {
 				bannedIpList.remove(string);
-				serverCommandSource.method_9226(new TranslatableText("commands.pardonip.success", string), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.pardonip.success", string), true);
 				return 1;
 			}
 		}

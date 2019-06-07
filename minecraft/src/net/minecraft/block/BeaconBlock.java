@@ -59,7 +59,7 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				((BeaconBlockEntity)blockEntity).method_10936(itemStack.method_7964());
+				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}

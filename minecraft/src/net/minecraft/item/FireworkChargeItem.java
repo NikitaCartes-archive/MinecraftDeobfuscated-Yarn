@@ -33,12 +33,12 @@ public class FireworkChargeItem extends Item {
 		list.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.field_1080));
 		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {
-			list.add(method_7811(new LiteralText("").formatted(Formatting.field_1080), is));
+			list.add(appendColors(new LiteralText("").formatted(Formatting.field_1080), is));
 		}
 
 		int[] js = compoundTag.getIntArray("FadeColors");
 		if (js.length > 0) {
-			list.add(method_7811(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.field_1080), js));
+			list.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.field_1080), js));
 		}
 
 		if (compoundTag.getBoolean("Trail")) {
@@ -51,20 +51,20 @@ public class FireworkChargeItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Text method_7811(Text text, int[] is) {
+	private static Text appendColors(Text text, int[] is) {
 		for (int i = 0; i < is.length; i++) {
 			if (i > 0) {
 				text.append(", ");
 			}
 
-			text.append(method_7810(is[i]));
+			text.append(getColorText(is[i]));
 		}
 
 		return text;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Text method_7810(int i) {
+	private static Text getColorText(int i) {
 		DyeColor dyeColor = DyeColor.byFireworkColor(i);
 		return dyeColor == null
 			? new TranslatableText("item.minecraft.firework_star.custom_color")

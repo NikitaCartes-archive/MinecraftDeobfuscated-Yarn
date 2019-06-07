@@ -42,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
@@ -427,7 +428,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					if (!blockState.isAir() && blockState.getMaterial() != Material.FIRE) {
-						if (this.world.getGameRules().getBoolean("mobGriefing") && !BlockTags.field_17753.contains(block)) {
+						if (this.world.getGameRules().getBoolean(GameRules.field_19388) && !BlockTags.field_17753.contains(block)) {
 							bl2 = this.world.clearBlockState(blockPos, false) || bl2;
 						} else {
 							bl = true;
@@ -511,7 +512,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			this.world.addParticle(ParticleTypes.field_11221, this.x + (double)f, this.y + 2.0 + (double)g, this.z + (double)h, 0.0, 0.0, 0.0);
 		}
 
-		boolean bl = this.world.getGameRules().getBoolean("doMobLoot");
+		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19391);
 		int i = 500;
 		if (this.fight != null && !this.fight.hasPreviouslyKilled()) {
 			i = 12000;

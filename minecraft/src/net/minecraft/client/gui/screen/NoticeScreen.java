@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class NoticeScreen extends Screen {
 	private final Runnable actionHandler;
-	protected final Text field_2346;
+	protected final Text notice;
 	private final List<String> noticeLines = Lists.<String>newArrayList();
 	protected final String buttonString;
 	private int field_2347;
@@ -24,7 +24,7 @@ public class NoticeScreen extends Screen {
 	public NoticeScreen(Runnable runnable, Text text, Text text2, String string) {
 		super(text);
 		this.actionHandler = runnable;
-		this.field_2346 = text2;
+		this.notice = text2;
 		this.buttonString = I18n.translate(string);
 	}
 
@@ -33,7 +33,7 @@ public class NoticeScreen extends Screen {
 		super.init();
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonString, buttonWidget -> this.actionHandler.run()));
 		this.noticeLines.clear();
-		this.noticeLines.addAll(this.font.wrapStringToWidthAsList(this.field_2346.asFormattedString(), this.width - 50));
+		this.noticeLines.addAll(this.font.wrapStringToWidthAsList(this.notice.asFormattedString(), this.width - 50));
 	}
 
 	@Override

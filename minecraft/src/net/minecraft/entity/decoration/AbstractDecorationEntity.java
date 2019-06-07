@@ -135,7 +135,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean handlePlayerAttack(Entity entity) {
+	public boolean handleAttack(Entity entity) {
 		return entity instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)entity), 0.0F) : false;
 	}
 
@@ -266,6 +266,6 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void refreshSize() {
+	public void calculateDimensions() {
 	}
 }

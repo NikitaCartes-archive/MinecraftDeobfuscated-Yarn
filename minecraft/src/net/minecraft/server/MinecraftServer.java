@@ -152,7 +152,6 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private int worldHeight;
 	private int playerIdleTimeout;
 	public final long[] lastTickLengths = new long[100];
-	protected final Map<DimensionType, long[]> field_4600 = Maps.<DimensionType, long[]>newIdentityHashMap();
 	@Nullable
 	private KeyPair keyPair;
 	@Nullable
@@ -290,10 +289,10 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 				Text text = null;
 
 				while (!worldUpdater.isDone()) {
-					Text text2 = worldUpdater.method_5394();
+					Text text2 = worldUpdater.getStatus();
 					if (text != text2) {
 						text = text2;
-						LOGGER.info(worldUpdater.method_5394().getString());
+						LOGGER.info(worldUpdater.getStatus().getString());
 					}
 
 					int i = worldUpdater.getTotalChunkCount();
@@ -413,7 +412,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		levelProperties.setHardcore(false);
 		levelProperties.setDifficulty(Difficulty.field_5801);
 		levelProperties.setDifficultyLocked(true);
-		levelProperties.getGameRules().put("doDaylightCycle", "false", this);
+		levelProperties.getGameRules().get(GameRules.field_19396).set(false, this);
 	}
 
 	protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
@@ -456,7 +455,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.method_16208();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
 			if (forcedChunkState != null) {
 				ServerWorld serverWorld2 = this.getWorld(dimensionType);
 				LongIterator longIterator = forcedChunkState.getChunks().iterator();
@@ -792,7 +791,6 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			long l = SystemUtil.getMeasuringTimeNano();
 			if (serverWorld.dimension.getType() == DimensionType.field_13072 || this.isNetherAllowed()) {
 				this.profiler
 					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
@@ -800,7 +798,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 					this.profiler.push("timeSync");
 					this.playerManager
 						.sendToDimension(
-							new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")),
+							new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.field_19396)),
 							serverWorld.dimension.getType()
 						);
 					this.profiler.pop();
@@ -810,8 +808,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 				try {
 					serverWorld.tick(booleanSupplier);
-				} catch (Throwable var8) {
-					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world");
+				} catch (Throwable var6) {
+					CrashReport crashReport = CrashReport.create(var6, "Exception ticking world");
 					serverWorld.addDetailsToCrashReport(crashReport);
 					throw new CrashException(crashReport);
 				}
@@ -819,9 +817,6 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 				this.profiler.pop();
 				this.profiler.pop();
 			}
-
-			((long[])this.field_4600.computeIfAbsent(serverWorld.dimension.getType(), dimensionType -> new long[100]))[this.ticks % 100] = SystemUtil.getMeasuringTimeNano()
-				- l;
 		}
 
 		this.profiler.swap("connection");
@@ -1043,7 +1038,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Override
-	public void method_9203(Text text) {
+	public void sendMessage(Text text) {
 		LOGGER.info(text.getString());
 	}
 
@@ -1380,7 +1375,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	public int getSpawnRadius(@Nullable ServerWorld serverWorld) {
-		return serverWorld != null ? serverWorld.getGameRules().getInteger("spawnRadius") : 10;
+		return serverWorld != null ? serverWorld.getGameRules().getInt(GameRules.field_19403) : 10;
 	}
 
 	public ServerAdvancementLoader getAdvancementManager() {
@@ -1418,6 +1413,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		CompletableFuture<Unit> completableFuture = this.dataManager
 			.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(Unit.field_17274));
 		this.waitFor(completableFuture::isDone);
+
+		try {
+			completableFuture.get();
+		} catch (Exception var6) {
+			LOGGER.error("Failed to reload data packs", (Throwable)var6);
+		}
+
 		levelProperties.getEnabledDataPacks().clear();
 		levelProperties.getDisabledDataPacks().clear();
 		this.dataPackContainerManager

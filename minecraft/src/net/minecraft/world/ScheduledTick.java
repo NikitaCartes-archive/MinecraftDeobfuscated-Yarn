@@ -37,7 +37,7 @@ public class ScheduledTick<T> {
 		return this.pos.hashCode();
 	}
 
-	public static <T> Comparator<ScheduledTick<T>> method_20597() {
+	public static <T> Comparator<ScheduledTick<T>> getComparator() {
 		return (scheduledTick, scheduledTick2) -> {
 			int i = Long.compare(scheduledTick.time, scheduledTick2.time);
 			if (i != 0) {

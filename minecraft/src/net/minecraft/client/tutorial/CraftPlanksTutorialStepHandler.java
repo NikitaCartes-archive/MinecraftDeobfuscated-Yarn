@@ -15,8 +15,8 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
-	private static final Text field_5611 = new TranslatableText("tutorial.craft_planks.title");
-	private static final Text field_5612 = new TranslatableText("tutorial.craft_planks.description");
+	private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title");
+	private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -47,7 +47,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 1200 && this.toast == null) {
-				this.toast = new TutorialToast(TutorialToast.Type.field_2236, field_5611, field_5612, false);
+				this.toast = new TutorialToast(TutorialToast.Type.field_2236, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}

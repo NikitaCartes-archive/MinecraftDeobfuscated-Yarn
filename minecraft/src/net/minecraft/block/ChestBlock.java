@@ -79,8 +79,12 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 				}
 
 				@Override
-				public Text method_5476() {
-					return new TranslatableText("container.chestDouble");
+				public Text getDisplayName() {
+					if (chestBlockEntity.hasCustomName()) {
+						return chestBlockEntity.getDisplayName();
+					} else {
+						return (Text)(chestBlockEntity2.hasCustomName() ? chestBlockEntity2.getDisplayName() : new TranslatableText("container.chestDouble"));
+					}
 				}
 			};
 		}
@@ -197,7 +201,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				((ChestBlockEntity)blockEntity).method_17488(itemStack.method_7964());
+				((ChestBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}

@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
-	private static final TranslatableText field_17355 = new TranslatableText("container.cartography_table");
+	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.cartography_table");
 
 	protected CartographyTableBlock(Block.Settings settings) {
 		super(settings);
@@ -31,7 +31,7 @@ public class CartographyTableBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17355
+			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 }

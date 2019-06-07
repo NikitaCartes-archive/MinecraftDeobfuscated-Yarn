@@ -132,7 +132,7 @@ public class DatapackCommand {
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().remove(resourcePackContainer.getName());
-		serverCommandSource.method_9226(new TranslatableText("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -147,7 +147,7 @@ public class DatapackCommand {
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
-		serverCommandSource.method_9226(new TranslatableText("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -159,9 +159,9 @@ public class DatapackCommand {
 	private static int executeListAvailable(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
 		if (resourcePackContainerManager.getDisabledContainers().isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.datapack.list.available.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
 					"commands.datapack.list.available.success",
 					resourcePackContainerManager.getDisabledContainers().size(),
@@ -177,9 +177,9 @@ public class DatapackCommand {
 	private static int executeListEnabled(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
 		if (resourcePackContainerManager.getEnabledContainers().isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableText("commands.datapack.list.enabled.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
 					"commands.datapack.list.enabled.success",
 					resourcePackContainerManager.getEnabledContainers().size(),

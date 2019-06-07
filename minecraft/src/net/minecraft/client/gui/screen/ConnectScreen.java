@@ -30,11 +30,11 @@ public class ConnectScreen extends Screen {
 	private ClientConnection connection;
 	private boolean field_2409;
 	private final Screen parent;
-	private Text field_2413 = new TranslatableText("connect.connecting");
+	private Text status = new TranslatableText("connect.connecting");
 	private long field_19097 = -1L;
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
 		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
@@ -44,7 +44,7 @@ public class ConnectScreen extends Screen {
 	}
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
 		this.parent = screen;
 		minecraftClient.disconnect();
@@ -67,7 +67,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.method_2131(text)
+								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
 							)
 						);
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
@@ -102,8 +102,8 @@ public class ConnectScreen extends Screen {
 		thread.start();
 	}
 
-	private void method_2131(Text text) {
-		this.field_2413 = text;
+	private void setStatus(Text text) {
+		this.status = text;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class ConnectScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
 			this.field_2409 = true;
 			if (this.connection != null) {
-				this.connection.method_10747(new TranslatableText("connect.aborted"));
+				this.connection.disconnect(new TranslatableText("connect.aborted"));
 			}
 
 			this.minecraft.openScreen(this.parent);
@@ -143,7 +143,7 @@ public class ConnectScreen extends Screen {
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.drawCenteredString(this.font, this.field_2413.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
+		this.drawCenteredString(this.font, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(i, j, f);
 	}
 }

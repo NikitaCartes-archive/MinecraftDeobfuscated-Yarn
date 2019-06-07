@@ -33,13 +33,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = team.getName();
 		this.mode = i;
 		if (i == 0 || i == 2) {
-			this.displayName = team.method_1140();
+			this.displayName = team.getDisplayName();
 			this.flags = team.getFriendlyFlagsBitwise();
 			this.nameTagVisibilityRule = team.getNameTagVisibilityRule().name;
 			this.collisionRule = team.getCollisionRule().name;
 			this.color = team.getColor();
-			this.prefix = team.method_1144();
-			this.suffix = team.method_1136();
+			this.prefix = team.getPrefix();
+			this.suffix = team.getSuffix();
 		}
 
 		if (i == 0) {
@@ -64,13 +64,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.displayName = packetByteBuf.method_10808();
+			this.displayName = packetByteBuf.readText();
 			this.flags = packetByteBuf.readByte();
 			this.nameTagVisibilityRule = packetByteBuf.readString(40);
 			this.collisionRule = packetByteBuf.readString(40);
 			this.color = packetByteBuf.readEnumConstant(Formatting.class);
-			this.prefix = packetByteBuf.method_10808();
-			this.suffix = packetByteBuf.method_10808();
+			this.prefix = packetByteBuf.readText();
+			this.suffix = packetByteBuf.readText();
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
@@ -87,13 +87,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeString(this.teamName);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.method_10805(this.displayName);
+			packetByteBuf.writeText(this.displayName);
 			packetByteBuf.writeByte(this.flags);
 			packetByteBuf.writeString(this.nameTagVisibilityRule);
 			packetByteBuf.writeString(this.collisionRule);
 			packetByteBuf.writeEnumConstant(this.color);
-			packetByteBuf.method_10805(this.prefix);
-			packetByteBuf.method_10805(this.suffix);
+			packetByteBuf.writeText(this.prefix);
+			packetByteBuf.writeText(this.suffix);
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {

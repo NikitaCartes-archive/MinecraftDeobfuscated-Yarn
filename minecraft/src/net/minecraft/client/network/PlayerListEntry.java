@@ -24,7 +24,7 @@ public class PlayerListEntry {
 	private int latency;
 	private boolean texturesLoaded;
 	private String model;
-	private Text field_3743;
+	private Text displayName;
 	private int field_3738;
 	private int field_3736;
 	private long field_3737;
@@ -39,7 +39,7 @@ public class PlayerListEntry {
 		this.profile = entry.getProfile();
 		this.gameMode = entry.getGameMode();
 		this.latency = entry.getLatency();
-		this.field_3743 = entry.getDisplayName();
+		this.displayName = entry.getDisplayName();
 	}
 
 	public GameProfile getProfile() {
@@ -116,13 +116,13 @@ public class PlayerListEntry {
 		}
 	}
 
-	public void method_2962(@Nullable Text text) {
-		this.field_3743 = text;
+	public void setDisplayName(@Nullable Text text) {
+		this.displayName = text;
 	}
 
 	@Nullable
-	public Text method_2971() {
-		return this.field_3743;
+	public Text getDisplayName() {
+		return this.displayName;
 	}
 
 	public int method_2973() {

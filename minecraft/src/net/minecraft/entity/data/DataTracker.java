@@ -7,6 +7,7 @@ import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
@@ -247,8 +248,22 @@ public class DataTracker {
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected <T> void copyToFrom(DataTracker.Entry<T> entry, DataTracker.Entry<?> entry2) {
-		entry.set((T)entry2.get());
+	private <T> void copyToFrom(DataTracker.Entry<T> entry, DataTracker.Entry<?> entry2) {
+		if (!Objects.equals(entry2.data.getType(), entry.data.getType())) {
+			throw new IllegalStateException(
+				String.format(
+					"Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)",
+					entry.data.getId(),
+					this.trackedEntity,
+					entry.value,
+					entry.value.getClass(),
+					entry2.value,
+					entry2.value.getClass()
+				)
+			);
+		} else {
+			entry.set((T)entry2.get());
+		}
 	}
 
 	public boolean isEmpty() {

@@ -41,6 +41,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class BoatEntity extends Entity {
@@ -78,7 +79,7 @@ public class BoatEntity extends Entity {
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6033 = true;
+		this.inanimate = true;
 	}
 
 	public BoatEntity(World world, double d, double e, double f) {
@@ -108,7 +109,7 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Box method_5708(Entity entity) {
+	public Box getHardCollisionBox(Entity entity) {
 		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
@@ -143,7 +144,7 @@ public class BoatEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
-				if (!bl && this.world.getGameRules().getBoolean("doEntityDrops")) {
+				if (!bl && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 					this.dropItem(this.asItem());
 				}
 
@@ -215,7 +216,7 @@ public class BoatEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_7686 = d;
 		this.field_7700 = e;
 		this.field_7685 = f;
@@ -718,7 +719,7 @@ public class BoatEntity extends Entity {
 					this.handleFallDamage(this.fallDistance, 1.0F);
 					if (!this.world.isClient && !this.removed) {
 						this.remove();
-						if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+						if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 							for (int i = 0; i < 3; i++) {
 								this.dropItem(this.getBoatType().getBaseBlock());
 							}

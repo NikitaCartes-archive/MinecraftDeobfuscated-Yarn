@@ -50,6 +50,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	@Override
 	public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 		this.placementData.setBoundingBox(mutableIntBoundingBox);
+		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 		if (this.structure.method_15172(iWorld, this.pos, this.placementData, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.method_16445(this.pos, this.placementData, Blocks.field_10465)) {
 				if (structureBlockInfo.tag != null) {

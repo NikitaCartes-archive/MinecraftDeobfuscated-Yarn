@@ -42,7 +42,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		return EXAMPLES;
 	}
 
-	public static DimensionArgumentType create() {
+	public static DimensionArgumentType dimension() {
 		return new DimensionArgumentType();
 	}
 

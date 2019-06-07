@@ -16,9 +16,9 @@ public class Team extends AbstractTeam {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
-	private Text field_1414;
-	private Text field_1418 = new LiteralText("");
-	private Text field_1419 = new LiteralText("");
+	private Text displayName;
+	private Text prefix = new LiteralText("");
+	private Text suffix = new LiteralText("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
 	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
@@ -29,7 +29,7 @@ public class Team extends AbstractTeam {
 	public Team(Scoreboard scoreboard, String string) {
 		this.scoreboard = scoreboard;
 		this.name = string;
-		this.field_1414 = new LiteralText(string);
+		this.displayName = new LiteralText(string);
 	}
 
 	@Override
@@ -37,13 +37,13 @@ public class Team extends AbstractTeam {
 		return this.name;
 	}
 
-	public Text method_1140() {
-		return this.field_1414;
+	public Text getDisplayName() {
+		return this.displayName;
 	}
 
-	public Text method_1148() {
+	public Text getFormattedName() {
 		Text text = Texts.bracketed(
-			this.field_1414
+			this.displayName
 				.deepCopy()
 				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.name))))
 		);
@@ -55,31 +55,31 @@ public class Team extends AbstractTeam {
 		return text;
 	}
 
-	public void method_1137(Text text) {
+	public void setDisplayName(Text text) {
 		if (text == null) {
 			throw new IllegalArgumentException("Name cannot be null");
 		} else {
-			this.field_1414 = text;
+			this.displayName = text;
 			this.scoreboard.updateScoreboardTeam(this);
 		}
 	}
 
-	public void method_1138(@Nullable Text text) {
-		this.field_1418 = (Text)(text == null ? new LiteralText("") : text.deepCopy());
+	public void setPrefix(@Nullable Text text) {
+		this.prefix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public Text method_1144() {
-		return this.field_1418;
+	public Text getPrefix() {
+		return this.prefix;
 	}
 
-	public void method_1139(@Nullable Text text) {
-		this.field_1419 = (Text)(text == null ? new LiteralText("") : text.deepCopy());
+	public void setSuffix(@Nullable Text text) {
+		this.suffix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public Text method_1136() {
-		return this.field_1419;
+	public Text getSuffix() {
+		return this.suffix;
 	}
 
 	@Override
@@ -88,8 +88,8 @@ public class Team extends AbstractTeam {
 	}
 
 	@Override
-	public Text method_1198(Text text) {
-		Text text2 = new LiteralText("").append(this.field_1418).append(text).append(this.field_1419);
+	public Text modifyText(Text text) {
+		Text text2 = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
 		Formatting formatting = this.getColor();
 		if (formatting != Formatting.field_1070) {
 			text2.formatted(formatting);
@@ -98,8 +98,8 @@ public class Team extends AbstractTeam {
 		return text2;
 	}
 
-	public static Text method_1142(@Nullable AbstractTeam abstractTeam, Text text) {
-		return abstractTeam == null ? text.deepCopy() : abstractTeam.method_1198(text);
+	public static Text modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
+		return abstractTeam == null ? text.deepCopy() : abstractTeam.modifyText(text);
 	}
 
 	@Override

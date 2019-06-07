@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 
 public class GameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -35,13 +36,13 @@ public class GameModeCommand {
 	private static void setGameMode(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
 		Text text = new TranslatableText("gameMode." + gameMode.getName());
 		if (serverCommandSource.getEntity() == serverPlayerEntity) {
-			serverCommandSource.method_9226(new TranslatableText("commands.gamemode.success.self", text), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
-			if (serverCommandSource.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-				serverPlayerEntity.method_9203(new TranslatableText("gameMode.changed", text));
+			if (serverCommandSource.getWorld().getGameRules().getBoolean(GameRules.field_19400)) {
+				serverPlayerEntity.sendMessage(new TranslatableText("gameMode.changed", text));
 			}
 
-			serverCommandSource.method_9226(new TranslatableText("commands.gamemode.success.other", serverPlayerEntity.method_5476(), text), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), text), true);
 		}
 	}
 

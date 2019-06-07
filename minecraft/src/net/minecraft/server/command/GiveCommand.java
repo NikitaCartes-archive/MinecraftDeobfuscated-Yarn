@@ -22,7 +22,7 @@ public class GiveCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("item", ItemStackArgumentType.create())
+							CommandManager.argument("item", ItemStackArgumentType.itemStack())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -86,15 +86,18 @@ public class GiveCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.give.success.single", i, itemStackArgument.createStack(i, false).method_7954(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.give.success.single",
+					i,
+					itemStackArgument.createStack(i, false).toHoverableText(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(
-				new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).method_7954(), collection.size()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true
 			);
 		}
 

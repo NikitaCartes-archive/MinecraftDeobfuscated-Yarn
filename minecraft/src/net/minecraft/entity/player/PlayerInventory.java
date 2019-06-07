@@ -324,7 +324,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				CrashReportSection crashReportSection = crashReport.addElement("Item being added");
 				crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
 				crashReportSection.add("Item data", itemStack.getDamage());
-				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.method_7964().getString()));
+				crashReportSection.add("Item name", (CrashCallable<String>)(() -> itemStack.getName().getString()));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -519,7 +519,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public Text method_5477() {
+	public Text getName() {
 		return new TranslatableText("container.inventory");
 	}
 

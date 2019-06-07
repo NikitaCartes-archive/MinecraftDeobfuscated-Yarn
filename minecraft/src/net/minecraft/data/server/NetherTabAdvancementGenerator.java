@@ -270,7 +270,6 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 						.withEffect(StatusEffects.field_5906)
 						.withEffect(StatusEffects.field_5927)
 						.withEffect(StatusEffects.field_5900)
-						.withEffect(StatusEffects.field_5922)
 						.withEffect(StatusEffects.field_5919)
 						.withEffect(StatusEffects.field_16595)
 						.withEffect(StatusEffects.field_18980)

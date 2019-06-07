@@ -39,7 +39,7 @@ public class BoatItem extends Item {
 				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
 
 				for (Entity entity : list) {
-					Box box = entity.getBoundingBox().expand((double)entity.getBoundingBoxMarginForTargeting());
+					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
 					if (box.contains(vec3d2)) {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}

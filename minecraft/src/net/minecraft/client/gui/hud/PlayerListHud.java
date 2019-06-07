@@ -31,8 +31,8 @@ public class PlayerListHud extends DrawableHelper {
 	private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new PlayerListHud.EntryOrderComparator());
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
-	private Text field_2154;
-	private Text field_2153;
+	private Text footer;
+	private Text header;
 	private long showTime;
 	private boolean visible;
 
@@ -42,9 +42,9 @@ public class PlayerListHud extends DrawableHelper {
 	}
 
 	public Text method_1918(PlayerListEntry playerListEntry) {
-		return playerListEntry.method_2971() != null
-			? playerListEntry.method_2971()
-			: Team.method_1142(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName()));
+		return playerListEntry.getDisplayName() != null
+			? playerListEntry.getDisplayName()
+			: Team.modifyText(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName()));
 	}
 
 	public void tick(boolean bl) {
@@ -96,8 +96,8 @@ public class PlayerListHud extends DrawableHelper {
 		int r = 10;
 		int s = p * l + (l - 1) * 5;
 		List<String> list2 = null;
-		if (this.field_2153 != null) {
-			list2 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2153.asFormattedString(), i - 50);
+		if (this.header != null) {
+			list2 = this.client.textRenderer.wrapStringToWidthAsList(this.header.asFormattedString(), i - 50);
 
 			for (String string : list2) {
 				s = Math.max(s, this.client.textRenderer.getStringWidth(string));
@@ -105,8 +105,8 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		List<String> list3 = null;
-		if (this.field_2154 != null) {
-			list3 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2154.asFormattedString(), i - 50);
+		if (this.footer != null) {
+			list3 = this.client.textRenderer.wrapStringToWidthAsList(this.footer.asFormattedString(), i - 50);
 
 			for (String string2 : list3) {
 				s = Math.max(s, this.client.textRenderer.getStringWidth(string2));
@@ -287,17 +287,17 @@ public class PlayerListHud extends DrawableHelper {
 		}
 	}
 
-	public void method_1924(@Nullable Text text) {
-		this.field_2154 = text;
+	public void setFooter(@Nullable Text text) {
+		this.footer = text;
 	}
 
-	public void method_1925(@Nullable Text text) {
-		this.field_2153 = text;
+	public void setHeader(@Nullable Text text) {
+		this.header = text;
 	}
 
 	public void clear() {
-		this.field_2153 = null;
-		this.field_2154 = null;
+		this.header = null;
+		this.footer = null;
 	}
 
 	@Environment(EnvType.CLIENT)

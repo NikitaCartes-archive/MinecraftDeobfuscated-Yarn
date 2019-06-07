@@ -22,7 +22,7 @@ public class TeamArgumentType implements ArgumentType<String> {
 		object -> new TranslatableText("team.notFound", object)
 	);
 
-	public static TeamArgumentType create() {
+	public static TeamArgumentType team() {
 		return new TeamArgumentType();
 	}
 

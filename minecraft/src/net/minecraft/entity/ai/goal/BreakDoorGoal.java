@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 
 public class BreakDoorGoal extends DoorInteractGoal {
 	private final Predicate<Difficulty> difficultySufficientPredicate;
@@ -30,7 +31,9 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		if (!super.canStart()) {
 			return false;
 		} else {
-			return !this.mob.world.getGameRules().getBoolean("mobGriefing") ? false : this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.method_6256();
+			return !this.mob.world.getGameRules().getBoolean(GameRules.field_19388)
+				? false
+				: this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.method_6256();
 		}
 	}
 

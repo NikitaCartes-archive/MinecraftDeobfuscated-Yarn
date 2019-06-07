@@ -34,7 +34,7 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
 								.then(
-									CommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeClear(
 													commandContext.getSource(),
@@ -50,7 +50,7 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeGive(
 													commandContext.getSource(),
@@ -136,12 +136,12 @@ public class EffectCommand {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.effect.give.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).method_5476(), k / 20),
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.effect.give.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName(), k / 20),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.effect.give.success.multiple", statusEffect.method_5560(), collection.size(), k / 20), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.method_5560(), collection.size(), k / 20), true);
 			}
 
 			return j;
@@ -161,11 +161,11 @@ public class EffectCommand {
 			throw CLEAR_EVERYTHING_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.effect.clear.everything.success.single", ((Entity)collection.iterator().next()).method_5476()), true
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.effect.clear.everything.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableText("commands.effect.clear.everything.success.multiple", collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.multiple", collection.size()), true);
 			}
 
 			return i;
@@ -185,12 +185,12 @@ public class EffectCommand {
 			throw CLEAR_SPECIFIC_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).method_5476()),
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName()),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(
+				serverCommandSource.sendFeedback(
 					new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.method_5560(), collection.size()), true
 				);
 			}

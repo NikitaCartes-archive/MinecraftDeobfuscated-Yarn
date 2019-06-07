@@ -438,7 +438,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 							itemStack.getOrCreateSubTag("CustomCreativeLock");
 							String string = this.minecraft.options.keysHotbar[j].getLocalizedName();
 							String string2 = this.minecraft.options.keySaveToolbarActivator.getLocalizedName();
-							itemStack.method_7977(new TranslatableText("inventory.hotbarInfo", string2, string));
+							itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", string2, string));
 							this.container.itemList.add(itemStack);
 						} else {
 							this.container.itemList.add(ItemStack.EMPTY);
@@ -623,7 +623,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			for (int k = 0; k < list2.size(); k++) {
 				if (k == 0) {
-					list2.set(k, itemStack.getRarity().field_8908 + (String)list2.get(k));
+					list2.set(k, itemStack.getRarity().formatting + (String)list2.get(k));
 				} else {
 					list2.set(k, Formatting.field_1080 + (String)list2.get(k));
 				}
@@ -774,7 +774,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			String string = minecraftClient.options.keysHotbar[i].getLocalizedName();
 			String string2 = minecraftClient.options.keyLoadToolbarActivator.getLocalizedName();
-			minecraftClient.inGameHud.method_1758(new TranslatableText("inventory.hotbarSaved", string2, string), false);
+			minecraftClient.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", string2, string), false);
 			hotbarStorage.save();
 		}
 	}

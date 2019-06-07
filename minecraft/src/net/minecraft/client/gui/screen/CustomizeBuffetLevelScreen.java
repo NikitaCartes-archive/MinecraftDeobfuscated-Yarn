@@ -160,7 +160,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			Registry.BIOME
 				.getIds()
 				.stream()
-				.sorted(Comparator.comparing(identifier -> Registry.BIOME.get(identifier).method_8693().getString()))
+				.sorted(Comparator.comparing(identifier -> Registry.BIOME.get(identifier).getName().getString()))
 				.forEach(identifier -> this.addEntry(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(identifier)));
 		}
 
@@ -172,7 +172,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		public void method_20089(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
-				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).method_8693().getString()).getString());
+				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getName().getString()).getString());
 			}
 		}
 
@@ -192,9 +192,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				BuffetBiomesListWidget.this.drawString(
-					CustomizeBuffetLevelScreen.this.font, Registry.BIOME.get(this.biome).method_8693().getString(), k + 5, j + 2, 16777215
-				);
+				BuffetBiomesListWidget.this.drawString(CustomizeBuffetLevelScreen.this.font, Registry.BIOME.get(this.biome).getName().getString(), k + 5, j + 2, 16777215);
 			}
 
 			@Override

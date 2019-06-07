@@ -3,8 +3,8 @@ package net.minecraft.entity.passive;
 import java.util.Random;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
@@ -44,8 +44,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entitySize.height * 0.65F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * 0.65F;
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	protected void copyDataToStack(ItemStack itemStack) {
 		if (this.hasCustomName()) {
-			itemStack.method_7977(this.method_5797());
+			itemStack.setCustomName(this.getCustomName());
 		}
 	}
 

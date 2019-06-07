@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class PaintingEntity extends AbstractDecorationEntity {
@@ -76,7 +77,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.motive = Registry.MOTIVE.get(Identifier.ofNullable(compoundTag.getString("Motive")));
+		this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
 		super.readCustomDataFromTag(compoundTag);
 	}
 
@@ -92,7 +93,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -117,7 +118,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}

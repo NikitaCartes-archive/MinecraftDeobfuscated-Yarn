@@ -221,7 +221,7 @@ public class EntitySelector {
 		return list.subList(0, Math.min(this.count, list.size()));
 	}
 
-	public static Text method_9822(List<? extends Entity> list) {
-		return Texts.join(list, Entity::method_5476);
+	public static Text getNames(List<? extends Entity> list) {
+		return Texts.join(list, Entity::getDisplayName);
 	}
 }

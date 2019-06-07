@@ -370,7 +370,7 @@ public class CrossbowItem extends RangedWeaponItem {
 		List<ItemStack> list2 = getProjectiles(itemStack);
 		if (isCharged(itemStack) && !list2.isEmpty()) {
 			ItemStack itemStack2 = (ItemStack)list2.get(0);
-			list.add(new TranslatableText("item.minecraft.crossbow.projectile").append(" ").append(itemStack2.method_7954()));
+			list.add(new TranslatableText("item.minecraft.crossbow.projectile").append(" ").append(itemStack2.toHoverableText()));
 			if (tooltipContext.isAdvanced() && itemStack2.getItem() == Items.field_8639) {
 				List<Text> list3 = Lists.<Text>newArrayList();
 				Items.field_8639.appendTooltip(itemStack2, world, list3, tooltipContext);

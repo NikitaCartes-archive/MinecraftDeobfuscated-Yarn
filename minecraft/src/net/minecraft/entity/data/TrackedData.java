@@ -31,4 +31,8 @@ public class TrackedData<T> {
 	public int hashCode() {
 		return this.id;
 	}
+
+	public String toString() {
+		return "<entity data: " + this.id + ">";
+	}
 }

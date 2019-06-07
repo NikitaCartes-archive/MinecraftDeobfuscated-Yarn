@@ -14,7 +14,7 @@ public class NameTagItem extends Item {
 	public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (itemStack.hasCustomName() && !(livingEntity instanceof PlayerEntity)) {
 			if (livingEntity.isAlive()) {
-				livingEntity.method_5665(itemStack.method_7964());
+				livingEntity.setCustomName(itemStack.getName());
 				if (livingEntity instanceof MobEntity) {
 					((MobEntity)livingEntity).setPersistent();
 				}

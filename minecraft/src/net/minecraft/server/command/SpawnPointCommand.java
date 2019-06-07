@@ -27,7 +27,7 @@ public class SpawnPointCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.create())
+							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), BlockPosArgumentType.getBlockPos(commandContext, "pos")
@@ -44,14 +44,18 @@ public class SpawnPointCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.spawnpoint.success.single", blockPos.getX(), blockPos.getY(), blockPos.getZ(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.spawnpoint.success.single",
+					blockPos.getX(),
+					blockPos.getY(),
+					blockPos.getZ(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true
 			);
 		}

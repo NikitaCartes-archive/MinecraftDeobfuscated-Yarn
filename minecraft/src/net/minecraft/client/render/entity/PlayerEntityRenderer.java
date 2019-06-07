@@ -22,7 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
@@ -81,7 +81,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
 			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
 			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
-			if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.field_6183) {
+			if (abstractClientPlayerEntity.getMainArm() == Arm.field_6183) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
 			} else {
@@ -140,7 +140,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
-				this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.method_1114().asFormattedString(), d, e, f, 64);
+				this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(), d, e, f, 64);
 				e += (double)(9.0F * 1.15F * 0.025F);
 			}
 		}

@@ -13,8 +13,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerType;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnType;
@@ -350,7 +350,7 @@ public class SheepEntity extends AnimalEntity {
 	private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
 		DyeColor dyeColor = ((SheepEntity)animalEntity).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)animalEntity2).getColor();
-		CraftingInventory craftingInventory = method_17690(dyeColor, dyeColor2);
+		CraftingInventory craftingInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
 		return (DyeColor)this.world
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
@@ -362,7 +362,7 @@ public class SheepEntity extends AnimalEntity {
 			.orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
-	private static CraftingInventory method_17690(DyeColor dyeColor, DyeColor dyeColor2) {
+	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor dyeColor, DyeColor dyeColor2) {
 		CraftingInventory craftingInventory = new CraftingInventory(new Container(null, -1) {
 			@Override
 			public boolean canUse(PlayerEntity playerEntity) {
@@ -375,7 +375,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return 0.95F * entitySize.height;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return 0.95F * entityDimensions.height;
 	}
 }

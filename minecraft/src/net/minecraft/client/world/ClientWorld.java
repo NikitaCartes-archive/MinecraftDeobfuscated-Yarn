@@ -55,6 +55,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
@@ -151,7 +152,7 @@ public class ClientWorld extends World {
 			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
-			if (entity.field_6016 || entity.isSpectator()) {
+			if (entity.updateNeeded || entity.isSpectator()) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.tick();
@@ -159,7 +160,7 @@ public class ClientWorld extends World {
 			}
 
 			this.checkChunk(entity);
-			if (entity.field_6016) {
+			if (entity.updateNeeded) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.tickPassenger(entity, entity2);
 				}
@@ -176,13 +177,13 @@ public class ClientWorld extends World {
 			entity2.prevRenderZ = entity2.z;
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				entity2.age++;
 				entity2.tickRiding();
 			}
 
 			this.checkChunk(entity2);
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				for (Entity entity3 : entity2.getPassengerList()) {
 					this.tickPassenger(entity2, entity3);
 				}
@@ -195,13 +196,13 @@ public class ClientWorld extends World {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
 		int k = MathHelper.floor(entity.z / 16.0);
-		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
+		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
+			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
 				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
-			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
-				entity.field_6016 = false;
+			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
+				entity.updateNeeded = false;
 			} else {
 				this.method_8497(i, k).addEntity(entity);
 			}
@@ -281,7 +282,7 @@ public class ClientWorld extends World {
 
 	private void finishRemovingEntity(Entity entity) {
 		entity.detach();
-		if (entity.field_6016) {
+		if (entity.updateNeeded) {
 			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
@@ -311,7 +312,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void disconnect() {
-		this.netHandler.getClientConnection().method_10747(new TranslatableText("multiplayer.status.quitting"));
+		this.netHandler.getClientConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {
@@ -475,9 +476,9 @@ public class ClientWorld extends World {
 	public void setTimeOfDay(long l) {
 		if (l < 0L) {
 			l = -l;
-			this.getGameRules().put("doDaylightCycle", "false", null);
+			this.getGameRules().get(GameRules.field_19396).set(false, null);
 		} else {
-			this.getGameRules().put("doDaylightCycle", "true", null);
+			this.getGameRules().get(GameRules.field_19396).set(true, null);
 		}
 
 		super.setTimeOfDay(l);

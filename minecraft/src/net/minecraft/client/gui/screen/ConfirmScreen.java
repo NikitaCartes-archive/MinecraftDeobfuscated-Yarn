@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmScreen extends Screen {
-	private final Text field_2401;
+	private final Text message;
 	private final List<String> messageSplit = Lists.<String>newArrayList();
 	protected String yesTranslated;
 	protected String noTranslated;
@@ -26,14 +26,14 @@ public class ConfirmScreen extends Screen {
 	public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2, String string, String string2) {
 		super(text);
 		this.callback = booleanConsumer;
-		this.field_2401 = text2;
+		this.message = text2;
 		this.yesTranslated = string;
 		this.noTranslated = string2;
 	}
 
 	@Override
 	public String getNarrationMessage() {
-		return super.getNarrationMessage() + ". " + this.field_2401.getString();
+		return super.getNarrationMessage() + ". " + this.message.getString();
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class ConfirmScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
 		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
 		this.messageSplit.clear();
-		this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.field_2401.asFormattedString(), this.width - 50));
+		this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
 	}
 
 	@Override

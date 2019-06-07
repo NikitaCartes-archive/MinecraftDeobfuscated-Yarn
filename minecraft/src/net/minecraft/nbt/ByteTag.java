@@ -50,7 +50,7 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text method_10710(String string, int i) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("b").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

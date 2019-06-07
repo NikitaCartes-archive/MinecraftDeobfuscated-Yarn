@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
@@ -30,7 +31,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean("mobGriefing")) {
+		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.field_19388)) {
 			return false;
 		} else if (this.cooldown > 0) {
 			this.cooldown--;

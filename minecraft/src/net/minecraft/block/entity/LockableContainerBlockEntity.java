@@ -16,7 +16,7 @@ import net.minecraft.util.Nameable;
 
 public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerProvider, Nameable {
 	private ContainerLock lock = ContainerLock.NONE;
-	private Text field_17376;
+	private Text customName;
 
 	protected LockableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -27,7 +27,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.fromTag(compoundTag);
 		this.lock = ContainerLock.deserialize(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_17376 = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -35,42 +35,42 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		this.lock.serialize(compoundTag);
-		if (this.field_17376 != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.field_17376));
+		if (this.customName != null) {
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
 		return compoundTag;
 	}
 
-	public void method_17488(Text text) {
-		this.field_17376 = text;
+	public void setCustomName(Text text) {
+		this.customName = text;
 	}
 
 	@Override
-	public Text method_5477() {
-		return this.field_17376 != null ? this.field_17376 : this.method_17823();
+	public Text getName() {
+		return this.customName != null ? this.customName : this.getContainerName();
 	}
 
 	@Override
-	public Text method_5476() {
-		return this.method_5477();
+	public Text getDisplayName() {
+		return this.getName();
 	}
 
 	@Nullable
 	@Override
-	public Text method_5797() {
-		return this.field_17376;
+	public Text getCustomName() {
+		return this.customName;
 	}
 
-	protected abstract Text method_17823();
+	protected abstract Text getContainerName();
 
 	public boolean checkUnlocked(PlayerEntity playerEntity) {
-		return method_17487(playerEntity, this.lock, this.method_5476());
+		return checkUnlocked(playerEntity, this.lock, this.getDisplayName());
 	}
 
-	public static boolean method_17487(PlayerEntity playerEntity, ContainerLock containerLock, Text text) {
+	public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, Text text) {
 		if (!playerEntity.isSpectator() && !containerLock.isEmpty(playerEntity.getMainHandStack())) {
-			playerEntity.method_7353(new TranslatableText("container.isLocked", text), true);
+			playerEntity.addChatMessage(new TranslatableText("container.isLocked", text), true);
 			playerEntity.playSound(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
 			return false;
 		} else {

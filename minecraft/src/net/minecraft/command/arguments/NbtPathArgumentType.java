@@ -36,7 +36,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		object -> new TranslatableText("arguments.nbtpath.nothing_found", object)
 	);
 
-	public static NbtPathArgumentType create() {
+	public static NbtPathArgumentType nbtPath() {
 		return new NbtPathArgumentType();
 	}
 

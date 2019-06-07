@@ -35,7 +35,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	public static final TranslatableText field_17363 = new TranslatableText("container.enderchest");
+	public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest");
 
 	protected EnderChestBlock(Block.Settings settings) {
 		super(settings);
@@ -81,7 +81,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
 				playerEntity.openContainer(
 					new ClientDummyContainerProvider(
-						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), field_17363
+						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
 				playerEntity.incrementStat(Stats.field_15424);

@@ -69,7 +69,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private Channel channel;
 	private SocketAddress address;
 	private PacketListener packetListener;
-	private Text field_11660;
+	private Text disconnectReason;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -104,7 +104,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext channelHandlerContext) throws Exception {
-		this.method_10747(new TranslatableText("disconnect.endOfStream"));
+		this.disconnect(new TranslatableText("disconnect.endOfStream"));
 	}
 
 	@Override
@@ -117,16 +117,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			if (this.channel.isOpen()) {
 				if (throwable instanceof TimeoutException) {
 					LOGGER.debug("Timeout", throwable);
-					this.method_10747(new TranslatableText("disconnect.timeout"));
+					this.disconnect(new TranslatableText("disconnect.timeout"));
 				} else {
 					Text text = new TranslatableText("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.send(new DisconnectS2CPacket(text), future -> this.method_10747(text));
+						this.send(new DisconnectS2CPacket(text), future -> this.disconnect(text));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
-						this.method_10747(text);
+						this.disconnect(text);
 					}
 				}
 			}
@@ -250,10 +250,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.address;
 	}
 
-	public void method_10747(Text text) {
+	public void disconnect(Text text) {
 		if (this.channel.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.field_11660 = text;
+			this.disconnectReason = text;
 		}
 	}
 
@@ -337,8 +337,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Nullable
-	public Text method_10748() {
-		return this.field_11660;
+	public Text getDisconnectReason() {
+		return this.disconnectReason;
 	}
 
 	public void disableAutoRead() {
@@ -375,10 +375,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				LOGGER.warn("handleDisconnection() called twice");
 			} else {
 				this.disconnected = true;
-				if (this.method_10748() != null) {
-					this.getPacketListener().method_10839(this.method_10748());
+				if (this.getDisconnectReason() != null) {
+					this.getPacketListener().onDisconnected(this.getDisconnectReason());
 				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().method_10839(new TranslatableText("multiplayer.disconnect.generic"));
+					this.getPacketListener().onDisconnected(new TranslatableText("multiplayer.disconnect.generic"));
 				}
 			}
 		}

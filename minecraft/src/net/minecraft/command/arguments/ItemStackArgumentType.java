@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
 
-	public static ItemStackArgumentType create() {
+	public static ItemStackArgumentType itemStack() {
 		return new ItemStackArgumentType();
 	}
 

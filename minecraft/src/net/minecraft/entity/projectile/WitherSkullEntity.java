@@ -19,6 +19,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -86,7 +87,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 			}
 
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.field_18687
 				: Explosion.DestructionType.field_18685;
 			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);

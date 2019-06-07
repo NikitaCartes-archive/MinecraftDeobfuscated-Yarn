@@ -128,6 +128,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
@@ -185,7 +186,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.lastTickMovePacketsCount = this.movePacketsCount;
 		if (this.floating) {
 			if (++this.floatingTicks > 80) {
-				LOGGER.warn("{} was kicked for floating too long!", this.player.method_5477().getString());
+				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
 				this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
 				return;
 			}
@@ -194,7 +195,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			this.floatingTicks = 0;
 		}
 
-		this.topmostRiddenEntity = this.player.getTopmostVehicle();
+		this.topmostRiddenEntity = this.player.getRootVehicle();
 		if (this.topmostRiddenEntity != this.player && this.topmostRiddenEntity.getPrimaryPassenger() == this.player) {
 			this.lastTickRiddenX = this.topmostRiddenEntity.x;
 			this.lastTickRiddenY = this.topmostRiddenEntity.y;
@@ -202,9 +203,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			this.updatedRiddenX = this.topmostRiddenEntity.x;
 			this.updatedRiddenY = this.topmostRiddenEntity.y;
 			this.updatedRiddenZ = this.topmostRiddenEntity.z;
-			if (this.ridingEntity && this.player.getTopmostVehicle().getPrimaryPassenger() == this.player) {
+			if (this.ridingEntity && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
 				if (++this.vehicleFloatingTicks > 80) {
-					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.method_5477().getString());
+					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName().getString());
 					this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
 					return;
 				}
@@ -265,7 +266,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	public void disconnect(Text text) {
-		this.client.send(new DisconnectS2CPacket(text), future -> this.client.method_10747(text));
+		this.client.send(new DisconnectS2CPacket(text), future -> this.client.disconnect(text));
 		this.client.disableAutoRead();
 		this.server.executeSync(this.client::handleDisconnection);
 	}
@@ -301,7 +302,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (validateVehicleMove(vehicleMoveC2SPacket)) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
-			Entity entity = this.player.getTopmostVehicle();
+			Entity entity = this.player.getRootVehicle();
 			if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
 				ServerWorld serverWorld = this.player.getServerWorld();
 				double d = entity.x;
@@ -318,7 +319,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double o = entity.getVelocity().lengthSquared();
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && !this.isServerOwner()) {
-					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.method_5477().getString(), this.player.method_5477().getString(), l, m, n);
+					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
 					this.client.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
@@ -339,7 +340,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				boolean bl2 = false;
 				if (p > 0.0625) {
 					bl2 = true;
-					LOGGER.warn("{} moved wrongly!", entity.method_5477().getString());
+					LOGGER.warn("{} moved wrongly!", entity.getName().getString());
 				}
 
 				entity.setPositionAnglesAndUpdate(g, h, i, j, k);
@@ -428,9 +429,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket updateCommandBlockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.method_9203(new TranslatableText("advMode.notEnabled"));
+			this.player.sendMessage(new TranslatableText("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.method_9203(new TranslatableText("advMode.notAllowed"));
+			this.player.sendMessage(new TranslatableText("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
@@ -486,13 +487,13 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				commandBlockExecutor.setCommand(string);
 				commandBlockExecutor.shouldTrackOutput(bl);
 				if (!bl) {
-					commandBlockExecutor.method_8291(null);
+					commandBlockExecutor.setLastOutput(null);
 				}
 
 				commandBlockBlockEntity.setAuto(updateCommandBlockC2SPacket.isAlwaysActive());
 				commandBlockExecutor.markDirty();
 				if (!ChatUtil.isEmpty(string)) {
-					this.player.method_9203(new TranslatableText("advMode.setCommand.success", string));
+					this.player.sendMessage(new TranslatableText("advMode.setCommand.success", string));
 				}
 			}
 		}
@@ -502,20 +503,20 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket updateCommandBlockMinecartC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockMinecartC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.method_9203(new TranslatableText("advMode.notEnabled"));
+			this.player.sendMessage(new TranslatableText("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.method_9203(new TranslatableText("advMode.notAllowed"));
+			this.player.sendMessage(new TranslatableText("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = updateCommandBlockMinecartC2SPacket.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
 				commandBlockExecutor.setCommand(updateCommandBlockMinecartC2SPacket.getCommand());
 				commandBlockExecutor.shouldTrackOutput(updateCommandBlockMinecartC2SPacket.shouldTrackOutput());
 				if (!updateCommandBlockMinecartC2SPacket.shouldTrackOutput()) {
-					commandBlockExecutor.method_8291(null);
+					commandBlockExecutor.setLastOutput(null);
 				}
 
 				commandBlockExecutor.markDirty();
-				this.player.method_9203(new TranslatableText("advMode.setCommand.success", updateCommandBlockMinecartC2SPacket.getCommand()));
+				this.player.sendMessage(new TranslatableText("advMode.setCommand.success", updateCommandBlockMinecartC2SPacket.getCommand()));
 			}
 		}
 	}
@@ -578,27 +579,27 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					String string = structureBlockBlockEntity.getStructureName();
 					if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.field_12110) {
 						if (structureBlockBlockEntity.saveStructure()) {
-							this.player.method_7353(new TranslatableText("structure_block.save_success", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.save_success", string), false);
 						} else {
-							this.player.method_7353(new TranslatableText("structure_block.save_failure", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.save_failure", string), false);
 						}
 					} else if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.field_12109) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
-							this.player.method_7353(new TranslatableText("structure_block.load_not_found", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.load_not_found", string), false);
 						} else if (structureBlockBlockEntity.loadStructure()) {
-							this.player.method_7353(new TranslatableText("structure_block.load_success", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.load_success", string), false);
 						} else {
-							this.player.method_7353(new TranslatableText("structure_block.load_prepare", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.load_prepare", string), false);
 						}
 					} else if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.field_12106) {
 						if (structureBlockBlockEntity.detectStructureSize()) {
-							this.player.method_7353(new TranslatableText("structure_block.size_success", string), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.size_success", string), false);
 						} else {
-							this.player.method_7353(new TranslatableText("structure_block.size_failure"), false);
+							this.player.addChatMessage(new TranslatableText("structure_block.size_failure"), false);
 						}
 					}
 				} else {
-					this.player.method_7353(new TranslatableText("structure_block.invalid_structure_name", updateStructureBlockC2SPacket.getStructureName()), false);
+					this.player.addChatMessage(new TranslatableText("structure_block.invalid_structure_name", updateStructureBlockC2SPacket.getStructureName()), false);
 				}
 
 				structureBlockBlockEntity.markDirty();
@@ -651,7 +652,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							itemStack3.setTag(compoundTag.method_10553());
 						}
 
-						itemStack3.putSubTag("author", new StringTag(this.player.method_5477().getString()));
+						itemStack3.putSubTag("author", new StringTag(this.player.getName().getString()));
 						itemStack3.putSubTag("title", new StringTag(itemStack.getTag().getString("title")));
 						ListTag listTag = itemStack.getTag().getList("pages", 8);
 
@@ -744,15 +745,15 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							this.movePacketsCount++;
 							int r = this.movePacketsCount - this.lastTickMovePacketsCount;
 							if (r > 5) {
-								LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.method_5477().getString(), r);
+								LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName().getString(), r);
 								r = 1;
 							}
 
 							if (!this.player.isInTeleportationState()
-								&& (!this.player.getServerWorld().getGameRules().getBoolean("disableElytraMovementCheck") || !this.player.isFallFlying())) {
+								&& (!this.player.getServerWorld().getGameRules().getBoolean(GameRules.field_19404) || !this.player.isFallFlying())) {
 								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
 								if (q - p > (double)(s * (float)r) && !this.isServerOwner()) {
-									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.method_5477().getString(), m, n, o);
+									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
 									this.requestTeleport(this.player.x, this.player.y, this.player.z, this.player.yaw, this.player.pitch);
 									return;
 								}
@@ -783,7 +784,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !this.player.interactionManager.isCreative()
 								&& this.player.interactionManager.getGameMode() != GameMode.field_9219) {
 								bl2 = true;
-								LOGGER.warn("{} moved wrongly!", this.player.method_5477().getString());
+								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
 							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
@@ -973,10 +974,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void method_10839(Text text) {
-		LOGGER.info("{} lost connection: {}", this.player.method_5477().getString(), text.getString());
+	public void onDisconnected(Text text) {
+		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), text.getString());
 		this.server.forcePlayerSampleUpdate();
-		this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.method_5476()).formatted(Formatting.field_1054));
+		this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.field_1054));
 		this.player.method_14231();
 		this.server.getPlayerManager().remove(this.player);
 		if (this.isServerOwner()) {
@@ -1019,7 +1020,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			this.player.inventory.selectedSlot = updateSelectedSlotC2SPacket.getSelectedSlot();
 			this.player.updateLastActionTime();
 		} else {
-			LOGGER.warn("{} tried to set an invalid carried item", this.player.method_5477().getString());
+			LOGGER.warn("{} tried to set an invalid carried item", this.player.getName().getString());
 		}
 	}
 
@@ -1043,7 +1044,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			if (string.startsWith("/")) {
 				this.executeCommand(string);
 			} else {
-				Text text = new TranslatableText("chat.type.text", this.player.method_5476(), string);
+				Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
 				this.server.getPlayerManager().broadcastChatMessage(text, false);
 			}
 
@@ -1146,7 +1147,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				} else if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.field_12875) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
-						this.server.warn("Player " + this.player.method_5477().getString() + " tried to attack an invalid entity");
+						this.server.warn("Player " + this.player.getName().getString() + " tried to attack an invalid entity");
 						return;
 					}
 
@@ -1175,7 +1176,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.field_13072, false);
 					if (this.server.isHardcore()) {
 						this.player.setGameMode(GameMode.field_9219);
-						this.player.getServerWorld().getGameRules().put("spectatorsGenerateChunks", "false", this.server);
+						this.player.getServerWorld().getGameRules().get(GameRules.field_19402).set(false, this.server);
 					}
 				}
 				break;
@@ -1322,14 +1323,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 			SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
 			if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player) {
-				this.server.warn("Player " + this.player.method_5477().getString() + " just tried to change non-editable sign");
+				this.server.warn("Player " + this.player.getName().getString() + " just tried to change non-editable sign");
 				return;
 			}
 
 			String[] strings = updateSignC2SPacket.getText();
 
 			for (int i = 0; i < strings.length; i++) {
-				signBlockEntity.method_11299(i, new LiteralText(Formatting.strip(strings[i])));
+				signBlockEntity.setTextOnRow(i, new LiteralText(Formatting.strip(strings[i])));
 			}
 
 			signBlockEntity.markDirty();
@@ -1341,7 +1342,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
 		if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
 			int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
-			this.player.field_13967 = (this.player.field_13967 * 3 + i) / 4;
+			this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
 			this.waitingForKeepAlive = false;
 		} else if (!this.isServerOwner()) {
 			this.disconnect(new TranslatableText("disconnect.timeout"));

@@ -10,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedScreen extends Screen {
-	private final Text field_2457;
+	private final Text reason;
 	private List<String> reasonFormatted;
 	private final Screen parent;
 	private int reasonHeight;
@@ -18,7 +18,7 @@ public class DisconnectedScreen extends Screen {
 	public DisconnectedScreen(Screen screen, String string, Text text) {
 		super(new TranslatableText(string));
 		this.parent = screen;
-		this.field_2457 = text;
+		this.reason = text;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class DisconnectedScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.field_2457.asFormattedString(), this.width - 50);
+		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.reason.asFormattedString(), this.width - 50);
 		this.reasonHeight = this.reasonFormatted.size() * 9;
 		this.addButton(
 			new ButtonWidget(

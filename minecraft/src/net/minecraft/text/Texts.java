@@ -13,11 +13,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 
 public class Texts {
-	public static Text method_10889(Text text, Style style) {
+	public static Text setStyleIfAbsent(Text text, Style style) {
 		if (style.isEmpty()) {
 			return text;
 		} else {
-			return text.method_10866().isEmpty() ? text.method_10862(style.deepCopy()) : new LiteralText("").append(text).method_10862(style.deepCopy());
+			return text.getStyle().isEmpty() ? text.setStyle(style.deepCopy()) : new LiteralText("").append(text).setStyle(style.deepCopy());
 		}
 	}
 
@@ -32,7 +32,7 @@ public class Texts {
 				text2.append(parse(serverCommandSource, text3, entity, i));
 			}
 
-			return method_10889(text2, text.method_10866());
+			return setStyleIfAbsent(text2, text.getStyle());
 		}
 	}
 

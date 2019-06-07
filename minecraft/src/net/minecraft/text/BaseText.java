@@ -8,11 +8,11 @@ import java.util.stream.Stream;
 
 public abstract class BaseText implements Text {
 	protected final List<Text> siblings = Lists.<Text>newArrayList();
-	private Style field_11730;
+	private Style style;
 
 	@Override
 	public Text append(Text text) {
-		text.method_10866().setParent(this.method_10866());
+		text.getStyle().setParent(this.getStyle());
 		this.siblings.add(text);
 		return this;
 	}
@@ -23,27 +23,27 @@ public abstract class BaseText implements Text {
 	}
 
 	@Override
-	public Text method_10862(Style style) {
-		this.field_11730 = style;
+	public Text setStyle(Style style) {
+		this.style = style;
 
 		for (Text text : this.siblings) {
-			text.method_10866().setParent(this.method_10866());
+			text.getStyle().setParent(this.getStyle());
 		}
 
 		return this;
 	}
 
 	@Override
-	public Style method_10866() {
-		if (this.field_11730 == null) {
-			this.field_11730 = new Style();
+	public Style getStyle() {
+		if (this.style == null) {
+			this.style = new Style();
 
 			for (Text text : this.siblings) {
-				text.method_10866().setParent(this.field_11730);
+				text.getStyle().setParent(this.style);
 			}
 		}
 
-		return this.field_11730;
+		return this.style;
 	}
 
 	@Override
@@ -58,15 +58,15 @@ public abstract class BaseText implements Text {
 			return false;
 		} else {
 			BaseText baseText = (BaseText)object;
-			return this.siblings.equals(baseText.siblings) && this.method_10866().equals(baseText.method_10866());
+			return this.siblings.equals(baseText.siblings) && this.getStyle().equals(baseText.getStyle());
 		}
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.method_10866(), this.siblings});
+		return Objects.hash(new Object[]{this.getStyle(), this.siblings});
 	}
 
 	public String toString() {
-		return "BaseComponent{style=" + this.field_11730 + ", siblings=" + this.siblings + '}';
+		return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + '}';
 	}
 }

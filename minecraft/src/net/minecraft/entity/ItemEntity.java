@@ -126,7 +126,7 @@ public class ItemEntity extends Entity {
 				this.age++;
 			}
 
-			this.velocityDirty = this.velocityDirty | this.method_5713();
+			this.velocityDirty = this.velocityDirty | this.checkWaterState();
 			if (!this.world.isClient) {
 				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {
@@ -284,13 +284,13 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public Text method_5477() {
-		Text text = this.method_5797();
+	public Text getName() {
+		Text text = this.getCustomName();
 		return (Text)(text != null ? text : new TranslatableText(this.getStack().getTranslationKey()));
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

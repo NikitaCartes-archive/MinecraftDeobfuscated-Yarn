@@ -196,8 +196,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	protected void renderComponentHoverEffect(Text text, int i, int j) {
-		if (text != null && text.method_10866().getHoverEvent() != null) {
-			HoverEvent hoverEvent = text.method_10866().getHoverEvent();
+		if (text != null && text.getStyle().getHoverEvent() != null) {
+			HoverEvent hoverEvent = text.getStyle().getHoverEvent();
 			if (hoverEvent.getAction() == HoverEvent.Action.field_11757) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
@@ -250,10 +250,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		if (text == null) {
 			return false;
 		} else {
-			ClickEvent clickEvent = text.method_10866().getClickEvent();
+			ClickEvent clickEvent = text.getStyle().getClickEvent();
 			if (hasShiftDown()) {
-				if (text.method_10866().getInsertion() != null) {
-					this.insertText(text.method_10866().getInsertion(), false);
+				if (text.getStyle().getInsertion() != null) {
+					this.insertText(text.getStyle().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {
@@ -305,7 +305,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public void sendMessage(String string, boolean bl) {
 		if (bl) {
-			this.minecraft.inGameHud.getChatHud().method_1803(string);
+			this.minecraft.inGameHud.getChatHud().addToMessageHistory(string);
 		}
 
 		this.minecraft.player.sendChatMessage(string);

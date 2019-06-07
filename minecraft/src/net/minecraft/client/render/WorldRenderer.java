@@ -1844,7 +1844,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (soundEvent != null) {
 			MusicDiscItem musicDiscItem = MusicDiscItem.bySound(soundEvent);
 			if (musicDiscItem != null) {
-				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.method_8011().asFormattedString());
+				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().asFormattedString());
 			}
 
 			SoundInstance var5 = PositionedSoundInstance.record(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());

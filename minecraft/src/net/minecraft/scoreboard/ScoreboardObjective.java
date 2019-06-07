@@ -11,14 +11,14 @@ public class ScoreboardObjective {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final ScoreboardCriterion criterion;
-	private Text field_1402;
+	private Text displayName;
 	private ScoreboardCriterion.RenderType renderType;
 
 	public ScoreboardObjective(Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
 		this.scoreboard = scoreboard;
 		this.name = string;
 		this.criterion = scoreboardCriterion;
-		this.field_1402 = text;
+		this.displayName = text;
 		this.renderType = renderType;
 	}
 
@@ -35,18 +35,18 @@ public class ScoreboardObjective {
 		return this.criterion;
 	}
 
-	public Text method_1114() {
-		return this.field_1402;
+	public Text getDisplayName() {
+		return this.displayName;
 	}
 
-	public Text method_1120() {
+	public Text toHoverableText() {
 		return Texts.bracketed(
-			this.field_1402.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getName()))))
+			this.displayName.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getName()))))
 		);
 	}
 
-	public void method_1121(Text text) {
-		this.field_1402 = text;
+	public void setDisplayName(Text text) {
+		this.displayName = text;
 		this.scoreboard.updateExistingObjective(this);
 	}
 

@@ -33,7 +33,7 @@ public class WhitelistCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> {
 										PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
@@ -52,7 +52,7 @@ public class WhitelistCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 											commandContext.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder
@@ -67,7 +67,7 @@ public class WhitelistCommand {
 
 	private static int executeReload(ServerCommandSource serverCommandSource) {
 		serverCommandSource.getMinecraftServer().getPlayerManager().reloadWhitelist();
-		serverCommandSource.method_9226(new TranslatableText("commands.whitelist.reloaded"), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.reloaded"), true);
 		serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
 		return 1;
 	}
@@ -80,7 +80,7 @@ public class WhitelistCommand {
 			if (!whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.add(whitelistEntry);
-				serverCommandSource.method_9226(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
 				i++;
 			}
 		}
@@ -100,7 +100,7 @@ public class WhitelistCommand {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.removeEntry(whitelistEntry);
-				serverCommandSource.method_9226(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
 				i++;
 			}
 		}
@@ -119,7 +119,7 @@ public class WhitelistCommand {
 			throw ALREADY_ON_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(true);
-			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.enabled"), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.enabled"), true);
 			serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
 			return 1;
 		}
@@ -131,7 +131,7 @@ public class WhitelistCommand {
 			throw ALREADY_OFF_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(false);
-			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.disabled"), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.disabled"), true);
 			return 1;
 		}
 	}
@@ -139,9 +139,9 @@ public class WhitelistCommand {
 	private static int executeList(ServerCommandSource serverCommandSource) {
 		String[] strings = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelistedNames();
 		if (strings.length == 0) {
-			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.none"), false);
 		} else {
-			serverCommandSource.method_9226(new TranslatableText("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
 		}
 
 		return strings.length;

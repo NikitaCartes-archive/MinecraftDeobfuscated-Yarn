@@ -143,7 +143,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private <T> Optional<Stat<T>> createStat(StatType<T> statType, String string) {
-		return Optional.ofNullable(Identifier.ofNullable(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
+		return Optional.ofNullable(Identifier.tryParse(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
 	}
 
 	private static CompoundTag jsonToCompound(JsonObject jsonObject) {

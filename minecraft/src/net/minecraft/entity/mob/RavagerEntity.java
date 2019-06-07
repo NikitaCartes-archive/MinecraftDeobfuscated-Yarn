@@ -39,6 +39,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
@@ -148,7 +149,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
-			if (this.horizontalCollision && this.world.getGameRules().getBoolean("mobGriefing")) {
+			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				boolean bl = false;
 				Box box = this.getBoundingBox().expand(0.2);
 

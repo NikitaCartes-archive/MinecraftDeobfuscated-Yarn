@@ -28,7 +28,7 @@ public class MultiTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_20470(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(scheduledTick -> ((TickScheduler)this.mapper.apply(scheduledTick.pos)).method_20470(Stream.of(scheduledTick)));
+	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
+		stream.forEach(scheduledTick -> ((TickScheduler)this.mapper.apply(scheduledTick.pos)).scheduleAll(Stream.of(scheduledTick)));
 	}
 }

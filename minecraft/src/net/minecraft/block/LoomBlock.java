@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class LoomBlock extends HorizontalFacingBlock {
-	private static final TranslatableText field_17373 = new TranslatableText("container.loom");
+	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.loom");
 
 	protected LoomBlock(Block.Settings settings) {
 		super(settings);
@@ -35,7 +35,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17373
+			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 

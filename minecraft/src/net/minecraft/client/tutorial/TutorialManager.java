@@ -105,7 +105,7 @@ public class TutorialManager {
 		return this.client.interactionManager == null ? GameMode.field_9218 : this.client.interactionManager.getCurrentGameMode();
 	}
 
-	public static Text method_4913(String string) {
+	public static Text getKeybindName(String string) {
 		return new KeybindText("key." + string).formatted(Formatting.field_1067);
 	}
 }

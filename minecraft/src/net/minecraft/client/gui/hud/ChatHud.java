@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 public class ChatHud extends DrawableHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
-	private final List<String> field_2063 = Lists.<String>newArrayList();
+	private final List<String> messageHistory = Lists.<String>newArrayList();
 	private final List<ChatHudLine> messages = Lists.<ChatHudLine>newArrayList();
 	private final List<ChatHudLine> visibleMessages = Lists.<ChatHudLine>newArrayList();
 	private int field_2066;
@@ -64,7 +64,7 @@ public class ChatHud extends DrawableHelper {
 								int r = 0;
 								int s = -n * 9;
 								fill(-2, s - 9, 0 + l + 4, s, q << 24);
-								String string = chatHudLine.method_1412().asFormattedString();
+								String string = chatHudLine.getText().asFormattedString();
 								GlStateManager.enableBlend();
 								this.client.textRenderer.drawWithShadow(string, 0.0F, (float)(s - 8), 16777215 + (p << 24));
 								GlStateManager.disableAlphaTest();
@@ -106,26 +106,26 @@ public class ChatHud extends DrawableHelper {
 		this.visibleMessages.clear();
 		this.messages.clear();
 		if (bl) {
-			this.field_2063.clear();
+			this.messageHistory.clear();
 		}
 	}
 
-	public void method_1812(Text text) {
-		this.method_1804(text, 0);
+	public void addMessage(Text text) {
+		this.addMessage(text, 0);
 	}
 
-	public void method_1804(Text text, int i) {
-		this.method_1815(text, i, this.client.inGameHud.getTicks(), false);
+	public void addMessage(Text text, int i) {
+		this.addMessage(text, i, this.client.inGameHud.getTicks(), false);
 		LOGGER.info("[CHAT] {}", text.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
 	}
 
-	private void method_1815(Text text, int i, int j, boolean bl) {
+	private void addMessage(Text text, int i, int j, boolean bl) {
 		if (i != 0) {
 			this.removeMessage(i);
 		}
 
 		int k = MathHelper.floor((double)this.getWidth() / this.getScale());
-		List<Text> list = TextComponentUtil.method_1850(text, k, this.client.textRenderer, false, false);
+		List<Text> list = TextComponentUtil.wrapLines(text, k, this.client.textRenderer, false, false);
 		boolean bl2 = this.isChatFocused();
 
 		for (Text text2 : list) {
@@ -156,17 +156,17 @@ public class ChatHud extends DrawableHelper {
 
 		for (int i = this.messages.size() - 1; i >= 0; i--) {
 			ChatHudLine chatHudLine = (ChatHudLine)this.messages.get(i);
-			this.method_1815(chatHudLine.method_1412(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
+			this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
 		}
 	}
 
-	public List<String> method_1809() {
-		return this.field_2063;
+	public List<String> getMessageHistory() {
+		return this.messageHistory;
 	}
 
-	public void method_1803(String string) {
-		if (this.field_2063.isEmpty() || !((String)this.field_2063.get(this.field_2063.size() - 1)).equals(string)) {
-			this.field_2063.add(string);
+	public void addToMessageHistory(String string) {
+		if (this.messageHistory.isEmpty() || !((String)this.messageHistory.get(this.messageHistory.size() - 1)).equals(string)) {
+			this.messageHistory.add(string);
 		}
 	}
 
@@ -189,7 +189,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	@Nullable
-	public Text method_1816(double d, double e) {
+	public Text getText(double d, double e) {
 		if (!this.isChatFocused()) {
 			return null;
 		} else {
@@ -206,7 +206,7 @@ public class ChatHud extends DrawableHelper {
 						ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(j);
 						int k = 0;
 
-						for (Text text : chatHudLine.method_1412()) {
+						for (Text text : chatHudLine.getText()) {
 							if (text instanceof LiteralText) {
 								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((LiteralText)text).getRawString(), false));
 								if ((double)k > g) {

@@ -145,15 +145,15 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		} else {
 			Entity entity = damageSource.getAttacker();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
-				this.copyEntityData(entity);
+				this.copyEntityData(entity, 400 + this.random.nextInt(400));
 			}
 
 			return super.damage(damageSource, f);
 		}
 	}
 
-	private void copyEntityData(Entity entity) {
-		this.anger = 400 + this.random.nextInt(400);
+	private void copyEntityData(Entity entity, int i) {
+		this.anger = i;
 		this.angrySoundDelay = this.random.nextInt(40);
 		if (entity instanceof LivingEntity) {
 			this.setAttacker((LivingEntity)entity);
@@ -208,8 +208,9 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		@Override
 		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
 			super.setMobEntityTarget(mobEntity, livingEntity);
-			if (mobEntity instanceof ZombiePigmanEntity) {
-				((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity);
+			int i = ((ZombiePigmanEntity)this.mob).anger;
+			if (mobEntity instanceof ZombiePigmanEntity && i > 0) {
+				((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity, i);
 			}
 		}
 	}

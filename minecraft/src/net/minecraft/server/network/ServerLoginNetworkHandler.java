@@ -54,7 +54,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	public void tick() {
 		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
-			this.method_14384();
+			this.acceptPlayer();
 		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
@@ -71,15 +71,15 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	public void disconnect(Text text) {
 		try {
-			LOGGER.info("Disconnecting {}: {}", this.method_14383(), text.getString());
+			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), text.getString());
 			this.client.send(new LoginDisconnectS2CPacket(text));
-			this.client.method_10747(text);
+			this.client.disconnect(text);
 		} catch (Exception var3) {
 			LOGGER.error("Error whilst disconnecting player", (Throwable)var3);
 		}
 	}
 
-	public void method_14384() {
+	public void acceptPlayer() {
 		if (!this.profile.isComplete()) {
 			this.profile = this.toOfflineProfile(this.profile);
 		}
@@ -109,11 +109,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Override
-	public void method_10839(Text text) {
-		LOGGER.info("{} lost connection: {}", this.method_14383(), text.getString());
+	public void onDisconnected(Text text) {
+		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), text.getString());
 	}
 
-	public String method_14383() {
+	public String getConnectionInfo() {
 		return this.profile != null ? this.profile + " (" + this.client.getAddress() + ")" : String.valueOf(this.client.getAddress());
 	}
 

@@ -16,7 +16,7 @@ public class RotationArgumentType implements ArgumentType<PosArgument> {
 		new TranslatableText("argument.rotation.incomplete")
 	);
 
-	public static RotationArgumentType create() {
+	public static RotationArgumentType rotation() {
 		return new RotationArgumentType();
 	}
 

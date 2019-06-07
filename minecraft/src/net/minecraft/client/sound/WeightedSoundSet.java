@@ -15,11 +15,11 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	private final List<SoundContainer<Sound>> sounds = Lists.<SoundContainer<Sound>>newArrayList();
 	private final Random random = new Random();
 	private final Identifier id;
-	private final Text field_5599;
+	private final Text subtitle;
 
 	public WeightedSoundSet(Identifier identifier, @Nullable String string) {
 		this.id = identifier;
-		this.field_5599 = string == null ? null : new TranslatableText(string);
+		this.subtitle = string == null ? null : new TranslatableText(string);
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	}
 
 	@Nullable
-	public Text method_4886() {
-		return this.field_5599;
+	public Text getSubtitle() {
+		return this.subtitle;
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class BookEditScreen extends Screen {
 	private final Hand hand;
 
 	public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
-		super(NarratorManager.field_18967);
+		super(NarratorManager.EMPTY);
 		this.player = playerEntity;
 		this.itemStack = itemStack;
 		this.hand = hand;
@@ -480,7 +480,7 @@ public class BookEditScreen extends Screen {
 			this.font.draw(string2, (float)(k + 36 + (114 - m) / 2), 34.0F, 0);
 			int n = this.getStringWidth(string);
 			this.font.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
-			String string3 = I18n.translate("book.byAuthor", this.player.method_5477().getString());
+			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int o = this.getStringWidth(string3);
 			this.font.draw(Formatting.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");

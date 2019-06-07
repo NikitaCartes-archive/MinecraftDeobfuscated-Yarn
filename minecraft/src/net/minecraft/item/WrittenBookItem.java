@@ -52,7 +52,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public Text method_7864(ItemStack itemStack) {
+	public Text getName(ItemStack itemStack) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("title");
@@ -61,7 +61,7 @@ public class WrittenBookItem extends Item {
 			}
 		}
 
-		return super.method_7864(itemStack);
+		return super.getName(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)

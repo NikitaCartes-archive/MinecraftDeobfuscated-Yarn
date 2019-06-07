@@ -35,7 +35,7 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BannerBlockEntity) {
-				((BannerBlockEntity)blockEntity).method_16842(itemStack.method_7964());
+				((BannerBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
 		}
 	}

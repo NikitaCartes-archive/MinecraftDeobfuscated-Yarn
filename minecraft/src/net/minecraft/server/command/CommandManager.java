@@ -134,10 +134,10 @@ public class CommandManager {
 		try {
 			return this.dispatcher.execute(stringReader, serverCommandSource);
 		} catch (CommandException var13) {
-			serverCommandSource.method_9213(var13.method_9199());
+			serverCommandSource.sendError(var13.getMessageText());
 			return 0;
 		} catch (CommandSyntaxException var14) {
-			serverCommandSource.method_9213(Texts.toText(var14.getRawMessage()));
+			serverCommandSource.sendError(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
 				Text text = new LiteralText("")
@@ -154,7 +154,7 @@ public class CommandManager {
 				}
 
 				text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}));
-				serverCommandSource.method_9213(text);
+				serverCommandSource.sendError(text);
 			}
 
 			return 0;
@@ -173,7 +173,7 @@ public class CommandManager {
 				}
 			}
 
-			serverCommandSource.method_9213(
+			serverCommandSource.sendError(
 				new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text3)))
 			);
 			var20 = 0;

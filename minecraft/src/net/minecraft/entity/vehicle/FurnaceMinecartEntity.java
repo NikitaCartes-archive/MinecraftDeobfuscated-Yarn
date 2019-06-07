@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class FurnaceMinecartEntity extends AbstractMinecartEntity {
@@ -73,7 +74,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {
+		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 			this.dropItem(Blocks.field_10181);
 		}
 	}

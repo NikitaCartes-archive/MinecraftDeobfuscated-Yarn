@@ -3,8 +3,8 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -30,6 +30,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
@@ -90,7 +91,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean("mobGriefing")) {
+			if (!this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				return;
 			}
 
@@ -124,7 +125,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 1.7F;
 	}
 
