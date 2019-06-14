@@ -21,82 +21,81 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty field_10748 = HorizontalFacingBlock.field_11177;
 	@Nullable
-	private BlockPattern snowGolemDispenserPattern;
+	private BlockPattern field_10749;
 	@Nullable
-	private BlockPattern snowGolemPattern;
+	private BlockPattern field_10750;
 	@Nullable
-	private BlockPattern ironGolemDispenserPattern;
+	private BlockPattern field_10752;
 	@Nullable
-	private BlockPattern ironGolemPattern;
+	private BlockPattern field_10753;
 	private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null
 			&& (blockState.getBlock() == Blocks.field_10147 || blockState.getBlock() == Blocks.field_10009);
 
 	protected CarvedPumpkinBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_10748, Direction.field_11043));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			this.trySpawnEntity(world, blockPos);
 		}
 	}
 
 	public boolean canDispense(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return this.getSnowGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null
-			|| this.getIronGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null;
+		return this.method_9732().searchAround(viewableWorld, blockPos) != null || this.method_9727().searchAround(viewableWorld, blockPos) != null;
 	}
 
 	private void trySpawnEntity(World world, BlockPos blockPos) {
-		BlockPattern.Result result = this.getSnowGolemPattern().searchAround(world, blockPos);
+		BlockPattern.Result result = this.method_9729().searchAround(world, blockPos);
 		if (result != null) {
-			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
+			for (int i = 0; i < this.method_9729().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
-				world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+				world.method_8652(cachedBlockPosition.getBlockPos(), Blocks.field_10124.method_9564(), 2);
+				world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.method_9507(cachedBlockPosition.getBlockState()));
 			}
 
-			SnowGolemEntity snowGolemEntity = EntityType.field_6047.create(world);
+			SnowGolemEntity snowGolemEntity = EntityType.field_6047.method_5883(world);
 			BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
 			snowGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(snowGolemEntity);
 
-			for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
+			for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, snowGolemEntity.method_5829().expand(5.0))) {
 				Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowGolemEntity);
 			}
 
-			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
+			for (int j = 0; j < this.method_9729().getHeight(); j++) {
 				CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
-				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.field_10124);
+				world.method_8408(cachedBlockPosition2.getBlockPos(), Blocks.field_10124);
 			}
 		} else {
-			result = this.getIronGolemPattern().searchAround(world, blockPos);
+			result = this.method_9730().searchAround(world, blockPos);
 			if (result != null) {
-				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
-					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
+				for (int i = 0; i < this.method_9730().getWidth(); i++) {
+					for (int k = 0; k < this.method_9730().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
-						world.playLevelEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
+						world.method_8652(cachedBlockPosition3.getBlockPos(), Blocks.field_10124.method_9564(), 2);
+						world.playLevelEvent(2001, cachedBlockPosition3.getBlockPos(), Block.method_9507(cachedBlockPosition3.getBlockState()));
 					}
 				}
 
 				BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
-				IronGolemEntity ironGolemEntity = EntityType.field_6147.create(world);
+				IronGolemEntity ironGolemEntity = EntityType.field_6147.method_5883(world);
 				ironGolemEntity.setPlayerCreated(true);
 				ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0F, 0.0F);
 				world.spawnEntity(ironGolemEntity);
 
-				for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
+				for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, ironGolemEntity.method_5829().expand(5.0))) {
 					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
 				}
 
-				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {
-					for (int l = 0; l < this.getIronGolemPattern().getHeight(); l++) {
+				for (int j = 0; j < this.method_9730().getWidth(); j++) {
+					for (int l = 0; l < this.method_9730().getHeight(); l++) {
 						CachedBlockPosition cachedBlockPosition4 = result.translate(j, l, 0);
-						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.field_10124);
+						world.method_8408(cachedBlockPosition4.getBlockPos(), Blocks.field_10124);
 					}
 				}
 			}
@@ -104,60 +103,60 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_10748, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.method_11667(field_10748);
 	}
 
-	private BlockPattern getSnowGolemDispenserPattern() {
-		if (this.snowGolemDispenserPattern == null) {
-			this.snowGolemDispenserPattern = BlockPatternBuilder.start()
+	private BlockPattern method_9732() {
+		if (this.field_10749 == null) {
+			this.field_10749 = BlockPatternBuilder.start()
 				.aisle(" ", "#", "#")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10491)))
 				.build();
 		}
 
-		return this.snowGolemDispenserPattern;
+		return this.field_10749;
 	}
 
-	private BlockPattern getSnowGolemPattern() {
-		if (this.snowGolemPattern == null) {
-			this.snowGolemPattern = BlockPatternBuilder.start()
+	private BlockPattern method_9729() {
+		if (this.field_10750 == null) {
+			this.field_10750 = BlockPatternBuilder.start()
 				.aisle("^", "#", "#")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10491)))
 				.build();
 		}
 
-		return this.snowGolemPattern;
+		return this.field_10750;
 	}
 
-	private BlockPattern getIronGolemDispenserPattern() {
-		if (this.ironGolemDispenserPattern == null) {
-			this.ironGolemDispenserPattern = BlockPatternBuilder.start()
+	private BlockPattern method_9727() {
+		if (this.field_10752 == null) {
+			this.field_10752 = BlockPatternBuilder.start()
 				.aisle("~ ~", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.method_11746(Material.AIR)))
 				.build();
 		}
 
-		return this.ironGolemDispenserPattern;
+		return this.field_10752;
 	}
 
-	private BlockPattern getIronGolemPattern() {
-		if (this.ironGolemPattern == null) {
-			this.ironGolemPattern = BlockPatternBuilder.start()
+	private BlockPattern method_9730() {
+		if (this.field_10753 == null) {
+			this.field_10753 = BlockPatternBuilder.start()
 				.aisle("~^~", "###", "~#~")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.method_11746(Material.AIR)))
 				.build();
 		}
 
-		return this.ironGolemPattern;
+		return this.field_10753;
 	}
 }

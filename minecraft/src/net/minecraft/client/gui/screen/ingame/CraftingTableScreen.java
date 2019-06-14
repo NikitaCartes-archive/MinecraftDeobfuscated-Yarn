@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableContainer> implements RecipeBookProvider {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/crafting_table.png");
 	private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
-	private final RecipeBookWidget recipeBookGui = new RecipeBookWidget();
+	private final RecipeBookWidget field_2880 = new RecipeBookWidget();
 	private boolean isNarrow;
 
 	public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Text text) {
@@ -28,14 +28,14 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	protected void init() {
 		super.init();
 		this.isNarrow = this.width < 379;
-		this.recipeBookGui.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
-		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
-		this.children.add(this.recipeBookGui);
-		this.setInitialFocus(this.recipeBookGui);
+		this.field_2880.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
+		this.left = this.field_2880.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+		this.children.add(this.field_2880);
+		this.method_20085(this.field_2880);
 		this.addButton(new TexturedButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
-			this.recipeBookGui.reset(this.isNarrow);
-			this.recipeBookGui.toggleOpen();
-			this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			this.field_2880.reset(this.isNarrow);
+			this.field_2880.toggleOpen();
+			this.left = this.field_2880.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 			((TexturedButtonWidget)buttonWidget).setPos(this.left + 5, this.height / 2 - 49);
 		}));
 	}
@@ -43,24 +43,24 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	@Override
 	public void tick() {
 		super.tick();
-		this.recipeBookGui.update();
+		this.field_2880.update();
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		if (this.recipeBookGui.isOpen() && this.isNarrow) {
+		if (this.field_2880.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBookGui.render(i, j, f);
+			this.field_2880.render(i, j, f);
 		} else {
-			this.recipeBookGui.render(i, j, f);
+			this.field_2880.render(i, j, f);
 			super.render(i, j, f);
-			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
+			this.field_2880.drawGhostSlots(this.left, this.top, true, f);
 		}
 
 		this.drawMouseoverTooltip(i, j);
-		this.recipeBookGui.drawTooltip(this.left, this.top, i, j);
-		this.focusOn(this.recipeBookGui);
+		this.field_2880.drawTooltip(this.left, this.top, i, j);
+		this.method_20086(this.field_2880);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BG_TEX);
+		this.minecraft.method_1531().bindTexture(BG_TEX);
 		int k = this.left;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -80,43 +80,43 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 
 	@Override
 	protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-		return (!this.isNarrow || !this.recipeBookGui.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
+		return (!this.isNarrow || !this.field_2880.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.recipeBookGui.mouseClicked(d, e, i)) {
+		if (this.field_2880.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			return this.isNarrow && this.recipeBookGui.isOpen() ? true : super.mouseClicked(d, e, i);
+			return this.isNarrow && this.field_2880.isOpen() ? true : super.mouseClicked(d, e, i);
 		}
 	}
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
 		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+		return this.field_2880.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
 	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
 		super.onMouseClick(slot, i, j, slotActionType);
-		this.recipeBookGui.slotClicked(slot);
+		this.field_2880.slotClicked(slot);
 	}
 
 	@Override
 	public void refreshRecipeBook() {
-		this.recipeBookGui.refresh();
+		this.field_2880.refresh();
 	}
 
 	@Override
 	public void removed() {
-		this.recipeBookGui.close();
+		this.field_2880.close();
 		super.removed();
 	}
 
 	@Override
 	public RecipeBookWidget getRecipeBookGui() {
-		return this.recipeBookGui;
+		return this.field_2880;
 	}
 }

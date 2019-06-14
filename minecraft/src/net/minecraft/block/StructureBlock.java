@@ -18,28 +18,28 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StructureBlock extends BlockWithEntity {
-	public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
+	public static final EnumProperty<StructureBlockMode> field_11586 = Properties.field_12547;
 
 	protected StructureBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new StructureBlockBlockEntity();
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		BlockEntity blockEntity = world.method_8321(blockPos);
 		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).openScreen(playerEntity) : false;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
 		if (!world.isClient) {
 			if (livingEntity != null) {
-				BlockEntity blockEntity = world.getBlockEntity(blockPos);
+				BlockEntity blockEntity = world.method_8321(blockPos);
 				if (blockEntity instanceof StructureBlockBlockEntity) {
 					((StructureBlockBlockEntity)blockEntity).setAuthor(livingEntity);
 				}
@@ -48,31 +48,31 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(MODE, StructureBlockMode.field_12696);
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_11586, StructureBlockMode.field_12696);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(MODE);
+		builder.method_11667(field_11586);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
 				boolean bl2 = world.isReceivingRedstonePower(blockPos);
 				boolean bl3 = structureBlockBlockEntity.isPowered();
 				if (bl2 && !bl3) {
 					structureBlockBlockEntity.setPowered(true);
-					this.doAction(structureBlockBlockEntity);
+					this.method_10703(structureBlockBlockEntity);
 				} else if (!bl2 && bl3) {
 					structureBlockBlockEntity.setPowered(false);
 				}
@@ -80,8 +80,8 @@ public class StructureBlock extends BlockWithEntity {
 		}
 	}
 
-	private void doAction(StructureBlockBlockEntity structureBlockBlockEntity) {
-		switch (structureBlockBlockEntity.getMode()) {
+	private void method_10703(StructureBlockBlockEntity structureBlockBlockEntity) {
+		switch (structureBlockBlockEntity.method_11374()) {
 			case field_12695:
 				structureBlockBlockEntity.saveStructure(false);
 				break;

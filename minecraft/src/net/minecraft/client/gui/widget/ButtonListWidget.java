@@ -18,11 +18,11 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 	}
 
 	public int addSingleOptionEntry(Option option) {
-		return this.addEntry(ButtonListWidget.ButtonEntry.create(this.minecraft.options, this.width, option));
+		return this.addEntry(ButtonListWidget.ButtonEntry.create(this.minecraft.field_1690, this.width, option));
 	}
 
 	public void addOptionEntry(Option option, @Nullable Option option2) {
-		this.addEntry(ButtonListWidget.ButtonEntry.create(this.minecraft.options, this.width, option, option2));
+		this.addEntry(ButtonListWidget.ButtonEntry.create(this.minecraft.field_1690, this.width, option, option2));
 	}
 
 	public void addAll(Option[] options) {
@@ -50,14 +50,14 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		}
 
 		public static ButtonListWidget.ButtonEntry create(GameOptions gameOptions, int i, Option option) {
-			return new ButtonListWidget.ButtonEntry(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
+			return new ButtonListWidget.ButtonEntry(ImmutableList.of(option.method_18520(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
 		public static ButtonListWidget.ButtonEntry create(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
-			AbstractButtonWidget abstractButtonWidget = option.createButton(gameOptions, i / 2 - 155, 0, 150);
+			AbstractButtonWidget abstractButtonWidget = option.method_18520(gameOptions, i / 2 - 155, 0, 150);
 			return option2 == null
 				? new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget))
-				: new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
+				: new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget, option2.method_18520(gameOptions, i / 2 - 155 + 160, 0, 150)));
 		}
 
 		@Override

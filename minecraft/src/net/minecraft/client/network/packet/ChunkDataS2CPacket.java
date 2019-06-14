@@ -117,12 +117,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public int writeData(PacketByteBuf packetByteBuf, WorldChunk worldChunk, int i) {
 		int j = 0;
-		ChunkSection[] chunkSections = worldChunk.getSectionArray();
+		ChunkSection[] chunkSections = worldChunk.method_12006();
 		int k = 0;
 
 		for (int l = chunkSections.length; k < l; k++) {
 			ChunkSection chunkSection = chunkSections[k];
-			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
+			if (chunkSection != WorldChunk.field_12852 && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
 				j |= 1 << k;
 				chunkSection.toPacket(packetByteBuf);
 			}
@@ -141,12 +141,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	protected int getDataSize(WorldChunk worldChunk, int i) {
 		int j = 0;
-		ChunkSection[] chunkSections = worldChunk.getSectionArray();
+		ChunkSection[] chunkSections = worldChunk.method_12006();
 		int k = 0;
 
 		for (int l = chunkSections.length; k < l; k++) {
 			ChunkSection chunkSection = chunkSections[k];
-			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
+			if (chunkSection != WorldChunk.field_12852 && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
 				j += chunkSection.getPacketSize();
 			}
 		}

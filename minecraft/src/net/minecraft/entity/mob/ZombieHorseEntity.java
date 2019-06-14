@@ -55,7 +55,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6048.create(this.world);
+		return EntityType.field_6048.method_5883(this.field_6002);
 	}
 
 	@Override

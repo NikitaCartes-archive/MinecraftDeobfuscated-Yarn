@@ -29,79 +29,81 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HopperBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = Properties.HOPPER_FACING;
-	public static final BooleanProperty ENABLED = Properties.ENABLED;
-	private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
-	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);
-	private static final VoxelShape OUTSIDE_SHAPE = VoxelShapes.union(MIDDLE_SHAPE, TOP_SHAPE);
-	private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.combineAndSimplify(OUTSIDE_SHAPE, Hopper.INSIDE_SHAPE, BooleanBiFunction.ONLY_FIRST);
-	private static final VoxelShape DOWN_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 4.0, 10.0));
-	private static final VoxelShape EAST_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(12.0, 4.0, 6.0, 16.0, 8.0, 10.0));
-	private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
-	private static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
-	private static final VoxelShape WEST_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
-	private static final VoxelShape DOWN_RAY_TRACE_SHAPE = Hopper.INSIDE_SHAPE;
-	private static final VoxelShape EAST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
-	private static final VoxelShape NORTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
-	private static final VoxelShape SOUTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
-	private static final VoxelShape WEST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
+	public static final DirectionProperty field_11129 = Properties.field_12545;
+	public static final BooleanProperty field_11126 = Properties.field_12515;
+	private static final VoxelShape field_11131 = Block.method_9541(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
+	private static final VoxelShape field_11127 = Block.method_9541(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);
+	private static final VoxelShape field_11121 = VoxelShapes.method_1084(field_11127, field_11131);
+	private static final VoxelShape field_11132 = VoxelShapes.method_1072(field_11121, Hopper.field_12025, BooleanBiFunction.ONLY_FIRST);
+	private static final VoxelShape field_11120 = VoxelShapes.method_1084(field_11132, Block.method_9541(6.0, 0.0, 6.0, 10.0, 4.0, 10.0));
+	private static final VoxelShape field_11134 = VoxelShapes.method_1084(field_11132, Block.method_9541(12.0, 4.0, 6.0, 16.0, 8.0, 10.0));
+	private static final VoxelShape field_11124 = VoxelShapes.method_1084(field_11132, Block.method_9541(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
+	private static final VoxelShape field_11122 = VoxelShapes.method_1084(field_11132, Block.method_9541(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
+	private static final VoxelShape field_11130 = VoxelShapes.method_1084(field_11132, Block.method_9541(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
+	private static final VoxelShape field_11125 = Hopper.field_12025;
+	private static final VoxelShape field_11133 = VoxelShapes.method_1084(Hopper.field_12025, Block.method_9541(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
+	private static final VoxelShape field_11123 = VoxelShapes.method_1084(Hopper.field_12025, Block.method_9541(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
+	private static final VoxelShape field_11128 = VoxelShapes.method_1084(Hopper.field_12025, Block.method_9541(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
+	private static final VoxelShape field_11135 = VoxelShapes.method_1084(Hopper.field_12025, Block.method_9541(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
 
 	public HopperBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11033).with(ENABLED, Boolean.valueOf(true)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11129, Direction.field_11033).method_11657(field_11126, Boolean.valueOf(true)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		switch ((Direction)blockState.method_11654(field_11129)) {
 			case field_11033:
-				return DOWN_SHAPE;
+				return field_11120;
 			case field_11043:
-				return NORTH_SHAPE;
+				return field_11124;
 			case field_11035:
-				return SOUTH_SHAPE;
+				return field_11122;
 			case field_11039:
-				return WEST_SHAPE;
+				return field_11130;
 			case field_11034:
-				return EAST_SHAPE;
+				return field_11134;
 			default:
-				return DEFAULT_SHAPE;
+				return field_11132;
 		}
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape method_9584(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		switch ((Direction)blockState.method_11654(field_11129)) {
 			case field_11033:
-				return DOWN_RAY_TRACE_SHAPE;
+				return field_11125;
 			case field_11043:
-				return NORTH_RAY_TRACE_SHAPE;
+				return field_11123;
 			case field_11035:
-				return SOUTH_RAY_TRACE_SHAPE;
+				return field_11128;
 			case field_11039:
-				return WEST_RAY_TRACE_SHAPE;
+				return field_11135;
 			case field_11034:
-				return EAST_RAY_TRACE_SHAPE;
+				return field_11133;
 			default:
-				return Hopper.INSIDE_SHAPE;
+				return Hopper.field_12025;
 		}
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
 		Direction direction = itemPlacementContext.getSide().getOpposite();
-		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.field_11033 : direction).with(ENABLED, Boolean.valueOf(true));
+		return this.method_9564()
+			.method_11657(field_11129, direction.getAxis() == Direction.Axis.Y ? Direction.field_11033 : direction)
+			.method_11657(field_11126, Boolean.valueOf(true));
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new HopperBlockEntity();
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
 		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				((HopperBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
@@ -109,18 +111,18 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			this.updateEnabled(world, blockPos, blockState);
+			this.method_10217(world, blockPos, blockState);
 		}
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				playerEntity.openContainer((HopperBlockEntity)blockEntity);
 				playerEntity.incrementStat(Stats.field_15366);
@@ -131,43 +133,43 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		this.updateEnabled(world, blockPos, blockState);
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		this.method_10217(world, blockPos, blockState);
 	}
 
-	private void updateEnabled(World world, BlockPos blockPos, BlockState blockState) {
+	private void method_10217(World world, BlockPos blockPos, BlockState blockState) {
 		boolean bl = !world.isReceivingRedstonePower(blockPos);
-		if (bl != (Boolean)blockState.get(ENABLED)) {
-			world.setBlockState(blockPos, blockState.with(ENABLED, Boolean.valueOf(bl)), 4);
+		if (bl != (Boolean)blockState.method_11654(field_11126)) {
+			world.method_8652(blockPos, blockState.method_11657(field_11126, Boolean.valueOf(bl)), 4);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				ItemScatterer.spawn(world, blockPos, (HopperBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(blockPos, this);
+				ItemScatterer.method_5451(world, blockPos, (HopperBlockEntity)blockEntity);
+				world.method_8455(blockPos, this);
 			}
 
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			super.method_9536(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean method_9498(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(blockPos));
+	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
+		return Container.method_7608(world.method_8321(blockPos));
 	}
 
 	@Override
@@ -176,30 +178,30 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.method_11657(field_11129, blockRotation.rotate(blockState.method_11654(field_11129)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_11129)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING, ENABLED);
+		builder.method_11667(field_11129, field_11126);
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		BlockEntity blockEntity = world.method_8321(blockPos);
 		if (blockEntity instanceof HopperBlockEntity) {
 			((HopperBlockEntity)blockEntity).onEntityCollided(entity);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

@@ -62,7 +62,7 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public void tick() {
-		double d = this.mob.squaredDistanceTo(this.target.x, this.target.getBoundingBox().minY, this.target.z);
+		double d = this.mob.squaredDistanceTo(this.target.x, this.target.method_5829().minY, this.target.z);
 		boolean bl = this.mob.getVisibilityCache().canSee(this.target);
 		if (bl) {
 			this.field_6579++;

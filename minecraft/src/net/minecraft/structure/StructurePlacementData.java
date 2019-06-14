@@ -93,12 +93,12 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData addProcessor(StructureProcessor structureProcessor) {
+	public StructurePlacementData method_16184(StructureProcessor structureProcessor) {
 		this.processors.add(structureProcessor);
 		return this;
 	}
 
-	public StructurePlacementData removeProcessor(StructureProcessor structureProcessor) {
+	public StructurePlacementData method_16664(StructureProcessor structureProcessor) {
 		this.processors.remove(structureProcessor);
 		return this;
 	}

@@ -263,8 +263,10 @@ public class MineshaftGenerator {
 		@Override
 		protected boolean addChest(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
 			BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-			if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).isAir() && !iWorld.getBlockState(blockPos.down()).isAir()) {
-				BlockState blockState = Blocks.field_10167.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
+			if (mutableIntBoundingBox.contains(blockPos) && iWorld.method_8320(blockPos).isAir() && !iWorld.method_8320(blockPos.down()).isAir()) {
+				BlockState blockState = Blocks.field_10167
+					.method_9564()
+					.method_11657(RailBlock.field_11369, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
 				this.addBlock(iWorld, blockState, i, j, k, mutableIntBoundingBox);
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
 					iWorld.getWorld(), (double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F)
@@ -291,7 +293,7 @@ public class MineshaftGenerator {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 2, 1, m, AIR, AIR, false);
 				this.fillWithOutlineUnderSealevel(iWorld, mutableIntBoundingBox, random, 0.8F, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
 				if (this.hasCobwebs) {
-					this.fillWithOutlineUnderSealevel(iWorld, mutableIntBoundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.field_10343.getDefaultState(), AIR, false, true);
+					this.fillWithOutlineUnderSealevel(iWorld, mutableIntBoundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.field_10343.method_9564(), AIR, false, true);
 				}
 
 				for (int n = 0; n < this.length; n++) {
@@ -321,8 +323,8 @@ public class MineshaftGenerator {
 						BlockPos blockPos = new BlockPos(r, p, s);
 						if (mutableIntBoundingBox.contains(blockPos) && this.isUnderSeaLevel(iWorld, 1, 0, q, mutableIntBoundingBox)) {
 							this.hasSpawner = true;
-							iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
-							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+							iWorld.method_8652(blockPos, Blocks.field_10260.method_9564(), 2);
+							BlockEntity blockEntity = iWorld.method_8321(blockPos);
 							if (blockEntity instanceof MobSpawnerBlockEntity) {
 								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.field_6084);
 							}
@@ -342,7 +344,7 @@ public class MineshaftGenerator {
 				}
 
 				if (this.hasRails) {
-					BlockState blockState3 = Blocks.field_10167.getDefaultState().with(RailBlock.SHAPE, RailShape.field_12665);
+					BlockState blockState3 = Blocks.field_10167.method_9564().method_11657(RailBlock.field_11369, RailShape.field_12665);
 
 					for (int oxx = 0; oxx <= m; oxx++) {
 						BlockState blockState4 = this.getBlockAt(iWorld, 1, -1, oxx, mutableIntBoundingBox);
@@ -362,18 +364,36 @@ public class MineshaftGenerator {
 			if (this.method_14719(iWorld, mutableIntBoundingBox, i, m, l, k)) {
 				BlockState blockState = this.method_16443();
 				BlockState blockState2 = this.method_14718();
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, i, j, k, i, l - 1, k, blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)), AIR, false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, m, j, k, m, l - 1, k, blockState2.with(FenceBlock.EAST, Boolean.valueOf(true)), AIR, false);
+				this.fillWithOutline(
+					iWorld, mutableIntBoundingBox, i, j, k, i, l - 1, k, blockState2.method_11657(FenceBlock.field_10903, Boolean.valueOf(true)), AIR, false
+				);
+				this.fillWithOutline(
+					iWorld, mutableIntBoundingBox, m, j, k, m, l - 1, k, blockState2.method_11657(FenceBlock.field_10907, Boolean.valueOf(true)), AIR, false
+				);
 				if (random.nextInt(4) == 0) {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, l, k, i, l, k, blockState, AIR, false);
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, m, l, k, m, l, k, blockState, AIR, false);
 				} else {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, l, k, m, l, k, blockState, AIR, false);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k - 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11043)
+						iWorld,
+						mutableIntBoundingBox,
+						random,
+						0.05F,
+						i + 1,
+						l,
+						k - 1,
+						Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11043)
 					);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k + 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035)
+						iWorld,
+						mutableIntBoundingBox,
+						random,
+						0.05F,
+						i + 1,
+						l,
+						k + 1,
+						Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11035)
 					);
 				}
 			}
@@ -381,7 +401,7 @@ public class MineshaftGenerator {
 
 		private void method_14715(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, float f, int i, int j, int k) {
 			if (this.isUnderSeaLevel(iWorld, i, j, k, mutableIntBoundingBox)) {
-				this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, f, i, j, k, Blocks.field_10343.getDefaultState());
+				this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, f, i, j, k, Blocks.field_10343.method_9564());
 			}
 		}
 	}
@@ -667,9 +687,9 @@ public class MineshaftGenerator {
 			switch (this.mineshaftType) {
 				case field_13692:
 				default:
-					return Blocks.field_10161.getDefaultState();
+					return Blocks.field_10161.method_9564();
 				case field_13691:
-					return Blocks.field_10075.getDefaultState();
+					return Blocks.field_10075.method_9564();
 			}
 		}
 
@@ -677,9 +697,9 @@ public class MineshaftGenerator {
 			switch (this.mineshaftType) {
 				case field_13692:
 				default:
-					return Blocks.field_10620.getDefaultState();
+					return Blocks.field_10620.method_9564();
 				case field_13691:
-					return Blocks.field_10132.getDefaultState();
+					return Blocks.field_10132.method_9564();
 			}
 		}
 
@@ -879,7 +899,7 @@ public class MineshaftGenerator {
 					this.boundingBox.maxX,
 					this.boundingBox.minY,
 					this.boundingBox.maxZ,
-					Blocks.field_10566.getDefaultState(),
+					Blocks.field_10566.method_9564(),
 					AIR,
 					true
 				);

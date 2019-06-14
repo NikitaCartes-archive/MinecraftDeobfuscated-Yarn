@@ -30,7 +30,7 @@ public class TriggerCommand {
 		commandDispatcher.register(
 			CommandManager.literal("trigger")
 				.then(
-					CommandManager.argument("objective", ObjectiveArgumentType.objective())
+					CommandManager.argument("objective", ObjectiveArgumentType.create())
 						.suggests((commandContext, suggestionsBuilder) -> suggestObjectives(commandContext.getSource(), suggestionsBuilder))
 						.executes(
 							commandContext -> executeSimple(
@@ -75,7 +75,7 @@ public class TriggerCommand {
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462 && scoreboard.playerHasObjective(string, scoreboardObjective)) {
+				if (scoreboardObjective.method_1116() == ScoreboardCriterion.field_1462 && scoreboard.playerHasObjective(string, scoreboardObjective)) {
 					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 					if (!scoreboardPlayerScore.isLocked()) {
 						list.add(scoreboardObjective.getName());
@@ -106,10 +106,10 @@ public class TriggerCommand {
 	}
 
 	private static ScoreboardPlayerScore getScore(ServerPlayerEntity serverPlayerEntity, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.field_1462) {
+		if (scoreboardObjective.method_1116() != ScoreboardCriterion.field_1462) {
 			throw FAILED_INVALID_EXCEPTION.create();
 		} else {
-			Scoreboard scoreboard = serverPlayerEntity.getScoreboard();
+			Scoreboard scoreboard = serverPlayerEntity.method_7327();
 			String string = serverPlayerEntity.getEntityName();
 			if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
 				throw FAILED_UMPRIMED_EXCEPTION.create();

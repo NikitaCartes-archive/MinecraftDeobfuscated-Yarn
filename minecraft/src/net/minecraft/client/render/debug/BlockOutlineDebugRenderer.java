@@ -27,11 +27,11 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.getCamera();
+		Camera camera = this.client.field_1773.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		BlockView blockView = this.client.player.world;
+		BlockView blockView = this.client.field_1724.field_6002;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -42,9 +42,9 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(camera.getPos());
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
-			BlockState blockState = blockView.getBlockState(blockPos2);
+			BlockState blockState = blockView.method_8320(blockPos2);
 			if (blockState.getBlock() != Blocks.field_10124) {
-				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
+				VoxelShape voxelShape = blockState.method_17770(blockView, blockPos2);
 
 				for (Box box : voxelShape.getBoundingBoxes()) {
 					Box box2 = box.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
@@ -58,10 +58,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 					float o = 0.0F;
 					float p = 0.0F;
 					float q = 0.5F;
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11039)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11039)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -69,10 +69,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11035)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11035)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -80,10 +80,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11034)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11034)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -91,10 +91,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11043)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11043)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -102,10 +102,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11033)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11033)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -113,10 +113,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						tessellator.draw();
 					}
 
-					if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.field_11036)) {
+					if (Block.method_20045(blockState, blockView, blockPos2, Direction.field_11036)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
 						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();

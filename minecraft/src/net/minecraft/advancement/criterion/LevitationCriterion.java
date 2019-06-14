@@ -62,10 +62,10 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		return new LevitationCriterion.Conditions(distancePredicate, intRange);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+	public void method_9008(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, vec3d, i);
+			handler.method_9011(serverPlayerEntity, vec3d, i);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.IntRange.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+		public boolean method_9014(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.duration.test(i);
 		}
 
@@ -116,11 +116,11 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+		public void method_9011(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 			List<Criterion.ConditionsContainer<LevitationCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, vec3d, i)) {
+				if (conditionsContainer.getConditions().method_9014(serverPlayerEntity, vec3d, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<LevitationCriterion.Conditions>>newArrayList();
 					}

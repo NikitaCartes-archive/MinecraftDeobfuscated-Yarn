@@ -28,8 +28,8 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
-		return Blocks.field_10243.getDefaultState();
+	public BlockState method_8320(BlockPos blockPos) {
+		return Blocks.field_10243.method_9564();
 	}
 
 	@Nullable
@@ -39,13 +39,13 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos blockPos) {
-		return Fluids.field_15906.getDefaultState();
+	public FluidState method_8316(BlockPos blockPos) {
+		return Fluids.field_15906.method_15785();
 	}
 
 	@Nullable
 	@Override
-	public LightingProvider getLightingProvider() {
+	public LightingProvider method_12023() {
 		return null;
 	}
 
@@ -89,11 +89,11 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+	public void method_12205(@Nullable Entity entity, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
 	}
 
 	@Override
-	public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, Predicate<? super T> predicate) {
+	public <T extends Entity> void method_12210(Class<? extends T> class_, Box box, List<T> list, Predicate<? super T> predicate) {
 	}
 
 	@Override

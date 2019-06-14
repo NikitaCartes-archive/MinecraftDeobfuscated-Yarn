@@ -49,18 +49,18 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+	protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
 		if (!viewableWorld.isAir(blockPos.up())) {
 			return false;
 		} else {
-			BlockState blockState = viewableWorld.getBlockState(blockPos);
+			BlockState blockState = viewableWorld.method_8320(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10034) {
 				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
 			} else {
-				return block == Blocks.field_10181 && blockState.get(FurnaceBlock.LIT)
+				return block == Blocks.field_10181 && blockState.method_11654(FurnaceBlock.field_11105)
 					? true
-					: block.matches(BlockTags.field_16443) && blockState.get(BedBlock.PART) != BedPart.field_12560;
+					: block.matches(BlockTags.field_16443) && blockState.method_11654(BedBlock.field_9967) != BedPart.field_12560;
 			}
 		}
 	}

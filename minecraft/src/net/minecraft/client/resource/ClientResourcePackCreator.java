@@ -48,7 +48,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 	@Nullable
 	private CompletableFuture<?> downloadTask;
 	@Nullable
-	private ClientResourcePackContainer serverContainer;
+	private ClientResourcePackContainer field_5295;
 
 	public ClientResourcePackCreator(File file, ResourceIndex resourceIndex) {
 		this.serverPacksRoot = file;
@@ -63,8 +63,8 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			map.put("vanilla", resourcePackContainer);
 		}
 
-		if (this.serverContainer != null) {
-			map.put("server", this.serverContainer);
+		if (this.field_5295 != null) {
+			map.put("server", this.field_5295);
 		}
 
 		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
@@ -87,8 +87,8 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 
 	public static Map<String, String> getDownloadHeaders() {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		map.put("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername());
-		map.put("X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid());
+		map.put("X-Minecraft-Username", MinecraftClient.getInstance().method_1548().getUsername());
+		map.put("X-Minecraft-UUID", MinecraftClient.getInstance().method_1548().getUuid());
 		map.put("X-Minecraft-Version", SharedConstants.getGameVersion().getName());
 		map.put("X-Minecraft-Pack-Format", String.valueOf(SharedConstants.getGameVersion().getPackVersion()));
 		map.put("User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
@@ -112,7 +112,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				ProgressScreen progressScreen = new ProgressScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.executeSync(() -> minecraftClient.openScreen(progressScreen));
+				minecraftClient.executeSync(() -> minecraftClient.method_1507(progressScreen));
 				completableFuture = NetworkUtils.download(file, string, map, 52428800, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
@@ -152,8 +152,8 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			}
 
 			this.downloadTask = null;
-			if (this.serverContainer != null) {
-				this.serverContainer = null;
+			if (this.field_5295 != null) {
+				this.field_5295 = null;
 				MinecraftClient.getInstance().reloadResourcesConcurrently();
 			}
 		} finally {
@@ -282,7 +282,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			return SystemUtil.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
 		} else {
 			LOGGER.info("Applying server pack {}", file);
-			this.serverContainer = new ClientResourcePackContainer(
+			this.field_5295 = new ClientResourcePackContainer(
 				"server",
 				true,
 				() -> new ZipResourcePack(file),

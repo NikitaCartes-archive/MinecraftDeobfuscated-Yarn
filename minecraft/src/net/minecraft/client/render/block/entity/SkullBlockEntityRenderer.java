@@ -51,10 +51,10 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 
 	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
 		float h = skullBlockEntity.getTicksPowered(g);
-		BlockState blockState = skullBlockEntity.getCachedState();
+		BlockState blockState = skullBlockEntity.method_11010();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
-		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
-		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
+		Direction direction = bl ? blockState.method_11654(WallSkullBlock.field_11724) : null;
+		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.method_11654(SkullBlock.field_11505));
 		this.render((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
 	}
 
@@ -120,9 +120,9 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		Identifier identifier = (Identifier)TEXTURES.get(skullType);
 		if (skullType == SkullBlock.Type.field_11510 && gameProfile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
+			Map<Type, MinecraftProfileTexture> map = minecraftClient.method_1582().getTextures(gameProfile);
 			if (map.containsKey(Type.SKIN)) {
-				identifier = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
+				identifier = minecraftClient.method_1582().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 			} else {
 				identifier = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 			}

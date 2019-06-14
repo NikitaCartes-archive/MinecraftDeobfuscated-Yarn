@@ -64,14 +64,14 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openScreen(this.previousScreen);
+		MinecraftClient.getInstance().method_1507(this.previousScreen);
 	}
 
 	private void showMissingRealmsErrorScreen() {
 		MinecraftClient.getInstance()
-			.openScreen(
+			.method_1507(
 				new NoticeScreen(
-					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
+					() -> MinecraftClient.getInstance().method_1507(this.previousScreen),
 					new LiteralText(""),
 					new TranslatableText(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)

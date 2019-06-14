@@ -34,7 +34,7 @@ public enum DyeColor implements StringIdentifiable {
 	);
 	private final int id;
 	private final String name;
-	private final MaterialColor materialColor;
+	private final MaterialColor field_7956;
 	private final int color;
 	private final int colorSwapped;
 	private final float[] colorComponents;
@@ -45,7 +45,7 @@ public enum DyeColor implements StringIdentifiable {
 		this.id = j;
 		this.name = string2;
 		this.color = k;
-		this.materialColor = materialColor;
+		this.field_7956 = materialColor;
 		this.signColor = m;
 		int n = (k & 0xFF0000) >> 16;
 		int o = (k & 0xFF00) >> 8;
@@ -72,8 +72,8 @@ public enum DyeColor implements StringIdentifiable {
 		return this.colorComponents;
 	}
 
-	public MaterialColor getMaterialColor() {
-		return this.materialColor;
+	public MaterialColor method_7794() {
+		return this.field_7956;
 	}
 
 	public int getFireworkColor() {

@@ -22,125 +22,128 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
-	public static final BooleanProperty OPEN = Properties.OPEN;
-	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
-	public static final BooleanProperty POWERED = Properties.POWERED;
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
-	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
-	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
-	protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
+	public static final BooleanProperty field_11631 = Properties.field_12537;
+	public static final EnumProperty<BlockHalf> field_11625 = Properties.field_12518;
+	public static final BooleanProperty field_11629 = Properties.field_12484;
+	public static final BooleanProperty field_11626 = Properties.field_12508;
+	protected static final VoxelShape field_11627 = Block.method_9541(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
+	protected static final VoxelShape field_11630 = Block.method_9541(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_11624 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
+	protected static final VoxelShape field_11633 = Block.method_9541(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_11632 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
+	protected static final VoxelShape field_11628 = Block.method_9541(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
 
 	protected TrapdoorBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(
-			this.stateFactory
-				.getDefaultState()
-				.with(FACING, Direction.field_11043)
-				.with(OPEN, Boolean.valueOf(false))
-				.with(HALF, BlockHalf.field_12617)
-				.with(POWERED, Boolean.valueOf(false))
-				.with(WATERLOGGED, Boolean.valueOf(false))
+		this.method_9590(
+			this.field_10647
+				.method_11664()
+				.method_11657(field_11177, Direction.field_11043)
+				.method_11657(field_11631, Boolean.valueOf(false))
+				.method_11657(field_11625, BlockHalf.field_12617)
+				.method_11657(field_11629, Boolean.valueOf(false))
+				.method_11657(field_11626, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		if (!(Boolean)blockState.get(OPEN)) {
-			return blockState.get(HALF) == BlockHalf.field_12619 ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		if (!(Boolean)blockState.method_11654(field_11631)) {
+			return blockState.method_11654(field_11625) == BlockHalf.field_12619 ? field_11628 : field_11632;
 		} else {
-			switch ((Direction)blockState.get(FACING)) {
+			switch ((Direction)blockState.method_11654(field_11177)) {
 				case field_11043:
 				default:
-					return NORTH_SHAPE;
+					return field_11633;
 				case field_11035:
-					return SOUTH_SHAPE;
+					return field_11624;
 				case field_11039:
-					return WEST_SHAPE;
+					return field_11630;
 				case field_11034:
-					return EAST_SHAPE;
+					return field_11627;
 			}
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
-				return (Boolean)blockState.get(OPEN);
+				return (Boolean)blockState.method_11654(field_11631);
 			case field_48:
-				return (Boolean)blockState.get(WATERLOGGED);
+				return (Boolean)blockState.method_11654(field_11626);
 			case field_51:
-				return (Boolean)blockState.get(OPEN);
+				return (Boolean)blockState.method_11654(field_11631);
 			default:
 				return false;
 		}
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (this.material == Material.METAL) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (this.field_10635 == Material.METAL) {
 			return false;
 		} else {
-			blockState = blockState.cycle(OPEN);
-			world.setBlockState(blockPos, blockState, 2);
-			if ((Boolean)blockState.get(WATERLOGGED)) {
-				world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			blockState = blockState.method_11572(field_11631);
+			world.method_8652(blockPos, blockState, 2);
+			if ((Boolean)blockState.method_11654(field_11626)) {
+				world.method_8405().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			this.playToggleSound(playerEntity, world, blockPos, (Boolean)blockState.get(OPEN));
+			this.playToggleSound(playerEntity, world, blockPos, (Boolean)blockState.method_11654(field_11631));
 			return true;
 		}
 	}
 
 	protected void playToggleSound(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {
 		if (bl) {
-			int i = this.material == Material.METAL ? 1037 : 1007;
+			int i = this.field_10635 == Material.METAL ? 1037 : 1007;
 			world.playLevelEvent(playerEntity, i, blockPos, 0);
 		} else {
-			int i = this.material == Material.METAL ? 1036 : 1013;
+			int i = this.field_10635 == Material.METAL ? 1036 : 1013;
 			world.playLevelEvent(playerEntity, i, blockPos, 0);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			boolean bl2 = world.isReceivingRedstonePower(blockPos);
-			if (bl2 != (Boolean)blockState.get(POWERED)) {
-				if ((Boolean)blockState.get(OPEN) != bl2) {
-					blockState = blockState.with(OPEN, Boolean.valueOf(bl2));
+			if (bl2 != (Boolean)blockState.method_11654(field_11629)) {
+				if ((Boolean)blockState.method_11654(field_11631) != bl2) {
+					blockState = blockState.method_11657(field_11631, Boolean.valueOf(bl2));
 					this.playToggleSound(null, world, blockPos, bl2);
 				}
 
-				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)), 2);
-				if ((Boolean)blockState.get(WATERLOGGED)) {
-					world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.method_8652(blockPos, blockState.method_11657(field_11629, Boolean.valueOf(bl2)), 2);
+				if ((Boolean)blockState.method_11654(field_11626)) {
+					world.method_8405().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}
 			}
 		}
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getDefaultState();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.method_9564();
+		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.getBlockPos());
 		Direction direction = itemPlacementContext.getSide();
 		if (!itemPlacementContext.canReplaceExisting() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(FACING, direction)
-				.with(HALF, itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617);
+			blockState = blockState.method_11657(field_11177, direction)
+				.method_11657(
+					field_11625,
+					itemPlacementContext.method_17698().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617
+				);
 		} else {
-			blockState = blockState.with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())
-				.with(HALF, direction == Direction.field_11036 ? BlockHalf.field_12617 : BlockHalf.field_12619);
+			blockState = blockState.method_11657(field_11177, itemPlacementContext.getPlayerFacing().getOpposite())
+				.method_11657(field_11625, direction == Direction.field_11036 ? BlockHalf.field_12617 : BlockHalf.field_12619);
 		}
 
-		if (itemPlacementContext.getWorld().isReceivingRedstonePower(itemPlacementContext.getBlockPos())) {
-			blockState = blockState.with(OPEN, Boolean.valueOf(true)).with(POWERED, Boolean.valueOf(true));
+		if (itemPlacementContext.method_8045().isReceivingRedstonePower(itemPlacementContext.getBlockPos())) {
+			blockState = blockState.method_11657(field_11631, Boolean.valueOf(true)).method_11657(field_11629, Boolean.valueOf(true));
 		}
 
-		return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+		return blockState.method_11657(field_11626, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
@@ -150,27 +153,25 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING, OPEN, HALF, POWERED, WATERLOGGED);
+		builder.method_11667(field_11177, field_11631, field_11625, field_11629, field_11626);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState method_9545(BlockState blockState) {
+		return blockState.method_11654(field_11626) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if ((Boolean)blockState.method_11654(field_11626)) {
+			iWorld.method_8405().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+	public boolean method_9523(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return false;
 	}
 }

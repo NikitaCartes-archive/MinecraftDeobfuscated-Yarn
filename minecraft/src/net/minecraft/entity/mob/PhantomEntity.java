@@ -107,11 +107,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			float f = MathHelper.cos((float)(this.getEntityId() * 3 + this.age) * 0.13F + (float) Math.PI);
 			float g = MathHelper.cos((float)(this.getEntityId() * 3 + this.age + 1) * 0.13F + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
-				this.world
+				this.field_6002
 					.playSound(
 						this.x,
 						this.y,
@@ -128,11 +128,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float h = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-			this.world.addParticle(ParticleTypes.field_11219, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
-			this.world.addParticle(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
+			this.field_6002.addParticle(ParticleTypes.field_11219, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
+			this.field_6002.addParticle(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
 		}
 
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
+		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -152,12 +152,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.field_7312 = new BlockPos(this).up(5);
 		this.setPhantomSize(0);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -221,9 +221,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose entityPose) {
+	public EntityDimensions method_18377(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.getDimensions(entityPose);
+		EntityDimensions entityDimensions = super.method_18377(entityPose);
 		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
 		return entityDimensions.scaled(f);
 	}
@@ -273,12 +273,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
+			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.field_6002.isAir(new BlockPos(PhantomEntity.this).down(1))) {
 				this.field_7326 = Math.max(1.0F, this.field_7326);
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
+			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.field_6002.isAir(new BlockPos(PhantomEntity.this).up(1))) {
 				this.field_7326 = Math.min(-1.0F, this.field_7326);
 				this.method_7103();
 			}
@@ -313,8 +313,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else {
 				this.delay = 60;
-				List<PlayerEntity> list = PhantomEntity.this.world
-					.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+				List<PlayerEntity> list = PhantomEntity.this.field_6002
+					.method_18464(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.method_5829().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
 
@@ -410,8 +410,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			double p = (double)(this.field_7331 * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
 			double q = (double)(this.field_7331 * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
 			double r = (double)(this.field_7331 * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
-			Vec3d vec3d = PhantomEntity.this.getVelocity();
-			PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
+			Vec3d vec3d = PhantomEntity.this.method_18798();
+			PhantomEntity.this.method_18799(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
 		}
 	}
 
@@ -441,7 +441,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void stop() {
-			PhantomEntity.this.field_7312 = PhantomEntity.this.world
+			PhantomEntity.this.field_7312 = PhantomEntity.this.field_6002
 				.getTopPosition(Heightmap.Type.field_13197, PhantomEntity.this.field_7312)
 				.up(10 + PhantomEntity.this.random.nextInt(20));
 		}
@@ -461,9 +461,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		private void method_7102() {
 			PhantomEntity.this.field_7312 = new BlockPos(PhantomEntity.this.getTarget()).up(20 + PhantomEntity.this.random.nextInt(20));
-			if (PhantomEntity.this.field_7312.getY() < PhantomEntity.this.world.getSeaLevel()) {
+			if (PhantomEntity.this.field_7312.getY() < PhantomEntity.this.field_6002.getSeaLevel()) {
 				PhantomEntity.this.field_7312 = new BlockPos(
-					PhantomEntity.this.field_7312.getX(), PhantomEntity.this.world.getSeaLevel() + 1, PhantomEntity.this.field_7312.getZ()
+					PhantomEntity.this.field_7312.getX(), PhantomEntity.this.field_6002.getSeaLevel() + 1, PhantomEntity.this.field_7312.getZ()
 				);
 			}
 		}
@@ -490,8 +490,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					return false;
 				} else {
 					if (PhantomEntity.this.age % 20 == 0) {
-						List<CatEntity> list = PhantomEntity.this.world
-							.getEntities(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
+						List<CatEntity> list = PhantomEntity.this.field_6002
+							.method_8390(CatEntity.class, PhantomEntity.this.method_5829().expand(16.0), EntityPredicates.VALID_ENTITY);
 						if (!list.isEmpty()) {
 							for (CatEntity catEntity : list) {
 								catEntity.hiss();
@@ -522,10 +522,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		public void tick() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
 			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5, livingEntity.z);
-			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
+			if (PhantomEntity.this.method_5829().expand(0.2F).intersects(livingEntity.method_5829())) {
 				PhantomEntity.this.tryAttack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
-				PhantomEntity.this.world.playLevelEvent(1039, new BlockPos(PhantomEntity.this), 0);
+				PhantomEntity.this.field_6002.playLevelEvent(1039, new BlockPos(PhantomEntity.this), 0);
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			}

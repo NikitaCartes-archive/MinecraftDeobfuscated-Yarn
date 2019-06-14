@@ -106,17 +106,17 @@ public class IronGolemEntity extends GolemEntity {
 			this.field_6759--;
 		}
 
-		if (squaredHorizontalLength(this.getVelocity()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
+		if (method_17996(this.method_18798()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
 			int i = MathHelper.floor(this.x);
 			int j = MathHelper.floor(this.y - 0.2F);
 			int k = MathHelper.floor(this.z);
-			BlockState blockState = this.world.getBlockState(new BlockPos(i, j, k));
+			BlockState blockState = this.field_6002.method_8320(new BlockPos(i, j, k));
 			if (!blockState.isAir()) {
-				this.world
+				this.field_6002
 					.addParticle(
 						new BlockStateParticleEffect(ParticleTypes.field_11217, blockState),
 						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
-						this.getBoundingBox().minY + 0.1,
+						this.method_5829().minY + 0.1,
 						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						4.0 * ((double)this.random.nextFloat() - 0.5),
 						0.5,
@@ -150,10 +150,10 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public boolean tryAttack(Entity entity) {
 		this.field_6762 = 10;
-		this.world.sendEntityStatus(this, (byte)4);
+		this.field_6002.sendEntityStatus(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
-			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
+			entity.method_18799(entity.method_18798().add(0.0, 0.4F, 0.0));
 			this.dealDamage(this, entity);
 		}
 
@@ -184,10 +184,10 @@ public class IronGolemEntity extends GolemEntity {
 	public void method_6497(boolean bl) {
 		if (bl) {
 			this.field_6759 = 400;
-			this.world.sendEntityStatus(this, (byte)11);
+			this.field_6002.sendEntityStatus(this, (byte)11);
 		} else {
 			this.field_6759 = 0;
-			this.world.sendEntityStatus(this, (byte)34);
+			this.field_6002.sendEntityStatus(this, (byte)34);
 		}
 	}
 
@@ -202,7 +202,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_15233, 1.0F, 1.0F);
 	}
 
@@ -230,22 +230,22 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
+	public boolean method_5957(ViewableWorld viewableWorld) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = viewableWorld.getBlockState(blockPos2);
+		BlockState blockState = viewableWorld.method_8320(blockPos2);
 		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
 			return false;
 		} else {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
-				BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())) {
+				BlockState blockState2 = viewableWorld.method_8320(blockPos3);
+				if (!SpawnHelper.method_8662(viewableWorld, blockPos3, blockState2, blockState2.method_11618())) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
+			return SpawnHelper.method_8662(viewableWorld, blockPos, viewableWorld.method_8320(blockPos), Fluids.field_15906.method_15785())
 				&& viewableWorld.intersectsEntities(this);
 		}
 	}

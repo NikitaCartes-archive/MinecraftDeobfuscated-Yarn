@@ -44,7 +44,7 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	@Override
 	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(this.texture);
+		minecraftClient.method_1531().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
 		int k = this.u;
 		int l = this.v;

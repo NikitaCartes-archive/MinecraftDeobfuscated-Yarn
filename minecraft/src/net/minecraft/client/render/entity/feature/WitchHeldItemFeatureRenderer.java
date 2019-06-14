@@ -34,7 +34,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 			this.getModel().method_2839().applyTransform(0.0625F);
 			GlStateManager.translatef(-0.0625F, 0.53125F, 0.21875F);
 			Item item = itemStack.getItem();
-			if (Block.getBlockFromItem(item).getDefaultState().getRenderType() == BlockRenderType.field_11456) {
+			if (Block.getBlockFromItem(item).method_9564().getRenderType() == BlockRenderType.field_11456) {
 				GlStateManager.translatef(0.0F, 0.0625F, -0.25F);
 				GlStateManager.rotatef(30.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(-5.0F, 0.0F, 1.0F, 0.0F);
@@ -58,7 +58,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 
 			GlStateManager.rotatef(-15.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(40.0F, 0.0F, 0.0F, 1.0F);
-			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4320);
+			MinecraftClient.getInstance().method_1489().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4320);
 			GlStateManager.popMatrix();
 		}
 	}

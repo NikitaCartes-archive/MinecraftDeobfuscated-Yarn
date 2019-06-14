@@ -19,7 +19,7 @@ public class SelectWorldScreen extends Screen {
 	private ButtonWidget editButton;
 	private ButtonWidget recreateButton;
 	protected TextFieldWidget searchBox;
-	private WorldListWidget levelList;
+	private WorldListWidget field_3218;
 
 	public SelectWorldScreen(Screen screen) {
 		super(new TranslatableText("selectWorld.title"));
@@ -40,10 +40,12 @@ public class SelectWorldScreen extends Screen {
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.searchBox = new TextFieldWidget(this.font, this.width / 2 - 100, 22, 200, 20, this.searchBox, I18n.translate("selectWorld.search"));
-		this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
-		this.levelList = new WorldListWidget(this, this.minecraft, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
+		this.searchBox.setChangedListener(string -> this.field_3218.filter(() -> string, false));
+		this.field_3218 = new WorldListWidget(
+			this, this.minecraft, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.field_3218
+		);
 		this.children.add(this.searchBox);
-		this.children.add(this.levelList);
+		this.children.add(this.field_3218);
 		this.selectButton = this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 154,
@@ -51,12 +53,17 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				I18n.translate("selectWorld.select"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::play)
+				buttonWidget -> this.field_3218.method_20159().ifPresent(WorldListWidget.LevelItem::play)
 			)
 		);
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.minecraft.openScreen(new CreateWorldScreen(this))
+				this.width / 2 + 4,
+				this.height - 52,
+				150,
+				20,
+				I18n.translate("selectWorld.create"),
+				buttonWidget -> this.minecraft.method_1507(new CreateWorldScreen(this))
 			)
 		);
 		this.editButton = this.addButton(
@@ -66,7 +73,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.edit"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::edit)
+				buttonWidget -> this.field_3218.method_20159().ifPresent(WorldListWidget.LevelItem::edit)
 			)
 		);
 		this.deleteButton = this.addButton(
@@ -76,7 +83,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.delete"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::delete)
+				buttonWidget -> this.field_3218.method_20159().ifPresent(WorldListWidget.LevelItem::delete)
 			)
 		);
 		this.recreateButton = this.addButton(
@@ -86,14 +93,14 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.recreate"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::recreate)
+				buttonWidget -> this.field_3218.method_20159().ifPresent(WorldListWidget.LevelItem::recreate)
 			)
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.parent))
 		);
 		this.worldSelected(false);
-		this.setInitialFocus(this.searchBox);
+		this.method_20085(this.searchBox);
 	}
 
 	@Override
@@ -109,7 +116,7 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.tooltipText = null;
-		this.levelList.render(i, j, f);
+		this.field_3218.render(i, j, f);
 		this.searchBox.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		super.render(i, j, f);
@@ -131,8 +138,8 @@ public class SelectWorldScreen extends Screen {
 
 	@Override
 	public void removed() {
-		if (this.levelList != null) {
-			this.levelList.children().forEach(WorldListWidget.LevelItem::close);
+		if (this.field_3218 != null) {
+			this.field_3218.children().forEach(WorldListWidget.LevelItem::close);
 		}
 	}
 }

@@ -57,6 +57,7 @@ public class GameRules {
 	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19407 = register("doLimitedCrafting", GameRules.BooleanRule.of(false));
 	public static final GameRules.RuleKey<GameRules.IntRule> field_19408 = register("maxCommandChainLength", GameRules.IntRule.of(65536));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19409 = register("announceAdvancements", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19422 = register("disableRaids", GameRules.BooleanRule.of(false));
 	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULES.entrySet()
 		.stream()
 		.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.RuleType)entry.getValue()).newRule()));

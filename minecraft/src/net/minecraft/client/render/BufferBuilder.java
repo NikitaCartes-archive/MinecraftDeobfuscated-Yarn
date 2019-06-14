@@ -22,14 +22,14 @@ public class BufferBuilder {
 	private ShortBuffer bufShort;
 	private FloatBuffer bufFloat;
 	private int vertexCount;
-	private VertexFormatElement currentElement;
+	private VertexFormatElement field_1558;
 	private int currentElementId;
 	private boolean colorDisabled;
 	private int drawMode;
 	private double offsetX;
 	private double offsetY;
 	private double offsetZ;
-	private VertexFormat format;
+	private VertexFormat field_1565;
 	private boolean building;
 
 	public BufferBuilder(int i) {
@@ -40,7 +40,7 @@ public class BufferBuilder {
 	}
 
 	private void grow(int i) {
-		if (this.vertexCount * this.format.getVertexSize() + i > this.bufByte.capacity()) {
+		if (this.vertexCount * this.field_1565.getVertexSize() + i > this.bufByte.capacity()) {
 			int j = this.bufByte.capacity();
 			int k = j + roundBufferSize(i);
 			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
@@ -82,8 +82,8 @@ public class BufferBuilder {
 				(float)((double)f + this.offsetX),
 				(float)((double)g + this.offsetY),
 				(float)((double)h + this.offsetZ),
-				this.format.getVertexSizeInteger(),
-				j * this.format.getVertexSize()
+				this.field_1565.getVertexSizeInteger(),
+				j * this.field_1565.getVertexSize()
 			);
 		}
 
@@ -95,7 +95,7 @@ public class BufferBuilder {
 
 		Arrays.sort(integers, (integer, integer2) -> Floats.compare(fs[integer2], fs[integer]));
 		BitSet bitSet = new BitSet();
-		int l = this.format.getVertexSize();
+		int l = this.field_1565.getVertexSize();
 		int[] is = new int[l];
 
 		for (int m = bitSet.nextClearBit(0); m < integers.length; m = bitSet.nextClearBit(m + 1)) {
@@ -134,11 +134,11 @@ public class BufferBuilder {
 		this.bufInt.get(is);
 		this.bufInt.limit(this.bufInt.capacity());
 		this.bufInt.position(i);
-		return new BufferBuilder.State(is, new VertexFormat(this.format));
+		return new BufferBuilder.State(is, new VertexFormat(this.field_1565));
 	}
 
 	private int getCurrentSize() {
-		return this.vertexCount * this.format.getVertexSizeInteger();
+		return this.vertexCount * this.field_1565.getVertexSizeInteger();
 	}
 
 	private static float getDistanceSq(FloatBuffer floatBuffer, float f, float g, float h, int i, int j) {
@@ -165,32 +165,32 @@ public class BufferBuilder {
 		this.grow(state.getRawBuffer().length * 4);
 		this.bufInt.put(state.getRawBuffer());
 		this.vertexCount = state.getVertexCount();
-		this.format = new VertexFormat(state.getFormat());
+		this.field_1565 = new VertexFormat(state.method_1345());
 	}
 
 	public void clear() {
 		this.vertexCount = 0;
-		this.currentElement = null;
+		this.field_1558 = null;
 		this.currentElementId = 0;
 	}
 
-	public void begin(int i, VertexFormat vertexFormat) {
+	public void method_1328(int i, VertexFormat vertexFormat) {
 		if (this.building) {
 			throw new IllegalStateException("Already building!");
 		} else {
 			this.building = true;
 			this.clear();
 			this.drawMode = i;
-			this.format = vertexFormat;
-			this.currentElement = vertexFormat.getElement(this.currentElementId);
+			this.field_1565 = vertexFormat;
+			this.field_1558 = vertexFormat.method_1364(this.currentElementId);
 			this.colorDisabled = false;
 			this.bufByte.limit(this.bufByte.capacity());
 		}
 	}
 
 	public BufferBuilder texture(double d, double e) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
-		switch (this.currentElement.getFormat()) {
+		int i = this.vertexCount * this.field_1565.getVertexSize() + this.field_1565.getElementOffset(this.currentElementId);
+		switch (this.field_1558.getFormat()) {
 			case field_1623:
 				this.bufByte.putFloat(i, (float)d);
 				this.bufByte.putFloat(i + 4, (float)e);
@@ -216,8 +216,8 @@ public class BufferBuilder {
 	}
 
 	public BufferBuilder texture(int i, int j) {
-		int k = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
-		switch (this.currentElement.getFormat()) {
+		int k = this.vertexCount * this.field_1565.getVertexSize() + this.field_1565.getElementOffset(this.currentElementId);
+		switch (this.field_1558.getFormat()) {
 			case field_1623:
 				this.bufByte.putFloat(k, (float)i);
 				this.bufByte.putFloat(k + 4, (float)j);
@@ -243,8 +243,8 @@ public class BufferBuilder {
 	}
 
 	public void brightness(int i, int j, int k, int l) {
-		int m = (this.vertexCount - 4) * this.format.getVertexSizeInteger() + this.format.getUvOffset(1) / 4;
-		int n = this.format.getVertexSize() >> 2;
+		int m = (this.vertexCount - 4) * this.field_1565.getVertexSizeInteger() + this.field_1565.getUvOffset(1) / 4;
+		int n = this.field_1565.getVertexSize() >> 2;
 		this.bufInt.put(m, i);
 		this.bufInt.put(m + n, j);
 		this.bufInt.put(m + n * 2, k);
@@ -252,7 +252,7 @@ public class BufferBuilder {
 	}
 
 	public void postPosition(double d, double e, double f) {
-		int i = this.format.getVertexSizeInteger();
+		int i = this.field_1565.getVertexSizeInteger();
 		int j = (this.vertexCount - 4) * i;
 
 		for (int k = 0; k < 4; k++) {
@@ -266,7 +266,7 @@ public class BufferBuilder {
 	}
 
 	private int getColorIndex(int i) {
-		return ((this.vertexCount - i) * this.format.getVertexSize() + this.format.getColorOffset()) / 4;
+		return ((this.vertexCount - i) * this.field_1565.getVertexSize() + this.field_1565.getColorOffset()) / 4;
 	}
 
 	public void multiplyColor(float f, float g, float h, int i) {
@@ -336,8 +336,8 @@ public class BufferBuilder {
 		if (this.colorDisabled) {
 			return this;
 		} else {
-			int m = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
-			switch (this.currentElement.getFormat()) {
+			int m = this.vertexCount * this.field_1565.getVertexSize() + this.field_1565.getElementOffset(this.currentElementId);
+			switch (this.field_1558.getFormat()) {
 				case field_1623:
 					this.bufByte.putFloat(m, (float)i / 255.0F);
 					this.bufByte.putFloat(m + 4, (float)j / 255.0F);
@@ -379,20 +379,20 @@ public class BufferBuilder {
 	}
 
 	public void putVertexData(int[] is) {
-		this.grow(is.length * 4 + this.format.getVertexSize());
+		this.grow(is.length * 4 + this.field_1565.getVertexSize());
 		this.bufInt.position(this.getCurrentSize());
 		this.bufInt.put(is);
-		this.vertexCount = this.vertexCount + is.length / this.format.getVertexSizeInteger();
+		this.vertexCount = this.vertexCount + is.length / this.field_1565.getVertexSizeInteger();
 	}
 
 	public void next() {
 		this.vertexCount++;
-		this.grow(this.format.getVertexSize());
+		this.grow(this.field_1565.getVertexSize());
 	}
 
 	public BufferBuilder vertex(double d, double e, double f) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
-		switch (this.currentElement.getFormat()) {
+		int i = this.vertexCount * this.field_1565.getVertexSize() + this.field_1565.getElementOffset(this.currentElementId);
+		switch (this.field_1558.getFormat()) {
 			case field_1623:
 				this.bufByte.putFloat(i, (float)(d + this.offsetX));
 				this.bufByte.putFloat(i + 4, (float)(e + this.offsetY));
@@ -426,8 +426,8 @@ public class BufferBuilder {
 		int j = (byte)((int)(g * 127.0F)) & 255;
 		int k = (byte)((int)(h * 127.0F)) & 255;
 		int l = i | j << 8 | k << 16;
-		int m = this.format.getVertexSize() >> 2;
-		int n = (this.vertexCount - 4) * m + this.format.getNormalOffset() / 4;
+		int m = this.field_1565.getVertexSize() >> 2;
+		int n = (this.vertexCount - 4) * m + this.field_1565.getNormalOffset() / 4;
 		this.bufInt.put(n, l);
 		this.bufInt.put(n + m, l);
 		this.bufInt.put(n + m * 2, l);
@@ -436,16 +436,16 @@ public class BufferBuilder {
 
 	private void nextElement() {
 		this.currentElementId++;
-		this.currentElementId = this.currentElementId % this.format.getElementCount();
-		this.currentElement = this.format.getElement(this.currentElementId);
-		if (this.currentElement.getType() == VertexFormatElement.Type.field_1629) {
+		this.currentElementId = this.currentElementId % this.field_1565.getElementCount();
+		this.field_1558 = this.field_1565.method_1364(this.currentElementId);
+		if (this.field_1558.getType() == VertexFormatElement.Type.field_1629) {
 			this.nextElement();
 		}
 	}
 
 	public BufferBuilder normal(float f, float g, float h) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
-		switch (this.currentElement.getFormat()) {
+		int i = this.vertexCount * this.field_1565.getVertexSize() + this.field_1565.getElementOffset(this.currentElementId);
+		switch (this.field_1558.getFormat()) {
 			case field_1623:
 				this.bufByte.putFloat(i, f);
 				this.bufByte.putFloat(i + 4, g);
@@ -494,8 +494,8 @@ public class BufferBuilder {
 		return this.bufByte;
 	}
 
-	public VertexFormat getVertexFormat() {
-		return this.format;
+	public VertexFormat method_1311() {
+		return this.field_1565;
 	}
 
 	public int getVertexCount() {
@@ -521,11 +521,11 @@ public class BufferBuilder {
 	@Environment(EnvType.CLIENT)
 	public class State {
 		private final int[] rawBuffer;
-		private final VertexFormat format;
+		private final VertexFormat field_1570;
 
 		public State(int[] is, VertexFormat vertexFormat) {
 			this.rawBuffer = is;
-			this.format = vertexFormat;
+			this.field_1570 = vertexFormat;
 		}
 
 		public int[] getRawBuffer() {
@@ -533,11 +533,11 @@ public class BufferBuilder {
 		}
 
 		public int getVertexCount() {
-			return this.rawBuffer.length / this.format.getVertexSizeInteger();
+			return this.rawBuffer.length / this.field_1570.getVertexSizeInteger();
 		}
 
-		public VertexFormat getFormat() {
-			return this.format;
+		public VertexFormat method_1345() {
+			return this.field_1570;
 		}
 	}
 }

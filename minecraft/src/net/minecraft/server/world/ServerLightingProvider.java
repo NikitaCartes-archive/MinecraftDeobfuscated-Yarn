@@ -72,6 +72,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	protected void method_20386(ChunkPos chunkPos) {
 		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
 			super.method_20601(chunkPos, false);
+			super.suppressLight(chunkPos, false);
 
 			for (int i = -1; i < 17; i++) {
 				super.queueData(LightType.field_9282, ChunkSectionPos.from(chunkPos, i), null);
@@ -144,7 +145,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
-			ChunkSection[] chunkSections = chunk.getSectionArray();
+			ChunkSection[] chunkSections = chunk.method_12006();
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];

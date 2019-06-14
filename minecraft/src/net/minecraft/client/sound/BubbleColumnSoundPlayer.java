@@ -22,11 +22,11 @@ public class BubbleColumnSoundPlayer implements ClientPlayerTickable {
 
 	@Override
 	public void tick() {
-		World world = this.player.world;
-		BlockState blockState = world.getBlockState(this.player.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
+		World world = this.player.field_6002;
+		BlockState blockState = world.method_8475(this.player.method_5829().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
 		if (blockState != null) {
 			if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState.getBlock() == Blocks.field_10422 && !this.player.isSpectator()) {
-				boolean bl = (Boolean)blockState.get(BubbleColumnBlock.DRAG);
+				boolean bl = (Boolean)blockState.method_11654(BubbleColumnBlock.field_10680);
 				if (bl) {
 					this.player.playSound(SoundEvents.field_19196, 1.0F, 1.0F);
 				} else {

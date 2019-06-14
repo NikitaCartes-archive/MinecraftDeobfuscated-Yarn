@@ -51,7 +51,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this.owner = livingEntity;
 		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 		this.setPosition(this.x, this.y, this.z);
-		this.setVelocity(Vec3d.ZERO);
+		this.method_18799(Vec3d.ZERO);
 		d += this.random.nextGaussian() * 0.4;
 		e += this.random.nextGaussian() * 0.4;
 		f += this.random.nextGaussian() * 0.4;
@@ -68,7 +68,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().averageDimension() * 4.0;
+		double e = this.method_5829().averageDimension() * 4.0;
 		if (Double.isNaN(e)) {
 			e = 4.0;
 		}
@@ -79,19 +79,19 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (this.world.isClient || (this.owner == null || !this.owner.removed) && this.world.isBlockLoaded(new BlockPos(this))) {
+		if (this.field_6002.isClient || (this.owner == null || !this.owner.removed) && this.field_6002.isBlockLoaded(new BlockPos(this))) {
 			super.tick();
 			if (this.isBurning()) {
 				this.setOnFireFor(1);
 			}
 
 			this.ticks++;
-			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
+			HitResult hitResult = ProjectileUtil.method_18076(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
 			if (hitResult.getType() != HitResult.Type.field_1333) {
-				this.onCollision(hitResult);
+				this.method_7469(hitResult);
 			}
 
-			Vec3d vec3d = this.getVelocity();
+			Vec3d vec3d = this.method_18798();
 			this.x = this.x + vec3d.x;
 			this.y = this.y + vec3d.y;
 			this.z = this.z + vec3d.z;
@@ -100,14 +100,15 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
-					this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					this.field_6002
+						.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				f = 0.8F;
 			}
 
-			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)f));
-			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.method_18799(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)f));
+			this.field_6002.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 			this.setPosition(this.x, this.y, this.z);
 		} else {
 			this.remove();
@@ -126,11 +127,11 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 0.95F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
+	protected abstract void method_7469(HitResult hitResult);
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		compoundTag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
 		compoundTag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
 		compoundTag.putInt("life", this.life);
@@ -162,7 +163,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public float getTargetingMargin() {
+	public float getBoundingBoxMarginForTargeting() {
 		return 1.0F;
 	}
 
@@ -173,8 +174,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		} else {
 			this.scheduleVelocityUpdate();
 			if (damageSource.getAttacker() != null) {
-				Vec3d vec3d = damageSource.getAttacker().getRotationVector();
-				this.setVelocity(vec3d);
+				Vec3d vec3d = damageSource.getAttacker().method_5720();
+				this.method_18799(vec3d);
 				this.posX = vec3d.x * 0.1;
 				this.posY = vec3d.y * 0.1;
 				this.posZ = vec3d.z * 0.1;

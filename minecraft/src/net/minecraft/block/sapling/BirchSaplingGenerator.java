@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 public class BirchSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
 		return new BirchTreeFeature(DefaultFeatureConfig::deserialize, true, false);
 	}
 }

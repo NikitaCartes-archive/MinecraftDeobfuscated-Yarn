@@ -21,7 +21,7 @@ public class NoRenderParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.NO_RENDER;
 	}
 }

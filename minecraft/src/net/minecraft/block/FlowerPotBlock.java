@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class FlowerPotBlock extends Block {
 	private static final Map<Block, Block> CONTENT_TO_POTTED = Maps.<Block, Block>newHashMap();
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+	protected static final VoxelShape field_11102 = Block.method_9541(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 	private final Block content;
 
 	public FlowerPotBlock(Block block, Block.Settings settings) {
@@ -31,25 +31,25 @@ public class FlowerPotBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return field_11102;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.field_10124) : Blocks.field_10124;
+		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).method_7711(), Blocks.field_10124) : Blocks.field_10124;
 		boolean bl = block == Blocks.field_10124;
 		boolean bl2 = this.content == Blocks.field_10124;
 		if (bl != bl2) {
 			if (bl2) {
-				world.setBlockState(blockPos, block.getDefaultState(), 3);
+				world.method_8652(blockPos, block.method_9564(), 3);
 				playerEntity.incrementStat(Stats.field_15412);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);
@@ -62,7 +62,7 @@ public class FlowerPotBlock extends Block {
 					playerEntity.dropItem(itemStack2, false);
 				}
 
-				world.setBlockState(blockPos, Blocks.field_10495.getDefaultState(), 3);
+				world.method_8652(blockPos, Blocks.field_10495.method_9564(), 3);
 			}
 		}
 
@@ -71,17 +71,15 @@ public class FlowerPotBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return this.content == Blocks.field_10124 ? super.getPickStack(blockView, blockPos, blockState) : new ItemStack(this.content);
+	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+		return this.content == Blocks.field_10124 ? super.method_9574(blockView, blockPos, blockState) : new ItemStack(this.content);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

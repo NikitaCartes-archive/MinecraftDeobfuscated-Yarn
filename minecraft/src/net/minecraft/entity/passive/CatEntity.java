@@ -65,7 +65,7 @@ import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 
 public class CatEntity extends TameableEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.method_8091(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -315,7 +315,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public CatEntity method_6573(PassiveEntity passiveEntity) {
-		CatEntity catEntity = EntityType.field_16281.create(this.world);
+		CatEntity catEntity = EntityType.field_16281.method_5883(this.field_6002);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
 				catEntity.setCatType(this.getCatType());
@@ -351,17 +351,17 @@ public class CatEntity extends TameableEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
 		} else {
 			this.setCatType(this.random.nextInt(10));
 		}
 
-		if (Feature.SWAMP_HUT.isInsideStructure(iWorld, new BlockPos(this))) {
+		if (Feature.field_13520.isInsideStructure(iWorld, new BlockPos(this))) {
 			this.setCatType(10);
 			this.setPersistent();
 		}
@@ -392,21 +392,21 @@ public class CatEntity extends TameableEntity {
 						this.heal((float)item.getFoodComponent().getHunger());
 						return true;
 					}
-				} else if (!this.world.isClient) {
+				} else if (!this.field_6002.isClient) {
 					this.sitGoal.setEnabledWithOwner(!this.isSitting());
 				}
 			}
 		} else if (this.isBreedingItem(itemStack)) {
 			this.eat(playerEntity, itemStack);
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(playerEntity);
 					this.showEmoteParticle(true);
 					this.sitGoal.setEnabledWithOwner(true);
-					this.world.sendEntityStatus(this, (byte)7);
+					this.field_6002.sendEntityStatus(this, (byte)7);
 				} else {
 					this.showEmoteParticle(false);
-					this.world.sendEntityStatus(this, (byte)6);
+					this.field_6002.sendEntityStatus(this, (byte)6);
 				}
 			}
 
@@ -497,9 +497,9 @@ public class CatEntity extends TameableEntity {
 					}
 
 					BlockPos blockPos = new BlockPos(this.owner);
-					BlockState blockState = this.cat.world.getBlockState(blockPos);
+					BlockState blockState = this.cat.field_6002.method_8320(blockPos);
 					if (blockState.getBlock().matches(BlockTags.field_16443)) {
-						Direction direction = blockState.get(BedBlock.FACING);
+						Direction direction = blockState.method_11654(BedBlock.field_11177);
 						this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
 						return !this.method_16098();
 					}
@@ -510,7 +510,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private boolean method_16098() {
-			for (CatEntity catEntity : this.cat.world.getEntities(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
+			for (CatEntity catEntity : this.cat.field_6002.method_18467(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
 				if (catEntity != this.cat && (catEntity.isSleepingWithOwner() || catEntity.isHeadDown())) {
 					return true;
 				}
@@ -535,8 +535,8 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void stop() {
 			this.cat.setSleepingWithOwner(false);
-			float f = this.cat.world.getSkyAngle(1.0F);
-			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
+			float f = this.cat.field_6002.getSkyAngle(1.0F);
+			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.field_6002.getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
 			}
 
@@ -557,18 +557,18 @@ public class CatEntity extends TameableEntity {
 					false
 				);
 			mutable.set(this.cat);
-			LootSupplier lootSupplier = this.cat.world.getServer().getLootManager().getSupplier(LootTables.field_16216);
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
-				.put(LootContextParameters.field_1232, mutable)
-				.put(LootContextParameters.field_1226, this.cat)
+			LootSupplier lootSupplier = this.cat.field_6002.getServer().getLootManager().getSupplier(LootTables.field_16216);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.field_6002)
+				.method_312(LootContextParameters.field_1232, mutable)
+				.method_312(LootContextParameters.field_1226, this.cat)
 				.setRandom(random);
 
-			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.field_16235))) {
+			for (ItemStack itemStack : lootSupplier.getDrops(builder.method_309(LootContextTypes.field_16235))) {
 				this.cat
-					.world
+					.field_6002
 					.spawnEntity(
 						new ItemEntity(
-							this.cat.world,
+							this.cat.field_6002,
 							(double)((float)mutable.getX() - MathHelper.sin(this.cat.field_6283 * (float) (Math.PI / 180.0))),
 							(double)mutable.getY(),
 							(double)((float)mutable.getZ() + MathHelper.cos(this.cat.field_6283 * (float) (Math.PI / 180.0))),

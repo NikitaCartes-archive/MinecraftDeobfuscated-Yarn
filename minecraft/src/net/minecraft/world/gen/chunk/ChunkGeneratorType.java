@@ -44,7 +44,7 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 		return this.factory.create(world, biomeSource, chunkGeneratorConfig);
 	}
 
-	public C createSettings() {
+	public C method_12117() {
 		return (C)this.settingsSupplier.get();
 	}
 

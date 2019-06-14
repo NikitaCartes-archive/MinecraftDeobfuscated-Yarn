@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -42,7 +42,7 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 		this.leftArmPose = BipedEntityModel.ArmPose.field_3409;
 		ItemStack itemStack = mobEntity.getStackInHand(Hand.field_5808);
 		if (itemStack.getItem() == Items.field_8102 && mobEntity.isAttacking()) {
-			if (mobEntity.getMainArm() == Arm.field_6183) {
+			if (mobEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.rightArmPose = BipedEntityModel.ArmPose.field_3403;
 			} else {
 				this.leftArmPose = BipedEntityModel.ArmPose.field_3403;
@@ -74,9 +74,9 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
-		float g = arm == Arm.field_6183 ? 1.0F : -1.0F;
-		Cuboid cuboid = this.getArm(arm);
+	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+		float g = absoluteHand == AbsoluteHand.field_6183 ? 1.0F : -1.0F;
+		Cuboid cuboid = this.getArm(absoluteHand);
 		cuboid.rotationPointX += g;
 		cuboid.applyTransform(f);
 		cuboid.rotationPointX -= g;

@@ -11,23 +11,23 @@ import net.minecraft.world.GameMode;
 public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.open_inventory.description", TutorialManager.getKeybindName("inventory"));
-	private final TutorialManager manager;
+	private final TutorialManager field_5640;
 	private TutorialToast field_5642;
 	private int ticks;
 
 	public OpenInventoryTutorialStepHandler(TutorialManager tutorialManager) {
-		this.manager = tutorialManager;
+		this.field_5640 = tutorialManager;
 	}
 
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.field_5640.getGameMode() != GameMode.field_9215) {
+			this.field_5640.setStep(TutorialStep.field_5653);
 		} else {
 			if (this.ticks >= 600 && this.field_5642 == null) {
 				this.field_5642 = new TutorialToast(TutorialToast.Type.field_2233, TITLE, DESCRIPTION, false);
-				this.manager.getClient().getToastManager().add(this.field_5642);
+				this.field_5640.getClient().method_1566().add(this.field_5642);
 			}
 		}
 	}
@@ -42,6 +42,6 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onInventoryOpened() {
-		this.manager.setStep(TutorialStep.field_5655);
+		this.field_5640.setStep(TutorialStep.field_5655);
 	}
 }

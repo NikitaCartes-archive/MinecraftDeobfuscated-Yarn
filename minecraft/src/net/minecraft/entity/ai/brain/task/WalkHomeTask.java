@@ -51,15 +51,15 @@ public class WalkHomeTask extends Task<LivingEntity> {
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		Predicate<BlockPos> predicate = blockPos -> {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-			if (serverWorld.getBlockState(blockPos.down()).isAir()) {
+			if (serverWorld.method_8320(blockPos.down()).isAir()) {
 				mutable.setOffset(Direction.field_11033);
 			}
 
-			while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
+			while (serverWorld.method_8320(mutable).isAir() && mutable.getY() >= 0) {
 				mutable.setOffset(Direction.field_11033);
 			}
 
-			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable);
+			Path path = mobEntityWithAi.getNavigation().method_6348(mutable);
 			return path != null && path.method_19313(mutable);
 		};
 		pointOfInterestStorage.getNearestPosition(

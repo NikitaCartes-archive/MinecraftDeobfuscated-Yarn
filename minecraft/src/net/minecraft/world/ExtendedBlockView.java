@@ -6,18 +6,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public interface ExtendedBlockView extends BlockView {
-	Biome getBiome(BlockPos blockPos);
+	Biome method_8310(BlockPos blockPos);
 
-	int getLightLevel(LightType lightType, BlockPos blockPos);
+	int method_8314(LightType lightType, BlockPos blockPos);
 
 	default boolean isSkyVisible(BlockPos blockPos) {
-		return this.getLightLevel(LightType.field_9284, blockPos) >= this.getMaxLightLevel();
+		return this.method_8314(LightType.field_9284, blockPos) >= this.getMaxLightLevel();
 	}
 
 	@Environment(EnvType.CLIENT)
 	default int getLightmapIndex(BlockPos blockPos, int i) {
-		int j = this.getLightLevel(LightType.field_9284, blockPos);
-		int k = this.getLightLevel(LightType.field_9282, blockPos);
+		int j = this.method_8314(LightType.field_9284, blockPos);
+		int k = this.method_8314(LightType.field_9282, blockPos);
 		if (k < i) {
 			k = i;
 		}

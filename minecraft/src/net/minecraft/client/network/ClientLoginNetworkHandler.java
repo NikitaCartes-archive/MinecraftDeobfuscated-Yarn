@@ -61,7 +61,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			Text text = this.joinServerSession(string);
 			if (text != null) {
-				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
+				if (this.client.method_1558() == null || !this.client.method_1558().isLocal()) {
 					this.connection.disconnect(text);
 					return;
 				}
@@ -77,7 +77,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Nullable
 	private Text joinServerSession(String string) {
 		try {
-			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), string);
+			this.getSessionService().joinServer(this.client.method_1548().getProfile(), this.client.method_1548().getAccessToken(), string);
 			return null;
 		} catch (AuthenticationUnavailableException var3) {
 			return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.serversUnavailable"));
@@ -103,9 +103,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onDisconnected(Text text) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
-			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", text).getProxy());
+			this.client.method_1507(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", text).getProxy());
 		} else {
-			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", text));
+			this.client.method_1507(new DisconnectedScreen(this.parentGui, "connect.failed", text));
 		}
 	}
 

@@ -70,8 +70,8 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
-			List<FishEntity> list = this.world.getEntities(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
+		if (this.hasOtherFishInGroup() && this.field_6002.random.nextInt(200) == 1) {
+			List<FishEntity> list = this.field_6002.method_18467(this.getClass(), this.method_5829().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {
 				this.groupSize = 1;
 			}
@@ -100,10 +100,10 @@ public abstract class SchoolingFishEntity extends FishEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (entityData == null) {
 			entityData = new SchoolingFishEntity.Data(this);
 		} else {

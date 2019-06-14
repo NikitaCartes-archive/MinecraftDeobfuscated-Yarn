@@ -85,7 +85,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(this.getStepSound(), 0.15F, 1.0F);
 	}
 
@@ -138,10 +138,10 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.initEquipment(localDifficulty);
 		this.updateEnchantments(localDifficulty);
 		this.updateAttackType();
@@ -160,13 +160,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	public void updateAttackType() {
-		if (this.world != null && !this.world.isClient) {
+		if (this.field_6002 != null && !this.field_6002.isClient) {
 			this.goalSelector.remove(this.meleeAttackGoal);
 			this.goalSelector.remove(this.bowAttackGoal);
 			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102));
 			if (itemStack.getItem() == Items.field_8102) {
 				int i = 20;
-				if (this.world.getDifficulty() != Difficulty.field_5807) {
+				if (this.field_6002.getDifficulty() != Difficulty.field_5807) {
 					i = 40;
 				}
 
@@ -183,12 +183,12 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102)));
 		ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
 		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
+		double e = livingEntity.method_5829().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
-		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.field_6002.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.field_14633, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(projectileEntity);
+		this.field_6002.spawnEntity(projectileEntity);
 	}
 
 	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
@@ -204,7 +204,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		super.setEquippedStack(equipmentSlot, itemStack);
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.updateAttackType();
 		}
 	}

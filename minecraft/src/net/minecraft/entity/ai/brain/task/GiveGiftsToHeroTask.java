@@ -116,12 +116,12 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		} else {
 			VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
-				LootSupplier lootSupplier = villagerEntity.world.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world)
-					.put(LootContextParameters.field_1232, new BlockPos(villagerEntity))
-					.put(LootContextParameters.field_1226, villagerEntity)
+				LootSupplier lootSupplier = villagerEntity.field_6002.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
+				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.field_6002)
+					.method_312(LootContextParameters.field_1232, new BlockPos(villagerEntity))
+					.method_312(LootContextParameters.field_1226, villagerEntity)
 					.setRandom(villagerEntity.getRand());
-				return lootSupplier.getDrops(builder.build(LootContextTypes.field_16235));
+				return lootSupplier.getDrops(builder.method_309(LootContextTypes.field_16235));
 			} else {
 				return ImmutableList.of(new ItemStack(Items.field_8317));
 			}

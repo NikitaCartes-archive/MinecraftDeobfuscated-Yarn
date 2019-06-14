@@ -119,11 +119,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.setVariant(this.random.nextInt(5));
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	@Override
-	protected EntityNavigation createNavigation(World world) {
+	protected EntityNavigation method_5965(World world) {
 		BirdNavigation birdNavigation = new BirdNavigation(this, world);
 		birdNavigation.setCanPathThroughDoors(false);
 		birdNavigation.setCanSwim(true);
@@ -164,10 +164,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 
 	@Override
 	public void tickMovement() {
-		imitateNearbyMob(this.world, this);
+		method_6587(this.field_6002, this);
 		if (this.songSource == null
-			|| !this.songSource.isWithinDistance(this.getPos(), 3.46)
-			|| this.world.getBlockState(this.songSource).getBlock() != Blocks.field_10223) {
+			|| !this.songSource.isWithinDistance(this.method_19538(), 3.46)
+			|| this.field_6002.method_8320(this.songSource).getBlock() != Blocks.field_10223) {
 			this.songPlaying = false;
 			this.songSource = null;
 		}
@@ -198,17 +198,17 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		}
 
 		this.field_6824 = (float)((double)this.field_6824 * 0.9);
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		if (!this.onGround && vec3d.y < 0.0) {
-			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
+			this.method_18799(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
 		this.field_6818 = this.field_6818 + this.field_6824 * 2.0F;
 	}
 
-	private static boolean imitateNearbyMob(World world, Entity entity) {
+	private static boolean method_6587(World world, Entity entity) {
 		if (entity.isAlive() && !entity.isSilent() && world.random.nextInt(50) == 0) {
-			List<MobEntity> list = world.getEntities(MobEntity.class, entity.getBoundingBox().expand(20.0), CAN_IMITATE);
+			List<MobEntity> list = world.method_8390(MobEntity.class, entity.method_5829().expand(20.0), CAN_IMITATE);
 			if (!list.isEmpty()) {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
 				if (!mobEntity.isSilent()) {
@@ -233,20 +233,20 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			}
 
 			if (!this.isSilent()) {
-				this.world
+				this.field_6002
 					.playSound(
 						null, this.x, this.y, this.z, SoundEvents.field_14960, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 					);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				if (this.random.nextInt(10) == 0) {
 					this.setOwner(playerEntity);
 					this.showEmoteParticle(true);
-					this.world.sendEntityStatus(this, (byte)7);
+					this.field_6002.sendEntityStatus(this, (byte)7);
 				} else {
 					this.showEmoteParticle(false);
-					this.world.sendEntityStatus(this, (byte)6);
+					this.field_6002.sendEntityStatus(this, (byte)6);
 				}
 			}
 
@@ -263,7 +263,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 
 			return true;
 		} else {
-			if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
+			if (!this.field_6002.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
 				this.sitGoal.setEnabledWithOwner(!this.isSitting());
 			}
 
@@ -277,7 +277,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+		Block block = iWorld.method_8320(blockPos.down()).getBlock();
 		return (block.matches(BlockTags.field_15503) || block == Blocks.field_10219 || block instanceof LogBlock || block == Blocks.field_10124)
 			&& iWorld.getLightLevel(blockPos, 0) > 8;
 	}
@@ -287,7 +287,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	@Override
-	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 	}
 
 	@Override
@@ -301,8 +301,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		return null;
 	}
 
-	public static void playMobSound(World world, Entity entity) {
-		if (!entity.isSilent() && !imitateNearbyMob(world, entity) && world.random.nextInt(200) == 0) {
+	public static void method_6589(World world, Entity entity) {
+		if (!entity.isSilent() && !method_6587(world, entity) && world.random.nextInt(200) == 0) {
 			world.playSound(null, entity.x, entity.y, entity.z, getRandomSound(world.random), entity.getSoundCategory(), 1.0F, getSoundPitch(world.random));
 		}
 	}
@@ -342,12 +342,12 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14602, 0.15F, 1.0F);
 	}
 
 	@Override
-	protected float calculateAerialStepDelta(float f) {
+	protected float method_5801(float f) {
 		this.playSound(SoundEvents.field_14925, 0.15F, 1.0F);
 		return f + this.field_6819 / 2.0F;
 	}

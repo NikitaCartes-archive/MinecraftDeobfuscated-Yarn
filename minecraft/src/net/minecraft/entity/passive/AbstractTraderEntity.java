@@ -6,10 +6,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -27,13 +29,14 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractTraderEntity extends PassiveEntity implements Npc, Trader {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
-	protected TraderOfferList offers;
+	protected TraderOfferList field_17721;
 	private final BasicInventory inventory = new BasicInventory(8);
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
@@ -80,18 +83,18 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public TraderOfferList getOffers() {
-		if (this.offers == null) {
-			this.offers = new TraderOfferList();
+	public TraderOfferList method_8264() {
+		if (this.field_17721 == null) {
+			this.field_17721 = new TraderOfferList();
 			this.fillRecipes();
 		}
 
-		return this.offers;
+		return this.field_17721;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
+	public void method_8261(@Nullable TraderOfferList traderOfferList) {
 	}
 
 	@Override
@@ -99,16 +102,16 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void trade(TradeOffer tradeOffer) {
+	public void method_8262(TradeOffer tradeOffer) {
 		tradeOffer.use();
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-		this.afterUsing(tradeOffer);
+		this.method_18008(tradeOffer);
 		if (this.customer instanceof ServerPlayerEntity) {
 			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, tradeOffer.getMutableSellItem());
 		}
 	}
 
-	protected abstract void afterUsing(TradeOffer tradeOffer);
+	protected abstract void method_18008(TradeOffer tradeOffer);
 
 	@Override
 	public boolean isLevelledTrader() {
@@ -117,7 +120,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Override
 	public void onSellingItem(ItemStack itemStack) {
-		if (!this.world.isClient && this.ambientSoundChance > -this.getMinAmbientSoundDelay() + 20) {
+		if (!this.field_6002.isClient && this.ambientSoundChance > -this.getMinAmbientSoundDelay() + 20) {
 			this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 			this.playSound(this.getTradingSound(!itemStack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
 		}
@@ -139,7 +142,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		TraderOfferList traderOfferList = this.getOffers();
+		TraderOfferList traderOfferList = this.method_8264();
 		if (!traderOfferList.isEmpty()) {
 			compoundTag.put("Offers", traderOfferList.toTag());
 		}
@@ -160,7 +163,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("Offers", 10)) {
-			this.offers = new TraderOfferList(compoundTag.getCompound("Offers"));
+			this.field_17721 = new TraderOfferList(compoundTag.getCompound("Offers"));
 		}
 
 		ListTag listTag = compoundTag.getList("Inventory", 10);
@@ -173,13 +176,30 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		}
 	}
 
+	@Nullable
+	@Override
+	public Entity method_5731(DimensionType dimensionType) {
+		this.resetCustomer();
+		return super.method_5731(dimensionType);
+	}
+
+	protected void resetCustomer() {
+		this.setCurrentCustomer(null);
+	}
+
+	@Override
+	public void onDeath(DamageSource damageSource) {
+		super.onDeath(damageSource);
+		this.resetCustomer();
+	}
+
 	@Environment(EnvType.CLIENT)
 	protected void produceParticles(ParticleEffect particleEffect) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world
+			this.field_6002
 				.addParticle(
 					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -217,13 +237,13 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public World getTraderWorld() {
-		return this.world;
+	public World method_8260() {
+		return this.field_6002;
 	}
 
 	protected abstract void fillRecipes();
 
-	protected void fillRecipesFromPool(TraderOfferList traderOfferList, TradeOffers.Factory[] factorys, int i) {
+	protected void method_19170(TraderOfferList traderOfferList, TradeOffers.Factory[] factorys, int i) {
 		Set<Integer> set = Sets.<Integer>newHashSet();
 		if (factorys.length > i) {
 			while (set.size() < i) {
@@ -237,7 +257,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 		for (Integer integer : set) {
 			TradeOffers.Factory factory = factorys[integer];
-			TradeOffer tradeOffer = factory.create(this, this.random);
+			TradeOffer tradeOffer = factory.method_7246(this, this.random);
 			if (tradeOffer != null) {
 				traderOfferList.add(tradeOffer);
 			}

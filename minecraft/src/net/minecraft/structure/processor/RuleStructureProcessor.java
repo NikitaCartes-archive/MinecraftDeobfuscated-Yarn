@@ -35,7 +35,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 		StructurePlacementData structurePlacementData
 	) {
 		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
-		BlockState blockState = viewableWorld.getBlockState(structureBlockInfo2.pos);
+		BlockState blockState = viewableWorld.method_8320(structureBlockInfo2.pos);
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
 			if (structureProcessorRule.test(structureBlockInfo2.state, blockState, random)) {
@@ -47,7 +47,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
+	protected StructureProcessorType method_16772() {
 		return StructureProcessorType.field_16990;
 	}
 

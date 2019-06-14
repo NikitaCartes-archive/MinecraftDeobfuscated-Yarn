@@ -215,7 +215,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.inventory.get(1);
 			if (this.isBurning() || !itemStack.isEmpty() && !this.inventory.get(0).isEmpty()) {
-				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).orElse(null);
+				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().method_8132(this.recipeType, this, this.world).orElse(null);
 				if (!this.isBurning() && this.canAcceptRecipeOutput(recipe)) {
 					this.burnTime = this.getFuelTime(itemStack);
 					this.fuelTime = this.burnTime;
@@ -249,7 +249,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 			if (bl != this.isBurning()) {
 				bl2 = true;
-				this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(AbstractFurnaceBlock.LIT, Boolean.valueOf(this.isBurning())), 3);
+				this.world.method_8652(this.pos, this.world.method_8320(this.pos).method_11657(AbstractFurnaceBlock.field_11105, Boolean.valueOf(this.isBurning())), 3);
 			}
 		}
 
@@ -313,7 +313,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	protected int getCookTime() {
-		return (Integer)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
+		return (Integer)this.world.getRecipeManager().method_8132(this.recipeType, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack itemStack) {
@@ -395,7 +395,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.world.getBlockEntity(this.pos) != this
+		return this.world.method_8321(this.pos) != this
 			? false
 			: playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
 	}
@@ -438,7 +438,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
 		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
+			playerEntity.field_6002.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
 				list.add(recipe);
 				dropExperience(playerEntity, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
 			});
@@ -463,7 +463,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		while (i > 0) {
 			int j = ExperienceOrbEntity.roundToOrbSize(i);
 			i -= j;
-			playerEntity.world.spawnEntity(new ExperienceOrbEntity(playerEntity.world, playerEntity.x, playerEntity.y + 0.5, playerEntity.z + 0.5, j));
+			playerEntity.field_6002.spawnEntity(new ExperienceOrbEntity(playerEntity.field_6002, playerEntity.x, playerEntity.y + 0.5, playerEntity.z + 0.5, j));
 		}
 	}
 

@@ -44,7 +44,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 		float o = 0.0F;
 		if (livingEntity.isFallFlying()) {
 			float p = 1.0F;
-			Vec3d vec3d = livingEntity.getVelocity();
+			Vec3d vec3d = livingEntity.method_18798();
 			if (vec3d.y < 0.0) {
 				Vec3d vec3d2 = vec3d.normalize();
 				p = 1.0F - (float)Math.pow(-vec3d2.y, 1.5);

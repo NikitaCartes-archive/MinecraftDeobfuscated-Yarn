@@ -20,7 +20,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -49,10 +49,10 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 			BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 			double d = Math.max(
 				this.world
-					.getBlockState(blockPos)
-					.getCollisionShape(this.world, blockPos)
+					.method_8320(blockPos)
+					.method_11628(this.world, blockPos)
 					.method_1102(Direction.Axis.Y, this.x - (double)blockPos.getX(), this.z - (double)blockPos.getZ()),
-				(double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos)
+				(double)this.world.method_8316(blockPos).getHeight(this.world, blockPos)
 			);
 			if (d > 0.0 && this.y < (double)blockPos.getY() + d) {
 				this.markDead();

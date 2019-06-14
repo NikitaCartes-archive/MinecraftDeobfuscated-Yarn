@@ -15,7 +15,7 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	protected double value;
 
 	protected SliderWidget(int i, int j, int k, int l, double d) {
-		this(MinecraftClient.getInstance().options, i, j, k, l, d);
+		this(MinecraftClient.getInstance().field_1690, i, j, k, l, d);
 	}
 
 	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, double d) {
@@ -36,7 +36,7 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 
 	@Override
 	protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
-		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
+		minecraftClient.method_1531().bindTexture(WIDGETS_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = (this.isHovered() ? 2 : 1) * 20;
 		this.blit(this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + k, 4, 20);
@@ -85,7 +85,7 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 
 	@Override
 	public void onRelease(double d, double e) {
-		super.playDownSound(MinecraftClient.getInstance().getSoundManager());
+		super.playDownSound(MinecraftClient.getInstance().method_1483());
 	}
 
 	protected abstract void updateMessage();

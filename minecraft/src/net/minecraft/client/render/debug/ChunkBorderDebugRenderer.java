@@ -19,7 +19,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.getCamera();
+		Camera camera = this.client.field_1773.getCamera();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		double d = camera.getPos().x;
@@ -32,7 +32,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		double i = (double)(camera.getFocusedEntity().chunkX << 4) - d;
 		double j = (double)(camera.getFocusedEntity().chunkZ << 4) - f;
 		GlStateManager.lineWidth(1.0F);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 
 		for (int k = -16; k <= 32; k += 16) {
 			for (int m = -16; m <= 32; m += 16) {
@@ -78,7 +78,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 
 		tessellator.draw();
 		GlStateManager.lineWidth(2.0F);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 
 		for (int k = 0; k <= 16; k += 16) {
 			for (int m = 0; m <= 16; m += 16) {

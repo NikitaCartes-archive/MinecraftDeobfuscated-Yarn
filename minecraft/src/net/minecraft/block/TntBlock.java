@@ -21,15 +21,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class TntBlock extends Block {
-	public static final BooleanProperty UNSTABLE = Properties.UNSTABLE;
+	public static final BooleanProperty field_11621 = Properties.field_12539;
 
 	public TntBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(UNSTABLE, Boolean.valueOf(false)));
+		this.method_9590(this.method_9564().method_11657(field_11621, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (world.isReceivingRedstonePower(blockPos)) {
 				primeTnt(world, blockPos);
@@ -39,7 +39,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (world.isReceivingRedstonePower(blockPos)) {
 			primeTnt(world, blockPos);
 			world.clearBlockState(blockPos, false);
@@ -47,12 +47,12 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		if (!world.isClient() && !playerEntity.isCreative() && (Boolean)blockState.get(UNSTABLE)) {
+	public void method_9576(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+		if (!world.isClient() && !playerEntity.isCreative() && (Boolean)blockState.method_11654(field_11621)) {
 			primeTnt(world, blockPos);
 		}
 
-		super.onBreak(world, blockPos, blockState, playerEntity);
+		super.method_9576(world, blockPos, blockState, playerEntity);
 	}
 
 	@Override
@@ -81,14 +81,14 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item != Items.field_8884 && item != Items.field_8814) {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		} else {
 			primeTnt(world, blockPos, playerEntity);
-			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
+			world.method_8652(blockPos, Blocks.field_10124.method_9564(), 11);
 			if (item == Items.field_8884) {
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			} else {
@@ -100,7 +100,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		if (!world.isClient && entity instanceof ProjectileEntity) {
 			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
 			Entity entity2 = projectileEntity.getOwner();
@@ -119,6 +119,6 @@ public class TntBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(UNSTABLE);
+		builder.method_11667(field_11621);
 	}
 }

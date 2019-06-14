@@ -36,12 +36,12 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
 					passiveEntity.setPositionAndAngles(this.x, this.y, this.z, 0.0F, 0.0F);
-					this.world.spawnEntity(passiveEntity);
+					this.field_6002.spawnEntity(passiveEntity);
 					if (itemStack.hasCustomName()) {
 						passiveEntity.setCustomName(itemStack.getName());
 					}
@@ -66,7 +66,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	public int getBreedingAge() {
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			return this.dataTracker.get(CHILD) ? -1 : 1;
 		} else {
 			return this.breedingAge;
@@ -133,10 +133,10 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {
-					this.world
+					this.field_6002
 						.addParticle(
 							ParticleTypes.field_11211,
 							this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

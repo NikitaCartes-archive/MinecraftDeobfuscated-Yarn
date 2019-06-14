@@ -115,7 +115,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801 && this.getSize() > 0) {
+		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.field_5801 && this.getSize() > 0) {
 			this.removed = true;
 		}
 
@@ -130,11 +130,11 @@ public class SlimeEntity extends MobEntity implements Monster {
 				float g = this.random.nextFloat() * 0.5F + 0.5F;
 				float h = MathHelper.sin(f) * (float)i * 0.5F * g;
 				float k = MathHelper.cos(f) * (float)i * 0.5F * g;
-				World var10000 = this.world;
+				World var10000 = this.field_6002;
 				ParticleEffect var10001 = this.getParticles();
 				double var10002 = this.x + (double)h;
 				double var10004 = this.z + (double)k;
-				var10000.addParticle(var10001, var10002, this.getBoundingBox().minY, var10004, 0.0, 0.0, 0.0);
+				var10000.addParticle(var10001, var10002, this.method_5829().minY, var10004, 0.0, 0.0, 0.0);
 			}
 
 			this.playSound(this.getSquishSound(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
@@ -177,13 +177,13 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Override
 	public void remove() {
 		int i = this.getSize();
-		if (!this.world.isClient && i > 1 && this.getHealth() <= 0.0F) {
+		if (!this.field_6002.isClient && i > 1 && this.getHealth() <= 0.0F) {
 			int j = 2 + this.random.nextInt(3);
 
 			for (int k = 0; k < j; k++) {
 				float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
 				float g = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
-				SlimeEntity slimeEntity = this.getType().create(this.world);
+				SlimeEntity slimeEntity = this.getType().method_5883(this.field_6002);
 				if (this.hasCustomName()) {
 					slimeEntity.setCustomName(this.getCustomName());
 				}
@@ -194,7 +194,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 				slimeEntity.setSize(i / 2, true);
 				slimeEntity.setPositionAndAngles(this.x + (double)f, this.y + 0.5, this.z + (double)g, this.random.nextFloat() * 360.0F, 0.0F);
-				this.world.spawnEntity(slimeEntity);
+				this.field_6002.spawnEntity(slimeEntity);
 			}
 		}
 
@@ -261,11 +261,11 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	public static boolean method_20685(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
+		if (iWorld.method_8401().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
 			return false;
 		} else {
 			if (iWorld.getDifficulty() != Difficulty.field_5801) {
-				Biome biome = iWorld.getBiome(blockPos);
+				Biome biome = iWorld.method_8310(blockPos);
 				if (biome == Biomes.field_9471
 					&& blockPos.getY() > 50
 					&& blockPos.getY() < 70
@@ -302,14 +302,14 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	protected void jump() {
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		this.setVelocity(vec3d.x, 0.42F, vec3d.z);
 		this.velocityDirty = true;
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		int i = this.random.nextInt(3);
@@ -319,7 +319,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		int j = 1 << i;
 		this.setSize(j, true);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	protected SoundEvent getJumpSound() {
@@ -327,8 +327,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose entityPose) {
-		return super.getDimensions(entityPose).scaled(0.255F * (float)this.getSize());
+	public EntityDimensions method_18377(EntityPose entityPose) {
+		return super.method_18377(entityPose).scaled(0.255F * (float)this.getSize());
 	}
 
 	static class SlimeMoveControl extends MoveControl {

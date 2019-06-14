@@ -48,7 +48,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
+		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -84,12 +84,12 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
 		return 0.5F - viewableWorld.getBrightness(blockPos);
 	}
 
 	public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
-		if (iWorld.getLightLevel(LightType.field_9284, blockPos) > random.nextInt(32)) {
+		if (iWorld.method_8314(LightType.field_9284, blockPos) > random.nextInt(32)) {
 			return false;
 		} else {
 			int i = iWorld.getWorld().isThundering() ? iWorld.method_8603(blockPos, 10) : iWorld.getLightLevel(blockPos);

@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	private static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
 	private static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
-	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.CommandExecutor();
+	private final CommandBlockExecutor field_7744 = new CommandBlockMinecartEntity.CommandExecutor();
 	private int lastExecuted;
 
 	public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {
@@ -43,15 +43,15 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.commandExecutor.deserialize(compoundTag);
-		this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
-		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
+		this.field_7744.deserialize(compoundTag);
+		this.getDataTracker().set(COMMAND, this.method_7567().getCommand());
+		this.getDataTracker().set(LAST_OUTPUT, this.method_7567().getLastOutput());
 	}
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		this.commandExecutor.serialize(compoundTag);
+		this.field_7744.serialize(compoundTag);
 	}
 
 	@Override
@@ -60,25 +60,25 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10525.getDefaultState();
+	public BlockState method_7517() {
+		return Blocks.field_10525.method_9564();
 	}
 
-	public CommandBlockExecutor getCommandExecutor() {
-		return this.commandExecutor;
+	public CommandBlockExecutor method_7567() {
+		return this.field_7744;
 	}
 
 	@Override
 	public void onActivatorRail(int i, int j, int k, boolean bl) {
 		if (bl && this.age - this.lastExecuted >= 4) {
-			this.getCommandExecutor().execute(this.world);
+			this.method_7567().method_8301(this.field_6002);
 			this.lastExecuted = this.age;
 		}
 	}
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		this.commandExecutor.interact(playerEntity);
+		this.field_7744.interact(playerEntity);
 		return true;
 	}
 
@@ -87,11 +87,11 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		super.onTrackedDataSet(trackedData);
 		if (LAST_OUTPUT.equals(trackedData)) {
 			try {
-				this.commandExecutor.setLastOutput(this.getDataTracker().get(LAST_OUTPUT));
+				this.field_7744.setLastOutput(this.getDataTracker().get(LAST_OUTPUT));
 			} catch (Throwable var3) {
 			}
 		} else if (COMMAND.equals(trackedData)) {
-			this.commandExecutor.setCommand(this.getDataTracker().get(COMMAND));
+			this.field_7744.setCommand(this.getDataTracker().get(COMMAND));
 		}
 	}
 
@@ -103,7 +103,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	public class CommandExecutor extends CommandBlockExecutor {
 		@Override
 		public ServerWorld getWorld() {
-			return (ServerWorld)CommandBlockMinecartEntity.this.world;
+			return (ServerWorld)CommandBlockMinecartEntity.this.field_6002;
 		}
 
 		@Override
@@ -114,7 +114,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public Vec3d getPos() {
+		public Vec3d method_8300() {
 			return new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z);
 		}
 
@@ -128,7 +128,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z),
-				CommandBlockMinecartEntity.this.getRotationClient(),
+				CommandBlockMinecartEntity.this.method_5802(),
 				this.getWorld(),
 				2,
 				this.getCustomName().getString(),

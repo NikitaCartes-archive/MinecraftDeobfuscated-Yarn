@@ -58,15 +58,15 @@ public class LookTargetUtil {
 
 	public static void give(LivingEntity livingEntity, ItemStack itemStack, LivingEntity livingEntity2) {
 		double d = livingEntity.y - 0.3F + (double)livingEntity.getStandingEyeHeight();
-		ItemEntity itemEntity = new ItemEntity(livingEntity.world, livingEntity.x, d, livingEntity.z, itemStack);
+		ItemEntity itemEntity = new ItemEntity(livingEntity.field_6002, livingEntity.x, d, livingEntity.z, itemStack);
 		BlockPos blockPos = new BlockPos(livingEntity2);
 		BlockPos blockPos2 = new BlockPos(livingEntity);
 		float f = 0.3F;
 		Vec3d vec3d = new Vec3d(blockPos.subtract(blockPos2));
 		vec3d = vec3d.normalize().multiply(0.3F);
-		itemEntity.setVelocity(vec3d);
+		itemEntity.method_18799(vec3d);
 		itemEntity.setToDefaultPickupDelay();
-		livingEntity.world.spawnEntity(itemEntity);
+		livingEntity.field_6002.spawnEntity(itemEntity);
 	}
 
 	public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld serverWorld, ChunkSectionPos chunkSectionPos, int i) {

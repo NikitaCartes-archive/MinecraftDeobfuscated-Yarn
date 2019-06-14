@@ -25,7 +25,7 @@ public class DynamicEntry extends LeafEntry {
 		lootContext.drop(this.name, consumer);
 	}
 
-	public static LeafEntry.Builder<?> builder(Identifier identifier) {
+	public static LeafEntry.Builder<?> method_390(Identifier identifier) {
 		return builder((i, j, lootConditions, lootFunctions) -> new DynamicEntry(identifier, i, j, lootConditions, lootFunctions));
 	}
 

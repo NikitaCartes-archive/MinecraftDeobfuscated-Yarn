@@ -23,46 +23,46 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class AnvilBlock extends FallingBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
-	private static final VoxelShape X_STEP_SHAPE = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
-	private static final VoxelShape X_STEM_SHAPE = Block.createCuboidShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
-	private static final VoxelShape X_FACE_SHAPE = Block.createCuboidShape(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
-	private static final VoxelShape Z_STEP_SHAPE = Block.createCuboidShape(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
-	private static final VoxelShape Z_STEM_SHAPE = Block.createCuboidShape(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
-	private static final VoxelShape Z_FACE_SHAPE = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
-	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
-	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
+	public static final DirectionProperty field_9883 = HorizontalFacingBlock.field_11177;
+	private static final VoxelShape field_9882 = Block.method_9541(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	private static final VoxelShape field_9885 = Block.method_9541(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
+	private static final VoxelShape field_9888 = Block.method_9541(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
+	private static final VoxelShape field_9884 = Block.method_9541(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
+	private static final VoxelShape field_9891 = Block.method_9541(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
+	private static final VoxelShape field_9889 = Block.method_9541(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
+	private static final VoxelShape field_9886 = Block.method_9541(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
+	private static final VoxelShape field_9887 = VoxelShapes.method_17786(field_9882, field_9885, field_9888, field_9884);
+	private static final VoxelShape field_9892 = VoxelShapes.method_17786(field_9882, field_9891, field_9889, field_9886);
 	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.repair");
 
 	public AnvilBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_9883, Direction.field_11043));
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().rotateYClockwise());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_9883, itemPlacementContext.getPlayerFacing().rotateYClockwise());
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		return true;
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.method_17392(world, blockPos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		Direction direction = blockState.get(FACING);
-		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		Direction direction = blockState.method_11654(field_9883);
+		return direction.getAxis() == Direction.Axis.X ? field_9887 : field_9892;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void method_10127(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 		world.playLevelEvent(1031, blockPos, 0);
 	}
 
@@ -81,27 +81,27 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Nullable
-	public static BlockState getLandingState(BlockState blockState) {
+	public static BlockState method_9346(BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10535) {
-			return Blocks.field_10105.getDefaultState().with(FACING, blockState.get(FACING));
+			return Blocks.field_10105.method_9564().method_11657(field_9883, blockState.method_11654(field_9883));
 		} else {
-			return block == Blocks.field_10105 ? Blocks.field_10414.getDefaultState().with(FACING, blockState.get(FACING)) : null;
+			return block == Blocks.field_10105 ? Blocks.field_10414.method_9564().method_11657(field_9883, blockState.method_11654(field_9883)) : null;
 		}
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.method_11657(field_9883, blockRotation.rotate(blockState.method_11654(field_9883)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.method_11667(field_9883);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

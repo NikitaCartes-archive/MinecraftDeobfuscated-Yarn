@@ -21,32 +21,32 @@ import net.minecraft.util.Identifier;
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
 	private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
-	private final ClientAdvancementManager advancementHandler;
+	private final ClientAdvancementManager field_2721;
 	private final Map<Advancement, AdvancementTreeWidget> widgetMap = Maps.<Advancement, AdvancementTreeWidget>newLinkedHashMap();
 	private AdvancementTreeWidget selectedWidget;
 	private boolean field_2718;
 
 	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
 		super(NarratorManager.EMPTY);
-		this.advancementHandler = clientAdvancementManager;
+		this.field_2721 = clientAdvancementManager;
 	}
 
 	@Override
 	protected void init() {
 		this.widgetMap.clear();
 		this.selectedWidget = null;
-		this.advancementHandler.setListener(this);
+		this.field_2721.setListener(this);
 		if (this.selectedWidget == null && !this.widgetMap.isEmpty()) {
-			this.advancementHandler.selectTab(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
+			this.field_2721.selectTab(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
 		} else {
-			this.advancementHandler.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
+			this.field_2721.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
 		}
 	}
 
 	@Override
 	public void removed() {
-		this.advancementHandler.setListener(null);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
+		this.field_2721.setListener(null);
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.method_1562();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.close());
 		}
@@ -60,7 +60,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(j, k, d, e)) {
-					this.advancementHandler.selectTab(advancementTreeWidget.method_2307(), true);
+					this.field_2721.selectTab(advancementTreeWidget.method_2307(), true);
 					break;
 				}
 			}
@@ -71,9 +71,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (this.minecraft.options.keyAdvancements.matchesKey(i, j)) {
-			this.minecraft.openScreen(null);
-			this.minecraft.mouse.lockCursor();
+		if (this.minecraft.field_1690.keyAdvancements.matchesKey(i, j)) {
+			this.minecraft.method_1507(null);
+			this.minecraft.field_1729.lockCursor();
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);
@@ -129,10 +129,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableBlend();
 		GuiLighting.disable();
-		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
+		this.minecraft.method_1531().bindTexture(WINDOW_TEXTURE);
 		this.blit(i, j, 0, 0, 252, 140);
 		if (this.widgetMap.size() > 1) {
-			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
+			this.minecraft.method_1531().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				advancementTreeWidget.drawBackground(i, j, advancementTreeWidget == this.selectedWidget);
@@ -145,7 +145,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			GuiLighting.enableForItems();
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
-				advancementTreeWidget.drawIcon(i, j, this.itemRenderer);
+				advancementTreeWidget.method_2315(i, j, this.itemRenderer);
 			}
 
 			GlStateManager.disableBlend();
@@ -176,7 +176,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), advancement);
+		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.method_2317(this.minecraft, this, this.widgetMap.size(), advancement);
 		if (advancementTreeWidget != null) {
 			this.widgetMap.put(advancement, advancementTreeWidget);
 		}
@@ -220,7 +220,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Nullable
 	public AdvancementWidget getAdvancementWidget(Advancement advancement) {
 		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
-		return advancementTreeWidget == null ? null : advancementTreeWidget.getWidgetForAdvancement(advancement);
+		return advancementTreeWidget == null ? null : advancementTreeWidget.method_2308(advancement);
 	}
 
 	@Nullable

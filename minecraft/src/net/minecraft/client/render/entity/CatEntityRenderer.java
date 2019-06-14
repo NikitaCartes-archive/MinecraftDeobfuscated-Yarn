@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
 	public CatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CatEntityModel<>(0.0F), 0.4F);
-		this.addFeature(new CatCollarFeatureRenderer(this));
+		this.method_4046(new CatCollarFeatureRenderer(this));
 	}
 
 	@Nullable
@@ -38,7 +38,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 			GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
 			BlockPos blockPos = new BlockPos(catEntity);
 
-			for (PlayerEntity playerEntity : catEntity.world.getEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
+			for (PlayerEntity playerEntity : catEntity.field_6002.method_18467(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
 					GlStateManager.translatef(0.15F * i, 0.0F, 0.0F);
 					break;

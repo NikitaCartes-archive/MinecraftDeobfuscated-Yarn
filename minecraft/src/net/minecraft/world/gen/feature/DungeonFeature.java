@@ -25,7 +25,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{
 		EntityType.field_6137, EntityType.field_6051, EntityType.field_6051, EntityType.field_6079
 	};
-	private static final BlockState AIR = Blocks.field_10543.getDefaultState();
+	private static final BlockState AIR = Blocks.field_10543.method_9564();
 
 	public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -49,7 +49,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			for (int t = -1; t <= 4; t++) {
 				for (int u = p; u <= q; u++) {
 					BlockPos blockPos2 = blockPos.add(s, t, u);
-					Material material = iWorld.getBlockState(blockPos2).getMaterial();
+					Material material = iWorld.method_8320(blockPos2).method_11620();
 					boolean bl = material.isSolid();
 					if (t == -1 && !bl) {
 						return false;
@@ -72,16 +72,16 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					for (int u = p; u <= q; u++) {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						if (s != k && t != -1 && u != p && s != l && t != 4 && u != q) {
-							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
-								iWorld.setBlockState(blockPos2x, AIR, 2);
+							if (iWorld.method_8320(blockPos2x).getBlock() != Blocks.field_10034) {
+								iWorld.method_8652(blockPos2x, AIR, 2);
 							}
-						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
-							iWorld.setBlockState(blockPos2x, AIR, 2);
-						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
+						} else if (blockPos2x.getY() >= 0 && !iWorld.method_8320(blockPos2x.down()).method_11620().isSolid()) {
+							iWorld.method_8652(blockPos2x, AIR, 2);
+						} else if (iWorld.method_8320(blockPos2x).method_11620().isSolid() && iWorld.method_8320(blockPos2x).getBlock() != Blocks.field_10034) {
 							if (t == -1 && random.nextInt(4) != 0) {
-								iWorld.setBlockState(blockPos2x, Blocks.field_9989.getDefaultState(), 2);
+								iWorld.method_8652(blockPos2x, Blocks.field_9989.method_9564(), 2);
 							} else {
-								iWorld.setBlockState(blockPos2x, Blocks.field_10445.getDefaultState(), 2);
+								iWorld.method_8652(blockPos2x, Blocks.field_10445.method_9564(), 2);
 							}
 						}
 					}
@@ -98,13 +98,13 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						int x = 0;
 
 						for (Direction direction : Direction.Type.field_11062) {
-							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
+							if (iWorld.method_8320(blockPos3.offset(direction)).method_11620().isSolid()) {
 								x++;
 							}
 						}
 
 						if (x == 1) {
-							iWorld.setBlockState(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.field_10034.getDefaultState()), 2);
+							iWorld.method_8652(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.field_10034.method_9564()), 2);
 							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.field_356);
 							break;
 						}
@@ -112,8 +112,8 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+			iWorld.method_8652(blockPos, Blocks.field_10260.method_9564(), 2);
+			BlockEntity blockEntity = iWorld.method_8321(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
 				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
 			} else {

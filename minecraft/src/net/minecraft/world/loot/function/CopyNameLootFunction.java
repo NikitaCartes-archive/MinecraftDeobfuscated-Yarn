@@ -24,12 +24,12 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.source.parameter);
+		return ImmutableSet.of(this.source.field_1024);
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Object object = lootContext.get(this.source.parameter);
+		Object object = lootContext.method_296(this.source.field_1024);
 		if (object instanceof Nameable) {
 			Nameable nameable = (Nameable)object;
 			if (nameable.hasCustomName()) {
@@ -40,7 +40,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(CopyNameLootFunction.Source source) {
+	public static ConditionalLootFunction.Builder<?> method_473(CopyNameLootFunction.Source source) {
 		return builder(lootConditions -> new CopyNameLootFunction(lootConditions, source));
 	}
 
@@ -67,11 +67,11 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		field_1023("block_entity", LootContextParameters.field_1228);
 
 		public final String name;
-		public final LootContextParameter<?> parameter;
+		public final LootContextParameter<?> field_1024;
 
 		private Source(String string2, LootContextParameter<?> lootContextParameter) {
 			this.name = string2;
-			this.parameter = lootContextParameter;
+			this.field_1024 = lootContextParameter;
 		}
 
 		public static CopyNameLootFunction.Source get(String string) {

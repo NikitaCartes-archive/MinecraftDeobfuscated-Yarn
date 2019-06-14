@@ -22,7 +22,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -33,19 +33,19 @@ public class LoomBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.method_17392(world, blockPos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_11177, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.method_11667(field_11177);
 	}
 }

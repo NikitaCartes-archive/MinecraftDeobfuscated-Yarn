@@ -28,35 +28,35 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class PortalBlock extends Block {
-	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
-	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
-	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	public static final EnumProperty<Direction.Axis> field_11310 = Properties.field_12529;
+	protected static final VoxelShape field_11309 = Block.method_9541(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
+	protected static final VoxelShape field_11308 = Block.method_9541(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
 	public PortalBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AXIS, Direction.Axis.X));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11310, Direction.Axis.X));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch ((Direction.Axis)blockState.get(AXIS)) {
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		switch ((Direction.Axis)blockState.method_11654(field_11310)) {
 			case Z:
-				return Z_SHAPE;
+				return field_11308;
 			case X:
 			default:
-				return X_SHAPE;
+				return field_11309;
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.field_19390) && random.nextInt(2000) < world.getDifficulty().getId()) {
-			while (world.getBlockState(blockPos).getBlock() == this) {
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (world.field_9247.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.field_19390) && random.nextInt(2000) < world.getDifficulty().getId()) {
+			while (world.method_8320(blockPos).getBlock() == this) {
 				blockPos = blockPos.down();
 			}
 
-			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
-				Entity entity = EntityType.field_6050.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
+			if (world.method_8320(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
+				Entity entity = EntityType.field_6050.method_5899(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}
@@ -86,15 +86,13 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		Direction.Axis axis = direction.getAxis();
-		Direction.Axis axis2 = blockState.get(AXIS);
+		Direction.Axis axis2 = blockState.method_11654(field_11310);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && blockState2.getBlock() != this && !new PortalBlock.AreaHelper(iWorld, blockPos, axis2).wasAlreadyValid()
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -103,7 +101,7 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
 			entity.setInPortal(blockPos);
 		}
@@ -111,7 +109,7 @@ public class PortalBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(100) == 0) {
 			world.playSound(
 				(double)blockPos.getX() + 0.5,
@@ -133,7 +131,7 @@ public class PortalBlock extends Block {
 			double h = ((double)random.nextFloat() - 0.5) * 0.5;
 			double j = ((double)random.nextFloat() - 0.5) * 0.5;
 			int k = random.nextInt(2) * 2 - 1;
-			if (world.getBlockState(blockPos.west()).getBlock() != this && world.getBlockState(blockPos.east()).getBlock() != this) {
+			if (world.method_8320(blockPos.west()).getBlock() != this && world.method_8320(blockPos.east()).getBlock() != this) {
 				d = (double)blockPos.getX() + 0.5 + 0.25 * (double)k;
 				g = (double)(random.nextFloat() * 2.0F * (float)k);
 			} else {
@@ -147,20 +145,20 @@ public class PortalBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
 			case field_11465:
 			case field_11463:
-				switch ((Direction.Axis)blockState.get(AXIS)) {
+				switch ((Direction.Axis)blockState.method_11654(field_11310)) {
 					case Z:
-						return blockState.with(AXIS, Direction.Axis.X);
+						return blockState.method_11657(field_11310, Direction.Axis.X);
 					case X:
-						return blockState.with(AXIS, Direction.Axis.Z);
+						return blockState.method_11657(field_11310, Direction.Axis.Z);
 					default:
 						return blockState;
 				}
@@ -171,7 +169,7 @@ public class PortalBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(AXIS);
+		builder.method_11667(field_11310);
 	}
 
 	public BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
@@ -255,7 +253,7 @@ public class PortalBlock extends Block {
 
 			BlockPos blockPos2 = blockPos;
 
-			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.down()))) {
+			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.method_10359(iWorld.method_8320(blockPos.down()))) {
 				blockPos = blockPos.down();
 			}
 
@@ -278,12 +276,12 @@ public class PortalBlock extends Block {
 			int i;
 			for (i = 0; i < 22; i++) {
 				BlockPos blockPos2 = blockPos.offset(direction, i);
-				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10540) {
+				if (!this.method_10359(this.world.method_8320(blockPos2)) || this.world.method_8320(blockPos2.down()).getBlock() != Blocks.field_10540) {
 					break;
 				}
 			}
 
-			Block block = this.world.getBlockState(blockPos.offset(direction, i)).getBlock();
+			Block block = this.world.method_8320(blockPos.offset(direction, i)).getBlock();
 			return block == Blocks.field_10540 ? i : 0;
 		}
 
@@ -300,8 +298,8 @@ public class PortalBlock extends Block {
 			for (this.height = 0; this.height < 21; this.height++) {
 				for (int i = 0; i < this.width; i++) {
 					BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i).up(this.height);
-					BlockState blockState = this.world.getBlockState(blockPos);
-					if (!this.validStateInsidePortal(blockState)) {
+					BlockState blockState = this.world.method_8320(blockPos);
+					if (!this.method_10359(blockState)) {
 						break label56;
 					}
 
@@ -311,12 +309,12 @@ public class PortalBlock extends Block {
 					}
 
 					if (i == 0) {
-						block = this.world.getBlockState(blockPos.offset(this.positiveDir)).getBlock();
+						block = this.world.method_8320(blockPos.offset(this.positiveDir)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
 					} else if (i == this.width - 1) {
-						block = this.world.getBlockState(blockPos.offset(this.negativeDir)).getBlock();
+						block = this.world.method_8320(blockPos.offset(this.negativeDir)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
@@ -325,7 +323,7 @@ public class PortalBlock extends Block {
 			}
 
 			for (int i = 0; i < this.width; i++) {
-				if (this.world.getBlockState(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.field_10540) {
+				if (this.world.method_8320(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.field_10540) {
 					this.height = 0;
 					break;
 				}
@@ -341,7 +339,7 @@ public class PortalBlock extends Block {
 			}
 		}
 
-		protected boolean validStateInsidePortal(BlockState blockState) {
+		protected boolean method_10359(BlockState blockState) {
 			Block block = blockState.getBlock();
 			return blockState.isAir() || block == Blocks.field_10036 || block == Blocks.field_10316;
 		}
@@ -355,7 +353,7 @@ public class PortalBlock extends Block {
 				BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i);
 
 				for (int j = 0; j < this.height; j++) {
-					this.world.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.AXIS, this.axis), 18);
+					this.world.method_8652(blockPos.up(j), Blocks.field_10316.method_9564().method_11657(PortalBlock.field_11310, this.axis), 18);
 				}
 			}
 		}

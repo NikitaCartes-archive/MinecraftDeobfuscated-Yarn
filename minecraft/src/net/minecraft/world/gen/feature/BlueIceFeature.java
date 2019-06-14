@@ -23,13 +23,13 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
 			return false;
-		} else if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10382 && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.field_10382) {
+		} else if (iWorld.method_8320(blockPos).getBlock() != Blocks.field_10382 && iWorld.method_8320(blockPos.down()).getBlock() != Blocks.field_10382) {
 			return false;
 		} else {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.field_11033 && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
+				if (direction != Direction.field_11033 && iWorld.method_8320(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
 					bl = true;
 					break;
 				}
@@ -38,7 +38,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 			if (!bl) {
 				return false;
 			} else {
-				iWorld.setBlockState(blockPos, Blocks.field_10384.getDefaultState(), 2);
+				iWorld.method_8652(blockPos, Blocks.field_10384.method_9564(), 2);
 
 				for (int i = 0; i < 200; i++) {
 					int j = random.nextInt(5) - random.nextInt(6);
@@ -49,13 +49,13 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 
 					if (k >= 1) {
 						BlockPos blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k));
-						BlockState blockState = iWorld.getBlockState(blockPos2);
+						BlockState blockState = iWorld.method_8320(blockPos2);
 						Block block = blockState.getBlock();
-						if (blockState.getMaterial() == Material.AIR || block == Blocks.field_10382 || block == Blocks.field_10225 || block == Blocks.field_10295) {
+						if (blockState.method_11620() == Material.AIR || block == Blocks.field_10382 || block == Blocks.field_10225 || block == Blocks.field_10295) {
 							for (Direction direction2 : Direction.values()) {
-								Block block2 = iWorld.getBlockState(blockPos2.offset(direction2)).getBlock();
+								Block block2 = iWorld.method_8320(blockPos2.offset(direction2)).getBlock();
 								if (block2 == Blocks.field_10384) {
-									iWorld.setBlockState(blockPos2, Blocks.field_10384.getDefaultState(), 2);
+									iWorld.method_8652(blockPos2, Blocks.field_10384.method_9564(), 2);
 									break;
 								}
 							}

@@ -26,31 +26,31 @@ public class BoatItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
+		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
 		if (hitResult.getType() == HitResult.Type.field_1333) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
-			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
+			Vec3d vec3d = playerEntity.method_5828(1.0F);
 			double d = 5.0;
-			List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
+			List<Entity> list = world.method_8333(playerEntity, playerEntity.method_5829().method_18804(vec3d.multiply(5.0)).expand(1.0), RIDERS);
 			if (!list.isEmpty()) {
-				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
+				Vec3d vec3d2 = playerEntity.method_5836(1.0F);
 
 				for (Entity entity : list) {
-					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
-					if (box.contains(vec3d2)) {
+					Box box = entity.method_5829().expand((double)entity.getBoundingBoxMarginForTargeting());
+					if (box.method_1006(vec3d2)) {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}
 				}
 			}
 
 			if (hitResult.getType() == HitResult.Type.field_1332) {
-				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+				BoatEntity boatEntity = new BoatEntity(world, hitResult.method_17784().x, hitResult.method_17784().y, hitResult.method_17784().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
-				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
+				if (!world.method_8587(boatEntity, boatEntity.method_5829().expand(-0.1))) {
 					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				} else {
 					if (!world.isClient) {

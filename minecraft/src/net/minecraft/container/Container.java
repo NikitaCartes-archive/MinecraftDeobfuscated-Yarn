@@ -38,9 +38,9 @@ public abstract class Container {
 		this.syncId = i;
 	}
 
-	protected static boolean canUse(BlockContext blockContext, PlayerEntity playerEntity, Block block) {
+	protected static boolean method_17695(BlockContext blockContext, PlayerEntity playerEntity, Block block) {
 		return blockContext.run(
-			(world, blockPos) -> world.getBlockState(blockPos).getBlock() != block
+			(world, blockPos) -> world.method_8320(blockPos).getBlock() != block
 					? false
 					: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
 			true
@@ -410,14 +410,14 @@ public abstract class Container {
 		}
 	}
 
-	protected void dropInventory(PlayerEntity playerEntity, World world, Inventory inventory) {
+	protected void method_7607(PlayerEntity playerEntity, World world, Inventory inventory) {
 		if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
 				playerEntity.dropItem(inventory.removeInvStack(i), false);
 			}
 		} else {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
-				playerEntity.inventory.offerOrDrop(world, inventory.removeInvStack(i));
+				playerEntity.inventory.method_7398(world, inventory.removeInvStack(i));
 			}
 		}
 	}
@@ -580,7 +580,7 @@ public abstract class Container {
 		return true;
 	}
 
-	public static int calculateComparatorOutput(@Nullable BlockEntity blockEntity) {
+	public static int method_7608(@Nullable BlockEntity blockEntity) {
 		return blockEntity instanceof Inventory ? calculateComparatorOutput((Inventory)blockEntity) : 0;
 	}
 

@@ -23,7 +23,7 @@ public class PlaySoundCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.playsound.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.identifier())
+		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.create())
 			.suggests(SuggestionProviders.AVAILABLE_SOUNDS);
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
@@ -45,14 +45,14 @@ public class PlaySoundCommand {
 								EntityArgumentType.getPlayers(commandContext, "targets"),
 								IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 								soundCategory,
-								commandContext.getSource().getPosition(),
+								commandContext.getSource().method_9222(),
 								1.0F,
 								1.0F,
 								0.0F
 							)
 					)
 					.then(
-						CommandManager.argument("pos", Vec3ArgumentType.vec3())
+						CommandManager.argument("pos", Vec3ArgumentType.create())
 							.executes(
 								commandContext -> execute(
 										commandContext.getSource(),

@@ -75,7 +75,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void mobTick() {
 		if (!this.isAiDisabled()) {
-			if (((ServerWorld)this.world).hasRaidAt(new BlockPos(this))) {
+			if (((ServerWorld)this.field_6002).hasRaidAt(new BlockPos(this))) {
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 			} else {
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(false);
@@ -127,10 +127,10 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(localDifficulty);
 		this.updateEnchantments(localDifficulty);
@@ -150,7 +150,7 @@ public class VindicatorEntity extends IllagerEntity {
 			return true;
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
+				? this.method_5781() == null && entity.method_5781() == null
 				: false;
 		}
 	}

@@ -25,8 +25,8 @@ public class WildCropFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int j = 0; j < 64; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.field_10219) {
-				iWorld.setBlockState(blockPos2, this.crop, 2);
+			if (iWorld.isAir(blockPos2) && iWorld.method_8320(blockPos2.down()).getBlock() == Blocks.field_10219) {
+				iWorld.method_8652(blockPos2, this.crop, 2);
 				i++;
 			}
 		}

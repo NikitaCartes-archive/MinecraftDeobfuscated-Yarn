@@ -9,7 +9,7 @@ public class ScheduledTick<T> {
 	private final T object;
 	public final BlockPos pos;
 	public final long time;
-	public final TaskPriority priority;
+	public final TaskPriority field_9320;
 	private final long id;
 
 	public ScheduledTick(BlockPos blockPos, T object) {
@@ -21,7 +21,7 @@ public class ScheduledTick<T> {
 		this.pos = blockPos.toImmutable();
 		this.object = object;
 		this.time = l;
-		this.priority = taskPriority;
+		this.field_9320 = taskPriority;
 	}
 
 	public boolean equals(Object object) {
@@ -37,20 +37,20 @@ public class ScheduledTick<T> {
 		return this.pos.hashCode();
 	}
 
-	public static <T> Comparator<ScheduledTick<T>> getComparator() {
+	public static <T> Comparator<ScheduledTick<T>> method_20597() {
 		return (scheduledTick, scheduledTick2) -> {
 			int i = Long.compare(scheduledTick.time, scheduledTick2.time);
 			if (i != 0) {
 				return i;
 			} else {
-				i = scheduledTick.priority.compareTo(scheduledTick2.priority);
+				i = scheduledTick.field_9320.compareTo(scheduledTick2.field_9320);
 				return i != 0 ? i : Long.compare(scheduledTick.id, scheduledTick2.id);
 			}
 		};
 	}
 
 	public String toString() {
-		return this.object + ": " + this.pos + ", " + this.time + ", " + this.priority + ", " + this.id;
+		return this.object + ": " + this.pos + ", " + this.time + ", " + this.field_9320 + ", " + this.id;
 	}
 
 	public T getObject() {

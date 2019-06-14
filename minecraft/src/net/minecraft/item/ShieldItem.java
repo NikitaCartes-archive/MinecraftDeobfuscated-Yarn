@@ -34,7 +34,7 @@ public class ShieldItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		BannerItem.appendBannerTooltip(itemStack, list);
 	}
 
@@ -49,7 +49,7 @@ public class ShieldItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.setCurrentHand(hand);
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);

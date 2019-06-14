@@ -18,30 +18,28 @@ public class FallingBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		world.method_8397().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		iWorld.method_8397().schedule(blockPos, this, this.getTickRate(iWorld));
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
 			this.tryStartFalling(world, blockPos);
 		}
 	}
 
 	private void tryStartFalling(World world, BlockPos blockPos) {
-		if (canFallThrough(world.getBlockState(blockPos.down())) && blockPos.getY() >= 0) {
+		if (method_10128(world.method_8320(blockPos.down())) && blockPos.getY() >= 0) {
 			if (!world.isClient) {
 				FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
-					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, world.getBlockState(blockPos)
+					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, world.method_8320(blockPos)
 				);
 				this.configureFallingBlockEntity(fallingBlockEntity);
 				world.spawnEntity(fallingBlockEntity);
@@ -57,13 +55,13 @@ public class FallingBlock extends Block {
 		return 2;
 	}
 
-	public static boolean canFallThrough(BlockState blockState) {
+	public static boolean method_10128(BlockState blockState) {
 		Block block = blockState.getBlock();
-		Material material = blockState.getMaterial();
+		Material material = blockState.method_11620();
 		return blockState.isAir() || block == Blocks.field_10036 || material.isLiquid() || material.isReplaceable();
 	}
 
-	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void method_10127(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 	}
 
 	public void onDestroyedOnLanding(World world, BlockPos blockPos) {
@@ -71,10 +69,10 @@ public class FallingBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(16) == 0) {
 			BlockPos blockPos2 = blockPos.down();
-			if (canFallThrough(world.getBlockState(blockPos2))) {
+			if (method_10128(world.method_8320(blockPos2))) {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)blockPos.getY() - 0.05;
 				double f = (double)((float)blockPos.getZ() + random.nextFloat());
@@ -84,7 +82,7 @@ public class FallingBlock extends Block {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getColor(BlockState blockState) {
+	public int method_10130(BlockState blockState) {
 		return -16777216;
 	}
 }

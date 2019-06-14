@@ -5,15 +5,15 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.EnumProperty;
 
 public class ReplaceableTallPlantBlock extends TallPlantBlock {
-	public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
+	public static final EnumProperty<DoubleBlockHalf> field_11484 = TallPlantBlock.field_10929;
 
 	public ReplaceableTallPlantBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		boolean bl = super.canReplace(blockState, itemPlacementContext);
+	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+		boolean bl = super.method_9616(blockState, itemPlacementContext);
 		return bl && itemPlacementContext.getStack().getItem() == this.asItem() ? false : bl;
 	}
 }

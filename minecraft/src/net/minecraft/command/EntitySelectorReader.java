@@ -45,10 +45,10 @@ public class EntitySelectorReader {
 	public static final BiConsumer<Vec3d, List<? extends Entity>> UNSORTED = (vec3d, list) -> {
 	};
 	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST_FIRST = (vec3d, list) -> list.sort(
-			(entity, entity2) -> Doubles.compare(entity.squaredDistanceTo(vec3d), entity2.squaredDistanceTo(vec3d))
+			(entity, entity2) -> Doubles.compare(entity.method_5707(vec3d), entity2.method_5707(vec3d))
 		);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> FURTHEST_FIRST = (vec3d, list) -> list.sort(
-			(entity, entity2) -> Doubles.compare(entity2.squaredDistanceTo(vec3d), entity.squaredDistanceTo(vec3d))
+			(entity, entity2) -> Doubles.compare(entity2.method_5707(vec3d), entity.method_5707(vec3d))
 		);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> RANDOM = (vec3d, list) -> Collections.shuffle(list);
 	public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> DEFAULT_SUGGESTION_PROVIDER = (suggestionsBuilder, consumer) -> suggestionsBuilder.buildFuture();

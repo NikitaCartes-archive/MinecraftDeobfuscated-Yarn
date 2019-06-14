@@ -28,7 +28,8 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
 		GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(livingEntity.getPos(), 5.0);
+		return Objects.equals(serverWorld.method_8597().method_12460(), globalPos.getDimension())
+			&& globalPos.getPos().isWithinDistance(livingEntity.method_19538(), 5.0);
 	}
 
 	@Override
@@ -42,8 +43,8 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	}
 
 	private boolean method_20500(ServerWorld serverWorld, BlockPos blockPos, LivingEntity livingEntity) {
-		BlockState blockState = serverWorld.getBlockState(blockPos);
-		return blockState.getBlock().matches(BlockTags.field_16443) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !livingEntity.isSleeping();
+		BlockState blockState = serverWorld.method_8320(blockPos);
+		return blockState.getBlock().matches(BlockTags.field_16443) && (Boolean)blockState.method_11654(BedBlock.field_9968) && !livingEntity.isSleeping();
 	}
 
 	private boolean method_20499(ServerWorld serverWorld, BlockPos blockPos) {

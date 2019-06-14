@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private final CreateWorldScreen parent;
+	private final CreateWorldScreen field_2422;
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String tileText;
 	private String heightText;
@@ -36,7 +36,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	public CustomizeFlatLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
 		super(new TranslatableText("createWorld.customize.flat.title"));
-		this.parent = createWorldScreen;
+		this.field_2422 = createWorldScreen;
 		this.method_2144(compoundTag);
 	}
 
@@ -86,18 +86,18 @@ public class CustomizeFlatLevelScreen extends Screen {
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets"), buttonWidget -> {
-			this.minecraft.openScreen(new PresetsScreen(this));
+			this.minecraft.method_1507(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.parent.generatorOptionsTag = this.method_2140();
-			this.minecraft.openScreen(this.parent);
+			this.field_2422.generatorOptionsTag = this.method_2140();
+			this.minecraft.method_1507(this.field_2422);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> {
-			this.minecraft.openScreen(this.parent);
+			this.minecraft.method_1507(this.field_2422);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
@@ -248,7 +248,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			private void method_19373(int i, int j) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+				SuperflatLayersListWidget.this.minecraft.method_1531().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
 				DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.blitOffset, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

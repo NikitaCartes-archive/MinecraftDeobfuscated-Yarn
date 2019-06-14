@@ -159,10 +159,10 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+			this.minecraft.method_1531().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float g = 32.0F;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0)
 				.texture((double)((float)this.field_2180 / 32.0F), (double)((float)(this.field_2165 + (int)this.field_2175) / 32.0F))
 				.color(32, 32, 32, 255)
@@ -198,13 +198,13 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			GlStateManager.shadeModel(7425);
 			GlStateManager.disableTexture();
 			int o = 4;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2166 + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2166 + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 			tessellator.draw();
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2165 - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
@@ -219,19 +219,19 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 					r = this.field_2166;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
@@ -379,14 +379,14 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				GlStateManager.disableTexture();
 				float g = this.isFocused() ? 1.0F : 0.5F;
 				GlStateManager.color4f(g, g, g, 1.0F);
-				bufferBuilder.begin(7, VertexFormats.POSITION);
+				bufferBuilder.method_1328(7, VertexFormats.field_1592);
 				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).next();
 				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
 				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
 				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).next();
 				tessellator.draw();
 				GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
-				bufferBuilder.begin(7, VertexFormats.POSITION);
+				bufferBuilder.method_1328(7, VertexFormats.field_1592);
 				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).next();
 				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).next();
 				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).next();
@@ -410,10 +410,10 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.method_1531().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		bufferBuilder.vertex((double)this.field_2180, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)j, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))

@@ -36,7 +36,7 @@ public class FollowMobGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		List<MobEntity> list = this.mob.world.getEntities(MobEntity.class, this.mob.getBoundingBox().expand((double)this.maxDistance), this.targetPredicate);
+		List<MobEntity> list = this.mob.field_6002.method_8390(MobEntity.class, this.mob.method_5829().expand((double)this.maxDistance), this.targetPredicate);
 		if (!list.isEmpty()) {
 			for (MobEntity mobEntity : list) {
 				if (!mobEntity.isInvisible()) {
@@ -57,15 +57,15 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6431 = 0;
-		this.field_6437 = this.mob.getPathNodeTypeWeight(PathNodeType.field_18);
-		this.mob.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_6437 = this.mob.method_5944(PathNodeType.field_18);
+		this.mob.method_5941(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.target = null;
 		this.navigation.stop();
-		this.mob.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6437);
+		this.mob.method_5941(PathNodeType.field_18, this.field_6437);
 	}
 
 	@Override

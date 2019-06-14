@@ -28,7 +28,7 @@ public class DefaultGameModeCommand {
 		if (minecraftServer.shouldForceGameMode()) {
 			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
-					serverPlayerEntity.setGameMode(gameMode);
+					serverPlayerEntity.method_7336(gameMode);
 					i++;
 				}
 			}

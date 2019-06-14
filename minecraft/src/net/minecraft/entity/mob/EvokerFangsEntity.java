@@ -47,8 +47,8 @@ public class EvokerFangsEntity extends Entity {
 
 	@Nullable
 	public LivingEntity getOwner() {
-		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+		if (this.owner == null && this.ownerUuid != null && this.field_6002 instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.field_6002).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}
@@ -76,7 +76,7 @@ public class EvokerFangsEntity extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			if (this.hasAttacked) {
 				this.ticksLeft--;
 				if (this.ticksLeft == 14) {
@@ -87,19 +87,19 @@ public class EvokerFangsEntity extends Entity {
 						double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
 						double h = 0.3 + this.random.nextDouble() * 0.3;
 						double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-						this.world.addParticle(ParticleTypes.field_11205, d, e + 1.0, f, g, h, j);
+						this.field_6002.addParticle(ParticleTypes.field_11205, d, e + 1.0, f, g, h, j);
 					}
 				}
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+				for (LivingEntity livingEntity : this.field_6002.method_18467(LivingEntity.class, this.method_5829().expand(0.2, 0.0, 0.2))) {
 					this.damage(livingEntity);
 				}
 			}
 
 			if (!this.field_7610) {
-				this.world.sendEntityStatus(this, (byte)4);
+				this.field_6002.sendEntityStatus(this, (byte)4);
 				this.field_7610 = true;
 			}
 
@@ -131,7 +131,7 @@ public class EvokerFangsEntity extends Entity {
 		if (b == 4) {
 			this.hasAttacked = true;
 			if (!this.isSilent()) {
-				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14692, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+				this.field_6002.playSound(this.x, this.y, this.z, SoundEvents.field_14692, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
 			}
 		}
 	}

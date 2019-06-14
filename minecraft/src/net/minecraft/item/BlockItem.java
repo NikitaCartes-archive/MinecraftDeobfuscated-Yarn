@@ -28,18 +28,18 @@ import net.minecraft.world.World;
 
 public class BlockItem extends Item {
 	@Deprecated
-	private final Block block;
+	private final Block field_7901;
 
 	public BlockItem(Block block, Item.Settings settings) {
 		super(settings);
-		this.block = block;
+		this.field_7901 = block;
 	}
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(itemUsageContext));
 		return actionResult != ActionResult.field_5812 && this.isFood()
-			? this.use(itemUsageContext.world, itemUsageContext.player, itemUsageContext.hand).getResult()
+			? this.method_7836(itemUsageContext.field_8945, itemUsageContext.player, itemUsageContext.hand).getResult()
 			: actionResult;
 	}
 
@@ -51,22 +51,22 @@ public class BlockItem extends Item {
 			if (itemPlacementContext2 == null) {
 				return ActionResult.field_5814;
 			} else {
-				BlockState blockState = this.getPlacementState(itemPlacementContext2);
+				BlockState blockState = this.method_7707(itemPlacementContext2);
 				if (blockState == null) {
 					return ActionResult.field_5814;
-				} else if (!this.place(itemPlacementContext2, blockState)) {
+				} else if (!this.method_7708(itemPlacementContext2, blockState)) {
 					return ActionResult.field_5814;
 				} else {
 					BlockPos blockPos = itemPlacementContext2.getBlockPos();
-					World world = itemPlacementContext2.getWorld();
+					World world = itemPlacementContext2.method_8045();
 					PlayerEntity playerEntity = itemPlacementContext2.getPlayer();
 					ItemStack itemStack = itemPlacementContext2.getStack();
-					BlockState blockState2 = world.getBlockState(blockPos);
+					BlockState blockState2 = world.method_8320(blockPos);
 					Block block = blockState2.getBlock();
 					if (block == blockState.getBlock()) {
-						blockState2 = this.placeFromTag(blockPos, world, itemStack, blockState2);
-						this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
-						block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
+						blockState2 = this.method_18084(blockPos, world, itemStack, blockState2);
+						this.method_7710(blockPos, world, playerEntity, itemStack, blockState2);
+						block.method_9567(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
 							Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 						}
@@ -76,7 +76,7 @@ public class BlockItem extends Item {
 					world.playSound(
 						playerEntity,
 						blockPos,
-						this.getPlaceSound(blockState2),
+						this.method_19260(blockState2),
 						SoundCategory.field_15245,
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
@@ -88,7 +88,7 @@ public class BlockItem extends Item {
 		}
 	}
 
-	protected SoundEvent getPlaceSound(BlockState blockState) {
+	protected SoundEvent method_19260(BlockState blockState) {
 		return blockState.getSoundGroup().getPlaceSound();
 	}
 
@@ -97,66 +97,66 @@ public class BlockItem extends Item {
 		return itemPlacementContext;
 	}
 
-	protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		return writeTagToBlockEntity(world, playerEntity, blockPos, itemStack);
+	protected boolean method_7710(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
+		return method_7714(world, playerEntity, blockPos, itemStack);
 	}
 
 	@Nullable
-	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getBlock().getPlacementState(itemPlacementContext);
-		return blockState != null && this.canPlace(itemPlacementContext, blockState) ? blockState : null;
+	protected BlockState method_7707(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.method_7711().method_9605(itemPlacementContext);
+		return blockState != null && this.method_7709(itemPlacementContext, blockState) ? blockState : null;
 	}
 
-	private BlockState placeFromTag(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
+	private BlockState method_18084(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
 		BlockState blockState2 = blockState;
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
-			StateFactory<Block, BlockState> stateFactory = blockState.getBlock().getStateFactory();
+			StateFactory<Block, BlockState> stateFactory = blockState.getBlock().method_9595();
 
 			for (String string : compoundTag2.getKeys()) {
-				Property<?> property = stateFactory.getProperty(string);
+				Property<?> property = stateFactory.method_11663(string);
 				if (property != null) {
 					String string2 = compoundTag2.getTag(string).asString();
-					blockState2 = with(blockState2, property, string2);
+					blockState2 = method_18083(blockState2, property, string2);
 				}
 			}
 		}
 
 		if (blockState2 != blockState) {
-			world.setBlockState(blockPos, blockState2, 2);
+			world.method_8652(blockPos, blockState2, 2);
 		}
 
 		return blockState2;
 	}
 
-	private static <T extends Comparable<T>> BlockState with(BlockState blockState, Property<T> property, String string) {
-		return (BlockState)property.getValue(string).map(comparable -> blockState.with(property, comparable)).orElse(blockState);
+	private static <T extends Comparable<T>> BlockState method_18083(BlockState blockState, Property<T> property, String string) {
+		return (BlockState)property.getValue(string).map(comparable -> blockState.method_11657(property, comparable)).orElse(blockState);
 	}
 
-	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+	protected boolean method_7709(ItemPlacementContext itemPlacementContext, BlockState blockState) {
 		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
 		EntityContext entityContext = playerEntity == null ? EntityContext.absent() : EntityContext.of(playerEntity);
-		return (!this.checkStatePlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
-			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), entityContext);
+		return (!this.checkStatePlacement() || blockState.canPlaceAt(itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos()))
+			&& itemPlacementContext.method_8045().method_8628(blockState, itemPlacementContext.getBlockPos(), entityContext);
 	}
 
 	protected boolean checkStatePlacement() {
 		return true;
 	}
 
-	protected boolean place(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 11);
+	protected boolean method_7708(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+		return itemPlacementContext.method_8045().method_8652(itemPlacementContext.getBlockPos(), blockState, 11);
 	}
 
-	public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
+	public static boolean method_7714(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
 		MinecraftServer minecraftServer = world.getServer();
 		if (minecraftServer == null) {
 			return false;
 		} else {
 			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
 			if (compoundTag != null) {
-				BlockEntity blockEntity = world.getBlockEntity(blockPos);
+				BlockEntity blockEntity = world.method_8321(blockPos);
 				if (blockEntity != null) {
 					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (playerEntity == null || !playerEntity.isCreativeLevelTwoOp())) {
 						return false;
@@ -182,28 +182,28 @@ public class BlockItem extends Item {
 
 	@Override
 	public String getTranslationKey() {
-		return this.getBlock().getTranslationKey();
+		return this.method_7711().getTranslationKey();
 	}
 
 	@Override
 	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isIn(itemGroup)) {
-			this.getBlock().addStacksForDisplay(itemGroup, defaultedList);
+			this.method_7711().addStacksForDisplay(itemGroup, defaultedList);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		super.appendTooltip(itemStack, world, list, tooltipContext);
-		this.getBlock().buildTooltip(itemStack, world, list, tooltipContext);
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		super.method_7851(itemStack, world, list, tooltipContext);
+		this.method_7711().buildTooltip(itemStack, world, list, tooltipContext);
 	}
 
-	public Block getBlock() {
-		return this.block;
+	public Block method_7711() {
+		return this.field_7901;
 	}
 
 	public void appendBlocks(Map<Block, Item> map, Item item) {
-		map.put(this.getBlock(), item);
+		map.put(this.method_7711(), item);
 	}
 }

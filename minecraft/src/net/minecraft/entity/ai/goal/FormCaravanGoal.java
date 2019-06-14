@@ -21,7 +21,7 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.llama.isLeashed() && !this.llama.isFollowing()) {
-			List<Entity> list = this.llama.world.getEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
+			List<Entity> list = this.llama.field_6002.method_8333(this.llama, this.llama.method_5829().expand(9.0, 4.0, 9.0), entityx -> {
 				EntityType<?> entityType = entityx.getType();
 				return entityType == EntityType.field_6074 || entityType == EntityType.field_17714;
 			});

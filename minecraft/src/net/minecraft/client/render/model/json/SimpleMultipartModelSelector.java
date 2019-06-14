@@ -26,7 +26,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 
 	@Override
 	public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
-		Property<?> property = stateFactory.getProperty(this.key);
+		Property<?> property = stateFactory.method_11663(this.key);
 		if (property == null) {
 			throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateFactory.getBaseObject().toString()));
 		} else {
@@ -62,7 +62,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 				String.format("Unknown value '%s' for property '%s' on '%s' in '%s'", string, this.key, stateFactory.getBaseObject().toString(), this.valueString)
 			);
 		} else {
-			return blockState -> blockState.get(property).equals(optional.get());
+			return blockState -> blockState.method_11654(property).equals(optional.get());
 		}
 	}
 

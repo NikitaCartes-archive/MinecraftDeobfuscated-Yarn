@@ -100,20 +100,20 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 	@Override
 	public boolean matches(Recipe<? super CraftingInventory> recipe) {
-		return recipe.matches(this.invCrafting, this.owner.world);
+		return recipe.method_8115(this.invCrafting, this.owner.field_6002);
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingTableContainer.updateResult(this.syncId, this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
+		CraftingTableContainer.method_17399(this.syncId, this.owner.field_6002, this.owner, this.invCrafting, this.invCraftingResult);
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.invCraftingResult.clear();
-		if (!playerEntity.world.isClient) {
-			this.dropInventory(playerEntity, playerEntity.world, this.invCrafting);
+		if (!playerEntity.field_6002.isClient) {
+			this.method_7607(playerEntity, playerEntity.field_6002, this.invCrafting);
 		}
 	}
 

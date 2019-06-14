@@ -52,7 +52,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 			}
 
-			MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, foxEntity, ModelTransformation.Type.field_4318, false);
+			MinecraftClient.getInstance().method_1480().renderHeldItem(itemStack, foxEntity, ModelTransformation.Type.field_4318, false);
 			GlStateManager.popMatrix();
 		}
 	}

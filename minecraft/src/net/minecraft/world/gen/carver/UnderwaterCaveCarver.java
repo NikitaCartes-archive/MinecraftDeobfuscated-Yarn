@@ -80,10 +80,10 @@ public class UnderwaterCaveCarver extends CaveCarver {
 		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
+		return method_16138(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 
-	protected static boolean carveAtPoint(
+	protected static boolean method_16138(
 		Carver<?> carver, Chunk chunk, BitSet bitSet, Random random, BlockPos.Mutable mutable, int i, int j, int k, int l, int m, int n, int o, int p
 	) {
 		if (o >= i) {
@@ -95,21 +95,21 @@ public class UnderwaterCaveCarver extends CaveCarver {
 			} else {
 				bitSet.set(q);
 				mutable.set(l, o, m);
-				BlockState blockState = chunk.getBlockState(mutable);
+				BlockState blockState = chunk.method_8320(mutable);
 				if (!carver.canAlwaysCarveBlock(blockState)) {
 					return false;
 				} else if (o == 10) {
 					float f = random.nextFloat();
 					if ((double)f < 0.25) {
-						chunk.setBlockState(mutable, Blocks.field_10092.getDefaultState(), false);
+						chunk.setBlockState(mutable, Blocks.field_10092.method_9564(), false);
 						chunk.getBlockTickScheduler().schedule(mutable, Blocks.field_10092, 0);
 					} else {
-						chunk.setBlockState(mutable, Blocks.field_10540.getDefaultState(), false);
+						chunk.setBlockState(mutable, Blocks.field_10540.method_9564(), false);
 					}
 
 					return true;
 				} else if (o < 10) {
-					chunk.setBlockState(mutable, Blocks.field_10164.getDefaultState(), false);
+					chunk.setBlockState(mutable, Blocks.field_10164.method_9564(), false);
 					return false;
 				} else {
 					boolean bl = false;
@@ -117,9 +117,9 @@ public class UnderwaterCaveCarver extends CaveCarver {
 					for (Direction direction : Direction.Type.field_11062) {
 						int r = l + direction.getOffsetX();
 						int s = m + direction.getOffsetZ();
-						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {
-							chunk.setBlockState(mutable, WATER.getBlockState(), false);
-							chunk.getFluidTickScheduler().schedule(mutable, WATER.getFluid(), 0);
+						if (r >> 4 != j || s >> 4 != k || chunk.method_8320(mutable.set(r, o, s)).isAir()) {
+							chunk.setBlockState(mutable, field_13305.getBlockState(), false);
+							chunk.getFluidTickScheduler().schedule(mutable, field_13305.getFluid(), 0);
 							bl = true;
 							break;
 						}
@@ -127,7 +127,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 
 					mutable.set(l, o, m);
 					if (!bl) {
-						chunk.setBlockState(mutable, WATER.getBlockState(), false);
+						chunk.setBlockState(mutable, field_13305.getBlockState(), false);
 						return true;
 					} else {
 						return true;

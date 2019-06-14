@@ -47,11 +47,11 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.check(lootTableReporter, function, set, lootContextType);
+	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		super.method_292(lootTableReporter, function, set, lootContextType);
 
 		for (int i = 0; i < this.entries.size(); i++) {
-			((LootEntry)this.entries.get(i)).check(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
+			((LootEntry)this.entries.get(i)).method_415(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetContentsLootFunction(this.getConditions(), this.entries);
+			return new SetContentsLootFunction(this.method_526(), this.entries);
 		}
 	}
 

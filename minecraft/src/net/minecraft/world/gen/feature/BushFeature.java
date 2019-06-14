@@ -22,8 +22,8 @@ public class BushFeature extends Feature<BushFeatureConfig> {
 
 		for (int j = 0; j < 64; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && (!iWorld.getDimension().isNether() || blockPos2.getY() < 255) && blockState.canPlaceAt(iWorld, blockPos2)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			if (iWorld.isAir(blockPos2) && (!iWorld.method_8597().isNether() || blockPos2.getY() < 255) && blockState.canPlaceAt(iWorld, blockPos2)) {
+				iWorld.method_8652(blockPos2, blockState, 2);
 				i++;
 			}
 		}

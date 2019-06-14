@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.method_5941(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
 				creeperEntity.onHeadDropped();
-				this.dropItem(Items.WITHER_SKELETON_SKULL);
+				this.method_5706(Items.WITHER_SKELETON_SKULL);
 			}
 		}
 	}
@@ -74,10 +74,10 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
 		this.updateAttackType();
 		return entityData2;

@@ -44,8 +44,8 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			ItemScatterer.spawn(this.world, this, this);
+		if (this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
+			ItemScatterer.method_5452(this.field_6002, this, this);
 		}
 	}
 
@@ -114,15 +114,15 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType dimensionType) {
+	public Entity method_5731(DimensionType dimensionType) {
 		this.field_7733 = false;
-		return super.changeDimension(dimensionType);
+		return super.method_5731(dimensionType);
 	}
 
 	@Override
 	public void remove() {
-		if (!this.world.isClient && this.field_7733) {
-			ItemScatterer.spawn(this.world, this, this);
+		if (!this.field_6002.isClient && this.field_7733) {
+			ItemScatterer.method_5452(this.field_6002, this, this);
 		}
 
 		super.remove();
@@ -167,21 +167,21 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			f += (float)i * 0.001F;
 		}
 
-		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
+		this.method_18799(this.method_18798().multiply((double)f, 0.0, (double)f));
 	}
 
 	public void method_7563(@Nullable PlayerEntity playerEntity) {
-		if (this.lootTableId != null && this.world.getServer() != null) {
-			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
+		if (this.lootTableId != null && this.field_6002.getServer() != null) {
+			LootSupplier lootSupplier = this.field_6002.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.field_1232, new BlockPos(this))
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.field_6002)
+				.method_312(LootContextParameters.field_1232, new BlockPos(this))
 				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
+			lootSupplier.supplyInventory(this, builder.method_309(LootContextTypes.field_1179));
 		}
 	}
 

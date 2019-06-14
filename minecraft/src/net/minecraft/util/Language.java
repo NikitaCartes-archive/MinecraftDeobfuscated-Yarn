@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -26,17 +27,36 @@ public class Language {
 	public Language() {
 		try {
 			InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json");
-			JsonElement jsonElement = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonElement.class);
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
+			Throwable var2 = null;
 
-			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				String string = field_11489.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
-				this.translations.put(entry.getKey(), string);
+			try {
+				JsonElement jsonElement = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonElement.class);
+				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
+
+				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+					String string = field_11489.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
+					this.translations.put(entry.getKey(), string);
+				}
+
+				this.timeLoaded = SystemUtil.getMeasuringTimeMs();
+			} catch (Throwable var16) {
+				var2 = var16;
+				throw var16;
+			} finally {
+				if (inputStream != null) {
+					if (var2 != null) {
+						try {
+							inputStream.close();
+						} catch (Throwable var15) {
+							var2.addSuppressed(var15);
+						}
+					} else {
+						inputStream.close();
+					}
+				}
 			}
-
-			this.timeLoaded = SystemUtil.getMeasuringTimeMs();
-		} catch (JsonParseException var7) {
-			LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)var7);
+		} catch (JsonParseException | IOException var18) {
+			LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)var18);
 		}
 	}
 

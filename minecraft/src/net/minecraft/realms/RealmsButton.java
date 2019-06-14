@@ -65,6 +65,6 @@ public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProx
 	}
 
 	public void drawCenteredString(String string, int i, int j, int k) {
-		this.getProxy().drawCenteredString(MinecraftClient.getInstance().textRenderer, string, i, j, k);
+		this.getProxy().drawCenteredString(MinecraftClient.getInstance().field_1772, string, i, j, k);
 	}
 }

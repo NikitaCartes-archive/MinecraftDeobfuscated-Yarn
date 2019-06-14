@@ -17,18 +17,18 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends Screen {
-	protected final Screen parent;
+	protected final Screen field_2490;
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
 	private final GameOptions options;
-	private final LanguageManager languageManager;
+	private final LanguageManager field_2488;
 	private OptionButtonWidget forceUnicodeButton;
 	private ButtonWidget doneButton;
 
 	public LanguageOptionsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
 		super(new TranslatableText("options.language"));
-		this.parent = screen;
+		this.field_2490 = screen;
 		this.options = gameOptions;
-		this.languageManager = languageManager;
+		this.field_2488 = languageManager;
 	}
 
 	@Override
@@ -37,27 +37,27 @@ public class LanguageOptionsScreen extends Screen {
 		this.children.add(this.languageSelectionList);
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.options), buttonWidget -> {
-					Option.FORCE_UNICODE_FONT.set(this.options);
+				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.method_18495(this.options), buttonWidget -> {
+					Option.FORCE_UNICODE_FONT.method_18491(this.options);
 					this.options.write();
-					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.options));
+					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.method_18495(this.options));
 					this.minecraft.onResolutionChanged();
 				}
 			)
 		);
 		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem = this.languageSelectionList.getSelected();
-			if (languageItem != null && !languageItem.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
-				this.languageManager.setLanguage(languageItem.languageDefinition);
-				this.options.language = languageItem.languageDefinition.getCode();
+			if (languageItem != null && !languageItem.field_18743.getCode().equals(this.field_2488.getLanguage().getCode())) {
+				this.field_2488.setLanguage(languageItem.field_18743);
+				this.options.language = languageItem.field_18743.getCode();
 				this.minecraft.reloadResources();
-				this.font.setRightToLeft(this.languageManager.isRightToLeft());
+				this.font.setRightToLeft(this.field_2488.isRightToLeft());
 				this.doneButton.setMessage(I18n.translate("gui.done"));
-				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.options));
+				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.method_18495(this.options));
 				this.options.write();
 			}
 
-			this.minecraft.openScreen(this.parent);
+			this.minecraft.method_1507(this.field_2490);
 		}));
 		super.init();
 	}
@@ -75,12 +75,12 @@ public class LanguageOptionsScreen extends Screen {
 		public LanguageSelectionListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
 
-			for (LanguageDefinition languageDefinition : LanguageOptionsScreen.this.languageManager.getAllLanguages()) {
+			for (LanguageDefinition languageDefinition : LanguageOptionsScreen.this.field_2488.getAllLanguages()) {
 				LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem = new LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem(
 					languageDefinition
 				);
 				this.addEntry(languageItem);
-				if (LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) {
+				if (LanguageOptionsScreen.this.field_2488.getLanguage().getCode().equals(languageDefinition.getCode())) {
 					this.method_20100(languageItem);
 				}
 			}
@@ -103,7 +103,7 @@ public class LanguageOptionsScreen extends Screen {
 		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem) {
 			super.setSelected(languageItem);
 			if (languageItem != null) {
-				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageItem.languageDefinition).getString());
+				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageItem.field_18743).getString());
 			}
 		}
 
@@ -119,19 +119,19 @@ public class LanguageOptionsScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class LanguageItem extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem> {
-			private final LanguageDefinition languageDefinition;
+			private final LanguageDefinition field_18743;
 
 			public LanguageItem(LanguageDefinition languageDefinition) {
-				this.languageDefinition = languageDefinition;
+				this.field_18743 = languageDefinition;
 			}
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 				LanguageOptionsScreen.this.font.setRightToLeft(true);
 				LanguageSelectionListWidget.this.drawCenteredString(
-					LanguageOptionsScreen.this.font, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, j + 1, 16777215
+					LanguageOptionsScreen.this.font, this.field_18743.toString(), LanguageSelectionListWidget.this.width / 2, j + 1, 16777215
 				);
-				LanguageOptionsScreen.this.font.setRightToLeft(LanguageOptionsScreen.this.languageManager.getLanguage().isRightToLeft());
+				LanguageOptionsScreen.this.font.setRightToLeft(LanguageOptionsScreen.this.field_2488.getLanguage().isRightToLeft());
 			}
 
 			@Override

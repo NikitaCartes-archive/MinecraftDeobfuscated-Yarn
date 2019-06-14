@@ -31,7 +31,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("title")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
@@ -45,7 +45,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("subtitle")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),
@@ -59,7 +59,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("actionbar")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.create())
 										.executes(
 											commandContext -> executeTitle(
 													commandContext.getSource(),

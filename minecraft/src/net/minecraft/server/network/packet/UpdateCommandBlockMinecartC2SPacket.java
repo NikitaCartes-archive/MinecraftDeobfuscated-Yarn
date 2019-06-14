@@ -48,7 +48,7 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	@Nullable
 	public CommandBlockExecutor getMinecartCommandExecutor(World world) {
 		Entity entity = world.getEntityById(this.entityId);
-		return entity instanceof CommandBlockMinecartEntity ? ((CommandBlockMinecartEntity)entity).getCommandExecutor() : null;
+		return entity instanceof CommandBlockMinecartEntity ? ((CommandBlockMinecartEntity)entity).method_7567() : null;
 	}
 
 	public String getCommand() {

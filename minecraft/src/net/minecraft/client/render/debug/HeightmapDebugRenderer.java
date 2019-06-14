@@ -23,8 +23,8 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.getCamera();
-		IWorld iWorld = this.client.world;
+		Camera camera = this.client.field_1773.getCamera();
+		IWorld iWorld = this.client.field_1687;
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
@@ -37,11 +37,11 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(5, VertexFormats.field_1576);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
 			int i = iWorld.getTop(Heightmap.Type.field_13194, blockPos2.getX(), blockPos2.getZ());
-			if (iWorld.getBlockState(blockPos2.add(0, i, 0).down()).isAir()) {
+			if (iWorld.method_8320(blockPos2.add(0, i, 0).down()).isAir()) {
 				WorldRenderer.buildBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.25F) - d,

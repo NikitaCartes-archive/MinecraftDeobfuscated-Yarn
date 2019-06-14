@@ -97,7 +97,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemConvertible... itemConvertibles) {
+		public static InventoryChangedCriterion.Conditions method_8959(ItemConvertible... itemConvertibles) {
 			ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
 
 			for (int i = 0; i < itemConvertibles.length; i++) {

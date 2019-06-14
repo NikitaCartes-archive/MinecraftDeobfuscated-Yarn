@@ -21,11 +21,11 @@ import net.minecraft.world.loot.context.LootContextType;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction implements LootFunction {
-	protected final LootCondition[] conditions;
+	protected final LootCondition[] field_1047;
 	private final Predicate<LootContext> predicate;
 
 	protected ConditionalLootFunction(LootCondition[] lootConditions) {
-		this.conditions = lootConditions;
+		this.field_1047 = lootConditions;
 		this.predicate = LootConditions.joinAnd(lootConditions);
 	}
 
@@ -36,11 +36,11 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	protected abstract ItemStack process(ItemStack itemStack, LootContext lootContext);
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		LootFunction.super.check(lootTableReporter, function, set, lootContextType);
+	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		LootFunction.super.method_292(lootTableReporter, function, set, lootContextType);
 
-		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(lootTableReporter.makeChild(".conditions[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.field_1047.length; i++) {
+			this.field_1047[i].method_292(lootTableReporter.makeChild(".conditions[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -62,7 +62,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 		protected abstract T getThisBuilder();
 
-		protected LootCondition[] getConditions() {
+		protected LootCondition[] method_526() {
 			return (LootCondition[])this.conditionList.toArray(new LootCondition[0]);
 		}
 	}
@@ -73,17 +73,17 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 
 		public void method_529(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
-			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
-				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
+			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.field_1047)) {
+				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.field_1047));
 			}
 		}
 
 		public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+			return this.method_530(jsonObject, jsonDeserializationContext, lootConditions);
 		}
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
+		public abstract T method_530(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
 	}
 
 	static final class Joiner extends ConditionalLootFunction.Builder<ConditionalLootFunction.Joiner> {
@@ -99,7 +99,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 		@Override
 		public LootFunction build() {
-			return (LootFunction)this.joiner.apply(this.getConditions());
+			return (LootFunction)this.joiner.apply(this.method_526());
 		}
 	}
 }

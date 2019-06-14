@@ -43,7 +43,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.method_5941(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
@@ -78,12 +78,22 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	@Override
 	protected void mobTick() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+		LivingEntity livingEntity = this.getAttacker();
 		if (this.isAngry()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 				entityAttributeInstance.addModifier(ATTACKING_SPEED_BOOST);
 			}
 
 			this.anger--;
+			LivingEntity livingEntity2 = livingEntity != null ? livingEntity : this.getTarget();
+			if (!this.isAngry() && livingEntity2 != null) {
+				if (!this.canSee(livingEntity2)) {
+					this.setAttacker(null);
+					this.setTarget(null);
+				} else {
+					this.anger = this.method_20806();
+				}
+			}
 		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
@@ -92,8 +102,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 			this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
 
-		if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
+		if (this.isAngry() && this.angerTarget != null && livingEntity == null) {
+			PlayerEntity playerEntity = this.field_6002.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			this.attackingPlayer = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
@@ -107,8 +117,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
-		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
+	public boolean method_5957(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.method_8599(this.method_5829());
 	}
 
 	@Override
@@ -129,7 +139,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
+			PlayerEntity playerEntity = this.field_6002.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
 				this.attackingPlayer = playerEntity;
@@ -145,22 +155,32 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		} else {
 			Entity entity = damageSource.getAttacker();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
-				this.copyEntityData(entity, 400 + this.random.nextInt(400));
+				this.method_20804(entity);
 			}
 
 			return super.damage(damageSource, f);
 		}
 	}
 
-	private void copyEntityData(Entity entity, int i) {
-		this.anger = i;
-		this.angrySoundDelay = this.random.nextInt(40);
-		if (entity instanceof LivingEntity) {
-			this.setAttacker((LivingEntity)entity);
+	private boolean method_20804(Entity entity) {
+		if (!this.canSee(entity)) {
+			return false;
+		} else {
+			this.anger = this.method_20806();
+			this.angrySoundDelay = this.random.nextInt(40);
+			if (entity instanceof LivingEntity) {
+				this.setAttacker((LivingEntity)entity);
+			}
+
+			return true;
 		}
 	}
 
-	public boolean isAngry() {
+	private int method_20806() {
+		return 400 + this.random.nextInt(400);
+	}
+
+	private boolean isAngry() {
 		return this.anger > 0;
 	}
 
@@ -207,10 +227,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 		@Override
 		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-			super.setMobEntityTarget(mobEntity, livingEntity);
-			int i = ((ZombiePigmanEntity)this.mob).anger;
-			if (mobEntity instanceof ZombiePigmanEntity && i > 0) {
-				((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity, i);
+			if (mobEntity instanceof ZombiePigmanEntity && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
+				mobEntity.setTarget(livingEntity);
 			}
 		}
 	}

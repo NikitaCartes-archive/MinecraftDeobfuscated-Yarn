@@ -486,10 +486,10 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	public Entity spawnFromItemStack(
+	public Entity method_5894(
 		World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2
 	) {
-		return this.spawn(
+		return this.method_5899(
 			world,
 			itemStack == null ? null : itemStack.getTag(),
 			itemStack != null && itemStack.hasCustomName() ? itemStack.getName() : null,
@@ -502,7 +502,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	public T spawn(
+	public T method_5899(
 		World world,
 		@Nullable CompoundTag compoundTag,
 		@Nullable Text text,
@@ -512,13 +512,13 @@ public class EntityType<T extends Entity> {
 		boolean bl,
 		boolean bl2
 	) {
-		T entity = this.create(world, compoundTag, text, playerEntity, blockPos, spawnType, bl, bl2);
+		T entity = this.method_5888(world, compoundTag, text, playerEntity, blockPos, spawnType, bl, bl2);
 		world.spawnEntity(entity);
 		return entity;
 	}
 
 	@Nullable
-	public T create(
+	public T method_5888(
 		World world,
 		@Nullable CompoundTag compoundTag,
 		@Nullable Text text,
@@ -528,14 +528,14 @@ public class EntityType<T extends Entity> {
 		boolean bl,
 		boolean bl2
 	) {
-		T entity = this.create(world);
+		T entity = this.method_5883(world);
 		if (entity == null) {
 			return null;
 		} else {
 			double d;
 			if (bl) {
 				entity.setPosition((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5);
-				d = getOriginY(world, blockPos, bl2, entity.getBoundingBox());
+				d = method_5884(world, blockPos, bl2, entity.method_5829());
 			} else {
 				d = 0.0;
 			}
@@ -547,7 +547,7 @@ public class EntityType<T extends Entity> {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.field_6283 = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
+				mobEntity.method_5943(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -555,22 +555,22 @@ public class EntityType<T extends Entity> {
 				entity.setCustomName(text);
 			}
 
-			loadFromEntityTag(world, playerEntity, entity, compoundTag);
+			method_5881(world, playerEntity, entity, compoundTag);
 			return entity;
 		}
 	}
 
-	protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
+	protected static double method_5884(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
 		Box box2 = new Box(blockPos);
 		if (bl) {
 			box2 = box2.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, box2, Collections.emptySet());
+		Stream<VoxelShape> stream = viewableWorld.method_8600(null, box2, Collections.emptySet());
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
 	}
 
-	public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
+	public static void method_5881(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			MinecraftServer minecraftServer = world.getServer();
 			if (minecraftServer != null && entity != null) {
@@ -637,19 +637,19 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	public T create(World world) {
+	public T method_5883(World world) {
 		return this.factory.create(this, world);
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static Entity createInstanceFromId(int i, World world) {
-		return newInstance(world, Registry.ENTITY_TYPE.get(i));
+	public static Entity method_5889(int i, World world) {
+		return method_5886(world, Registry.ENTITY_TYPE.get(i));
 	}
 
-	public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
+	public static Optional<Entity> method_5892(CompoundTag compoundTag, World world) {
 		return SystemUtil.ifPresentOrElse(
-			fromTag(compoundTag).map(entityType -> entityType.create(world)),
+			fromTag(compoundTag).map(entityType -> entityType.method_5883(world)),
 			entity -> entity.fromTag(compoundTag),
 			() -> LOGGER.warn("Skipping Entity with id {}", compoundTag.getString("id"))
 		);
@@ -657,11 +657,11 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private static Entity newInstance(World world, @Nullable EntityType<?> entityType) {
-		return entityType == null ? null : entityType.create(world);
+	private static Entity method_5886(World world, @Nullable EntityType<?> entityType) {
+		return entityType == null ? null : entityType.method_5883(world);
 	}
 
-	public Box createSimpleBoundingBox(double d, double e, double f) {
+	public Box method_17683(double d, double e, double f) {
 		float g = this.getWidth() / 2.0F;
 		return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
 	}
@@ -675,13 +675,13 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
-		return (Entity)loadEntityFromTag(compoundTag, world).map(function).map(entity -> {
+	public static Entity method_17842(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
+		return (Entity)method_17848(compoundTag, world).map(function).map(entity -> {
 			if (compoundTag.containsKey("Passengers", 9)) {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
 
 				for (int i = 0; i < listTag.size(); i++) {
-					Entity entity2 = loadEntityWithPassengers(listTag.getCompoundTag(i), world, function);
+					Entity entity2 = method_17842(listTag.getCompoundTag(i), world, function);
 					if (entity2 != null) {
 						entity2.startRiding(entity, true);
 					}
@@ -692,9 +692,9 @@ public class EntityType<T extends Entity> {
 		}).orElse(null);
 	}
 
-	private static Optional<Entity> loadEntityFromTag(CompoundTag compoundTag, World world) {
+	private static Optional<Entity> method_17848(CompoundTag compoundTag, World world) {
 		try {
-			return getEntityFromTag(compoundTag, world);
+			return method_5892(compoundTag, world);
 		} catch (RuntimeException var3) {
 			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
 			return Optional.empty();

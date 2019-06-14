@@ -134,9 +134,9 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 	@Override
 	public void tickMovement() {
-		Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
-		if (!this.world.isClient && this.getTrackedEntityId(0) > 0) {
-			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
+		Vec3d vec3d = this.method_18798().multiply(1.0, 0.6, 1.0);
+		if (!this.field_6002.isClient && this.getTrackedEntityId(0) > 0) {
+			Entity entity = this.field_6002.getEntityById(this.getTrackedEntityId(0));
 			if (entity != null) {
 				double d = vec3d.y;
 				if (this.y < entity.y || !this.isAtHalfHealth() && this.y < entity.y + 5.0) {
@@ -146,15 +146,15 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 				vec3d = new Vec3d(vec3d.x, d, vec3d.z);
 				Vec3d vec3d2 = new Vec3d(entity.x - this.x, 0.0, entity.z - this.z);
-				if (squaredHorizontalLength(vec3d2) > 9.0) {
+				if (method_17996(vec3d2) > 9.0) {
 					Vec3d vec3d3 = vec3d2.normalize();
 					vec3d = vec3d.add(vec3d3.x * 0.3 - vec3d.x * 0.6, 0.0, vec3d3.z * 0.3 - vec3d.z * 0.6);
 				}
 			}
 		}
 
-		this.setVelocity(vec3d);
-		if (squaredHorizontalLength(vec3d) > 0.05) {
+		this.method_18799(vec3d);
+		if (method_17996(vec3d) > 0.05) {
 			this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F;
 		}
 
@@ -169,7 +169,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			int j = this.getTrackedEntityId(i + 1);
 			Entity entity2 = null;
 			if (j > 0) {
-				entity2 = this.world.getEntityById(j);
+				entity2 = this.field_6002.getEntityById(j);
 			}
 
 			if (entity2 != null) {
@@ -195,7 +195,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			double p = this.getHeadX(jx);
 			double q = this.getHeadY(jx);
 			double r = this.getHeadZ(jx);
-			this.world
+			this.field_6002
 				.addParticle(
 					ParticleTypes.field_11251,
 					p + this.random.nextGaussian() * 0.3F,
@@ -205,8 +205,8 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 					0.0,
 					0.0
 				);
-			if (bl && this.world.random.nextInt(4) == 0) {
-				this.world
+			if (bl && this.field_6002.random.nextInt(4) == 0) {
+				this.field_6002
 					.addParticle(
 						ParticleTypes.field_11226,
 						p + this.random.nextGaussian() * 0.3F,
@@ -221,7 +221,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 		if (this.getInvulTimer() > 0) {
 			for (int jxx = 0; jxx < 3; jxx++) {
-				this.world
+				this.field_6002
 					.addParticle(
 						ParticleTypes.field_11226,
 						this.x + this.random.nextGaussian(),
@@ -240,11 +240,11 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+				Explosion.DestructionType destructionType = this.field_6002.getGameRules().getBoolean(GameRules.field_19388)
 					? Explosion.DestructionType.field_18687
 					: Explosion.DestructionType.field_18685;
-				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
-				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
+				this.field_6002.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
+				this.field_6002.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 
 			this.setInvulTimer(i);
@@ -257,7 +257,8 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			for (int ix = 1; ix < 3; ix++) {
 				if (this.age >= this.field_7091[ix - 1]) {
 					this.field_7091[ix - 1] = this.age + 10 + this.random.nextInt(10);
-					if ((this.world.getDifficulty() == Difficulty.field_5802 || this.world.getDifficulty() == Difficulty.field_5807) && this.field_7092[ix - 1]++ > 15) {
+					if ((this.field_6002.getDifficulty() == Difficulty.field_5802 || this.field_6002.getDifficulty() == Difficulty.field_5807)
+						&& this.field_7092[ix - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
 						double d = MathHelper.nextDouble(this.random, this.x - 10.0, this.x + 10.0);
@@ -269,7 +270,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 					int j = this.getTrackedEntityId(ix);
 					if (j > 0) {
-						Entity entity = this.world.getEntityById(j);
+						Entity entity = this.field_6002.getEntityById(j);
 						if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
 							this.setTrackedEntityId(ix, 0);
 						} else if (entity instanceof PlayerEntity && ((PlayerEntity)entity).abilities.invulnerable) {
@@ -280,7 +281,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 							this.field_7092[ix - 1] = 0;
 						}
 					} else {
-						List<LivingEntity> list = this.world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
+						List<LivingEntity> list = this.field_6002.method_18466(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.method_5829().expand(20.0, 8.0, 20.0));
 
 						for (int k = 0; k < 10 && !list.isEmpty(); k++) {
 							LivingEntity livingEntity = (LivingEntity)list.get(this.random.nextInt(list.size()));
@@ -309,7 +310,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 			if (this.field_7082 > 0) {
 				this.field_7082--;
-				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+				if (this.field_7082 == 0 && this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
 					int ixx = MathHelper.floor(this.y);
 					int j = MathHelper.floor(this.x);
 					int l = MathHelper.floor(this.z);
@@ -322,16 +323,16 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 								int q = ixx + o;
 								int r = l + n;
 								BlockPos blockPos = new BlockPos(p, q, r);
-								BlockState blockState = this.world.getBlockState(blockPos);
-								if (canDestroy(blockState)) {
-									bl = this.world.breakBlock(blockPos, true) || bl;
+								BlockState blockState = this.field_6002.method_8320(blockPos);
+								if (method_6883(blockState)) {
+									bl = this.field_6002.breakBlock(blockPos, true) || bl;
 								}
 							}
 						}
 					}
 
 					if (bl) {
-						this.world.playLevelEvent(null, 1022, new BlockPos(this), 0);
+						this.field_6002.playLevelEvent(null, 1022, new BlockPos(this), 0);
 					}
 				}
 			}
@@ -344,7 +345,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		}
 	}
 
-	public static boolean canDestroy(BlockState blockState) {
+	public static boolean method_6883(BlockState blockState) {
 		return !blockState.isAir() && !BlockTags.field_17754.contains(blockState.getBlock());
 	}
 
@@ -354,7 +355,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, Vec3d vec3d) {
+	public void method_5844(BlockState blockState, Vec3d vec3d) {
 	}
 
 	@Override
@@ -413,14 +414,14 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	}
 
 	private void method_6877(int i, double d, double e, double f, boolean bl) {
-		this.world.playLevelEvent(null, 1024, new BlockPos(this), 0);
+		this.field_6002.playLevelEvent(null, 1024, new BlockPos(this), 0);
 		double g = this.getHeadX(i);
 		double h = this.getHeadY(i);
 		double j = this.getHeadZ(i);
 		double k = d - g;
 		double l = e - h;
 		double m = f - j;
-		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, k, l, m);
+		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.field_6002, this, k, l, m);
 		if (bl) {
 			witherSkullEntity.setCharged(true);
 		}
@@ -428,7 +429,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		witherSkullEntity.y = h;
 		witherSkullEntity.x = g;
 		witherSkullEntity.z = j;
-		this.world.spawnEntity(witherSkullEntity);
+		this.field_6002.spawnEntity(witherSkullEntity);
 	}
 
 	@Override
@@ -472,7 +473,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	@Override
 	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
 		super.dropEquipment(damageSource, i, bl);
-		ItemEntity itemEntity = this.dropItem(Items.field_8137);
+		ItemEntity itemEntity = this.method_5706(Items.field_8137);
 		if (itemEntity != null) {
 			itemEntity.method_6976();
 		}

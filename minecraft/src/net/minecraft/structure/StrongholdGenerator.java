@@ -216,14 +216,14 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 6);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 1, 2, 3, 1, 4, Blocks.field_10056.getDefaultState(), Blocks.field_10056.getDefaultState(), false);
-			this.addBlock(iWorld, Blocks.field_10131.getDefaultState(), 3, 1, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10131.getDefaultState(), 3, 1, 5, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10131.getDefaultState(), 3, 2, 2, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10131.getDefaultState(), 3, 2, 4, mutableIntBoundingBox);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 1, 2, 3, 1, 4, Blocks.field_10056.method_9564(), Blocks.field_10056.method_9564(), false);
+			this.addBlock(iWorld, Blocks.field_10131.method_9564(), 3, 1, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10131.method_9564(), 3, 1, 5, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10131.method_9564(), 3, 2, 2, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10131.method_9564(), 3, 2, 4, mutableIntBoundingBox);
 
 			for (int i = 2; i <= 4; i++) {
-				this.addBlock(iWorld, Blocks.field_10131.getDefaultState(), 2, 1, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10131.method_9564(), 2, 1, i, mutableIntBoundingBox);
 			}
 
 			if (!this.chestGenerated && mutableIntBoundingBox.contains(new BlockPos(this.applyXTransform(3, 3), this.applyYTransform(2), this.applyZTransform(3, 3)))) {
@@ -285,8 +285,8 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 6);
-			BlockState blockState = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034);
-			BlockState blockState2 = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039);
+			BlockState blockState = Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11034);
+			BlockState blockState2 = Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11039);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 1, blockState);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 3, 2, 1, blockState2);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 5, blockState);
@@ -398,13 +398,13 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, 1, 5, 8, 4, 9, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 4, 7, 3, 4, 9, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 5, 3, 3, 6, false, random, StrongholdGenerator.field_15263);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 4, 3, 3, 4, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 4, 6, 3, 4, 6, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 4, 3, 3, 4, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 4, 6, 3, 4, 6, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 1, 7, 7, 1, 8, false, random, StrongholdGenerator.field_15263);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 1, 9, 7, 1, 9, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 2, 7, 7, 2, 7, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 7, 4, 5, 9, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, 5, 7, 8, 5, 9, Blocks.field_10136.getDefaultState(), Blocks.field_10136.getDefaultState(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 1, 9, 7, 1, 9, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 2, 7, 7, 2, 7, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 7, 4, 5, 9, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, 5, 7, 8, 5, 9, Blocks.field_10136.method_9564(), Blocks.field_10136.method_9564(), false);
 			this.fillWithOutline(
 				iWorld,
 				mutableIntBoundingBox,
@@ -414,11 +414,11 @@ public class StrongholdGenerator {
 				7,
 				5,
 				9,
-				Blocks.field_10136.getDefaultState().with(SlabBlock.TYPE, SlabType.field_12682),
-				Blocks.field_10136.getDefaultState().with(SlabBlock.TYPE, SlabType.field_12682),
+				Blocks.field_10136.method_9564().method_11657(SlabBlock.field_11501, SlabType.field_12682),
+				Blocks.field_10136.method_9564().method_11657(SlabBlock.field_11501, SlabType.field_12682),
 				false
 			);
-			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035), 6, 5, 6, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11035), 6, 5, 6, mutableIntBoundingBox);
 			return true;
 		}
 	}
@@ -511,54 +511,60 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 13, i - 1, 14, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 4, 1, 0);
 			this.fillWithOutlineUnderSealevel(
-				iWorld, mutableIntBoundingBox, random, 0.07F, 2, 1, 1, 11, 4, 13, Blocks.field_10343.getDefaultState(), Blocks.field_10343.getDefaultState(), false, false
+				iWorld, mutableIntBoundingBox, random, 0.07F, 2, 1, 1, 11, 4, 13, Blocks.field_10343.method_9564(), Blocks.field_10343.method_9564(), false, false
 			);
 			int j = 1;
 			int k = 12;
 
 			for (int l = 1; l <= 13; l++) {
 				if ((l - 1) % 4 == 0) {
-					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034), 2, 3, l, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039), 11, 3, l, mutableIntBoundingBox);
+					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11034), 2, 3, l, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11039), 11, 3, l, mutableIntBoundingBox);
 					if (this.tall) {
-						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
+						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
 					}
 				} else {
-					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
-					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
+					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
+					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
 					if (this.tall) {
-						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
-						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
+						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
+						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
 					}
 				}
 			}
 
 			for (int lx = 3; lx < 12; lx += 2) {
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 1, lx, 4, 3, lx, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 1, lx, 7, 3, lx, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, lx, 10, 3, lx, Blocks.field_10504.getDefaultState(), Blocks.field_10504.getDefaultState(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 1, lx, 4, 3, lx, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 1, lx, 7, 3, lx, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, lx, 10, 3, lx, Blocks.field_10504.method_9564(), Blocks.field_10504.method_9564(), false);
 			}
 
 			if (this.tall) {
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 5, 1, 3, 5, 13, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 5, 1, 12, 5, 13, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 1, 9, 5, 2, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 12, 9, 5, 13, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-				this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 9, 5, 11, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 8, 5, 11, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 9, 5, 10, mutableIntBoundingBox);
-				BlockState blockState = Blocks.field_10620.getDefaultState().with(FenceBlock.WEST, Boolean.valueOf(true)).with(FenceBlock.EAST, Boolean.valueOf(true));
-				BlockState blockState2 = Blocks.field_10620.getDefaultState().with(FenceBlock.NORTH, Boolean.valueOf(true)).with(FenceBlock.SOUTH, Boolean.valueOf(true));
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 5, 1, 3, 5, 13, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 5, 1, 12, 5, 13, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 1, 9, 5, 2, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 5, 12, 9, 5, 13, Blocks.field_10161.method_9564(), Blocks.field_10161.method_9564(), false);
+				this.addBlock(iWorld, Blocks.field_10161.method_9564(), 9, 5, 11, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10161.method_9564(), 8, 5, 11, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10161.method_9564(), 9, 5, 10, mutableIntBoundingBox);
+				BlockState blockState = Blocks.field_10620
+					.method_9564()
+					.method_11657(FenceBlock.field_10903, Boolean.valueOf(true))
+					.method_11657(FenceBlock.field_10907, Boolean.valueOf(true));
+				BlockState blockState2 = Blocks.field_10620
+					.method_9564()
+					.method_11657(FenceBlock.field_10905, Boolean.valueOf(true))
+					.method_11657(FenceBlock.field_10904, Boolean.valueOf(true));
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 6, 3, 3, 6, 11, blockState2, blockState2, false);
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 6, 3, 10, 6, 9, blockState2, blockState2, false);
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 6, 2, 9, 6, 2, blockState, blockState, false);
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 6, 12, 7, 6, 12, blockState, blockState, false);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10620.getDefaultState().with(FenceBlock.NORTH, Boolean.valueOf(true)).with(FenceBlock.EAST, Boolean.valueOf(true)),
+					Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10905, Boolean.valueOf(true)).method_11657(FenceBlock.field_10907, Boolean.valueOf(true)),
 					3,
 					6,
 					2,
@@ -566,7 +572,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10620.getDefaultState().with(FenceBlock.SOUTH, Boolean.valueOf(true)).with(FenceBlock.EAST, Boolean.valueOf(true)),
+					Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10904, Boolean.valueOf(true)).method_11657(FenceBlock.field_10907, Boolean.valueOf(true)),
 					3,
 					6,
 					12,
@@ -574,7 +580,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10620.getDefaultState().with(FenceBlock.NORTH, Boolean.valueOf(true)).with(FenceBlock.WEST, Boolean.valueOf(true)),
+					Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10905, Boolean.valueOf(true)).method_11657(FenceBlock.field_10903, Boolean.valueOf(true)),
 					10,
 					6,
 					2,
@@ -584,7 +590,7 @@ public class StrongholdGenerator {
 				for (int m = 0; m <= 2; m++) {
 					this.addBlock(
 						iWorld,
-						Blocks.field_10620.getDefaultState().with(FenceBlock.SOUTH, Boolean.valueOf(true)).with(FenceBlock.WEST, Boolean.valueOf(true)),
+						Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10904, Boolean.valueOf(true)).method_11657(FenceBlock.field_10903, Boolean.valueOf(true)),
 						8 + m,
 						6,
 						12 - m,
@@ -593,7 +599,7 @@ public class StrongholdGenerator {
 					if (m != 2) {
 						this.addBlock(
 							iWorld,
-							Blocks.field_10620.getDefaultState().with(FenceBlock.NORTH, Boolean.valueOf(true)).with(FenceBlock.EAST, Boolean.valueOf(true)),
+							Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10905, Boolean.valueOf(true)).method_11657(FenceBlock.field_10907, Boolean.valueOf(true)),
 							8 + m,
 							6,
 							11 - m,
@@ -602,7 +608,7 @@ public class StrongholdGenerator {
 					}
 				}
 
-				BlockState blockState3 = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.field_11035);
+				BlockState blockState3 = Blocks.field_9983.method_9564().method_11657(LadderBlock.field_11253, Direction.field_11035);
 				this.addBlock(iWorld, blockState3, 10, 1, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 2, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 3, 13, mutableIntBoundingBox);
@@ -612,22 +618,23 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState3, 10, 7, 13, mutableIntBoundingBox);
 				int n = 7;
 				int o = 7;
-				BlockState blockState4 = Blocks.field_10620.getDefaultState().with(FenceBlock.EAST, Boolean.valueOf(true));
+				BlockState blockState4 = Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10907, Boolean.valueOf(true));
 				this.addBlock(iWorld, blockState4, 6, 9, 7, mutableIntBoundingBox);
-				BlockState blockState5 = Blocks.field_10620.getDefaultState().with(FenceBlock.WEST, Boolean.valueOf(true));
+				BlockState blockState5 = Blocks.field_10620.method_9564().method_11657(FenceBlock.field_10903, Boolean.valueOf(true));
 				this.addBlock(iWorld, blockState5, 7, 9, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState4, 6, 8, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState5, 7, 8, 7, mutableIntBoundingBox);
-				BlockState blockState6 = blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)).with(FenceBlock.EAST, Boolean.valueOf(true));
+				BlockState blockState6 = blockState2.method_11657(FenceBlock.field_10903, Boolean.valueOf(true))
+					.method_11657(FenceBlock.field_10907, Boolean.valueOf(true));
 				this.addBlock(iWorld, blockState6, 6, 7, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState6, 7, 7, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState4, 5, 7, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState5, 8, 7, 7, mutableIntBoundingBox);
-				this.addBlock(iWorld, blockState4.with(FenceBlock.NORTH, Boolean.valueOf(true)), 6, 7, 6, mutableIntBoundingBox);
-				this.addBlock(iWorld, blockState4.with(FenceBlock.SOUTH, Boolean.valueOf(true)), 6, 7, 8, mutableIntBoundingBox);
-				this.addBlock(iWorld, blockState5.with(FenceBlock.NORTH, Boolean.valueOf(true)), 7, 7, 6, mutableIntBoundingBox);
-				this.addBlock(iWorld, blockState5.with(FenceBlock.SOUTH, Boolean.valueOf(true)), 7, 7, 8, mutableIntBoundingBox);
-				BlockState blockState7 = Blocks.field_10336.getDefaultState();
+				this.addBlock(iWorld, blockState4.method_11657(FenceBlock.field_10905, Boolean.valueOf(true)), 6, 7, 6, mutableIntBoundingBox);
+				this.addBlock(iWorld, blockState4.method_11657(FenceBlock.field_10904, Boolean.valueOf(true)), 6, 7, 8, mutableIntBoundingBox);
+				this.addBlock(iWorld, blockState5.method_11657(FenceBlock.field_10905, Boolean.valueOf(true)), 7, 7, 6, mutableIntBoundingBox);
+				this.addBlock(iWorld, blockState5.method_11657(FenceBlock.field_10904, Boolean.valueOf(true)), 7, 7, 8, mutableIntBoundingBox);
+				BlockState blockState7 = Blocks.field_10336.method_9564();
 				this.addBlock(iWorld, blockState7, 5, 8, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState7, 8, 8, 7, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState7, 6, 8, 6, mutableIntBoundingBox);
@@ -671,24 +678,26 @@ public class StrongholdGenerator {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, j, k, i + 3 - 1, j + 3 - 1, k, AIR, AIR, false);
 					break;
 				case field_15290:
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 1, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10149.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10149.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 1, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10149.method_9564(), i + 1, j, k, mutableIntBoundingBox);
+					this.addBlock(
+						iWorld, Blocks.field_10149.method_9564().method_11657(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox
+					);
 					break;
 				case field_15289:
-					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), i + 1, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)), i, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)), i, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10543.method_9564(), i + 1, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10543.method_9564(), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10903, Boolean.valueOf(true)), i, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10903, Boolean.valueOf(true)), i, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(
 						iWorld,
-						Blocks.field_10576.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true)),
+						Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)).method_11657(PaneBlock.field_10903, Boolean.valueOf(true)),
 						i,
 						j + 2,
 						k,
@@ -696,7 +705,7 @@ public class StrongholdGenerator {
 					);
 					this.addBlock(
 						iWorld,
-						Blocks.field_10576.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true)),
+						Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)).method_11657(PaneBlock.field_10903, Boolean.valueOf(true)),
 						i + 1,
 						j + 2,
 						k,
@@ -704,30 +713,32 @@ public class StrongholdGenerator {
 					);
 					this.addBlock(
 						iWorld,
-						Blocks.field_10576.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true)),
+						Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)).method_11657(PaneBlock.field_10903, Boolean.valueOf(true)),
 						i + 2,
 						j + 2,
 						k,
 						mutableIntBoundingBox
 					);
-					this.addBlock(iWorld, Blocks.field_10576.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)), i + 2, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10576.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)), i + 2, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)), i + 2, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)), i + 2, j, k, mutableIntBoundingBox);
 					break;
 				case field_15291:
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 1, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 2, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_9973.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 1, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j + 2, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), i + 2, j, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_9973.method_9564(), i + 1, j, k, mutableIntBoundingBox);
 					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.field_11043), i + 2, j + 1, k + 1, mutableIntBoundingBox
+						iWorld, Blocks.field_9973.method_9564().method_11657(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox
 					);
 					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.field_11035), i + 2, j + 1, k - 1, mutableIntBoundingBox
+						iWorld, Blocks.field_10494.method_9564().method_11657(AbstractButtonBlock.field_11177, Direction.field_11043), i + 2, j + 1, k + 1, mutableIntBoundingBox
+					);
+					this.addBlock(
+						iWorld, Blocks.field_10494.method_9564().method_11657(AbstractButtonBlock.field_11177, Direction.field_11035), i + 2, j + 1, k - 1, mutableIntBoundingBox
 					);
 			}
 		}
@@ -886,12 +897,18 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, i, 14, 8, i, 14, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 2, 1, 4, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, 1, 1, 9, 1, 4, false, random, StrongholdGenerator.field_15263);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 1, 1, 3, Blocks.field_10164.getDefaultState(), Blocks.field_10164.getDefaultState(), false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, 1, 9, 1, 3, Blocks.field_10164.getDefaultState(), Blocks.field_10164.getDefaultState(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 1, 1, 3, Blocks.field_10164.method_9564(), Blocks.field_10164.method_9564(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, 1, 9, 1, 3, Blocks.field_10164.method_9564(), Blocks.field_10164.method_9564(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 1, 8, 7, 1, 12, false, random, StrongholdGenerator.field_15263);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 9, 6, 1, 11, Blocks.field_10164.getDefaultState(), Blocks.field_10164.getDefaultState(), false);
-			BlockState blockState = Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true));
-			BlockState blockState2 = Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)).with(PaneBlock.EAST, Boolean.valueOf(true));
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 9, 6, 1, 11, Blocks.field_10164.method_9564(), Blocks.field_10164.method_9564(), false);
+			BlockState blockState = Blocks.field_10576
+				.method_9564()
+				.method_11657(PaneBlock.field_10905, Boolean.valueOf(true))
+				.method_11657(PaneBlock.field_10904, Boolean.valueOf(true));
+			BlockState blockState2 = Blocks.field_10576
+				.method_9564()
+				.method_11657(PaneBlock.field_10903, Boolean.valueOf(true))
+				.method_11657(PaneBlock.field_10907, Boolean.valueOf(true));
 
 			for (int j = 3; j < 14; j += 2) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 3, j, 0, 4, j, blockState, blockState, false);
@@ -902,7 +919,7 @@ public class StrongholdGenerator {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, j, 3, 15, j, 4, 15, blockState2, blockState2, false);
 			}
 
-			BlockState blockState3 = Blocks.field_10392.getDefaultState().with(StairsBlock.FACING, Direction.field_11043);
+			BlockState blockState3 = Blocks.field_10392.method_9564().method_11657(StairsBlock.field_11571, Direction.field_11043);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 5, 6, 1, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 2, 6, 6, 2, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 3, 7, 6, 3, 7, false, random, StrongholdGenerator.field_15263);
@@ -913,10 +930,10 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState3, k, 3, 6, mutableIntBoundingBox);
 			}
 
-			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11043);
-			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11035);
-			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11034);
-			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.field_11039);
+			BlockState blockState4 = Blocks.field_10398.method_9564().method_11657(EndPortalFrameBlock.field_10954, Direction.field_11043);
+			BlockState blockState5 = Blocks.field_10398.method_9564().method_11657(EndPortalFrameBlock.field_10954, Direction.field_11035);
+			BlockState blockState6 = Blocks.field_10398.method_9564().method_11657(EndPortalFrameBlock.field_10954, Direction.field_11034);
+			BlockState blockState7 = Blocks.field_10398.method_9564().method_11657(EndPortalFrameBlock.field_10954, Direction.field_11039);
 			boolean bl = true;
 			boolean[] bls = new boolean[12];
 
@@ -925,20 +942,20 @@ public class StrongholdGenerator {
 				bl &= bls[l];
 			}
 
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[0])), 4, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[1])), 5, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[2])), 6, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[3])), 4, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[4])), 5, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[5])), 6, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[6])), 3, 3, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[7])), 3, 3, 10, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[8])), 3, 3, 11, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[9])), 7, 3, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[10])), 7, 3, 10, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[11])), 7, 3, 11, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[0])), 4, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[1])), 5, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[2])), 6, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[3])), 4, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[4])), 5, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[5])), 6, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[6])), 3, 3, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[7])), 3, 3, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[8])), 3, 3, 11, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[9])), 7, 3, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[10])), 7, 3, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[11])), 7, 3, 11, mutableIntBoundingBox);
 			if (bl) {
-				BlockState blockState8 = Blocks.field_10027.getDefaultState();
+				BlockState blockState8 = Blocks.field_10027.method_9564();
 				this.addBlock(iWorld, blockState8, 4, 3, 9, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState8, 5, 3, 9, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState8, 6, 3, 9, mutableIntBoundingBox);
@@ -955,8 +972,8 @@ public class StrongholdGenerator {
 				BlockPos blockPos = new BlockPos(this.applyXTransform(5, 6), i, this.applyZTransform(5, 6));
 				if (mutableIntBoundingBox.contains(blockPos)) {
 					this.spawnerPlaced = true;
-					iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
-					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+					iWorld.method_8652(blockPos, Blocks.field_10260.method_9564(), 2);
+					BlockEntity blockEntity = iWorld.method_8321(blockPos);
 					if (blockEntity instanceof MobSpawnerBlockEntity) {
 						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.field_6125);
 					}
@@ -1004,7 +1021,7 @@ public class StrongholdGenerator {
 			for (int i = 1; i <= 3; i++) {
 				this.addBlock(
 					iWorld,
-					Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true)),
+					Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true)),
 					4,
 					i,
 					4,
@@ -1013,10 +1030,10 @@ public class StrongholdGenerator {
 				this.addBlock(
 					iWorld,
 					Blocks.field_10576
-						.getDefaultState()
-						.with(PaneBlock.NORTH, Boolean.valueOf(true))
-						.with(PaneBlock.SOUTH, Boolean.valueOf(true))
-						.with(PaneBlock.EAST, Boolean.valueOf(true)),
+						.method_9564()
+						.method_11657(PaneBlock.field_10905, Boolean.valueOf(true))
+						.method_11657(PaneBlock.field_10904, Boolean.valueOf(true))
+						.method_11657(PaneBlock.field_10907, Boolean.valueOf(true)),
 					4,
 					i,
 					5,
@@ -1024,7 +1041,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true)),
+					Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true)),
 					4,
 					i,
 					6,
@@ -1032,7 +1049,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)).with(PaneBlock.EAST, Boolean.valueOf(true)),
+					Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10903, Boolean.valueOf(true)).method_11657(PaneBlock.field_10907, Boolean.valueOf(true)),
 					5,
 					i,
 					5,
@@ -1040,7 +1057,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)).with(PaneBlock.EAST, Boolean.valueOf(true)),
+					Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10903, Boolean.valueOf(true)).method_11657(PaneBlock.field_10907, Boolean.valueOf(true)),
 					6,
 					i,
 					5,
@@ -1048,7 +1065,7 @@ public class StrongholdGenerator {
 				);
 				this.addBlock(
 					iWorld,
-					Blocks.field_10576.getDefaultState().with(PaneBlock.WEST, Boolean.valueOf(true)).with(PaneBlock.EAST, Boolean.valueOf(true)),
+					Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10903, Boolean.valueOf(true)).method_11657(PaneBlock.field_10907, Boolean.valueOf(true)),
 					7,
 					i,
 					5,
@@ -1058,7 +1075,7 @@ public class StrongholdGenerator {
 
 			this.addBlock(
 				iWorld,
-				Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true)),
+				Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true)),
 				4,
 				3,
 				2,
@@ -1066,14 +1083,17 @@ public class StrongholdGenerator {
 			);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true)),
+				Blocks.field_10576.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true)),
 				4,
 				3,
 				8,
 				mutableIntBoundingBox
 			);
-			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.field_11039);
-			BlockState blockState2 = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.field_11039).with(DoorBlock.HALF, DoubleBlockHalf.field_12609);
+			BlockState blockState = Blocks.field_9973.method_9564().method_11657(DoorBlock.field_10938, Direction.field_11039);
+			BlockState blockState2 = Blocks.field_9973
+				.method_9564()
+				.method_11657(DoorBlock.field_10938, Direction.field_11039)
+				.method_11657(DoorBlock.field_10946, DoubleBlockHalf.field_12609);
 			this.addBlock(iWorld, blockState, 4, 1, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState2, 4, 2, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState, 4, 1, 8, mutableIntBoundingBox);
@@ -1172,25 +1192,25 @@ public class StrongholdGenerator {
 		@Override
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			for (int i = 0; i < this.length; i++) {
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 0, 0, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 0, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 0, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 0, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 4, 0, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 0, 0, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 0, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 0, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 0, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 4, 0, i, mutableIntBoundingBox);
 
 				for (int j = 1; j <= 3; j++) {
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 0, j, i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), 1, j, i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), 2, j, i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), 3, j, i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 4, j, i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 0, j, i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10543.method_9564(), 1, j, i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10543.method_9564(), 2, j, i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10543.method_9564(), 3, j, i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 4, j, i, mutableIntBoundingBox);
 				}
 
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 0, 4, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 4, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 4, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 4, i, mutableIntBoundingBox);
-				this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 4, 4, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 0, 4, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 4, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 4, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 4, i, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10056.method_9564(), 4, 4, i, mutableIntBoundingBox);
 			}
 
 			return true;
@@ -1256,23 +1276,23 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 4, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 7, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 4);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 6, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 5, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 1, 6, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 5, 2, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 4, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 1, 5, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 4, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 3, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 3, 4, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 3, 2, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 2, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 3, 3, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 2, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 1, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 1, 2, 1, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 1, 2, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 1, 1, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 6, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 5, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 1, 6, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 5, 2, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 4, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 1, 5, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 4, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 3, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 3, 4, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 3, 2, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 2, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 3, 3, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 2, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 1, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 1, 2, 1, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 1, 2, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10136.method_9564(), 1, 1, 3, mutableIntBoundingBox);
 			return true;
 		}
 	}
@@ -1322,78 +1342,78 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 1, 4, 10, 3, 6, AIR, AIR, false);
 			switch (this.roomType) {
 				case 0:
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 2, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11039), 4, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11034), 6, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11035), 5, 3, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.field_11043), 5, 3, 6, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 6, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 6, 1, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 6, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 6, 1, 6, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 5, 1, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 5, 1, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 2, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11039), 4, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11034), 6, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11035), 5, 3, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, Direction.field_11043), 5, 3, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 4, 1, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 4, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 4, 1, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 6, 1, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 6, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 6, 1, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 5, 1, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10136.method_9564(), 5, 1, 6, mutableIntBoundingBox);
 					break;
 				case 1:
 					for (int i = 0; i < 5; i++) {
-						this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 1, 3 + i, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 7, 1, 3 + i, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3 + i, 1, 3, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3 + i, 1, 7, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 1, 3 + i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10056.method_9564(), 7, 1, 3 + i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3 + i, 1, 3, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3 + i, 1, 7, mutableIntBoundingBox);
 					}
 
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 2, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10382.getDefaultState(), 5, 4, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 2, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 5, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10382.method_9564(), 5, 4, 5, mutableIntBoundingBox);
 					break;
 				case 2:
 					for (int i = 1; i <= 9; i++) {
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 1, 3, i, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 9, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 1, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 9, 3, i, mutableIntBoundingBox);
 					}
 
 					for (int i = 1; i <= 9; i++) {
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), i, 3, 1, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), i, 3, 9, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), i, 3, 1, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), i, 3, 9, mutableIntBoundingBox);
 					}
 
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 5, 1, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 5, 1, 6, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 5, 3, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 5, 3, 6, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 4, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 6, 1, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 4, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 6, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 5, 1, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 5, 1, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 5, 3, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 5, 3, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 4, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 6, 1, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 4, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10445.method_9564(), 6, 3, 5, mutableIntBoundingBox);
 
 					for (int i = 1; i <= 3; i++) {
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 4, i, 4, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 6, i, 4, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 4, i, 6, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10445.getDefaultState(), 6, i, 6, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 4, i, 4, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 6, i, 4, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 4, i, 6, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10445.method_9564(), 6, i, 6, mutableIntBoundingBox);
 					}
 
-					this.addBlock(iWorld, Blocks.field_10336.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10336.method_9564(), 5, 3, 5, mutableIntBoundingBox);
 
 					for (int i = 2; i <= 8; i++) {
-						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 2, 3, i, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 3, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10161.method_9564(), 2, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10161.method_9564(), 3, 3, i, mutableIntBoundingBox);
 						if (i <= 3 || i >= 7) {
-							this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 4, 3, i, mutableIntBoundingBox);
-							this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 5, 3, i, mutableIntBoundingBox);
-							this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 6, 3, i, mutableIntBoundingBox);
+							this.addBlock(iWorld, Blocks.field_10161.method_9564(), 4, 3, i, mutableIntBoundingBox);
+							this.addBlock(iWorld, Blocks.field_10161.method_9564(), 5, 3, i, mutableIntBoundingBox);
+							this.addBlock(iWorld, Blocks.field_10161.method_9564(), 6, 3, i, mutableIntBoundingBox);
 						}
 
-						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 7, 3, i, mutableIntBoundingBox);
-						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 8, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10161.method_9564(), 7, 3, i, mutableIntBoundingBox);
+						this.addBlock(iWorld, Blocks.field_10161.method_9564(), 8, 3, i, mutableIntBoundingBox);
 					}
 
-					BlockState blockState = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.field_11039);
+					BlockState blockState = Blocks.field_9983.method_9564().method_11657(LadderBlock.field_11253, Direction.field_11039);
 					this.addBlock(iWorld, blockState, 9, 1, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 2, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 3, 3, mutableIntBoundingBox);
@@ -1433,16 +1453,16 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 7, true, random, StrongholdGenerator.field_15263);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 7, 0);
 			this.generateEntrance(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.Piece.EntranceType.field_15288, 1, 1, 7);
-			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.field_11035);
+			BlockState blockState = Blocks.field_10596.method_9564().method_11657(StairsBlock.field_11571, Direction.field_11035);
 
 			for (int i = 0; i < 6; i++) {
 				this.addBlock(iWorld, blockState, 1, 6 - i, 1 + i, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState, 2, 6 - i, 1 + i, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState, 3, 6 - i, 1 + i, mutableIntBoundingBox);
 				if (i < 5) {
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 1, 5 - i, 1 + i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 2, 5 - i, 1 + i, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 3, 5 - i, 1 + i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 1, 5 - i, 1 + i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 2, 5 - i, 1 + i, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10056.method_9564(), 3, 5 - i, 1 + i, mutableIntBoundingBox);
 				}
 			}
 
@@ -1474,16 +1494,16 @@ public class StrongholdGenerator {
 			if (bl) {
 				float f = random.nextFloat();
 				if (f < 0.2F) {
-					this.block = Blocks.field_10416.getDefaultState();
+					this.block = Blocks.field_10416.method_9564();
 				} else if (f < 0.5F) {
-					this.block = Blocks.field_10065.getDefaultState();
+					this.block = Blocks.field_10065.method_9564();
 				} else if (f < 0.55F) {
-					this.block = Blocks.field_10387.getDefaultState();
+					this.block = Blocks.field_10387.method_9564();
 				} else {
-					this.block = Blocks.field_10056.getDefaultState();
+					this.block = Blocks.field_10056.method_9564();
 				}
 			} else {
-				this.block = Blocks.field_10543.getDefaultState();
+				this.block = Blocks.field_10543.method_9564();
 			}
 		}
 	}

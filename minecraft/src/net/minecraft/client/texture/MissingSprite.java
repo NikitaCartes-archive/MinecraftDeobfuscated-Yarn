@@ -56,7 +56,7 @@ public final class MissingSprite extends Sprite {
 	public static NativeImageBackedTexture getMissingSpriteTexture() {
 		if (TEXTURE == null) {
 			TEXTURE = new NativeImageBackedTexture(IMAGE.get());
-			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
+			MinecraftClient.getInstance().method_1531().method_4616(MISSINGNO, TEXTURE);
 		}
 
 		return TEXTURE;

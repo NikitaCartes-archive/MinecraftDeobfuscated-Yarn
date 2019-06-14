@@ -32,7 +32,7 @@ import org.lwjgl.system.MemoryUtil;
 public final class Window implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final GLFWErrorCallback errorCallback = GLFWErrorCallback.create(this::logGlError);
-	private final WindowEventHandler windowEventHandler;
+	private final WindowEventHandler field_5176;
 	private final MonitorTracker monitorTracker;
 	private Monitor monitor;
 	private final long handle;
@@ -62,7 +62,7 @@ public final class Window implements AutoCloseable {
 		this.monitorTracker = monitorTracker;
 		this.throwExceptionOnGlError();
 		this.setPhase("Pre startup");
-		this.windowEventHandler = windowEventHandler;
+		this.field_5176 = windowEventHandler;
 		Optional<VideoMode> optional = VideoMode.fromString(string);
 		if (optional.isPresent()) {
 			this.videoMode = optional;
@@ -74,7 +74,7 @@ public final class Window implements AutoCloseable {
 
 		this.field_5177 = this.fullscreen = windowSettings.fullscreen;
 		this.monitor = monitorTracker.getMonitor(GLFW.glfwGetPrimaryMonitor());
-		VideoMode videoMode = this.monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
+		VideoMode videoMode = this.monitor.method_1614(this.fullscreen ? this.videoMode : Optional.empty());
 		this.field_5174 = this.width = windowSettings.width > 0 ? windowSettings.width : 1;
 		this.field_5184 = this.height = windowSettings.height > 0 ? windowSettings.height : 1;
 		this.field_5175 = this.positionX = this.monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
@@ -212,8 +212,8 @@ public final class Window implements AutoCloseable {
 
 	private void updateMonitor() {
 		Monitor monitor = this.monitor;
-		this.monitor = this.monitorTracker.getMonitor(this);
-		Option.FULLSCREEN_RESOLUTION.setMax((float)this.monitor.getVideoModeCount());
+		this.monitor = this.monitorTracker.method_1681(this);
+		Option.field_1931.setMax((float)this.monitor.getVideoModeCount());
 	}
 
 	private void onWindowPosChanged(long l, int i, int j) {
@@ -230,7 +230,7 @@ public final class Window implements AutoCloseable {
 				this.framebufferWidth = i;
 				this.framebufferHeight = j;
 				if (this.getFramebufferWidth() != k || this.getFramebufferHeight() != m) {
-					this.windowEventHandler.onResolutionChanged();
+					this.field_5176.onResolutionChanged();
 				}
 			}
 		}
@@ -252,7 +252,7 @@ public final class Window implements AutoCloseable {
 
 	private void onWindowFocusChanged(long l, boolean bl) {
 		if (l == this.handle) {
-			this.windowEventHandler.onWindowFocusChanged(bl);
+			this.field_5176.onWindowFocusChanged(bl);
 		}
 	}
 
@@ -297,7 +297,7 @@ public final class Window implements AutoCloseable {
 			i = this.monitor.getVideoModeCount() - 1;
 		}
 
-		return this.monitor.getVideoMode(i).toString();
+		return this.monitor.method_1620(i).toString();
 	}
 
 	public void method_4505(int i) {
@@ -305,7 +305,7 @@ public final class Window implements AutoCloseable {
 		if (i == 0) {
 			this.videoMode = Optional.empty();
 		} else {
-			this.videoMode = Optional.of(this.monitor.getVideoMode(i - 1));
+			this.videoMode = Optional.of(this.monitor.method_1620(i - 1));
 		}
 
 		if (!this.videoMode.equals(optional)) {
@@ -317,14 +317,14 @@ public final class Window implements AutoCloseable {
 		if (this.fullscreen && this.field_5186) {
 			this.field_5186 = false;
 			this.method_4479();
-			this.windowEventHandler.onResolutionChanged();
+			this.field_5176.onResolutionChanged();
 		}
 	}
 
 	private void method_4479() {
 		boolean bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
 		if (this.fullscreen) {
-			VideoMode videoMode = this.monitor.findClosestVideoMode(this.videoMode);
+			VideoMode videoMode = this.monitor.method_1614(this.videoMode);
 			if (!bl) {
 				this.field_5175 = this.positionX;
 				this.field_5185 = this.positionY;
@@ -338,7 +338,7 @@ public final class Window implements AutoCloseable {
 			this.height = videoMode.getHeight();
 			GLFW.glfwSetWindowMonitor(this.handle, this.monitor.getHandle(), this.positionX, this.positionY, this.width, this.height, videoMode.getRefreshRate());
 		} else {
-			VideoMode videoMode = this.monitor.getCurrentVideoMode();
+			VideoMode videoMode = this.monitor.method_1617();
 			this.positionX = this.field_5175;
 			this.positionY = this.field_5185;
 			this.width = this.field_5174;
@@ -354,9 +354,9 @@ public final class Window implements AutoCloseable {
 	private void method_4485(boolean bl) {
 		try {
 			this.method_4479();
-			this.windowEventHandler.onResolutionChanged();
+			this.field_5176.onResolutionChanged();
 			this.setVsync(bl);
-			this.windowEventHandler.updateDisplay(false);
+			this.field_5176.updateDisplay(false);
 		} catch (Exception var3) {
 			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var3);
 		}

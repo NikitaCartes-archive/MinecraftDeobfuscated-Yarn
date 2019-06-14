@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 public class TextureStitcher {
 	private static final Comparator<TextureStitcher.Holder> comparator = Comparator.comparing(holder -> -holder.height)
 		.thenComparing(holder -> -holder.width)
-		.thenComparing(holder -> holder.sprite.getId());
+		.thenComparing(holder -> holder.field_5249.getId());
 	private final int mipLevel;
 	private final Set<TextureStitcher.Holder> holders = Sets.<TextureStitcher.Holder>newHashSetWithExpectedSize(256);
 	private final List<TextureStitcher.Slot> slots = Lists.<TextureStitcher.Slot>newArrayListWithCapacity(256);
@@ -37,7 +37,7 @@ public class TextureStitcher {
 		return this.height;
 	}
 
-	public void add(Sprite sprite) {
+	public void method_4553(Sprite sprite) {
 		TextureStitcher.Holder holder = new TextureStitcher.Holder(sprite, this.mipLevel);
 		this.holders.add(holder);
 	}
@@ -48,7 +48,7 @@ public class TextureStitcher {
 
 		for (TextureStitcher.Holder holder : list) {
 			if (!this.tryFit(holder)) {
-				throw new TextureStitcherCannotFitException(holder.sprite);
+				throw new TextureStitcherCannotFitException(holder.field_5249);
 			}
 		}
 
@@ -62,7 +62,7 @@ public class TextureStitcher {
 		for (TextureStitcher.Slot slot : this.slots) {
 			slot.addAllFilledSlots(slotx -> {
 				TextureStitcher.Holder holder = slotx.getTexture();
-				Sprite sprite = holder.sprite;
+				Sprite sprite = holder.field_5249;
 				sprite.init(this.width, this.height, slotx.getX(), slotx.getY());
 				list.add(sprite);
 			});
@@ -125,12 +125,12 @@ public class TextureStitcher {
 
 	@Environment(EnvType.CLIENT)
 	static class Holder {
-		public final Sprite sprite;
+		public final Sprite field_5249;
 		public final int width;
 		public final int height;
 
 		public Holder(Sprite sprite, int i) {
-			this.sprite = sprite;
+			this.field_5249 = sprite;
 			this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), i);
 			this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), i);
 		}

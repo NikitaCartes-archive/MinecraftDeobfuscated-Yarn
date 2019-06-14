@@ -42,22 +42,20 @@ public class AdvancementWidget extends DrawableHelper {
 		this.advancement = advancement;
 		this.display = advancementDisplay;
 		this.client = minecraftClient;
-		this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().asFormattedString(), 163);
+		this.field_2713 = minecraftClient.field_1772.trimToWidth(advancementDisplay.getTitle().asFormattedString(), 163);
 		this.xPos = MathHelper.floor(advancementDisplay.getX() * 28.0F);
 		this.yPos = MathHelper.floor(advancementDisplay.getY() * 27.0F);
 		int i = advancement.getRequirementCount();
 		int j = String.valueOf(i).length();
 		int k = i > 1
-			? minecraftClient.textRenderer.getStringWidth("  ")
-				+ minecraftClient.textRenderer.getStringWidth("0") * j * 2
-				+ minecraftClient.textRenderer.getStringWidth("/")
+			? minecraftClient.field_1772.getStringWidth("  ") + minecraftClient.field_1772.getStringWidth("0") * j * 2 + minecraftClient.field_1772.getStringWidth("/")
 			: 0;
-		int l = 29 + minecraftClient.textRenderer.getStringWidth(this.field_2713) + k;
+		int l = 29 + minecraftClient.field_1772.getStringWidth(this.field_2713) + k;
 		String string = advancementDisplay.getDescription().asFormattedString();
 		this.field_2705 = this.method_2330(string, l);
 
 		for (String string2 : this.field_2705) {
-			l = Math.max(l, minecraftClient.textRenderer.getStringWidth(string2));
+			l = Math.max(l, minecraftClient.field_1772.getStringWidth(string2));
 		}
 
 		this.field_2715 = l + 3 + 5;
@@ -67,21 +65,21 @@ public class AdvancementWidget extends DrawableHelper {
 		if (string.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string, i);
+			List<String> list = this.client.field_1772.wrapStringToWidthAsList(string, i);
 			if (list.size() < 2) {
 				return list;
 			} else {
 				String string2 = (String)list.get(0);
 				String string3 = (String)list.get(1);
-				int j = this.client.textRenderer.getStringWidth(string2 + ' ' + string3.split(" ")[0]);
+				int j = this.client.field_1772.getStringWidth(string2 + ' ' + string3.split(" ")[0]);
 				if (j - i <= 10) {
-					return this.client.textRenderer.wrapStringToWidthAsList(string, j);
+					return this.client.field_1772.wrapStringToWidthAsList(string, j);
 				} else {
 					Matcher matcher = field_2708.matcher(string2);
 					if (matcher.matches()) {
-						int k = this.client.textRenderer.getStringWidth(matcher.group(1));
+						int k = this.client.field_1772.getStringWidth(matcher.group(1));
 						if (i - k <= 10) {
-							return this.client.textRenderer.wrapStringToWidthAsList(string, k);
+							return this.client.field_1772.wrapStringToWidthAsList(string, k);
 						}
 					}
 
@@ -97,7 +95,7 @@ public class AdvancementWidget extends DrawableHelper {
 			advancement = advancement.getParent();
 		} while (advancement != null && advancement.getDisplay() == null);
 
-		return advancement != null && advancement.getDisplay() != null ? this.tree.getWidgetForAdvancement(advancement) : null;
+		return advancement != null && advancement.getDisplay() != null ? this.tree.method_2308(advancement) : null;
 	}
 
 	public void method_2323(int i, int j, boolean bl) {
@@ -139,12 +137,12 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.field_2699;
 			}
 
-			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+			this.client.method_1531().bindTexture(WIDGETS_TEX);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
 			this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
 			GuiLighting.enableForItems();
-			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+			this.client.method_1480().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
@@ -163,7 +161,7 @@ public class AdvancementWidget extends DrawableHelper {
 	public void method_2331(int i, int j, float f, int k, int l) {
 		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
 		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
-		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
+		int m = string == null ? 0 : this.client.field_1772.getStringWidth(string);
 		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * 9;
 		float g = this.field_2714 == null ? 0.0F : this.field_2714.getProgressBarPercentage();
 		int n = MathHelper.floor(g * (float)this.field_2715);
@@ -192,7 +190,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int o = this.field_2715 - n;
-		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+		this.client.method_1531().bindTexture(WIDGETS_TEX);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableBlend();
 		int p = j + this.yPos;
@@ -216,29 +214,29 @@ public class AdvancementWidget extends DrawableHelper {
 		this.blit(q + n, p, 200 - o, advancementObtainedStatus2.getSpriteIndex() * 26, o, 26);
 		this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
 		if (bl) {
-			this.client.textRenderer.drawWithShadow(this.field_2713, (float)(q + 5), (float)(j + this.yPos + 9), -1);
+			this.client.field_1772.drawWithShadow(this.field_2713, (float)(q + 5), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos - m), (float)(j + this.yPos + 9), -1);
+				this.client.field_1772.drawWithShadow(string, (float)(i + this.xPos - m), (float)(j + this.yPos + 9), -1);
 			}
 		} else {
-			this.client.textRenderer.drawWithShadow(this.field_2713, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
+			this.client.field_1772.drawWithShadow(this.field_2713, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos + this.field_2715 - m - 5), (float)(j + this.yPos + 9), -1);
+				this.client.field_1772.drawWithShadow(string, (float)(i + this.xPos + this.field_2715 - m - 5), (float)(j + this.yPos + 9), -1);
 			}
 		}
 
 		if (bl2) {
 			for (int s = 0; s < this.field_2705.size(); s++) {
-				this.client.textRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * 9), -5592406);
+				this.client.field_1772.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * 9), -5592406);
 			}
 		} else {
 			for (int s = 0; s < this.field_2705.size(); s++) {
-				this.client.textRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * 9), -5592406);
+				this.client.field_1772.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * 9), -5592406);
 			}
 		}
 
 		GuiLighting.enableForItems();
-		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+		this.client.method_1480().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 	}
 
 	protected void method_2324(int i, int j, int k, int l, int m, int n, int o, int p, int q) {

@@ -39,8 +39,8 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
-		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
+	public boolean method_5957(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.method_8599(this.method_5829());
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected void jump() {
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		this.setVelocity(vec3d.x, (double)(0.42F + (float)this.getSize() * 0.1F), vec3d.z);
 		this.velocityDirty = true;
 	}
@@ -95,7 +95,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected void swimUpward(Tag<Fluid> tag) {
 		if (tag == FluidTags.field_15518) {
-			Vec3d vec3d = this.getVelocity();
+			Vec3d vec3d = this.method_18798();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {

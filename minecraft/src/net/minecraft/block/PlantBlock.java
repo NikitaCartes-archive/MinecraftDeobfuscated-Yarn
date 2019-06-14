@@ -11,7 +11,7 @@ public class PlantBlock extends Block {
 		super(settings);
 	}
 
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	protected boolean method_9695(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Block block = blockState.getBlock();
 		return block == Blocks.field_10219
 			|| block == Blocks.field_10566
@@ -21,18 +21,16 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return this.canPlantOnTop(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2);
+		return this.method_9695(viewableWorld.method_8320(blockPos2), viewableWorld, blockPos2);
 	}
 
 	@Override
@@ -41,7 +39,7 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

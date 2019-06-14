@@ -12,20 +12,20 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 public class BannerPatternItem extends Item {
-	private final BannerPattern pattern;
+	private final BannerPattern field_7900;
 
 	public BannerPatternItem(BannerPattern bannerPattern, Item.Settings settings) {
 		super(settings);
-		this.pattern = bannerPattern;
+		this.field_7900 = bannerPattern;
 	}
 
-	public BannerPattern getPattern() {
-		return this.pattern;
+	public BannerPattern method_7704() {
+		return this.field_7900;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		list.add(this.getDescription().formatted(Formatting.field_1080));
 	}
 

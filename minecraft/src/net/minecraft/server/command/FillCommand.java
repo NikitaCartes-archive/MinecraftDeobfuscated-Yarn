@@ -27,7 +27,7 @@ public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableText("commands.fill.toobig", object, object2)
 	);
-	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
+	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.field_10124.method_9564(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -35,11 +35,11 @@ public class FillCommand {
 			CommandManager.literal("fill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("from", BlockPosArgumentType.blockPos())
+					CommandManager.argument("from", BlockPosArgumentType.create())
 						.then(
-							CommandManager.argument("to", BlockPosArgumentType.blockPos())
+							CommandManager.argument("to", BlockPosArgumentType.create())
 								.then(
-									CommandManager.argument("block", BlockStateArgumentType.blockState())
+									CommandManager.argument("block", BlockStateArgumentType.create())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -65,7 +65,7 @@ public class FillCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
+													CommandManager.argument("filter", BlockPredicateArgumentType.create())
 														.executes(
 															commandContext -> execute(
 																	commandContext.getSource(),
@@ -167,7 +167,7 @@ public class FillCommand {
 				if (predicate == null || predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
 					BlockStateArgument blockStateArgument2 = mode.filter.filter(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld);
 					if (blockStateArgument2 != null) {
-						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+						BlockEntity blockEntity = serverWorld.method_8321(blockPos);
 						Clearable.clear(blockEntity);
 						if (blockStateArgument2.setBlockState(serverWorld, blockPos, 2)) {
 							list.add(blockPos.toImmutable());
@@ -178,8 +178,8 @@ public class FillCommand {
 			}
 
 			for (BlockPos blockPosx : list) {
-				Block block = serverWorld.getBlockState(blockPosx).getBlock();
-				serverWorld.updateNeighbors(blockPosx, block);
+				Block block = serverWorld.method_8320(blockPosx).getBlock();
+				serverWorld.method_8408(blockPosx, block);
 			}
 
 			if (j == 0) {

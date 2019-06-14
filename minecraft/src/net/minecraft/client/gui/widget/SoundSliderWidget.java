@@ -11,7 +11,7 @@ public class SoundSliderWidget extends SliderWidget {
 	private final SoundCategory category;
 
 	public SoundSliderWidget(MinecraftClient minecraftClient, int i, int j, SoundCategory soundCategory, int k) {
-		super(minecraftClient.options, i, j, k, 20, (double)minecraftClient.options.getSoundVolume(soundCategory));
+		super(minecraftClient.field_1690, i, j, k, 20, (double)minecraftClient.field_1690.getSoundVolume(soundCategory));
 		this.category = soundCategory;
 		this.updateMessage();
 	}

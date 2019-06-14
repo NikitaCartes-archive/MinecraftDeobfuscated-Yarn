@@ -67,7 +67,7 @@ public abstract class ItemGroup {
 		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8475);
 		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
+	}).method_7745(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -75,7 +75,7 @@ public abstract class ItemGroup {
 				return new ItemStack(Items.field_8845);
 			}
 		})
-		.setEnchantments(
+		.method_7745(
 			new EnchantmentTarget[]{
 				EnchantmentTarget.ALL,
 				EnchantmentTarget.ARMOR,
@@ -131,7 +131,7 @@ public abstract class ItemGroup {
 	private String texture = "items.png";
 	private boolean scrollbar = true;
 	private boolean tooltip = true;
-	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
+	private EnchantmentTarget[] field_7927 = new EnchantmentTarget[0];
 	private ItemStack icon;
 
 	public ItemGroup(int i, String string) {
@@ -222,18 +222,18 @@ public abstract class ItemGroup {
 		return this.getColumn() == 5;
 	}
 
-	public EnchantmentTarget[] getEnchantments() {
-		return this.enchantments;
+	public EnchantmentTarget[] method_7744() {
+		return this.field_7927;
 	}
 
-	public ItemGroup setEnchantments(EnchantmentTarget... enchantmentTargets) {
-		this.enchantments = enchantmentTargets;
+	public ItemGroup method_7745(EnchantmentTarget... enchantmentTargets) {
+		this.field_7927 = enchantmentTargets;
 		return this;
 	}
 
-	public boolean containsEnchantments(@Nullable EnchantmentTarget enchantmentTarget) {
+	public boolean method_7740(@Nullable EnchantmentTarget enchantmentTarget) {
 		if (enchantmentTarget != null) {
-			for (EnchantmentTarget enchantmentTarget2 : this.enchantments) {
+			for (EnchantmentTarget enchantmentTarget2 : this.field_7927) {
 				if (enchantmentTarget2 == enchantmentTarget) {
 					return true;
 				}

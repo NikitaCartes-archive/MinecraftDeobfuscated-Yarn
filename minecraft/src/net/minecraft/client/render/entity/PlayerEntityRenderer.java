@@ -22,7 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
@@ -37,19 +37,20 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
 		super(entityRenderDispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new StuckArrowsFeatureRenderer<>(this));
-		this.addFeature(new Deadmau5FeatureRenderer(this));
-		this.addFeature(new CapeFeatureRenderer(this));
-		this.addFeature(new HeadFeatureRenderer<>(this));
-		this.addFeature(new ElytraFeatureRenderer<>(this));
-		this.addFeature(new ShoulderParrotFeatureRenderer<>(this));
-		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
+		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.method_4046(new StuckArrowsFeatureRenderer<>(this));
+		this.method_4046(new Deadmau5FeatureRenderer(this));
+		this.method_4046(new CapeFeatureRenderer(this));
+		this.method_4046(new HeadFeatureRenderer<>(this));
+		this.method_4046(new ElytraFeatureRenderer<>(this));
+		this.method_4046(new ShoulderParrotFeatureRenderer<>(this));
+		this.method_4046(new TridentRiptideFeatureRenderer<>(this));
 	}
 
 	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-		if (!abstractClientPlayerEntity.isMainPlayer() || this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
+		if (!abstractClientPlayerEntity.isMainPlayer()
+			|| this.renderManager.camera != null && this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isInSneakingPose()) {
 				i = e - 0.125;
@@ -81,7 +82,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
 			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
 			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
-			if (abstractClientPlayerEntity.getMainArm() == Arm.field_6183) {
+			if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.field_6183) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
 			} else {
@@ -136,7 +137,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, String string, double g) {
 		if (g < 100.0) {
-			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
+			Scoreboard scoreboard = abstractClientPlayerEntity.method_7327();
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
@@ -194,10 +195,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				GlStateManager.rotatef(k * (-90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
 			}
 
-			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
-			Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
-			double d = Entity.squaredHorizontalLength(vec3d2);
-			double e = Entity.squaredHorizontalLength(vec3d);
+			Vec3d vec3d = abstractClientPlayerEntity.method_5828(h);
+			Vec3d vec3d2 = abstractClientPlayerEntity.method_18798();
+			double d = Entity.method_17996(vec3d2);
+			double e = Entity.method_17996(vec3d);
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;

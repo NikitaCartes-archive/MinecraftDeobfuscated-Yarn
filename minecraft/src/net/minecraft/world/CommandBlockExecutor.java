@@ -100,7 +100,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.command;
 	}
 
-	public boolean execute(World world) {
+	public boolean method_8301(World world) {
 		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
@@ -175,8 +175,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (!playerEntity.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openCommandBlockMinecartScreen(this);
+			if (playerEntity.method_5770().isClient) {
+				playerEntity.method_7257(this);
 			}
 
 			return true;
@@ -184,7 +184,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract Vec3d getPos();
+	public abstract Vec3d method_8300();
 
 	public abstract ServerCommandSource getSource();
 

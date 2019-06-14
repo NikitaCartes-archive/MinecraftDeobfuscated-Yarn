@@ -139,7 +139,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		int l = 0;
 		float f = 5.0F;
 
-		for (PlayerEntity playerEntity : world.getEntities(
+		for (PlayerEntity playerEntity : world.method_18467(
 			PlayerEntity.class,
 			new Box(
 				(double)((float)i - 5.0F),
@@ -162,13 +162,13 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	private void playSound(SoundEvent soundEvent) {
-		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
+		ChestType chestType = this.method_11010().method_11654(ChestBlock.field_10770);
 		if (chestType != ChestType.field_12574) {
 			double d = (double)this.pos.getX() + 0.5;
 			double e = (double)this.pos.getY() + 0.5;
 			double f = (double)this.pos.getZ() + 0.5;
 			if (chestType == ChestType.field_12571) {
-				Direction direction = ChestBlock.getFacing(this.getCachedState());
+				Direction direction = ChestBlock.method_9758(this.method_11010());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
@@ -208,10 +208,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	protected void onInvOpenOrClose() {
-		Block block = this.getCachedState().getBlock();
+		Block block = this.method_11010().getBlock();
 		if (block instanceof ChestBlock) {
-			this.world.addBlockAction(this.pos, block, 1, this.viewerCount);
-			this.world.updateNeighborsAlways(this.pos, block);
+			this.world.method_8427(this.pos, block, 1, this.viewerCount);
+			this.world.method_8452(this.pos, block);
 		}
 	}
 
@@ -232,9 +232,9 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
-		BlockState blockState = blockView.getBlockState(blockPos);
+		BlockState blockState = blockView.method_8320(blockPos);
 		if (blockState.getBlock().hasBlockEntity()) {
-			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+			BlockEntity blockEntity = blockView.method_8321(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				return ((ChestBlockEntity)blockEntity).viewerCount;
 			}

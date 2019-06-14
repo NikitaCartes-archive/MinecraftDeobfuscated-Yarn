@@ -62,7 +62,7 @@ public abstract class DrawableHelper {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(g, h, o, f);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.method_1328(7, VertexFormats.field_1592);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
@@ -90,7 +90,7 @@ public abstract class DrawableHelper {
 		GlStateManager.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1576);
 		bufferBuilder.vertex((double)k, (double)j, (double)this.blitOffset).color(g, h, o, f).next();
 		bufferBuilder.vertex((double)i, (double)j, (double)this.blitOffset).color(g, h, o, f).next();
 		bufferBuilder.vertex((double)i, (double)l, (double)this.blitOffset).color(q, r, s, p).next();
@@ -141,7 +141,7 @@ public abstract class DrawableHelper {
 	protected static void innerBlit(int i, int j, int k, int l, int m, float f, float g, float h, float n) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.method_1328(7, VertexFormats.field_1585);
 		bufferBuilder.vertex((double)i, (double)l, (double)m).texture((double)f, (double)n).next();
 		bufferBuilder.vertex((double)j, (double)l, (double)m).texture((double)g, (double)n).next();
 		bufferBuilder.vertex((double)j, (double)k, (double)m).texture((double)g, (double)h).next();

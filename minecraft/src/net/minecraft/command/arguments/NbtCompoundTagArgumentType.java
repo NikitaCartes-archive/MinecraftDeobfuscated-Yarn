@@ -15,7 +15,7 @@ public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 	private NbtCompoundTagArgumentType() {
 	}
 
-	public static NbtCompoundTagArgumentType nbtCompound() {
+	public static NbtCompoundTagArgumentType create() {
 		return new NbtCompoundTagArgumentType();
 	}
 

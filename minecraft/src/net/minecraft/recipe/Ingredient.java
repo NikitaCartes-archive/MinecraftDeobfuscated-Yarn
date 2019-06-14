@@ -117,7 +117,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemConvertible... itemConvertibles) {
+	public static Ingredient method_8091(ItemConvertible... itemConvertibles) {
 		return ofEntries(Arrays.stream(itemConvertibles).map(itemConvertible -> new Ingredient.StackEntry(new ItemStack(itemConvertible))));
 	}
 

@@ -20,7 +20,7 @@ public class BlockStatePredicate implements Predicate<BlockState> {
 	}
 
 	public static BlockStatePredicate forBlock(Block block) {
-		return new BlockStatePredicate(block.getStateFactory());
+		return new BlockStatePredicate(block.method_9595());
 	}
 
 	public boolean method_11760(@Nullable BlockState blockState) {
@@ -29,7 +29,7 @@ public class BlockStatePredicate implements Predicate<BlockState> {
 				return true;
 			} else {
 				for (Entry<Property<?>, Predicate<Object>> entry : this.propertyTests.entrySet()) {
-					if (!this.testProperty(blockState, (Property)entry.getKey(), (Predicate<Object>)entry.getValue())) {
+					if (!this.method_11761(blockState, (Property)entry.getKey(), (Predicate<Object>)entry.getValue())) {
 						return false;
 					}
 				}
@@ -41,12 +41,12 @@ public class BlockStatePredicate implements Predicate<BlockState> {
 		}
 	}
 
-	protected <T extends Comparable<T>> boolean testProperty(BlockState blockState, Property<T> property, Predicate<Object> predicate) {
-		T comparable = blockState.get(property);
+	protected <T extends Comparable<T>> boolean method_11761(BlockState blockState, Property<T> property, Predicate<Object> predicate) {
+		T comparable = blockState.method_11654(property);
 		return predicate.test(comparable);
 	}
 
-	public <V extends Comparable<V>> BlockStatePredicate with(Property<V> property, Predicate<Object> predicate) {
+	public <V extends Comparable<V>> BlockStatePredicate method_11762(Property<V> property, Predicate<Object> predicate) {
 		if (!this.factory.getProperties().contains(property)) {
 			throw new IllegalArgumentException(this.factory + " cannot support property " + property);
 		} else {

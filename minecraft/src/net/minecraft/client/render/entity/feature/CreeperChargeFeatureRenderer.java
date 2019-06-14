@@ -34,7 +34,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.getModel().copyStateTo(this.model);
-			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+			GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 			gameRenderer.setFogBlack(true);
 			this.model.render(creeperEntity, f, g, i, j, k, l);
 			gameRenderer.setFogBlack(false);

@@ -105,7 +105,7 @@ public class SheepEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.field_8861), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.method_8091(Items.field_8861), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, this.eatGrassGoal);
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
@@ -121,7 +121,7 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	public void tickMovement() {
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			this.field_6865 = Math.max(0, this.field_6865 - 1);
 		}
 
@@ -220,7 +220,7 @@ public class SheepEntity extends AnimalEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isBaby()) {
 			this.dropItems();
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 		}
@@ -229,15 +229,15 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	public void dropItems() {
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.setSheared(true);
 			int i = 1 + this.random.nextInt(3);
 
 			for (int j = 0; j < i; j++) {
-				ItemEntity itemEntity = this.dropItem((ItemConvertible)DROPS.get(this.getColor()), 1);
+				ItemEntity itemEntity = this.method_5870((ItemConvertible)DROPS.get(this.getColor()), 1);
 				if (itemEntity != null) {
-					itemEntity.setVelocity(
-						itemEntity.getVelocity()
+					itemEntity.method_18799(
+						itemEntity.method_18798()
 							.add(
 								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
 								(double)(this.random.nextFloat() * 0.05F),
@@ -281,7 +281,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14870, 0.15F, 1.0F);
 	}
 
@@ -324,7 +324,7 @@ public class SheepEntity extends AnimalEntity {
 
 	public SheepEntity method_6640(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-		SheepEntity sheepEntity2 = EntityType.field_6115.create(this.world);
+		SheepEntity sheepEntity2 = EntityType.field_6115.method_5883(this.field_6002);
 		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}
@@ -339,10 +339,10 @@ public class SheepEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setColor(generateDefaultColor(iWorld.getRandom()));
 		return entityData;
 	}
@@ -351,15 +351,15 @@ public class SheepEntity extends AnimalEntity {
 		DyeColor dyeColor = ((SheepEntity)animalEntity).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)animalEntity2).getColor();
 		CraftingInventory craftingInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
-		return (DyeColor)this.world
+		return (DyeColor)this.field_6002
 			.getRecipeManager()
-			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
+			.method_8132(RecipeType.CRAFTING, craftingInventory, this.field_6002)
 			.map(craftingRecipe -> craftingRecipe.craft(craftingInventory))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
 			.map(DyeItem::getColor)
-			.orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
+			.orElseGet(() -> this.field_6002.random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
 	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor dyeColor, DyeColor dyeColor2) {

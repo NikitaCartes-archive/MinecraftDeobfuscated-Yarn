@@ -26,12 +26,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DetectorRailBlock extends AbstractRailBlock {
-	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
-	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final EnumProperty<RailShape> field_10914 = Properties.field_12542;
+	public static final BooleanProperty field_10913 = Properties.field_12484;
 
 	public DetectorRailBlock(Block.Settings settings) {
 		super(true, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(SHAPE, RailShape.field_12665));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_10913, Boolean.valueOf(false)).method_11657(field_10914, RailShape.field_12665));
 	}
 
 	@Override
@@ -40,42 +40,42 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState blockState) {
+	public boolean method_9506(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient) {
-			if (!(Boolean)blockState.get(POWERED)) {
-				this.updatePoweredStatus(world, blockPos, blockState);
+			if (!(Boolean)blockState.method_11654(field_10913)) {
+				this.method_10002(world, blockPos, blockState);
 			}
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient && (Boolean)blockState.get(POWERED)) {
-			this.updatePoweredStatus(world, blockPos, blockState);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!world.isClient && (Boolean)blockState.method_11654(field_10913)) {
+			this.method_10002(world, blockPos, blockState);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(POWERED) ? 15 : 0;
+	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.method_11654(field_10913) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		if (!(Boolean)blockState.get(POWERED)) {
+	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		if (!(Boolean)blockState.method_11654(field_10913)) {
 			return 0;
 		} else {
 			return direction == Direction.field_11036 ? 15 : 0;
 		}
 	}
 
-	private void updatePoweredStatus(World world, BlockPos blockPos, BlockState blockState) {
-		boolean bl = (Boolean)blockState.get(POWERED);
+	private void method_10002(World world, BlockPos blockPos, BlockState blockState) {
+		boolean bl = (Boolean)blockState.method_11654(field_10913);
 		boolean bl2 = false;
 		List<AbstractMinecartEntity> list = this.getCarts(world, blockPos, AbstractMinecartEntity.class, null);
 		if (!list.isEmpty()) {
@@ -83,61 +83,61 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		}
 
 		if (bl2 && !bl) {
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 3);
-			this.updateNearbyRails(world, blockPos, blockState, true);
-			world.updateNeighborsAlways(blockPos, this);
-			world.updateNeighborsAlways(blockPos.down(), this);
+			world.method_8652(blockPos, blockState.method_11657(field_10913, Boolean.valueOf(true)), 3);
+			this.method_10003(world, blockPos, blockState, true);
+			world.method_8452(blockPos, this);
+			world.method_8452(blockPos.down(), this);
 			world.scheduleBlockRender(blockPos);
 		}
 
 		if (!bl2 && bl) {
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 3);
-			this.updateNearbyRails(world, blockPos, blockState, false);
-			world.updateNeighborsAlways(blockPos, this);
-			world.updateNeighborsAlways(blockPos.down(), this);
+			world.method_8652(blockPos, blockState.method_11657(field_10913, Boolean.valueOf(false)), 3);
+			this.method_10003(world, blockPos, blockState, false);
+			world.method_8452(blockPos, this);
+			world.method_8452(blockPos.down(), this);
 			world.scheduleBlockRender(blockPos);
 		}
 
 		if (bl2) {
-			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+			world.method_8397().schedule(blockPos, this, this.getTickRate(world));
 		}
 
-		world.updateHorizontalAdjacent(blockPos, this);
+		world.method_8455(blockPos, this);
 	}
 
-	protected void updateNearbyRails(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+	protected void method_10003(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
 		RailPlacementHelper railPlacementHelper = new RailPlacementHelper(world, blockPos, blockState);
 
 		for (BlockPos blockPos2 : railPlacementHelper.getNeighbors()) {
-			BlockState blockState2 = world.getBlockState(blockPos2);
+			BlockState blockState2 = world.method_8320(blockPos2);
 			blockState2.neighborUpdate(world, blockPos2, blockState2.getBlock(), blockPos, false);
 		}
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			super.onBlockAdded(blockState, world, blockPos, blockState2, bl);
-			this.updatePoweredStatus(world, blockPos, blockState);
+			super.method_9615(blockState, world, blockPos, blockState2, bl);
+			this.method_10002(world, blockPos, blockState);
 		}
 	}
 
 	@Override
-	public Property<RailShape> getShapeProperty() {
-		return SHAPE;
+	public Property<RailShape> method_9474() {
+		return field_10914;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean method_9498(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		if ((Boolean)blockState.get(POWERED)) {
+	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
+		if ((Boolean)blockState.method_11654(field_10913)) {
 			List<CommandBlockMinecartEntity> list = this.getCarts(world, blockPos, CommandBlockMinecartEntity.class, null);
 			if (!list.isEmpty()) {
-				return ((CommandBlockMinecartEntity)list.get(0)).getCommandExecutor().getSuccessCount();
+				return ((CommandBlockMinecartEntity)list.get(0)).method_7567().getSuccessCount();
 			}
 
 			List<AbstractMinecartEntity> list2 = this.getCarts(world, blockPos, AbstractMinecartEntity.class, EntityPredicates.VALID_INVENTORIES);
@@ -150,10 +150,10 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	protected <T extends AbstractMinecartEntity> List<T> getCarts(World world, BlockPos blockPos, Class<T> class_, @Nullable Predicate<Entity> predicate) {
-		return world.getEntities(class_, this.getCartDetectionBox(blockPos), predicate);
+		return world.method_8390(class_, this.method_10004(blockPos), predicate);
 	}
 
-	private Box getCartDetectionBox(BlockPos blockPos) {
+	private Box method_10004(BlockPos blockPos) {
 		float f = 0.2F;
 		return new Box(
 			(double)((float)blockPos.getX() + 0.2F),
@@ -166,72 +166,72 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
 			case field_11464:
-				switch ((RailShape)blockState.get(SHAPE)) {
+				switch ((RailShape)blockState.method_11654(field_10914)) {
 					case field_12667:
-						return blockState.with(SHAPE, RailShape.field_12666);
+						return blockState.method_11657(field_10914, RailShape.field_12666);
 					case field_12666:
-						return blockState.with(SHAPE, RailShape.field_12667);
+						return blockState.method_11657(field_10914, RailShape.field_12667);
 					case field_12670:
-						return blockState.with(SHAPE, RailShape.field_12668);
+						return blockState.method_11657(field_10914, RailShape.field_12668);
 					case field_12668:
-						return blockState.with(SHAPE, RailShape.field_12670);
+						return blockState.method_11657(field_10914, RailShape.field_12670);
 					case field_12664:
-						return blockState.with(SHAPE, RailShape.field_12672);
+						return blockState.method_11657(field_10914, RailShape.field_12672);
 					case field_12671:
-						return blockState.with(SHAPE, RailShape.field_12663);
+						return blockState.method_11657(field_10914, RailShape.field_12663);
 					case field_12672:
-						return blockState.with(SHAPE, RailShape.field_12664);
+						return blockState.method_11657(field_10914, RailShape.field_12664);
 					case field_12663:
-						return blockState.with(SHAPE, RailShape.field_12671);
+						return blockState.method_11657(field_10914, RailShape.field_12671);
 				}
 			case field_11465:
-				switch ((RailShape)blockState.get(SHAPE)) {
+				switch ((RailShape)blockState.method_11654(field_10914)) {
 					case field_12667:
-						return blockState.with(SHAPE, RailShape.field_12670);
+						return blockState.method_11657(field_10914, RailShape.field_12670);
 					case field_12666:
-						return blockState.with(SHAPE, RailShape.field_12668);
+						return blockState.method_11657(field_10914, RailShape.field_12668);
 					case field_12670:
-						return blockState.with(SHAPE, RailShape.field_12666);
+						return blockState.method_11657(field_10914, RailShape.field_12666);
 					case field_12668:
-						return blockState.with(SHAPE, RailShape.field_12667);
+						return blockState.method_11657(field_10914, RailShape.field_12667);
 					case field_12664:
-						return blockState.with(SHAPE, RailShape.field_12663);
+						return blockState.method_11657(field_10914, RailShape.field_12663);
 					case field_12671:
-						return blockState.with(SHAPE, RailShape.field_12664);
+						return blockState.method_11657(field_10914, RailShape.field_12664);
 					case field_12672:
-						return blockState.with(SHAPE, RailShape.field_12671);
+						return blockState.method_11657(field_10914, RailShape.field_12671);
 					case field_12663:
-						return blockState.with(SHAPE, RailShape.field_12672);
+						return blockState.method_11657(field_10914, RailShape.field_12672);
 					case field_12665:
-						return blockState.with(SHAPE, RailShape.field_12674);
+						return blockState.method_11657(field_10914, RailShape.field_12674);
 					case field_12674:
-						return blockState.with(SHAPE, RailShape.field_12665);
+						return blockState.method_11657(field_10914, RailShape.field_12665);
 				}
 			case field_11463:
-				switch ((RailShape)blockState.get(SHAPE)) {
+				switch ((RailShape)blockState.method_11654(field_10914)) {
 					case field_12667:
-						return blockState.with(SHAPE, RailShape.field_12668);
+						return blockState.method_11657(field_10914, RailShape.field_12668);
 					case field_12666:
-						return blockState.with(SHAPE, RailShape.field_12670);
+						return blockState.method_11657(field_10914, RailShape.field_12670);
 					case field_12670:
-						return blockState.with(SHAPE, RailShape.field_12667);
+						return blockState.method_11657(field_10914, RailShape.field_12667);
 					case field_12668:
-						return blockState.with(SHAPE, RailShape.field_12666);
+						return blockState.method_11657(field_10914, RailShape.field_12666);
 					case field_12664:
-						return blockState.with(SHAPE, RailShape.field_12671);
+						return blockState.method_11657(field_10914, RailShape.field_12671);
 					case field_12671:
-						return blockState.with(SHAPE, RailShape.field_12672);
+						return blockState.method_11657(field_10914, RailShape.field_12672);
 					case field_12672:
-						return blockState.with(SHAPE, RailShape.field_12663);
+						return blockState.method_11657(field_10914, RailShape.field_12663);
 					case field_12663:
-						return blockState.with(SHAPE, RailShape.field_12664);
+						return blockState.method_11657(field_10914, RailShape.field_12664);
 					case field_12665:
-						return blockState.with(SHAPE, RailShape.field_12674);
+						return blockState.method_11657(field_10914, RailShape.field_12674);
 					case field_12674:
-						return blockState.with(SHAPE, RailShape.field_12665);
+						return blockState.method_11657(field_10914, RailShape.field_12665);
 				}
 			default:
 				return blockState;
@@ -239,52 +239,52 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		RailShape railShape = blockState.get(SHAPE);
+	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
+		RailShape railShape = blockState.method_11654(field_10914);
 		switch (blockMirror) {
 			case field_11300:
 				switch (railShape) {
 					case field_12670:
-						return blockState.with(SHAPE, RailShape.field_12668);
+						return blockState.method_11657(field_10914, RailShape.field_12668);
 					case field_12668:
-						return blockState.with(SHAPE, RailShape.field_12670);
+						return blockState.method_11657(field_10914, RailShape.field_12670);
 					case field_12664:
-						return blockState.with(SHAPE, RailShape.field_12663);
+						return blockState.method_11657(field_10914, RailShape.field_12663);
 					case field_12671:
-						return blockState.with(SHAPE, RailShape.field_12672);
+						return blockState.method_11657(field_10914, RailShape.field_12672);
 					case field_12672:
-						return blockState.with(SHAPE, RailShape.field_12671);
+						return blockState.method_11657(field_10914, RailShape.field_12671);
 					case field_12663:
-						return blockState.with(SHAPE, RailShape.field_12664);
+						return blockState.method_11657(field_10914, RailShape.field_12664);
 					default:
-						return super.mirror(blockState, blockMirror);
+						return super.method_9569(blockState, blockMirror);
 				}
 			case field_11301:
 				switch (railShape) {
 					case field_12667:
-						return blockState.with(SHAPE, RailShape.field_12666);
+						return blockState.method_11657(field_10914, RailShape.field_12666);
 					case field_12666:
-						return blockState.with(SHAPE, RailShape.field_12667);
+						return blockState.method_11657(field_10914, RailShape.field_12667);
 					case field_12670:
 					case field_12668:
 					default:
 						break;
 					case field_12664:
-						return blockState.with(SHAPE, RailShape.field_12671);
+						return blockState.method_11657(field_10914, RailShape.field_12671);
 					case field_12671:
-						return blockState.with(SHAPE, RailShape.field_12664);
+						return blockState.method_11657(field_10914, RailShape.field_12664);
 					case field_12672:
-						return blockState.with(SHAPE, RailShape.field_12663);
+						return blockState.method_11657(field_10914, RailShape.field_12663);
 					case field_12663:
-						return blockState.with(SHAPE, RailShape.field_12672);
+						return blockState.method_11657(field_10914, RailShape.field_12672);
 				}
 		}
 
-		return super.mirror(blockState, blockMirror);
+		return super.method_9569(blockState, blockMirror);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(SHAPE, POWERED);
+		builder.method_11667(field_10914, field_10913);
 	}
 }

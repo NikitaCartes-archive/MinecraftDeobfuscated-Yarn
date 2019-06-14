@@ -112,12 +112,12 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 				double e = this.method_13424(o, p, blockPos2, m, n, d);
 				if (e < 0.0) {
 					BlockPos blockPos3 = blockPos.add(o, j, p);
-					Block block = iWorld.getBlockState(blockPos3).getBlock();
+					Block block = iWorld.method_8320(blockPos3).getBlock();
 					if (this.method_13420(block) || block == Blocks.field_10491) {
 						if (bl) {
-							this.setBlockState(iWorld, blockPos3, Blocks.field_10382.getDefaultState());
+							this.setBlockState(iWorld, blockPos3, Blocks.field_10382.method_9564());
 						} else {
-							this.setBlockState(iWorld, blockPos3, Blocks.field_10124.getDefaultState());
+							this.setBlockState(iWorld, blockPos3, Blocks.field_10124.method_9564());
 							this.method_13422(iWorld, blockPos3);
 						}
 					}
@@ -127,8 +127,8 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 	}
 
 	private void method_13422(IWorld iWorld, BlockPos blockPos) {
-		if (iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10477) {
-			this.setBlockState(iWorld, blockPos.up(), Blocks.field_10124.getDefaultState());
+		if (iWorld.method_8320(blockPos.up()).getBlock() == Blocks.field_10477) {
+			this.setBlockState(iWorld, blockPos.up(), Blocks.field_10124.method_9564());
 		}
 	}
 
@@ -148,13 +148,13 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 	}
 
 	private void method_13425(BlockPos blockPos, IWorld iWorld, Random random, int i, int j, boolean bl, boolean bl2, BlockState blockState) {
-		BlockState blockState2 = iWorld.getBlockState(blockPos);
+		BlockState blockState2 = iWorld.method_8320(blockPos);
 		Block block = blockState2.getBlock();
-		if (blockState2.getMaterial() == Material.AIR || block == Blocks.field_10491 || block == Blocks.field_10295 || block == Blocks.field_10382) {
+		if (blockState2.method_11620() == Material.AIR || block == Blocks.field_10491 || block == Blocks.field_10295 || block == Blocks.field_10382) {
 			boolean bl3 = !bl || random.nextDouble() > 0.05;
 			int k = bl ? 3 : 2;
 			if (bl2 && block != Blocks.field_10382 && (double)i <= (double)random.nextInt(Math.max(1, j / k)) + (double)j * 0.6 && bl3) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10491.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.field_10491.method_9564());
 			} else {
 				this.setBlockState(iWorld, blockPos, blockState);
 			}
@@ -209,7 +209,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 	}
 
 	private boolean method_13414(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos.down()).getMaterial() == Material.AIR;
+		return blockView.method_8320(blockPos.down()).method_11620() == Material.AIR;
 	}
 
 	private void method_13418(IWorld iWorld, BlockPos blockPos, int i, int j, boolean bl, int k) {
@@ -219,17 +219,17 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 			for (int n = -l; n <= l; n++) {
 				for (int o = 0; o <= j; o++) {
 					BlockPos blockPos2 = blockPos.add(m, o, n);
-					Block block = iWorld.getBlockState(blockPos2).getBlock();
+					Block block = iWorld.method_8320(blockPos2).getBlock();
 					if (this.method_13420(block) || block == Blocks.field_10477) {
 						if (this.method_13414(iWorld, blockPos2)) {
-							this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
-							this.setBlockState(iWorld, blockPos2.up(), Blocks.field_10124.getDefaultState());
+							this.setBlockState(iWorld, blockPos2, Blocks.field_10124.method_9564());
+							this.setBlockState(iWorld, blockPos2.up(), Blocks.field_10124.method_9564());
 						} else if (this.method_13420(block)) {
 							Block[] blocks = new Block[]{
-								iWorld.getBlockState(blockPos2.west()).getBlock(),
-								iWorld.getBlockState(blockPos2.east()).getBlock(),
-								iWorld.getBlockState(blockPos2.north()).getBlock(),
-								iWorld.getBlockState(blockPos2.south()).getBlock()
+								iWorld.method_8320(blockPos2.west()).getBlock(),
+								iWorld.method_8320(blockPos2.east()).getBlock(),
+								iWorld.method_8320(blockPos2.north()).getBlock(),
+								iWorld.method_8320(blockPos2.south()).getBlock()
 							};
 							int p = 0;
 
@@ -240,7 +240,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 							}
 
 							if (p >= 3) {
-								this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+								this.setBlockState(iWorld, blockPos2, Blocks.field_10124.method_9564());
 							}
 						}
 					}

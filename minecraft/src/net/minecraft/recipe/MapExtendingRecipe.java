@@ -19,15 +19,15 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			3,
 			DefaultedList.create(
 				Ingredient.EMPTY,
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8204),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407)
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8204),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407)
 			),
 			new ItemStack(Items.field_8895)
 		);
@@ -50,17 +50,17 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
-				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
+				MapState mapState = FilledMapItem.method_8001(itemStack, world);
 				if (mapState == null) {
 					return false;
 				} else {
-					return this.matches(mapState) ? false : mapState.scale < 4;
+					return this.method_8120(mapState) ? false : mapState.scale < 4;
 				}
 			}
 		}
 	}
 
-	private boolean matches(MapState mapState) {
+	private boolean method_8120(MapState mapState) {
 		if (mapState.icons != null) {
 			for (MapIcon mapIcon : mapState.icons.values()) {
 				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {
@@ -96,6 +96,6 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.MAP_EXTENDING;
+		return RecipeSerializer.field_9039;
 	}
 }

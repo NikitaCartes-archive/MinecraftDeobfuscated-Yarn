@@ -65,7 +65,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
+		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -203,7 +203,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 					double d = vec3d.length();
 					vec3d = vec3d.normalize();
 					if (this.method_7051(vec3d, MathHelper.ceil(d))) {
-						this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
+						this.ghast.method_18799(this.ghast.method_18798().add(vec3d.multiply(0.1)));
 					} else {
 						this.state = MoveControl.State.field_6377;
 					}
@@ -212,11 +212,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		}
 
 		private boolean method_7051(Vec3d vec3d, int i) {
-			Box box = this.ghast.getBoundingBox();
+			Box box = this.ghast.method_5829();
 
 			for (int j = 1; j < i; j++) {
-				box = box.offset(vec3d);
-				if (!this.ghast.world.doesNotCollide(this.ghast, box)) {
+				box = box.method_997(vec3d);
+				if (!this.ghast.field_6002.method_8587(this.ghast, box)) {
 					return false;
 				}
 			}
@@ -241,7 +241,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			if (this.ghast.getTarget() == null) {
-				Vec3d vec3d = this.ghast.getVelocity();
+				Vec3d vec3d = this.ghast.method_18798();
 				this.ghast.yaw = -((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI);
 				this.ghast.field_6283 = this.ghast.yaw;
 			} else {
@@ -285,7 +285,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			LivingEntity livingEntity = this.ghast.getTarget();
 			double d = 64.0;
 			if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
-				World world = this.ghast.world;
+				World world = this.ghast.field_6002;
 				this.cooldown++;
 				if (this.cooldown == 10) {
 					world.playLevelEvent(null, 1015, new BlockPos(this.ghast), 0);
@@ -293,9 +293,9 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 				if (this.cooldown == 20) {
 					double e = 4.0;
-					Vec3d vec3d = this.ghast.getRotationVec(1.0F);
+					Vec3d vec3d = this.ghast.method_5828(1.0F);
 					double f = livingEntity.x - (this.ghast.x + vec3d.x * 4.0);
-					double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0F));
+					double g = livingEntity.method_5829().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0F));
 					double h = livingEntity.z - (this.ghast.z + vec3d.z * 4.0);
 					world.playLevelEvent(null, 1016, new BlockPos(this.ghast), 0);
 					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);

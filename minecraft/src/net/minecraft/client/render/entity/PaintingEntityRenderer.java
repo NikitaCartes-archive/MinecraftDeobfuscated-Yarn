@@ -38,7 +38,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(paintingEntity));
 		}
 
-		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
+		PaintingManager paintingManager = MinecraftClient.getInstance().method_18321();
 		this.method_4074(
 			paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite()
 		);
@@ -90,7 +90,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float ah = sprite.getV(e * (double)(x - (z + 1)));
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+				bufferBuilder.method_1328(7, VertexFormats.field_1589);
 				bufferBuilder.vertex((double)aa, (double)ad, -0.5).texture((double)af, (double)ag).normal(0.0F, 0.0F, -1.0F).next();
 				bufferBuilder.vertex((double)ab, (double)ad, -0.5).texture((double)ae, (double)ag).normal(0.0F, 0.0F, -1.0F).next();
 				bufferBuilder.vertex((double)ab, (double)ac, -0.5).texture((double)ae, (double)ah).normal(0.0F, 0.0F, -1.0F).next();
@@ -124,7 +124,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		int i = MathHelper.floor(paintingEntity.x);
 		int j = MathHelper.floor(paintingEntity.y + (double)(g / 16.0F));
 		int k = MathHelper.floor(paintingEntity.z);
-		Direction direction = paintingEntity.facing;
+		Direction direction = paintingEntity.getHorizontalFacing();
 		if (direction == Direction.field_11043) {
 			i = MathHelper.floor(paintingEntity.x + (double)(f / 16.0F));
 		}

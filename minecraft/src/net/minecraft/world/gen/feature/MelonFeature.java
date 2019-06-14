@@ -20,9 +20,9 @@ public class MelonFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		for (int i = 0; i < 64; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			BlockState blockState = Blocks.field_10545.getDefaultState();
-			if (iWorld.getBlockState(blockPos2).getMaterial().isReplaceable() && iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.field_10219) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			BlockState blockState = Blocks.field_10545.method_9564();
+			if (iWorld.method_8320(blockPos2).method_11620().isReplaceable() && iWorld.method_8320(blockPos2.down()).getBlock() == Blocks.field_10219) {
+				iWorld.method_8652(blockPos2, blockState, 2);
 			}
 		}
 

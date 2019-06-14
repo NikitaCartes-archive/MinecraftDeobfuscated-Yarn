@@ -28,19 +28,17 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
-		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-			nativeImageBackedTexture.getImage().untrack();
+	private static final NativeImageBackedTexture field_4742 = SystemUtil.consume(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+		nativeImageBackedTexture.getImage().untrack();
 
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
-				}
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
 			}
-
-			nativeImageBackedTexture.upload();
 		}
-	);
+
+		nativeImageBackedTexture.upload();
+	});
 	protected M model;
 	protected final FloatBuffer colorOverlayBuffer = GlAllocationUtils.allocateFloatBuffer(4);
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
@@ -52,7 +50,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.field_4673 = f;
 	}
 
-	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
+	protected final boolean method_4046(FeatureRenderer<T, M> featureRenderer) {
 		return this.features.add(featureRenderer);
 	}
 
@@ -184,7 +182,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		boolean bl = this.method_4056(livingEntity);
-		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
+		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().field_1724);
 		if (bl || bl2) {
 			if (!this.bindEntityTexture(livingEntity)) {
 				return;
@@ -264,7 +262,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.texEnv(8960, 8705, this.colorOverlayBuffer);
 			GlStateManager.activeTexture(GLX.GL_TEXTURE2);
 			GlStateManager.enableTexture();
-			GlStateManager.bindTexture(colorOverlayTexture.getGlId());
+			GlStateManager.bindTexture(field_4742.getGlId());
 			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
 			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
 			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_PREVIOUS);
@@ -411,7 +409,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	public void method_4041(T livingEntity, double d, double e, double f) {
 		if (this.method_4055(livingEntity)) {
-			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
+			double g = livingEntity.method_5707(this.renderManager.camera.getPos());
 			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
 				String string = livingEntity.getDisplayName().asFormattedString();
@@ -422,11 +420,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected boolean method_4055(T livingEntity) {
-		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
+		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().field_1724;
 		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
-			AbstractTeam abstractTeam = livingEntity.getScoreboardTeam();
-			AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();
+			AbstractTeam abstractTeam = livingEntity.method_5781();
+			AbstractTeam abstractTeam2 = clientPlayerEntity.method_5781();
 			if (abstractTeam != null) {
 				AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {

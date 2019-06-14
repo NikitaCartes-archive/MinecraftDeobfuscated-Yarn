@@ -13,6 +13,6 @@ public class SnowPileFeature extends AbstractPileFeature {
 
 	@Override
 	protected BlockState getPileBlockState(IWorld iWorld) {
-		return Blocks.field_10491.getDefaultState();
+		return Blocks.field_10491.method_9564();
 	}
 }

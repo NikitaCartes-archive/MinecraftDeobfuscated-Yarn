@@ -34,7 +34,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 			double d = 0.08;
 
 			for (int i = 0; i < 8; i++) {
-				this.world
+				this.field_6002
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getStack()),
 						this.x,
@@ -49,12 +49,12 @@ public class ThrownEggEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.field_1331) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}
 
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			if (this.random.nextInt(8) == 0) {
 				int i = 1;
 				if (this.random.nextInt(32) == 0) {
@@ -62,14 +62,14 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = EntityType.field_6132.create(this.world);
+					ChickenEntity chickenEntity = EntityType.field_6132.method_5883(this.field_6002);
 					chickenEntity.setBreedingAge(-24000);
 					chickenEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-					this.world.spawnEntity(chickenEntity);
+					this.field_6002.spawnEntity(chickenEntity);
 				}
 			}
 
-			this.world.sendEntityStatus(this, (byte)3);
+			this.field_6002.sendEntityStatus(this, (byte)3);
 			this.remove();
 		}
 	}

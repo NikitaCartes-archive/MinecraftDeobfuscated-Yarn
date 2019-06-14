@@ -19,8 +19,8 @@ public class SpectatorMenuState {
 
 	public SpectatorMenuCommand getCommand(int i) {
 		return i >= 0 && i < this.commands.size()
-			? MoreObjects.firstNonNull((SpectatorMenuCommand)this.commands.get(i), SpectatorMenu.BLANK_COMMAND)
-			: SpectatorMenu.BLANK_COMMAND;
+			? MoreObjects.firstNonNull((SpectatorMenuCommand)this.commands.get(i), SpectatorMenu.field_3260)
+			: SpectatorMenu.field_3260;
 	}
 
 	public int getSelectedSlot() {

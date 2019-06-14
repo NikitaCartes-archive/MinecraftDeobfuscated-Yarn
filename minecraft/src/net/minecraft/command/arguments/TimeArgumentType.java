@@ -24,7 +24,7 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 	);
 	private static final Object2IntMap<String> units = new Object2IntOpenHashMap<>();
 
-	public static TimeArgumentType time() {
+	public static TimeArgumentType create() {
 		return new TimeArgumentType();
 	}
 

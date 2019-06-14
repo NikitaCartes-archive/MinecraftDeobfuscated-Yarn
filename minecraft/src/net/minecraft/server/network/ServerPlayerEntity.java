@@ -95,7 +95,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -153,7 +153,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
 	private int containerSyncId;
 	public boolean field_13991;
-	public int pingMilliseconds;
+	public int field_13967;
 	public boolean notInAnyWorld;
 
 	public ServerPlayerEntity(
@@ -172,9 +172,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	private void method_14245(ServerWorld serverWorld) {
 		BlockPos blockPos = serverWorld.getSpawnPos();
-		if (serverWorld.dimension.hasSkyLight() && serverWorld.getLevelProperties().getGameMode() != GameMode.field_9216) {
+		if (serverWorld.field_9247.hasSkyLight() && serverWorld.method_8401().getGameMode() != GameMode.field_9216) {
 			int i = Math.max(0, this.server.getSpawnRadius(serverWorld));
-			int j = MathHelper.floor(serverWorld.getWorldBorder().contains((double)blockPos.getX(), (double)blockPos.getZ()));
+			int j = MathHelper.floor(serverWorld.method_8621().contains((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
 				i = j;
 			}
@@ -193,7 +193,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
+				BlockPos blockPos2 = serverWorld.method_8597().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
 					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (serverWorld.doesNotCollide(this)) {
@@ -253,9 +253,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			compoundTag.put("enteredNetherPosition", compoundTag2);
 		}
 
-		Entity entity = this.getRootVehicle();
+		Entity entity = this.getTopmostVehicle();
 		Entity entity2 = this.getVehicle();
-		if (entity2 != null && entity != this && entity.hasPlayerRider()) {
+		if (entity2 != null && entity != this && entity.method_5817()) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			CompoundTag compoundTag4 = new CompoundTag();
 			entity.saveToTag(compoundTag4);
@@ -308,8 +308,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	protected void onBlockCollision(BlockState blockState) {
-		Criterions.ENTER_BLOCK.handle(this, blockState);
+	protected void method_5622(BlockState blockState) {
+		Criterions.ENTER_BLOCK.method_8885(this, blockState);
 	}
 
 	@Override
@@ -321,12 +321,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void tick() {
 		this.interactionManager.update();
 		this.field_13998--;
-		if (this.timeUntilRegen > 0) {
-			this.timeUntilRegen--;
+		if (this.field_6008 > 0) {
+			this.field_6008--;
 		}
 
 		this.container.sendContentUpdates();
-		if (!this.world.isClient && !this.container.canUse(this)) {
+		if (!this.field_6002.isClient && !this.container.canUse(this)) {
 			this.closeContainer();
 			this.container = this.playerContainer;
 		}
@@ -360,7 +360,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		Criterions.TICK.handle(this);
 		if (this.field_13992 != null) {
-			Criterions.LEVITATION.handle(this, this.field_13992, this.age - this.field_13973);
+			Criterions.LEVITATION.method_9008(this, this.field_13992, this.age - this.field_13973);
 		}
 
 		this.advancementManager.sendUpdate(this);
@@ -368,14 +368,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void method_14226() {
 		try {
-			if (!this.isSpectator() || this.world.isBlockLoaded(new BlockPos(this))) {
+			if (!this.isSpectator() || this.field_6002.isBlockLoaded(new BlockPos(this))) {
 				super.tick();
 			}
 
 			for (int i = 0; i < this.inventory.getInvSize(); i++) {
 				ItemStack itemStack = this.inventory.getInvStack(i);
 				if (itemStack.getItem().isNetworkSynced()) {
-					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
+					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).method_7757(itemStack, this.field_6002, this);
 					if (packet != null) {
 						this.networkHandler.sendPacket(packet);
 					}
@@ -438,12 +438,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	private void method_14212(ScoreboardCriterion scoreboardCriterion, int i) {
-		this.getScoreboard().forEachScore(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
+		this.method_7327().method_1162(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
 	}
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19398);
+		boolean bl = this.field_6002.getGameRules().getBoolean(GameRules.field_19398);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
@@ -460,7 +460,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						}
 					}
 				);
-			AbstractTeam abstractTeam = this.getScoreboardTeam();
+			AbstractTeam abstractTeam = this.method_5781();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1442) {
 				this.server.getPlayerManager().sendToAll(text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1444) {
@@ -477,25 +477,25 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.drop(damageSource);
 		}
 
-		this.getScoreboard().forEachScore(ScoreboardCriterion.field_1456, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.method_7327().method_1162(ScoreboardCriterion.field_1456, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.method_6124();
 		if (livingEntity != null) {
 			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.field_6232, damageSource);
-			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
+			if (!this.field_6002.isClient && livingEntity instanceof WitherEntity) {
 				boolean bl2 = false;
-				if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+				if (this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
 					BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-					BlockState blockState = Blocks.field_10606.getDefaultState();
-					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-						this.world.setBlockState(blockPos, blockState, 3);
+					BlockState blockState = Blocks.field_10606.method_9564();
+					if (this.field_6002.method_8320(blockPos).isAir() && blockState.canPlaceAt(this.field_6002, blockPos)) {
+						this.field_6002.method_8652(blockPos, blockState, 3);
 						bl2 = true;
 					}
 				}
 
 				if (!bl2) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
-					this.world.spawnEntity(itemEntity);
+					ItemEntity itemEntity = new ItemEntity(this.field_6002, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
+					this.field_6002.spawnEntity(itemEntity);
 				}
 			}
 		}
@@ -515,10 +515,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.addScore(i);
 			String string = this.getEntityName();
 			String string2 = entity.getEntityName();
-			this.getScoreboard().forEachScore(ScoreboardCriterion.field_1457, string, ScoreboardPlayerScore::incrementScore);
+			this.method_7327().method_1162(ScoreboardCriterion.field_1457, string, ScoreboardPlayerScore::incrementScore);
 			if (entity instanceof PlayerEntity) {
 				this.incrementStat(Stats.field_15404);
-				this.getScoreboard().forEachScore(ScoreboardCriterion.field_1463, string, ScoreboardPlayerScore::incrementScore);
+				this.method_7327().method_1162(ScoreboardCriterion.field_1463, string, ScoreboardPlayerScore::incrementScore);
 			} else {
 				this.incrementStat(Stats.field_15414);
 			}
@@ -530,11 +530,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	private void method_14227(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
-		Team team = this.getScoreboard().getPlayerTeam(string2);
+		Team team = this.method_7327().getPlayerTeam(string2);
 		if (team != null) {
 			int i = team.getColor().getColorIndex();
 			if (i >= 0 && i < scoreboardCriterions.length) {
-				this.getScoreboard().forEachScore(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
+				this.method_7327().method_1162(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
 			}
 		}
 	}
@@ -579,9 +579,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType dimensionType) {
+	public Entity method_5731(DimensionType dimensionType) {
 		this.inTeleportationState = true;
-		DimensionType dimensionType2 = this.dimension;
+		DimensionType dimensionType2 = this.field_6026;
 		if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13072) {
 			this.detach();
 			this.getServerWorld().removePlayer(this);
@@ -594,9 +594,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			return this;
 		} else {
 			ServerWorld serverWorld = this.server.getWorld(dimensionType2);
-			this.dimension = dimensionType;
+			this.field_6026 = dimensionType;
 			ServerWorld serverWorld2 = this.server.getWorld(dimensionType);
-			LevelProperties levelProperties = this.world.getLevelProperties();
+			LevelProperties levelProperties = this.field_6002.method_8401();
 			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(dimensionType, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
@@ -630,10 +630,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.setPositionAndAngles(d, e, f, h, g);
 			serverWorld.getProfiler().pop();
 			serverWorld.getProfiler().push("placing");
-			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
-			double l = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
-			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-			double n = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+			double k = Math.min(-2.9999872E7, serverWorld2.method_8621().getBoundWest() + 16.0);
+			double l = Math.min(-2.9999872E7, serverWorld2.method_8621().getBoundNorth() + 16.0);
+			double m = Math.min(2.9999872E7, serverWorld2.method_8621().getBoundEast() - 16.0);
+			double n = Math.min(2.9999872E7, serverWorld2.method_8621().getBoundSouth() - 16.0);
 			d = MathHelper.clamp(d, k, m);
 			f = MathHelper.clamp(f, l, n);
 			this.setPositionAndAngles(d, e, f, h, g);
@@ -651,20 +651,20 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							int x = p + v;
 							int y = q + u * 0 - t * 1;
 							boolean bl = v < 0;
-							serverWorld2.setBlockState(new BlockPos(w, x, y), bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
+							serverWorld2.method_8501(new BlockPos(w, x, y), bl ? Blocks.field_10540.method_9564() : Blocks.field_10124.method_9564());
 						}
 					}
 				}
 
 				this.setPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
-				this.setVelocity(Vec3d.ZERO);
+				this.method_18799(Vec3d.ZERO);
 			} else if (!serverWorld2.getPortalForcer().usePortal(this, j)) {
 				serverWorld2.getPortalForcer().createPortal(this);
 				serverWorld2.getPortalForcer().usePortal(this, j);
 			}
 
 			serverWorld.getProfiler().pop();
-			this.setWorld(serverWorld2);
+			this.method_5866(serverWorld2);
 			serverWorld2.method_18211(this);
 			this.method_18783(serverWorld);
 			this.networkHandler.requestTeleport(this.x, this.y, this.z, h, g);
@@ -686,11 +686,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	private void method_18783(ServerWorld serverWorld) {
-		DimensionType dimensionType = serverWorld.dimension.getType();
-		DimensionType dimensionType2 = this.world.dimension.getType();
-		Criterions.CHANGED_DIMENSION.handle(this, dimensionType, dimensionType2);
+		DimensionType dimensionType = serverWorld.field_9247.method_12460();
+		DimensionType dimensionType2 = this.field_6002.field_9247.method_12460();
+		Criterions.CHANGED_DIMENSION.method_8794(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.field_13076 && dimensionType2 == DimensionType.field_13072 && this.enteredNetherPos != null) {
-			Criterions.NETHER_TRAVEL.handle(this, this.enteredNetherPos);
+			Criterions.NETHER_TRAVEL.method_9080(this, this.enteredNetherPos);
 		}
 
 		if (dimensionType2 != DimensionType.field_13076) {
@@ -773,7 +773,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 	}
 
 	@Override
@@ -788,11 +788,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		int j = MathHelper.floor(this.y - 0.2F);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		if (this.world.isBlockLoaded(blockPos)) {
-			BlockState blockState = this.world.getBlockState(blockPos);
+		if (this.field_6002.isBlockLoaded(blockPos)) {
+			BlockState blockState = this.field_6002.method_8320(blockPos);
 			if (blockState.isAir()) {
 				BlockPos blockPos2 = blockPos.down();
-				BlockState blockState2 = this.world.getBlockState(blockPos2);
+				BlockState blockState2 = this.field_6002.method_8320(blockPos2);
 				Block block = blockState2.getBlock();
 				if (block.matches(BlockTags.field_16584) || block.matches(BlockTags.field_15504) || block instanceof FenceGateBlock) {
 					blockPos = blockPos2;
@@ -800,12 +800,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				}
 			}
 
-			super.fall(d, bl, blockState, blockPos);
+			super.method_5623(d, bl, blockState, blockPos);
 		}
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
+	public void method_7311(SignBlockEntity signBlockEntity) {
 		signBlockEntity.setEditor(this);
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
 	}
@@ -841,7 +841,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void sendTradeOffers(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
+	public void method_17354(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
 		this.networkHandler.sendPacket(new SetTradeOffersPacket(i, traderOfferList, j, k, bl, bl2));
 	}
 
@@ -870,7 +870,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void method_7323(CommandBlockBlockEntity commandBlockBlockEntity) {
 		commandBlockBlockEntity.setNeedsUpdatePacket(true);
 		this.sendBlockEntityUpdate(commandBlockBlockEntity);
 	}
@@ -938,13 +938,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void increaseStat(Stat<?> stat, int i) {
 		this.statHandler.increaseStat(this, stat, i);
-		this.getScoreboard().forEachScore(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
+		this.method_7327().method_1162(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
 	}
 
 	@Override
 	public void resetStat(Stat<?> stat) {
 		this.statHandler.setStat(this, stat, 0);
-		this.getScoreboard().forEachScore(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
+		this.method_7327().method_1162(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
 	}
 
 	@Override
@@ -1004,14 +1004,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void lookAt(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
-		super.lookAt(entityAnchor, vec3d);
+	public void method_5702(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
+		super.method_5702(entityAnchor, vec3d);
 		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
 	}
 
 	public void method_14222(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
-		Vec3d vec3d = entityAnchor2.positionAt(entity);
-		super.lookAt(entityAnchor, vec3d);
+		Vec3d vec3d = entityAnchor2.method_9302(entity);
+		super.method_5702(entityAnchor, vec3d);
 		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, entity, entityAnchor2));
 	}
 
@@ -1025,9 +1025,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.experienceProgress = serverPlayerEntity.experienceProgress;
 			this.setScore(serverPlayerEntity.getScore());
 			this.lastPortalPosition = serverPlayerEntity.lastPortalPosition;
-			this.lastPortalDirectionVector = serverPlayerEntity.lastPortalDirectionVector;
-			this.lastPortalDirection = serverPlayerEntity.lastPortalDirection;
-		} else if (this.world.getGameRules().getBoolean(GameRules.field_19389) || serverPlayerEntity.isSpectator()) {
+			this.field_6020 = serverPlayerEntity.field_6020;
+			this.field_6028 = serverPlayerEntity.field_6028;
+		} else if (this.field_6002.getGameRules().getBoolean(GameRules.field_19389) || serverPlayerEntity.isSpectator()) {
 			this.inventory.clone(serverPlayerEntity.inventory);
 			this.experienceLevel = serverPlayerEntity.experienceLevel;
 			this.totalExperience = serverPlayerEntity.totalExperience;
@@ -1103,11 +1103,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public ServerWorld getServerWorld() {
-		return (ServerWorld)this.world;
+		return (ServerWorld)this.field_6002;
 	}
 
 	@Override
-	public void setGameMode(GameMode gameMode) {
+	public void method_7336(GameMode gameMode) {
 		this.interactionManager.setGameMode(gameMode);
 		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
 		if (gameMode == GameMode.field_9219) {
@@ -1165,7 +1165,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.method_12135();
 		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.field_6182 ? 0 : 1));
+		this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() == AbsoluteHand.field_6182 ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {
@@ -1283,19 +1283,19 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void teleport(ServerWorld serverWorld, double d, double e, double f, float g, float h) {
 		this.setCameraEntity(this);
 		this.stopRiding();
-		if (serverWorld == this.world) {
+		if (serverWorld == this.field_6002) {
 			this.networkHandler.requestTeleport(d, e, f, g, h);
 		} else {
 			ServerWorld serverWorld2 = this.getServerWorld();
-			this.dimension = serverWorld.dimension.getType();
-			LevelProperties levelProperties = serverWorld.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
+			this.field_6026 = serverWorld.field_9247.method_12460();
+			LevelProperties levelProperties = serverWorld.method_8401();
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.field_6026, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld2.removePlayer(this);
 			this.removed = false;
 			this.setPositionAndAngles(d, e, f, g, h);
-			this.setWorld(serverWorld);
+			this.method_5866(serverWorld);
 			serverWorld.method_18207(this);
 			this.method_18783(serverWorld2);
 			this.networkHandler.requestTeleport(d, e, f, g, h);
@@ -1338,7 +1338,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (itemEntity == null) {
 			return null;
 		} else {
-			this.world.spawnEntity(itemEntity);
+			this.field_6002.spawnEntity(itemEntity);
 			ItemStack itemStack2 = itemEntity.getStack();
 			if (bl2) {
 				if (!itemStack2.isEmpty()) {

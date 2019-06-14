@@ -13,7 +13,7 @@ import net.minecraft.util.PacketByteBuf;
 public class ArrayPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
 	private final T[] array;
-	private final PaletteResizeListener<T> resizeListener;
+	private final PaletteResizeListener<T> field_12905;
 	private final Function<CompoundTag, T> valueDeserializer;
 	private final int indexBits;
 	private int size;
@@ -22,7 +22,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		this.idList = idList;
 		this.array = (T[])(new Object[1 << i]);
 		this.indexBits = i;
-		this.resizeListener = paletteResizeListener;
+		this.field_12905 = paletteResizeListener;
 		this.valueDeserializer = function;
 	}
 
@@ -40,7 +40,7 @@ public class ArrayPalette<T> implements Palette<T> {
 			this.size++;
 			return ix;
 		} else {
-			return this.resizeListener.onResize(this.indexBits + 1, object);
+			return this.field_12905.onResize(this.indexBits + 1, object);
 		}
 	}
 

@@ -17,23 +17,23 @@ public class ChatOptionsScreen extends Screen {
 		Option.CHAT_COLOR,
 		Option.CHAT_LINKS,
 		Option.CHAT_LINKS_PROMPT,
-		Option.CHAT_OPACITY,
-		Option.TEXT_BACKGROUND_OPACITY,
-		Option.CHAT_SCALE,
-		Option.CHAT_WIDTH,
-		Option.CHAT_HEIGHT_FOCUSED,
-		Option.SATURATION,
+		Option.field_1921,
+		Option.field_18723,
+		Option.field_1946,
+		Option.field_1941,
+		Option.field_1940,
+		Option.field_1939,
 		Option.REDUCED_DEBUG_INFO,
 		Option.AUTO_SUGGESTIONS,
 		Option.NARRATOR
 	};
-	private final Screen parent;
+	private final Screen field_2354;
 	private final GameOptions options;
 	private AbstractButtonWidget narratorOptionButton;
 
 	public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableText("options.chat.title"));
-		this.parent = screen;
+		this.field_2354 = screen;
 		this.options = gameOptions;
 	}
 
@@ -44,7 +44,7 @@ public class ChatOptionsScreen extends Screen {
 		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.minecraft.options, j, k, 150));
+			AbstractButtonWidget abstractButtonWidget = this.addButton(option.method_18520(this.minecraft.field_1690, j, k, 150));
 			if (option == Option.NARRATOR) {
 				this.narratorOptionButton = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
@@ -55,14 +55,14 @@ public class ChatOptionsScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.field_2354)
 			)
 		);
 	}
 
 	@Override
 	public void removed() {
-		this.minecraft.options.write();
+		this.minecraft.field_1690.write();
 	}
 
 	@Override
@@ -73,6 +73,6 @@ public class ChatOptionsScreen extends Screen {
 	}
 
 	public void method_2096() {
-		this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.options));
+		this.narratorOptionButton.setMessage(Option.NARRATOR.method_18501(this.options));
 	}
 }

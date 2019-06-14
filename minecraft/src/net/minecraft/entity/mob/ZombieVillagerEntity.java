@@ -99,11 +99,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.isAlive() && this.isConverting()) {
+		if (!this.field_6002.isClient && this.isAlive() && this.isConverting()) {
 			int i = this.getConversionRate();
 			this.conversionTimer -= i;
 			if (this.conversionTimer <= 0) {
-				this.finishConversion((ServerWorld)this.world);
+				this.finishConversion((ServerWorld)this.field_6002);
 			}
 		}
 
@@ -118,7 +118,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 				itemStack.decrement(1);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
 			}
 
@@ -147,8 +147,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.conversionTimer = i;
 		this.getDataTracker().set(CONVERTING, true);
 		this.removeStatusEffect(StatusEffects.field_5911);
-		this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5910, i, Math.min(this.world.getDifficulty().getId() - 1, 0)));
-		this.world.sendEntityStatus(this, (byte)16);
+		this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5910, i, Math.min(this.field_6002.getDifficulty().getId() - 1, 0)));
+		this.field_6002.sendEntityStatus(this, (byte)16);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -156,7 +156,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	public void handleStatus(byte b) {
 		if (b == 16) {
 			if (!this.isSilent()) {
-				this.world
+				this.field_6002
 					.playSound(
 						this.x + 0.5,
 						this.y + 0.5,
@@ -174,15 +174,15 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	protected void finishConversion(ServerWorld serverWorld) {
-		VillagerEntity villagerEntity = EntityType.field_6077.create(serverWorld);
+		VillagerEntity villagerEntity = EntityType.field_6077.method_5883(serverWorld);
 		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.offerData != null) {
-			villagerEntity.setOffers(new TraderOfferList(this.offerData));
+			villagerEntity.method_16917(new TraderOfferList(this.offerData));
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
+		villagerEntity.method_5943(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
 		if (this.isBaby()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
@@ -216,7 +216,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			for (int k = (int)this.x - 4; k < (int)this.x + 4 && j < 14; k++) {
 				for (int l = (int)this.y - 4; l < (int)this.y + 4 && j < 14; l++) {
 					for (int m = (int)this.z - 4; m < (int)this.z + 4 && j < 14; m++) {
-						Block block = this.world.getBlockState(mutable.set(k, l, m)).getBlock();
+						Block block = this.field_6002.method_8320(mutable.set(k, l, m)).getBlock();
 						if (block == Blocks.field_10576 || block instanceof BedBlock) {
 							if (this.random.nextFloat() < 0.3F) {
 								i++;
@@ -268,11 +268,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.method_16930(iWorld.method_8310(new BlockPos(this)))));
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public void setVillagerData(VillagerData villagerData) {

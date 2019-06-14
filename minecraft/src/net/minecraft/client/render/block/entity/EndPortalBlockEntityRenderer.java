@@ -34,7 +34,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		int j = this.method_3592(h);
 		float k = this.method_3594();
 		boolean bl = false;
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 
 		for (int l = 0; l < j; l++) {
 			GlStateManager.pushMatrix();
@@ -80,7 +80,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			GlStateManager.multMatrix(field_4408);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1576);
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
 			float q = (RANDOM.nextFloat() * 0.5F + 0.5F) * m;

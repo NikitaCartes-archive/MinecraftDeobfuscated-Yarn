@@ -51,8 +51,8 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			return this.ticks < 100
-				&& Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType())
-				&& globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+				&& Objects.equals(globalPos.getDimension(), serverWorld.method_8597().method_12460())
+				&& globalPos.getPos().isWithinDistance(villagerEntity.method_19538(), 1.73);
 		}
 	}
 

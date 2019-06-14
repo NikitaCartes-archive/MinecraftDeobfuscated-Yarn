@@ -24,7 +24,7 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 	private ScoreboardSlotArgumentType() {
 	}
 
-	public static ScoreboardSlotArgumentType scoreboardSlot() {
+	public static ScoreboardSlotArgumentType create() {
 		return new ScoreboardSlotArgumentType();
 	}
 

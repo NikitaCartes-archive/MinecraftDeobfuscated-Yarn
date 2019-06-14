@@ -11,7 +11,7 @@ public interface SoundInstance {
 	Identifier getId();
 
 	@Nullable
-	WeightedSoundSet getSoundSet(SoundManager soundManager);
+	WeightedSoundSet method_4783(SoundManager soundManager);
 
 	Sound getSound();
 

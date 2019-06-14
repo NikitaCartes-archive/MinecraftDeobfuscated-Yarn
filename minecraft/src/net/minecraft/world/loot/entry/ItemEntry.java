@@ -27,7 +27,7 @@ public class ItemEntry extends LeafEntry {
 		consumer.accept(new ItemStack(this.item));
 	}
 
-	public static LeafEntry.Builder<?> builder(ItemConvertible itemConvertible) {
+	public static LeafEntry.Builder<?> method_411(ItemConvertible itemConvertible) {
 		return builder((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemConvertible.asItem(), i, j, lootConditions, lootFunctions));
 	}
 

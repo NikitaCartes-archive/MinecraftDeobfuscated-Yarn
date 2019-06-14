@@ -23,7 +23,7 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 	}
 
 	@Override
@@ -32,6 +32,6 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
+	public void method_20470(Stream<ScheduledTick<T>> stream) {
 	}
 }

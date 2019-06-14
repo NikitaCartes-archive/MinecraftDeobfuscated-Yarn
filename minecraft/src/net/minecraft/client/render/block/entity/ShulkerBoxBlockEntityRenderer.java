@@ -22,9 +22,9 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 	public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
 		Direction direction = Direction.field_11036;
 		if (shulkerBoxBlockEntity.hasWorld()) {
-			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
+			BlockState blockState = this.getWorld().method_8320(shulkerBoxBlockEntity.getPos());
 			if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-				direction = blockState.get(ShulkerBoxBlock.FACING);
+				direction = blockState.method_11654(ShulkerBoxBlock.field_11496);
 			}
 		}
 

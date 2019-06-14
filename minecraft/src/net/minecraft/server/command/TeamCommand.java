@@ -66,7 +66,7 @@ public class TeamCommand {
 					CommandManager.literal("list")
 						.executes(commandContext -> executeListTeams(commandContext.getSource()))
 						.then(
-							CommandManager.argument("team", TeamArgumentType.team())
+							CommandManager.argument("team", TeamArgumentType.create())
 								.executes(commandContext -> executeListMembers(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
@@ -76,7 +76,7 @@ public class TeamCommand {
 							CommandManager.argument("team", StringArgumentType.word())
 								.executes(commandContext -> executeAdd(commandContext.getSource(), StringArgumentType.getString(commandContext, "team")))
 								.then(
-									CommandManager.argument("displayName", TextArgumentType.text())
+									CommandManager.argument("displayName", TextArgumentType.create())
 										.executes(
 											commandContext -> executeAdd(
 													commandContext.getSource(), StringArgumentType.getString(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "displayName")
@@ -88,21 +88,21 @@ public class TeamCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.team())
+							CommandManager.argument("team", TeamArgumentType.create())
 								.executes(commandContext -> executeRemove(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("empty")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.team())
+							CommandManager.argument("team", TeamArgumentType.create())
 								.executes(commandContext -> executeEmpty(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("join")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.team())
+							CommandManager.argument("team", TeamArgumentType.create())
 								.executes(
 									commandContext -> executeJoin(
 											commandContext.getSource(),
@@ -134,11 +134,11 @@ public class TeamCommand {
 				.then(
 					CommandManager.literal("modify")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.team())
+							CommandManager.argument("team", TeamArgumentType.create())
 								.then(
 									CommandManager.literal("displayName")
 										.then(
-											CommandManager.argument("displayName", TextArgumentType.text())
+											CommandManager.argument("displayName", TextArgumentType.create())
 												.executes(
 													commandContext -> executeModifyDisplayName(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "displayName")
@@ -149,7 +149,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("color")
 										.then(
-											CommandManager.argument("value", ColorArgumentType.color())
+											CommandManager.argument("value", ColorArgumentType.create())
 												.executes(
 													commandContext -> executeModifyColor(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), ColorArgumentType.getColor(commandContext, "value")
@@ -287,7 +287,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("prefix")
 										.then(
-											CommandManager.argument("prefix", TextArgumentType.text())
+											CommandManager.argument("prefix", TextArgumentType.create())
 												.executes(
 													commandContext -> executeModifyPrefix(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "prefix")
@@ -298,7 +298,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("suffix")
 										.then(
-											CommandManager.argument("suffix", TextArgumentType.text())
+											CommandManager.argument("suffix", TextArgumentType.create())
 												.executes(
 													commandContext -> executeModifySuffix(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "suffix")
@@ -371,7 +371,7 @@ public class TeamCommand {
 		if (team.getCollisionRule() == collisionRule) {
 			throw OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION.create();
 		} else {
-			team.setCollisionRule(collisionRule);
+			team.method_1145(collisionRule);
 			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getTranslationKey()), true
 			);

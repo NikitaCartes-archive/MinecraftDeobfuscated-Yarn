@@ -19,27 +19,27 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public interface EntityView {
-	List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate);
+	List<Entity> method_8333(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate);
 
-	<T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate);
+	<T extends Entity> List<T> method_8390(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate);
 
 	List<? extends PlayerEntity> getPlayers();
 
-	default List<Entity> getEntities(@Nullable Entity entity, Box box) {
-		return this.getEntities(entity, box, EntityPredicates.EXCEPT_SPECTATOR);
+	default List<Entity> method_8335(@Nullable Entity entity, Box box) {
+		return this.method_8333(entity, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
 		return voxelShape.isEmpty()
 			? true
-			: this.getEntities(entity, voxelShape.getBoundingBox())
+			: this.method_8335(entity, voxelShape.getBoundingBox())
 				.stream()
-				.filter(entity2 -> !entity2.removed && entity2.inanimate && (entity == null || !entity2.isConnectedThroughVehicle(entity)))
-				.noneMatch(entityx -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entityx.getBoundingBox()), BooleanBiFunction.AND));
+				.filter(entity2 -> !entity2.removed && entity2.field_6033 && (entity == null || !entity2.isConnectedThroughVehicle(entity)))
+				.noneMatch(entityx -> VoxelShapes.method_1074(voxelShape, VoxelShapes.method_1078(entityx.method_5829()), BooleanBiFunction.AND));
 	}
 
-	default <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
-		return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
+	default <T extends Entity> List<T> method_18467(Class<? extends T> class_, Box box) {
+		return this.method_8390(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
 	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
@@ -47,14 +47,14 @@ public interface EntityView {
 			return Stream.empty();
 		} else {
 			Box box2 = box.expand(1.0E-7);
-			return this.getEntities(entity, box2)
+			return this.method_8335(entity, box2)
 				.stream()
 				.filter(entityx -> !set.contains(entityx))
 				.filter(entity2 -> entity == null || !entity.isConnectedThroughVehicle(entity2))
-				.flatMap(entity2 -> Stream.of(entity2.getCollisionBox(), entity == null ? null : entity.getHardCollisionBox(entity2)))
+				.flatMap(entity2 -> Stream.of(entity2.method_5827(), entity == null ? null : entity.method_5708(entity2)))
 				.filter(Objects::nonNull)
 				.filter(box2::intersects)
-				.map(VoxelShapes::cuboid);
+				.map(VoxelShapes::method_1078);
 		}
 	}
 
@@ -134,10 +134,10 @@ public interface EntityView {
 	}
 
 	@Nullable
-	default <T extends LivingEntity> T getClosestEntity(
+	default <T extends LivingEntity> T method_18465(
 		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box
 	) {
-		return this.getClosestEntity(this.getEntities(class_, box, null), targetPredicate, livingEntity, d, e, f);
+		return this.getClosestEntity(this.method_8390(class_, box, null), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable
@@ -160,7 +160,7 @@ public interface EntityView {
 		return livingEntity2;
 	}
 
-	default List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+	default List<PlayerEntity> method_18464(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
 		List<PlayerEntity> list = Lists.<PlayerEntity>newArrayList();
 
 		for (PlayerEntity playerEntity : this.getPlayers()) {
@@ -172,8 +172,8 @@ public interface EntityView {
 		return list;
 	}
 
-	default <T extends LivingEntity> List<T> getTargets(Class<? extends T> class_, TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
-		List<T> list = this.getEntities(class_, box, null);
+	default <T extends LivingEntity> List<T> method_18466(Class<? extends T> class_, TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+		List<T> list = this.method_8390(class_, box, null);
 		List<T> list2 = Lists.<T>newArrayList();
 
 		for (T livingEntity2 : list) {

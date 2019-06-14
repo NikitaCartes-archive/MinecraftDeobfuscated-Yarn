@@ -34,7 +34,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 				double j = f + this.dragon.getRand().nextGaussian() / 2.0;
 
 				for (int k = 0; k < 6; k++) {
-					this.dragon.world.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
+					this.dragon.field_6002.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
 				}
 
 				vec3d.rotateY((float) (Math.PI / 16));
@@ -59,18 +59,18 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
-			while (this.dragon.world.isAir(mutable)) {
+			while (this.dragon.field_6002.isAir(mutable)) {
 				mutable.set(d, --g, e);
 			}
 
 			g = (double)(MathHelper.floor(g) + 1);
-			this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, g, e);
+			this.field_7051 = new AreaEffectCloudEntity(this.dragon.field_6002, d, g, e);
 			this.field_7051.setOwner(this.dragon);
 			this.field_7051.setRadius(5.0F);
 			this.field_7051.setDuration(200);
 			this.field_7051.setParticleType(ParticleTypes.field_11216);
 			this.field_7051.addEffect(new StatusEffectInstance(StatusEffects.field_5921));
-			this.dragon.world.spawnEntity(this.field_7051);
+			this.dragon.field_6002.spawnEntity(this.field_7051);
 		}
 	}
 

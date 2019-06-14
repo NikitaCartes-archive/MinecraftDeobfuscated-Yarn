@@ -31,7 +31,7 @@ public class MeleeAttackGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		long l = this.mob.world.getTime();
+		long l = this.mob.field_6002.getTime();
 		if (l - this.field_19200 < 20L) {
 			return false;
 		} else {
@@ -42,10 +42,10 @@ public class MeleeAttackGoal extends Goal {
 			} else if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity);
+				this.field_6509 = this.mob.getNavigation().method_6349(livingEntity);
 				return this.field_6509 != null
 					? true
-					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
 			}
 		}
 	}
@@ -68,7 +68,7 @@ public class MeleeAttackGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.mob.getNavigation().startMovingAlong(this.field_6509, this.speed);
+		this.mob.getNavigation().method_6334(this.field_6509, this.speed);
 		this.mob.setAttacking(true);
 		this.field_6501 = 0;
 	}
@@ -88,7 +88,7 @@ public class MeleeAttackGoal extends Goal {
 	public void tick() {
 		LivingEntity livingEntity = this.mob.getTarget();
 		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
 		this.field_6501--;
 		if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
@@ -98,7 +98,7 @@ public class MeleeAttackGoal extends Goal {
 					|| this.mob.getRand().nextFloat() < 0.05F
 			)) {
 			this.targetX = livingEntity.x;
-			this.targetY = livingEntity.getBoundingBox().minY;
+			this.targetY = livingEntity.method_5829().minY;
 			this.targetZ = livingEntity.z;
 			this.field_6501 = 4 + this.mob.getRand().nextInt(7);
 			if (d > 1024.0) {

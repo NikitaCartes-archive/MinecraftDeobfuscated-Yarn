@@ -24,21 +24,21 @@ import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
 	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.stonecutter");
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
+	public static final DirectionProperty field_17649 = HorizontalFacingBlock.field_11177;
+	protected static final VoxelShape field_16407 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	public StonecutterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_17649, Direction.field_11043));
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_17649, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		playerEntity.incrementStat(Stats.field_19254);
 		return true;
@@ -46,29 +46,29 @@ public class StonecutterBlock extends Block {
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.method_17392(world, blockPos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return field_16407;
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean method_9526(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public boolean isOpaque(BlockState blockState) {
+	public boolean method_9601(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
@@ -78,22 +78,22 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.method_11657(field_17649, blockRotation.rotate(blockState.method_11654(field_17649)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_17649)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.method_11667(field_17649);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

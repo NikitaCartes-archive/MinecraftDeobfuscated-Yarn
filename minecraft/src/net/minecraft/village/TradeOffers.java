@@ -691,7 +691,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(this.buy, this.price);
 			return new TradeOffer(itemStack, new ItemStack(Items.field_8687), this.maxUses, this.experience, this.multiplier);
 		}
@@ -705,10 +705,10 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			Enchantment enchantment = Registry.ENCHANTMENT.getRandom(random);
 			int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
-			ItemStack itemStack = EnchantedBookItem.forEnchantment(new InfoEnchantment(enchantment, i));
+			ItemStack itemStack = EnchantedBookItem.method_7808(new InfoEnchantment(enchantment, i));
 			int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
 			if (enchantment.isTreasure()) {
 				j *= 2;
@@ -724,7 +724,7 @@ public class TradeOffers {
 
 	public interface Factory {
 		@Nullable
-		TradeOffer create(Entity entity, Random random);
+		TradeOffer method_7246(Entity entity, Random random);
 	}
 
 	static class ProcessItemFactory implements TradeOffers.Factory {
@@ -754,7 +754,7 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			return new TradeOffer(
 				new ItemStack(Items.field_8687, this.price),
 				new ItemStack(this.secondBuy.getItem(), this.secondCount),
@@ -784,7 +784,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8687, this.price);
 			ItemStack itemStack2 = new ItemStack(this.sell);
 			if (this.sell instanceof DyeableArmorItem) {
@@ -829,7 +829,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			int i = 5 + random.nextInt(15);
 			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
 			int j = Math.min(this.basePrice + i, 64);
@@ -872,7 +872,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			return new TradeOffer(
 				new ItemStack(Items.field_8687, this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier
 			);
@@ -882,27 +882,27 @@ public class TradeOffers {
 	static class SellMapFactory implements TradeOffers.Factory {
 		private final int price;
 		private final String structure;
-		private final MapIcon.Type iconType;
+		private final MapIcon.Type field_7473;
 		private final int maxUses;
 		private final int experience;
 
 		public SellMapFactory(int i, String string, MapIcon.Type type, int j, int k) {
 			this.price = i;
 			this.structure = string;
-			this.iconType = type;
+			this.field_7473 = type;
 			this.maxUses = j;
 			this.experience = k;
 		}
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
-			World world = entity.world;
+		public TradeOffer method_7246(Entity entity, Random random) {
+			World world = entity.field_6002;
 			BlockPos blockPos = world.locateStructure(this.structure, new BlockPos(entity), 100, true);
 			if (blockPos != null) {
-				ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
-				FilledMapItem.fillExplorationMap(world, itemStack);
-				MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
+				ItemStack itemStack = FilledMapItem.method_8005(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
+				FilledMapItem.method_8002(world, itemStack);
+				MapState.addDecorationsTag(itemStack, blockPos, "+", this.field_7473);
 				itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
 				return new TradeOffer(new ItemStack(Items.field_8687, this.price), new ItemStack(Items.field_8251), itemStack, this.maxUses, this.experience, 0.2F);
 			} else {
@@ -933,7 +933,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8687, this.price);
 			List<Potion> list = (List<Potion>)Registry.POTION
 				.stream()
@@ -960,7 +960,7 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8766, 1);
 			SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
 			return new TradeOffer(new ItemStack(Items.field_8687, 1), itemStack, 6, this.experience, this.multiplier);
@@ -985,7 +985,7 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer method_7246(Entity entity, Random random) {
 			if (entity instanceof VillagerDataContainer) {
 				ItemStack itemStack = new ItemStack((ItemConvertible)this.map.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.count);
 				return new TradeOffer(itemStack, new ItemStack(Items.field_8687), this.maxUses, this.experience, 0.05F);

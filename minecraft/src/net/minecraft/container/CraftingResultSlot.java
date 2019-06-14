@@ -47,7 +47,7 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	protected void onCrafted(ItemStack itemStack) {
 		if (this.amount > 0) {
-			itemStack.onCraft(this.player.world, this.player, this.amount);
+			itemStack.method_7982(this.player.field_6002, this.player, this.amount);
 		}
 
 		if (this.inventory instanceof RecipeUnlocker) {
@@ -60,7 +60,9 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 		this.onCrafted(itemStack);
-		DefaultedList<ItemStack> defaultedList = playerEntity.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.craftingInv, playerEntity.world);
+		DefaultedList<ItemStack> defaultedList = playerEntity.field_6002
+			.getRecipeManager()
+			.method_8128(RecipeType.CRAFTING, this.craftingInv, playerEntity.field_6002);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			ItemStack itemStack2 = this.craftingInv.getInvStack(i);

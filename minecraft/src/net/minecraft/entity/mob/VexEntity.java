@@ -52,8 +52,8 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d vec3d) {
-		super.move(movementType, vec3d);
+	public void method_5784(MovementType movementType, Vec3d vec3d) {
+		super.method_5784(movementType, vec3d);
 		this.checkBlockCollision();
 	}
 
@@ -195,12 +195,12 @@ public class VexEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.initEquipment(localDifficulty);
 		this.updateEnchantments(localDifficulty);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class VexEntity extends HostileEntity {
 		@Override
 		public void start() {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
-			Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
+			Vec3d vec3d = livingEntity.method_5836(1.0F);
 			VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 			VexEntity.this.setCharging(true);
 			VexEntity.this.playSound(SoundEvents.field_14898, 1.0F, 1.0F);
@@ -246,13 +246,13 @@ public class VexEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
-			if (VexEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
+			if (VexEntity.this.method_5829().intersects(livingEntity.method_5829())) {
 				VexEntity.this.tryAttack(livingEntity);
 				VexEntity.this.setCharging(false);
 			} else {
 				double d = VexEntity.this.squaredDistanceTo(livingEntity);
 				if (d < 9.0) {
-					Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
+					Vec3d vec3d = livingEntity.method_5836(1.0F);
 					VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}
 			}
@@ -283,7 +283,7 @@ public class VexEntity extends HostileEntity {
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
-				if (VexEntity.this.world.isAir(blockPos2)) {
+				if (VexEntity.this.field_6002.isAir(blockPos2)) {
 					VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
 					if (VexEntity.this.getTarget() == null) {
 						VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0F, 20.0F);
@@ -325,13 +325,13 @@ public class VexEntity extends HostileEntity {
 			if (this.state == MoveControl.State.field_6378) {
 				Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.x, this.targetY - VexEntity.this.y, this.targetZ - VexEntity.this.z);
 				double d = vec3d.length();
-				if (d < VexEntity.this.getBoundingBox().averageDimension()) {
+				if (d < VexEntity.this.method_5829().averageDimension()) {
 					this.state = MoveControl.State.field_6377;
-					VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
+					VexEntity.this.method_18799(VexEntity.this.method_18798().multiply(0.5));
 				} else {
-					VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
+					VexEntity.this.method_18799(VexEntity.this.method_18798().add(vec3d.multiply(this.speed * 0.05 / d)));
 					if (VexEntity.this.getTarget() == null) {
-						Vec3d vec3d2 = VexEntity.this.getVelocity();
+						Vec3d vec3d2 = VexEntity.this.method_18798();
 						VexEntity.this.yaw = -((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * (180.0F / (float)Math.PI);
 						VexEntity.this.field_6283 = VexEntity.this.yaw;
 					} else {

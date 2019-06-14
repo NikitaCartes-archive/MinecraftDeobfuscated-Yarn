@@ -46,10 +46,10 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
+	public boolean method_8754(StructureFeature<?> structureFeature) {
 		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.biomes) {
-				if (biome.hasStructureFeature(structureFeaturex)) {
+				if (biome.method_8684(structureFeaturex)) {
 					return true;
 				}
 			}
@@ -62,7 +62,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.biomes) {
-				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+				this.topMaterials.add(biome.method_8722().getTopMaterial());
 			}
 		}
 

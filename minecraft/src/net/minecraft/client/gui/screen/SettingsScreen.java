@@ -17,8 +17,8 @@ import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class SettingsScreen extends Screen {
-	private static final Option[] OPTIONS = new Option[]{Option.FOV};
-	private final Screen parent;
+	private static final Option[] OPTIONS = new Option[]{Option.field_1964};
+	private final Screen field_2501;
 	private final GameOptions settings;
 	private ButtonWidget difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
@@ -26,7 +26,7 @@ public class SettingsScreen extends Screen {
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableText("options.title"));
-		this.parent = screen;
+		this.field_2501 = screen;
 		this.settings = gameOptions;
 	}
 
@@ -37,40 +37,40 @@ public class SettingsScreen extends Screen {
 		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 - 12 + 24 * (i >> 1);
-			this.addButton(option.createButton(this.minecraft.options, j, k, 150));
+			this.addButton(option.method_18520(this.minecraft.field_1690, j, k, 150));
 			i++;
 		}
 
-		if (this.minecraft.world != null) {
-			this.difficulty = this.minecraft.world.getDifficulty();
+		if (this.minecraft.field_1687 != null) {
+			this.difficulty = this.minecraft.field_1687.getDifficulty();
 			this.difficultyButton = this.addButton(
 				new ButtonWidget(
 					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), buttonWidget -> {
 						this.difficulty = Difficulty.byOrdinal(this.difficulty.getId() + 1);
-						this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
+						this.minecraft.method_1562().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
 						this.difficultyButton.setMessage(this.getDifficultyButtonText(this.difficulty));
 					}
 				)
 			);
-			if (this.minecraft.isIntegratedServerRunning() && !this.minecraft.world.getLevelProperties().isHardcore()) {
+			if (this.minecraft.isIntegratedServerRunning() && !this.minecraft.field_1687.method_8401().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
 				this.lockDifficultyButton = this.addButton(
 					new LockButtonWidget(
 						this.difficultyButton.x + this.difficultyButton.getWidth(),
 						this.difficultyButton.y,
 						buttonWidget -> this.minecraft
-								.openScreen(
+								.method_1507(
 									new ConfirmScreen(
 										this::lockDifficulty,
 										new TranslatableText("difficulty.lock.title"),
 										new TranslatableText(
-											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.minecraft.world.getLevelProperties().getDifficulty().getName())
+											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.minecraft.field_1687.method_8401().getDifficulty().getName())
 										)
 									)
 								)
 					)
 				);
-				this.lockDifficultyButton.setLocked(this.minecraft.world.getLevelProperties().isDifficultyLocked());
+				this.lockDifficultyButton.setLocked(this.minecraft.field_1687.method_8401().isDifficultyLocked());
 				this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
 				this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
 			} else {
@@ -84,11 +84,11 @@ public class SettingsScreen extends Screen {
 					150,
 					20,
 					Option.REALMS_NOTIFICATIONS,
-					Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
+					Option.REALMS_NOTIFICATIONS.method_18495(this.settings),
 					buttonWidget -> {
-						Option.REALMS_NOTIFICATIONS.set(this.settings);
+						Option.REALMS_NOTIFICATIONS.method_18491(this.settings);
 						this.settings.write();
-						buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
+						buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.method_18495(this.settings));
 					}
 				)
 			);
@@ -101,7 +101,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.skinCustomisation"),
-				buttonWidget -> this.minecraft.openScreen(new SkinOptionsScreen(this))
+				buttonWidget -> this.minecraft.method_1507(new SkinOptionsScreen(this))
 			)
 		);
 		this.addButton(
@@ -111,7 +111,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.sounds"),
-				buttonWidget -> this.minecraft.openScreen(new SoundOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.method_1507(new SoundOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -121,7 +121,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.video"),
-				buttonWidget -> this.minecraft.openScreen(new VideoOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.method_1507(new VideoOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -131,7 +131,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.controls"),
-				buttonWidget -> this.minecraft.openScreen(new ControlsOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.method_1507(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -141,7 +141,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.language"),
-				buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen(this, this.settings, this.minecraft.getLanguageManager()))
+				buttonWidget -> this.minecraft.method_1507(new LanguageOptionsScreen(this, this.settings, this.minecraft.method_1526()))
 			)
 		);
 		this.addButton(
@@ -151,7 +151,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.chat.title"),
-				buttonWidget -> this.minecraft.openScreen(new ChatOptionsScreen(this, this.settings))
+				buttonWidget -> this.minecraft.method_1507(new ChatOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -161,7 +161,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.resourcepack"),
-				buttonWidget -> this.minecraft.openScreen(new ResourcePackOptionsScreen(this))
+				buttonWidget -> this.minecraft.method_1507(new ResourcePackOptionsScreen(this))
 			)
 		);
 		this.addButton(
@@ -171,11 +171,13 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.accessibility.title"),
-				buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.settings))
+				buttonWidget -> this.minecraft.method_1507(new AccessibilityScreen(this, this.settings))
 			)
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(
+				this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.field_2501)
+			)
 		);
 	}
 
@@ -184,9 +186,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	private void lockDifficulty(boolean bl) {
-		this.minecraft.openScreen(this);
-		if (bl && this.minecraft.world != null) {
-			this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
+		this.minecraft.method_1507(this);
+		if (bl && this.minecraft.field_1687 != null) {
+			this.minecraft.method_1562().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);
 			this.lockDifficultyButton.active = false;
 			this.difficultyButton.active = false;

@@ -14,11 +14,11 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
-	private static final SpectatorMenuCommand CLOSE_COMMAND = new SpectatorMenu.CloseSpectatorMenuCommand();
-	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
-	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
-	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
-	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
+	private static final SpectatorMenuCommand field_3261 = new SpectatorMenu.CloseSpectatorMenuCommand();
+	private static final SpectatorMenuCommand field_3262 = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
+	private static final SpectatorMenuCommand field_3256 = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
+	private static final SpectatorMenuCommand field_3259 = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
+	public static final SpectatorMenuCommand field_3260 = new SpectatorMenuCommand() {
 		@Override
 		public void use(SpectatorMenu spectatorMenu) {
 		}
@@ -37,29 +37,29 @@ public class SpectatorMenu {
 			return false;
 		}
 	};
-	private final SpectatorMenuCloseCallback closeCallback;
+	private final SpectatorMenuCloseCallback field_3255;
 	private final List<SpectatorMenuState> stateStack = Lists.<SpectatorMenuState>newArrayList();
-	private SpectatorMenuCommandGroup currentGroup;
+	private SpectatorMenuCommandGroup field_3258;
 	private int selectedSlot = -1;
 	private int page;
 
 	public SpectatorMenu(SpectatorMenuCloseCallback spectatorMenuCloseCallback) {
-		this.currentGroup = new RootSpectatorCommandGroup();
-		this.closeCallback = spectatorMenuCloseCallback;
+		this.field_3258 = new RootSpectatorCommandGroup();
+		this.field_3255 = spectatorMenuCloseCallback;
 	}
 
-	public SpectatorMenuCommand getCommand(int i) {
+	public SpectatorMenuCommand method_2777(int i) {
 		int j = i + this.page * 6;
 		if (this.page > 0 && i == 0) {
-			return PREVIOUS_PAGE_COMMAND;
+			return field_3262;
 		} else if (i == 7) {
-			return j < this.currentGroup.getCommands().size() ? NEXT_PAGE_COMMAND : DISABLED_NEXT_PAGE_COMMAND;
+			return j < this.field_3258.getCommands().size() ? field_3256 : field_3259;
 		} else if (i == 8) {
-			return CLOSE_COMMAND;
+			return field_3261;
 		} else {
-			return j >= 0 && j < this.currentGroup.getCommands().size()
-				? MoreObjects.firstNonNull((SpectatorMenuCommand)this.currentGroup.getCommands().get(j), BLANK_COMMAND)
-				: BLANK_COMMAND;
+			return j >= 0 && j < this.field_3258.getCommands().size()
+				? MoreObjects.firstNonNull((SpectatorMenuCommand)this.field_3258.getCommands().get(j), field_3260)
+				: field_3260;
 		}
 	}
 
@@ -67,23 +67,23 @@ public class SpectatorMenu {
 		List<SpectatorMenuCommand> list = Lists.<SpectatorMenuCommand>newArrayList();
 
 		for (int i = 0; i <= 8; i++) {
-			list.add(this.getCommand(i));
+			list.add(this.method_2777(i));
 		}
 
 		return list;
 	}
 
-	public SpectatorMenuCommand getSelectedCommand() {
-		return this.getCommand(this.selectedSlot);
+	public SpectatorMenuCommand method_2774() {
+		return this.method_2777(this.selectedSlot);
 	}
 
-	public SpectatorMenuCommandGroup getCurrentGroup() {
-		return this.currentGroup;
+	public SpectatorMenuCommandGroup method_2776() {
+		return this.field_3258;
 	}
 
 	public void setSelectedSlot(int i) {
-		SpectatorMenuCommand spectatorMenuCommand = this.getCommand(i);
-		if (spectatorMenuCommand != BLANK_COMMAND) {
+		SpectatorMenuCommand spectatorMenuCommand = this.method_2777(i);
+		if (spectatorMenuCommand != field_3260) {
 			if (this.selectedSlot == i && spectatorMenuCommand.enabled()) {
 				spectatorMenuCommand.use(this);
 			} else {
@@ -93,22 +93,22 @@ public class SpectatorMenu {
 	}
 
 	public void close() {
-		this.closeCallback.close(this);
+		this.field_3255.close(this);
 	}
 
 	public int getSelectedSlot() {
 		return this.selectedSlot;
 	}
 
-	public void selectElement(SpectatorMenuCommandGroup spectatorMenuCommandGroup) {
-		this.stateStack.add(this.getCurrentState());
-		this.currentGroup = spectatorMenuCommandGroup;
+	public void method_2778(SpectatorMenuCommandGroup spectatorMenuCommandGroup) {
+		this.stateStack.add(this.method_2772());
+		this.field_3258 = spectatorMenuCommandGroup;
 		this.selectedSlot = -1;
 		this.page = 0;
 	}
 
-	public SpectatorMenuState getCurrentState() {
-		return new SpectatorMenuState(this.currentGroup, this.getCommands(), this.selectedSlot);
+	public SpectatorMenuState method_2772() {
+		return new SpectatorMenuState(this.field_3258, this.getCommands(), this.selectedSlot);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -133,7 +133,7 @@ public class SpectatorMenu {
 
 		@Override
 		public void renderIcon(float f, int i) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
+			MinecraftClient.getInstance().method_1531().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
 				DrawableHelper.blit(0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
 			} else {
@@ -164,7 +164,7 @@ public class SpectatorMenu {
 
 		@Override
 		public void renderIcon(float f, int i) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
+			MinecraftClient.getInstance().method_1531().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			DrawableHelper.blit(0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}
 

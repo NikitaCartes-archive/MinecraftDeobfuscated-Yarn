@@ -97,28 +97,28 @@ public class EnchantingTableContainer extends Container {
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
 							if ((j != 0 || k != 0) && world.isAir(blockPos.add(k, 0, j)) && world.isAir(blockPos.add(k, 1, j))) {
-								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.field_10504) {
+								if (world.method_8320(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.field_10504) {
 									ix++;
 								}
 
-								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).getBlock() == Blocks.field_10504) {
+								if (world.method_8320(blockPos.add(k * 2, 1, j * 2)).getBlock() == Blocks.field_10504) {
 									ix++;
 								}
 
 								if (k != 0 && j != 0) {
-									if (world.getBlockState(blockPos.add(k * 2, 0, j)).getBlock() == Blocks.field_10504) {
+									if (world.method_8320(blockPos.add(k * 2, 0, j)).getBlock() == Blocks.field_10504) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k * 2, 1, j)).getBlock() == Blocks.field_10504) {
+									if (world.method_8320(blockPos.add(k * 2, 1, j)).getBlock() == Blocks.field_10504) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 0, j * 2)).getBlock() == Blocks.field_10504) {
+									if (world.method_8320(blockPos.add(k, 0, j * 2)).getBlock() == Blocks.field_10504) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 1, j * 2)).getBlock() == Blocks.field_10504) {
+									if (world.method_8320(blockPos.add(k, 1, j * 2)).getBlock() == Blocks.field_10504) {
 										ix++;
 									}
 								}
@@ -186,9 +186,9 @@ public class EnchantingTableContainer extends Container {
 					for (int k = 0; k < list.size(); k++) {
 						InfoEnchantment infoEnchantment = (InfoEnchantment)list.get(k);
 						if (bl) {
-							EnchantedBookItem.addEnchantment(itemStack3, infoEnchantment);
+							EnchantedBookItem.method_7807(itemStack3, infoEnchantment);
 						} else {
-							itemStack3.addEnchantment(infoEnchantment.enchantment, infoEnchantment.level);
+							itemStack3.method_7978(infoEnchantment.enchantment, infoEnchantment.level);
 						}
 					}
 
@@ -238,12 +238,12 @@ public class EnchantingTableContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, playerEntity.field_6002, this.inventory)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10485);
+		return method_17695(this.context, playerEntity, Blocks.field_10485);
 	}
 
 	@Override

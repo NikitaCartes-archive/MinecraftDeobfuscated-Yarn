@@ -61,15 +61,15 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
 		if (itemStack.getItem() == Items.field_8529) {
 			itemStack = new ItemStack(Items.field_8598);
-			EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment2, i));
+			EnchantedBookItem.method_7807(itemStack, new InfoEnchantment(enchantment2, i));
 		} else {
-			itemStack.addEnchantment(enchantment2, i);
+			itemStack.method_7978(enchantment2, i);
 		}
 
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder() {
+	public static ConditionalLootFunction.Builder<?> method_489() {
 		return builder(lootConditions -> new EnchantRandomlyLootFunction(lootConditions, ImmutableList.<Enchantment>of()));
 	}
 

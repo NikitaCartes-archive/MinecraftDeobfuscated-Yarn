@@ -17,7 +17,7 @@ public class MessageCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("message", MessageArgumentType.message())
+							CommandManager.argument("message", MessageArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message")

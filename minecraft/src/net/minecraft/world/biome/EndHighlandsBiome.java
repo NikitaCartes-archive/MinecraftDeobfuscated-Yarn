@@ -17,7 +17,7 @@ public class EndHighlandsBiome extends Biome {
 	public EndHighlandsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.END_CONFIG)
+				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15671)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.THEEND)
 				.depth(0.1F)
@@ -28,16 +28,16 @@ public class EndHighlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
-		this.addFeature(
+		this.method_8710(Feature.field_13553, FeatureConfig.field_13603);
+		this.method_8719(
 			GenerationStep.Feature.field_13173,
-			configureFeature(
-				Feature.field_13564, EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true), Decorator.field_14230, DecoratorConfig.DEFAULT
-			)
+			method_8699(Feature.field_13564, EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true), Decorator.field_14230, DecoratorConfig.field_13436)
 		);
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT));
-		this.addFeature(
-			GenerationStep.Feature.field_13178, configureFeature(Feature.field_13552, FeatureConfig.DEFAULT, Decorator.field_14257, DecoratorConfig.DEFAULT)
+		this.method_8719(
+			GenerationStep.Feature.field_13173, method_8699(Feature.field_13553, FeatureConfig.field_13603, Decorator.field_14250, DecoratorConfig.field_13436)
+		);
+		this.method_8719(
+			GenerationStep.Feature.field_13178, method_8699(Feature.field_13552, FeatureConfig.field_13603, Decorator.field_14257, DecoratorConfig.field_13436)
 		);
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 4, 4));
 	}

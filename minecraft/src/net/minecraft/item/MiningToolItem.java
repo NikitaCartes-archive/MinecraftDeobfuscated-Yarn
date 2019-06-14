@@ -26,7 +26,7 @@ public class MiningToolItem extends ToolItem {
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+	public float method_7865(ItemStack itemStack, BlockState blockState) {
 		return this.effectiveBlocks.contains(blockState.getBlock()) ? this.miningSpeed : 1.0F;
 	}
 
@@ -37,7 +37,7 @@ public class MiningToolItem extends ToolItem {
 	}
 
 	@Override
-	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient && blockState.getHardness(world, blockPos) != 0.0F) {
 			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}

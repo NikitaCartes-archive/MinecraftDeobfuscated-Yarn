@@ -45,7 +45,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class OcelotEntity extends AnimalEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.method_8091(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
 	private OcelotEntity.OcelotTemptGoal temptGoal;
@@ -171,14 +171,14 @@ public class OcelotEntity extends AnimalEntity {
 			&& this.isBreedingItem(itemStack)
 			&& playerEntity.squaredDistanceTo(this) < 9.0) {
 			this.eat(playerEntity, itemStack);
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.setTrusting(true);
 					this.showEmoteParticle(true);
-					this.world.sendEntityStatus(this, (byte)41);
+					this.field_6002.sendEntityStatus(this, (byte)41);
 				} else {
 					this.showEmoteParticle(false);
-					this.world.sendEntityStatus(this, (byte)40);
+					this.field_6002.sendEntityStatus(this, (byte)40);
 				}
 			}
 
@@ -210,7 +210,7 @@ public class OcelotEntity extends AnimalEntity {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world
+			this.field_6002
 				.addParticle(
 					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -235,7 +235,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public OcelotEntity method_16104(PassiveEntity passiveEntity) {
-		return EntityType.field_6081.create(this.world);
+		return EntityType.field_6081.method_5883(this.field_6002);
 	}
 
 	@Override
@@ -248,14 +248,14 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
-		if (viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox())) {
-			BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
+	public boolean method_5957(ViewableWorld viewableWorld) {
+		if (viewableWorld.intersectsEntities(this) && !viewableWorld.method_8599(this.method_5829())) {
+			BlockPos blockPos = new BlockPos(this.x, this.method_5829().minY, this.z);
 			if (blockPos.getY() < viewableWorld.getSeaLevel()) {
 				return false;
 			}
 
-			BlockState blockState = viewableWorld.getBlockState(blockPos.down());
+			BlockState blockState = viewableWorld.method_8320(blockPos.down());
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10219 || blockState.matches(BlockTags.field_15503)) {
 				return true;
@@ -267,19 +267,19 @@ public class OcelotEntity extends AnimalEntity {
 
 	protected void spawnKittens() {
 		for (int i = 0; i < 2; i++) {
-			OcelotEntity ocelotEntity = EntityType.field_6081.create(this.world);
+			OcelotEntity ocelotEntity = EntityType.field_6081.method_5883(this.field_6002);
 			ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			ocelotEntity.setBreedingAge(-24000);
-			this.world.spawnEntity(ocelotEntity);
+			this.field_6002.spawnEntity(ocelotEntity);
 		}
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(7) == 0) {
 			this.spawnKittens();
 		}

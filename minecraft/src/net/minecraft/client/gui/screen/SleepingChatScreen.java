@@ -33,11 +33,11 @@ public class SleepingChatScreen extends ChatScreen {
 		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
-				this.minecraft.player.sendChatMessage(string);
+				this.minecraft.field_1724.sendChatMessage(string);
 			}
 
 			this.chatField.setText("");
-			this.minecraft.inGameHud.getChatHud().method_1820();
+			this.minecraft.field_1705.method_1743().method_1820();
 			return true;
 		}
 
@@ -45,7 +45,7 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	private void stopSleeping() {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.field_12986));
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.field_1724.networkHandler;
+		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.field_1724, ClientCommandC2SPacket.Mode.field_12986));
 	}
 }

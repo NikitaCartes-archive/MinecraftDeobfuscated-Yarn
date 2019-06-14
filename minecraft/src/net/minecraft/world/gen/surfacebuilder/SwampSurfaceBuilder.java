@@ -27,7 +27,7 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		long m,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		double e = Biome.FOLIAGE_NOISE.sample((double)i * 0.25, (double)j * 0.25);
+		double e = Biome.field_9324.sample((double)i * 0.25, (double)j * 0.25);
 		if (e > 0.0) {
 			int n = i & 15;
 			int o = j & 15;
@@ -35,8 +35,8 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 
 			for (int p = k; p >= 0; p--) {
 				mutable.set(n, p, o);
-				if (!chunk.getBlockState(mutable).isAir()) {
-					if (p == 62 && chunk.getBlockState(mutable).getBlock() != blockState2.getBlock()) {
+				if (!chunk.method_8320(mutable).isAir()) {
+					if (p == 62 && chunk.method_8320(mutable).getBlock() != blockState2.getBlock()) {
 						chunk.setBlockState(mutable, blockState2, false);
 					}
 					break;
@@ -44,6 +44,6 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			}
 		}
 
-		SurfaceBuilder.field_15701.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
+		SurfaceBuilder.field_15701.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
 	}
 }

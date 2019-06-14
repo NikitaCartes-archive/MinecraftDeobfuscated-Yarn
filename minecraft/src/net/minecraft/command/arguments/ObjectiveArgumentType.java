@@ -28,7 +28,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		object -> new TranslatableText("commands.scoreboard.objectives.add.longName", object)
 	);
 
-	public static ObjectiveArgumentType objective() {
+	public static ObjectiveArgumentType create() {
 		return new ObjectiveArgumentType();
 	}
 
@@ -45,7 +45,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 
 	public static ScoreboardObjective getWritableObjective(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		ScoreboardObjective scoreboardObjective = getObjective(commandContext, string);
-		if (scoreboardObjective.getCriterion().isReadOnly()) {
+		if (scoreboardObjective.method_1116().isReadOnly()) {
 			throw READONLY_OBJECTIVE_EXCEPTION.create(scoreboardObjective.getName());
 		} else {
 			return scoreboardObjective;

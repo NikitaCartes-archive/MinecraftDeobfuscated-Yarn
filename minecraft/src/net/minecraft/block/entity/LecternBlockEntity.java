@@ -84,7 +84,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 
 		@Override
 		public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-			if (LecternBlockEntity.this.world.getBlockEntity(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
+			if (LecternBlockEntity.this.world.method_8321(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
 				return false;
 			} else {
 				return playerEntity.squaredDistanceTo(
@@ -147,7 +147,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	private void onBookRemoved() {
 		this.currentPage = 0;
 		this.pageCount = 0;
-		LecternBlock.setHasBook(this.getWorld(), this.getPos(), this.getCachedState(), false);
+		LecternBlock.method_17473(this.getWorld(), this.getPos(), this.method_11010(), false);
 	}
 
 	public void setBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
@@ -162,7 +162,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		if (j != this.currentPage) {
 			this.currentPage = j;
 			this.markDirty();
-			LecternBlock.setPowered(this.getWorld(), this.getPos(), this.getCachedState());
+			LecternBlock.method_17471(this.getWorld(), this.getPos(), this.method_11010());
 		}
 	}
 

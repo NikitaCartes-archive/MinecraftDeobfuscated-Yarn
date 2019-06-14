@@ -18,7 +18,7 @@ import net.minecraft.text.Text;
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
 
-	public static MessageArgumentType message() {
+	public static MessageArgumentType create() {
 		return new MessageArgumentType();
 	}
 

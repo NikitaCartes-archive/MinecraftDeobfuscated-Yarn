@@ -92,38 +92,38 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return this.animationStage;
 	}
 
-	public Box getBoundingBox(BlockState blockState) {
-		return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
+	public Box method_11314(BlockState blockState) {
+		return this.method_11311(blockState.method_11654(ShulkerBoxBlock.field_11496));
 	}
 
-	public Box getBoundingBox(Direction direction) {
+	public Box method_11311(Direction direction) {
 		float f = this.getAnimationProgress(1.0F);
-		return VoxelShapes.fullCube()
+		return VoxelShapes.method_1077()
 			.getBoundingBox()
 			.stretch(
 				(double)(0.5F * f * (float)direction.getOffsetX()), (double)(0.5F * f * (float)direction.getOffsetY()), (double)(0.5F * f * (float)direction.getOffsetZ())
 			);
 	}
 
-	private Box getCollisionBox(Direction direction) {
+	private Box method_11315(Direction direction) {
 		Direction direction2 = direction.getOpposite();
-		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
+		return this.method_11311(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
 	}
 
 	private void pushEntities() {
-		BlockState blockState = this.world.getBlockState(this.getPos());
+		BlockState blockState = this.world.method_8320(this.getPos());
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-			Box box = this.getCollisionBox(direction).offset(this.pos);
-			List<Entity> list = this.world.getEntities(null, box);
+			Direction direction = blockState.method_11654(ShulkerBoxBlock.field_11496);
+			Box box = this.method_11315(direction).offset(this.pos);
+			List<Entity> list = this.world.method_8335(null, box);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
-					if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
+					if (entity.method_5657() != PistonBehavior.field_15975) {
 						double d = 0.0;
 						double e = 0.0;
 						double f = 0.0;
-						Box box2 = entity.getBoundingBox();
+						Box box2 = entity.method_5829();
 						switch (direction.getAxis()) {
 							case X:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
@@ -153,7 +153,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 								f += 0.01;
 						}
 
-						entity.move(
+						entity.method_5784(
 							MovementType.field_6306, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
 						);
 					}
@@ -188,7 +188,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	private void updateNeighborStates() {
-		this.getCachedState().updateNeighborStates(this.getWorld(), this.getPos(), 3);
+		this.method_11010().updateNeighborStates(this.getWorld(), this.getPos(), 3);
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			}
 
 			this.viewerCount++;
-			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
+			this.world.method_8427(this.pos, this.method_11010().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount == 1) {
 				this.world.playSound(null, this.pos, SoundEvents.field_14825, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
@@ -210,7 +210,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			this.viewerCount--;
-			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
+			this.world.method_8427(this.pos, this.method_11010().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
 				this.world.playSound(null, this.pos, SoundEvents.field_14751, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
@@ -292,7 +292,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		if (this.cachedColorUpdateNeeded) {
-			this.cachedColor = ShulkerBoxBlock.getColor(this.getCachedState().getBlock());
+			this.cachedColor = ShulkerBoxBlock.getColor(this.method_11010().getBlock());
 			this.cachedColorUpdateNeeded = false;
 		}
 

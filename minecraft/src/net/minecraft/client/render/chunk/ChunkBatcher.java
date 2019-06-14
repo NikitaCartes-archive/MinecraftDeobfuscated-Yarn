@@ -44,7 +44,7 @@ public class ChunkBatcher {
 	private final BufferRenderer displayListBufferRenderer = new BufferRenderer();
 	private final GlBufferRenderer vboBufferRenderer = new GlBufferRenderer();
 	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
-	private final ChunkRenderWorker clientThreadWorker;
+	private final ChunkRenderWorker field_4439;
 	private Vec3d cameraPosition = Vec3d.ZERO;
 
 	public ChunkBatcher(boolean bl) {
@@ -52,7 +52,7 @@ public class ChunkBatcher {
 		int j = Runtime.getRuntime().availableProcessors();
 		int k = bl ? j : Math.min(j, 4);
 		int l = Math.max(1, Math.min(k * 2, i));
-		this.clientThreadWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
+		this.field_4439 = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayListWithExpectedSize(l);
 
 		try {
@@ -109,7 +109,7 @@ public class ChunkBatcher {
 				ChunkRenderTask chunkRenderTask = (ChunkRenderTask)this.pendingChunks.poll();
 				if (chunkRenderTask != null) {
 					try {
-						this.clientThreadWorker.runTask(chunkRenderTask);
+						this.field_4439.runTask(chunkRenderTask);
 						bl2 = true;
 					} catch (InterruptedException var9) {
 						LOGGER.warn("Skipped task due to interrupt");
@@ -138,7 +138,7 @@ public class ChunkBatcher {
 		return bl;
 	}
 
-	public boolean rebuild(ChunkRenderer chunkRenderer) {
+	public boolean method_3624(ChunkRenderer chunkRenderer) {
 		chunkRenderer.getLock().lock();
 
 		boolean var4;
@@ -158,7 +158,7 @@ public class ChunkBatcher {
 		return var4;
 	}
 
-	public boolean rebuildSync(ChunkRenderer chunkRenderer) {
+	public boolean method_3627(ChunkRenderer chunkRenderer) {
 		chunkRenderer.getLock().lock();
 
 		boolean var3;
@@ -166,7 +166,7 @@ public class ChunkBatcher {
 			ChunkRenderTask chunkRenderTask = chunkRenderer.startRebuild();
 
 			try {
-				this.clientThreadWorker.runTask(chunkRenderTask);
+				this.field_4439.runTask(chunkRenderTask);
 			} catch (InterruptedException var7) {
 			}
 
@@ -206,7 +206,7 @@ public class ChunkBatcher {
 		return (ChunkRenderTask)this.pendingChunks.take();
 	}
 
-	public boolean resortTransparency(ChunkRenderer chunkRenderer) {
+	public boolean method_3620(ChunkRenderer chunkRenderer) {
 		chunkRenderer.getLock().lock();
 
 		boolean var3;
@@ -225,7 +225,7 @@ public class ChunkBatcher {
 		return var3;
 	}
 
-	public ListenableFuture<Void> upload(
+	public ListenableFuture<Void> method_3635(
 		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
 		if (MinecraftClient.getInstance().isOnThread()) {
@@ -239,7 +239,7 @@ public class ChunkBatcher {
 			return Futures.immediateFuture(null);
 		} else {
 			ListenableFutureTask<Void> listenableFutureTask = ListenableFutureTask.create(
-				() -> this.upload(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
+				() -> this.method_3635(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
 			);
 			synchronized (this.pendingUploads) {
 				this.pendingUploads.add(new ChunkBatcher.ChunkUploadTask(listenableFutureTask, d));

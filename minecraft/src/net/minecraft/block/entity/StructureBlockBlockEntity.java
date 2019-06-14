@@ -40,7 +40,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private BlockPos size = BlockPos.ORIGIN;
 	private BlockMirror mirror = BlockMirror.field_11302;
 	private BlockRotation rotation = BlockRotation.field_11467;
-	private StructureBlockMode mode = StructureBlockMode.field_12696;
+	private StructureBlockMode field_12094 = StructureBlockMode.field_12696;
 	private boolean ignoreEntities = true;
 	private boolean powered;
 	private boolean showAir;
@@ -66,7 +66,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		compoundTag.putInt("sizeZ", this.size.getZ());
 		compoundTag.putString("rotation", this.rotation.toString());
 		compoundTag.putString("mirror", this.mirror.toString());
-		compoundTag.putString("mode", this.mode.toString());
+		compoundTag.putString("mode", this.field_12094.toString());
 		compoundTag.putBoolean("ignoreEntities", this.ignoreEntities);
 		compoundTag.putBoolean("powered", this.powered);
 		compoundTag.putBoolean("showair", this.showAir);
@@ -104,9 +104,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 
 		try {
-			this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
+			this.field_12094 = StructureBlockMode.valueOf(compoundTag.getString("mode"));
 		} catch (IllegalArgumentException var9) {
-			this.mode = StructureBlockMode.field_12696;
+			this.field_12094 = StructureBlockMode.field_12696;
 		}
 
 		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
@@ -126,9 +126,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private void updateBlockMode() {
 		if (this.world != null) {
 			BlockPos blockPos = this.getPos();
-			BlockState blockState = this.world.getBlockState(blockPos);
+			BlockState blockState = this.world.method_8320(blockPos);
 			if (blockState.getBlock() == Blocks.field_10465) {
-				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.mode), 2);
+				this.world.method_8652(blockPos, blockState.method_11657(StructureBlock.field_11586, this.field_12094), 2);
 			}
 		}
 	}
@@ -148,8 +148,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		if (!playerEntity.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openStructureBlockScreen(this);
+			if (playerEntity.method_5770().isClient) {
+				playerEntity.method_7303(this);
 			}
 
 			return true;
@@ -221,32 +221,32 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.metadata = string;
 	}
 
-	public StructureBlockMode getMode() {
-		return this.mode;
+	public StructureBlockMode method_11374() {
+		return this.field_12094;
 	}
 
-	public void setMode(StructureBlockMode structureBlockMode) {
-		this.mode = structureBlockMode;
-		BlockState blockState = this.world.getBlockState(this.getPos());
+	public void method_11381(StructureBlockMode structureBlockMode) {
+		this.field_12094 = structureBlockMode;
+		BlockState blockState = this.world.method_8320(this.getPos());
 		if (blockState.getBlock() == Blocks.field_10465) {
-			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, structureBlockMode), 2);
+			this.world.method_8652(this.getPos(), blockState.method_11657(StructureBlock.field_11586, structureBlockMode), 2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void cycleMode() {
-		switch (this.getMode()) {
+		switch (this.method_11374()) {
 			case field_12695:
-				this.setMode(StructureBlockMode.field_12697);
+				this.method_11381(StructureBlockMode.field_12697);
 				break;
 			case field_12697:
-				this.setMode(StructureBlockMode.field_12699);
+				this.method_11381(StructureBlockMode.field_12699);
 				break;
 			case field_12699:
-				this.setMode(StructureBlockMode.field_12696);
+				this.method_11381(StructureBlockMode.field_12696);
 				break;
 			case field_12696:
-				this.setMode(StructureBlockMode.field_12695);
+				this.method_11381(StructureBlockMode.field_12695);
 		}
 	}
 
@@ -278,7 +278,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean detectStructureSize() {
-		if (this.mode != StructureBlockMode.field_12695) {
+		if (this.field_12094 != StructureBlockMode.field_12695) {
 			return false;
 		} else {
 			BlockPos blockPos = this.getPos();
@@ -290,7 +290,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			if (list2.size() < 1) {
 				return false;
 			} else {
-				MutableIntBoundingBox mutableIntBoundingBox = this.makeBoundingBox(blockPos, list2);
+				MutableIntBoundingBox mutableIntBoundingBox = this.method_11355(blockPos, list2);
 				if (mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX > 1
 					&& mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY > 1
 					&& mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ > 1) {
@@ -303,8 +303,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 						mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ - 1
 					);
 					this.markDirty();
-					BlockState blockState = this.world.getBlockState(blockPos);
-					this.world.updateListeners(blockPos, blockState, blockState, 3);
+					BlockState blockState = this.world.method_8320(blockPos);
+					this.world.method_8413(blockPos, blockState, blockState, 3);
 					return true;
 				} else {
 					return false;
@@ -314,7 +314,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> list) {
-		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.field_12699
+		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.field_12094 == StructureBlockMode.field_12699
 				&& Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
 		return (List<StructureBlockBlockEntity>)list.stream().filter(predicate).collect(Collectors.toList());
 	}
@@ -323,9 +323,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		List<StructureBlockBlockEntity> list = Lists.<StructureBlockBlockEntity>newArrayList();
 
 		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
-			BlockState blockState = this.world.getBlockState(blockPos3);
+			BlockState blockState = this.world.method_8320(blockPos3);
 			if (blockState.getBlock() == Blocks.field_10465) {
-				BlockEntity blockEntity = this.world.getBlockEntity(blockPos3);
+				BlockEntity blockEntity = this.world.method_8321(blockPos3);
 				if (blockEntity != null && blockEntity instanceof StructureBlockBlockEntity) {
 					list.add((StructureBlockBlockEntity)blockEntity);
 				}
@@ -335,7 +335,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return list;
 	}
 
-	private MutableIntBoundingBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+	private MutableIntBoundingBox method_11355(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
 		MutableIntBoundingBox mutableIntBoundingBox;
 		if (list.size() > 1) {
 			BlockPos blockPos2 = ((StructureBlockBlockEntity)list.get(0)).getPos();
@@ -373,14 +373,14 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean saveStructure(boolean bl) {
-		if (this.mode == StructureBlockMode.field_12695 && !this.world.isClient && this.structureName != null) {
+		if (this.field_12094 == StructureBlockMode.field_12695 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			StructureManager structureManager = serverWorld.getStructureManager();
 
 			Structure structure;
 			try {
-				structure = structureManager.getStructureOrBlank(this.structureName);
+				structure = structureManager.method_15091(this.structureName);
 			} catch (InvalidIdentifierException var8) {
 				return false;
 			}
@@ -410,7 +410,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean loadStructure(boolean bl) {
-		if (this.mode == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
+		if (this.field_12094 == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos();
 			BlockPos blockPos2 = blockPos.add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
@@ -418,7 +418,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 			Structure structure;
 			try {
-				structure = structureManager.getStructure(this.structureName);
+				structure = structureManager.method_15094(this.structureName);
 			} catch (InvalidIdentifierException var10) {
 				return false;
 			}
@@ -435,8 +435,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				if (!bl2) {
 					this.size = blockPos3;
 					this.markDirty();
-					BlockState blockState = this.world.getBlockState(blockPos);
-					this.world.updateListeners(blockPos, blockState, blockState, 3);
+					BlockState blockState = this.world.method_8320(blockPos);
+					this.world.method_8413(blockPos, blockState, blockState, 3);
 				}
 
 				if (bl && !bl2) {
@@ -449,7 +449,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 						.setChunkPosition(null);
 					if (this.integrity < 1.0F) {
 						structurePlacementData.clearProcessors()
-							.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
+							.method_16184(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
 							.setRandom(createRandom(this.seed));
 					}
 
@@ -471,12 +471,12 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean isStructureAvailable() {
-		if (this.mode == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
+		if (this.field_12094 == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			StructureManager structureManager = serverWorld.getStructureManager();
 
 			try {
-				return structureManager.getStructure(this.structureName) != null;
+				return structureManager.method_15094(this.structureName) != null;
 			} catch (InvalidIdentifierException var4) {
 				return false;
 			}

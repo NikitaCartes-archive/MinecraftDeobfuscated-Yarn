@@ -19,7 +19,7 @@ public class EntityPosWrapper implements LookTarget {
 	}
 
 	@Override
-	public Vec3d getPos() {
+	public Vec3d method_18991() {
 		return new Vec3d(this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
 	}
 

@@ -20,7 +20,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public EntityVelocityUpdateS2CPacket(Entity entity) {
-		this(entity.getEntityId(), entity.getVelocity());
+		this(entity.getEntityId(), entity.method_18798());
 	}
 
 	public EntityVelocityUpdateS2CPacket(int i, Vec3d vec3d) {

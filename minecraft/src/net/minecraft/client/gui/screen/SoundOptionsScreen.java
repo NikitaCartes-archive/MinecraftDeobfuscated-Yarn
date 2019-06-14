@@ -39,21 +39,21 @@ public class SoundOptionsScreen extends Screen {
 
 		this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.options), buttonWidget -> {
-					Option.SUBTITLES.set(this.minecraft.options);
-					buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.minecraft.options));
-					this.minecraft.options.write();
+				this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.method_18495(this.options), buttonWidget -> {
+					Option.SUBTITLES.method_18491(this.minecraft.field_1690);
+					buttonWidget.setMessage(Option.SUBTITLES.method_18495(this.minecraft.field_1690));
+					this.minecraft.field_1690.write();
 				}
 			)
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.parent))
 		);
 	}
 
 	@Override
 	public void removed() {
-		this.minecraft.options.write();
+		this.minecraft.field_1690.write();
 	}
 
 	@Override

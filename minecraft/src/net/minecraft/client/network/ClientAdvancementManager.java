@@ -55,7 +55,7 @@ public class ClientAdvancementManager {
 					&& advancementProgress.isDone()
 					&& advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldShowToast()) {
-					this.client.getToastManager().add(new AdvancementToast(advancement));
+					this.client.method_1566().add(new AdvancementToast(advancement));
 				}
 			} else {
 				LOGGER.warn("Server informed client about progress for unknown advancement {}", entry.getKey());
@@ -68,7 +68,7 @@ public class ClientAdvancementManager {
 	}
 
 	public void selectTab(@Nullable Advancement advancement, boolean bl) {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.method_1562();
 		if (clientPlayNetworkHandler != null && advancement != null && bl) {
 			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(advancement));
 		}

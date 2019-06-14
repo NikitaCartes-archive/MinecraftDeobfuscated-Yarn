@@ -22,15 +22,15 @@ import net.minecraft.world.World;
 public class FireworksSparkParticle {
 	@Environment(EnvType.CLIENT)
 	public static class ExplosionFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider spriteProvider;
+		private final SpriteProvider field_17811;
 
 		public ExplosionFactory(SpriteProvider spriteProvider) {
-			this.spriteProvider = spriteProvider;
+			this.field_17811 = spriteProvider;
 		}
 
 		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.ExplosionParticle explosionParticle = new FireworksSparkParticle.ExplosionParticle(
-				world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider
+				world, d, e, f, g, h, i, MinecraftClient.getInstance().field_1713, this.field_17811
 			);
 			explosionParticle.setColorAlpha(0.99F);
 			return explosionParticle;
@@ -41,7 +41,7 @@ public class FireworksSparkParticle {
 	static class ExplosionParticle extends AnimatedParticle {
 		private boolean trail;
 		private boolean flicker;
-		private final ParticleManager particleManager;
+		private final ParticleManager field_3798;
 		private float field_3801;
 		private float field_3800;
 		private float field_3799;
@@ -54,7 +54,7 @@ public class FireworksSparkParticle {
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
-			this.particleManager = particleManager;
+			this.field_3798 = particleManager;
 			this.scale *= 0.75F;
 			this.maxAge = 48 + this.random.nextInt(12);
 			this.setSpriteForAge(spriteProvider);
@@ -80,7 +80,7 @@ public class FireworksSparkParticle {
 			super.tick();
 			if (this.trail && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
 				FireworksSparkParticle.ExplosionParticle explosionParticle = new FireworksSparkParticle.ExplosionParticle(
-					this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.particleManager, this.spriteProvider
+					this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.field_3798, this.field_17866
 				);
 				explosionParticle.setColorAlpha(0.99F);
 				explosionParticle.setColor(this.colorRed, this.colorGreen, this.colorBlue);
@@ -93,7 +93,7 @@ public class FireworksSparkParticle {
 				}
 
 				explosionParticle.flicker = this.flicker;
-				this.particleManager.addParticle(explosionParticle);
+				this.field_3798.addParticle(explosionParticle);
 			}
 		}
 	}
@@ -101,7 +101,7 @@ public class FireworksSparkParticle {
 	@Environment(EnvType.CLIENT)
 	public static class FireworkParticle extends NoRenderParticle {
 		private int age;
-		private final ParticleManager particleManager;
+		private final ParticleManager field_3805;
 		private ListTag explosions;
 		private boolean flicker;
 
@@ -112,7 +112,7 @@ public class FireworksSparkParticle {
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
-			this.particleManager = particleManager;
+			this.field_3805 = particleManager;
 			this.maxAge = 8;
 			if (compoundTag != null) {
 				this.explosions = compoundTag.getList("Explosions", 10);
@@ -219,7 +219,7 @@ public class FireworksSparkParticle {
 				float f = (float)((k & 0xFF0000) >> 16) / 255.0F;
 				float g = (float)((k & 0xFF00) >> 8) / 255.0F;
 				float h = (float)((k & 0xFF) >> 0) / 255.0F;
-				Particle particle = this.particleManager.addParticle(ParticleTypes.field_17909, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+				Particle particle = this.field_3805.addParticle(ParticleTypes.field_17909, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 				particle.setColor(f, g, h);
 			}
 
@@ -237,11 +237,11 @@ public class FireworksSparkParticle {
 
 		private boolean isFar() {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			return minecraftClient.gameRenderer.getCamera().getPos().squaredDistanceTo(this.x, this.y, this.z) >= 256.0;
+			return minecraftClient.field_1773.getCamera().getPos().squaredDistanceTo(this.x, this.y, this.z) >= 256.0;
 		}
 
 		private void addExplosionParticle(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-			FireworksSparkParticle.ExplosionParticle explosionParticle = (FireworksSparkParticle.ExplosionParticle)this.particleManager
+			FireworksSparkParticle.ExplosionParticle explosionParticle = (FireworksSparkParticle.ExplosionParticle)this.field_3805
 				.addParticle(ParticleTypes.field_11248, d, e, f, g, h, i);
 			explosionParticle.setTrail(bl);
 			explosionParticle.setFlicker(bl2);
@@ -322,15 +322,15 @@ public class FireworksSparkParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class FlashFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider spriteProvider;
+		private final SpriteProvider field_17810;
 
 		public FlashFactory(SpriteProvider spriteProvider) {
-			this.spriteProvider = spriteProvider;
+			this.field_17810 = spriteProvider;
 		}
 
 		public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.FlashParticle flashParticle = new FireworksSparkParticle.FlashParticle(world, d, e, f);
-			flashParticle.setSprite(this.spriteProvider);
+			flashParticle.setSprite(this.field_17810);
 			return flashParticle;
 		}
 	}
@@ -343,7 +343,7 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public ParticleTextureSheet getType() {
+		public ParticleTextureSheet method_18122() {
 			return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 		}
 

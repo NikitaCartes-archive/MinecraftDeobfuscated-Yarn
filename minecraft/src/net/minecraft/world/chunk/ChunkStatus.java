@@ -29,7 +29,7 @@ public class ChunkStatus {
 		Heightmap.Type.field_13200, Heightmap.Type.field_13202, Heightmap.Type.field_13197, Heightmap.Type.field_13203
 	);
 	private static final ChunkStatus.class_4305 field_19345 = (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> {
-		if (chunk instanceof ProtoChunk && !chunk.getStatus().isAtLeast(chunkStatus)) {
+		if (chunk instanceof ProtoChunk && !chunk.method_12009().isAtLeast(chunkStatus)) {
 			((ProtoChunk)chunk).setStatus(chunkStatus);
 		}
 
@@ -46,9 +46,9 @@ public class ChunkStatus {
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-				if (serverWorld.getLevelProperties().hasStructures()) {
-					chunkGenerator.setStructureStarts(chunk, chunkGenerator, structureManager);
+			if (!chunk.method_12009().isAtLeast(chunkStatus)) {
+				if (serverWorld.method_8401().hasStructures()) {
+					chunkGenerator.method_16129(chunk, chunkGenerator, structureManager);
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -97,7 +97,7 @@ public class ChunkStatus {
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13169)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.method_12108(chunk, GenerationStep.Carver.field_13169)
 	);
 	public static final ChunkStatus field_12790 = register(
 		"liquid_carvers",
@@ -105,7 +105,7 @@ public class ChunkStatus {
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13166)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.method_12108(chunk, GenerationStep.Carver.field_13166)
 	);
 	public static final ChunkStatus field_12795 = register(
 		"features",
@@ -114,8 +114,8 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
-			chunk.setLightingProvider(serverLightingProvider);
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+			chunk.method_17032(serverLightingProvider);
+			if (!chunk.method_12009().isAtLeast(chunkStatus)) {
 				Heightmap.populateHeightmaps(
 					chunk, EnumSet.of(Heightmap.Type.field_13197, Heightmap.Type.field_13203, Heightmap.Type.field_13200, Heightmap.Type.field_13202)
 				);
@@ -191,7 +191,7 @@ public class ChunkStatus {
 		ChunkStatus chunkStatus, ServerLightingProvider serverLightingProvider, Chunk chunk
 	) {
 		boolean bl = method_20608(chunkStatus, chunk);
-		if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+		if (!chunk.method_12009().isAtLeast(chunkStatus)) {
 			((ProtoChunk)chunk).setStatus(chunkStatus);
 		}
 
@@ -236,7 +236,7 @@ public class ChunkStatus {
 	}
 
 	private static boolean method_20608(ChunkStatus chunkStatus, Chunk chunk) {
-		return chunk.getStatus().isAtLeast(chunkStatus) && chunk.isLightOn();
+		return chunk.method_12009().isAtLeast(chunkStatus) && chunk.isLightOn();
 	}
 
 	public static ChunkStatus getTargetGenerationStatus(int i) {
@@ -286,7 +286,7 @@ public class ChunkStatus {
 		return this.previous;
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runTask(
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_12154(
 		ServerWorld serverWorld,
 		ChunkGenerator<?> chunkGenerator,
 		StructureManager structureManager,
@@ -348,7 +348,7 @@ public class ChunkStatus {
 			List<Chunk> list,
 			Chunk chunk
 		) {
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+			if (!chunk.method_12009().isAtLeast(chunkStatus)) {
 				this.doWork(serverWorld, chunkGenerator, list, chunk);
 				if (chunk instanceof ProtoChunk) {
 					((ProtoChunk)chunk).setStatus(chunkStatus);

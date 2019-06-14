@@ -23,7 +23,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	private final int groundLevelDelta;
 	protected final BlockRotation rotation;
 	private final List<JigsawJunction> junctions = Lists.<JigsawJunction>newArrayList();
-	private final StructureManager structureManager;
+	private final StructureManager field_17660;
 
 	public PoolStructurePiece(
 		StructurePieceType structurePieceType,
@@ -35,7 +35,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		super(structurePieceType, 0);
-		this.structureManager = structureManager;
+		this.field_17660 = structureManager;
 		this.poolElement = structurePoolElement;
 		this.pos = blockPos;
 		this.groundLevelDelta = i;
@@ -45,14 +45,14 @@ public abstract class PoolStructurePiece extends StructurePiece {
 
 	public PoolStructurePiece(StructureManager structureManager, CompoundTag compoundTag, StructurePieceType structurePieceType) {
 		super(structurePieceType, compoundTag);
-		this.structureManager = structureManager;
+		this.field_17660 = structureManager;
 		this.pos = new BlockPos(compoundTag.getInt("PosX"), compoundTag.getInt("PosY"), compoundTag.getInt("PosZ"));
 		this.groundLevelDelta = compoundTag.getInt("ground_level_delta");
 		this.poolElement = DynamicDeserializer.deserialize(
 			new Dynamic<>(NbtOps.INSTANCE, compoundTag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE
 		);
 		this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
-		this.boundingBox = this.poolElement.getBoundingBox(structureManager, this.pos, this.rotation);
+		this.boundingBox = this.poolElement.method_16628(structureManager, this.pos, this.rotation);
 		ListTag listTag = compoundTag.getList("junctions", 10);
 		this.junctions.clear();
 		listTag.forEach(tag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag))));
@@ -77,7 +77,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 
 	@Override
 	public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-		return this.poolElement.generate(this.structureManager, iWorld, this.pos, this.rotation, mutableIntBoundingBox, random);
+		return this.poolElement.method_16626(this.field_17660, iWorld, this.pos, this.rotation, mutableIntBoundingBox, random);
 	}
 
 	@Override

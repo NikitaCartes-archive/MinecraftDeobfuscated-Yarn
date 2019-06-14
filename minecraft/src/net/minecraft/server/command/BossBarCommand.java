@@ -65,9 +65,9 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.identifier())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.then(
-									CommandManager.argument("name", TextArgumentType.text())
+									CommandManager.argument("name", TextArgumentType.create())
 										.executes(
 											commandContext -> addBossBar(
 													commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "id"), TextArgumentType.getTextArgument(commandContext, "name")
@@ -79,7 +79,7 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.identifier())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
 								.executes(commandContext -> removeBossBar(commandContext.getSource(), createBossBar(commandContext)))
 						)
@@ -88,12 +88,12 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("set")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.identifier())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
 								.then(
 									CommandManager.literal("name")
 										.then(
-											CommandManager.argument("name", TextArgumentType.text())
+											CommandManager.argument("name", TextArgumentType.create())
 												.executes(
 													commandContext -> setName(commandContext.getSource(), createBossBar(commandContext), TextArgumentType.getTextArgument(commandContext, "name"))
 												)
@@ -197,7 +197,7 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("get")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.identifier())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
 								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), createBossBar(commandContext))))
 								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), createBossBar(commandContext))))

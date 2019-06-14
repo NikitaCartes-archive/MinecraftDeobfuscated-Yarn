@@ -18,53 +18,53 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class RedstoneOreBlock extends Block {
-	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+	public static final BooleanProperty field_11392 = RedstoneTorchBlock.field_11446;
 
 	public RedstoneOreBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(LIT, Boolean.valueOf(false)));
+		this.method_9590(this.method_9564().method_11657(field_11392, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public int getLuminance(BlockState blockState) {
-		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
+	public int method_9593(BlockState blockState) {
+		return blockState.method_11654(field_11392) ? super.method_9593(blockState) : 0;
 	}
 
 	@Override
-	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		light(blockState, world, blockPos);
-		super.onBlockBreakStart(blockState, world, blockPos, playerEntity);
+	public void method_9606(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		method_10441(blockState, world, blockPos);
+		super.method_9606(blockState, world, blockPos, playerEntity);
 	}
 
 	@Override
 	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-		light(world.getBlockState(blockPos), world, blockPos);
+		method_10441(world.method_8320(blockPos), world, blockPos);
 		super.onSteppedOn(world, blockPos, entity);
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		light(blockState, world, blockPos);
-		return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		method_10441(blockState, world, blockPos);
+		return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 	}
 
-	private static void light(BlockState blockState, World world, BlockPos blockPos) {
+	private static void method_10441(BlockState blockState, World world, BlockPos blockPos) {
 		spawnParticles(world, blockPos);
-		if (!(Boolean)blockState.get(LIT)) {
-			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(true)), 3);
+		if (!(Boolean)blockState.method_11654(field_11392)) {
+			world.method_8652(blockPos, blockState.method_11657(field_11392, Boolean.valueOf(true)), 3);
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT)) {
-			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.method_11654(field_11392)) {
+			world.method_8652(blockPos, blockState.method_11657(field_11392, Boolean.valueOf(false)), 3);
 		}
 	}
 
 	@Override
-	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
-		super.onStacksDropped(blockState, world, blockPos, itemStack);
+	public void method_9565(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+		super.method_9565(blockState, world, blockPos, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
 			int i = 1 + world.random.nextInt(5);
 			this.dropExperience(world, blockPos, i);
@@ -73,8 +73,8 @@ public class RedstoneOreBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT)) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.method_11654(field_11392)) {
 			spawnParticles(world, blockPos);
 		}
 	}
@@ -85,7 +85,7 @@ public class RedstoneOreBlock extends Block {
 
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (!world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
+			if (!world.method_8320(blockPos2).isFullOpaque(world, blockPos2)) {
 				Direction.Axis axis = direction.getAxis();
 				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
 				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
@@ -97,6 +97,6 @@ public class RedstoneOreBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(LIT);
+		builder.method_11667(field_11392);
 	}
 }

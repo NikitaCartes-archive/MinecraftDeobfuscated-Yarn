@@ -49,7 +49,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 			this.getModel().setHeadAngle(0.0625F);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
+			if (item instanceof BlockItem && ((BlockItem)item).method_7711() instanceof AbstractSkullBlock) {
 				float m = 1.1875F;
 				GlStateManager.scalef(1.1875F, -1.1875F, -1.1875F);
 				if (bl) {
@@ -71,7 +71,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				}
 
 				SkullBlockEntityRenderer.INSTANCE
-					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
+					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).method_7711()).getSkullType(), gameProfile, -1, f);
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
 				float mx = 0.625F;
 				GlStateManager.translatef(0.0F, -0.25F, 0.0F);
@@ -81,7 +81,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
 				}
 
-				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4316);
+				MinecraftClient.getInstance().method_1489().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4316);
 			}
 
 			GlStateManager.popMatrix();

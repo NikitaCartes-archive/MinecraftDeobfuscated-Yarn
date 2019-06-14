@@ -22,9 +22,9 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_12817(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		for (BlockState blockState = iWorld.getBlockState(blockPos);
+		for (BlockState blockState = iWorld.method_8320(blockPos);
 			(blockState.isAir() || blockState.matches(BlockTags.field_15503)) && blockPos.getY() > 1;
-			blockState = iWorld.getBlockState(blockPos)
+			blockState = iWorld.method_8320(blockPos)
 		) {
 			blockPos = blockPos.down();
 		}
@@ -37,14 +37,14 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 			for (int i = 0; i < 4; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), random.nextInt(3) - random.nextInt(3), random.nextInt(4) - random.nextInt(4));
 				if (iWorld.isAir(blockPos2)) {
-					iWorld.setBlockState(blockPos2, Blocks.field_10034.getDefaultState(), 2);
+					iWorld.method_8652(blockPos2, Blocks.field_10034.method_9564(), 2);
 					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
-					BlockState blockState2 = Blocks.field_10336.getDefaultState();
+					BlockState blockState2 = Blocks.field_10336.method_9564();
 
 					for (Direction direction : Direction.Type.field_11062) {
 						BlockPos blockPos3 = blockPos2.offset(direction);
 						if (blockState2.canPlaceAt(iWorld, blockPos3)) {
-							iWorld.setBlockState(blockPos3, blockState2, 2);
+							iWorld.method_8652(blockPos3, blockState2, 2);
 						}
 					}
 

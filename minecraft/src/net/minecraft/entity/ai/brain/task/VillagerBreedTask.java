@@ -95,7 +95,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
-		Path path = villagerEntity.getNavigation().findPathTo(blockPos);
+		Path path = villagerEntity.getNavigation().method_6348(blockPos);
 		return path != null && path.method_19313(blockPos);
 	}
 
@@ -108,14 +108,14 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			villagerEntity2.setBreedingAge(6000);
 			villagerEntity3.setBreedingAge(-24000);
 			villagerEntity3.setPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0F, 0.0F);
-			villagerEntity.world.spawnEntity(villagerEntity3);
-			villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
+			villagerEntity.field_6002.spawnEntity(villagerEntity3);
+			villagerEntity.field_6002.sendEntityStatus(villagerEntity3, (byte)12);
 			return Optional.of(villagerEntity3);
 		}
 	}
 
 	private void method_19572(ServerWorld serverWorld, VillagerEntity villagerEntity, BlockPos blockPos) {
-		GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
+		GlobalPos globalPos = GlobalPos.create(serverWorld.method_8597().method_12460(), blockPos);
 		villagerEntity.getBrain().putMemory(MemoryModuleType.field_18438, globalPos);
 	}
 }

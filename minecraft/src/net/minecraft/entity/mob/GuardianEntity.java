@@ -89,7 +89,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected EntityNavigation createNavigation(World world) {
+	protected EntityNavigation method_5965(World world) {
 		return new SwimNavigation(this, world);
 	}
 
@@ -134,11 +134,11 @@ public class GuardianEntity extends HostileEntity {
 	public LivingEntity getBeamTarget() {
 		if (!this.hasBeamTarget()) {
 			return null;
-		} else if (this.world.isClient) {
+		} else if (this.field_6002.isClient) {
 			if (this.cachedBeamTarget != null) {
 				return this.cachedBeamTarget;
 			} else {
-				Entity entity = this.world.getEntityById(this.dataTracker.get(BEAM_TARGET_ID));
+				Entity entity = this.field_6002.getEntityById(this.dataTracker.get(BEAM_TARGET_ID));
 				if (entity instanceof LivingEntity) {
 					this.cachedBeamTarget = (LivingEntity)entity;
 					return this.cachedBeamTarget;
@@ -191,25 +191,25 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)
+	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.method_8316(blockPos).matches(FluidTags.field_15517)
 			? 10.0F + viewableWorld.getBrightness(blockPos) - 0.5F
-			: super.getPathfindingFavor(blockPos, viewableWorld);
+			: super.method_6144(blockPos, viewableWorld);
 	}
 
 	@Override
 	public void tickMovement() {
 		if (this.isAlive()) {
-			if (this.world.isClient) {
+			if (this.field_6002.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
 				if (!this.isInsideWater()) {
 					this.spikesExtensionRate = 2.0F;
-					Vec3d vec3d = this.getVelocity();
+					Vec3d vec3d = this.method_18798();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
-						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
+						this.field_6002.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
+					this.flopping = vec3d.y < 0.0 && this.field_6002.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -231,10 +231,10 @@ public class GuardianEntity extends HostileEntity {
 				}
 
 				if (this.areSpikesRetracted() && this.isInsideWater()) {
-					Vec3d vec3d = this.getRotationVec(0.0F);
+					Vec3d vec3d = this.method_5828(0.0F);
 
 					for (int i = 0; i < 2; i++) {
-						this.world
+						this.field_6002
 							.addParticle(
 								ParticleTypes.field_11247,
 								this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.x * 1.5,
@@ -268,7 +268,8 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.field_11247, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
+							this.field_6002
+								.addParticle(ParticleTypes.field_11247, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -277,8 +278,8 @@ public class GuardianEntity extends HostileEntity {
 			if (this.isInsideWaterOrBubbleColumn()) {
 				this.setBreath(300);
 			} else if (this.onGround) {
-				this.setVelocity(
-					this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
+				this.method_18799(
+					this.method_18798().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
 				);
 				this.yaw = this.random.nextFloat() * 360.0F;
 				this.onGround = false;
@@ -312,14 +313,14 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
+	public boolean method_5957(ViewableWorld viewableWorld) {
 		return viewableWorld.intersectsEntities(this);
 	}
 
 	public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return (random.nextInt(20) == 0 || !iWorld.method_8626(blockPos))
 			&& iWorld.getDifficulty() != Difficulty.field_5801
-			&& (spawnType == SpawnType.field_16469 || iWorld.getFluidState(blockPos).matches(FluidTags.field_15517));
+			&& (spawnType == SpawnType.field_16469 || iWorld.method_8316(blockPos).matches(FluidTags.field_15517));
 	}
 
 	@Override
@@ -344,16 +345,16 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void travel(Vec3d vec3d) {
+	public void method_6091(Vec3d vec3d) {
 		if (this.canMoveVoluntarily() && this.isInsideWater()) {
-			this.updateVelocity(0.1F, vec3d);
-			this.move(MovementType.field_6308, this.getVelocity());
-			this.setVelocity(this.getVelocity().multiply(0.9));
+			this.method_5724(0.1F, vec3d);
+			this.method_5784(MovementType.field_6308, this.method_18798());
+			this.method_18799(this.method_18798().multiply(0.9));
 			if (!this.areSpikesRetracted() && this.getTarget() == null) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
+				this.method_18799(this.method_18798().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(vec3d);
+			super.method_6091(vec3d);
 		}
 	}
 
@@ -405,10 +406,10 @@ public class GuardianEntity extends HostileEntity {
 				this.beamTicks++;
 				if (this.beamTicks == 0) {
 					this.guardian.setBeamTarget(this.guardian.getTarget().getEntityId());
-					this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+					this.guardian.field_6002.sendEntityStatus(this.guardian, (byte)21);
 				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
-					if (this.guardian.world.getDifficulty() == Difficulty.field_5807) {
+					if (this.guardian.field_6002.getDifficulty() == Difficulty.field_5807) {
 						f += 2.0F;
 					}
 
@@ -452,7 +453,7 @@ public class GuardianEntity extends HostileEntity {
 				double l = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
 				double m = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
 				double n = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
-				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
+				this.guardian.method_18799(this.guardian.method_18798().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();
 				double o = this.guardian.x + e * 2.0;
 				double p = (double)this.guardian.getStandingEyeHeight() + this.guardian.y + f / d;

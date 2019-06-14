@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class JsonUnbakedModel implements UnbakedModel {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
+	private static final BakedQuadFactory field_4249 = new BakedQuadFactory();
 	@VisibleForTesting
 	static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(JsonUnbakedModel.class, new JsonUnbakedModel.Deserializer())
@@ -58,7 +58,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	private final List<ModelElement> elements;
 	private final boolean depthInGui;
 	private final boolean ambientOcclusion;
-	private final ModelTransformation transformations;
+	private final ModelTransformation field_4250;
 	private final List<ModelItemOverride> overrides;
 	public String id = "";
 	@VisibleForTesting
@@ -90,7 +90,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		this.depthInGui = bl2;
 		this.textureMap = map;
 		this.parentId = identifier;
-		this.transformations = modelTransformation;
+		this.field_4250 = modelTransformation;
 		this.overrides = list2;
 	}
 
@@ -110,10 +110,10 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.overrides;
 	}
 
-	private ModelItemPropertyOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel) {
+	private ModelItemPropertyOverrideList method_3440(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel) {
 		return this.overrides.isEmpty()
 			? ModelItemPropertyOverrideList.EMPTY
-			: new ModelItemPropertyOverrideList(modelLoader, jsonUnbakedModel, modelLoader::getOrLoadModel, this.overrides);
+			: new ModelItemPropertyOverrideList(modelLoader, jsonUnbakedModel, modelLoader::method_4726, this.overrides);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 
 			if (unbakedModel == null) {
-				jsonUnbakedModel.parentId = ModelLoader.MISSING;
+				jsonUnbakedModel.parentId = ModelLoader.field_5374;
 				unbakedModel = (UnbakedModel)function.apply(jsonUnbakedModel.parentId);
 			}
 
@@ -195,25 +195,27 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Override
 	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
-		return this.bake(modelLoader, this, function, modelBakeSettings);
+		return this.method_3446(modelLoader, this, function, modelBakeSettings);
 	}
 
-	public BakedModel bake(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
+	public BakedModel method_3446(
+		ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings
+	) {
 		Sprite sprite = (Sprite)function.apply(new Identifier(this.resolveTexture("particle")));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(modelLoader, jsonUnbakedModel), sprite);
+			return new BuiltinBakedModel(this.method_3443(), this.method_3440(modelLoader, jsonUnbakedModel), sprite);
 		} else {
-			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(modelLoader, jsonUnbakedModel)).setParticle(sprite);
+			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.method_3440(modelLoader, jsonUnbakedModel)).setParticle(sprite);
 
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
 					Sprite sprite2 = (Sprite)function.apply(new Identifier(this.resolveTexture(modelElementFace.textureId)));
 					if (modelElementFace.cullFace == null) {
-						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings));
+						builder.addQuad(method_3447(modelElement, modelElementFace, sprite2, direction, modelBakeSettings));
 					} else {
 						builder.addQuad(
-							modelBakeSettings.getRotation().apply(modelElementFace.cullFace), createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings)
+							modelBakeSettings.getRotation().apply(modelElementFace.cullFace), method_3447(modelElement, modelElementFace, sprite2, direction, modelBakeSettings)
 						);
 					}
 				}
@@ -223,11 +225,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 		}
 	}
 
-	private static BakedQuad createQuad(
+	private static BakedQuad method_3447(
 		ModelElement modelElement, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings
 	) {
-		return QUAD_FACTORY.bake(
-			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelBakeSettings, modelElement.rotation, modelElement.shade
+		return field_4249.method_3468(
+			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelBakeSettings, modelElement.field_4232, modelElement.shade
 		);
 	}
 
@@ -274,24 +276,22 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.parent == null ? this : this.parent.getRootModel();
 	}
 
-	public ModelTransformation getTransformations() {
-		Transformation transformation = this.getTransformation(ModelTransformation.Type.field_4323);
-		Transformation transformation2 = this.getTransformation(ModelTransformation.Type.field_4320);
-		Transformation transformation3 = this.getTransformation(ModelTransformation.Type.field_4321);
-		Transformation transformation4 = this.getTransformation(ModelTransformation.Type.field_4322);
-		Transformation transformation5 = this.getTransformation(ModelTransformation.Type.field_4316);
-		Transformation transformation6 = this.getTransformation(ModelTransformation.Type.field_4317);
-		Transformation transformation7 = this.getTransformation(ModelTransformation.Type.field_4318);
-		Transformation transformation8 = this.getTransformation(ModelTransformation.Type.field_4319);
+	public ModelTransformation method_3443() {
+		Transformation transformation = this.method_3438(ModelTransformation.Type.field_4323);
+		Transformation transformation2 = this.method_3438(ModelTransformation.Type.field_4320);
+		Transformation transformation3 = this.method_3438(ModelTransformation.Type.field_4321);
+		Transformation transformation4 = this.method_3438(ModelTransformation.Type.field_4322);
+		Transformation transformation5 = this.method_3438(ModelTransformation.Type.field_4316);
+		Transformation transformation6 = this.method_3438(ModelTransformation.Type.field_4317);
+		Transformation transformation7 = this.method_3438(ModelTransformation.Type.field_4318);
+		Transformation transformation8 = this.method_3438(ModelTransformation.Type.field_4319);
 		return new ModelTransformation(
 			transformation, transformation2, transformation3, transformation4, transformation5, transformation6, transformation7, transformation8
 		);
 	}
 
-	private Transformation getTransformation(ModelTransformation.Type type) {
-		return this.parent != null && !this.transformations.isTransformationDefined(type)
-			? this.parent.getTransformation(type)
-			: this.transformations.getTransformation(type);
+	private Transformation method_3438(ModelTransformation.Type type) {
+		return this.parent != null && !this.field_4250.isTransformationDefined(type) ? this.parent.method_3438(type) : this.field_4250.getTransformation(type);
 	}
 
 	public String toString() {

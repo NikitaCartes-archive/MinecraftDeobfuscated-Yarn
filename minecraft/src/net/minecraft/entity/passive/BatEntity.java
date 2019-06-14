@@ -104,10 +104,10 @@ public class BatEntity extends AmbientEntity {
 	public void tick() {
 		super.tick();
 		if (this.isRoosting()) {
-			this.setVelocity(Vec3d.ZERO);
+			this.method_18799(Vec3d.ZERO);
 			this.y = (double)MathHelper.floor(this.y) + 1.0 - (double)this.getHeight();
 		} else {
-			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
+			this.method_18799(this.method_18798().multiply(1.0, 0.6, 1.0));
 		}
 	}
 
@@ -117,25 +117,25 @@ public class BatEntity extends AmbientEntity {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.up();
 		if (this.isRoosting()) {
-			if (this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos)) {
+			if (this.field_6002.method_8320(blockPos2).isSimpleFullBlock(this.field_6002, blockPos)) {
 				if (this.random.nextInt(200) == 0) {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
-				if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
+				if (this.field_6002.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
-					this.world.playLevelEvent(null, 1025, blockPos, 0);
+					this.field_6002.playLevelEvent(null, 1025, blockPos, 0);
 				}
 			} else {
 				this.setRoosting(false);
-				this.world.playLevelEvent(null, 1025, blockPos, 0);
+				this.field_6002.playLevelEvent(null, 1025, blockPos, 0);
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
+			if (this.hangingPosition != null && (!this.field_6002.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
 				this.hangingPosition = null;
 			}
 
-			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
+			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.method_19538(), 2.0)) {
 				this.hangingPosition = new BlockPos(
 					this.x + (double)this.random.nextInt(7) - (double)this.random.nextInt(7),
 					this.y + (double)this.random.nextInt(6) - 2.0,
@@ -146,14 +146,14 @@ public class BatEntity extends AmbientEntity {
 			double d = (double)this.hangingPosition.getX() + 0.5 - this.x;
 			double e = (double)this.hangingPosition.getY() + 0.1 - this.y;
 			double f = (double)this.hangingPosition.getZ() + 0.5 - this.z;
-			Vec3d vec3d = this.getVelocity();
+			Vec3d vec3d = this.method_18798();
 			Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * 0.1F, (Math.signum(e) * 0.7F - vec3d.y) * 0.1F, (Math.signum(f) * 0.5 - vec3d.z) * 0.1F);
-			this.setVelocity(vec3d2);
+			this.method_18799(vec3d2);
 			float g = (float)(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI) - 90.0F;
 			float h = MathHelper.wrapDegrees(g - this.yaw);
 			this.forwardSpeed = 0.5F;
 			this.yaw += h;
-			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos2)) {
+			if (this.random.nextInt(100) == 0 && this.field_6002.method_8320(blockPos2).isSimpleFullBlock(this.field_6002, blockPos2)) {
 				this.setRoosting(true);
 			}
 		}
@@ -169,7 +169,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class BatEntity extends AmbientEntity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.world.isClient && this.isRoosting()) {
+			if (!this.field_6002.isClient && this.isRoosting()) {
 				this.setRoosting(false);
 			}
 

@@ -5,22 +5,22 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-public enum Arm {
+public enum AbsoluteHand {
 	field_6182(new TranslatableText("options.mainHand.left")),
 	field_6183(new TranslatableText("options.mainHand.right"));
 
-	private final Text optionName;
+	private final Text name;
 
-	private Arm(Text text) {
-		this.optionName = text;
+	private AbsoluteHand(Text text) {
+		this.name = text;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Arm getOpposite() {
+	public AbsoluteHand getOpposite() {
 		return this == field_6182 ? field_6183 : field_6182;
 	}
 
 	public String toString() {
-		return this.optionName.getString();
+		return this.name.getString();
 	}
 }

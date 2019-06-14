@@ -40,7 +40,7 @@ public class WorldBorder {
 			&& (double)chunkPos.getStartZ() < this.getBoundSouth();
 	}
 
-	public boolean contains(Box box) {
+	public boolean method_11966(Box box) {
 		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
 	}
 
@@ -48,7 +48,7 @@ public class WorldBorder {
 		return this.contains(entity.x, entity.z);
 	}
 
-	public VoxelShape asVoxelShape() {
+	public VoxelShape method_17903() {
 		return this.area.method_17906();
 	}
 
@@ -97,7 +97,7 @@ public class WorldBorder {
 		this.area.onCenterChanged();
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onCenterChanged(this, d, e);
+			worldBorderListener.method_11930(this, d, e);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class WorldBorder {
 		this.area = new WorldBorder.StaticArea(d);
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onSizeChange(this, d);
+			worldBorderListener.method_11934(this, d);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class WorldBorder {
 		this.area = (WorldBorder.Area)(d == e ? new WorldBorder.StaticArea(e) : new WorldBorder.MovingArea(d, e, l));
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onInterpolateSize(this, d, e, l);
+			worldBorderListener.method_11931(this, d, e, l);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class WorldBorder {
 		this.buffer = d;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onSafeZoneChanged(this, d);
+			worldBorderListener.method_11935(this, d);
 		}
 	}
 
@@ -166,7 +166,7 @@ public class WorldBorder {
 		this.damagePerBlock = d;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onDamagePerBlockChanged(this, d);
+			worldBorderListener.method_11929(this, d);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class WorldBorder {
 		this.warningTime = i;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onWarningTimeChanged(this, i);
+			worldBorderListener.method_11932(this, i);
 		}
 	}
 
@@ -195,7 +195,7 @@ public class WorldBorder {
 		this.warningBlocks = i;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onWarningBlocksChanged(this, i);
+			worldBorderListener.method_11933(this, i);
 		}
 	}
 
@@ -203,7 +203,7 @@ public class WorldBorder {
 		this.area = this.area.getAreaInstance();
 	}
 
-	public void save(LevelProperties levelProperties) {
+	public void method_17904(LevelProperties levelProperties) {
 		levelProperties.setBorderSize(this.getSize());
 		levelProperties.setBorderCenterX(this.getCenterX());
 		levelProperties.borderCenterZ(this.getCenterZ());
@@ -215,7 +215,7 @@ public class WorldBorder {
 		levelProperties.setBorderSizeLerpTime(this.getTargetRemainingTime());
 	}
 
-	public void load(LevelProperties levelProperties) {
+	public void method_17905(LevelProperties levelProperties) {
 		this.setCenter(levelProperties.getBorderCenterX(), levelProperties.getBorderCenterZ());
 		this.setDamagePerBlock(levelProperties.getBorderDamagePerBlock());
 		this.setBuffer(levelProperties.getBorderSafeZone());
@@ -336,9 +336,9 @@ public class WorldBorder {
 
 		@Override
 		public VoxelShape method_17906() {
-			return VoxelShapes.combineAndSimplify(
-				VoxelShapes.UNBOUNDED,
-				VoxelShapes.cuboid(
+			return VoxelShapes.method_1072(
+				VoxelShapes.field_17669,
+				VoxelShapes.method_1081(
 					Math.floor(this.getBoundWest()),
 					Double.NEGATIVE_INFINITY,
 					Math.floor(this.getBoundNorth()),
@@ -416,9 +416,9 @@ public class WorldBorder {
 			this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
 			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
-			this.field_17653 = VoxelShapes.combineAndSimplify(
-				VoxelShapes.UNBOUNDED,
-				VoxelShapes.cuboid(
+			this.field_17653 = VoxelShapes.method_1072(
+				VoxelShapes.field_17669,
+				VoxelShapes.method_1081(
 					Math.floor(this.getBoundWest()),
 					Double.NEGATIVE_INFINITY,
 					Math.floor(this.getBoundNorth()),

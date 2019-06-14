@@ -35,7 +35,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(dragonFireballEntity));
 		}
 
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+		bufferBuilder.method_1328(7, VertexFormats.field_1589);
 		bufferBuilder.vertex(-0.5, -0.25, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 		bufferBuilder.vertex(0.5, -0.25, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 		bufferBuilder.vertex(0.5, 0.75, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();

@@ -24,15 +24,15 @@ public class ReedFeature extends Feature<DefaultFeatureConfig> {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			if (iWorld.isAir(blockPos2)) {
 				BlockPos blockPos3 = blockPos2.down();
-				if (iWorld.getFluidState(blockPos3.west()).matches(FluidTags.field_15517)
-					|| iWorld.getFluidState(blockPos3.east()).matches(FluidTags.field_15517)
-					|| iWorld.getFluidState(blockPos3.north()).matches(FluidTags.field_15517)
-					|| iWorld.getFluidState(blockPos3.south()).matches(FluidTags.field_15517)) {
+				if (iWorld.method_8316(blockPos3.west()).matches(FluidTags.field_15517)
+					|| iWorld.method_8316(blockPos3.east()).matches(FluidTags.field_15517)
+					|| iWorld.method_8316(blockPos3.north()).matches(FluidTags.field_15517)
+					|| iWorld.method_8316(blockPos3.south()).matches(FluidTags.field_15517)) {
 					int k = 2 + random.nextInt(random.nextInt(3) + 1);
 
 					for (int l = 0; l < k; l++) {
-						if (Blocks.field_10424.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
-							iWorld.setBlockState(blockPos2.up(l), Blocks.field_10424.getDefaultState(), 2);
+						if (Blocks.field_10424.method_9564().canPlaceAt(iWorld, blockPos2)) {
+							iWorld.method_8652(blockPos2.up(l), Blocks.field_10424.method_9564(), 2);
 							i++;
 						}
 					}

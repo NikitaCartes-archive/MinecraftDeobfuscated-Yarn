@@ -36,7 +36,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				false,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13078))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13078))
 			.build(consumer, "end/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -64,7 +64,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.field_10613))
+			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.method_8890(Blocks.field_10613))
 			.build(consumer, "end/enter_end_gateway");
 		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement2)
@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.END_CITY)))
+			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.method_9017(Feature.field_13553)))
 			.build(consumer, "end/find_end_city");
 		Advancement advancement6 = Advancement.Task.create()
 			.parent(advancement2)
@@ -106,7 +106,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.items(Items.field_8613))
+			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.method_8959(Items.field_8613))
 			.build(consumer, "end/dragon_breath");
 		Advancement advancement7 = Advancement.Task.create()
 			.parent(advancement5)
@@ -135,7 +135,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("elytra", InventoryChangedCriterion.Conditions.items(Items.field_8833))
+			.criterion("elytra", InventoryChangedCriterion.Conditions.method_8959(Items.field_8833))
 			.build(consumer, "end/elytra");
 		Advancement advancement9 = Advancement.Task.create()
 			.parent(advancement2)
@@ -149,7 +149,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("dragon_egg", InventoryChangedCriterion.Conditions.items(Blocks.field_10081))
+			.criterion("dragon_egg", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10081))
 			.build(consumer, "end/dragon_egg");
 	}
 }

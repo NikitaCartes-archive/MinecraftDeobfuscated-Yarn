@@ -24,8 +24,8 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 				int l = blockPos.getZ() + j;
 				int m = fillLayerFeatureConfig.height;
 				mutable.set(k, m, l);
-				if (iWorld.getBlockState(mutable).isAir()) {
-					iWorld.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
+				if (iWorld.method_8320(mutable).isAir()) {
+					iWorld.method_8652(mutable, fillLayerFeatureConfig.state, 2);
 				}
 			}
 		}

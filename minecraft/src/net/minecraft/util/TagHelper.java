@@ -184,16 +184,16 @@ public final class TagHelper {
 
 	public static BlockState deserializeBlockState(CompoundTag compoundTag) {
 		if (!compoundTag.containsKey("Name", 8)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.field_10124.method_9564();
 		} else {
 			Block block = Registry.BLOCK.get(new Identifier(compoundTag.getString("Name")));
-			BlockState blockState = block.getDefaultState();
+			BlockState blockState = block.method_9564();
 			if (compoundTag.containsKey("Properties", 10)) {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
-				StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+				StateFactory<Block, BlockState> stateFactory = block.method_9595();
 
 				for (String string : compoundTag2.getKeys()) {
-					Property<?> property = stateFactory.getProperty(string);
+					Property<?> property = stateFactory.method_11663(string);
 					if (property != null) {
 						blockState = withProperty(blockState, property, string, compoundTag2, compoundTag);
 					}
@@ -209,7 +209,7 @@ public final class TagHelper {
 	) {
 		Optional<T> optional = property.getValue(compoundTag.getString(string));
 		if (optional.isPresent()) {
-			return propertyContainer.with(property, (Comparable)optional.get());
+			return propertyContainer.method_11657(property, (Comparable)optional.get());
 		} else {
 			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", string, compoundTag.getString(string), compoundTag2.toString());
 			return propertyContainer;

@@ -55,12 +55,12 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_19597(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
-		return globalPos.getDimension() != serverWorld.getDimension().getType()
+		return globalPos.getDimension() != serverWorld.method_8597().method_12460()
 			|| globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) > this.field_18385;
 	}
 
 	private boolean reachedDestination(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
-		return globalPos.getDimension() == serverWorld.getDimension().getType()
+		return globalPos.getDimension() == serverWorld.method_8597().method_12460()
 			&& globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) <= this.completionRange;
 	}
 }

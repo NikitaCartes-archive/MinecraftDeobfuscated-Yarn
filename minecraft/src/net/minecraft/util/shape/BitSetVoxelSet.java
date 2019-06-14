@@ -105,7 +105,7 @@ public final class BitSetVoxelSet extends VoxelSet {
 		this.storage.set(this.getIndex(k, l, i), this.getIndex(k, l, j), bl);
 	}
 
-	static BitSetVoxelSet combine(
+	static BitSetVoxelSet method_1040(
 		VoxelSet voxelSet,
 		VoxelSet voxelSet2,
 		DoubleListPair doubleListPair,

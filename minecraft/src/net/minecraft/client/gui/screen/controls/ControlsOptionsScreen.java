@@ -15,7 +15,7 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class ControlsOptionsScreen extends Screen {
-	private static final Option[] OPTIONS = new Option[]{Option.INVERT_MOUSE, Option.SENSITIVITY, Option.TOUCHSCREEN, Option.AUTO_JUMP};
+	private static final Option[] OPTIONS = new Option[]{Option.INVERT_MOUSE, Option.field_1944, Option.TOUCHSCREEN, Option.AUTO_JUMP};
 	private final Screen parent;
 	private final GameOptions options;
 	public KeyBinding focusedBinding;
@@ -33,21 +33,21 @@ public class ControlsOptionsScreen extends Screen {
 	protected void init() {
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this))
+				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.method_1507(new MouseOptionsScreen(this))
 			)
 		);
-		this.addButton(Option.AUTO_JUMP.createButton(this.minecraft.options, this.width / 2 - 155 + 160, 18, 150));
+		this.addButton(Option.AUTO_JUMP.method_18520(this.minecraft.field_1690, this.width / 2 - 155 + 160, 18, 150));
 		this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
 		this.children.add(this.keyBindingListWidget);
 		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
-			for (KeyBinding keyBinding : this.minecraft.options.keysAll) {
+			for (KeyBinding keyBinding : this.minecraft.field_1690.keysAll) {
 				keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
 			}
 
 			KeyBinding.updateKeysByCode();
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.parent))
 		);
 	}
 

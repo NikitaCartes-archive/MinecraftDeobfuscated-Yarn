@@ -25,16 +25,16 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new BeaconBlockEntity();
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				playerEntity.openContainer((BeaconBlockEntity)blockEntity);
 				playerEntity.incrementStat(Stats.field_15416);
@@ -45,19 +45,19 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
 		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}

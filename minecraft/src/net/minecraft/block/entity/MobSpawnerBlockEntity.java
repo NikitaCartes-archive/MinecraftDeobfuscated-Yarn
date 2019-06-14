@@ -15,11 +15,11 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(int i) {
-			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, i, 0);
+			MobSpawnerBlockEntity.this.world.method_8427(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, i, 0);
 		}
 
 		@Override
-		public World getWorld() {
+		public World method_8271() {
 			return MobSpawnerBlockEntity.this.world;
 		}
 
@@ -29,11 +29,11 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		@Override
-		public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
-			super.setSpawnEntry(mobSpawnerEntry);
-			if (this.getWorld() != null) {
-				BlockState blockState = this.getWorld().getBlockState(this.getPos());
-				this.getWorld().updateListeners(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);
+		public void method_8277(MobSpawnerEntry mobSpawnerEntry) {
+			super.method_8277(mobSpawnerEntry);
+			if (this.method_8271() != null) {
+				BlockState blockState = this.method_8271().method_8320(this.getPos());
+				this.method_8271().method_8413(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);
 			}
 		}
 	};

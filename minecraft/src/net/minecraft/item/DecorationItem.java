@@ -29,7 +29,7 @@ public class DecorationItem extends Item {
 		if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
 			return ActionResult.field_5814;
 		} else {
-			World world = itemUsageContext.getWorld();
+			World world = itemUsageContext.method_8045();
 			AbstractDecorationEntity abstractDecorationEntity;
 			if (this.entityType == EntityType.field_6120) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
@@ -43,7 +43,7 @@ public class DecorationItem extends Item {
 
 			CompoundTag compoundTag = itemStack.getTag();
 			if (compoundTag != null) {
-				EntityType.loadFromEntityTag(world, playerEntity, abstractDecorationEntity, compoundTag);
+				EntityType.method_5881(world, playerEntity, abstractDecorationEntity, compoundTag);
 			}
 
 			if (abstractDecorationEntity.method_6888()) {

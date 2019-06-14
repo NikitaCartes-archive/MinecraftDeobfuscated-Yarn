@@ -56,8 +56,8 @@ public class CubeMapRenderer {
 			GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 
 			for (int n = 0; n < 6; n++) {
-				minecraftClient.getTextureManager().bindTexture(this.faces[n]);
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				minecraftClient.method_1531().bindTexture(this.faces[n]);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				int o = Math.round(255.0F * h) / (j + 1);
 				if (n == 0) {
 					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
@@ -119,7 +119,7 @@ public class CubeMapRenderer {
 		GlStateManager.enableDepthTest();
 	}
 
-	public CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
+	public CompletableFuture<Void> method_18143(TextureManager textureManager, Executor executor) {
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[6];
 
 		for (int i = 0; i < completableFutures.length; i++) {

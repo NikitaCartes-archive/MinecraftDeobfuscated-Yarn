@@ -31,7 +31,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends ElementListWidget.Entry<E>> extends EntryListWidget.Entry<E> implements ParentElement {
 		@Nullable
-		private Element focused;
+		private Element field_19077;
 		private boolean dragging;
 
 		@Override
@@ -46,13 +46,13 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 
 		@Override
 		public void setFocused(@Nullable Element element) {
-			this.focused = element;
+			this.field_19077 = element;
 		}
 
 		@Nullable
 		@Override
 		public Element getFocused() {
-			return this.focused;
+			return this.field_19077;
 		}
 	}
 }

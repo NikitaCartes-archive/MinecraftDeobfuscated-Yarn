@@ -20,7 +20,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private static final Text MOVE_DESCRIPTION = new TranslatableText("tutorial.move.description", TutorialManager.getKeybindName("jump"));
 	private static final Text LOOK_TITLE = new TranslatableText("tutorial.look.title");
 	private static final Text LOOK_DESCRIPTION = new TranslatableText("tutorial.look.description");
-	private final TutorialManager manager;
+	private final TutorialManager field_5618;
 	private TutorialToast moveToast;
 	private TutorialToast lookAroundToast;
 	private int ticks;
@@ -32,7 +32,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private int lookAroundCompletionTicks = -1;
 
 	public MovementTutorialStepHandler(TutorialManager tutorialManager) {
-		this.manager = tutorialManager;
+		this.field_5618 = tutorialManager;
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 		}
 
 		if (this.moveAroundCompletionTicks != -1 && this.lookAroundCompletionTicks != -1) {
-			if (this.manager.getGameMode() == GameMode.field_9215) {
-				this.manager.setStep(TutorialStep.field_5648);
+			if (this.field_5618.getGameMode() == GameMode.field_9215) {
+				this.field_5618.setStep(TutorialStep.field_5648);
 			} else {
-				this.manager.setStep(TutorialStep.field_5653);
+				this.field_5618.setStep(TutorialStep.field_5653);
 			}
 		}
 
@@ -85,13 +85,13 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 		if (this.ticks >= 100) {
 			if (this.moveAroundCompletionTicks == -1 && this.moveToast == null) {
 				this.moveToast = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
-				this.manager.getClient().getToastManager().add(this.moveToast);
+				this.field_5618.getClient().method_1566().add(this.moveToast);
 			} else if (this.moveAroundCompletionTicks != -1
 				&& this.ticks - this.moveAroundCompletionTicks >= 20
 				&& this.lookAroundCompletionTicks == -1
 				&& this.lookAroundToast == null) {
 				this.lookAroundToast = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
-				this.manager.getClient().getToastManager().add(this.lookAroundToast);
+				this.field_5618.getClient().method_1566().add(this.lookAroundToast);
 			}
 		}
 	}

@@ -81,7 +81,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14678, 0.15F, 1.0F);
 	}
 
@@ -127,9 +127,9 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			for (int i = 0; i < 2; i++) {
-				this.world
+				this.field_6002
 					.addParticle(
 						ParticleTypes.field_11214,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),

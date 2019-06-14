@@ -71,17 +71,25 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (j < i + 1) {
 			this.dataStorage.heightMap.put(m, i + 1);
 			if (this.field_15817.contains(m)) {
-				this.field_15815.add(l);
-				this.field_15816.remove(l);
+				this.method_20810(l);
 				if (j > this.dataStorage.defaultHeight) {
 					long n = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), j - 1, ChunkSectionPos.unpackLongZ(l));
-					this.field_15815.remove(n);
-					this.field_15816.add(n);
+					this.method_20809(n);
 				}
 
 				this.checkForUpdates();
 			}
 		}
+	}
+
+	private void method_20809(long l) {
+		this.field_15816.add(l);
+		this.field_15815.remove(l);
+	}
+
+	private void method_20810(long l) {
+		this.field_15815.add(l);
+		this.field_15816.remove(l);
 	}
 
 	private void checkForUpdates() {
@@ -93,8 +101,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		long m = ChunkSectionPos.toLightStorageIndex(l);
 		boolean bl = this.field_15817.contains(m);
 		if (bl) {
-			this.field_15816.add(l);
-			this.field_15815.remove(l);
+			this.method_20809(l);
 		}
 
 		int i = ChunkSectionPos.unpackLongY(l);
@@ -107,8 +114,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			if (this.hasChunk(n)) {
 				this.dataStorage.heightMap.put(m, i + 1);
 				if (bl) {
-					this.field_15815.add(n);
-					this.field_15816.remove(n);
+					this.method_20810(n);
 				}
 			} else {
 				this.dataStorage.heightMap.remove(m);
@@ -126,18 +132,11 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			int i = this.dataStorage.heightMap.get(l);
 			if (i != this.dataStorage.defaultHeight) {
 				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
-				this.field_15815.add(m);
-				this.field_15816.remove(m);
+				this.method_20810(m);
 				this.checkForUpdates();
 			}
-		} else if (!bl && this.field_15817.remove(l)) {
-			int i = this.dataStorage.heightMap.get(l);
-			if (i != this.dataStorage.defaultHeight) {
-				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
-				this.field_15816.add(m);
-				this.field_15815.remove(m);
-				this.checkForUpdates();
-			}
+		} else if (!bl) {
+			this.field_15817.remove(l);
 		}
 	}
 

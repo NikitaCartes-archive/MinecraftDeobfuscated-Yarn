@@ -29,21 +29,21 @@ public abstract class DoorInteractGoal extends Goal {
 		if (!this.field_6412) {
 			return false;
 		} else {
-			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
+			BlockState blockState = this.mob.field_6002.method_8320(this.doorPos);
 			if (!(blockState.getBlock() instanceof DoorBlock)) {
 				this.field_6412 = false;
 				return false;
 			} else {
-				return (Boolean)blockState.get(DoorBlock.OPEN);
+				return (Boolean)blockState.method_11654(DoorBlock.field_10945);
 			}
 		}
 	}
 
 	protected void setDoorOpen(boolean bl) {
 		if (this.field_6412) {
-			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
+			BlockState blockState = this.mob.field_6002.method_8320(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, bl);
+				((DoorBlock)blockState.getBlock()).setOpen(this.mob.field_6002, this.doorPos, bl);
 			}
 		}
 	}
@@ -54,13 +54,13 @@ public abstract class DoorInteractGoal extends Goal {
 			return false;
 		} else {
 			MobNavigation mobNavigation = (MobNavigation)this.mob.getNavigation();
-			Path path = mobNavigation.getCurrentPath();
+			Path path = mobNavigation.method_6345();
 			if (path != null && !path.isFinished() && mobNavigation.canEnterOpenDoors()) {
 				for (int i = 0; i < Math.min(path.getCurrentNodeIndex() + 2, path.getLength()); i++) {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.mob.squaredDistanceTo((double)this.doorPos.getX(), this.mob.y, (double)this.doorPos.getZ()) > 2.25)) {
-						this.field_6412 = getDoor(this.mob.world, this.doorPos);
+						this.field_6412 = method_6254(this.mob.field_6002, this.doorPos);
 						if (this.field_6412) {
 							return true;
 						}
@@ -68,7 +68,7 @@ public abstract class DoorInteractGoal extends Goal {
 				}
 
 				this.doorPos = new BlockPos(this.mob).up();
-				this.field_6412 = getDoor(this.mob.world, this.doorPos);
+				this.field_6412 = method_6254(this.mob.field_6002, this.doorPos);
 				return this.field_6412;
 			} else {
 				return false;
@@ -98,8 +98,8 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	public static boolean getDoor(World world, BlockPos blockPos) {
-		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
+	public static boolean method_6254(World world, BlockPos blockPos) {
+		BlockState blockState = world.method_8320(blockPos);
+		return blockState.getBlock() instanceof DoorBlock && blockState.method_11620() == Material.WOOD;
 	}
 }

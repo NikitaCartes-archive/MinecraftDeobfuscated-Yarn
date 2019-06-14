@@ -49,18 +49,20 @@ public class LookAtEntityGoal extends Goal {
 			}
 
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
+				this.target = this.mob
+					.field_6002
+					.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
 			} else {
 				this.target = this.mob
-					.world
-					.getClosestEntity(
+					.field_6002
+					.method_18465(
 						this.targetType,
 						this.targetPredicate,
 						this.mob,
 						this.mob.x,
 						this.mob.y + (double)this.mob.getStandingEyeHeight(),
 						this.mob.z,
-						this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+						this.mob.method_5829().expand((double)this.range, 3.0, (double)this.range)
 					);
 			}
 

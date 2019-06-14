@@ -64,10 +64,10 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 		return new NetherTravelCriterion.Conditions(locationPredicate, locationPredicate2, distancePredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+	public void method_9080(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
 		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
+			handler.method_9084(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 			return new NetherTravelCriterion.Conditions(LocationPredicate.ANY, LocationPredicate.ANY, distancePredicate);
 		}
 
-		public boolean matches(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
+		public boolean method_9086(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
 			if (!this.entered.test(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
 				return false;
 			} else {
@@ -125,11 +125,11 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
+		public void method_9084(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
 			List<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverWorld, vec3d, d, e, f)) {
+				if (conditionsContainer.getConditions().method_9086(serverWorld, vec3d, d, e, f)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newArrayList();
 					}

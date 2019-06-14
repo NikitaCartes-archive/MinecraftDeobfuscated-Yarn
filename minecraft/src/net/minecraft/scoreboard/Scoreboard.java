@@ -40,7 +40,7 @@ public class Scoreboard {
 		return (ScoreboardObjective)this.objectives.get(string);
 	}
 
-	public ScoreboardObjective addObjective(String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
+	public ScoreboardObjective method_1168(String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
 		if (string.length() > 16) {
 			throw new IllegalArgumentException("The objective name '" + string + "' is too long!");
 		} else if (this.objectives.containsKey(string)) {
@@ -54,7 +54,7 @@ public class Scoreboard {
 		}
 	}
 
-	public final void forEachScore(ScoreboardCriterion scoreboardCriterion, String string, Consumer<ScoreboardPlayerScore> consumer) {
+	public final void method_1162(ScoreboardCriterion scoreboardCriterion, String string, Consumer<ScoreboardPlayerScore> consumer) {
 		((List)this.objectivesByCriterion.getOrDefault(scoreboardCriterion, Collections.emptyList()))
 			.forEach(scoreboardObjective -> consumer.accept(this.getPlayerScore(string, scoreboardObjective)));
 	}
@@ -149,7 +149,7 @@ public class Scoreboard {
 			}
 		}
 
-		List<ScoreboardObjective> list = (List<ScoreboardObjective>)this.objectivesByCriterion.get(scoreboardObjective.getCriterion());
+		List<ScoreboardObjective> list = (List<ScoreboardObjective>)this.objectivesByCriterion.get(scoreboardObjective.method_1116());
 		if (list != null) {
 			list.remove(scoreboardObjective);
 		}

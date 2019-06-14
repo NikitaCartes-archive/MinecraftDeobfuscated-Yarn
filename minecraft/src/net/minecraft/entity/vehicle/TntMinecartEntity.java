@@ -37,8 +37,8 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10375.getDefaultState();
+	public BlockState method_7517() {
+		return Blocks.field_10375.method_9564();
 	}
 
 	@Override
@@ -46,13 +46,13 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
-			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.field_6002.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 		} else if (this.fuseTicks == 0) {
-			this.explode(squaredHorizontalLength(this.getVelocity()));
+			this.explode(method_17996(this.method_18798()));
 		}
 
 		if (this.horizontalCollision) {
-			double d = squaredHorizontalLength(this.getVelocity());
+			double d = method_17996(this.method_18798());
 			if (d >= 0.01F) {
 				this.explode(d);
 			}
@@ -65,7 +65,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		if (entity instanceof ProjectileEntity) {
 			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
 			if (projectileEntity.isOnFire()) {
-				this.explode(projectileEntity.getVelocity().lengthSquared());
+				this.explode(projectileEntity.method_18798().lengthSquared());
 			}
 		}
 
@@ -74,11 +74,11 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public void dropItems(DamageSource damageSource) {
-		double d = squaredHorizontalLength(this.getVelocity());
+		double d = method_17996(this.method_18798());
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
-			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-				this.dropItem(Blocks.field_10375);
+			if (!damageSource.isExplosive() && this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
+				this.method_5706(Blocks.field_10375);
 			}
 		} else {
 			if (this.fuseTicks < 0) {
@@ -89,13 +89,13 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	protected void explode(double d) {
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			double e = Math.sqrt(d);
 			if (e > 5.0) {
 				e = 5.0;
 			}
 
-			this.world.createExplosion(this, this.x, this.y, this.z, (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.field_18686);
+			this.field_6002.createExplosion(this, this.x, this.y, this.z, (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.field_18686);
 			this.remove();
 		}
 	}
@@ -129,10 +129,10 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	public void prime() {
 		this.fuseTicks = 80;
-		if (!this.world.isClient) {
-			this.world.sendEntityStatus(this, (byte)10);
+		if (!this.field_6002.isClient) {
+			this.field_6002.sendEntityStatus(this, (byte)10);
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+				this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 			}
 		}
 	}
@@ -147,18 +147,16 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public float getEffectiveExplosionResistance(
-		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
-	) {
-		return !this.isPrimed() || !blockState.matches(BlockTags.field_15463) && !blockView.getBlockState(blockPos.up()).matches(BlockTags.field_15463)
-			? super.getEffectiveExplosionResistance(explosion, blockView, blockPos, blockState, fluidState, f)
+	public float method_5774(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f) {
+		return !this.isPrimed() || !blockState.matches(BlockTags.field_15463) && !blockView.method_8320(blockPos.up()).matches(BlockTags.field_15463)
+			? super.method_5774(explosion, blockView, blockPos, blockState, fluidState, f)
 			: 0.0F;
 	}
 
 	@Override
-	public boolean canExplosionDestroyBlock(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, float f) {
-		return !this.isPrimed() || !blockState.matches(BlockTags.field_15463) && !blockView.getBlockState(blockPos.up()).matches(BlockTags.field_15463)
-			? super.canExplosionDestroyBlock(explosion, blockView, blockPos, blockState, f)
+	public boolean method_5853(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, float f) {
+		return !this.isPrimed() || !blockState.matches(BlockTags.field_15463) && !blockView.method_8320(blockPos.up()).matches(BlockTags.field_15463)
+			? super.method_5853(explosion, blockView, blockPos, blockState, f)
 			: false;
 	}
 

@@ -15,7 +15,7 @@ public interface EntityContext {
 
 	boolean isSneaking();
 
-	boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl);
+	boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl);
 
 	boolean isHolding(Item item);
 }

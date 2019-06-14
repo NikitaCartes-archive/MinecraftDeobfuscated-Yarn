@@ -31,9 +31,9 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		if (!super.canStart()) {
 			return false;
 		} else {
-			return !this.mob.world.getGameRules().getBoolean(GameRules.field_19388)
+			return !this.mob.field_6002.getGameRules().getBoolean(GameRules.field_19388)
 				? false
-				: this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.method_6256();
+				: this.isDifficultySufficient(this.mob.field_6002.getDifficulty()) && !this.method_6256();
 		}
 	}
 
@@ -47,21 +47,21 @@ public class BreakDoorGoal extends DoorInteractGoal {
 	public boolean shouldContinue() {
 		return this.breakProgress <= this.method_16462()
 			&& !this.method_6256()
-			&& this.doorPos.isWithinDistance(this.mob.getPos(), 2.0)
-			&& this.isDifficultySufficient(this.mob.world.getDifficulty());
+			&& this.doorPos.isWithinDistance(this.mob.method_19538(), 2.0)
+			&& this.isDifficultySufficient(this.mob.field_6002.getDifficulty());
 	}
 
 	@Override
 	public void stop() {
 		super.stop();
-		this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, -1);
+		this.mob.field_6002.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, -1);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.mob.getRand().nextInt(20) == 0) {
-			this.mob.world.playLevelEvent(1019, this.doorPos, 0);
+			this.mob.field_6002.playLevelEvent(1019, this.doorPos, 0);
 			if (!this.mob.isHandSwinging) {
 				this.mob.swingHand(this.mob.getActiveHand());
 			}
@@ -70,14 +70,14 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		this.breakProgress++;
 		int i = (int)((float)this.breakProgress / (float)this.method_16462() * 10.0F);
 		if (i != this.prevBreakProgress) {
-			this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, i);
+			this.mob.field_6002.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, i);
 			this.prevBreakProgress = i;
 		}
 
-		if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
-			this.mob.world.clearBlockState(this.doorPos, false);
-			this.mob.world.playLevelEvent(1021, this.doorPos, 0);
-			this.mob.world.playLevelEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
+		if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.field_6002.getDifficulty())) {
+			this.mob.field_6002.clearBlockState(this.doorPos, false);
+			this.mob.field_6002.playLevelEvent(1021, this.doorPos, 0);
+			this.mob.field_6002.playLevelEvent(2001, this.doorPos, Block.method_9507(this.mob.field_6002.method_8320(this.doorPos)));
 		}
 	}
 

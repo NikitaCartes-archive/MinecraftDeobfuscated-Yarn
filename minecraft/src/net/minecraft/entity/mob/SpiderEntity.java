@@ -66,7 +66,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected EntityNavigation createNavigation(World world) {
+	protected EntityNavigation method_5965(World world) {
 		return new SpiderNavigation(this, world);
 	}
 
@@ -79,7 +79,7 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.setCanClimb(this.horizontalCollision);
 		}
 	}
@@ -107,7 +107,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14760, 0.15F, 1.0F);
 	}
 
@@ -117,9 +117,9 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, Vec3d vec3d) {
+	public void method_5844(BlockState blockState, Vec3d vec3d) {
 		if (blockState.getBlock() != Blocks.field_10343) {
-			super.slowMovement(blockState, vec3d);
+			super.method_5844(blockState, vec3d);
 		}
 	}
 
@@ -150,14 +150,14 @@ public class SpiderEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.field_6137.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.field_6137.method_5883(this.field_6002);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-			skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
+			skeletonEntity.method_5943(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
 		}

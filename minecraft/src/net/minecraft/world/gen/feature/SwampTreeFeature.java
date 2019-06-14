@@ -14,15 +14,15 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10431.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10503.getDefaultState();
+	private static final BlockState LOG = Blocks.field_10431.method_9564();
+	private static final BlockState LEAVES = Blocks.field_10503.method_9564();
 
 	public SwampTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function, false);
 	}
 
 	@Override
-	public boolean generate(
+	public boolean method_12775(
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		int i = random.nextInt(4) + 5;
@@ -78,7 +78,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 							if (Math.abs(mx) != n || Math.abs(p) != n || random.nextInt(2) != 0 && kx != 0) {
 								BlockPos blockPos2 = new BlockPos(l, j, o);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
+									this.method_12773(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
 								}
 							}
 						}
@@ -88,7 +88,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 				for (int j = 0; j < i; j++) {
 					BlockPos blockPos3 = blockPos.up(j);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos3) || isWater(modifiableTestableWorld, blockPos3)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG, mutableIntBoundingBox);
+						this.method_12773(set, modifiableTestableWorld, blockPos3, LOG, mutableIntBoundingBox);
 					}
 				}
 
@@ -106,19 +106,19 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 								BlockPos blockPos5 = mutable2.north();
 								BlockPos blockPos6 = mutable2.south();
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos4)) {
-									this.makeVines(modifiableTestableWorld, blockPos4, VineBlock.EAST);
+									this.makeVines(modifiableTestableWorld, blockPos4, VineBlock.field_11702);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos2)) {
-									this.makeVines(modifiableTestableWorld, blockPos2, VineBlock.WEST);
+									this.makeVines(modifiableTestableWorld, blockPos2, VineBlock.field_11696);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos5)) {
-									this.makeVines(modifiableTestableWorld, blockPos5, VineBlock.SOUTH);
+									this.makeVines(modifiableTestableWorld, blockPos5, VineBlock.field_11699);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos6)) {
-									this.makeVines(modifiableTestableWorld, blockPos6, VineBlock.NORTH);
+									this.makeVines(modifiableTestableWorld, blockPos6, VineBlock.field_11706);
 								}
 							}
 						}
@@ -135,7 +135,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	}
 
 	private void makeVines(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
-		BlockState blockState = Blocks.field_10597.getDefaultState().with(booleanProperty, Boolean.valueOf(true));
+		BlockState blockState = Blocks.field_10597.method_9564().method_11657(booleanProperty, Boolean.valueOf(true));
 		this.setBlockState(modifiableTestableWorld, blockPos, blockState);
 		int i = 4;
 

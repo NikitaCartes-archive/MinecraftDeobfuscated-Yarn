@@ -359,7 +359,7 @@ public class PacketByteBuf extends ByteBuf {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		this.writeBlockPos(blockPos);
 		this.writeEnumConstant(blockHitResult.getSide());
-		Vec3d vec3d = blockHitResult.getPos();
+		Vec3d vec3d = blockHitResult.method_17784();
 		this.writeFloat((float)(vec3d.x - (double)blockPos.getX()));
 		this.writeFloat((float)(vec3d.y - (double)blockPos.getY()));
 		this.writeFloat((float)(vec3d.z - (double)blockPos.getZ()));

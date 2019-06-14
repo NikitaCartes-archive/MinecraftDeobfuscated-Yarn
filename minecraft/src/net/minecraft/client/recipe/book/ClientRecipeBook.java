@@ -41,15 +41,15 @@ public class ClientRecipeBook extends RecipeBook {
 
 		for (Recipe<?> recipe : this.manager.values()) {
 			if (!recipe.isIgnoredInRecipeBook()) {
-				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipe);
+				RecipeBookGroup recipeBookGroup = method_1400(recipe);
 				String string = recipe.getGroup();
 				RecipeResultCollection recipeResultCollection;
 				if (string.isEmpty()) {
-					recipeResultCollection = this.addGroup(recipeBookGroup);
+					recipeResultCollection = this.method_1394(recipeBookGroup);
 				} else {
 					recipeResultCollection = table.get(recipeBookGroup, string);
 					if (recipeResultCollection == null) {
-						recipeResultCollection = this.addGroup(recipeBookGroup);
+						recipeResultCollection = this.method_1394(recipeBookGroup);
 						table.put(recipeBookGroup, string, recipeResultCollection);
 					}
 				}
@@ -59,32 +59,32 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup) {
+	private RecipeResultCollection method_1394(RecipeBookGroup recipeBookGroup) {
 		RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 		if (recipeBookGroup == RecipeBookGroup.field_1811 || recipeBookGroup == RecipeBookGroup.field_1808 || recipeBookGroup == RecipeBookGroup.field_1812) {
-			this.addGroupResults(RecipeBookGroup.field_1804, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1804, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17111 || recipeBookGroup == RecipeBookGroup.field_17112) {
-			this.addGroupResults(RecipeBookGroup.field_17110, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17110, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17114) {
-			this.addGroupResults(RecipeBookGroup.field_17113, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17113, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17764) {
-			this.addGroupResults(RecipeBookGroup.field_17764, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17764, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17765) {
-			this.addGroupResults(RecipeBookGroup.field_17765, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17765, recipeResultCollection);
 		} else {
-			this.addGroupResults(RecipeBookGroup.field_1809, recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1809, recipeResultCollection);
 		}
 
 		return recipeResultCollection;
 	}
 
-	private void addGroupResults(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
+	private void method_18092(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 
-	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
+	private static RecipeBookGroup method_1400(Recipe<?> recipe) {
 		RecipeType<?> recipeType = recipe.getType();
 		if (recipeType == RecipeType.SMELTING) {
 			if (recipe.getOutput().getItem().isFood()) {
@@ -133,7 +133,7 @@ public class ClientRecipeBook extends RecipeBook {
 		return this.orderedResults;
 	}
 
-	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
+	public List<RecipeResultCollection> method_1396(RecipeBookGroup recipeBookGroup) {
 		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(recipeBookGroup, Collections.emptyList());
 	}
 }

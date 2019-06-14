@@ -96,9 +96,9 @@ public class FishingBobberEntity extends Entity {
 			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045,
 			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045
 		);
-		this.setVelocity(vec3d);
+		this.method_18799(vec3d);
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(squaredHorizontalLength(vec3d))) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(method_17996(vec3d))) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -112,7 +112,7 @@ public class FishingBobberEntity extends Entity {
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (HOOK_ENTITY_ID.equals(trackedData)) {
 			int i = this.getDataTracker().get(HOOK_ENTITY_ID);
-			this.hookedEntity = i > 0 ? this.world.getEntityById(i - 1) : null;
+			this.hookedEntity = i > 0 ? this.field_6002.getEntityById(i - 1) : null;
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -127,7 +127,7 @@ public class FishingBobberEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class FishingBobberEntity extends Entity {
 		super.tick();
 		if (this.owner == null) {
 			this.remove();
-		} else if (this.world.isClient || !this.method_6959()) {
+		} else if (this.field_6002.isClient || !this.method_6959()) {
 			if (this.field_7176) {
 				this.field_7167++;
 				if (this.field_7167 >= 1200) {
@@ -146,25 +146,25 @@ public class FishingBobberEntity extends Entity {
 
 			float f = 0.0F;
 			BlockPos blockPos = new BlockPos(this);
-			FluidState fluidState = this.world.getFluidState(blockPos);
+			FluidState fluidState = this.field_6002.method_8316(blockPos);
 			if (fluidState.matches(FluidTags.field_15517)) {
-				f = fluidState.getHeight(this.world, blockPos);
+				f = fluidState.getHeight(this.field_6002, blockPos);
 			}
 
 			if (this.state == FishingBobberEntity.State.field_7180) {
 				if (this.hookedEntity != null) {
-					this.setVelocity(Vec3d.ZERO);
+					this.method_18799(Vec3d.ZERO);
 					this.state = FishingBobberEntity.State.field_7178;
 					return;
 				}
 
 				if (f > 0.0F) {
-					this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
+					this.method_18799(this.method_18798().multiply(0.3, 0.2, 0.3));
 					this.state = FishingBobberEntity.State.field_7179;
 					return;
 				}
 
-				if (!this.world.isClient) {
+				if (!this.field_6002.isClient) {
 					this.method_6958();
 				}
 
@@ -172,7 +172,7 @@ public class FishingBobberEntity extends Entity {
 					this.field_7166++;
 				} else {
 					this.field_7166 = 0;
-					this.setVelocity(Vec3d.ZERO);
+					this.method_18799(Vec3d.ZERO);
 				}
 			} else {
 				if (this.state == FishingBobberEntity.State.field_7178) {
@@ -182,7 +182,7 @@ public class FishingBobberEntity extends Entity {
 							this.state = FishingBobberEntity.State.field_7180;
 						} else {
 							this.x = this.hookedEntity.x;
-							this.y = this.hookedEntity.getBoundingBox().minY + (double)this.hookedEntity.getHeight() * 0.8;
+							this.y = this.hookedEntity.method_5829().minY + (double)this.hookedEntity.getHeight() * 0.8;
 							this.z = this.hookedEntity.z;
 							this.setPosition(this.x, this.y, this.z);
 						}
@@ -192,27 +192,27 @@ public class FishingBobberEntity extends Entity {
 				}
 
 				if (this.state == FishingBobberEntity.State.field_7179) {
-					Vec3d vec3d = this.getVelocity();
+					Vec3d vec3d = this.method_18798();
 					double d = this.y + vec3d.y - (double)blockPos.getY() - (double)f;
 					if (Math.abs(d) < 0.01) {
 						d += Math.signum(d) * 0.1;
 					}
 
 					this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
-					if (!this.world.isClient && f > 0.0F) {
+					if (!this.field_6002.isClient && f > 0.0F) {
 						this.method_6949(blockPos);
 					}
 				}
 			}
 
 			if (!fluidState.matches(FluidTags.field_15517)) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
+				this.method_18799(this.method_18798().add(0.0, -0.03, 0.0));
 			}
 
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.method_5784(MovementType.field_6308, this.method_18798());
 			this.method_6952();
 			double e = 0.92;
-			this.setVelocity(this.getVelocity().multiply(0.92));
+			this.method_18799(this.method_18798().multiply(0.92));
 			this.setPosition(this.x, this.y, this.z);
 		}
 	}
@@ -231,8 +231,8 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	private void method_6952() {
-		Vec3d vec3d = this.getVelocity();
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		Vec3d vec3d = this.method_18798();
+		float f = MathHelper.sqrt(method_17996(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
@@ -257,9 +257,9 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	private void method_6958() {
-		HitResult hitResult = ProjectileUtil.getCollision(
+		HitResult hitResult = ProjectileUtil.method_18074(
 			this,
-			this.getBoundingBox().stretch(this.getVelocity()).expand(1.0),
+			this.method_5829().method_18804(this.method_18798()).expand(1.0),
 			entity -> !entity.isSpectator() && (entity.collides() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),
 			RayTraceContext.ShapeType.field_17558,
 			true
@@ -279,14 +279,14 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	private void method_6949(BlockPos blockPos) {
-		ServerWorld serverWorld = (ServerWorld)this.world;
+		ServerWorld serverWorld = (ServerWorld)this.field_6002;
 		int i = 1;
 		BlockPos blockPos2 = blockPos.up();
-		if (this.random.nextFloat() < 0.25F && this.world.hasRain(blockPos2)) {
+		if (this.random.nextFloat() < 0.25F && this.field_6002.hasRain(blockPos2)) {
 			i++;
 		}
 
-		if (this.random.nextFloat() < 0.5F && !this.world.isSkyVisible(blockPos2)) {
+		if (this.random.nextFloat() < 0.5F && !this.field_6002.isSkyVisible(blockPos2)) {
 			i--;
 		}
 
@@ -296,7 +296,7 @@ public class FishingBobberEntity extends Entity {
 				this.field_7174 = 0;
 				this.field_7172 = 0;
 			} else {
-				this.setVelocity(this.getVelocity().add(0.0, -0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat(), 0.0));
+				this.method_18799(this.method_18798().add(0.0, -0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat(), 0.0));
 			}
 		} else if (this.field_7172 > 0) {
 			this.field_7172 -= i;
@@ -306,9 +306,9 @@ public class FishingBobberEntity extends Entity {
 				float g = MathHelper.sin(f);
 				float h = MathHelper.cos(f);
 				double d = this.x + (double)(g * (float)this.field_7172 * 0.1F);
-				double e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0F);
+				double e = (double)((float)MathHelper.floor(this.method_5829().minY) + 1.0F);
 				double j = this.z + (double)(h * (float)this.field_7172 * 0.1F);
-				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
+				Block block = serverWorld.method_8320(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.field_10382) {
 					if (this.random.nextFloat() < 0.15F) {
 						serverWorld.spawnParticles(ParticleTypes.field_11247, d, e - 0.1F, j, 1, (double)g, 0.1, (double)h, 0.0);
@@ -320,10 +320,10 @@ public class FishingBobberEntity extends Entity {
 					serverWorld.spawnParticles(ParticleTypes.field_11244, d, e, j, 0, (double)(-l), 0.01, (double)k, 1.0);
 				}
 			} else {
-				Vec3d vec3d = this.getVelocity();
+				Vec3d vec3d = this.method_18798();
 				this.setVelocity(vec3d.x, (double)(-0.4F * MathHelper.nextFloat(this.random, 0.6F, 1.0F)), vec3d.z);
 				this.playSound(SoundEvents.field_14660, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-				double m = this.getBoundingBox().minY + 0.5;
+				double m = this.method_5829().minY + 0.5;
 				serverWorld.spawnParticles(
 					ParticleTypes.field_11247, this.x, m, this.z, (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
 				);
@@ -347,9 +347,9 @@ public class FishingBobberEntity extends Entity {
 				float g = MathHelper.nextFloat(this.random, 0.0F, 360.0F) * (float) (Math.PI / 180.0);
 				float h = MathHelper.nextFloat(this.random, 25.0F, 60.0F);
 				double d = this.x + (double)(MathHelper.sin(g) * h * 0.1F);
-				double e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0F);
+				double e = (double)((float)MathHelper.floor(this.method_5829().minY) + 1.0F);
 				double j = this.z + (double)(MathHelper.cos(g) * h * 0.1F);
-				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
+				Block block = serverWorld.method_8320(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.field_10382) {
 					serverWorld.spawnParticles(ParticleTypes.field_11202, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
 				}
@@ -374,32 +374,34 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	public int method_6957(ItemStack itemStack) {
-		if (!this.world.isClient && this.owner != null) {
+		if (!this.field_6002.isClient && this.owner != null) {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.method_6954();
 				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
-				this.world.sendEntityStatus(this, (byte)31);
+				this.field_6002.sendEntityStatus(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.put(LootContextParameters.field_1232, new BlockPos(this))
-					.put(LootContextParameters.field_1229, itemStack)
+				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.field_6002)
+					.method_312(LootContextParameters.field_1232, new BlockPos(this))
+					.method_312(LootContextParameters.field_1229, itemStack)
 					.setRandom(this.random)
 					.setLuck((float)this.lureLevel + this.owner.getLuck());
-				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.field_353);
-				List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.field_1176));
+				LootSupplier lootSupplier = this.field_6002.getServer().getLootManager().getSupplier(LootTables.field_353);
+				List<ItemStack> list = lootSupplier.getDrops(builder.method_309(LootContextTypes.field_1176));
 				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
 
 				for (ItemStack itemStack2 : list) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);
+					ItemEntity itemEntity = new ItemEntity(this.field_6002, this.x, this.y, this.z, itemStack2);
 					double d = this.owner.x - this.x;
 					double e = this.owner.y - this.y;
 					double f = this.owner.z - this.z;
 					double g = 0.1;
 					itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
-					this.world.spawnEntity(itemEntity);
-					this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
+					this.field_6002.spawnEntity(itemEntity);
+					this.owner
+						.field_6002
+						.spawnEntity(new ExperienceOrbEntity(this.owner.field_6002, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
 					if (itemStack2.getItem().isIn(ItemTags.field_15527)) {
 						this.owner.increaseStat(Stats.field_15391, 1);
 					}
@@ -422,7 +424,7 @@ public class FishingBobberEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte b) {
-		if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
+		if (b == 31 && this.field_6002.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
 			this.method_6954();
 		}
 
@@ -432,7 +434,7 @@ public class FishingBobberEntity extends Entity {
 	protected void method_6954() {
 		if (this.owner != null) {
 			Vec3d vec3d = new Vec3d(this.owner.x - this.x, this.owner.y - this.y, this.owner.z - this.z).multiply(0.1);
-			this.hookedEntity.setVelocity(this.hookedEntity.getVelocity().add(vec3d));
+			this.hookedEntity.method_18799(this.hookedEntity.method_18798().add(vec3d));
 		}
 	}
 

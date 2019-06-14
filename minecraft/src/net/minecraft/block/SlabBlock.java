@@ -21,64 +21,67 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class SlabBlock extends Block implements Waterloggable {
-	public static final EnumProperty<SlabType> TYPE = Properties.SLAB_TYPE;
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	protected static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
+	public static final EnumProperty<SlabType> field_11501 = Properties.field_12485;
+	public static final BooleanProperty field_11502 = Properties.field_12508;
+	protected static final VoxelShape field_11500 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	protected static final VoxelShape field_11499 = Block.method_9541(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
 
 	public SlabBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(TYPE, SlabType.field_12681).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.method_9590(this.method_9564().method_11657(field_11501, SlabType.field_12681).method_11657(field_11502, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
-		return blockState.get(TYPE) != SlabType.field_12682;
+	public boolean method_9526(BlockState blockState) {
+		return blockState.method_11654(field_11501) != SlabType.field_12682;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(TYPE, WATERLOGGED);
+		builder.method_11667(field_11501, field_11502);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		SlabType slabType = blockState.get(TYPE);
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		SlabType slabType = blockState.method_11654(field_11501);
 		switch (slabType) {
 			case field_12682:
-				return VoxelShapes.fullCube();
+				return VoxelShapes.method_1077();
 			case field_12679:
-				return TOP_SHAPE;
+				return field_11499;
 			default:
-				return BOTTOM_SHAPE;
+				return field_11500;
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(blockPos);
+		BlockState blockState = itemPlacementContext.method_8045().method_8320(blockPos);
 		if (blockState.getBlock() == this) {
-			return blockState.with(TYPE, SlabType.field_12682).with(WATERLOGGED, Boolean.valueOf(false));
+			return blockState.method_11657(field_11501, SlabType.field_12682).method_11657(field_11502, Boolean.valueOf(false));
 		} else {
-			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
-			BlockState blockState2 = this.getDefaultState().with(TYPE, SlabType.field_12681).with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+			FluidState fluidState = itemPlacementContext.method_8045().method_8316(blockPos);
+			BlockState blockState2 = this.method_9564()
+				.method_11657(field_11501, SlabType.field_12681)
+				.method_11657(field_11502, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 			Direction direction = itemPlacementContext.getSide();
-			return direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5))
+			return direction != Direction.field_11033
+					&& (direction == Direction.field_11036 || !(itemPlacementContext.method_17698().y - (double)blockPos.getY() > 0.5))
 				? blockState2
-				: blockState2.with(TYPE, SlabType.field_12679);
+				: blockState2.method_11657(field_11501, SlabType.field_12679);
 		}
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		ItemStack itemStack = itemPlacementContext.getStack();
-		SlabType slabType = blockState.get(TYPE);
+		SlabType slabType = blockState.method_11654(field_11501);
 		if (slabType == SlabType.field_12682 || itemStack.getItem() != this.asItem()) {
 			return false;
 		} else if (itemPlacementContext.canReplaceExisting()) {
-			boolean bl = itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
+			boolean bl = itemPlacementContext.method_17698().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
 			Direction direction = itemPlacementContext.getSide();
 			return slabType == SlabType.field_12681
 				? direction == Direction.field_11036 || bl && direction.getAxis().isHorizontal()
@@ -89,38 +92,36 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState method_9545(BlockState blockState) {
+		return blockState.method_11654(field_11502) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
 	}
 
 	@Override
-	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-		return blockState.get(TYPE) != SlabType.field_12682 ? Waterloggable.super.tryFillWithFluid(iWorld, blockPos, blockState, fluidState) : false;
+	public boolean method_10311(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+		return blockState.method_11654(field_11501) != SlabType.field_12682 ? Waterloggable.super.method_10311(iWorld, blockPos, blockState, fluidState) : false;
 	}
 
 	@Override
-	public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-		return blockState.get(TYPE) != SlabType.field_12682 ? Waterloggable.super.canFillWithFluid(blockView, blockPos, blockState, fluid) : false;
+	public boolean method_10310(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+		return blockState.method_11654(field_11501) != SlabType.field_12682 ? Waterloggable.super.method_10310(blockView, blockPos, blockState, fluid) : false;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if ((Boolean)blockState.method_11654(field_11502)) {
+			iWorld.method_8405().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
 				return false;
 			case field_48:
-				return blockView.getFluidState(blockPos).matches(FluidTags.field_15517);
+				return blockView.method_8316(blockPos).matches(FluidTags.field_15517);
 			case field_51:
 				return false;
 			default:

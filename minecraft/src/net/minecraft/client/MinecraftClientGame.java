@@ -17,13 +17,13 @@ import net.minecraft.util.MetricsData;
 
 @Environment(EnvType.CLIENT)
 public class MinecraftClientGame implements RunningGame {
-	private final MinecraftClient client;
+	private final MinecraftClient field_16757;
 	@Nullable
 	private final Launcher launcher;
 	private SessionEventListener listener = SessionEventListener.NONE;
 
 	public MinecraftClientGame(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+		this.field_16757 = minecraftClient;
 		this.launcher = Bridge.getLauncher();
 		if (this.launcher != null) {
 			this.launcher.registerGame(this);
@@ -37,19 +37,19 @@ public class MinecraftClientGame implements RunningGame {
 
 	@Override
 	public Language getSelectedLanguage() {
-		return this.client.getLanguageManager().getLanguage();
+		return this.field_16757.method_1526().getLanguage();
 	}
 
 	@Nullable
 	@Override
 	public GameSession getCurrentSession() {
-		ClientWorld clientWorld = this.client.world;
-		return clientWorld == null ? null : new ClientGameSession(clientWorld, this.client.player, this.client.player.networkHandler);
+		ClientWorld clientWorld = this.field_16757.field_1687;
+		return clientWorld == null ? null : new ClientGameSession(clientWorld, this.field_16757.field_1724, this.field_16757.field_1724.networkHandler);
 	}
 
 	@Override
 	public PerformanceMetrics getPerformanceMetrics() {
-		MetricsData metricsData = this.client.getMetricsData();
+		MetricsData metricsData = this.field_16757.getMetricsData();
 		long l = 2147483647L;
 		long m = -2147483648L;
 		long n = 0L;

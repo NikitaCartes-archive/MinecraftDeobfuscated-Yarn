@@ -27,7 +27,7 @@ public interface Phase {
 	PhaseType<? extends Phase> getType();
 
 	@Nullable
-	Vec3d getTarget();
+	Vec3d method_6851();
 
 	float modifyDamageTaken(DamageSource damageSource, float f);
 }

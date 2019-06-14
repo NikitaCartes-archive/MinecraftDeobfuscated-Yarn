@@ -17,12 +17,12 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 
 	public EndermanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EndermanEntityModel<>(0.0F), 0.5F);
-		this.addFeature(new EndermanEyesFeatureRenderer<>(this));
-		this.addFeature(new EndermanBlockFeatureRenderer(this));
+		this.method_4046(new EndermanEyesFeatureRenderer<>(this));
+		this.method_4046(new EndermanBlockFeatureRenderer(this));
 	}
 
 	public void method_3911(EndermanEntity endermanEntity, double d, double e, double f, float g, float h) {
-		BlockState blockState = endermanEntity.getCarriedBlock();
+		BlockState blockState = endermanEntity.method_7027();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
 		endermanEntityModel.angry = endermanEntity.isAngry();

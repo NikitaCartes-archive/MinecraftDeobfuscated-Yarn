@@ -30,7 +30,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 			if (iWorld.isAir(mutable)) {
 				for (Direction direction : DIRECTIONS) {
 					if (direction != Direction.field_11033 && VineBlock.shouldConnectTo(iWorld, mutable, direction)) {
-						iWorld.setBlockState(mutable, Blocks.field_10597.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+						iWorld.method_8652(mutable, Blocks.field_10597.method_9564().method_11657(VineBlock.method_10828(direction), Boolean.valueOf(true)), 2);
 						break;
 					}
 				}

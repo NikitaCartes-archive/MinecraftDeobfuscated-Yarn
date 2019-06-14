@@ -23,9 +23,9 @@ public class ScaffoldingItem extends BlockItem {
 	@Override
 	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		World world = itemPlacementContext.getWorld();
-		BlockState blockState = world.getBlockState(blockPos);
-		Block block = this.getBlock();
+		World world = itemPlacementContext.method_8045();
+		BlockState blockState = world.method_8320(blockPos);
+		Block block = this.method_7711();
 		if (blockState.getBlock() != block) {
 			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : itemPlacementContext;
 		} else {
@@ -52,8 +52,8 @@ public class ScaffoldingItem extends BlockItem {
 					break;
 				}
 
-				blockState = world.getBlockState(mutable);
-				if (blockState.getBlock() != this.getBlock()) {
+				blockState = world.method_8320(mutable);
+				if (blockState.getBlock() != this.method_7711()) {
 					if (blockState.canReplace(itemPlacementContext)) {
 						return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
 					}

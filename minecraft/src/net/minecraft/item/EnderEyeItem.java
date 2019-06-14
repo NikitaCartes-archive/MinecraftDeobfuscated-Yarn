@@ -28,27 +28,27 @@ public class EnderEyeItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
+		World world = itemUsageContext.method_8045();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() != Blocks.field_10398 || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
+		BlockState blockState = world.method_8320(blockPos);
+		if (blockState.getBlock() != Blocks.field_10398 || (Boolean)blockState.method_11654(EndPortalFrameBlock.field_10958)) {
 			return ActionResult.field_5811;
 		} else if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
-			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
-			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
-			world.setBlockState(blockPos, blockState2, 2);
-			world.updateHorizontalAdjacent(blockPos, Blocks.field_10398);
+			BlockState blockState2 = blockState.method_11657(EndPortalFrameBlock.field_10958, Boolean.valueOf(true));
+			Block.method_9582(blockState, blockState2, world, blockPos);
+			world.method_8652(blockPos, blockState2, 2);
+			world.method_8455(blockPos, Blocks.field_10398);
 			itemUsageContext.getStack().decrement(1);
 			world.playLevelEvent(1503, blockPos, 0);
-			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
+			BlockPattern.Result result = EndPortalFrameBlock.method_10054().searchAround(world, blockPos);
 			if (result != null) {
 				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);
 
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						world.setBlockState(blockPos2.add(i, 0, j), Blocks.field_10027.getDefaultState(), 2);
+						world.method_8652(blockPos2.add(i, 0, j), Blocks.field_10027.method_9564(), 2);
 					}
 				}
 
@@ -60,15 +60,15 @@ public class EnderEyeItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1348);
-		if (hitResult.getType() == HitResult.Type.field_1332 && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10398) {
+		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1348);
+		if (hitResult.getType() == HitResult.Type.field_1332 && world.method_8320(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10398) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
 			if (!world.isClient) {
-				BlockPos blockPos = world.getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
+				BlockPos blockPos = world.method_8398().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0F), playerEntity.z);
 					enderEyeEntity.setItem(itemStack);

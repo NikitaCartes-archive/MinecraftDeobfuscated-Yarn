@@ -19,81 +19,81 @@ import net.minecraft.world.GameMode;
 public class TutorialManager {
 	private final MinecraftClient client;
 	@Nullable
-	private TutorialStepHandler currentHandler;
+	private TutorialStepHandler field_5646;
 
 	public TutorialManager(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 	}
 
 	public void onMovement(Input input) {
-		if (this.currentHandler != null) {
-			this.currentHandler.onMovement(input);
+		if (this.field_5646 != null) {
+			this.field_5646.onMovement(input);
 		}
 	}
 
 	public void onUpdateMouse(double d, double e) {
-		if (this.currentHandler != null) {
-			this.currentHandler.onMouseUpdate(d, e);
+		if (this.field_5646 != null) {
+			this.field_5646.onMouseUpdate(d, e);
 		}
 	}
 
 	public void tick(@Nullable ClientWorld clientWorld, @Nullable HitResult hitResult) {
-		if (this.currentHandler != null && hitResult != null && clientWorld != null) {
-			this.currentHandler.onTarget(clientWorld, hitResult);
+		if (this.field_5646 != null && hitResult != null && clientWorld != null) {
+			this.field_5646.onTarget(clientWorld, hitResult);
 		}
 	}
 
 	public void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
-		if (this.currentHandler != null) {
-			this.currentHandler.onBlockAttacked(clientWorld, blockPos, blockState, f);
+		if (this.field_5646 != null) {
+			this.field_5646.onBlockAttacked(clientWorld, blockPos, blockState, f);
 		}
 	}
 
 	public void onInventoryOpened() {
-		if (this.currentHandler != null) {
-			this.currentHandler.onInventoryOpened();
+		if (this.field_5646 != null) {
+			this.field_5646.onInventoryOpened();
 		}
 	}
 
 	public void onSlotUpdate(ItemStack itemStack) {
-		if (this.currentHandler != null) {
-			this.currentHandler.onSlotUpdate(itemStack);
+		if (this.field_5646 != null) {
+			this.field_5646.onSlotUpdate(itemStack);
 		}
 	}
 
 	public void destroyHandler() {
-		if (this.currentHandler != null) {
-			this.currentHandler.destroy();
-			this.currentHandler = null;
+		if (this.field_5646 != null) {
+			this.field_5646.destroy();
+			this.field_5646 = null;
 		}
 	}
 
 	public void createHandler() {
-		if (this.currentHandler != null) {
+		if (this.field_5646 != null) {
 			this.destroyHandler();
 		}
 
-		this.currentHandler = this.client.options.tutorialStep.createHandler(this);
+		this.field_5646 = this.client.field_1690.tutorialStep.createHandler(this);
 	}
 
 	public void tick() {
-		if (this.currentHandler != null) {
-			if (this.client.world != null) {
-				this.currentHandler.tick();
+		if (this.field_5646 != null) {
+			if (this.client.field_1687 != null) {
+				this.field_5646.tick();
 			} else {
 				this.destroyHandler();
 			}
-		} else if (this.client.world != null) {
+		} else if (this.client.field_1687 != null) {
 			this.createHandler();
 		}
 	}
 
 	public void setStep(TutorialStep tutorialStep) {
-		this.client.options.tutorialStep = tutorialStep;
-		this.client.options.write();
-		if (this.currentHandler != null) {
-			this.currentHandler.destroy();
-			this.currentHandler = tutorialStep.createHandler(this);
+		this.client.field_1690.tutorialStep = tutorialStep;
+		this.client.field_1690.write();
+		if (this.field_5646 != null) {
+			this.field_5646.destroy();
+			this.field_5646 = tutorialStep.createHandler(this);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class TutorialManager {
 	}
 
 	public GameMode getGameMode() {
-		return this.client.interactionManager == null ? GameMode.field_9218 : this.client.interactionManager.getCurrentGameMode();
+		return this.client.field_1761 == null ? GameMode.field_9218 : this.client.field_1761.getCurrentGameMode();
 	}
 
 	public static Text getKeybindName(String string) {

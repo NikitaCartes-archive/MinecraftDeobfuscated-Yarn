@@ -19,6 +19,6 @@ public class SmeltingRecipe extends AbstractCookingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SMELTING;
+		return RecipeSerializer.field_9042;
 	}
 }

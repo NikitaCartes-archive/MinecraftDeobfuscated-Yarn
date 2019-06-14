@@ -14,7 +14,7 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 
 	public WitchEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitchEntityModel<>(0.0F), 0.5F);
-		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
+		this.method_4046(new WitchHeldItemFeatureRenderer<>(this));
 	}
 
 	public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {

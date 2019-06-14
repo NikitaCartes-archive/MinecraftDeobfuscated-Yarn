@@ -42,17 +42,18 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	private boolean isWater(BlockPos blockPos, int i, int j, int k) {
 		BlockPos blockPos2 = blockPos.add(i * k, 0, j * k);
-		return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.field_15517)
-			&& !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
+		return this.dolphin.field_6002.method_8316(blockPos2).matches(FluidTags.field_15517)
+			&& !this.dolphin.field_6002.method_8320(blockPos2).method_11620().blocksMovement();
 	}
 
 	private boolean isAir(BlockPos blockPos, int i, int j, int k) {
-		return this.dolphin.world.getBlockState(blockPos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(blockPos.add(i * k, 2, j * k)).isAir();
+		return this.dolphin.field_6002.method_8320(blockPos.add(i * k, 1, j * k)).isAir()
+			&& this.dolphin.field_6002.method_8320(blockPos.add(i * k, 2, j * k)).isAir();
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		double d = this.dolphin.getVelocity().y;
+		double d = this.dolphin.method_18798().y;
 		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isInsideWater()) && !this.dolphin.onGround;
 	}
 
@@ -64,7 +65,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	@Override
 	public void start() {
 		Direction direction = this.dolphin.getMovementDirection();
-		this.dolphin.setVelocity(this.dolphin.getVelocity().add((double)direction.getOffsetX() * 0.6, 0.7, (double)direction.getOffsetZ() * 0.6));
+		this.dolphin.method_18799(this.dolphin.method_18798().add((double)direction.getOffsetX() * 0.6, 0.7, (double)direction.getOffsetZ() * 0.6));
 		this.dolphin.getNavigation().stop();
 	}
 
@@ -77,7 +78,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	public void tick() {
 		boolean bl = this.field_6473;
 		if (!bl) {
-			FluidState fluidState = this.dolphin.world.getFluidState(new BlockPos(this.dolphin));
+			FluidState fluidState = this.dolphin.field_6002.method_8316(new BlockPos(this.dolphin));
 			this.field_6473 = fluidState.matches(FluidTags.field_15517);
 		}
 
@@ -85,11 +86,11 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 			this.dolphin.playSound(SoundEvents.field_14707, 1.0F, 1.0F);
 		}
 
-		Vec3d vec3d = this.dolphin.getVelocity();
+		Vec3d vec3d = this.dolphin.method_18798();
 		if (vec3d.y * vec3d.y < 0.03F && this.dolphin.pitch != 0.0F) {
 			this.dolphin.pitch = this.updatePitch(this.dolphin.pitch, 0.0F, 0.2F);
 		} else {
-			double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+			double d = Math.sqrt(Entity.method_17996(vec3d));
 			double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
 			this.dolphin.pitch = (float)e;
 		}

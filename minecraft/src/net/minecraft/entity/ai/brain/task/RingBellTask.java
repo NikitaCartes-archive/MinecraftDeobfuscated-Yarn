@@ -30,13 +30,13 @@ public class RingBellTask extends Task<LivingEntity> {
 		Brain<?> brain = livingEntity.getBrain();
 		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_18440).get()).getPos();
 		if (blockPos.isWithinDistance(new BlockPos(livingEntity), 3.0)) {
-			BlockState blockState = serverWorld.getBlockState(blockPos);
+			BlockState blockState = serverWorld.method_8320(blockPos);
 			if (blockState.getBlock() == Blocks.field_16332) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();
 
 				for (Direction direction : Direction.Type.field_11062) {
-					if (bellBlock.ring(
-						serverWorld, blockState, serverWorld.getBlockEntity(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false
+					if (bellBlock.method_19285(
+						serverWorld, blockState, serverWorld.method_8321(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false
 					)) {
 						break;
 					}

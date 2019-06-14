@@ -18,12 +18,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneTorchBlock extends TorchBlock {
-	public static final BooleanProperty LIT = Properties.LIT;
+	public static final BooleanProperty field_11446 = Properties.field_12548;
 	private static final Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> BURNOUT_MAP = new WeakHashMap();
 
 	protected RedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(LIT, Boolean.valueOf(true)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11446, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -32,76 +32,76 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		for (Direction direction : Direction.values()) {
-			world.updateNeighborsAlways(blockPos.offset(direction), this);
+			world.method_8452(blockPos.offset(direction), this);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl) {
 			for (Direction direction : Direction.values()) {
-				world.updateNeighborsAlways(blockPos.offset(direction), this);
+				world.method_8452(blockPos.offset(direction), this);
 			}
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(LIT) && Direction.field_11036 != direction ? 15 : 0;
+	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.method_11654(field_11446) && Direction.field_11036 != direction ? 15 : 0;
 	}
 
-	protected boolean shouldUnpower(World world, BlockPos blockPos, BlockState blockState) {
+	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
 		return world.isEmittingRedstonePower(blockPos.down(), Direction.field_11033);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		update(blockState, world, blockPos, random, this.shouldUnpower(world, blockPos, blockState));
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		method_10490(blockState, world, blockPos, random, this.method_10488(world, blockPos, blockState));
 	}
 
-	public static void update(BlockState blockState, World world, BlockPos blockPos, Random random, boolean bl) {
+	public static void method_10490(BlockState blockState, World world, BlockPos blockPos, Random random, boolean bl) {
 		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.get(world);
 
 		while (list != null && !list.isEmpty() && world.getTime() - ((RedstoneTorchBlock.BurnoutEntry)list.get(0)).time > 60L) {
 			list.remove(0);
 		}
 
-		if ((Boolean)blockState.get(LIT)) {
+		if ((Boolean)blockState.method_11654(field_11446)) {
 			if (bl) {
-				world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
+				world.method_8652(blockPos, blockState.method_11657(field_11446, Boolean.valueOf(false)), 3);
 				if (isBurnedOut(world, blockPos, true)) {
 					world.playLevelEvent(1502, blockPos, 0);
-					world.getBlockTickScheduler().schedule(blockPos, world.getBlockState(blockPos).getBlock(), 160);
+					world.method_8397().schedule(blockPos, world.method_8320(blockPos).getBlock(), 160);
 				}
 			}
 		} else if (!bl && !isBurnedOut(world, blockPos, false)) {
-			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(true)), 3);
+			world.method_8652(blockPos, blockState.method_11657(field_11446, Boolean.valueOf(true)), 3);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if ((Boolean)blockState.get(LIT) == this.shouldUnpower(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
-			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		if ((Boolean)blockState.method_11654(field_11446) == this.method_10488(world, blockPos, blockState) && !world.method_8397().isTicking(blockPos, this)) {
+			world.method_8397().schedule(blockPos, this, this.getTickRate(world));
 		}
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return direction == Direction.field_11033 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState blockState) {
+	public boolean method_9506(BlockState blockState) {
 		return true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT)) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.method_11654(field_11446)) {
 			double d = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
@@ -110,13 +110,13 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public int getLuminance(BlockState blockState) {
-		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
+	public int method_9593(BlockState blockState) {
+		return blockState.method_11654(field_11446) ? super.method_9593(blockState) : 0;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(LIT);
+		builder.method_11667(field_11446);
 	}
 
 	private static boolean isBurnedOut(World world, BlockPos blockPos, boolean bl) {

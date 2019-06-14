@@ -35,7 +35,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.selfAnchor = entityAnchor;
 		this.entityId = entity.getEntityId();
 		this.targetAnchor = entityAnchor2;
-		Vec3d vec3d = entityAnchor2.positionAt(entity);
+		Vec3d vec3d = entityAnchor2.method_9302(entity);
 		this.targetX = vec3d.x;
 		this.targetY = vec3d.y;
 		this.targetZ = vec3d.z;
@@ -82,7 +82,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	public Vec3d getTargetPosition(World world) {
 		if (this.lookAtEntity) {
 			Entity entity = world.getEntityById(this.entityId);
-			return entity == null ? new Vec3d(this.targetX, this.targetY, this.targetZ) : this.targetAnchor.positionAt(entity);
+			return entity == null ? new Vec3d(this.targetX, this.targetY, this.targetZ) : this.targetAnchor.method_9302(entity);
 		} else {
 			return new Vec3d(this.targetX, this.targetY, this.targetZ);
 		}

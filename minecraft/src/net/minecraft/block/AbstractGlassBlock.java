@@ -13,27 +13,27 @@ public abstract class AbstractGlassBlock extends TransparentBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public float method_9575(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1.0F;
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_16362(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+	public boolean method_9523(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return false;
 	}
 }

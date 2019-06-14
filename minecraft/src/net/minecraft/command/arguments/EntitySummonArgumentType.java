@@ -19,7 +19,7 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		object -> new TranslatableText("entity.notFound", object)
 	);
 
-	public static EntitySummonArgumentType entitySummon() {
+	public static EntitySummonArgumentType create() {
 		return new EntitySummonArgumentType();
 	}
 

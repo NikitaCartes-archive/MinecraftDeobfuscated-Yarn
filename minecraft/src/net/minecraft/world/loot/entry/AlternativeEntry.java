@@ -39,17 +39,17 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.check(lootTableReporter, function, set, lootContextType);
+	public void method_415(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		super.method_415(lootTableReporter, function, set, lootContextType);
 
-		for (int i = 0; i < this.children.length - 1; i++) {
-			if (ArrayUtils.isEmpty((Object[])this.children[i].conditions)) {
+		for (int i = 0; i < this.field_982.length - 1; i++) {
+			if (ArrayUtils.isEmpty((Object[])this.field_982[i].field_988)) {
 				lootTableReporter.report("Unreachable entry!");
 			}
 		}
 	}
 
-	public static AlternativeEntry.Builder builder(LootEntry.Builder<?>... builders) {
+	public static AlternativeEntry.Builder method_386(LootEntry.Builder<?>... builders) {
 		return new AlternativeEntry.Builder(builders);
 	}
 
@@ -74,7 +74,7 @@ public class AlternativeEntry extends CombinedEntry {
 
 		@Override
 		public LootEntry build() {
-			return new AlternativeEntry((LootEntry[])this.children.toArray(new LootEntry[0]), this.getConditions());
+			return new AlternativeEntry((LootEntry[])this.children.toArray(new LootEntry[0]), this.method_420());
 		}
 	}
 }

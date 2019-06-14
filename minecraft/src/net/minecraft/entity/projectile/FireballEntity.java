@@ -30,16 +30,16 @@ public class FireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isClient) {
+	protected void method_7469(HitResult hitResult) {
+		if (!this.field_6002.isClient) {
 			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
 				this.dealDamage(this.owner, entity);
 			}
 
-			boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19388);
-			this.world
+			boolean bl = this.field_6002.getGameRules().getBoolean(GameRules.field_19388);
+			this.field_6002
 				.createExplosion(
 					null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685
 				);

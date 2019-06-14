@@ -57,7 +57,7 @@ public class PlayerSkinProvider {
 	) {
 		String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
 		final Identifier identifier = new Identifier("skins/" + string);
-		Texture texture = this.textureManager.getTexture(identifier);
+		Texture texture = this.textureManager.method_4619(identifier);
 		if (texture != null) {
 			if (skinTextureAvailableCallback != null) {
 				skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
@@ -83,7 +83,7 @@ public class PlayerSkinProvider {
 					}
 				}
 			});
-			this.textureManager.registerTexture(identifier, playerSkinTexture);
+			this.textureManager.method_4616(identifier, playerSkinTexture);
 		}
 
 		return identifier;
@@ -100,7 +100,7 @@ public class PlayerSkinProvider {
 
 			if (map.isEmpty()) {
 				gameProfile.getProperties().clear();
-				if (gameProfile.getId().equals(MinecraftClient.getInstance().getSession().getProfile().getId())) {
+				if (gameProfile.getId().equals(MinecraftClient.getInstance().method_1548().getProfile().getId())) {
 					gameProfile.getProperties().putAll(MinecraftClient.getInstance().getSessionProperties());
 					map.putAll(this.sessionService.getTextures(gameProfile, false));
 				} else {

@@ -28,7 +28,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public boolean matches(Inventory inventory, World world) {
+	public boolean method_8115(Inventory inventory, World world) {
 		return this.input.method_8093(inventory.getInvStack(0));
 	}
 

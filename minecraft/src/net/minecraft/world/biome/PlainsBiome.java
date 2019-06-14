@@ -14,7 +14,7 @@ public final class PlainsBiome extends Biome {
 	protected PlainsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.GRASS_CONFIG)
+				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15677)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.field_9355)
 				.depth(0.125F)
@@ -25,10 +25,10 @@ public final class PlainsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
-		this.addStructureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13587, new VillageFeatureConfig("village/plains/town_centers", 6));
+		this.method_8710(Feature.field_16655, new PillagerOutpostFeatureConfig(0.004));
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

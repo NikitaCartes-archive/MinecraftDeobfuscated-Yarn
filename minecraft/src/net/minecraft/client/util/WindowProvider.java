@@ -18,7 +18,7 @@ public final class WindowProvider implements AutoCloseable {
 
 	public Monitor createMonitor(long l) {
 		Monitor monitor = new Monitor(this.monitorTracker, l);
-		Option.FULLSCREEN_RESOLUTION.setMax((float)monitor.getVideoModeCount());
+		Option.field_1931.setMax((float)monitor.getVideoModeCount());
 		return monitor;
 	}
 

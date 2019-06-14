@@ -32,8 +32,8 @@ public class ForestFlowerFeature extends FlowerFeature {
 
 	@Override
 	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
-		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 48.0, (double)blockPos.getZ() / 48.0)) / 2.0, 0.0, 0.9999);
+		double d = MathHelper.clamp((1.0 + Biome.field_9324.sample((double)blockPos.getX() / 48.0, (double)blockPos.getZ() / 48.0)) / 2.0, 0.0, 0.9999);
 		Block block = FLOWERS[(int)(d * (double)FLOWERS.length)];
-		return block == Blocks.field_10086 ? Blocks.field_10449.getDefaultState() : block.getDefaultState();
+		return block == Blocks.field_10086 ? Blocks.field_10449.method_9564() : block.method_9564();
 	}
 }

@@ -35,7 +35,7 @@ public class TeleportCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("location", Vec3ArgumentType.vec3())
+							CommandManager.argument("location", Vec3ArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -47,7 +47,7 @@ public class TeleportCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("rotation", RotationArgumentType.rotation())
+									CommandManager.argument("rotation", RotationArgumentType.create())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -76,7 +76,7 @@ public class TeleportCommand {
 																)
 														)
 														.then(
-															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.entityAnchor())
+															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.create())
 																.executes(
 																	commandContext -> execute(
 																			commandContext.getSource(),
@@ -93,7 +93,7 @@ public class TeleportCommand {
 												)
 										)
 										.then(
-											CommandManager.argument("facingLocation", Vec3ArgumentType.vec3())
+											CommandManager.argument("facingLocation", Vec3ArgumentType.create())
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
@@ -117,7 +117,7 @@ public class TeleportCommand {
 						)
 				)
 				.then(
-					CommandManager.argument("location", Vec3ArgumentType.vec3())
+					CommandManager.argument("location", Vec3ArgumentType.create())
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
@@ -150,7 +150,7 @@ public class TeleportCommand {
 			teleport(
 				serverCommandSource,
 				entity2,
-				(ServerWorld)entity.world,
+				(ServerWorld)entity.field_6002,
 				entity.x,
 				entity.y,
 				entity.z,
@@ -247,7 +247,7 @@ public class TeleportCommand {
 				((ServerPlayerEntity)entity).wakeUp(true, true, false);
 			}
 
-			if (serverWorld == entity.world) {
+			if (serverWorld == entity.field_6002) {
 				((ServerPlayerEntity)entity).networkHandler.teleportRequest(d, e, f, g, h, set);
 			} else {
 				((ServerPlayerEntity)entity).teleport(serverWorld, d, e, f, g, h);
@@ -258,19 +258,19 @@ public class TeleportCommand {
 			float i = MathHelper.wrapDegrees(g);
 			float j = MathHelper.wrapDegrees(h);
 			j = MathHelper.clamp(j, -90.0F, 90.0F);
-			if (serverWorld == entity.world) {
+			if (serverWorld == entity.field_6002) {
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 			} else {
 				entity.detach();
-				entity.dimension = serverWorld.dimension.getType();
+				entity.field_6026 = serverWorld.field_9247.method_12460();
 				Entity entity2 = entity;
-				entity = entity.getType().create(serverWorld);
+				entity = entity.getType().method_5883(serverWorld);
 				if (entity == null) {
 					return;
 				}
 
-				entity.copyFrom(entity2);
+				entity.method_5878(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 				serverWorld.method_18769(entity);
@@ -283,7 +283,7 @@ public class TeleportCommand {
 		}
 
 		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
-			entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
+			entity.method_18799(entity.method_18798().multiply(1.0, 0.0, 1.0));
 			entity.onGround = true;
 		}
 	}
@@ -296,7 +296,7 @@ public class TeleportCommand {
 		public LookTarget(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
 			this.targetEntity = entity;
 			this.targetEntityAnchor = entityAnchor;
-			this.targetPos = entityAnchor.positionAt(entity);
+			this.targetPos = entityAnchor.method_9302(entity);
 		}
 
 		public LookTarget(Vec3d vec3d) {
@@ -310,10 +310,10 @@ public class TeleportCommand {
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
 				} else {
-					entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
+					entity.method_5702(serverCommandSource.getEntityAnchor(), this.targetPos);
 				}
 			} else {
-				entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
+				entity.method_5702(serverCommandSource.getEntityAnchor(), this.targetPos);
 			}
 		}
 	}

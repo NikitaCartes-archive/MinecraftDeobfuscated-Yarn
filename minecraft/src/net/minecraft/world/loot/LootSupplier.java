@@ -34,16 +34,16 @@ import org.apache.logging.log4j.Logger;
 public class LootSupplier {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final LootSupplier EMPTY = new LootSupplier(LootContextTypes.field_1175, new LootPool[0], new LootFunction[0]);
-	public static final LootContextType GENERIC = LootContextTypes.field_1177;
-	private final LootContextType type;
+	public static final LootContextType field_947 = LootContextTypes.field_1177;
+	private final LootContextType field_942;
 	private final LootPool[] pools;
-	private final LootFunction[] functions;
+	private final LootFunction[] field_944;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
 	private LootSupplier(LootContextType lootContextType, LootPool[] lootPools, LootFunction[] lootFunctions) {
-		this.type = lootContextType;
+		this.field_942 = lootContextType;
 		this.pools = lootPools;
-		this.functions = lootFunctions;
+		this.field_944 = lootFunctions;
 		this.combinedFunction = LootFunctions.join(lootFunctions);
 	}
 
@@ -65,14 +65,14 @@ public class LootSupplier {
 	}
 
 	public void drop(LootContext lootContext, Consumer<ItemStack> consumer) {
-		if (lootContext.addDrop(this)) {
+		if (lootContext.method_298(this)) {
 			Consumer<ItemStack> consumer2 = LootFunction.apply(this.combinedFunction, consumer, lootContext);
 
 			for (LootPool lootPool : this.pools) {
 				lootPool.drop(consumer2, lootContext);
 			}
 
-			lootContext.removeDrop(this);
+			lootContext.method_295(this);
 		} else {
 			LOGGER.warn("Detected infinite loop in loot tables");
 		}
@@ -88,17 +88,17 @@ public class LootSupplier {
 		return list;
 	}
 
-	public LootContextType getType() {
-		return this.type;
+	public LootContextType method_322() {
+		return this.field_942;
 	}
 
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+	public void method_330(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
 		for (int i = 0; i < this.pools.length; i++) {
-			this.pools[i].check(lootTableReporter.makeChild(".pools[" + i + "]"), function, set, lootContextType);
+			this.pools[i].method_349(lootTableReporter.makeChild(".pools[" + i + "]"), function, set, lootContextType);
 		}
 
-		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.field_944.length; i++) {
+			this.field_944[i].method_292(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -177,15 +177,15 @@ public class LootSupplier {
 	public static class Builder implements FunctionConsumerBuilder<LootSupplier.Builder> {
 		private final List<LootPool> pools = Lists.<LootPool>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
-		private LootContextType type = LootSupplier.GENERIC;
+		private LootContextType field_950 = LootSupplier.field_947;
 
 		public LootSupplier.Builder withPool(LootPool.Builder builder) {
 			this.pools.add(builder.build());
 			return this;
 		}
 
-		public LootSupplier.Builder withType(LootContextType lootContextType) {
-			this.type = lootContextType;
+		public LootSupplier.Builder method_334(LootContextType lootContextType) {
+			this.field_950 = lootContextType;
 			return this;
 		}
 
@@ -199,7 +199,7 @@ public class LootSupplier {
 		}
 
 		public LootSupplier create() {
-			return new LootSupplier(this.type, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0]));
+			return new LootSupplier(this.field_950, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0]));
 		}
 	}
 
@@ -219,12 +219,12 @@ public class LootSupplier {
 
 		public JsonElement method_339(LootSupplier lootSupplier, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			if (lootSupplier.type != LootSupplier.GENERIC) {
-				Identifier identifier = LootContextTypes.getId(lootSupplier.type);
+			if (lootSupplier.field_942 != LootSupplier.field_947) {
+				Identifier identifier = LootContextTypes.getId(lootSupplier.field_942);
 				if (identifier != null) {
 					jsonObject.addProperty("type", identifier.toString());
 				} else {
-					LootSupplier.LOGGER.warn("Failed to find id for param set " + lootSupplier.type);
+					LootSupplier.LOGGER.warn("Failed to find id for param set " + lootSupplier.field_942);
 				}
 			}
 
@@ -232,8 +232,8 @@ public class LootSupplier {
 				jsonObject.add("pools", jsonSerializationContext.serialize(lootSupplier.pools));
 			}
 
-			if (!ArrayUtils.isEmpty((Object[])lootSupplier.functions)) {
-				jsonObject.add("functions", jsonSerializationContext.serialize(lootSupplier.functions));
+			if (!ArrayUtils.isEmpty((Object[])lootSupplier.field_944)) {
+				jsonObject.add("functions", jsonSerializationContext.serialize(lootSupplier.field_944));
 			}
 
 			return jsonObject;

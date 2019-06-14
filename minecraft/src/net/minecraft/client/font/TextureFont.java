@@ -37,7 +37,7 @@ public class TextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char c) {
+	public RenderableGlyph method_2040(char c) {
 		return this.characterToGlyphMap.get(c);
 	}
 

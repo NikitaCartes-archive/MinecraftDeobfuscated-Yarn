@@ -67,8 +67,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.hasChest()) {
-			if (!this.world.isClient) {
-				this.dropItem(Blocks.field_10034);
+			if (!this.field_6002.isClient) {
+				this.method_5706(Blocks.field_10034);
 			}
 
 			this.setHasChest(false);

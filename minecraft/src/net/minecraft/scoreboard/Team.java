@@ -13,7 +13,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 
 public class Team extends AbstractTeam {
-	private final Scoreboard scoreboard;
+	private final Scoreboard field_1420;
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
 	private Text displayName;
@@ -24,10 +24,10 @@ public class Team extends AbstractTeam {
 	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
 	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
 	private Formatting color = Formatting.field_1070;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
+	private AbstractTeam.CollisionRule field_1425 = AbstractTeam.CollisionRule.field_1437;
 
 	public Team(Scoreboard scoreboard, String string) {
-		this.scoreboard = scoreboard;
+		this.field_1420 = scoreboard;
 		this.name = string;
 		this.displayName = new LiteralText(string);
 	}
@@ -60,13 +60,13 @@ public class Team extends AbstractTeam {
 			throw new IllegalArgumentException("Name cannot be null");
 		} else {
 			this.displayName = text;
-			this.scoreboard.updateScoreboardTeam(this);
+			this.field_1420.updateScoreboardTeam(this);
 		}
 	}
 
 	public void setPrefix(@Nullable Text text) {
 		this.prefix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	public Text getPrefix() {
@@ -75,7 +75,7 @@ public class Team extends AbstractTeam {
 
 	public void setSuffix(@Nullable Text text) {
 		this.suffix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	public Text getSuffix() {
@@ -98,7 +98,7 @@ public class Team extends AbstractTeam {
 		return text2;
 	}
 
-	public static Text modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
+	public static Text method_1142(@Nullable AbstractTeam abstractTeam, Text text) {
 		return abstractTeam == null ? text.deepCopy() : abstractTeam.modifyText(text);
 	}
 
@@ -109,7 +109,7 @@ public class Team extends AbstractTeam {
 
 	public void setFriendlyFireAllowed(boolean bl) {
 		this.friendlyFire = bl;
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class Team extends AbstractTeam {
 
 	public void setShowFriendlyInvisibles(boolean bl) {
 		this.showFriendlyInvisibles = bl;
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	@Override
@@ -134,22 +134,22 @@ public class Team extends AbstractTeam {
 
 	public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
 		this.nameTagVisibilityRule = visibilityRule;
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
 		this.deathMessageVisibilityRule = visibilityRule;
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	@Override
 	public AbstractTeam.CollisionRule getCollisionRule() {
-		return this.collisionRule;
+		return this.field_1425;
 	}
 
-	public void setCollisionRule(AbstractTeam.CollisionRule collisionRule) {
-		this.collisionRule = collisionRule;
-		this.scoreboard.updateScoreboardTeam(this);
+	public void method_1145(AbstractTeam.CollisionRule collisionRule) {
+		this.field_1425 = collisionRule;
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	public int getFriendlyFlagsBitwise() {
@@ -173,7 +173,7 @@ public class Team extends AbstractTeam {
 
 	public void setColor(Formatting formatting) {
 		this.color = formatting;
-		this.scoreboard.updateScoreboardTeam(this);
+		this.field_1420.updateScoreboardTeam(this);
 	}
 
 	@Override

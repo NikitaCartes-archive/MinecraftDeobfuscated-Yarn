@@ -17,30 +17,30 @@ import net.minecraft.world.GameMode;
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description");
-	private final TutorialManager manager;
+	private final TutorialManager field_5608;
 	private TutorialToast toast;
 	private int ticks;
 
 	public CraftPlanksTutorialStepHandler(TutorialManager tutorialManager) {
-		this.manager = tutorialManager;
+		this.field_5608 = tutorialManager;
 	}
 
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.field_5608.getGameMode() != GameMode.field_9215) {
+			this.field_5608.setStep(TutorialStep.field_5653);
 		} else {
 			if (this.ticks == 1) {
-				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
+				ClientPlayerEntity clientPlayerEntity = this.field_5608.getClient().field_1724;
 				if (clientPlayerEntity != null) {
 					if (clientPlayerEntity.inventory.contains(ItemTags.field_15537)) {
-						this.manager.setStep(TutorialStep.field_5653);
+						this.field_5608.setStep(TutorialStep.field_5653);
 						return;
 					}
 
 					if (hasCrafted(clientPlayerEntity, ItemTags.field_15537)) {
-						this.manager.setStep(TutorialStep.field_5653);
+						this.field_5608.setStep(TutorialStep.field_5653);
 						return;
 					}
 				}
@@ -48,7 +48,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 
 			if (this.ticks >= 1200 && this.toast == null) {
 				this.toast = new TutorialToast(TutorialToast.Type.field_2236, TITLE, DESCRIPTION, false);
-				this.manager.getClient().getToastManager().add(this.toast);
+				this.field_5608.getClient().method_1566().add(this.toast);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	public void onSlotUpdate(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		if (ItemTags.field_15537.contains(item)) {
-			this.manager.setStep(TutorialStep.field_5653);
+			this.field_5608.setStep(TutorialStep.field_5653);
 		}
 	}
 

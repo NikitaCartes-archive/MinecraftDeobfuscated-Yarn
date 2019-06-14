@@ -24,7 +24,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	private static final Direction[] DIRECTIONS = Direction.values();
 	protected final ChunkProvider chunkProvider;
 	protected final LightType type;
-	protected final S lightStorage;
+	protected final S field_15793;
 	private boolean field_15794;
 	protected final BlockPos.Mutable field_19284 = new BlockPos.Mutable();
 	private final long[] field_17397 = new long[2];
@@ -34,14 +34,14 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		super(16, 256, 8192);
 		this.chunkProvider = chunkProvider;
 		this.type = lightType;
-		this.lightStorage = lightStorage;
+		this.field_15793 = lightStorage;
 		this.method_17530();
 	}
 
 	@Override
 	protected void fullyUpdate(long l) {
-		this.lightStorage.updateAll();
-		if (this.lightStorage.hasChunk(ChunkSectionPos.toChunkLong(l))) {
+		this.field_15793.updateAll();
+		if (this.field_15793.hasChunk(ChunkSectionPos.toChunkLong(l))) {
 			super.fullyUpdate(l);
 		}
 	}
@@ -79,7 +79,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 				atomicInteger.set(0);
 			}
 
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.field_10124.method_9564();
 		} else {
 			int i = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l));
 			int j = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l));
@@ -89,22 +89,22 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					atomicInteger.set(16);
 				}
 
-				return Blocks.field_9987.getDefaultState();
+				return Blocks.field_9987.method_9564();
 			} else {
 				this.field_19284.setFromLong(l);
-				BlockState blockState = blockView.getBlockState(this.field_19284);
+				BlockState blockState = blockView.method_8320(this.field_19284);
 				boolean bl = blockState.isOpaque() && blockState.hasSidedTransparency();
 				if (atomicInteger != null) {
 					atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
 				}
 
-				return bl ? blockState : Blocks.field_10124.getDefaultState();
+				return bl ? blockState : Blocks.field_10124.method_9564();
 			}
 		}
 	}
 
 	protected VoxelShape method_20710(BlockState blockState, long l, Direction direction) {
-		return blockState.isOpaque() ? blockState.getCullShape(this.chunkProvider.getWorld(), this.field_19284.setFromLong(l), direction) : VoxelShapes.empty();
+		return blockState.isOpaque() ? blockState.method_16384(this.chunkProvider.getWorld(), this.field_19284.setFromLong(l), direction) : VoxelShapes.method_1073();
 	}
 
 	public static int method_20049(
@@ -115,8 +115,8 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		if (!bl && !bl2) {
 			return i;
 		} else {
-			VoxelShape voxelShape = bl ? blockState.method_11615(blockView, blockPos) : VoxelShapes.empty();
-			VoxelShape voxelShape2 = bl2 ? blockState2.method_11615(blockView, blockPos2) : VoxelShapes.empty();
+			VoxelShape voxelShape = bl ? blockState.method_11615(blockView, blockPos) : VoxelShapes.method_1073();
+			VoxelShape voxelShape2 = bl2 ? blockState2.method_11615(blockView, blockPos2) : VoxelShapes.method_1073();
 			return VoxelShapes.method_1080(voxelShape, voxelShape2, direction) ? 16 : i;
 		}
 	}
@@ -133,7 +133,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected int getLevel(long l) {
-		return l == Long.MAX_VALUE ? 0 : 15 - this.lightStorage.get(l);
+		return l == Long.MAX_VALUE ? 0 : 15 - this.field_15793.get(l);
 	}
 
 	protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
@@ -147,7 +147,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected void setLevel(long l, int i) {
-		this.lightStorage.set(l, Math.min(15, 15 - i));
+		this.field_15793.set(l, Math.min(15, 15 - i));
 	}
 
 	@Override
@@ -156,19 +156,19 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	public boolean hasUpdates() {
-		return this.hasLevelUpdates() || this.lightStorage.hasLevelUpdates() || this.lightStorage.hasLightUpdates();
+		return this.hasLevelUpdates() || this.field_15793.hasLevelUpdates() || this.field_15793.hasLightUpdates();
 	}
 
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
 		if (!this.field_15794) {
-			if (this.lightStorage.hasLevelUpdates()) {
-				i = this.lightStorage.updateAllRecursively(i);
+			if (this.field_15793.hasLevelUpdates()) {
+				i = this.field_15793.updateAllRecursively(i);
 				if (i == 0) {
 					return i;
 				}
 			}
 
-			this.lightStorage.processUpdates(this, bl, bl2);
+			this.field_15793.processUpdates(this, bl, bl2);
 		}
 
 		this.field_15794 = true;
@@ -181,28 +181,28 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		}
 
 		this.field_15794 = false;
-		this.lightStorage.notifyChunkProvider();
+		this.field_15793.notifyChunkProvider();
 		return i;
 	}
 
 	protected void setSection(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
-		this.lightStorage.scheduleToUpdate(l, chunkNibbleArray);
+		this.field_15793.scheduleToUpdate(l, chunkNibbleArray);
 	}
 
 	@Nullable
 	@Override
 	public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
-		return this.lightStorage.method_20533(chunkSectionPos.asLong());
+		return this.field_15793.method_20533(chunkSectionPos.asLong());
 	}
 
 	@Override
 	public int getLightLevel(BlockPos blockPos) {
-		return this.lightStorage.getLight(blockPos.asLong());
+		return this.field_15793.getLight(blockPos.asLong());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public String method_15520(long l) {
-		return "" + this.lightStorage.getLevel(l);
+		return "" + this.field_15793.getLevel(l);
 	}
 
 	public void queueLightCheck(BlockPos blockPos) {
@@ -219,17 +219,17 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
-		this.lightStorage.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
+		this.field_15793.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
 	}
 
 	public void method_15512(ChunkPos chunkPos, boolean bl) {
 		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-		this.lightStorage.updateAll();
-		this.lightStorage.method_15535(l, bl);
+		this.field_15793.updateAll();
+		this.field_15793.method_15535(l, bl);
 	}
 
 	public void method_20599(ChunkPos chunkPos, boolean bl) {
 		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-		this.lightStorage.method_20600(l, bl);
+		this.field_15793.method_20600(l, bl);
 	}
 }

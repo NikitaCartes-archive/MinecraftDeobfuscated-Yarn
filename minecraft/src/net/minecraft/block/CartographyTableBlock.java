@@ -21,7 +21,7 @@ public class CartographyTableBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		playerEntity.incrementStat(Stats.field_19252);
 		return true;
@@ -29,9 +29,9 @@ public class CartographyTableBlock extends Block {
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.method_17392(world, blockPos)), CONTAINER_NAME
 		);
 	}
 }

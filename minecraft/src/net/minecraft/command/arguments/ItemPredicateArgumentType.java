@@ -27,7 +27,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		object -> new TranslatableText("arguments.item.tag.unknown", object)
 	);
 
-	public static ItemPredicateArgumentType itemPredicate() {
+	public static ItemPredicateArgumentType create() {
 		return new ItemPredicateArgumentType();
 	}
 

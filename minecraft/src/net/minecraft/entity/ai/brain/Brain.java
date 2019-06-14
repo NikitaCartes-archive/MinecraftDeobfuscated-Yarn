@@ -173,7 +173,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public void stopAllTasks(ServerWorld serverWorld, E livingEntity) {
-		long l = livingEntity.world.getTime();
+		long l = livingEntity.field_6002.getTime();
 		this.streamRunningTasks().forEach(task -> task.stop(serverWorld, livingEntity, l));
 	}
 

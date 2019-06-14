@@ -29,7 +29,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public abstract class StructurePiece {
-	protected static final BlockState AIR = Blocks.field_10543.getDefaultState();
+	protected static final BlockState AIR = Blocks.field_10543.method_9564();
 	protected MutableIntBoundingBox boundingBox;
 	@Nullable
 	private Direction facing;
@@ -119,11 +119,11 @@ public abstract class StructurePiece {
 
 		for (int o = i; o <= l; o++) {
 			for (int p = k; p <= n; p++) {
-				if (blockView.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, j, p)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, m, p)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -131,11 +131,11 @@ public abstract class StructurePiece {
 
 		for (int o = i; o <= l; o++) {
 			for (int p = j; p <= m; p++) {
-				if (blockView.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, p, k)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, p, n)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -143,11 +143,11 @@ public abstract class StructurePiece {
 
 		for (int o = k; o <= n; o++) {
 			for (int p = j; p <= m; p++) {
-				if (blockView.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(i, p, o)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(l, p, o)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -209,14 +209,14 @@ public abstract class StructurePiece {
 				blockState = blockState.rotate(this.rotation);
 			}
 
-			iWorld.setBlockState(blockPos, blockState, 2);
-			FluidState fluidState = iWorld.getFluidState(blockPos);
+			iWorld.method_8652(blockPos, blockState, 2);
+			FluidState fluidState = iWorld.method_8316(blockPos);
 			if (!fluidState.isEmpty()) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+				iWorld.method_8405().schedule(blockPos, fluidState.getFluid(), 0);
 			}
 
 			if (BLOCKS_NEEDING_POST_PROCESSING.contains(blockState.getBlock())) {
-				iWorld.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+				iWorld.method_16955(blockPos).markBlockForPostProcessing(blockPos);
 			}
 		}
 	}
@@ -226,7 +226,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.field_10124.getDefaultState() : blockView.getBlockState(blockPos);
+		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.field_10124.method_9564() : blockView.method_8320(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
@@ -241,7 +241,7 @@ public abstract class StructurePiece {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10124.method_9564(), p, o, q, mutableIntBoundingBox);
 				}
 			}
 		}
@@ -374,8 +374,8 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-			while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
-				iWorld.setBlockState(new BlockPos(l, m, n), blockState, 2);
+			while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.method_8320(new BlockPos(l, m, n)).method_11620().isLiquid()) && m > 1) {
+				iWorld.method_8652(new BlockPos(l, m, n), blockState, 2);
 				m--;
 			}
 		}
@@ -391,7 +391,7 @@ public abstract class StructurePiece {
 
 		for (Direction direction2 : Direction.Type.field_11062) {
 			BlockPos blockPos2 = blockPos.offset(direction2);
-			BlockState blockState2 = blockView.getBlockState(blockPos2);
+			BlockState blockState2 = blockView.method_8320(blockPos2);
 			if (blockState2.getBlock() == Blocks.field_10034) {
 				return blockState;
 			}
@@ -407,39 +407,39 @@ public abstract class StructurePiece {
 		}
 
 		if (direction != null) {
-			return blockState.with(HorizontalFacingBlock.FACING, direction.getOpposite());
+			return blockState.method_11657(HorizontalFacingBlock.field_11177, direction.getOpposite());
 		} else {
-			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
+			Direction direction3 = blockState.method_11654(HorizontalFacingBlock.field_11177);
 			BlockPos blockPos3 = blockPos.offset(direction3);
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.method_8320(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.method_8320(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.rotateYClockwise();
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.method_8320(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			return blockState.with(HorizontalFacingBlock.FACING, direction3);
+			return blockState.method_11657(HorizontalFacingBlock.field_11177, direction3);
 		}
 	}
 
 	protected boolean addChest(
 		IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, BlockPos blockPos, Identifier identifier, @Nullable BlockState blockState
 	) {
-		if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10034) {
+		if (mutableIntBoundingBox.contains(blockPos) && iWorld.method_8320(blockPos).getBlock() != Blocks.field_10034) {
 			if (blockState == null) {
-				blockState = method_14916(iWorld, blockPos, Blocks.field_10034.getDefaultState());
+				blockState = method_14916(iWorld, blockPos, Blocks.field_10034.method_9564());
 			}
 
-			iWorld.setBlockState(blockPos, blockState, 2);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+			iWorld.method_8652(blockPos, blockState, 2);
+			BlockEntity blockEntity = iWorld.method_8321(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				((ChestBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
 			}
@@ -454,9 +454,9 @@ public abstract class StructurePiece {
 		IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Direction direction, Identifier identifier
 	) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-		if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10200) {
-			this.addBlock(iWorld, Blocks.field_10200.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, mutableIntBoundingBox);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+		if (mutableIntBoundingBox.contains(blockPos) && iWorld.method_8320(blockPos).getBlock() != Blocks.field_10200) {
+			this.addBlock(iWorld, Blocks.field_10200.method_9564().method_11657(DispenserBlock.field_10918, direction), i, j, k, mutableIntBoundingBox);
+			BlockEntity blockEntity = iWorld.method_8321(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				((DispenserBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
 			}
@@ -511,7 +511,7 @@ public abstract class StructurePiece {
 	}
 
 	public abstract static class BlockRandomizer {
-		protected BlockState block = Blocks.field_10124.getDefaultState();
+		protected BlockState block = Blocks.field_10124.method_9564();
 
 		protected BlockRandomizer() {
 		}

@@ -270,7 +270,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			for (int i = 0; i < defaultedList.size(); i++) {
 				if (!defaultedList.get(i).isEmpty()) {
-					defaultedList.get(i).inventoryTick(this.player.world, this.player, i, this.selectedSlot == i);
+					defaultedList.get(i).method_7917(this.player.field_6002, this.player, i, this.selectedSlot == i);
 				}
 			}
 		}
@@ -330,7 +330,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public void offerOrDrop(World world, ItemStack itemStack) {
+	public void method_7398(World world, ItemStack itemStack) {
 		if (!world.isClient) {
 			while (!itemStack.isEmpty()) {
 				int i = this.getOccupiedSlotWithRoomForStack(itemStack);
@@ -418,8 +418,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public float getBlockBreakingSpeed(BlockState blockState) {
-		return this.main.get(this.selectedSlot).getMiningSpeed(blockState);
+	public float method_7370(BlockState blockState) {
+		return this.main.get(this.selectedSlot).method_7924(blockState);
 	}
 
 	public ListTag serialize(ListTag listTag) {
@@ -523,8 +523,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		return new TranslatableText("container.inventory");
 	}
 
-	public boolean isUsingEffectiveTool(BlockState blockState) {
-		return this.getInvStack(this.selectedSlot).isEffectiveOn(blockState);
+	public boolean method_7383(BlockState blockState) {
+		return this.getInvStack(this.selectedSlot).method_7951(blockState);
 	}
 
 	@Environment(EnvType.CLIENT)

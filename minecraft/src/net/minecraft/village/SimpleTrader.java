@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class SimpleTrader implements Trader {
 	private final TraderInventory traderInventory;
 	private final PlayerEntity player;
-	private TraderOfferList recipeList = new TraderOfferList();
+	private TraderOfferList field_7442 = new TraderOfferList();
 	private int experience;
 
 	public SimpleTrader(PlayerEntity playerEntity) {
@@ -31,18 +31,18 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public TraderOfferList getOffers() {
-		return this.recipeList;
+	public TraderOfferList method_8264() {
+		return this.field_7442;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
-		this.recipeList = traderOfferList;
+	public void method_8261(@Nullable TraderOfferList traderOfferList) {
+		this.field_7442 = traderOfferList;
 	}
 
 	@Override
-	public void trade(TradeOffer tradeOffer) {
+	public void method_8262(TradeOffer tradeOffer) {
 		tradeOffer.use();
 	}
 
@@ -51,8 +51,8 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public World getTraderWorld() {
-		return this.player.world;
+	public World method_8260() {
+		return this.player.field_6002;
 	}
 
 	@Override

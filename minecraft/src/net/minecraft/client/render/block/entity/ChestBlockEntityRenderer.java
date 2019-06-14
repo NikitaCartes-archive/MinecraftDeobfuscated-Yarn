@@ -44,9 +44,9 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
 		BlockState blockState = blockEntity.hasWorld()
-			? blockEntity.getCachedState()
-			: Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11035);
-		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.field_12569;
+			? blockEntity.method_11010()
+			: Blocks.field_10034.method_9564().method_11657(ChestBlock.field_10768, Direction.field_11035);
+		ChestType chestType = blockState.method_11570((Property<T>)ChestBlock.field_10770) ? blockState.method_11654(ChestBlock.field_10770) : ChestType.field_12569;
 		if (chestType != ChestType.field_12574) {
 			boolean bl = chestType != ChestType.field_12569;
 			ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);
@@ -64,7 +64,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.translatef((float)d, (float)e + 1.0F, (float)f + 1.0F);
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
-			float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+			float h = ((Direction)blockState.method_11654(ChestBlock.field_10768)).asRotation();
 			if ((double)Math.abs(h) > 1.0E-5) {
 				GlStateManager.translatef(0.5F, 0.5F, 0.5F);
 				GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);

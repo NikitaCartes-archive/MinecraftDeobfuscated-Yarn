@@ -95,10 +95,10 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		this.minecraft
-			.getNetworkHandler()
+			.method_1562()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(
-					new BlockPos(commandBlockExecutor.getPos()),
+					new BlockPos(commandBlockExecutor.method_8300()),
 					this.consoleCommandTextField.getText(),
 					this.mode,
 					commandBlockExecutor.isTrackingOutput(),

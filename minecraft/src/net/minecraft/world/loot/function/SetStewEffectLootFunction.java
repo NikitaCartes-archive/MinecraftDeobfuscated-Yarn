@@ -69,7 +69,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetStewEffectLootFunction(this.getConditions(), this.map);
+			return new SetStewEffectLootFunction(this.method_526(), this.map);
 		}
 	}
 

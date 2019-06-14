@@ -83,14 +83,14 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 
 	protected static boolean isReplaceablePlant(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
-			Material material = blockState.getMaterial();
+			Material material = blockState.method_11620();
 			return material == Material.REPLACEABLE_PLANT;
 		});
 	}
 
 	protected void setToDirt(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		if (!isNaturalDirt(modifiableTestableWorld, blockPos)) {
-			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.field_10566.getDefaultState());
+			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.field_10566.method_9564());
 		}
 	}
 
@@ -99,7 +99,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
 	}
 
-	protected final void setBlockState(
+	protected final void method_12773(
 		Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
@@ -111,17 +111,19 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 
 	private void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
 		if (this.emitNeighborBlockUpdates) {
-			modifiableWorld.setBlockState(blockPos, blockState, 19);
+			modifiableWorld.method_8652(blockPos, blockState, 19);
 		} else {
-			modifiableWorld.setBlockState(blockPos, blockState, 18);
+			modifiableWorld.method_8652(blockPos, blockState, 18);
 		}
 	}
 
 	@Override
-	public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
+	public final boolean method_13151(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig
+	) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
-		boolean bl = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
+		boolean bl = this.method_12775(set, iWorld, random, blockPos, mutableIntBoundingBox);
 		if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
 			return false;
 		} else {
@@ -148,10 +150,10 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 						for (Direction direction : Direction.values()) {
 							pooledMutable.method_10114(blockPos2).method_10118(direction);
 							if (!set.contains(pooledMutable)) {
-								BlockState blockState = iWorld.getBlockState(pooledMutable);
-								if (blockState.contains(Properties.DISTANCE_1_7)) {
+								BlockState blockState = iWorld.method_8320(pooledMutable);
+								if (blockState.method_11570(Properties.field_12541)) {
 									((Set)list.get(0)).add(pooledMutable.toImmutable());
-									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
+									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.method_11657(Properties.field_12541, Integer.valueOf(1)));
 									if (mutableIntBoundingBox.contains(pooledMutable)) {
 										voxelSet.set(
 											pooledMutable.getX() - mutableIntBoundingBox.minX,
@@ -181,11 +183,11 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 						for (Direction direction2 : Direction.values()) {
 							pooledMutable.method_10114(blockPos3).method_10118(direction2);
 							if (!set2.contains(pooledMutable) && !set3.contains(pooledMutable)) {
-								BlockState blockState2 = iWorld.getBlockState(pooledMutable);
-								if (blockState2.contains(Properties.DISTANCE_1_7)) {
-									int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
+								BlockState blockState2 = iWorld.method_8320(pooledMutable);
+								if (blockState2.method_11570(Properties.field_12541)) {
+									int l = (Integer)blockState2.method_11654(Properties.field_12541);
 									if (l > k + 1) {
-										BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
+										BlockState blockState3 = blockState2.method_11657(Properties.field_12541, Integer.valueOf(k + 1));
 										this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
 										if (mutableIntBoundingBox.contains(pooledMutable)) {
 											voxelSet.set(
@@ -211,7 +213,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 		}
 	}
 
-	protected abstract boolean generate(
+	protected abstract boolean method_12775(
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	);
 }

@@ -33,7 +33,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		float f = 0.125F;
 		float g = 0.1875F;
 		float h = 0.25F;
-		this.setBoundingBox(new Box(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
+		this.method_5857(new Box(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
 		this.teleporting = true;
 	}
 
@@ -64,7 +64,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float method_18378(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return -0.0625F;
 	}
 
@@ -89,12 +89,13 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			return true;
 		} else {
 			boolean bl = false;
 			double d = 7.0;
-			List<MobEntity> list = this.world.getEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+			List<MobEntity> list = this.field_6002
+				.method_18467(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
 
 			for (MobEntity mobEntity : list) {
 				if (mobEntity.getHoldingEntity() == playerEntity) {
@@ -120,15 +121,15 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean method_6888() {
-		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.field_16584);
+		return this.field_6002.method_8320(this.blockPos).getBlock().matches(BlockTags.field_16584);
 	}
 
-	public static LeadKnotEntity getOrCreate(World world, BlockPos blockPos) {
+	public static LeadKnotEntity method_6932(World world, BlockPos blockPos) {
 		int i = blockPos.getX();
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (LeadKnotEntity leadKnotEntity : world.getEntities(
+		for (LeadKnotEntity leadKnotEntity : world.method_18467(
 			LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)
 		)) {
 			if (leadKnotEntity.getDecorationBlockPos().equals(blockPos)) {

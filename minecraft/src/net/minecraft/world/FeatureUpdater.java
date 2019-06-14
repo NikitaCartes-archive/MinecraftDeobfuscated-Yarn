@@ -48,7 +48,7 @@ public class FeatureUpdater {
 	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager, List<String> list, List<String> list2) {
 		this.field_17658 = list;
 		this.field_17659 = list2;
-		this.init(persistentStateManager);
+		this.method_14734(persistentStateManager);
 		boolean bl = false;
 
 		for (String string : this.field_17659) {
@@ -146,7 +146,7 @@ public class FeatureUpdater {
 		return compoundTag;
 	}
 
-	private void init(@Nullable PersistentStateManager persistentStateManager) {
+	private void method_14734(@Nullable PersistentStateManager persistentStateManager) {
 		if (persistentStateManager != null) {
 			for (String string : this.field_17658) {
 				CompoundTag compoundTag = new CompoundTag();
@@ -194,7 +194,7 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
+	public static FeatureUpdater method_14745(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
 		if (dimensionType == DimensionType.field_13072) {
 			return new FeatureUpdater(
 				persistentStateManager,

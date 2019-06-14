@@ -17,12 +17,12 @@ import net.minecraft.world.gen.GenerationStep;
 
 public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfig> {
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
-		.flatMap(block -> block.getStateFactory().getStates().stream())
+		.flatMap(block -> block.method_9595().getStates().stream())
 		.collect(Collectors.toList());
 	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
-	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
-	protected static final BlockState BARRIER = Blocks.field_10499.getDefaultState();
+	protected static final BlockState AIR = Blocks.field_10124.method_9564();
+	protected static final BlockState BARRIER = Blocks.field_10499.method_9564();
 
 	public DebugChunkGenerator(IWorld iWorld, BiomeSource biomeSource, DebugChunkGeneratorConfig debugChunkGeneratorConfig) {
 		super(iWorld, biomeSource, debugChunkGeneratorConfig);
@@ -33,7 +33,7 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void carve(Chunk chunk, GenerationStep.Carver carver) {
+	public void method_12108(Chunk chunk, GenerationStep.Carver carver) {
 	}
 
 	@Override
@@ -51,10 +51,10 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 			for (int l = 0; l < 16; l++) {
 				int m = (i << 4) + k;
 				int n = (j << 4) + l;
-				chunkRegion.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
+				chunkRegion.method_8652(mutable.set(m, 60, n), BARRIER, 2);
 				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {
-					chunkRegion.setBlockState(mutable.set(m, 70, n), blockState, 2);
+					chunkRegion.method_8652(mutable.set(m, 70, n), blockState, 2);
 				}
 			}
 		}

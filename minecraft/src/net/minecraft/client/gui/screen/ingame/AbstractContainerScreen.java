@@ -113,7 +113,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		GuiLighting.disable();
 		this.drawForeground(i, j);
 		GuiLighting.enableForItems();
-		PlayerInventory playerInventory = this.minecraft.player.inventory;
+		PlayerInventory playerInventory = this.minecraft.field_1724.inventory;
 		ItemStack itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
 			int p = 8;
@@ -154,7 +154,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	protected void drawMouseoverTooltip(int i, int j) {
-		if (this.minecraft.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
+		if (this.minecraft.field_1724.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
 			this.renderTooltip(this.focusedSlot.getStack(), i, j);
 		}
 	}
@@ -180,7 +180,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		ItemStack itemStack = slot.getStack();
 		boolean bl = false;
 		boolean bl2 = slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && !this.touchIsRightClickDrag;
-		ItemStack itemStack2 = this.minecraft.player.inventory.getCursorStack();
+		ItemStack itemStack2 = this.minecraft.field_1724.inventory.getCursorStack();
 		String string = null;
 		if (slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && this.touchIsRightClickDrag && !itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
@@ -210,9 +210,9 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		if (itemStack.isEmpty() && slot.doDrawHoveringEffect()) {
 			String string2 = slot.getBackgroundSprite();
 			if (string2 != null) {
-				Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
+				Sprite sprite = this.minecraft.method_1549().method_4607(string2);
 				GlStateManager.disableLighting();
-				this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+				this.minecraft.method_1531().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 				blit(i, j, this.blitOffset, 16, 16, sprite);
 				GlStateManager.enableLighting();
 				bl2 = true;
@@ -225,7 +225,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			}
 
 			GlStateManager.enableDepthTest();
-			this.itemRenderer.renderGuiItem(this.minecraft.player, itemStack, i, j);
+			this.itemRenderer.renderGuiItem(this.minecraft.field_1724, itemStack, i, j);
 			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j, string);
 		}
 
@@ -234,7 +234,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	private void calculateOffset() {
-		ItemStack itemStack = this.minecraft.player.inventory.getCursorStack();
+		ItemStack itemStack = this.minecraft.field_1724.inventory.getCursorStack();
 		if (!itemStack.isEmpty() && this.isCursorDragging) {
 			if (this.heldButtonType == 2) {
 				this.draggedStackRemainder = itemStack.getMaxCount();
@@ -273,7 +273,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		if (super.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			boolean bl = this.minecraft.options.keyPickItem.matchesMouse(i);
+			boolean bl = this.minecraft.field_1690.keyPickItem.matchesMouse(i);
 			Slot slot = this.getSlotAt(d, e);
 			long l = SystemUtil.getMeasuringTimeMs();
 			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == i;
@@ -291,13 +291,13 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					m = -999;
 				}
 
-				if (this.minecraft.options.touchscreen && bl2 && this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-					this.minecraft.openScreen(null);
+				if (this.minecraft.field_1690.touchscreen && bl2 && this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
+					this.minecraft.method_1507(null);
 					return true;
 				}
 
 				if (m != -1) {
-					if (this.minecraft.options.touchscreen) {
+					if (this.minecraft.field_1690.touchscreen) {
 						if (slot != null && slot.hasStack()) {
 							this.touchDragSlotStart = slot;
 							this.touchDragStack = ItemStack.EMPTY;
@@ -306,8 +306,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							this.touchDragSlotStart = null;
 						}
 					} else if (!this.isCursorDragging) {
-						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-							if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
+						if (this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
+							if (this.minecraft.field_1690.keyPickItem.matchesMouse(i)) {
 								this.onMouseClick(slot, m, i, SlotActionType.field_7796);
 							} else {
 								boolean bl3 = m != -999
@@ -335,7 +335,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 								this.heldButtonType = 0;
 							} else if (i == 1) {
 								this.heldButtonType = 1;
-							} else if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
+							} else if (this.minecraft.field_1690.keyPickItem.matchesMouse(i)) {
 								this.heldButtonType = 2;
 							}
 						}
@@ -357,8 +357,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
 		Slot slot = this.getSlotAt(d, e);
-		ItemStack itemStack = this.minecraft.player.inventory.getCursorStack();
-		if (this.touchDragSlotStart != null && this.minecraft.options.touchscreen) {
+		ItemStack itemStack = this.minecraft.field_1724.inventory.getCursorStack();
+		if (this.touchDragSlotStart != null && this.minecraft.field_1690.touchscreen) {
 			if (i == 0 || i == 1) {
 				if (this.touchDragStack.isEmpty()) {
 					if (slot != this.touchDragSlotStart && !this.touchDragSlotStart.getStack().isEmpty()) {
@@ -414,7 +414,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				if (!this.quickMovingStack.isEmpty()) {
 					for (Slot slot2 : this.container.slotList) {
 						if (slot2 != null
-							&& slot2.canTakeItems(this.minecraft.player)
+							&& slot2.canTakeItems(this.minecraft.field_1724)
 							&& slot2.hasStack()
 							&& slot2.inventory == slot.inventory
 							&& Container.canInsertItemIntoSlot(slot2, this.quickMovingStack, true)) {
@@ -441,7 +441,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				return true;
 			}
 
-			if (this.touchDragSlotStart != null && this.minecraft.options.touchscreen) {
+			if (this.touchDragSlotStart != null && this.minecraft.field_1690.touchscreen) {
 				if (i == 0 || i == 1) {
 					if (this.touchDragStack.isEmpty() && slot != this.touchDragSlotStart) {
 						this.touchDragStack = this.touchDragSlotStart.getStack();
@@ -451,7 +451,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					if (l != -1 && !this.touchDragStack.isEmpty() && bl2) {
 						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
 						this.onMouseClick(slot, l, 0, SlotActionType.field_7790);
-						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
+						if (this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
 							this.touchDropReturningStack = ItemStack.EMPTY;
 						} else {
 							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
@@ -480,8 +480,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				}
 
 				this.onMouseClick(null, -999, Container.packClickData(2, this.heldButtonType), SlotActionType.field_7789);
-			} else if (!this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-				if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
+			} else if (!this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
+				if (this.minecraft.field_1690.keyPickItem.matchesMouse(i)) {
 					this.onMouseClick(slot, l, i, SlotActionType.field_7796);
 				} else {
 					boolean bl2 = l != -999
@@ -498,7 +498,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			}
 		}
 
-		if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
+		if (this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
 			this.lastButtonClickTime = 0L;
 		}
 
@@ -523,7 +523,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			i = slot.id;
 		}
 
-		this.minecraft.interactionManager.method_2906(this.container.syncId, i, j, slotActionType, this.minecraft.player);
+		this.minecraft.field_1761.method_2906(this.container.syncId, i, j, slotActionType, this.minecraft.field_1724);
 	}
 
 	@Override
@@ -536,15 +536,15 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		if (super.keyPressed(i, j, k)) {
 			return true;
 		} else {
-			if (i == 256 || this.minecraft.options.keyInventory.matchesKey(i, j)) {
-				this.minecraft.player.closeContainer();
+			if (i == 256 || this.minecraft.field_1690.keyInventory.matchesKey(i, j)) {
+				this.minecraft.field_1724.closeContainer();
 			}
 
 			this.handleHotbarKeyPressed(i, j);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-				if (this.minecraft.options.keyPickItem.matchesKey(i, j)) {
+				if (this.minecraft.field_1690.keyPickItem.matchesKey(i, j)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.field_7796);
-				} else if (this.minecraft.options.keyDrop.matchesKey(i, j)) {
+				} else if (this.minecraft.field_1690.keyDrop.matchesKey(i, j)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, hasControlDown() ? 1 : 0, SlotActionType.field_7795);
 				}
 			}
@@ -554,9 +554,9 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	protected boolean handleHotbarKeyPressed(int i, int j) {
-		if (this.minecraft.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
+		if (this.minecraft.field_1724.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
 			for (int k = 0; k < 9; k++) {
-				if (this.minecraft.options.keysHotbar[k].matchesKey(i, j)) {
+				if (this.minecraft.field_1690.keysHotbar[k].matchesKey(i, j)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, SlotActionType.field_7791);
 					return true;
 				}
@@ -568,8 +568,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 	@Override
 	public void removed() {
-		if (this.minecraft.player != null) {
-			this.container.close(this.minecraft.player);
+		if (this.minecraft.field_1724 != null) {
+			this.container.close(this.minecraft.field_1724);
 		}
 	}
 
@@ -581,8 +581,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.minecraft.player.isAlive() || this.minecraft.player.removed) {
-			this.minecraft.player.closeContainer();
+		if (!this.minecraft.field_1724.isAlive() || this.minecraft.field_1724.removed) {
+			this.minecraft.field_1724.closeContainer();
 		}
 	}
 

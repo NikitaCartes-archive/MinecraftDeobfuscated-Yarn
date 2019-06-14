@@ -23,7 +23,7 @@ public class CachedBlockPosition {
 
 	public BlockState getBlockState() {
 		if (this.state == null && (this.forceLoad || this.world.isBlockLoaded(this.pos))) {
-			this.state = this.world.getBlockState(this.pos);
+			this.state = this.world.method_8320(this.pos);
 		}
 
 		return this.state;
@@ -32,7 +32,7 @@ public class CachedBlockPosition {
 	@Nullable
 	public BlockEntity getBlockEntity() {
 		if (this.blockEntity == null && !this.cachedEntity) {
-			this.blockEntity = this.world.getBlockEntity(this.pos);
+			this.blockEntity = this.world.method_8321(this.pos);
 			this.cachedEntity = true;
 		}
 

@@ -22,8 +22,8 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 
 	public EnderDragonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new DragonEntityModel(0.0F), 0.5F);
-		this.addFeature(new EnderDragonEyesFeatureRenderer(this));
-		this.addFeature(new EnderDragonDeathFeatureRenderer(this));
+		this.method_4046(new EnderDragonEyesFeatureRenderer(this));
+		this.method_4046(new EnderDragonDeathFeatureRenderer(this));
 	}
 
 	protected void method_3915(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
@@ -109,7 +109,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		GlStateManager.shadeModel(7425);
 		float t = 0.0F - ((float)k + g) * 0.01F;
 		float u = MathHelper.sqrt(o * o + p * p + q * q) / 32.0F - ((float)k + g) * 0.01F;
-		bufferBuilder.begin(5, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(5, VertexFormats.field_1575);
 		int v = 8;
 
 		for (int w = 0; w <= 8; w++) {

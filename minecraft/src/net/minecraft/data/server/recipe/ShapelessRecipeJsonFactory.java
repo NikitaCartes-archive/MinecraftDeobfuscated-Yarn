@@ -52,7 +52,7 @@ public class ShapelessRecipeJsonFactory {
 
 	public ShapelessRecipeJsonFactory input(ItemConvertible itemConvertible, int i) {
 		for (int j = 0; j < i; j++) {
-			this.input(Ingredient.ofItems(itemConvertible));
+			this.input(Ingredient.method_8091(itemConvertible));
 		}
 
 		return this;

@@ -24,13 +24,13 @@ public class HoeItem extends ToolItem {
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
 			Blocks.field_10219,
-			Blocks.field_10362.getDefaultState(),
+			Blocks.field_10362.method_9564(),
 			Blocks.field_10194,
-			Blocks.field_10362.getDefaultState(),
+			Blocks.field_10362.method_9564(),
 			Blocks.field_10566,
-			Blocks.field_10362.getDefaultState(),
+			Blocks.field_10362.method_9564(),
 			Blocks.field_10253,
-			Blocks.field_10566.getDefaultState()
+			Blocks.field_10566.method_9564()
 		)
 	);
 
@@ -41,15 +41,15 @@ public class HoeItem extends ToolItem {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
+		World world = itemUsageContext.method_8045();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getSide() != Direction.field_11033 && world.getBlockState(blockPos.up()).isAir()) {
-			BlockState blockState = (BlockState)TILLED_BLOCKS.get(world.getBlockState(blockPos).getBlock());
+		if (itemUsageContext.getSide() != Direction.field_11033 && world.method_8320(blockPos.up()).isAir()) {
+			BlockState blockState = (BlockState)TILLED_BLOCKS.get(world.method_8320(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				world.playSound(playerEntity, blockPos, SoundEvents.field_14846, SoundCategory.field_15245, 1.0F, 1.0F);
 				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState, 11);
+					world.method_8652(blockPos, blockState, 11);
 					if (playerEntity != null) {
 						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 					}

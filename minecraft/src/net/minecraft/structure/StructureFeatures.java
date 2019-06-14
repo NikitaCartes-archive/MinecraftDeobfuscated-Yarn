@@ -18,21 +18,21 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureFeatures {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<?> field_16709 = register("Mineshaft", Feature.MINESHAFT);
-	public static final StructureFeature<?> field_16706 = register("Pillager_Outpost", Feature.PILLAGER_OUTPOST);
-	public static final StructureFeature<?> field_16707 = register("Fortress", Feature.NETHER_BRIDGE);
-	public static final StructureFeature<?> field_16697 = register("Stronghold", Feature.STRONGHOLD);
-	public static final StructureFeature<?> field_16710 = register("Jungle_Pyramid", Feature.JUNGLE_TEMPLE);
-	public static final StructureFeature<?> field_16705 = register("Ocean_Ruin", Feature.OCEAN_RUIN);
-	public static final StructureFeature<?> field_16700 = register("Desert_Pyramid", Feature.DESERT_PYRAMID);
-	public static final StructureFeature<?> field_16708 = register("Igloo", Feature.IGLOO);
-	public static final StructureFeature<?> field_16703 = register("Swamp_Hut", Feature.SWAMP_HUT);
-	public static final StructureFeature<?> field_16699 = register("Monument", Feature.OCEAN_MONUMENT);
-	public static final StructureFeature<?> field_16701 = register("EndCity", Feature.END_CITY);
-	public static final StructureFeature<?> field_16704 = register("Mansion", Feature.WOODLAND_MANSION);
-	public static final StructureFeature<?> field_16711 = register("Buried_Treasure", Feature.BURIED_TREASURE);
-	public static final StructureFeature<?> field_16702 = register("Shipwreck", Feature.SHIPWRECK);
-	public static final StructureFeature<?> field_16698 = register("Village", Feature.VILLAGE);
+	public static final StructureFeature<?> field_16709 = register("Mineshaft", Feature.field_13547);
+	public static final StructureFeature<?> field_16706 = register("Pillager_Outpost", Feature.field_16655);
+	public static final StructureFeature<?> field_16707 = register("Fortress", Feature.field_13569);
+	public static final StructureFeature<?> field_16697 = register("Stronghold", Feature.field_13565);
+	public static final StructureFeature<?> field_16710 = register("Jungle_Pyramid", Feature.field_13586);
+	public static final StructureFeature<?> field_16705 = register("Ocean_Ruin", Feature.field_13536);
+	public static final StructureFeature<?> field_16700 = register("Desert_Pyramid", Feature.field_13515);
+	public static final StructureFeature<?> field_16708 = register("Igloo", Feature.field_13527);
+	public static final StructureFeature<?> field_16703 = register("Swamp_Hut", Feature.field_13520);
+	public static final StructureFeature<?> field_16699 = register("Monument", Feature.field_13588);
+	public static final StructureFeature<?> field_16701 = register("EndCity", Feature.field_13553);
+	public static final StructureFeature<?> field_16704 = register("Mansion", Feature.field_13528);
+	public static final StructureFeature<?> field_16711 = register("Buried_Treasure", Feature.field_13538);
+	public static final StructureFeature<?> field_16702 = register("Shipwreck", Feature.field_13589);
+	public static final StructureFeature<?> field_16698 = register("Village", Feature.field_13587);
 
 	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
 		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);
@@ -42,7 +42,7 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(
+	public static StructureStart method_14842(
 		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
 	) {
 		String string = compoundTag.getString("id");

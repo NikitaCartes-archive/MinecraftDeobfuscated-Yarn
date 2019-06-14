@@ -30,7 +30,7 @@ public class PhantomSpawner {
 				return 0;
 			} else {
 				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + (60 + random.nextInt(60)) * 20;
-				if (serverWorld.getAmbientDarkness() < 5 && serverWorld.dimension.hasSkyLight()) {
+				if (serverWorld.getAmbientDarkness() < 5 && serverWorld.field_9247.hasSkyLight()) {
 					return 0;
 				} else {
 					int i = 0;
@@ -38,7 +38,7 @@ public class PhantomSpawner {
 					for (PlayerEntity playerEntity : serverWorld.getPlayers()) {
 						if (!playerEntity.isSpectator()) {
 							BlockPos blockPos = new BlockPos(playerEntity);
-							if (!serverWorld.dimension.hasSkyLight() || blockPos.getY() >= serverWorld.getSeaLevel() && serverWorld.isSkyVisible(blockPos)) {
+							if (!serverWorld.field_9247.hasSkyLight() || blockPos.getY() >= serverWorld.getSeaLevel() && serverWorld.isSkyVisible(blockPos)) {
 								LocalDifficulty localDifficulty = serverWorld.getLocalDifficulty(blockPos);
 								if (localDifficulty.method_5455(random.nextFloat() * 3.0F)) {
 									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
@@ -46,16 +46,16 @@ public class PhantomSpawner {
 									int k = 24000;
 									if (random.nextInt(j) >= 72000) {
 										BlockPos blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
-										BlockState blockState = serverWorld.getBlockState(blockPos2);
-										FluidState fluidState = serverWorld.getFluidState(blockPos2);
-										if (SpawnHelper.isClearForSpawn(serverWorld, blockPos2, blockState, fluidState)) {
+										BlockState blockState = serverWorld.method_8320(blockPos2);
+										FluidState fluidState = serverWorld.method_8316(blockPos2);
+										if (SpawnHelper.method_8662(serverWorld, blockPos2, blockState, fluidState)) {
 											EntityData entityData = null;
 											int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = EntityType.field_6078.create(serverWorld);
+												PhantomEntity phantomEntity = EntityType.field_6078.method_5883(serverWorld);
 												phantomEntity.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
-												entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnType.field_16459, entityData, null);
+												entityData = phantomEntity.method_5943(serverWorld, localDifficulty, SpawnType.field_16459, entityData, null);
 												serverWorld.spawnEntity(phantomEntity);
 											}
 

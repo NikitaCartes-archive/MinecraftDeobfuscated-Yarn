@@ -36,8 +36,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10312.getDefaultState();
+	public BlockState method_7517() {
+		return Blocks.field_10312.method_9564();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	@Override
 	public World getWorld() {
-		return this.world;
+		return this.field_6002;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
+		if (!this.field_6002.isClient && this.isAlive() && this.isEnabled()) {
 			BlockPos blockPos = new BlockPos(this);
 			if (blockPos.equals(this.currentBlockPos)) {
 				this.transferCooldown--;
@@ -111,7 +111,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		if (HopperBlockEntity.extract(this)) {
 			return true;
 		} else {
-			List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
+			List<ItemEntity> list = this.field_6002.method_8390(ItemEntity.class, this.method_5829().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
 			if (!list.isEmpty()) {
 				HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
 			}
@@ -123,8 +123,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.dropItem(Blocks.field_10312);
+		if (this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.method_5706(Blocks.field_10312);
 		}
 	}
 

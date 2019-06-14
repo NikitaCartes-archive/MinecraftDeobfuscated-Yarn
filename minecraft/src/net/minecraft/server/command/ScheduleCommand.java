@@ -24,10 +24,10 @@ public class ScheduleCommand {
 				.then(
 					CommandManager.literal("function")
 						.then(
-							CommandManager.argument("function", FunctionArgumentType.function())
+							CommandManager.argument("function", FunctionArgumentType.create())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 								.then(
-									CommandManager.argument("time", TimeArgumentType.time())
+									CommandManager.argument("time", TimeArgumentType.create())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -47,20 +47,14 @@ public class ScheduleCommand {
 		} else {
 			long l = serverCommandSource.getWorld().getTime() + (long)i;
 			either.ifLeft(commandFunction -> {
-					Identifier identifier = commandFunction.getId();
-					serverCommandSource.getWorld().getLevelProperties().getScheduledEvents().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
-					serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
-				})
-				.ifRight(
-					tag -> {
-						Identifier identifier = tag.getId();
-						serverCommandSource.getWorld()
-							.getLevelProperties()
-							.getScheduledEvents()
-							.replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
-						serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
-					}
-				);
+				Identifier identifier = commandFunction.getId();
+				serverCommandSource.getWorld().method_8401().method_143().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
+			}).ifRight(tag -> {
+				Identifier identifier = tag.getId();
+				serverCommandSource.getWorld().method_8401().method_143().replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
+			});
 			return (int)Math.floorMod(l, 2147483647L);
 		}
 	}

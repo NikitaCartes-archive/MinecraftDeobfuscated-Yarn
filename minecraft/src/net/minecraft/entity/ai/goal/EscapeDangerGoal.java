@@ -29,7 +29,7 @@ public class EscapeDangerGoal extends Goal {
 			return false;
 		} else {
 			if (this.mob.isOnFire()) {
-				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
+				BlockPos blockPos = this.method_6300(this.mob.field_6002, this.mob, 5, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -43,7 +43,7 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	protected boolean findTarget() {
-		Vec3d vec3d = PathfindingUtil.findTarget(this.mob, 5, 4);
+		Vec3d vec3d = PathfindingUtil.method_6375(this.mob, 5, 4);
 		if (vec3d == null) {
 			return false;
 		} else {
@@ -65,7 +65,7 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	@Nullable
-	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int i, int j) {
+	protected BlockPos method_6300(BlockView blockView, Entity entity, int i, int j) {
 		BlockPos blockPos = new BlockPos(entity);
 		int k = blockPos.getX();
 		int l = blockPos.getY();
@@ -78,7 +78,7 @@ public class EscapeDangerGoal extends Goal {
 			for (int o = l - j; o <= l + j; o++) {
 				for (int p = m - i; p <= m + i; p++) {
 					mutable.set(n, o, p);
-					if (blockView.getFluidState(mutable).matches(FluidTags.field_15517)) {
+					if (blockView.method_8316(mutable).matches(FluidTags.field_15517)) {
 						float g = (float)((n - k) * (n - k) + (o - l) * (o - l) + (p - m) * (p - m));
 						if (g < f) {
 							f = g;

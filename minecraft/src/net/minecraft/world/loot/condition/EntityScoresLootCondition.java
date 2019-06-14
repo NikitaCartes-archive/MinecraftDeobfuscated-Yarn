@@ -30,18 +30,18 @@ public class EntityScoresLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.target.getIdentifier());
+		return ImmutableSet.of(this.target.method_315());
 	}
 
 	public boolean method_864(LootContext lootContext) {
-		Entity entity = lootContext.get(this.target.getIdentifier());
+		Entity entity = lootContext.method_296(this.target.method_315());
 		if (entity == null) {
 			return false;
 		} else {
-			Scoreboard scoreboard = entity.world.getScoreboard();
+			Scoreboard scoreboard = entity.field_6002.method_8428();
 
 			for (Entry<String, UniformLootTableRange> entry : this.scores.entrySet()) {
-				if (!this.entityScoreIsInRange(entity, scoreboard, (String)entry.getKey(), (UniformLootTableRange)entry.getValue())) {
+				if (!this.method_865(entity, scoreboard, (String)entry.getKey(), (UniformLootTableRange)entry.getValue())) {
 					return false;
 				}
 			}
@@ -50,7 +50,7 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
-	protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
+	protected boolean method_865(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
 		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 		if (scoreboardObjective == null) {
 			return false;

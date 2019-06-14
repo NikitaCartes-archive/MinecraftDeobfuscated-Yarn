@@ -76,7 +76,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	protected void drawBackground(float f, int i, int j) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.method_1531().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -99,7 +99,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		int m = (int)(41.0F * this.scrollPosition);
 		this.blit(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
 		if (this.output != null && !this.hasTooManyPatterns) {
-			this.minecraft.getTextureManager().bindTexture(this.output);
+			this.minecraft.method_1531().bindTexture(this.output);
 			blit(k + 141, l + 8, 20, 40, 1.0F, 1.0F, 20, 40, 64, 64);
 		} else if (this.hasTooManyPatterns) {
 			this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
@@ -114,7 +114,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 				int r = q - this.firstPatternButtonId;
 				int s = n + r % 4 * 14;
 				int t = o + r / 4 * 14;
-				this.minecraft.getTextureManager().bindTexture(TEXTURE);
+				this.minecraft.method_1531().bindTexture(TEXTURE);
 				int u = this.containerHeight;
 				if (q == this.container.getSelectedPattern()) {
 					u += 14;
@@ -124,18 +124,18 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 
 				this.blit(s, t, 0, u, 14, 14);
 				if (this.patternButtonTextureIds[q] != null) {
-					this.minecraft.getTextureManager().bindTexture(this.patternButtonTextureIds[q]);
+					this.minecraft.method_1531().bindTexture(this.patternButtonTextureIds[q]);
 					blit(s + 4, t + 2, 5, 10, 1.0F, 1.0F, 20, 40, 64, 64);
 				}
 			}
 		} else if (this.canApplySpecialPattern) {
 			int n = k + 60;
 			int o = l + 13;
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.minecraft.method_1531().bindTexture(TEXTURE);
 			this.blit(n, o, 0, this.containerHeight, 14, 14);
 			int p = this.container.getSelectedPattern();
 			if (this.patternButtonTextureIds[p] != null) {
-				this.minecraft.getTextureManager().bindTexture(this.patternButtonTextureIds[p]);
+				this.minecraft.method_1531().bindTexture(this.patternButtonTextureIds[p]);
 				blit(n + 4, o + 2, 5, 10, 1.0F, 1.0F, 20, 40, 64, 64);
 			}
 		}
@@ -153,9 +153,9 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 				int n = m - this.firstPatternButtonId;
 				double f = d - (double)(j + n % 4 * 14);
 				double g = e - (double)(k + n / 4 * 14);
-				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.minecraft.player, m)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
-					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
+				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.minecraft.field_1724, m)) {
+					MinecraftClient.getInstance().method_1483().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
+					this.minecraft.field_1761.clickButton(this.container.syncId, m);
 					return true;
 				}
 			}

@@ -26,7 +26,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		object -> new TranslatableText("recipe.notFound", object)
 	);
 
-	public static IdentifierArgumentType identifier() {
+	public static IdentifierArgumentType create() {
 		return new IdentifierArgumentType();
 	}
 

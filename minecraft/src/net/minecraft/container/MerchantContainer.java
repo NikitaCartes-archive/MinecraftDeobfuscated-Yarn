@@ -16,7 +16,7 @@ import net.minecraft.village.TraderInventory;
 import net.minecraft.village.TraderOfferList;
 
 public class MerchantContainer extends Container {
-	private final Trader trader;
+	private final Trader field_7863;
 	private final TraderInventory traderInventory;
 	@Environment(EnvType.CLIENT)
 	private int levelProgress;
@@ -31,7 +31,7 @@ public class MerchantContainer extends Container {
 
 	public MerchantContainer(int i, PlayerInventory playerInventory, Trader trader) {
 		super(ContainerType.field_17340, i);
-		this.trader = trader;
+		this.field_7863 = trader;
 		this.traderInventory = new TraderInventory(trader);
 		this.addSlot(new Slot(this.traderInventory, 0, 136, 37));
 		this.addSlot(new Slot(this.traderInventory, 1, 162, 37));
@@ -65,12 +65,12 @@ public class MerchantContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.trader.getCurrentCustomer() == playerEntity;
+		return this.field_7863.getCurrentCustomer() == playerEntity;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getExperience() {
-		return this.trader.getExperience();
+		return this.field_7863.getExperience();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -80,7 +80,7 @@ public class MerchantContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public void setExperienceFromServer(int i) {
-		this.trader.setExperienceFromServer(i);
+		this.field_7863.setExperienceFromServer(i);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -151,17 +151,17 @@ public class MerchantContainer extends Container {
 	}
 
 	private void method_20595() {
-		if (!this.trader.getTraderWorld().isClient) {
-			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.field_15254, 1.0F, 1.0F, false);
+		if (!this.field_7863.method_8260().isClient) {
+			Entity entity = (Entity)this.field_7863;
+			this.field_7863.method_8260().playSound(entity.x, entity.y, entity.z, this.field_7863.method_18010(), SoundCategory.field_15254, 1.0F, 1.0F, false);
 		}
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.trader.setCurrentCustomer(null);
-		if (!this.trader.getTraderWorld().isClient) {
+		this.field_7863.setCurrentCustomer(null);
+		if (!this.field_7863.method_8260().isClient) {
 			if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
 				ItemStack itemStack = this.traderInventory.removeInvStack(0);
 				if (!itemStack.isEmpty()) {
@@ -173,14 +173,14 @@ public class MerchantContainer extends Container {
 					playerEntity.dropItem(itemStack, false);
 				}
 			} else {
-				playerEntity.inventory.offerOrDrop(playerEntity.world, this.traderInventory.removeInvStack(0));
-				playerEntity.inventory.offerOrDrop(playerEntity.world, this.traderInventory.removeInvStack(1));
+				playerEntity.inventory.method_7398(playerEntity.field_6002, this.traderInventory.removeInvStack(0));
+				playerEntity.inventory.method_7398(playerEntity.field_6002, this.traderInventory.removeInvStack(1));
 			}
 		}
 	}
 
 	public void switchTo(int i) {
-		if (this.getRecipes().size() > i) {
+		if (this.method_17438().size() > i) {
 			ItemStack itemStack = this.traderInventory.getInvStack(0);
 			if (!itemStack.isEmpty()) {
 				if (!this.insertItem(itemStack, 3, 39, true)) {
@@ -200,9 +200,9 @@ public class MerchantContainer extends Container {
 			}
 
 			if (this.traderInventory.getInvStack(0).isEmpty() && this.traderInventory.getInvStack(1).isEmpty()) {
-				ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(i)).getAdjustedFirstBuyItem();
+				ItemStack itemStack3 = ((TradeOffer)this.method_17438().get(i)).getAdjustedFirstBuyItem();
 				this.autofill(0, itemStack3);
-				ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(i)).getSecondBuyItem();
+				ItemStack itemStack4 = ((TradeOffer)this.method_17438().get(i)).getSecondBuyItem();
 				this.autofill(1, itemStack4);
 			}
 		}
@@ -234,12 +234,12 @@ public class MerchantContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setOffers(TraderOfferList traderOfferList) {
-		this.trader.setOffersFromServer(traderOfferList);
+	public void method_17437(TraderOfferList traderOfferList) {
+		this.field_7863.method_8261(traderOfferList);
 	}
 
-	public TraderOfferList getRecipes() {
-		return this.trader.getOffers();
+	public TraderOfferList method_17438() {
+		return this.field_7863.method_8264();
 	}
 
 	@Environment(EnvType.CLIENT)

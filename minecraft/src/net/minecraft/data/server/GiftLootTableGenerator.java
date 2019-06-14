@@ -22,14 +22,14 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8245).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8073).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8726).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8153).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8614).setWeight(2))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8245).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8073).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8726).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8153).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8511).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8276).setWeight(10))
+						.method_351(ItemEntry.method_411(Items.field_8614).setWeight(2))
 				)
 		);
 		biConsumer.accept(
@@ -37,11 +37,11 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8283))
-						.withEntry(ItemEntry.builder(Items.field_8873))
-						.withEntry(ItemEntry.builder(Items.field_8218))
-						.withEntry(ItemEntry.builder(Items.field_8313))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8283))
+						.method_351(ItemEntry.method_411(Items.field_8873))
+						.method_351(ItemEntry.method_411(Items.field_8218))
+						.method_351(ItemEntry.method_411(Items.field_8313))
 				)
 		);
 		biConsumer.accept(
@@ -49,12 +49,12 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8752))
-						.withEntry(ItemEntry.builder(Items.field_8544))
-						.withEntry(ItemEntry.builder(Items.field_8261))
-						.withEntry(ItemEntry.builder(Items.field_8176))
-						.withEntry(ItemEntry.builder(Items.field_8347))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8752))
+						.method_351(ItemEntry.method_411(Items.field_8544))
+						.method_351(ItemEntry.method_411(Items.field_8261))
+						.method_351(ItemEntry.method_411(Items.field_8176))
+						.method_351(ItemEntry.method_411(Items.field_8347))
 				)
 		);
 		biConsumer.accept(
@@ -62,9 +62,9 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8895))
-						.withEntry(ItemEntry.builder(Items.field_8407))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8895))
+						.method_351(ItemEntry.method_411(Items.field_8407))
 				)
 		);
 		biConsumer.accept(
@@ -72,9 +72,9 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8725))
-						.withEntry(ItemEntry.builder(Items.field_8759))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8725))
+						.method_351(ItemEntry.method_411(Items.field_8759))
 				)
 		);
 		biConsumer.accept(
@@ -82,10 +82,10 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8229))
-						.withEntry(ItemEntry.builder(Items.field_8741))
-						.withEntry(ItemEntry.builder(Items.field_8423))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8229))
+						.method_351(ItemEntry.method_411(Items.field_8741))
+						.method_351(ItemEntry.method_411(Items.field_8423))
 				)
 		);
 		biConsumer.accept(
@@ -93,9 +93,9 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8429))
-						.withEntry(ItemEntry.builder(Items.field_8209))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8429))
+						.method_351(ItemEntry.method_411(Items.field_8209))
 				)
 		);
 		biConsumer.accept(
@@ -103,74 +103,74 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8107).setWeight(26))
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8107).setWeight(26))
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:swiftness"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:strength"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:healing"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:harming"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:leaping"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:regeneration"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(
 									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance")))
 								)
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(
 									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water_breathing")))
 								)
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:invisibility"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:night_vision"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:weakness"))))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+						.method_351(
+							ItemEntry.method_411(Items.field_8087)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:poison"))))
 						)
@@ -178,38 +178,38 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.field_19069,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8745)))
+			LootSupplier.builder().withPool(LootPool.builder().method_352(ConstantLootTableRange.create(1)).method_351(ItemEntry.method_411(Items.field_8745)))
 		);
 		biConsumer.accept(
 			LootTables.field_19070,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8529)))
+			LootSupplier.builder().withPool(LootPool.builder().method_352(ConstantLootTableRange.create(1)).method_351(ItemEntry.method_411(Items.field_8529)))
 		);
 		biConsumer.accept(
 			LootTables.field_19071,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
+			LootSupplier.builder().withPool(LootPool.builder().method_352(ConstantLootTableRange.create(1)).method_351(ItemEntry.method_411(Items.CLAY)))
 		);
 		biConsumer.accept(
 			LootTables.field_19072,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.WHITE_WOOL))
-						.withEntry(ItemEntry.builder(Items.ORANGE_WOOL))
-						.withEntry(ItemEntry.builder(Items.MAGENTA_WOOL))
-						.withEntry(ItemEntry.builder(Items.LIGHT_BLUE_WOOL))
-						.withEntry(ItemEntry.builder(Items.YELLOW_WOOL))
-						.withEntry(ItemEntry.builder(Items.LIME_WOOL))
-						.withEntry(ItemEntry.builder(Items.PINK_WOOL))
-						.withEntry(ItemEntry.builder(Items.GRAY_WOOL))
-						.withEntry(ItemEntry.builder(Items.LIGHT_GRAY_WOOL))
-						.withEntry(ItemEntry.builder(Items.CYAN_WOOL))
-						.withEntry(ItemEntry.builder(Items.PURPLE_WOOL))
-						.withEntry(ItemEntry.builder(Items.BLUE_WOOL))
-						.withEntry(ItemEntry.builder(Items.BROWN_WOOL))
-						.withEntry(ItemEntry.builder(Items.GREEN_WOOL))
-						.withEntry(ItemEntry.builder(Items.RED_WOOL))
-						.withEntry(ItemEntry.builder(Items.BLACK_WOOL))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.WHITE_WOOL))
+						.method_351(ItemEntry.method_411(Items.ORANGE_WOOL))
+						.method_351(ItemEntry.method_411(Items.MAGENTA_WOOL))
+						.method_351(ItemEntry.method_411(Items.LIGHT_BLUE_WOOL))
+						.method_351(ItemEntry.method_411(Items.YELLOW_WOOL))
+						.method_351(ItemEntry.method_411(Items.LIME_WOOL))
+						.method_351(ItemEntry.method_411(Items.PINK_WOOL))
+						.method_351(ItemEntry.method_411(Items.GRAY_WOOL))
+						.method_351(ItemEntry.method_411(Items.LIGHT_GRAY_WOOL))
+						.method_351(ItemEntry.method_411(Items.CYAN_WOOL))
+						.method_351(ItemEntry.method_411(Items.PURPLE_WOOL))
+						.method_351(ItemEntry.method_411(Items.BLUE_WOOL))
+						.method_351(ItemEntry.method_411(Items.BROWN_WOOL))
+						.method_351(ItemEntry.method_411(Items.GREEN_WOOL))
+						.method_351(ItemEntry.method_411(Items.RED_WOOL))
+						.method_351(ItemEntry.method_411(Items.BLACK_WOOL))
 				)
 		);
 		biConsumer.accept(
@@ -217,11 +217,11 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8387))
-						.withEntry(ItemEntry.builder(Items.field_8062))
-						.withEntry(ItemEntry.builder(Items.field_8431))
-						.withEntry(ItemEntry.builder(Items.field_8776))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8387))
+						.method_351(ItemEntry.method_411(Items.field_8062))
+						.method_351(ItemEntry.method_411(Items.field_8431))
+						.method_351(ItemEntry.method_411(Items.field_8776))
 				)
 		);
 		biConsumer.accept(
@@ -229,10 +229,10 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8062))
-						.withEntry(ItemEntry.builder(Items.field_8825))
-						.withEntry(ItemEntry.builder(Items.field_8475))
+						.method_352(ConstantLootTableRange.create(1))
+						.method_351(ItemEntry.method_411(Items.field_8062))
+						.method_351(ItemEntry.method_411(Items.field_8825))
+						.method_351(ItemEntry.method_411(Items.field_8475))
 				)
 		);
 	}

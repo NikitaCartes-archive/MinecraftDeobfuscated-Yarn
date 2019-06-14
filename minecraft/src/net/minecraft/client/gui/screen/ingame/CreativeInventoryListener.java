@@ -22,7 +22,7 @@ public class CreativeInventoryListener implements ContainerListener {
 
 	@Override
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
-		this.client.interactionManager.clickCreativeStack(itemStack, i);
+		this.client.field_1761.clickCreativeStack(itemStack, i);
 	}
 
 	@Override

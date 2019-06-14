@@ -24,7 +24,7 @@ public class ParticleArgumentType implements ArgumentType<ParticleEffect> {
 		object -> new TranslatableText("particle.notFound", object)
 	);
 
-	public static ParticleArgumentType particle() {
+	public static ParticleArgumentType create() {
 		return new ParticleArgumentType();
 	}
 

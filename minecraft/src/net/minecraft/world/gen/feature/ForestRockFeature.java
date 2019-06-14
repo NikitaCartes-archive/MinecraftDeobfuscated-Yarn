@@ -20,7 +20,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 	) {
 		while (blockPos.getY() > 3) {
 			if (!iWorld.isAir(blockPos.down())) {
-				Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+				Block block = iWorld.method_8320(blockPos.down()).getBlock();
 				if (block == Blocks.field_10219 || Block.isNaturalDirt(block) || Block.isNaturalStone(block)) {
 					break;
 				}
@@ -42,7 +42,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-k, -l, -m), blockPos.add(k, l, m))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						iWorld.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
+						iWorld.method_8652(blockPos2, boulderFeatureConfig.state, 4);
 					}
 				}
 

@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.PacketByteBuf;
 
 public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -15,19 +15,19 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	private ChatVisibility chatVisibility;
 	private boolean field_12779;
 	private int playerModelBitMask;
-	private Arm mainArm;
+	private AbsoluteHand mainHand;
 
 	public ClientSettingsC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, Arm arm) {
+	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, AbsoluteHand absoluteHand) {
 		this.language = string;
 		this.viewDistance = i;
 		this.chatVisibility = chatVisibility;
 		this.field_12779 = bl;
 		this.playerModelBitMask = j;
-		this.mainArm = arm;
+		this.mainHand = absoluteHand;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
 		this.field_12779 = packetByteBuf.readBoolean();
 		this.playerModelBitMask = packetByteBuf.readUnsignedByte();
-		this.mainArm = packetByteBuf.readEnumConstant(Arm.class);
+		this.mainHand = packetByteBuf.readEnumConstant(AbsoluteHand.class);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		packetByteBuf.writeEnumConstant(this.chatVisibility);
 		packetByteBuf.writeBoolean(this.field_12779);
 		packetByteBuf.writeByte(this.playerModelBitMask);
-		packetByteBuf.writeEnumConstant(this.mainArm);
+		packetByteBuf.writeEnumConstant(this.mainHand);
 	}
 
 	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
@@ -70,7 +70,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.playerModelBitMask;
 	}
 
-	public Arm getMainArm() {
-		return this.mainArm;
+	public AbsoluteHand getMainHand() {
+		return this.mainHand;
 	}
 }

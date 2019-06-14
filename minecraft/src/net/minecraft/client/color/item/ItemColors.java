@@ -70,7 +70,7 @@ public class ItemColors {
 
 		itemColors.register(
 			(itemStack, i) -> {
-				BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().getDefaultState();
+				BlockState blockState = ((BlockItem)itemStack.getItem()).method_7711().method_9564();
 				return blockColors.getColorMultiplier(blockState, null, null, i);
 			},
 			Blocks.field_10219,

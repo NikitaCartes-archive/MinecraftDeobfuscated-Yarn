@@ -52,7 +52,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new EnchantWithLevelsLootFunction(this.getConditions(), this.range, this.treasureEnchantmentsAllowed);
+			return new EnchantWithLevelsLootFunction(this.method_526(), this.range, this.treasureEnchantmentsAllowed);
 		}
 	}
 

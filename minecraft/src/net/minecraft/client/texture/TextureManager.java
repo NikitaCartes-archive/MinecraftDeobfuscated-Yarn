@@ -43,14 +43,14 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		Texture texture = (Texture)this.textures.get(identifier);
 		if (texture == null) {
 			texture = new ResourceTexture(identifier);
-			this.registerTexture(identifier, texture);
+			this.method_4616(identifier, texture);
 		}
 
 		texture.bindTexture();
 	}
 
-	public boolean registerTextureUpdateable(Identifier identifier, TickableTexture tickableTexture) {
-		if (this.registerTexture(identifier, tickableTexture)) {
+	public boolean method_4620(Identifier identifier, TickableTexture tickableTexture) {
+		if (this.method_4616(identifier, tickableTexture)) {
 			this.tickListeners.add(tickableTexture);
 			return true;
 		} else {
@@ -58,7 +58,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		}
 	}
 
-	public boolean registerTexture(Identifier identifier, Texture texture) {
+	public boolean method_4616(Identifier identifier, Texture texture) {
 		boolean bl = true;
 
 		try {
@@ -83,7 +83,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return bl;
 	}
 
-	public Texture getTexture(Identifier identifier) {
+	public Texture method_4619(Identifier identifier) {
 		return (Texture)this.textures.get(identifier);
 	}
 
@@ -97,7 +97,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 
 		this.dynamicIdCounters.put(string, integer);
 		Identifier identifier = new Identifier(String.format("dynamic/%s_%d", string, integer));
-		this.registerTexture(identifier, nativeImageBackedTexture);
+		this.method_4616(identifier, nativeImageBackedTexture);
 		return identifier;
 	}
 
@@ -105,7 +105,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		if (!this.textures.containsKey(identifier)) {
 			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
 			this.textures.put(identifier, asyncTexture);
-			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
+			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.method_4616(identifier, asyncTexture), MinecraftClient.getInstance());
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
@@ -119,7 +119,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	}
 
 	public void destroyTexture(Identifier identifier) {
-		Texture texture = this.getTexture(identifier);
+		Texture texture = this.method_4619(identifier);
 		if (texture != null) {
 			TextureUtil.releaseTextureId(texture.getGlId());
 		}
@@ -134,7 +134,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		Executor executor,
 		Executor executor2
 	) {
-		return CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
+		return CompletableFuture.allOf(TitleScreen.method_18105(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();

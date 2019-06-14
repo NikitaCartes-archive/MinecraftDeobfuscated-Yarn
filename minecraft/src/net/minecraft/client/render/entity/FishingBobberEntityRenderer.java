@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -44,7 +44,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishingBobberEntity));
 			}
 
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+			bufferBuilder.method_1328(7, VertexFormats.field_1589);
 			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
@@ -57,7 +57,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
-			int l = playerEntity.getMainArm() == Arm.field_6183 ? 1 : -1;
+			int l = playerEntity.getMainHand() == AbsoluteHand.field_6183 ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (itemStack.getItem() != Items.field_8378) {
 				l = -l;
@@ -74,7 +74,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double u;
 			double v;
 			double w;
-			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().field_1724) {
 				double x = this.renderManager.gameOptions.fov;
 				x /= 100.0;
 				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);
@@ -101,7 +101,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double ac = (double)((float)(v - z));
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
-			bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(3, VertexFormats.field_1576);
 			int ad = 16;
 
 			for (int ae = 0; ae <= 16; ae++) {

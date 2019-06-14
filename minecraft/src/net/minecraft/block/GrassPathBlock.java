@@ -12,55 +12,51 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GrassPathBlock extends Block {
-	protected static final VoxelShape SHAPE = FarmlandBlock.SHAPE;
+	protected static final VoxelShape field_11106 = FarmlandBlock.field_11010;
 
 	protected GrassPathBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean method_9526(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			? Block.pushEntitiesUpBeforeBlockChange(
-				this.getDefaultState(), Blocks.field_10566.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
-			)
-			: super.getPlacementState(itemPlacementContext);
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return !this.method_9564().canPlaceAt(itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos())
+			? Block.method_9582(this.method_9564(), Blocks.field_10566.method_9564(), itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos())
+			: super.method_9605(itemPlacementContext);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		if (direction == Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+			iWorld.method_8397().schedule(blockPos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		FarmlandBlock.setToDirt(blockState, world, blockPos);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		FarmlandBlock.method_10125(blockState, world, blockPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState2 = viewableWorld.method_8320(blockPos.up());
+		return !blockState2.method_11620().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return field_11106;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

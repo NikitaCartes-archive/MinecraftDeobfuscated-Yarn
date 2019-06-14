@@ -14,7 +14,7 @@ public class TellRawCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("message", TextArgumentType.text())
+							CommandManager.argument("message", TextArgumentType.create())
 								.executes(
 									commandContext -> {
 										int i = 0;

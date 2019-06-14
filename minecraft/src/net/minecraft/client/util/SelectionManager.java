@@ -23,7 +23,7 @@ public class SelectionManager {
 
 	public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
 		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.textRenderer;
+		this.fontRenderer = minecraftClient.field_1772;
 		this.stringSupplier = supplier;
 		this.stringConsumer = consumer;
 		this.field_16455 = i;

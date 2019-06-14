@@ -56,7 +56,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 		Chunk.getList(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
 	}
 
@@ -66,7 +66,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(scheduledTick -> this.schedule(scheduledTick.pos, (T)scheduledTick.getObject(), 0, scheduledTick.priority));
+	public void method_20470(Stream<ScheduledTick<T>> stream) {
+		stream.forEach(scheduledTick -> this.method_8675(scheduledTick.pos, (T)scheduledTick.getObject(), 0, scheduledTick.field_9320));
 	}
 }

@@ -20,10 +20,10 @@ public class ItemPickupParticle extends Particle {
 	private int field_3826;
 	private final int field_3825;
 	private final float field_3822;
-	private final EntityRenderDispatcher field_3824 = MinecraftClient.getInstance().getEntityRenderManager();
+	private final EntityRenderDispatcher field_3824 = MinecraftClient.getInstance().method_1561();
 
 	public ItemPickupParticle(World world, Entity entity, Entity entity2, float f) {
-		this(world, entity, entity2, f, entity.getVelocity());
+		this(world, entity, entity2, f, entity.method_18798());
 	}
 
 	private ItemPickupParticle(World world, Entity entity, Entity entity2, float f, Vec3d vec3d) {
@@ -35,7 +35,7 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 

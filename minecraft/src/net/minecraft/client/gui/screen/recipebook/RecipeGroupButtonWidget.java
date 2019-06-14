@@ -26,11 +26,11 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	public void checkForNewRecipes(MinecraftClient minecraftClient) {
-		ClientRecipeBook clientRecipeBook = minecraftClient.player.getRecipeBook();
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (minecraftClient.player.container instanceof CraftingContainer) {
+		ClientRecipeBook clientRecipeBook = minecraftClient.field_1724.getRecipeBook();
+		List<RecipeResultCollection> list = clientRecipeBook.method_1396(this.category);
+		if (minecraftClient.field_1724.container instanceof CraftingContainer) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.field_1724.container))) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;
@@ -51,7 +51,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(this.texture);
+		minecraftClient.method_1531().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
 		int k = this.u;
 		int l = this.v;
@@ -73,7 +73,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		GlStateManager.enableDepthTest();
 		GuiLighting.enableForItems();
 		GlStateManager.disableLighting();
-		this.method_2621(minecraftClient.getItemRenderer());
+		this.method_2621(minecraftClient.method_1480());
 		GlStateManager.enableLighting();
 		GuiLighting.disable();
 		if (this.bounce > 0.0F) {
@@ -98,7 +98,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	public boolean hasKnownRecipes(ClientRecipeBook clientRecipeBook) {
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
+		List<RecipeResultCollection> list = clientRecipeBook.method_1396(this.category);
 		this.visible = false;
 		if (list != null) {
 			for (RecipeResultCollection recipeResultCollection : list) {

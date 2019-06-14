@@ -20,6 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterest;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
@@ -31,7 +32,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public RaidManager(ServerWorld serverWorld) {
-		super(nameFor(serverWorld.dimension));
+		super(method_16533(serverWorld.field_9247));
 		this.world = serverWorld;
 		this.nextAvailableId = 1;
 		this.markDirty();
@@ -47,6 +48,10 @@ public class RaidManager extends PersistentState {
 
 		while (iterator.hasNext()) {
 			Raid raid = (Raid)iterator.next();
+			if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+				raid.invalidate();
+			}
+
 			if (raid.hasStopped()) {
 				iterator.remove();
 				this.markDirty();
@@ -63,11 +68,11 @@ public class RaidManager extends PersistentState {
 	}
 
 	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
-		return raiderEntity != null && raid != null && raid.getWorld() != null
+		return raiderEntity != null && raid != null && raid.method_16831() != null
 			? raiderEntity.isAlive()
 				&& raiderEntity.canJoinRaid()
 				&& raiderEntity.getDespawnCounter() <= 2400
-				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
+				&& raiderEntity.field_6002.method_8597().method_12460() == raid.method_16831().method_8597().method_12460()
 			: false;
 	}
 
@@ -75,8 +80,10 @@ public class RaidManager extends PersistentState {
 	public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
 		if (serverPlayerEntity.isSpectator()) {
 			return null;
+		} else if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+			return null;
 		} else {
-			DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();
+			DimensionType dimensionType = serverPlayerEntity.field_6002.method_8597().method_12460();
 			if (dimensionType == DimensionType.field_13076) {
 				return null;
 			} else {
@@ -166,8 +173,8 @@ public class RaidManager extends PersistentState {
 		return compoundTag;
 	}
 
-	public static String nameFor(Dimension dimension) {
-		return "raids" + dimension.getType().getSuffix();
+	public static String method_16533(Dimension dimension) {
+		return "raids" + dimension.method_12460().getSuffix();
 	}
 
 	private int nextId() {

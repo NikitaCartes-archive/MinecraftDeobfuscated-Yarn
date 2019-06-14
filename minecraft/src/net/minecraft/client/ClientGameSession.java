@@ -21,7 +21,7 @@ public class ClientGameSession implements GameSession {
 		this.playerCount = clientPlayNetworkHandler.getPlayerList().size();
 		this.remoteServer = !clientPlayNetworkHandler.getClientConnection().isLocal();
 		this.difficulty = clientWorld.getDifficulty().getName();
-		PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(clientPlayerEntity.getUuid());
+		PlayerListEntry playerListEntry = clientPlayNetworkHandler.method_2871(clientPlayerEntity.getUuid());
 		if (playerListEntry != null) {
 			this.gameMode = playerListEntry.getGameMode().getName();
 		} else {

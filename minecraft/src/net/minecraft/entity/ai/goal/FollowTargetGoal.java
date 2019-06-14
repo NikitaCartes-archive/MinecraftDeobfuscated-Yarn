@@ -42,26 +42,26 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		}
 	}
 
-	protected Box getSearchBox(double d) {
-		return this.mob.getBoundingBox().expand(d, 4.0, d);
+	protected Box method_6321(double d) {
+		return this.mob.method_5829().expand(d, 4.0, d);
 	}
 
 	protected void findClosestTarget() {
 		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
 			this.targetEntity = this.mob
-				.world
-				.getClosestEntity(
+				.field_6002
+				.method_18465(
 					this.targetClass,
 					this.targetPredicate,
 					this.mob,
 					this.mob.x,
 					this.mob.y + (double)this.mob.getStandingEyeHeight(),
 					this.mob.z,
-					this.getSearchBox(this.getFollowRange())
+					this.method_6321(this.getFollowRange())
 				);
 		} else {
 			this.targetEntity = this.mob
-				.world
+				.field_6002
 				.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
 		}
 	}

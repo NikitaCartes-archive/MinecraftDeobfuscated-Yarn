@@ -45,8 +45,8 @@ public abstract class TrackTargetGoal extends Goal {
 		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else {
-			AbstractTeam abstractTeam = this.mob.getScoreboardTeam();
-			AbstractTeam abstractTeam2 = livingEntity.getScoreboardTeam();
+			AbstractTeam abstractTeam = this.mob.method_5781();
+			AbstractTeam abstractTeam2 = livingEntity.method_5781();
 			if (abstractTeam != null && abstractTeam2 == abstractTeam) {
 				return false;
 			} else {
@@ -119,7 +119,7 @@ public abstract class TrackTargetGoal extends Goal {
 
 	private boolean canNavigateToEntity(LivingEntity livingEntity) {
 		this.checkCanNavigateCooldown = 10 + this.mob.getRand().nextInt(5);
-		Path path = this.mob.getNavigation().findPathTo(livingEntity);
+		Path path = this.mob.getNavigation().method_6349(livingEntity);
 		if (path == null) {
 			return false;
 		} else {

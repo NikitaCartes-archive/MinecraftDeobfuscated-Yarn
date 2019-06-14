@@ -11,15 +11,15 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
+	private static final BlockState LOG = Blocks.field_10037.method_9564();
+	private static final BlockState LEAVES = Blocks.field_9988.method_9564();
 
 	public PineTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function, false);
 	}
 
 	@Override
-	public boolean generate(
+	public boolean method_12775(
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		int i = random.nextInt(5) + 7;
@@ -65,7 +65,7 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 							if (Math.abs(o) != m || Math.abs(r) != m || m <= 0) {
 								BlockPos blockPos2 = new BlockPos(q, n, px);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
+									this.method_12773(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
 								}
 							}
 						}
@@ -80,7 +80,7 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 				for (int n = 0; n < i - 1; n++) {
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(n))) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), LOG, mutableIntBoundingBox);
+						this.method_12773(set, modifiableTestableWorld, blockPos.up(n), LOG, mutableIntBoundingBox);
 					}
 				}
 

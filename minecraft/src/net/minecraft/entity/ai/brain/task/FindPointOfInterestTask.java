@@ -62,10 +62,10 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 					blockPos2 = blockPosx;
 				}
 
-				if (mobEntityWithAi.getBoundingBox().expand(2.0).contains(new Vec3d(blockPos2))) {
+				if (mobEntityWithAi.method_5829().expand(2.0).method_1006(new Vec3d(blockPos2))) {
 					return true;
 				} else {
-					Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
+					Path path = mobEntityWithAi.getNavigation().method_6348(blockPos2);
 					boolean bl = path != null && path.method_19313(blockPos2);
 					if (!bl) {
 						this.field_19289.put(lx, this.lastRunTime + 40L);
@@ -78,7 +78,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 		Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(this.poiType.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48);
 		if (optional.isPresent()) {
 			BlockPos blockPos = (BlockPos)optional.get();
-			livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
+			livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.method_8597().method_12460(), blockPos));
 			DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
 		} else if (this.field_19290 < 5) {
 			this.field_19289.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastRunTime);
@@ -88,6 +88,6 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 	private void method_20496(ServerWorld serverWorld, BlockPos.Mutable mutable) {
 		do {
 			mutable.setOffset(Direction.field_11033);
-		} while (serverWorld.getBlockState(mutable).getCollisionShape(serverWorld, mutable).isEmpty() && mutable.getY() > 0);
+		} while (serverWorld.method_8320(mutable).method_11628(serverWorld, mutable).isEmpty() && mutable.getY() > 0);
 	}
 }

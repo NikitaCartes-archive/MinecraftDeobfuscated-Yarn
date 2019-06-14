@@ -105,7 +105,7 @@ public class OceanRuinGenerator {
 		return BIG_WARM_RUINS[random.nextInt(BIG_WARM_RUINS.length)];
 	}
 
-	public static void addPieces(
+	public static void method_14827(
 		StructureManager structureManager,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
@@ -213,7 +213,7 @@ public class OceanRuinGenerator {
 			this.integrity = f;
 			this.biomeType = biomeType;
 			this.large = bl;
-			this.initialize(structureManager);
+			this.method_14828(structureManager);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
@@ -223,16 +223,16 @@ public class OceanRuinGenerator {
 			this.integrity = compoundTag.getFloat("Integrity");
 			this.biomeType = OceanRuinFeature.BiomeType.valueOf(compoundTag.getString("BiomeType"));
 			this.large = compoundTag.getBoolean("IsLarge");
-			this.initialize(structureManager);
+			this.method_14828(structureManager);
 		}
 
-		private void initialize(StructureManager structureManager) {
-			Structure structure = structureManager.getStructureOrBlank(this.template);
+		private void method_14828(StructureManager structureManager) {
+			Structure structure = structureManager.method_15091(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.field_11302)
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			this.setStructureData(structure, this.pos, structurePlacementData);
+				.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+			this.method_15027(structure, this.pos, structurePlacementData);
 		}
 
 		@Override
@@ -248,39 +248,39 @@ public class OceanRuinGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
 			if ("chest".equals(string)) {
-				iWorld.setBlockState(
+				iWorld.method_8652(
 					blockPos,
-					Blocks.field_10034.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(iWorld.getFluidState(blockPos).matches(FluidTags.field_15517))),
+					Blocks.field_10034.method_9564().method_11657(ChestBlock.field_10772, Boolean.valueOf(iWorld.method_8316(blockPos).matches(FluidTags.field_15517))),
 					2
 				);
-				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+				BlockEntity blockEntity = iWorld.method_8321(blockPos);
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.field_300 : LootTables.field_397, random.nextLong());
 				}
 			} else if ("drowned".equals(string)) {
-				DrownedEntity drownedEntity = EntityType.field_6123.create(iWorld.getWorld());
+				DrownedEntity drownedEntity = EntityType.field_6123.method_5883(iWorld.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				drownedEntity.initialize(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
+				drownedEntity.method_5943(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(drownedEntity);
 				if (blockPos.getY() > iWorld.getSeaLevel()) {
-					iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
+					iWorld.method_8652(blockPos, Blocks.field_10124.method_9564(), 2);
 				} else {
-					iWorld.setBlockState(blockPos, Blocks.field_10382.getDefaultState(), 2);
+					iWorld.method_8652(blockPos, Blocks.field_10382.method_9564(), 2);
 				}
 			}
 		}
 
 		@Override
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			this.placementData
+			this.field_15434
 				.clearProcessors()
-				.addProcessor(new BlockRotStructureProcessor(this.integrity))
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+				.method_16184(new BlockRotStructureProcessor(this.integrity))
+				.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			int i = iWorld.getTop(Heightmap.Type.field_13195, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = Structure.method_15168(
-					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.field_11302, this.rotation, BlockPos.ORIGIN
+					new BlockPos(this.field_15433.getSize().getX() - 1, 0, this.field_15433.getSize().getZ() - 1), BlockMirror.field_11302, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, iWorld, blockPos), this.pos.getZ());
@@ -298,14 +298,14 @@ public class OceanRuinGenerator {
 				int n = blockPos3.getZ();
 				int o = blockPos.getY() - 1;
 				BlockPos.Mutable mutable = new BlockPos.Mutable(m, o, n);
-				BlockState blockState = blockView.getBlockState(mutable);
+				BlockState blockState = blockView.method_8320(mutable);
 
-				for (FluidState fluidState = blockView.getFluidState(mutable);
+				for (FluidState fluidState = blockView.method_8316(mutable);
 					(blockState.isAir() || fluidState.matches(FluidTags.field_15517) || blockState.getBlock().matches(BlockTags.field_15467)) && o > 1;
-					fluidState = blockView.getFluidState(mutable)
+					fluidState = blockView.method_8316(mutable)
 				) {
 					mutable.set(m, --o, n);
-					blockState = blockView.getBlockState(mutable);
+					blockState = blockView.method_8320(mutable);
 				}
 
 				j = Math.min(j, o);

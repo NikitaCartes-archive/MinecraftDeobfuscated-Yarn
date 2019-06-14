@@ -8,31 +8,31 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class ScoreboardObjective {
-	private final Scoreboard scoreboard;
+	private final Scoreboard field_1404;
 	private final String name;
-	private final ScoreboardCriterion criterion;
+	private final ScoreboardCriterion field_1406;
 	private Text displayName;
 	private ScoreboardCriterion.RenderType renderType;
 
 	public ScoreboardObjective(Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
-		this.scoreboard = scoreboard;
+		this.field_1404 = scoreboard;
 		this.name = string;
-		this.criterion = scoreboardCriterion;
+		this.field_1406 = scoreboardCriterion;
 		this.displayName = text;
 		this.renderType = renderType;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Scoreboard getScoreboard() {
-		return this.scoreboard;
+	public Scoreboard method_1117() {
+		return this.field_1404;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public ScoreboardCriterion getCriterion() {
-		return this.criterion;
+	public ScoreboardCriterion method_1116() {
+		return this.field_1406;
 	}
 
 	public Text getDisplayName() {
@@ -47,7 +47,7 @@ public class ScoreboardObjective {
 
 	public void setDisplayName(Text text) {
 		this.displayName = text;
-		this.scoreboard.updateExistingObjective(this);
+		this.field_1404.updateExistingObjective(this);
 	}
 
 	public ScoreboardCriterion.RenderType getRenderType() {
@@ -56,6 +56,6 @@ public class ScoreboardObjective {
 
 	public void setRenderType(ScoreboardCriterion.RenderType renderType) {
 		this.renderType = renderType;
-		this.scoreboard.updateExistingObjective(this);
+		this.field_1404.updateExistingObjective(this);
 	}
 }

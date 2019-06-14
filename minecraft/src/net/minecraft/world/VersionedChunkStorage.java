@@ -16,24 +16,24 @@ import net.minecraft.world.storage.RegionBasedStorage;
 public class VersionedChunkStorage extends RegionBasedStorage {
 	protected final DataFixer dataFixer;
 	@Nullable
-	private FeatureUpdater featureUpdater;
+	private FeatureUpdater field_17654;
 
 	public VersionedChunkStorage(File file, DataFixer dataFixer) {
 		super(file);
 		this.dataFixer = dataFixer;
 	}
 
-	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
+	public CompoundTag method_17907(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
 		int i = getDataVersion(compoundTag);
 		int j = 1493;
 		if (i < 1493) {
 			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.field_19214, compoundTag, i, 1493);
 			if (compoundTag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(dimensionType, (PersistentStateManager)supplier.get());
+				if (this.field_17654 == null) {
+					this.field_17654 = FeatureUpdater.method_14745(dimensionType, (PersistentStateManager)supplier.get());
 				}
 
-				compoundTag = this.featureUpdater.getUpdatedReferences(compoundTag);
+				compoundTag = this.field_17654.getUpdatedReferences(compoundTag);
 			}
 		}
 
@@ -52,8 +52,8 @@ public class VersionedChunkStorage extends RegionBasedStorage {
 	@Override
 	public void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
 		super.setTagAt(chunkPos, compoundTag);
-		if (this.featureUpdater != null) {
-			this.featureUpdater.markResolved(chunkPos.toLong());
+		if (this.field_17654 != null) {
+			this.field_17654.markResolved(chunkPos.toLong());
 		}
 	}
 }

@@ -21,7 +21,7 @@ public class RecipeToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager toastManager, long l) {
+	public Toast.Visibility method_1986(ToastManager toastManager, long l) {
 		if (this.justUpdated) {
 			this.startTime = l;
 			this.justUpdated = false;
@@ -30,19 +30,19 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.field_2209;
 		} else {
-			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+			toastManager.getGame().method_1531().bindTexture(TOASTS_TEX);
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 			toastManager.blit(0, 0, 0, 32, 160, 32);
-			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
-			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
+			toastManager.getGame().field_1772.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
+			toastManager.getGame().field_1772.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
 			GuiLighting.enableForItems();
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.6F, 0.6F, 1.0F);
-			toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
+			toastManager.getGame().method_1480().renderGuiItem(null, itemStack, 3, 3);
 			GlStateManager.popMatrix();
-			toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
+			toastManager.getGame().method_1480().renderGuiItem(null, recipe.getOutput(), 8, 8);
 			return l - this.startTime >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		}
 	}
@@ -53,7 +53,7 @@ public class RecipeToast implements Toast {
 		}
 	}
 
-	public static void show(ToastManager toastManager, Recipe<?> recipe) {
+	public static void method_1985(ToastManager toastManager, Recipe<?> recipe) {
 		RecipeToast recipeToast = toastManager.getToast(RecipeToast.class, field_2208);
 		if (recipeToast == null) {
 			toastManager.add(new RecipeToast(recipe));

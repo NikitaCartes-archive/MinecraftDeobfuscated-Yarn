@@ -31,7 +31,7 @@ public class ChunkRenderData {
 	private final boolean[] initialized = new boolean[BlockRenderLayer.values().length];
 	private boolean empty = true;
 	private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
-	private ChunkOcclusionGraph occlusionGraph = new ChunkOcclusionGraph();
+	private ChunkOcclusionGraph field_4455 = new ChunkOcclusionGraph();
 	private BufferBuilder.State bufferState;
 
 	public boolean isEmpty() {
@@ -64,11 +64,11 @@ public class ChunkRenderData {
 	}
 
 	public boolean isVisibleThrough(Direction direction, Direction direction2) {
-		return this.occlusionGraph.isVisibleThrough(direction, direction2);
+		return this.field_4455.isVisibleThrough(direction, direction2);
 	}
 
-	public void setOcclusionGraph(ChunkOcclusionGraph chunkOcclusionGraph) {
-		this.occlusionGraph = chunkOcclusionGraph;
+	public void method_3640(ChunkOcclusionGraph chunkOcclusionGraph) {
+		this.field_4455 = chunkOcclusionGraph;
 	}
 
 	public BufferBuilder.State getBufferState() {

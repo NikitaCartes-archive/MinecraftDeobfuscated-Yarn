@@ -26,12 +26,12 @@ import net.minecraft.world.World;
 
 public abstract class LavaFluid extends BaseFluid {
 	@Override
-	public Fluid getFlowing() {
+	public Fluid method_15750() {
 		return Fluids.FLOWING_LAVA;
 	}
 
 	@Override
-	public Fluid getStill() {
+	public Fluid method_15751() {
 		return Fluids.LAVA;
 	}
 
@@ -48,9 +48,9 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	public void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 		BlockPos blockPos2 = blockPos.up();
-		if (world.getBlockState(blockPos2).isAir() && !world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
+		if (world.method_8320(blockPos2).isAir() && !world.method_8320(blockPos2).isFullOpaque(world, blockPos2)) {
 			if (random.nextInt(100) == 0) {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)(blockPos.getY() + 1);
@@ -75,7 +75,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	public void method_15792(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 		if (world.getGameRules().getBoolean(GameRules.field_19387)) {
 			int i = random.nextInt(3);
 			if (i > 0) {
@@ -87,13 +87,13 @@ public abstract class LavaFluid extends BaseFluid {
 						return;
 					}
 
-					BlockState blockState = world.getBlockState(blockPos2);
+					BlockState blockState = world.method_8320(blockPos2);
 					if (blockState.isAir()) {
 						if (this.method_15819(world, blockPos2)) {
-							world.setBlockState(blockPos2, Blocks.field_10036.getDefaultState());
+							world.method_8501(blockPos2, Blocks.field_10036.method_9564());
 							return;
 						}
-					} else if (blockState.getMaterial().blocksMovement()) {
+					} else if (blockState.method_11620().blocksMovement()) {
 						return;
 					}
 				}
@@ -105,7 +105,7 @@ public abstract class LavaFluid extends BaseFluid {
 					}
 
 					if (world.isAir(blockPos3.up()) && this.method_15817(world, blockPos3)) {
-						world.setBlockState(blockPos3.up(), Blocks.field_10036.getDefaultState());
+						world.method_8501(blockPos3.up(), Blocks.field_10036.method_9564());
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public abstract class LavaFluid extends BaseFluid {
 	private boolean method_15817(ViewableWorld viewableWorld, BlockPos blockPos) {
 		return blockPos.getY() >= 0 && blockPos.getY() < 256 && !viewableWorld.isBlockLoaded(blockPos)
 			? false
-			: viewableWorld.getBlockState(blockPos).getMaterial().isBurnable();
+			: viewableWorld.method_8320(blockPos).method_11620().isBurnable();
 	}
 
 	@Nullable
@@ -142,12 +142,12 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int method_15733(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().doesWaterVaporize() ? 4 : 2;
+		return viewableWorld.method_8597().doesWaterVaporize() ? 4 : 2;
 	}
 
 	@Override
-	public BlockState toBlockState(FluidState fluidState) {
-		return Blocks.field_10164.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(fluidState)));
+	public BlockState method_15790(FluidState fluidState) {
+		return Blocks.field_10164.method_9564().method_11657(FluidBlock.field_11278, Integer.valueOf(method_15741(fluidState)));
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().doesWaterVaporize() ? 1 : 2;
+		return viewableWorld.method_8597().doesWaterVaporize() ? 1 : 2;
 	}
 
 	@Override
@@ -167,16 +167,16 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int getTickRate(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().isNether() ? 10 : 30;
+		return viewableWorld.method_8597().isNether() ? 10 : 30;
 	}
 
 	@Override
-	public int getNextTickDelay(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
+	public int method_15753(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
 		int i = this.getTickRate(world);
 		if (!fluidState.isEmpty()
 			&& !fluidState2.isEmpty()
-			&& !(Boolean)fluidState.get(FALLING)
-			&& !(Boolean)fluidState2.get(FALLING)
+			&& !(Boolean)fluidState.method_11654(FALLING)
+			&& !(Boolean)fluidState2.method_11654(FALLING)
 			&& fluidState2.getHeight(world, blockPos) > fluidState.getHeight(world, blockPos)
 			&& world.getRandom().nextInt(4) != 0) {
 			i *= 4;
@@ -195,12 +195,12 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	protected void flow(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
+	protected void method_15745(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
 		if (direction == Direction.field_11033) {
-			FluidState fluidState2 = iWorld.getFluidState(blockPos);
+			FluidState fluidState2 = iWorld.method_8316(blockPos);
 			if (this.matches(FluidTags.field_15518) && fluidState2.matches(FluidTags.field_15517)) {
 				if (blockState.getBlock() instanceof FluidBlock) {
-					iWorld.setBlockState(blockPos, Blocks.field_10340.getDefaultState(), 3);
+					iWorld.method_8652(blockPos, Blocks.field_10340.method_9564(), 3);
 				}
 
 				this.method_15818(iWorld, blockPos);
@@ -208,7 +208,7 @@ public abstract class LavaFluid extends BaseFluid {
 			}
 		}
 
-		super.flow(iWorld, blockPos, blockState, direction, fluidState);
+		super.method_15745(iWorld, blockPos, blockState, direction, fluidState);
 	}
 
 	@Override
@@ -225,28 +225,28 @@ public abstract class LavaFluid extends BaseFluid {
 		@Override
 		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
-			builder.add(LEVEL);
+			builder.method_11667(LEVEL);
 		}
 
 		@Override
-		public int getLevel(FluidState fluidState) {
-			return (Integer)fluidState.get(LEVEL);
+		public int method_15779(FluidState fluidState) {
+			return (Integer)fluidState.method_11654(LEVEL);
 		}
 
 		@Override
-		public boolean isStill(FluidState fluidState) {
+		public boolean method_15793(FluidState fluidState) {
 			return false;
 		}
 	}
 
 	public static class Still extends LavaFluid {
 		@Override
-		public int getLevel(FluidState fluidState) {
+		public int method_15779(FluidState fluidState) {
 			return 8;
 		}
 
 		@Override
-		public boolean isStill(FluidState fluidState) {
+		public boolean method_15793(FluidState fluidState) {
 			return true;
 		}
 	}

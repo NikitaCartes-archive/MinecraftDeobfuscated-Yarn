@@ -121,7 +121,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler<Optional<BlockState>>() {
 		public void method_12734(PacketByteBuf packetByteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
-				packetByteBuf.writeVarInt(Block.getRawIdFromState((BlockState)optional.get()));
+				packetByteBuf.writeVarInt(Block.method_9507((BlockState)optional.get()));
 			} else {
 				packetByteBuf.writeVarInt(0);
 			}
@@ -129,7 +129,7 @@ public class TrackedDataHandlerRegistry {
 
 		public Optional<BlockState> method_12735(PacketByteBuf packetByteBuf) {
 			int i = packetByteBuf.readVarInt();
-			return i == 0 ? Optional.empty() : Optional.of(Block.getStateFromRawId(i));
+			return i == 0 ? Optional.empty() : Optional.of(Block.method_9531(i));
 		}
 
 		public Optional<BlockState> method_12736(Optional<BlockState> optional) {

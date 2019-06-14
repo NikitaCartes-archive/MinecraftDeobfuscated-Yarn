@@ -16,7 +16,7 @@ import net.minecraft.world.ViewableWorld;
 public class FollowOwnerGoal extends Goal {
 	protected final TameableEntity tameable;
 	private LivingEntity owner;
-	protected final ViewableWorld world;
+	protected final ViewableWorld field_6445;
 	private final double field_6442;
 	private final EntityNavigation navigation;
 	private int field_6443;
@@ -26,7 +26,7 @@ public class FollowOwnerGoal extends Goal {
 
 	public FollowOwnerGoal(TameableEntity tameableEntity, double d, float f, float g) {
 		this.tameable = tameableEntity;
-		this.world = tameableEntity.world;
+		this.field_6445 = tameableEntity.field_6002;
 		this.field_6442 = d;
 		this.navigation = tameableEntity.getNavigation();
 		this.minDistance = f;
@@ -62,15 +62,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.field_18);
-		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_6447 = this.tameable.method_5944(PathNodeType.field_18);
+		this.tameable.method_5941(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
+		this.tameable.method_5941(PathNodeType.field_18, this.field_6447);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class FollowOwnerGoal extends Goal {
 						if (!(this.tameable.squaredDistanceTo(this.owner) < 144.0)) {
 							int i = MathHelper.floor(this.owner.x) - 2;
 							int j = MathHelper.floor(this.owner.z) - 2;
-							int k = MathHelper.floor(this.owner.getBoundingBox().minY);
+							int k = MathHelper.floor(this.owner.method_5829().minY);
 
 							for (int l = 0; l <= 4; l++) {
 								for (int m = 0; m <= 4; m++) {
@@ -104,7 +104,9 @@ public class FollowOwnerGoal extends Goal {
 	}
 
 	protected boolean method_6263(BlockPos blockPos) {
-		BlockState blockState = this.world.getBlockState(blockPos);
-		return blockState.allowsSpawning(this.world, blockPos, this.tameable.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
+		BlockState blockState = this.field_6445.method_8320(blockPos);
+		return blockState.allowsSpawning(this.field_6445, blockPos, this.tameable.getType())
+			&& this.field_6445.isAir(blockPos.up())
+			&& this.field_6445.isAir(blockPos.up(2));
 	}
 }

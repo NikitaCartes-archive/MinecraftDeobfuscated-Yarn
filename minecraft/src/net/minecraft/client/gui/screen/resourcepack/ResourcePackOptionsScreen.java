@@ -16,7 +16,7 @@ import net.minecraft.util.SystemUtil;
 @Environment(EnvType.CLIENT)
 public class ResourcePackOptionsScreen extends Screen {
 	private final Screen parent;
-	private AvailableResourcePackListWidget availableList;
+	private AvailableResourcePackListWidget field_3157;
 	private SelectedResourcePackListWidget selectedList;
 	private boolean edited;
 
@@ -42,39 +42,39 @@ public class ResourcePackOptionsScreen extends Screen {
 				List<ClientResourcePackContainer> listx = Lists.<ClientResourcePackContainer>newArrayList();
 
 				for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.selectedList.children()) {
-					listx.add(resourcePackEntry.getPackContainer());
+					listx.add(resourcePackEntry.method_20150());
 				}
 
 				Collections.reverse(listx);
 				this.minecraft.getResourcePackContainerManager().setEnabled(listx);
-				this.minecraft.options.resourcePacks.clear();
-				this.minecraft.options.incompatibleResourcePacks.clear();
+				this.minecraft.field_1690.resourcePacks.clear();
+				this.minecraft.field_1690.incompatibleResourcePacks.clear();
 
 				for (ClientResourcePackContainer clientResourcePackContainerx : listx) {
 					if (!clientResourcePackContainerx.isPositionFixed()) {
-						this.minecraft.options.resourcePacks.add(clientResourcePackContainerx.getName());
+						this.minecraft.field_1690.resourcePacks.add(clientResourcePackContainerx.getName());
 						if (!clientResourcePackContainerx.getCompatibility().isCompatible()) {
-							this.minecraft.options.incompatibleResourcePacks.add(clientResourcePackContainerx.getName());
+							this.minecraft.field_1690.incompatibleResourcePacks.add(clientResourcePackContainerx.getName());
 						}
 					}
 				}
 
-				this.minecraft.options.write();
-				this.minecraft.openScreen(this.parent);
+				this.minecraft.field_1690.write();
+				this.minecraft.method_1507(this.parent);
 				this.minecraft.reloadResources();
 			} else {
-				this.minecraft.openScreen(this.parent);
+				this.minecraft.method_1507(this.parent);
 			}
 		}));
-		AvailableResourcePackListWidget availableResourcePackListWidget = this.availableList;
+		AvailableResourcePackListWidget availableResourcePackListWidget = this.field_3157;
 		SelectedResourcePackListWidget selectedResourcePackListWidget = this.selectedList;
-		this.availableList = new AvailableResourcePackListWidget(this.minecraft, 200, this.height);
-		this.availableList.setLeftPos(this.width / 2 - 4 - 200);
+		this.field_3157 = new AvailableResourcePackListWidget(this.minecraft, 200, this.height);
+		this.field_3157.setLeftPos(this.width / 2 - 4 - 200);
 		if (availableResourcePackListWidget != null) {
-			this.availableList.children().addAll(availableResourcePackListWidget.children());
+			this.field_3157.children().addAll(availableResourcePackListWidget.children());
 		}
 
-		this.children.add(this.availableList);
+		this.children.add(this.field_3157);
 		this.selectedList = new SelectedResourcePackListWidget(this.minecraft, 200, this.height);
 		this.selectedList.setLeftPos(this.width / 2 + 4);
 		if (selectedResourcePackListWidget != null) {
@@ -83,7 +83,7 @@ public class ResourcePackOptionsScreen extends Screen {
 
 		this.children.add(this.selectedList);
 		if (!this.edited) {
-			this.availableList.children().clear();
+			this.field_3157.children().clear();
 			this.selectedList.children().clear();
 			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.minecraft.getResourcePackContainerManager();
 			resourcePackContainerManager.callCreators();
@@ -91,7 +91,7 @@ public class ResourcePackOptionsScreen extends Screen {
 			list.removeAll(resourcePackContainerManager.getEnabledContainers());
 
 			for (ClientResourcePackContainer clientResourcePackContainer : list) {
-				this.availableList.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.availableList, this, clientResourcePackContainer));
+				this.field_3157.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.field_3157, this, clientResourcePackContainer));
 			}
 
 			for (ClientResourcePackContainer clientResourcePackContainer : Lists.reverse(Lists.newArrayList(resourcePackContainerManager.getEnabledContainers()))) {
@@ -101,14 +101,14 @@ public class ResourcePackOptionsScreen extends Screen {
 	}
 
 	public void select(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-		this.availableList.children().remove(resourcePackEntry);
+		this.field_3157.children().remove(resourcePackEntry);
 		resourcePackEntry.method_20145(this.selectedList);
 		this.setEdited();
 	}
 
 	public void remove(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
 		this.selectedList.children().remove(resourcePackEntry);
-		this.availableList.addEntry(resourcePackEntry);
+		this.field_3157.addEntry(resourcePackEntry);
 		this.setEdited();
 	}
 
@@ -119,7 +119,7 @@ public class ResourcePackOptionsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderDirtBackground(0);
-		this.availableList.render(i, j, f);
+		this.field_3157.render(i, j, f);
 		this.selectedList.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);

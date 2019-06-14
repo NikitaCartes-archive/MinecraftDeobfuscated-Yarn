@@ -30,7 +30,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Abstr
 	}
 
 	protected void method_2476() {
-		if (this.minecraft.player.getStatusEffects().isEmpty()) {
+		if (this.minecraft.field_1724.getStatusEffects().isEmpty()) {
 			this.left = (this.width - this.containerWidth) / 2;
 			this.offsetGuiForEffects = false;
 		} else {
@@ -49,7 +49,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Abstr
 
 	private void drawPotionEffects() {
 		int i = this.left - 124;
-		Collection<StatusEffectInstance> collection = this.minecraft.player.getStatusEffects();
+		Collection<StatusEffectInstance> collection = this.minecraft.field_1724.getStatusEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
@@ -66,7 +66,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Abstr
 	}
 
 	private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		this.minecraft.method_1531().bindTexture(BACKGROUND_TEXTURE);
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
@@ -77,8 +77,8 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Abstr
 	}
 
 	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
-		StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
+		this.minecraft.method_1531().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+		StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.method_18505();
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {

@@ -24,14 +24,14 @@ public class ModelElement {
 	public final Vector3f from;
 	public final Vector3f to;
 	public final Map<Direction, ModelElementFace> faces;
-	public final ModelRotation rotation;
+	public final ModelRotation field_4232;
 	public final boolean shade;
 
 	public ModelElement(Vector3f vector3f, Vector3f vector3f2, Map<Direction, ModelElementFace> map, @Nullable ModelRotation modelRotation, boolean bl) {
 		this.from = vector3f;
 		this.to = vector3f2;
 		this.faces = map;
-		this.rotation = modelRotation;
+		this.field_4232 = modelRotation;
 		this.shade = bl;
 		this.method_3402();
 	}
@@ -39,7 +39,7 @@ public class ModelElement {
 	private void method_3402() {
 		for (Entry<Direction, ModelElementFace> entry : this.faces.entrySet()) {
 			float[] fs = this.method_3401((Direction)entry.getKey());
-			((ModelElementFace)entry.getValue()).textureData.setUvs(fs);
+			((ModelElementFace)entry.getValue()).field_4227.setUvs(fs);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class ModelElement {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Vector3f vector3f = this.deserializeFrom(jsonObject);
 			Vector3f vector3f2 = this.deserializeTo(jsonObject);
-			ModelRotation modelRotation = this.deserializeRotation(jsonObject);
+			ModelRotation modelRotation = this.method_3410(jsonObject);
 			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(jsonDeserializationContext, jsonObject);
 			if (jsonObject.has("shade") && !JsonHelper.hasBoolean(jsonObject, "shade")) {
 				throw new JsonParseException("Expected shade to be a Boolean");
@@ -81,7 +81,7 @@ public class ModelElement {
 		}
 
 		@Nullable
-		private ModelRotation deserializeRotation(JsonObject jsonObject) {
+		private ModelRotation method_3410(JsonObject jsonObject) {
 			ModelRotation modelRotation = null;
 			if (jsonObject.has("rotation")) {
 				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "rotation");

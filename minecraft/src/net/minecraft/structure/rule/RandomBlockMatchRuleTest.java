@@ -28,7 +28,7 @@ public class RandomBlockMatchRuleTest extends AbstractRuleTest {
 	}
 
 	@Override
-	protected RuleTest getRuleTest() {
+	protected RuleTest method_16766() {
 		return RuleTest.field_16980;
 	}
 

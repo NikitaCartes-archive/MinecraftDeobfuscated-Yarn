@@ -1,6 +1,7 @@
 package net.minecraft.village;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -9,6 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 
 public class ZombieSiegeManager {
@@ -62,21 +64,21 @@ public class ZombieSiegeManager {
 	private boolean spawn() {
 		for (PlayerEntity playerEntity : this.world.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
-				BlockPos blockPos = new BlockPos(playerEntity);
+				BlockPos blockPos = playerEntity.getBlockPos();
 				if (this.world.isNearOccupiedPointOfInterest(blockPos)) {
 					for (int i = 0; i < 10; i++) {
 						float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
 						this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);
 						this.startY = blockPos.getY();
 						this.startZ = blockPos.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F);
+						if (this.method_6448(new BlockPos(this.startX, this.startY, this.startZ)) != null) {
+							this.countdown = 0;
+							this.remaining = 20;
+							break;
+						}
 					}
 
-					Vec3d vec3d = this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ));
-					if (vec3d != null) {
-						this.countdown = 0;
-						this.remaining = 20;
-						return true;
-					}
+					return true;
 				}
 			}
 		}
@@ -85,12 +87,12 @@ public class ZombieSiegeManager {
 	}
 
 	private void trySpawnZombie() {
-		Vec3d vec3d = this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ));
+		Vec3d vec3d = this.method_6448(new BlockPos(this.startX, this.startY, this.startZ));
 		if (vec3d != null) {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.world);
-				zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
+				zombieEntity.method_5943(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
 				return;
@@ -102,10 +104,14 @@ public class ZombieSiegeManager {
 	}
 
 	@Nullable
-	private Vec3d getSpawnVector(BlockPos blockPos) {
+	private Vec3d method_6448(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
-			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
-			if (this.world.isNearOccupiedPointOfInterest(blockPos2) && SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, blockPos2, null)) {
+			int j = blockPos.getX() + this.world.random.nextInt(16) - 8;
+			int k = blockPos.getZ() + this.world.random.nextInt(16) - 8;
+			int l = this.world.getTop(Heightmap.Type.field_13202, j, k);
+			BlockPos blockPos2 = new BlockPos(j, l, k);
+			if (this.world.isNearOccupiedPointOfInterest(blockPos2)
+				&& SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, blockPos2, EntityType.field_6051)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

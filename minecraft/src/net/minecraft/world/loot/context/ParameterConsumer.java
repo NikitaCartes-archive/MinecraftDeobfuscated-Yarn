@@ -12,7 +12,7 @@ public interface ParameterConsumer {
 		return ImmutableSet.of();
 	}
 
-	default void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+	default void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
 		lootContextType.check(lootTableReporter, this);
 	}
 }

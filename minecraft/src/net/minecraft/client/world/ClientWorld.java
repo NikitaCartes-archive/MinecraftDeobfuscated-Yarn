@@ -70,7 +70,7 @@ public class ClientWorld extends World {
 	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<>();
 	private final ClientPlayNetworkHandler netHandler;
-	private final WorldRenderer worldRenderer;
+	private final WorldRenderer field_17780;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private int ticksUntilCaveAmbientSound = this.random.nextInt(12000);
@@ -82,17 +82,17 @@ public class ClientWorld extends World {
 	) {
 		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, i), profiler, true);
 		this.netHandler = clientPlayNetworkHandler;
-		this.worldRenderer = worldRenderer;
+		this.field_17780 = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 	}
 
 	public void tick(BooleanSupplier booleanSupplier) {
-		this.getWorldBorder().tick();
+		this.method_8621().tick();
 		this.tickTime();
 		this.getProfiler().push("blocks");
-		this.chunkManager.tick(booleanSupplier);
+		this.field_9248.tick(booleanSupplier);
 		this.tickCaveAmbientSound();
 		this.getProfiler().pop();
 	}
@@ -152,7 +152,7 @@ public class ClientWorld extends World {
 			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
-			if (entity.updateNeeded || entity.isSpectator()) {
+			if (entity.field_6016 || entity.isSpectator()) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.tick();
@@ -160,7 +160,7 @@ public class ClientWorld extends World {
 			}
 
 			this.checkChunk(entity);
-			if (entity.updateNeeded) {
+			if (entity.field_6016) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.tickPassenger(entity, entity2);
 				}
@@ -177,13 +177,13 @@ public class ClientWorld extends World {
 			entity2.prevRenderZ = entity2.z;
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
-			if (entity2.updateNeeded) {
+			if (entity2.field_6016) {
 				entity2.age++;
 				entity2.tickRiding();
 			}
 
 			this.checkChunk(entity2);
-			if (entity2.updateNeeded) {
+			if (entity2.field_6016) {
 				for (Entity entity3 : entity2.getPassengerList()) {
 					this.tickPassenger(entity2, entity3);
 				}
@@ -196,13 +196,13 @@ public class ClientWorld extends World {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
 		int k = MathHelper.floor(entity.z / 16.0);
-		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
+		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
+			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
 				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
-			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
-				entity.updateNeeded = false;
+			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
+				entity.field_6016 = false;
 			} else {
 				this.method_8497(i, k).addEntity(entity);
 			}
@@ -213,7 +213,7 @@ public class ClientWorld extends World {
 
 	public void unloadBlockEntities(WorldChunk worldChunk) {
 		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
-		this.chunkManager.getLightingProvider().suppressLight(worldChunk.getPos(), false);
+		this.field_9248.method_12130().suppressLight(worldChunk.getPos(), false);
 	}
 
 	@Override
@@ -222,16 +222,16 @@ public class ClientWorld extends World {
 	}
 
 	private void tickCaveAmbientSound() {
-		if (this.client.player != null) {
+		if (this.client.field_1724 != null) {
 			if (this.ticksUntilCaveAmbientSound > 0) {
 				this.ticksUntilCaveAmbientSound--;
 			} else {
-				BlockPos blockPos = new BlockPos(this.client.player);
+				BlockPos blockPos = new BlockPos(this.client.field_1724);
 				BlockPos blockPos2 = blockPos.add(4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1));
 				double d = blockPos.getSquaredDistance(blockPos2);
 				if (d >= 4.0 && d <= 256.0) {
-					BlockState blockState = this.getBlockState(blockPos2);
-					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.field_9284, blockPos2) <= 0) {
+					BlockState blockState = this.method_8320(blockPos2);
+					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.method_8314(LightType.field_9284, blockPos2) <= 0) {
 						this.playSound(
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.5,
@@ -257,7 +257,7 @@ public class ClientWorld extends World {
 		this.globalEntities.add(lightningEntity);
 	}
 
-	public void addPlayer(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public void method_18107(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		this.addEntityPrivate(i, abstractClientPlayerEntity);
 		this.players.add(abstractClientPlayerEntity);
 	}
@@ -282,7 +282,7 @@ public class ClientWorld extends World {
 
 	private void finishRemovingEntity(Entity entity) {
 		entity.detach();
-		if (entity.updateNeeded) {
+		if (entity.field_6016) {
 			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
@@ -307,7 +307,7 @@ public class ClientWorld extends World {
 	}
 
 	public void setBlockStateWithoutNeighborUpdates(BlockPos blockPos, BlockState blockState) {
-		this.setBlockState(blockPos, blockState, 19);
+		this.method_8652(blockPos, blockState, 19);
 	}
 
 	@Override
@@ -318,10 +318,8 @@ public class ClientWorld extends World {
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {
 		int l = 32;
 		Random random = new Random();
-		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.field_9220
-			&& !itemStack.isEmpty()
-			&& itemStack.getItem() == Blocks.field_10499.asItem();
+		ItemStack itemStack = this.client.field_1724.getMainHandStack();
+		boolean bl = this.client.field_1761.getCurrentGameMode() == GameMode.field_9220 && !itemStack.isEmpty() && itemStack.getItem() == Blocks.field_10499.asItem();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int m = 0; m < 667; m++) {
@@ -335,16 +333,16 @@ public class ClientWorld extends World {
 		int n = j + this.random.nextInt(l) - this.random.nextInt(l);
 		int o = k + this.random.nextInt(l) - this.random.nextInt(l);
 		mutable.set(m, n, o);
-		BlockState blockState = this.getBlockState(mutable);
-		blockState.getBlock().randomDisplayTick(blockState, this, mutable, random);
-		FluidState fluidState = this.getFluidState(mutable);
+		BlockState blockState = this.method_8320(mutable);
+		blockState.getBlock().method_9496(blockState, this, mutable, random);
+		FluidState fluidState = this.method_8316(mutable);
 		if (!fluidState.isEmpty()) {
 			fluidState.randomDisplayTick(this, mutable, random);
 			ParticleEffect particleEffect = fluidState.getParticle();
 			if (particleEffect != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.isSolidFullSquare(blockState, this, mutable, Direction.field_11033);
+				boolean bl2 = Block.method_20045(blockState, this, mutable, Direction.field_11033);
 				BlockPos blockPos = mutable.down();
-				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
+				this.addParticle(blockPos, this.method_8320(blockPos), particleEffect, bl2);
 			}
 		}
 
@@ -354,8 +352,8 @@ public class ClientWorld extends World {
 	}
 
 	private void addParticle(BlockPos blockPos, BlockState blockState, ParticleEffect particleEffect, boolean bl) {
-		if (blockState.getFluidState().isEmpty()) {
-			VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
+		if (blockState.method_11618().isEmpty()) {
+			VoxelShape voxelShape = blockState.method_11628(this, blockPos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d < 1.0) {
 				if (bl) {
@@ -374,10 +372,10 @@ public class ClientWorld extends World {
 					this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos2 = blockPos.down();
-					BlockState blockState2 = this.getBlockState(blockPos2);
-					VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
+					BlockState blockState2 = this.method_8320(blockPos2);
+					VoxelShape voxelShape2 = blockState2.method_11628(this, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
-					if (f < 1.0 && blockState2.getFluidState().isEmpty()) {
+					if (f < 1.0 && blockState2.method_11618().isEmpty()) {
 						this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
@@ -416,24 +414,24 @@ public class ClientWorld extends World {
 	@Override
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = super.addDetailsToCrashReport(crashReport);
-		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.player.getServerBrand()));
+		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.field_1724.getServerBrand()));
 		crashReportSection.add(
-			"Server type", (CrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
+			"Server type", (CrashCallable<String>)(() -> this.client.method_1576() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
 		);
 		return crashReportSection;
 	}
 
 	@Override
 	public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
-		if (playerEntity == this.client.player) {
+		if (playerEntity == this.client.field_1724) {
 			this.playSound(d, e, f, soundEvent, soundCategory, g, h, false);
 		}
 	}
 
 	@Override
 	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		if (playerEntity == this.client.player) {
-			this.client.getSoundManager().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
+		if (playerEntity == this.client.field_1724) {
+			this.client.method_1483().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
 		}
 	}
 
@@ -443,19 +441,19 @@ public class ClientWorld extends World {
 
 	@Override
 	public void playSound(double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h, boolean bl) {
-		double i = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(d, e, f);
+		double i = this.client.field_1773.getCamera().getPos().squaredDistanceTo(d, e, f);
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(soundEvent, soundCategory, g, h, (float)d, (float)e, (float)f);
 		if (bl && i > 100.0) {
 			double j = Math.sqrt(i) / 40.0;
-			this.client.getSoundManager().play(positionedSoundInstance, (int)(j * 20.0));
+			this.client.method_1483().play(positionedSoundInstance, (int)(j * 20.0));
 		} else {
-			this.client.getSoundManager().play(positionedSoundInstance);
+			this.client.method_1483().play(positionedSoundInstance);
 		}
 	}
 
 	@Override
 	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
-		this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
+		this.client.field_1713.addParticle(new FireworksSparkParticle.FireworkParticle(this, d, e, f, g, h, i, this.client.field_1713, compoundTag));
 	}
 
 	@Override
@@ -485,27 +483,27 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public TickScheduler<Block> getBlockTickScheduler() {
+	public TickScheduler<Block> method_8397() {
 		return DummyClientTickScheduler.get();
 	}
 
 	@Override
-	public TickScheduler<Fluid> getFluidTickScheduler() {
+	public TickScheduler<Fluid> method_8405() {
 		return DummyClientTickScheduler.get();
 	}
 
 	public ClientChunkManager method_2935() {
-		return (ClientChunkManager)super.getChunkManager();
+		return (ClientChunkManager)super.method_8398();
 	}
 
 	@Nullable
 	@Override
-	public MapState getMapState(String string) {
+	public MapState method_17891(String string) {
 		return (MapState)this.mapStates.get(string);
 	}
 
 	@Override
-	public void putMapState(MapState mapState) {
+	public void method_17890(MapState mapState) {
 		this.mapStates.put(mapState.getId(), mapState);
 	}
 
@@ -515,7 +513,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public Scoreboard getScoreboard() {
+	public Scoreboard method_8428() {
 		return this.scoreboard;
 	}
 
@@ -525,33 +523,33 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.worldRenderer.updateBlock(this, blockPos, blockState, blockState2, i);
+	public void method_8413(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+		this.field_17780.updateBlock(this, blockPos, blockState, blockState2, i);
 	}
 
 	@Override
 	public void scheduleBlockRender(BlockPos blockPos) {
-		this.worldRenderer.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		this.field_17780.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
 	public void scheduleBlockRenders(int i, int j, int k) {
-		this.worldRenderer.scheduleBlockRenders(i, j, k);
+		this.field_17780.scheduleBlockRenders(i, j, k);
 	}
 
 	@Override
 	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
-		this.worldRenderer.setBlockBreakingProgress(i, blockPos, j);
+		this.field_17780.setBlockBreakingProgress(i, blockPos, j);
 	}
 
 	@Override
 	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
-		this.worldRenderer.playGlobalEvent(i, blockPos, j);
+		this.field_17780.playGlobalEvent(i, blockPos, j);
 	}
 
 	@Override
 	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		try {
-			this.worldRenderer.playLevelEvent(playerEntity, i, blockPos, j);
+			this.field_17780.playLevelEvent(playerEntity, i, blockPos, j);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
 			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
@@ -565,22 +563,22 @@ public class ClientWorld extends World {
 
 	@Override
 	public void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
+		this.field_17780.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
 	}
 
 	@Override
 	public void addParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, d, e, f, g, h, i);
+		this.field_17780.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, d, e, f, g, h, i);
 	}
 
 	@Override
 	public void addImportantParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleEffect, false, true, d, e, f, g, h, i);
+		this.field_17780.addParticle(particleEffect, false, true, d, e, f, g, h, i);
 	}
 
 	@Override
 	public void addImportantParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
+		this.field_17780.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
 	}
 
 	@Override

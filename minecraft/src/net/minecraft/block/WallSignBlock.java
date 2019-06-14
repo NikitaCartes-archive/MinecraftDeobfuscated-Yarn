@@ -20,23 +20,23 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class WallSignBlock extends AbstractSignBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty field_11726 = HorizontalFacingBlock.field_11177;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.field_11043,
-			Block.createCuboidShape(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
+			Block.method_9541(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
 			Direction.field_11035,
-			Block.createCuboidShape(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
+			Block.method_9541(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
 			Direction.field_11034,
-			Block.createCuboidShape(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
+			Block.method_9541(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
 			Direction.field_11039,
-			Block.createCuboidShape(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
+			Block.method_9541(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
 		)
 	);
 
 	public WallSignBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11726, Direction.field_11043).method_11657(field_11491, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -45,30 +45,30 @@ public class WallSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return (VoxelShape)FACING_TO_SHAPE.get(blockState.method_11654(field_11726));
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getMaterial().isSolid();
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.method_8320(blockPos.offset(((Direction)blockState.method_11654(field_11726)).getOpposite())).method_11620().isSolid();
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getDefaultState();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.method_9564();
+		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.getBlockPos());
+		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.with(FACING, direction2);
+				blockState = blockState.method_11657(field_11726, direction2);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
-					return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+					return blockState.method_11657(field_11491, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
 			}
 		}
@@ -77,26 +77,24 @@ public class WallSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return direction.getOpposite() == blockState.method_11654(field_11726) && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.method_11657(field_11726, blockRotation.rotate(blockState.method_11654(field_11726)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_11726)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING, WATERLOGGED);
+		builder.method_11667(field_11726, field_11491);
 	}
 }

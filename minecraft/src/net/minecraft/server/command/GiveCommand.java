@@ -22,7 +22,7 @@ public class GiveCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("item", ItemStackArgumentType.itemStack())
+							CommandManager.argument("item", ItemStackArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -63,7 +63,7 @@ public class GiveCommand {
 						itemEntity.method_6987();
 					}
 
-					serverPlayerEntity.world
+					serverPlayerEntity.field_6002
 						.playSound(
 							null,
 							serverPlayerEntity.x,

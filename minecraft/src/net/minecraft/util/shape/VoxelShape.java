@@ -63,7 +63,7 @@ public abstract class VoxelShape {
 
 	public VoxelShape offset(double d, double e, double f) {
 		return (VoxelShape)(this.isEmpty()
-			? VoxelShapes.empty()
+			? VoxelShapes.method_1073()
 			: new ArrayVoxelShape(
 				this.voxels,
 				new OffsetDoubleList(this.getPointPositions(Direction.Axis.X), d),
@@ -73,8 +73,10 @@ public abstract class VoxelShape {
 	}
 
 	public VoxelShape simplify() {
-		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.empty()};
-		this.forEachBox((d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.combine(voxelShapes[0], VoxelShapes.cuboid(d, e, f, g, h, i), BooleanBiFunction.OR));
+		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.method_1073()};
+		this.forEachBox(
+			(d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.method_1082(voxelShapes[0], VoxelShapes.method_1081(d, e, f, g, h, i), BooleanBiFunction.OR)
+		);
 		return voxelShapes[0];
 	}
 
@@ -162,13 +164,13 @@ public abstract class VoxelShape {
 				Vec3d vec3d4 = vec3d.add(vec3d3.multiply(0.001));
 				return this.contains(vec3d4.x - (double)blockPos.getX(), vec3d4.y - (double)blockPos.getY(), vec3d4.z - (double)blockPos.getZ())
 					? new BlockHitResult(vec3d4, Direction.getFacing(vec3d3.x, vec3d3.y, vec3d3.z).getOpposite(), blockPos, true)
-					: Box.rayTrace(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
+					: Box.method_1010(this.getBoundingBoxes(), vec3d, vec3d2, blockPos);
 			}
 		}
 	}
 
 	public VoxelShape getFace(Direction direction) {
-		if (!this.isEmpty() && this != VoxelShapes.fullCube()) {
+		if (!this.isEmpty() && this != VoxelShapes.method_1077()) {
 			if (this.shapeCache != null) {
 				VoxelShape voxelShape = this.shapeCache[direction.ordinal()];
 				if (voxelShape != null) {

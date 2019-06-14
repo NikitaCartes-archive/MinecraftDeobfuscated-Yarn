@@ -62,14 +62,17 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8997),
 					SoundEvents.field_18315,
-					wanderingTraderEntity -> !this.world.isDaylight() && !wanderingTraderEntity.isInvisible()
+					wanderingTraderEntity -> !this.field_6002.isDaylight() && !wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector
 			.add(
 				0,
 				new HoldInHandsGoal<>(
-					this, new ItemStack(Items.field_8103), SoundEvents.field_18314, wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()
+					this,
+					new ItemStack(Items.field_8103),
+					SoundEvents.field_18314,
+					wanderingTraderEntity -> this.field_6002.isDaylight() && wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
@@ -111,10 +114,10 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 				playerEntity.incrementStat(Stats.field_15384);
 			}
 
-			if (this.getOffers().isEmpty()) {
+			if (this.method_8264().isEmpty()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
-				if (!this.world.isClient) {
+				if (!this.field_6002.isClient) {
 					this.setCurrentCustomer(playerEntity);
 					this.sendOffers(playerEntity, this.getDisplayName(), 1);
 				}
@@ -131,11 +134,11 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
 		TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
-			TraderOfferList traderOfferList = this.getOffers();
-			this.fillRecipesFromPool(traderOfferList, factorys, 5);
+			TraderOfferList traderOfferList = this.method_8264();
+			this.method_19170(traderOfferList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);
 			TradeOffers.Factory factory = factorys2[i];
-			TradeOffer tradeOffer = factory.create(this, this.random);
+			TradeOffer tradeOffer = factory.method_7246(this, this.random);
 			if (tradeOffer != null) {
 				traderOfferList.add(tradeOffer);
 			}
@@ -171,10 +174,10 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected void afterUsing(TradeOffer tradeOffer) {
+	protected void method_18008(TradeOffer tradeOffer) {
 		if (tradeOffer.shouldRewardPlayerExperience()) {
 			int i = 3 + this.random.nextInt(4);
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
+			this.field_6002.spawnEntity(new ExperienceOrbEntity(this.field_6002, this.x, this.y + 0.5, this.z, i));
 		}
 	}
 
@@ -220,7 +223,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.tickDespawnDelay();
 		}
 	}
@@ -280,7 +283,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 
 		private boolean isTooFarFrom(BlockPos blockPos, double d) {
-			return !blockPos.isWithinDistance(this.trader.getPos(), d);
+			return !blockPos.isWithinDistance(this.trader.method_19538(), d);
 		}
 	}
 }

@@ -624,7 +624,7 @@ public class OceanMonumentGenerator {
 			}
 
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 3, 6, 9, 6, 9, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, 7, 8, 5, 8, Blocks.field_10205.getDefaultState(), Blocks.field_10205.getDefaultState(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, 7, 8, 5, 8, Blocks.field_10205.method_9564(), Blocks.field_10205.method_9564(), false);
 
 			for (int ix = 3; ix <= 6; ix += 3) {
 				for (int k = 6; k <= 9; k += 3) {
@@ -1422,7 +1422,7 @@ public class OceanMonumentGenerator {
 				for (int j = 1; j <= 6; j++) {
 					if (random.nextInt(3) != 0) {
 						int k = 2 + (random.nextInt(4) == 0 ? 0 : 1);
-						BlockState blockState = Blocks.field_10562.getDefaultState();
+						BlockState blockState = Blocks.field_10562.method_9564();
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, i, k, j, i, 3, j, blockState, blockState, false);
 					}
 				}
@@ -1711,12 +1711,12 @@ public class OceanMonumentGenerator {
 	}
 
 	public abstract static class class_3384 extends StructurePiece {
-		protected static final BlockState PRISMARINE = Blocks.field_10135.getDefaultState();
-		protected static final BlockState PRISMARINE_BRICKS = Blocks.field_10006.getDefaultState();
-		protected static final BlockState DARK_PRISMARINE = Blocks.field_10297.getDefaultState();
+		protected static final BlockState PRISMARINE = Blocks.field_10135.method_9564();
+		protected static final BlockState PRISMARINE_BRICKS = Blocks.field_10006.method_9564();
+		protected static final BlockState DARK_PRISMARINE = Blocks.field_10297.method_9564();
 		protected static final BlockState field_14470 = PRISMARINE_BRICKS;
-		protected static final BlockState SEA_LANTERN = Blocks.field_10174.getDefaultState();
-		protected static final BlockState WATER = Blocks.field_10382.getDefaultState();
+		protected static final BlockState SEA_LANTERN = Blocks.field_10174.method_9564();
+		protected static final BlockState WATER = Blocks.field_10382.method_9564();
 		protected static final Set<Block> ICE_BLOCKS = ImmutableSet.<Block>builder()
 			.add(Blocks.field_10295)
 			.add(Blocks.field_10225)
@@ -1787,7 +1787,7 @@ public class OceanMonumentGenerator {
 						BlockState blockState = this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox);
 						if (!ICE_BLOCKS.contains(blockState.getBlock())) {
 							if (this.applyYTransform(o) >= iWorld.getSeaLevel() && blockState != WATER) {
-								this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
+								this.addBlock(iWorld, Blocks.field_10124.method_9564(), p, o, q, mutableIntBoundingBox);
 							} else {
 								this.addBlock(iWorld, WATER, p, o, q, mutableIntBoundingBox);
 							}
@@ -1837,10 +1837,10 @@ public class OceanMonumentGenerator {
 			int m = this.applyYTransform(j);
 			int n = this.applyZTransform(i, k);
 			if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-				ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.create(iWorld.getWorld());
+				ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.method_5883(iWorld.getWorld());
 				elderGuardianEntity.heal(elderGuardianEntity.getHealthMaximum());
 				elderGuardianEntity.setPositionAndAngles((double)l + 0.5, (double)m, (double)n + 0.5, 0.0F, 0.0F);
-				elderGuardianEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);
+				elderGuardianEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(elderGuardianEntity);
 				return true;
 			} else {

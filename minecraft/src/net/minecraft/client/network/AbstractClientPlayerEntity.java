@@ -35,13 +35,13 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean isSpectator() {
-		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().method_1562().method_2871(this.getGameProfile().getId());
 		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().method_1562().method_2871(this.getGameProfile().getId());
 		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9220;
 	}
 
@@ -52,7 +52,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	@Nullable
 	protected PlayerListEntry getPlayerListEntry() {
 		if (this.cachedScoreboardEntry == null) {
-			this.cachedScoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getUuid());
+			this.cachedScoreboardEntry = MinecraftClient.getInstance().method_1562().method_2871(this.getUuid());
 		}
 
 		return this.cachedScoreboardEntry;
@@ -84,9 +84,9 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return playerListEntry == null ? null : playerListEntry.getElytraTexture();
 	}
 
-	public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
-		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		Texture texture = textureManager.getTexture(identifier);
+	public static PlayerSkinTexture method_3120(Identifier identifier, String string) {
+		TextureManager textureManager = MinecraftClient.getInstance().method_1531();
+		Texture texture = textureManager.method_4619(identifier);
 		if (texture == null) {
 			texture = new PlayerSkinTexture(
 				null,
@@ -94,7 +94,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(string)),
 				new SkinRemappingImageFilter()
 			);
-			textureManager.registerTexture(identifier, texture);
+			textureManager.method_4616(identifier, texture);
 		}
 
 		return (PlayerSkinTexture)texture;

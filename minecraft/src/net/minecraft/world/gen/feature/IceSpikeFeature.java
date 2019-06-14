@@ -24,7 +24,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10491) {
+		if (iWorld.method_8320(blockPos).getBlock() != Blocks.field_10491) {
 			return false;
 		} else {
 			blockPos = blockPos.up(random.nextInt(4));
@@ -44,17 +44,17 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					for (int n = -l; n <= l; n++) {
 						float h = (float)MathHelper.abs(n) - 0.25F;
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
-							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
+							BlockState blockState = iWorld.method_8320(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
 							if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.field_10225.getDefaultState());
+								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.field_10225.method_9564());
 							}
 
 							if (k != 0 && l > 1) {
-								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
+								blockState = iWorld.method_8320(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
 								if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.field_10225.getDefaultState());
+									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.field_10225.method_9564());
 								}
 							}
 						}
@@ -78,13 +78,13 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					}
 
 					while (blockPos2.getY() > 50) {
-						BlockState blockState2 = iWorld.getBlockState(blockPos2);
+						BlockState blockState2 = iWorld.method_8320(blockPos2);
 						Block block2 = blockState2.getBlock();
 						if (!blockState2.isAir() && !Block.isNaturalDirt(block2) && block2 != Blocks.field_10491 && block2 != Blocks.field_10295 && block2 != Blocks.field_10225) {
 							break;
 						}
 
-						this.setBlockState(iWorld, blockPos2, Blocks.field_10225.getDefaultState());
+						this.setBlockState(iWorld, blockPos2, Blocks.field_10225.method_9564());
 						blockPos2 = blockPos2.down();
 						if (--p <= 0) {
 							blockPos2 = blockPos2.down(random.nextInt(5) + 1);

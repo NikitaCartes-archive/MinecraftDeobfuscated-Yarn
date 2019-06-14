@@ -46,7 +46,7 @@ public class BlockEntityRenderDispatcher {
 	public static double renderOffsetX;
 	public static double renderOffsetY;
 	public static double renderOffsetZ;
-	public TextureManager textureManager;
+	public TextureManager field_4347;
 	public World world;
 	public Camera cameraEntity;
 	public HitResult hitResult;
@@ -76,10 +76,10 @@ public class BlockEntityRenderDispatcher {
 		}
 	}
 
-	public <T extends BlockEntity> BlockEntityRenderer<T> get(Class<? extends BlockEntity> class_) {
+	public <T extends BlockEntity> BlockEntityRenderer<T> method_3550(Class<? extends BlockEntity> class_) {
 		BlockEntityRenderer<? extends BlockEntity> blockEntityRenderer = (BlockEntityRenderer<? extends BlockEntity>)this.renderers.get(class_);
 		if (blockEntityRenderer == null && class_ != BlockEntity.class) {
-			blockEntityRenderer = this.get(class_.getSuperclass());
+			blockEntityRenderer = this.method_3550(class_.getSuperclass());
 			this.renderers.put(class_, blockEntityRenderer);
 		}
 
@@ -87,16 +87,16 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	@Nullable
-	public <T extends BlockEntity> BlockEntityRenderer<T> get(@Nullable BlockEntity blockEntity) {
-		return blockEntity == null ? null : this.get(blockEntity.getClass());
+	public <T extends BlockEntity> BlockEntityRenderer<T> method_3553(@Nullable BlockEntity blockEntity) {
+		return blockEntity == null ? null : this.method_3550(blockEntity.getClass());
 	}
 
-	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
+	public void method_3549(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
-		this.textureManager = textureManager;
+		this.field_4347 = textureManager;
 		this.cameraEntity = camera;
 		this.fontRenderer = textRenderer;
 		this.hitResult = hitResult;
@@ -127,10 +127,10 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g, int i, boolean bl) {
-		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
+		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.method_3553(blockEntity);
 		if (blockEntityRenderer != null) {
 			try {
-				if (bl || blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
+				if (bl || blockEntity.hasWorld() && blockEntity.method_11017().supports(blockEntity.method_11010().getBlock())) {
 					blockEntityRenderer.render(blockEntity, d, e, f, g, i);
 				}
 			} catch (Throwable var15) {

@@ -72,8 +72,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	public void tick() {
-		if (!this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.openScreen(new InventoryScreen(this.minecraft.player));
+		if (!this.minecraft.field_1761.hasCreativeInventory()) {
+			this.minecraft.method_1507(new InventoryScreen(this.minecraft.field_1724));
 		} else if (this.searchBox != null) {
 			this.searchBox.tick();
 		}
@@ -89,59 +89,59 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		boolean bl = slotActionType == SlotActionType.field_7794;
 		slotActionType = i == -999 && slotActionType == SlotActionType.field_7790 ? SlotActionType.field_7795 : slotActionType;
 		if (slot == null && selectedTab != ItemGroup.INVENTORY.getIndex() && slotActionType != SlotActionType.field_7789) {
-			PlayerInventory playerInventory = this.minecraft.player.inventory;
+			PlayerInventory playerInventory = this.minecraft.field_1724.inventory;
 			if (!playerInventory.getCursorStack().isEmpty() && this.field_2887) {
 				if (j == 0) {
-					this.minecraft.player.dropItem(playerInventory.getCursorStack(), true);
-					this.minecraft.interactionManager.dropCreativeStack(playerInventory.getCursorStack());
+					this.minecraft.field_1724.dropItem(playerInventory.getCursorStack(), true);
+					this.minecraft.field_1761.dropCreativeStack(playerInventory.getCursorStack());
 					playerInventory.setCursorStack(ItemStack.EMPTY);
 				}
 
 				if (j == 1) {
 					ItemStack itemStack2 = playerInventory.getCursorStack().split(1);
-					this.minecraft.player.dropItem(itemStack2, true);
-					this.minecraft.interactionManager.dropCreativeStack(itemStack2);
+					this.minecraft.field_1724.dropItem(itemStack2, true);
+					this.minecraft.field_1761.dropCreativeStack(itemStack2);
 				}
 			}
 		} else {
-			if (slot != null && !slot.canTakeItems(this.minecraft.player)) {
+			if (slot != null && !slot.canTakeItems(this.minecraft.field_1724)) {
 				return;
 			}
 
 			if (slot == this.deleteItemSlot && bl) {
-				for (int k = 0; k < this.minecraft.player.playerContainer.getStacks().size(); k++) {
-					this.minecraft.interactionManager.clickCreativeStack(ItemStack.EMPTY, k);
+				for (int k = 0; k < this.minecraft.field_1724.playerContainer.getStacks().size(); k++) {
+					this.minecraft.field_1761.clickCreativeStack(ItemStack.EMPTY, k);
 				}
 			} else if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
 				if (slot == this.deleteItemSlot) {
-					this.minecraft.player.inventory.setCursorStack(ItemStack.EMPTY);
+					this.minecraft.field_1724.inventory.setCursorStack(ItemStack.EMPTY);
 				} else if (slotActionType == SlotActionType.field_7795 && slot != null && slot.hasStack()) {
 					ItemStack itemStack = slot.takeStack(j == 0 ? 1 : slot.getStack().getMaxCount());
 					ItemStack itemStack2 = slot.getStack();
-					this.minecraft.player.dropItem(itemStack, true);
-					this.minecraft.interactionManager.dropCreativeStack(itemStack);
-					this.minecraft.interactionManager.clickCreativeStack(itemStack2, ((CreativeInventoryScreen.CreativeSlot)slot).slot.id);
-				} else if (slotActionType == SlotActionType.field_7795 && !this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-					this.minecraft.player.dropItem(this.minecraft.player.inventory.getCursorStack(), true);
-					this.minecraft.interactionManager.dropCreativeStack(this.minecraft.player.inventory.getCursorStack());
-					this.minecraft.player.inventory.setCursorStack(ItemStack.EMPTY);
+					this.minecraft.field_1724.dropItem(itemStack, true);
+					this.minecraft.field_1761.dropCreativeStack(itemStack);
+					this.minecraft.field_1761.clickCreativeStack(itemStack2, ((CreativeInventoryScreen.CreativeSlot)slot).slot.id);
+				} else if (slotActionType == SlotActionType.field_7795 && !this.minecraft.field_1724.inventory.getCursorStack().isEmpty()) {
+					this.minecraft.field_1724.dropItem(this.minecraft.field_1724.inventory.getCursorStack(), true);
+					this.minecraft.field_1761.dropCreativeStack(this.minecraft.field_1724.inventory.getCursorStack());
+					this.minecraft.field_1724.inventory.setCursorStack(ItemStack.EMPTY);
 				} else {
 					this.minecraft
-						.player
+						.field_1724
 						.playerContainer
-						.onSlotClick(slot == null ? i : ((CreativeInventoryScreen.CreativeSlot)slot).slot.id, j, slotActionType, this.minecraft.player);
-					this.minecraft.player.playerContainer.sendContentUpdates();
+						.onSlotClick(slot == null ? i : ((CreativeInventoryScreen.CreativeSlot)slot).slot.id, j, slotActionType, this.minecraft.field_1724);
+					this.minecraft.field_1724.playerContainer.sendContentUpdates();
 				}
 			} else if (slotActionType != SlotActionType.field_7789 && slot.inventory == inventory) {
-				PlayerInventory playerInventory = this.minecraft.player.inventory;
+				PlayerInventory playerInventory = this.minecraft.field_1724.inventory;
 				ItemStack itemStack2 = playerInventory.getCursorStack();
 				ItemStack itemStack3 = slot.getStack();
 				if (slotActionType == SlotActionType.field_7791) {
 					if (!itemStack3.isEmpty() && j >= 0 && j < 9) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setCount(itemStack4.getMaxCount());
-						this.minecraft.player.inventory.setInvStack(j, itemStack4);
-						this.minecraft.player.playerContainer.sendContentUpdates();
+						this.minecraft.field_1724.inventory.setInvStack(j, itemStack4);
+						this.minecraft.field_1724.playerContainer.sendContentUpdates();
 					}
 
 					return;
@@ -161,8 +161,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					if (!itemStack3.isEmpty()) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setCount(j == 0 ? 1 : itemStack4.getMaxCount());
-						this.minecraft.player.dropItem(itemStack4, true);
-						this.minecraft.interactionManager.dropCreativeStack(itemStack4);
+						this.minecraft.field_1724.dropItem(itemStack4, true);
+						this.minecraft.field_1761.dropCreativeStack(itemStack4);
 					}
 
 					return;
@@ -191,25 +191,25 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				}
 			} else if (this.container != null) {
 				ItemStack itemStack = slot == null ? ItemStack.EMPTY : this.container.getSlot(slot.id).getStack();
-				this.container.onSlotClick(slot == null ? i : slot.id, j, slotActionType, this.minecraft.player);
+				this.container.onSlotClick(slot == null ? i : slot.id, j, slotActionType, this.minecraft.field_1724);
 				if (Container.unpackButtonId(j) == 2) {
 					for (int l = 0; l < 9; l++) {
-						this.minecraft.interactionManager.clickCreativeStack(this.container.getSlot(45 + l).getStack(), 36 + l);
+						this.minecraft.field_1761.clickCreativeStack(this.container.getSlot(45 + l).getStack(), 36 + l);
 					}
 				} else if (slot != null) {
 					ItemStack itemStack2x = this.container.getSlot(slot.id).getStack();
-					this.minecraft.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
+					this.minecraft.field_1761.clickCreativeStack(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
 					int m = 45 + j;
 					if (slotActionType == SlotActionType.field_7791) {
-						this.minecraft.interactionManager.clickCreativeStack(itemStack, m - this.container.slotList.size() + 9 + 36);
+						this.minecraft.field_1761.clickCreativeStack(itemStack, m - this.container.slotList.size() + 9 + 36);
 					} else if (slotActionType == SlotActionType.field_7795 && !itemStack.isEmpty()) {
 						ItemStack itemStack4 = itemStack.copy();
 						itemStack4.setCount(j == 0 ? 1 : itemStack4.getMaxCount());
-						this.minecraft.player.dropItem(itemStack4, true);
-						this.minecraft.interactionManager.dropCreativeStack(itemStack4);
+						this.minecraft.field_1724.dropItem(itemStack4, true);
+						this.minecraft.field_1761.dropCreativeStack(itemStack4);
 					}
 
-					this.minecraft.player.playerContainer.sendContentUpdates();
+					this.minecraft.field_1724.playerContainer.sendContentUpdates();
 				}
 			}
 		}
@@ -230,7 +230,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void init() {
-		if (this.minecraft.interactionManager.hasCreativeInventory()) {
+		if (this.minecraft.field_1761.hasCreativeInventory()) {
 			super.init();
 			this.minecraft.keyboard.enableRepeatEvents(true);
 			this.searchBox = new TextFieldWidget(this.font, this.left + 82, this.top + 6, 80, 9, I18n.translate("itemGroup.search"));
@@ -242,11 +242,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			int i = selectedTab;
 			selectedTab = -1;
 			this.setSelectedTab(ItemGroup.GROUPS[i]);
-			this.minecraft.player.playerContainer.removeListener(this.field_2891);
+			this.minecraft.field_1724.playerContainer.removeListener(this.field_2891);
 			this.field_2891 = new CreativeInventoryListener(this.minecraft);
-			this.minecraft.player.playerContainer.addListener(this.field_2891);
+			this.minecraft.field_1724.playerContainer.addListener(this.field_2891);
 		} else {
-			this.minecraft.openScreen(new InventoryScreen(this.minecraft.player));
+			this.minecraft.method_1507(new InventoryScreen(this.minecraft.field_1724));
 		}
 	}
 
@@ -263,8 +263,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public void removed() {
 		super.removed();
-		if (this.minecraft.player != null && this.minecraft.player.inventory != null) {
-			this.minecraft.player.playerContainer.removeListener(this.field_2891);
+		if (this.minecraft.field_1724 != null && this.minecraft.field_1724.inventory != null) {
+			this.minecraft.field_1724.playerContainer.removeListener(this.field_2891);
 		}
 
 		this.minecraft.keyboard.enableRepeatEvents(false);
@@ -294,7 +294,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	public boolean keyPressed(int i, int j, int k) {
 		this.field_2888 = false;
 		if (selectedTab != ItemGroup.SEARCH.getIndex()) {
-			if (this.minecraft.options.keyChat.matchesKey(i, j)) {
+			if (this.minecraft.field_1690.keyChat.matchesKey(i, j)) {
 				this.field_2888 = true;
 				this.setSelectedTab(ItemGroup.SEARCH);
 				return true;
@@ -339,10 +339,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			Searchable<ItemStack> searchable;
 			if (string.startsWith("#")) {
 				string = string.substring(1);
-				searchable = this.minecraft.getSearchableContainer(SearchManager.ITEM_TAG);
+				searchable = this.minecraft.method_1484(SearchManager.ITEM_TAG);
 				this.method_15871(string);
 			} else {
-				searchable = this.minecraft.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
+				searchable = this.minecraft.method_1484(SearchManager.ITEM_TOOLTIP);
 			}
 
 			this.container.itemList.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));
@@ -430,14 +430,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			HotbarStorage hotbarStorage = this.minecraft.getCreativeHotbarStorage();
 
 			for (int j = 0; j < 9; j++) {
-				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(j);
+				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.method_1410(j);
 				if (hotbarStorageEntry.isEmpty()) {
 					for (int k = 0; k < 9; k++) {
 						if (k == j) {
 							ItemStack itemStack = new ItemStack(Items.field_8407);
 							itemStack.getOrCreateSubTag("CustomCreativeLock");
-							String string = this.minecraft.options.keysHotbar[j].getLocalizedName();
-							String string2 = this.minecraft.options.keySaveToolbarActivator.getLocalizedName();
+							String string = this.minecraft.field_1690.keysHotbar[j].getLocalizedName();
+							String string2 = this.minecraft.field_1690.keySaveToolbarActivator.getLocalizedName();
 							itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", string2, string));
 							this.container.itemList.add(itemStack);
 						} else {
@@ -453,7 +453,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		if (itemGroup == ItemGroup.INVENTORY) {
-			Container container = this.minecraft.player.playerContainer;
+			Container container = this.minecraft.field_1724.playerContainer;
 			if (this.slots == null) {
 				this.slots = ImmutableList.copyOf(this.container.slotList);
 			}
@@ -588,7 +588,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	protected void renderTooltip(ItemStack itemStack, int i, int j) {
 		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
 			List<Text> list = itemStack.getTooltip(
-				this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
+				this.minecraft.field_1724, this.minecraft.field_1690.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 			);
 			List<String> list2 = Lists.<String>newArrayListWithCapacity(list.size());
 
@@ -604,7 +604,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
 
 					for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-						if (itemGroup2.containsEnchantments(enchantment.type)) {
+						if (itemGroup2.method_7740(enchantment.field_9083)) {
 							itemGroup = itemGroup2;
 							break;
 						}
@@ -642,27 +642,27 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 
 		for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.minecraft.method_1531().bindTexture(TEXTURE);
 			if (itemGroup2.getIndex() != selectedTab) {
 				this.method_2468(itemGroup2);
 			}
 		}
 
-		this.minecraft.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
+		this.minecraft.method_1531().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
 		this.blit(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
 		this.searchBox.render(i, j, f);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = this.left + 175;
 		int l = this.top + 18;
 		int m = l + 112;
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.method_1531().bindTexture(TEXTURE);
 		if (itemGroup.hasScrollbar()) {
 			this.blit(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.doRenderScrollBar() ? 0 : 12), 0, 12, 15);
 		}
 
 		this.method_2468(itemGroup);
 		if (itemGroup == ItemGroup.INVENTORY) {
-			InventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, (float)(this.left + 88 - i), (float)(this.top + 45 - 30 - j), this.minecraft.player);
+			InventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, (float)(this.left + 88 - i), (float)(this.top + 45 - 30 - j), this.minecraft.field_1724);
 		}
 	}
 
@@ -756,14 +756,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	public static void onHotbarKeyPress(MinecraftClient minecraftClient, int i, boolean bl, boolean bl2) {
-		ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
+		ClientPlayerEntity clientPlayerEntity = minecraftClient.field_1724;
 		HotbarStorage hotbarStorage = minecraftClient.getCreativeHotbarStorage();
-		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(i);
+		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.method_1410(i);
 		if (bl) {
 			for (int j = 0; j < PlayerInventory.getHotbarSize(); j++) {
 				ItemStack itemStack = hotbarStorageEntry.get(j).copy();
 				clientPlayerEntity.inventory.setInvStack(j, itemStack);
-				minecraftClient.interactionManager.clickCreativeStack(itemStack, 36 + j);
+				minecraftClient.field_1761.clickCreativeStack(itemStack, 36 + j);
 			}
 
 			clientPlayerEntity.playerContainer.sendContentUpdates();
@@ -772,9 +772,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				hotbarStorageEntry.set(j, clientPlayerEntity.inventory.getInvStack(j).copy());
 			}
 
-			String string = minecraftClient.options.keysHotbar[i].getLocalizedName();
-			String string2 = minecraftClient.options.keyLoadToolbarActivator.getLocalizedName();
-			minecraftClient.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", string2, string), false);
+			String string = minecraftClient.field_1690.keysHotbar[i].getLocalizedName();
+			String string2 = minecraftClient.field_1690.keyLoadToolbarActivator.getLocalizedName();
+			minecraftClient.field_1705.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", string2, string), false);
 			hotbarStorage.save();
 		}
 	}

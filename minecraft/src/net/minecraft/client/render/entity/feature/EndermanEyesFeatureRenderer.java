@@ -31,7 +31,7 @@ public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends Feature
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 61680.0F, 0.0F);
 		GlStateManager.enableLighting();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 		gameRenderer.setFogBlack(true);
 		this.getModel().method_17088(livingEntity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);

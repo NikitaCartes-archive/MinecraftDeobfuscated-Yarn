@@ -16,18 +16,18 @@ public class SpawnPointCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(
 					commandContext -> execute(
-							commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), new BlockPos(commandContext.getSource().getPosition())
+							commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), new BlockPos(commandContext.getSource().method_9222())
 						)
 				)
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
 							commandContext -> execute(
-									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new BlockPos(commandContext.getSource().getPosition())
+									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new BlockPos(commandContext.getSource().method_9222())
 								)
 						)
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+							CommandManager.argument("pos", BlockPosArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), BlockPosArgumentType.getBlockPos(commandContext, "pos")

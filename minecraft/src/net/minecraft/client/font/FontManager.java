@@ -41,7 +41,7 @@ public class FontManager implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, TextRenderer> textRenderers = Maps.<Identifier, TextRenderer>newHashMap();
 	private final Set<Font> fonts = Sets.<Font>newHashSet();
-	private final TextureManager textureManager;
+	private final TextureManager field_2260;
 	private boolean forceUnicodeFont;
 	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
@@ -138,7 +138,7 @@ public class FontManager implements AutoCloseable {
 				for (char c = 0; c < '\uffff'; c++) {
 					if (c != ' ') {
 						for (Font font : Lists.reverse(list)) {
-							if (font.getGlyph(c) != null) {
+							if (font.method_2040(c) != null) {
 								break;
 							}
 						}
@@ -163,9 +163,7 @@ public class FontManager implements AutoCloseable {
 						List<Font> list = (List<Font>)map.getOrDefault(identifier, Collections.emptyList());
 						Collections.reverse(list);
 						((TextRenderer)FontManager.this.textRenderers
-								.computeIfAbsent(
-									identifier, identifierx -> new TextRenderer(FontManager.this.textureManager, new FontStorage(FontManager.this.textureManager, identifierx))
-								))
+								.computeIfAbsent(identifier, identifierx -> new TextRenderer(FontManager.this.field_2260, new FontStorage(FontManager.this.field_2260, identifierx))))
 							.setFonts(list);
 					}
 				);
@@ -176,14 +174,14 @@ public class FontManager implements AutoCloseable {
 	};
 
 	public FontManager(TextureManager textureManager, boolean bl) {
-		this.textureManager = textureManager;
+		this.field_2260 = textureManager;
 		this.forceUnicodeFont = bl;
 	}
 
 	@Nullable
 	public TextRenderer getTextRenderer(Identifier identifier) {
 		return (TextRenderer)this.textRenderers.computeIfAbsent(identifier, identifierx -> {
-			TextRenderer textRenderer = new TextRenderer(this.textureManager, new FontStorage(this.textureManager, identifierx));
+			TextRenderer textRenderer = new TextRenderer(this.field_2260, new FontStorage(this.field_2260, identifierx));
 			textRenderer.setFonts(Lists.<Font>newArrayList(new BlankFont()));
 			return textRenderer;
 		});

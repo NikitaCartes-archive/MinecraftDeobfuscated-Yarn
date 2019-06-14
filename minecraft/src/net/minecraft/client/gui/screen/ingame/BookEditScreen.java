@@ -40,8 +40,8 @@ public class BookEditScreen extends Screen {
 	private int highlightTo;
 	private long lastClickTime;
 	private int lastClickIndex = -1;
-	private PageTurnWidget buttonPreviousPage;
-	private PageTurnWidget buttonNextPage;
+	private PageTurnWidget field_2843;
+	private PageTurnWidget field_2839;
 	private ButtonWidget buttonDone;
 	private ButtonWidget buttonSign;
 	private ButtonWidget buttonFinalize;
@@ -85,13 +85,13 @@ public class BookEditScreen extends Screen {
 			this.updateButtons();
 		}));
 		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.minecraft.openScreen(null);
+			this.minecraft.method_1507(null);
 			this.finalizeBook(false);
 		}));
 		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
 			if (this.signing) {
 				this.finalizeBook(true);
-				this.minecraft.openScreen(null);
+				this.minecraft.method_1507(null);
 			}
 		}));
 		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
@@ -103,8 +103,8 @@ public class BookEditScreen extends Screen {
 		}));
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.buttonPreviousPage = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
-		this.buttonNextPage = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
+		this.field_2843 = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
+		this.field_2839 = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
 		this.updateButtons();
 	}
 
@@ -154,8 +154,8 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void updateButtons() {
-		this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
-		this.buttonPreviousPage.visible = !this.signing;
+		this.field_2839.visible = !this.signing && this.currentPage > 0;
+		this.field_2843.visible = !this.signing;
 		this.buttonDone.visible = !this.signing;
 		this.buttonSign.visible = !this.signing;
 		this.buttonCancel.visible = this.signing;
@@ -185,7 +185,7 @@ public class BookEditScreen extends Screen {
 				this.itemStack.putSubTag("title", new StringTag(this.title.trim()));
 			}
 
-			this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
+			this.minecraft.method_1562().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
 		}
 	}
 
@@ -268,10 +268,10 @@ public class BookEditScreen extends Screen {
 					this.applyUpArrowKey(string);
 					return true;
 				case 266:
-					this.buttonNextPage.onPress();
+					this.field_2839.onPress();
 					return true;
 				case 267:
-					this.buttonPreviousPage.onPress();
+					this.field_2843.onPress();
 					return true;
 				case 268:
 					this.moveCursorToTop(string);
@@ -416,7 +416,7 @@ public class BookEditScreen extends Screen {
 			case 335:
 				if (!this.title.isEmpty()) {
 					this.finalizeBook(true);
-					this.minecraft.openScreen(null);
+					this.minecraft.method_1507(null);
 				}
 
 				return true;
@@ -463,7 +463,7 @@ public class BookEditScreen extends Screen {
 		this.renderBackground();
 		this.setFocused(null);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
+		this.minecraft.method_1531().bindTexture(BookScreen.BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.blit(k, 2, 0, 0, 192, 192);
@@ -578,7 +578,7 @@ public class BookEditScreen extends Screen {
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.method_1328(7, VertexFormats.field_1592);
 		bufferBuilder.vertex((double)position3.x, (double)position4.y, 0.0).next();
 		bufferBuilder.vertex((double)position4.x, (double)position4.y, 0.0).next();
 		bufferBuilder.vertex((double)position4.x, (double)position3.y, 0.0).next();

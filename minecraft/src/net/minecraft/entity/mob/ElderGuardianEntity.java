@@ -73,7 +73,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		int i = 1200;
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
 			StatusEffect statusEffect = StatusEffects.field_5901;
-			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
+			List<ServerPlayerEntity> list = ((ServerWorld)this.field_6002)
 				.getPlayers(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
 			int j = 2;
 			int k = 6000;

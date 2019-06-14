@@ -24,37 +24,37 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
 
 public final class VoxelShapes {
-	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
+	private static final VoxelShape field_1385 = SystemUtil.get(() -> {
 		VoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
 		voxelSet.set(0, 0, 0, true, true);
 		return new SimpleVoxelShape(voxelSet);
 	});
-	public static final VoxelShape UNBOUNDED = cuboid(
+	public static final VoxelShape field_17669 = method_1081(
 		Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
 	);
-	private static final VoxelShape EMPTY = new ArrayVoxelShape(
+	private static final VoxelShape field_1384 = new ArrayVoxelShape(
 		new BitSetVoxelSet(0, 0, 0), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0})
 	);
 
-	public static VoxelShape empty() {
-		return EMPTY;
+	public static VoxelShape method_1073() {
+		return field_1384;
 	}
 
-	public static VoxelShape fullCube() {
-		return FULL_CUBE;
+	public static VoxelShape method_1077() {
+		return field_1385;
 	}
 
-	public static VoxelShape cuboid(double d, double e, double f, double g, double h, double i) {
-		return cuboid(new Box(d, e, f, g, h, i));
+	public static VoxelShape method_1081(double d, double e, double f, double g, double h, double i) {
+		return method_1078(new Box(d, e, f, g, h, i));
 	}
 
-	public static VoxelShape cuboid(Box box) {
+	public static VoxelShape method_1078(Box box) {
 		int i = findRequiredBitResolution(box.minX, box.maxX);
 		int j = findRequiredBitResolution(box.minY, box.maxY);
 		int k = findRequiredBitResolution(box.minZ, box.maxZ);
 		if (i >= 0 && j >= 0 && k >= 0) {
 			if (i == 0 && j == 0 && k == 0) {
-				return box.contains(0.5, 0.5, 0.5) ? fullCube() : empty();
+				return box.contains(0.5, 0.5, 0.5) ? method_1077() : method_1073();
 			} else {
 				int l = 1 << i;
 				int m = 1 << j;
@@ -78,7 +78,7 @@ public final class VoxelShapes {
 				return new SimpleVoxelShape(bitSetVoxelSet);
 			}
 		} else {
-			return new ArrayVoxelShape(FULL_CUBE.voxels, new double[]{box.minX, box.maxX}, new double[]{box.minY, box.maxY}, new double[]{box.minZ, box.maxZ});
+			return new ArrayVoxelShape(field_1385.voxels, new double[]{box.minX, box.maxX}, new double[]{box.minY, box.maxY}, new double[]{box.minZ, box.maxZ});
 		}
 	}
 
@@ -104,30 +104,30 @@ public final class VoxelShapes {
 		return (long)i * (long)(j / IntMath.gcd(i, j));
 	}
 
-	public static VoxelShape union(VoxelShape voxelShape, VoxelShape voxelShape2) {
-		return combineAndSimplify(voxelShape, voxelShape2, BooleanBiFunction.OR);
+	public static VoxelShape method_1084(VoxelShape voxelShape, VoxelShape voxelShape2) {
+		return method_1072(voxelShape, voxelShape2, BooleanBiFunction.OR);
 	}
 
-	public static VoxelShape union(VoxelShape voxelShape, VoxelShape... voxelShapes) {
-		return (VoxelShape)Arrays.stream(voxelShapes).reduce(voxelShape, VoxelShapes::union);
+	public static VoxelShape method_17786(VoxelShape voxelShape, VoxelShape... voxelShapes) {
+		return (VoxelShape)Arrays.stream(voxelShapes).reduce(voxelShape, VoxelShapes::method_1084);
 	}
 
-	public static VoxelShape combineAndSimplify(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
-		return combine(voxelShape, voxelShape2, booleanBiFunction).simplify();
+	public static VoxelShape method_1072(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+		return method_1082(voxelShape, voxelShape2, booleanBiFunction).simplify();
 	}
 
-	public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+	public static VoxelShape method_1082(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
 			throw new IllegalArgumentException();
 		} else if (voxelShape == voxelShape2) {
-			return booleanBiFunction.apply(true, true) ? voxelShape : empty();
+			return booleanBiFunction.apply(true, true) ? voxelShape : method_1073();
 		} else {
 			boolean bl = booleanBiFunction.apply(true, false);
 			boolean bl2 = booleanBiFunction.apply(false, true);
 			if (voxelShape.isEmpty()) {
-				return bl2 ? voxelShape2 : empty();
+				return bl2 ? voxelShape2 : method_1073();
 			} else if (voxelShape2.isEmpty()) {
-				return bl ? voxelShape : empty();
+				return bl ? voxelShape : method_1073();
 			} else {
 				DoubleListPair doubleListPair = createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
 				DoubleListPair doubleListPair2 = createListPair(
@@ -140,7 +140,7 @@ public final class VoxelShapes {
 					bl,
 					bl2
 				);
-				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(
+				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.method_1040(
 					voxelShape.voxels, voxelShape2.voxels, doubleListPair, doubleListPair2, doubleListPair3, booleanBiFunction
 				);
 				return (VoxelShape)(doubleListPair instanceof FractionalDoubleListPair
@@ -152,7 +152,7 @@ public final class VoxelShapes {
 		}
 	}
 
-	public static boolean matchesAnywhere(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+	public static boolean method_1074(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
 			throw new IllegalArgumentException();
 		} else if (voxelShape == voxelShape2) {
@@ -221,9 +221,7 @@ public final class VoxelShapes {
 		return d;
 	}
 
-	public static double calculateSoftOffset(
-		Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream
-	) {
+	public static double method_17945(Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
 		return method_17944(box, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
@@ -269,9 +267,9 @@ public final class VoxelShapes {
 
 						if (s < 3) {
 							mutable.method_17965(axisCycleDirection2, q, r, p);
-							BlockState blockState = viewableWorld.getBlockState(mutable);
+							BlockState blockState = viewableWorld.method_8320(mutable);
 							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.field_10008)) {
-								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
+								d = blockState.method_16337(viewableWorld, mutable, entityContext)
 									.method_1108(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {
 									return 0.0;
@@ -296,7 +294,7 @@ public final class VoxelShapes {
 
 	@Environment(EnvType.CLIENT)
 	public static boolean method_1083(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
-		if (voxelShape == fullCube() && voxelShape2 == fullCube()) {
+		if (voxelShape == method_1077() && voxelShape2 == method_1077()) {
 			return true;
 		} else if (voxelShape2.isEmpty()) {
 			return false;
@@ -308,15 +306,13 @@ public final class VoxelShapes {
 			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
 			return DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7)
 				&& DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7)
-				&& !matchesAnywhere(
-					new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), booleanBiFunction
-				);
+				&& !method_1074(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), booleanBiFunction);
 		}
 	}
 
 	public static VoxelShape method_16344(VoxelShape voxelShape, Direction direction) {
-		if (voxelShape == fullCube()) {
-			return fullCube();
+		if (voxelShape == method_1077()) {
+			return method_1077();
 		} else {
 			Direction.Axis axis = direction.getAxis();
 			boolean bl;
@@ -329,27 +325,27 @@ public final class VoxelShapes {
 				i = 0;
 			}
 
-			return (VoxelShape)(!bl ? empty() : new SliceVoxelShape(voxelShape, axis, i));
+			return (VoxelShape)(!bl ? method_1073() : new SliceVoxelShape(voxelShape, axis, i));
 		}
 	}
 
 	public static boolean method_1080(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
-		if (voxelShape != fullCube() && voxelShape2 != fullCube()) {
+		if (voxelShape != method_1077() && voxelShape2 != method_1077()) {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
 			VoxelShape voxelShape3 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape : voxelShape2;
 			VoxelShape voxelShape4 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape2 : voxelShape;
 			if (!DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7)) {
-				voxelShape3 = empty();
+				voxelShape3 = method_1073();
 			}
 
 			if (!DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7)) {
-				voxelShape4 = empty();
+				voxelShape4 = method_1073();
 			}
 
-			return !matchesAnywhere(
-				fullCube(),
-				combine(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), BooleanBiFunction.OR),
+			return !method_1074(
+				method_1077(),
+				method_1082(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), BooleanBiFunction.OR),
 				BooleanBiFunction.ONLY_FIRST
 			);
 		} else {
@@ -358,12 +354,12 @@ public final class VoxelShapes {
 	}
 
 	public static boolean method_20713(VoxelShape voxelShape, VoxelShape voxelShape2) {
-		if (voxelShape == fullCube() || voxelShape2 == fullCube()) {
+		if (voxelShape == method_1077() || voxelShape2 == method_1077()) {
 			return true;
 		} else {
 			return voxelShape.isEmpty() && voxelShape2.isEmpty()
 				? false
-				: !matchesAnywhere(fullCube(), combine(voxelShape, voxelShape2, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
+				: !method_1074(method_1077(), method_1082(voxelShape, voxelShape2, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
 		}
 	}
 

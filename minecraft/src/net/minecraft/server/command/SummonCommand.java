@@ -27,19 +27,19 @@ public class SummonCommand {
 			CommandManager.literal("summon")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("entity", EntitySummonArgumentType.entitySummon())
+					CommandManager.argument("entity", EntitySummonArgumentType.create())
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
 									EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
-									commandContext.getSource().getPosition(),
+									commandContext.getSource().method_9222(),
 									new CompoundTag(),
 									true
 								)
 						)
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.vec3())
+							CommandManager.argument("pos", Vec3ArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -50,7 +50,7 @@ public class SummonCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
+									CommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -76,7 +76,7 @@ public class SummonCommand {
 			return 1;
 		} else {
 			ServerWorld serverWorld = serverCommandSource.getWorld();
-			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2, serverWorld, entityx -> {
+			Entity entity = EntityType.method_17842(compoundTag2, serverWorld, entityx -> {
 				entityx.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entityx.yaw, entityx.pitch);
 				return !serverWorld.method_18768(entityx) ? null : entityx;
 			});
@@ -85,7 +85,7 @@ public class SummonCommand {
 			} else {
 				if (bl && entity instanceof MobEntity) {
 					((MobEntity)entity)
-						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
+						.method_5943(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
 				}
 
 				serverCommandSource.sendFeedback(new TranslatableText("commands.summon.success", entity.getDisplayName()), true);

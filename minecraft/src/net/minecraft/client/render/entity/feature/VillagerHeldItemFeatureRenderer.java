@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, VillagerResemblingModel<T>> {
-	private final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+	private final ItemRenderer itemRenderer = MinecraftClient.getInstance().method_1480();
 
 	public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, VillagerResemblingModel<T>> featureRendererContext) {
 		super(featureRendererContext);

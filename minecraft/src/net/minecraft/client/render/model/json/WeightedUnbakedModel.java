@@ -74,7 +74,7 @@ public class WeightedUnbakedModel implements UnbakedModel {
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
 			for (ModelVariant modelVariant : this.getVariants()) {
-				BakedModel bakedModel = modelLoader.bake(modelVariant.getLocation(), modelVariant);
+				BakedModel bakedModel = modelLoader.method_15878(modelVariant.getLocation(), modelVariant);
 				builder.add(bakedModel, modelVariant.getWeight());
 			}
 

@@ -21,7 +21,7 @@ public class VertexFormat {
 		this();
 
 		for (int i = 0; i < vertexFormat.getElementCount(); i++) {
-			this.add(vertexFormat.getElement(i));
+			this.method_1361(vertexFormat.method_1364(i));
 		}
 
 		this.size = vertexFormat.getVertexSize();
@@ -39,7 +39,7 @@ public class VertexFormat {
 		this.size = 0;
 	}
 
-	public VertexFormat add(VertexFormatElement vertexFormatElement) {
+	public VertexFormat method_1361(VertexFormatElement vertexFormatElement) {
 		if (vertexFormatElement.isPosition() && this.hasPositionElement()) {
 			LOGGER.warn("VertexFormat error: Trying to add a position VertexFormatElement when one already exists, ignoring.");
 			return this;
@@ -128,7 +128,7 @@ public class VertexFormat {
 		return this.elements.size();
 	}
 
-	public VertexFormatElement getElement(int i) {
+	public VertexFormatElement method_1364(int i) {
 		return (VertexFormatElement)this.elements.get(i);
 	}
 

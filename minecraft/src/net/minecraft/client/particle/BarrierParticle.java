@@ -12,14 +12,14 @@ import net.minecraft.world.World;
 public class BarrierParticle extends SpriteBillboardParticle {
 	private BarrierParticle(World world, double d, double e, double f, ItemConvertible itemConvertible) {
 		super(world, d, e, f);
-		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(itemConvertible));
+		this.method_18141(MinecraftClient.getInstance().method_1480().getModels().method_3307(itemConvertible));
 		this.gravityStrength = 0.0F;
 		this.maxAge = 80;
 		this.collidesWithWorld = false;
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 

@@ -77,7 +77,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private final ResourceManager resourceContainer;
 	private final Random random = new Random();
 	private float viewDistance;
-	public final FirstPersonRenderer firstPersonRenderer;
+	public final FirstPersonRenderer field_4012;
 	private final MapRenderer mapRenderer;
 	private int ticks;
 	private float movementFovMultiplier;
@@ -88,7 +88,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private boolean blockOutlineEnabled = true;
 	private long lastWorldIconUpdate;
 	private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
-	private final LightmapTextureManager lightmapTextureManager;
+	private final LightmapTextureManager field_4028;
 	private int field_3995;
 	private final float[] field_3991 = new float[1024];
 	private final float[] field_3989 = new float[1024];
@@ -101,7 +101,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private int floatingItemTimeLeft;
 	private float floatingItemWidth;
 	private float floatingItemHeight;
-	private ShaderEffect shader;
+	private ShaderEffect field_4024;
 	private static final Identifier[] SHADERS_LOCATIONS = new Identifier[]{
 		new Identifier("shaders/post/notch.json"),
 		new Identifier("shaders/post/fxaa.json"),
@@ -137,11 +137,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager) {
 		this.client = minecraftClient;
 		this.resourceContainer = resourceManager;
-		this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
-		this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
-		this.lightmapTextureManager = new LightmapTextureManager(this);
+		this.field_4012 = minecraftClient.method_1489();
+		this.mapRenderer = new MapRenderer(minecraftClient.method_1531());
+		this.field_4028 = new LightmapTextureManager(this);
 		this.backgroundRenderer = new BackgroundRenderer(this);
-		this.shader = null;
+		this.field_4024 = null;
 
 		for (int i = 0; i < 32; i++) {
 			for (int j = 0; j < 32; j++) {
@@ -155,21 +155,21 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	public void close() {
-		this.lightmapTextureManager.close();
+		this.field_4028.close();
 		this.mapRenderer.close();
 		this.disableShader();
 	}
 
 	public boolean isShaderEnabled() {
-		return GLX.usePostProcess && this.shader != null;
+		return GLX.usePostProcess && this.field_4024 != null;
 	}
 
 	public void disableShader() {
-		if (this.shader != null) {
-			this.shader.close();
+		if (this.field_4024 != null) {
+			this.field_4024.close();
 		}
 
-		this.shader = null;
+		this.field_4024 = null;
 		this.forcedShaderIndex = SHADER_COUNT;
 	}
 
@@ -179,11 +179,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	public void onCameraEntitySet(@Nullable Entity entity) {
 		if (GLX.usePostProcess) {
-			if (this.shader != null) {
-				this.shader.close();
+			if (this.field_4024 != null) {
+				this.field_4024.close();
 			}
 
-			this.shader = null;
+			this.field_4024 = null;
 			if (entity instanceof CreeperEntity) {
 				this.loadShader(new Identifier("shaders/post/creeper.json"));
 			} else if (entity instanceof SpiderEntity) {
@@ -195,13 +195,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void loadShader(Identifier identifier) {
-		if (this.shader != null) {
-			this.shader.close();
+		if (this.field_4024 != null) {
+			this.field_4024.close();
 		}
 
 		try {
-			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), identifier);
-			this.shader.setupDimensions(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
+			this.field_4024 = new ShaderEffect(this.client.method_1531(), this.resourceContainer, this.client.getFramebuffer(), identifier);
+			this.field_4024.setupDimensions(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
 			this.shadersEnabled = true;
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", identifier, var3);
@@ -216,11 +216,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	@Override
 	public void apply(ResourceManager resourceManager) {
-		if (this.shader != null) {
-			this.shader.close();
+		if (this.field_4024 != null) {
+			this.field_4024.close();
 		}
 
-		this.shader = null;
+		this.field_4024 = null;
 		if (this.forcedShaderIndex == SHADER_COUNT) {
 			this.onCameraEntitySet(this.client.getCameraEntity());
 		} else {
@@ -234,17 +234,17 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 
 		this.updateMovementFovMultiplier();
-		this.lightmapTextureManager.tick();
+		this.field_4028.tick();
 		if (this.client.getCameraEntity() == null) {
-			this.client.setCameraEntity(this.client.player);
+			this.client.setCameraEntity(this.client.field_1724);
 		}
 
 		this.camera.updateEyeHeight();
 		this.ticks++;
-		this.firstPersonRenderer.updateHeldItems();
+		this.field_4012.updateHeldItems();
 		this.renderRain();
 		this.lastSkyDarkness = this.skyDarkness;
-		if (this.client.inGameHud.getBossBarHud().shouldDarkenSky()) {
+		if (this.client.field_1705.method_1740().shouldDarkenSky()) {
 			this.skyDarkness += 0.05F;
 			if (this.skyDarkness > 1.0F) {
 				this.skyDarkness = 1.0F;
@@ -261,33 +261,33 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public ShaderEffect getShader() {
-		return this.shader;
+	public ShaderEffect method_3183() {
+		return this.field_4024;
 	}
 
 	public void onResized(int i, int j) {
 		if (GLX.usePostProcess) {
-			if (this.shader != null) {
-				this.shader.setupDimensions(i, j);
+			if (this.field_4024 != null) {
+				this.field_4024.setupDimensions(i, j);
 			}
 
-			this.client.worldRenderer.onResized(i, j);
+			this.client.field_1769.onResized(i, j);
 		}
 	}
 
 	public void updateTargetedEntity(float f) {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
-			if (this.client.world != null) {
+			if (this.client.field_1687 != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
-				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.hitResult = entity.rayTrace(d, f, false);
-				net.minecraft.util.math.Vec3d vec3d = entity.getCameraPosVec(f);
+				double d = (double)this.client.field_1761.getReachDistance();
+				this.client.hitResult = entity.method_5745(d, f, false);
+				net.minecraft.util.math.Vec3d vec3d = entity.method_5836(f);
 				boolean bl = false;
 				int i = 3;
 				double e = d;
-				if (this.client.interactionManager.hasExtendedReach()) {
+				if (this.client.field_1761.hasExtendedReach()) {
 					e = 6.0;
 					d = e;
 				} else {
@@ -300,20 +300,20 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 				e *= e;
 				if (this.client.hitResult != null) {
-					e = this.client.hitResult.getPos().squaredDistanceTo(vec3d);
+					e = this.client.hitResult.method_17784().squaredDistanceTo(vec3d);
 				}
 
-				net.minecraft.util.math.Vec3d vec3d2 = entity.getRotationVec(1.0F);
+				net.minecraft.util.math.Vec3d vec3d2 = entity.method_5828(1.0F);
 				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float g = 1.0F;
-				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
+				Box box = entity.method_5829().method_18804(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
+				EntityHitResult entityHitResult = ProjectileUtil.method_18075(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
-					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.getPos();
+					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.method_17784();
 					double h = vec3d.squaredDistanceTo(vec3d4);
 					if (bl && h > 9.0) {
-						this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+						this.client.hitResult = BlockHitResult.method_17778(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
 					} else if (h < e || this.client.hitResult == null) {
 						this.client.hitResult = entityHitResult;
 						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
@@ -351,7 +351,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		} else {
 			double d = 70.0;
 			if (bl) {
-				d = this.client.options.fov;
+				d = this.client.field_1690.fov;
 				d *= (double)MathHelper.lerp(f, this.lastMovementFovMultiplier, this.movementFovMultiplier);
 			}
 
@@ -394,8 +394,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private void bobView(float f) {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
-			float h = -(playerEntity.horizontalSpeed + g * f);
+			float g = playerEntity.field_5973 - playerEntity.field_6039;
+			float h = -(playerEntity.field_5973 + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
 			GlStateManager.translatef(MathHelper.sin(h * (float) Math.PI) * i * 0.5F, -Math.abs(MathHelper.cos(h * (float) Math.PI) * i), 0.0F);
 			GlStateManager.rotatef(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, 0.0F, 0.0F, 1.0F);
@@ -404,7 +404,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void applyCameraTransformations(float f) {
-		this.viewDistance = (float)(this.client.options.viewDistance * 16);
+		this.viewDistance = (float)(this.client.field_1690.viewDistance * 16);
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
 		if (this.field_4005 != 1.0) {
@@ -423,14 +423,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 		this.bobViewWhenHurt(f);
-		if (this.client.options.bobView) {
+		if (this.client.field_1690.bobView) {
 			this.bobView(f);
 		}
 
-		float g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+		float g = MathHelper.lerp(f, this.client.field_1724.lastNauseaStrength, this.client.field_1724.nextNauseaStrength);
 		if (g > 0.0F) {
 			int i = 20;
-			if (this.client.player.hasStatusEffect(StatusEffects.field_5916)) {
+			if (this.client.field_1724.hasStatusEffect(StatusEffects.field_5916)) {
 				i = 7;
 			}
 
@@ -458,38 +458,38 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			GlStateManager.loadIdentity();
 			GlStateManager.pushMatrix();
 			this.bobViewWhenHurt(f);
-			if (this.client.options.bobView) {
+			if (this.client.field_1690.bobView) {
 				this.bobView(f);
 			}
 
 			boolean bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
-			if (this.client.options.perspective == 0
+			if (this.client.field_1690.perspective == 0
 				&& !bl
-				&& !this.client.options.hudHidden
-				&& this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
+				&& !this.client.field_1690.hudHidden
+				&& this.client.field_1761.getCurrentGameMode() != GameMode.field_9219) {
 				this.enableLightmap();
-				this.firstPersonRenderer.renderFirstPersonItem(f);
+				this.field_4012.renderFirstPersonItem(f);
 				this.disableLightmap();
 			}
 
 			GlStateManager.popMatrix();
-			if (this.client.options.perspective == 0 && !bl) {
-				this.firstPersonRenderer.renderOverlays(f);
+			if (this.client.field_1690.perspective == 0 && !bl) {
+				this.field_4012.renderOverlays(f);
 				this.bobViewWhenHurt(f);
 			}
 
-			if (this.client.options.bobView) {
+			if (this.client.field_1690.bobView) {
 				this.bobView(f);
 			}
 		}
 	}
 
 	public void disableLightmap() {
-		this.lightmapTextureManager.disable();
+		this.field_4028.disable();
 	}
 
 	public void enableLightmap() {
-		this.lightmapTextureManager.enable();
+		this.field_4028.enable();
 	}
 
 	public float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -499,8 +499,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	public void render(float f, long l, boolean bl) {
 		if (!this.client.isWindowFocused()
-			&& this.client.options.pauseOnLostFocus
-			&& (!this.client.options.touchscreen || !this.client.mouse.wasRightButtonClicked())) {
+			&& this.client.field_1690.pauseOnLostFocus
+			&& (!this.client.field_1690.touchscreen || !this.client.field_1729.wasRightButtonClicked())) {
 			if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
 				this.client.openPauseMenu(false);
 			}
@@ -509,10 +509,10 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 
 		if (!this.client.skipGameRender) {
-			int i = (int)(this.client.mouse.getX() * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth());
-			int j = (int)(this.client.mouse.getY() * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight());
-			int k = this.client.options.maxFps;
-			if (bl && this.client.world != null) {
+			int i = (int)(this.client.field_1729.getX() * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth());
+			int j = (int)(this.client.field_1729.getY() * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight());
+			int k = this.client.field_1690.maxFps;
+			if (bl && this.client.field_1687 != null) {
 				this.client.getProfiler().push("level");
 				int m = Math.min(MinecraftClient.getCurrentFps(), k);
 				m = Math.max(m, 60);
@@ -521,18 +521,18 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o);
 				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < SystemUtil.getMeasuringTimeMs() - 1000L) {
 					this.lastWorldIconUpdate = SystemUtil.getMeasuringTimeMs();
-					if (!this.client.getServer().hasIconFile()) {
+					if (!this.client.method_1576().hasIconFile()) {
 						this.updateWorldIcon();
 					}
 				}
 
 				if (GLX.usePostProcess) {
-					this.client.worldRenderer.drawEntityOutlinesFramebuffer();
-					if (this.shader != null && this.shadersEnabled) {
+					this.client.field_1769.drawEntityOutlinesFramebuffer();
+					if (this.field_4024 != null && this.shadersEnabled) {
 						GlStateManager.matrixMode(5890);
 						GlStateManager.pushMatrix();
 						GlStateManager.loadIdentity();
-						this.shader.render(f);
+						this.field_4024.render(f);
 						GlStateManager.popMatrix();
 					}
 
@@ -540,11 +540,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				}
 
 				this.client.getProfiler().swap("gui");
-				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
+				if (!this.client.field_1690.hudHidden || this.client.field_1755 != null) {
 					GlStateManager.alphaFunc(516, 0.1F);
 					this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 					this.renderFloatingItem(this.client.window.getScaledWidth(), this.client.window.getScaledHeight(), f);
-					this.client.inGameHud.draw(f);
+					this.client.field_1705.draw(f);
 				}
 
 				this.client.getProfiler().pop();
@@ -557,29 +557,31 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
-			if (this.client.overlay != null) {
+			if (this.client.field_18175 != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
+					this.client.field_18175.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
-					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
+					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.field_18175.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
-			} else if (this.client.currentScreen != null) {
+			} else if (this.client.field_1755 != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
+					this.client.field_1755.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
-					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
+					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.field_1755.getClass().getCanonicalName()));
 					crashReportSection.add(
 						"Mouse location",
-						(CrashCallable<String>)(() -> String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.client.mouse.getX(), this.client.mouse.getY()))
+						(CrashCallable<String>)(() -> String.format(
+								Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.client.field_1729.getX(), this.client.field_1729.getY()
+							))
 					);
 					crashReportSection.add(
 						"Screen size",
@@ -600,7 +602,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void updateWorldIcon() {
-		if (this.client.worldRenderer.getChunkNumber() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
+		if (this.client.field_1769.getChunkNumber() > 10 && this.client.field_1769.isTerrainRenderComplete() && !this.client.method_1576().hasIconFile()) {
 			NativeImage nativeImage = ScreenshotUtils.method_1663(
 				this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), this.client.getFramebuffer()
 			);
@@ -619,7 +621,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 				try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
 					nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
-					nativeImage2.writeFile(this.client.getServer().getIconFile());
+					nativeImage2.writeFile(this.client.method_1576().getIconFile());
 				} catch (IOException var27) {
 					LOGGER.warn("Couldn't save auto screenshot", (Throwable)var27);
 				} finally {
@@ -634,21 +636,21 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			return false;
 		} else {
 			Entity entity = this.client.getCameraEntity();
-			boolean bl = entity instanceof PlayerEntity && !this.client.options.hudHidden;
+			boolean bl = entity instanceof PlayerEntity && !this.client.field_1690.hudHidden;
 			if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
 				ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
 				HitResult hitResult = this.client.hitResult;
 				if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-					BlockState blockState = this.client.world.getBlockState(blockPos);
-					if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
-						bl = blockState.createContainerProvider(this.client.world, blockPos) != null;
+					BlockState blockState = this.client.field_1687.method_8320(blockPos);
+					if (this.client.field_1761.getCurrentGameMode() == GameMode.field_9219) {
+						bl = blockState.createContainerProvider(this.client.field_1687, blockPos) != null;
 					} else {
-						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
+						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.field_1687, blockPos, false);
 						bl = !itemStack.isEmpty()
 							&& (
-								itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition)
-									|| itemStack.canPlaceOn(this.client.world.getTagManager(), cachedBlockPosition)
+								itemStack.method_7940(this.client.field_1687.getTagManager(), cachedBlockPosition)
+									|| itemStack.method_7944(this.client.field_1687.getTagManager(), cachedBlockPosition)
 							);
 					}
 				}
@@ -659,9 +661,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	public void renderWorld(float f, long l) {
-		this.lightmapTextureManager.update(f);
+		this.field_4028.update(f);
 		if (this.client.getCameraEntity() == null) {
-			this.client.setCameraEntity(this.client.player);
+			this.client.setCameraEntity(this.client.field_1724);
 		}
 
 		this.updateTargetedEntity(f);
@@ -674,21 +676,21 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void renderCenter(float f, long l) {
-		WorldRenderer worldRenderer = this.client.worldRenderer;
-		ParticleManager particleManager = this.client.particleManager;
+		WorldRenderer worldRenderer = this.client.field_1769;
+		ParticleManager particleManager = this.client.field_1713;
 		boolean bl = this.shouldRenderBlockOutline();
 		GlStateManager.enableCull();
 		this.client.getProfiler().swap("camera");
 		this.applyCameraTransformations(f);
 		Camera camera = this.camera;
 		camera.update(
-			this.client.world,
-			(Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity()),
-			this.client.options.perspective > 0,
-			this.client.options.perspective == 2,
+			this.client.field_1687,
+			(Entity)(this.client.getCameraEntity() == null ? this.client.field_1724 : this.client.getCameraEntity()),
+			this.client.field_1690.perspective > 0,
+			this.client.field_1690.perspective == 2,
 			f
 		);
-		Frustum frustum = GlMatrixFrustum.get();
+		Frustum frustum = GlMatrixFrustum.method_3696();
 		this.client.getProfiler().swap("clear");
 		GlStateManager.viewport(0, 0, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
 		this.backgroundRenderer.renderBackground(camera, f);
@@ -699,7 +701,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		double e = camera.getPos().y;
 		double g = camera.getPos().z;
 		visibleRegion.setOrigin(d, e, g);
-		if (this.client.options.viewDistance >= 4) {
+		if (this.client.field_1690.viewDistance >= 4) {
 			this.backgroundRenderer.applyFog(camera, -1);
 			this.client.getProfiler().swap("sky");
 			GlStateManager.matrixMode(5889);
@@ -730,18 +732,18 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.backgroundRenderer.applyFog(camera, 0);
 		GlStateManager.shadeModel(7425);
 		if (camera.getPos().y < 128.0) {
-			this.renderAboveClouds(camera, worldRenderer, f, d, e, g);
+			this.method_3206(camera, worldRenderer, f, d, e, g);
 		}
 
 		this.client.getProfiler().swap("prepareterrain");
 		this.backgroundRenderer.applyFog(camera, 0);
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.method_1531().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		GuiLighting.disable();
 		this.client.getProfiler().swap("terrain_setup");
-		this.client.world.method_2935().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
-		worldRenderer.setUpTerrain(camera, visibleRegion, this.field_4021++, this.client.player.isSpectator());
+		this.client.field_1687.method_2935().method_12130().doLightUpdates(Integer.MAX_VALUE, true, true);
+		worldRenderer.method_3273(camera, visibleRegion, this.field_4021++, this.client.field_1724.isSpectator());
 		this.client.getProfiler().swap("updatechunks");
-		this.client.worldRenderer.updateChunks(l);
+		this.client.field_1769.updateChunks(l);
 		this.client.getProfiler().swap("terrain");
 		GlStateManager.matrixMode(5888);
 		GlStateManager.pushMatrix();
@@ -749,9 +751,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		worldRenderer.renderLayer(BlockRenderLayer.field_9178, camera);
 		GlStateManager.enableAlphaTest();
 		worldRenderer.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera);
-		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
+		this.client.method_1531().method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		worldRenderer.renderLayer(BlockRenderLayer.field_9174, camera);
-		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
+		this.client.method_1531().method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.matrixMode(5888);
@@ -759,7 +761,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.pushMatrix();
 		GuiLighting.enable();
 		this.client.getProfiler().swap("entities");
-		worldRenderer.renderEntities(camera, visibleRegion, f);
+		worldRenderer.method_3271(camera, visibleRegion, f);
 		GuiLighting.disable();
 		this.disableLightmap();
 		GlStateManager.matrixMode(5888);
@@ -771,8 +773,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			GlStateManager.enableAlphaTest();
 		}
 
-		if (this.client.debugRenderer.shouldRender()) {
-			this.client.debugRenderer.renderDebuggers(l);
+		if (this.client.field_1709.shouldRender()) {
+			this.client.field_1709.renderDebuggers(l);
 		}
 
 		this.client.getProfiler().swap("destroyProgress");
@@ -780,9 +782,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
-		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
+		this.client.method_1531().method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		worldRenderer.renderPartiallyBrokenBlocks(Tessellator.getInstance(), Tessellator.getInstance().getBufferBuilder(), camera);
-		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
+		this.client.method_1531().method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		GlStateManager.disableBlend();
 		this.enableLightmap();
 		this.backgroundRenderer.applyFog(camera, 0);
@@ -804,7 +806,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.backgroundRenderer.applyFog(camera, 0);
 		GlStateManager.enableBlend();
 		GlStateManager.depthMask(false);
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.method_1531().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		GlStateManager.shadeModel(7425);
 		this.client.getProfiler().swap("translucent");
 		worldRenderer.renderLayer(BlockRenderLayer.field_9179, camera);
@@ -815,7 +817,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.disableFog();
 		if (camera.getPos().y >= 128.0) {
 			this.client.getProfiler().swap("aboveClouds");
-			this.renderAboveClouds(camera, worldRenderer, f, d, e, g);
+			this.method_3206(camera, worldRenderer, f, d, e, g);
 		}
 
 		this.client.getProfiler().swap("hand");
@@ -825,8 +827,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	private void renderAboveClouds(Camera camera, WorldRenderer worldRenderer, float f, double d, double e, double g) {
-		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
+	private void method_3206(Camera camera, WorldRenderer worldRenderer, float f, double d, double e, double g) {
+		if (this.client.field_1690.getCloudRenderMode() != CloudRenderMode.OFF) {
 			this.client.getProfiler().swap("clouds");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
@@ -859,14 +861,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void renderRain() {
-		float f = this.client.world.getRainGradient(1.0F);
-		if (!this.client.options.fancyGraphics) {
+		float f = this.client.field_1687.getRainGradient(1.0F);
+		if (!this.client.field_1690.fancyGraphics) {
 			f /= 2.0F;
 		}
 
 		if (f != 0.0F) {
 			this.random.setSeed((long)this.ticks * 312987231L);
-			ViewableWorld viewableWorld = this.client.world;
+			ViewableWorld viewableWorld = this.client.field_1687;
 			BlockPos blockPos = new BlockPos(this.camera.getPos());
 			int i = 10;
 			double d = 0.0;
@@ -874,9 +876,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			double g = 0.0;
 			int j = 0;
 			int k = (int)(100.0F * f * f);
-			if (this.client.options.particles == ParticlesOption.DECREASED) {
+			if (this.client.field_1690.field_1882 == ParticlesOption.DECREASED) {
 				k >>= 1;
-			} else if (this.client.options.particles == ParticlesOption.MINIMAL) {
+			} else if (this.client.field_1690.field_1882 == ParticlesOption.MINIMAL) {
 				k = 0;
 			}
 
@@ -884,7 +886,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				BlockPos blockPos2 = viewableWorld.getTopPosition(
 					Heightmap.Type.field_13197, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10))
 				);
-				Biome biome = viewableWorld.getBiome(blockPos2);
+				Biome biome = viewableWorld.method_8310(blockPos2);
 				BlockPos blockPos3 = blockPos2.down();
 				if (blockPos2.getY() <= blockPos.getY() + 10
 					&& blockPos2.getY() >= blockPos.getY() - 10
@@ -892,9 +894,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					&& biome.getTemperature(blockPos2) >= 0.15F) {
 					double h = this.random.nextDouble();
 					double m = this.random.nextDouble();
-					BlockState blockState = viewableWorld.getBlockState(blockPos3);
-					FluidState fluidState = viewableWorld.getFluidState(blockPos2);
-					VoxelShape voxelShape = blockState.getCollisionShape(viewableWorld, blockPos3);
+					BlockState blockState = viewableWorld.method_8320(blockPos3);
+					FluidState fluidState = viewableWorld.method_8316(blockPos2);
+					VoxelShape voxelShape = blockState.method_11628(viewableWorld, blockPos3);
 					double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
 					double o = (double)fluidState.getHeight(viewableWorld, blockPos2);
 					double p;
@@ -910,7 +912,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					if (p > -Double.MAX_VALUE) {
 						if (!fluidState.matches(FluidTags.field_15518)
 							&& blockState.getBlock() != Blocks.field_10092
-							&& (blockState.getBlock() != Blocks.field_17350 || !(Boolean)blockState.get(CampfireBlock.LIT))) {
+							&& (blockState.getBlock() != Blocks.field_17350 || !(Boolean)blockState.method_11654(CampfireBlock.field_17352))) {
 							if (this.random.nextInt(++j) == 0) {
 								d = (double)blockPos3.getX() + h;
 								e = (double)((float)blockPos3.getY() + 0.1F) + p - 1.0;
@@ -918,13 +920,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 							}
 
 							this.client
-								.world
+								.field_1687
 								.addParticle(
 									ParticleTypes.field_11242, (double)blockPos3.getX() + h, (double)((float)blockPos3.getY() + 0.1F) + p, (double)blockPos3.getZ() + m, 0.0, 0.0, 0.0
 								);
 						} else {
 							this.client
-								.world
+								.field_1687
 								.addParticle(
 									ParticleTypes.field_11251, (double)blockPos2.getX() + h, (double)((float)blockPos2.getY() + 0.1F) - q, (double)blockPos2.getZ() + m, 0.0, 0.0, 0.0
 								);
@@ -937,19 +939,19 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.field_3995 = 0;
 				if (e > (double)(blockPos.getY() + 1)
 					&& viewableWorld.getTopPosition(Heightmap.Type.field_13197, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
-					this.client.world.playSound(d, e, g, SoundEvents.field_15020, SoundCategory.field_15252, 0.1F, 0.5F, false);
+					this.client.field_1687.playSound(d, e, g, SoundEvents.field_15020, SoundCategory.field_15252, 0.1F, 0.5F, false);
 				} else {
-					this.client.world.playSound(d, e, g, SoundEvents.field_14946, SoundCategory.field_15252, 0.2F, 1.0F, false);
+					this.client.field_1687.playSound(d, e, g, SoundEvents.field_14946, SoundCategory.field_15252, 0.2F, 1.0F, false);
 				}
 			}
 		}
 	}
 
 	protected void renderWeather(float f) {
-		float g = this.client.world.getRainGradient(f);
+		float g = this.client.field_1687.getRainGradient(f);
 		if (!(g <= 0.0F)) {
 			this.enableLightmap();
-			World world = this.client.world;
+			World world = this.client.field_1687;
 			int i = MathHelper.floor(this.camera.getPos().x);
 			int j = MathHelper.floor(this.camera.getPos().y);
 			int k = MathHelper.floor(this.camera.getPos().z);
@@ -967,7 +969,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			double h = this.camera.getPos().z;
 			int l = MathHelper.floor(e);
 			int m = 5;
-			if (this.client.options.fancyGraphics) {
+			if (this.client.field_1690.fancyGraphics) {
 				m = 10;
 			}
 
@@ -983,7 +985,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					double s = (double)this.field_3991[r] * 0.5;
 					double t = (double)this.field_3989[r] * 0.5;
 					mutable.set(q, 0, p);
-					Biome biome = world.getBiome(mutable);
+					Biome biome = world.method_8310(mutable);
 					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
 						int u = world.getTopPosition(Heightmap.Type.field_13197, mutable).getY();
 						int v = j - m;
@@ -1012,8 +1014,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 									}
 
 									n = 0;
-									this.client.getTextureManager().bindTexture(RAIN_LOC);
-									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+									this.client.method_1531().bindTexture(RAIN_LOC);
+									bufferBuilder.method_1328(7, VertexFormats.field_1584);
 								}
 
 								double z = -((double)(this.ticks + q * q * 3121 + q * 45238971 + p * p * 418711 + p * 13761 & 31) + (double)f)
@@ -1054,8 +1056,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 									}
 
 									n = 1;
-									this.client.getTextureManager().bindTexture(SNOW_LOC);
-									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+									this.client.method_1531().bindTexture(SNOW_LOC);
+									bufferBuilder.method_1328(7, VertexFormats.field_1584);
 								}
 
 								double z = (double)(-((float)(this.ticks & 511) + f) / 512.0F);
@@ -1142,8 +1144,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-		float m = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
+		bufferBuilder.method_1328(7, VertexFormats.field_1576);
+		float m = MinecraftClient.getInstance().field_1690.getTextBackgroundOpacity(0.25F);
 		bufferBuilder.vertex((double)(-l - 1), (double)(-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
 		bufferBuilder.vertex((double)(-l - 1), (double)(8 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
 		bufferBuilder.vertex((double)(l + 1), (double)(8 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
@@ -1194,7 +1196,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			GlStateManager.rotatef(900.0F * MathHelper.abs(MathHelper.sin(n)), 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 0.0F, 0.0F, 1.0F);
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.field_4319);
+			this.client.method_1480().renderItem(this.floatingItem, ModelTransformation.Type.field_4319);
 			GlStateManager.popAttributes();
 			GlStateManager.popMatrix();
 			GuiLighting.disable();

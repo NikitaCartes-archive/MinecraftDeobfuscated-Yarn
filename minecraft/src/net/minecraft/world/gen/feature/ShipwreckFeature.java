@@ -38,12 +38,12 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 
 	@Override
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getShipwreckSpacing();
+		return chunkGenerator.method_12109().getShipwreckSpacing();
 	}
 
 	@Override
 	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getShipwreckSeparation();
+		return chunkGenerator.method_12109().getShipwreckSeparation();
 	}
 
 	public static class Start extends StructureStart {
@@ -52,11 +52,11 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			ShipwreckFeatureConfig shipwreckFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.SHIPWRECK);
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			ShipwreckFeatureConfig shipwreckFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13589);
 			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this.children, this.random, shipwreckFeatureConfig);
+			ShipwreckGenerator.method_14834(structureManager, blockPos, blockRotation, this.children, this.random, shipwreckFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

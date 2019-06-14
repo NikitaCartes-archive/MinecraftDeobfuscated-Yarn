@@ -28,30 +28,30 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 			if (bl || blockPos2.isWithinDistance(blockPos, 3.5)) {
 				if (blockPos2.getY() < blockPos.getY()) {
 					if (bl) {
-						this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+						this.setBlockState(iWorld, blockPos2, Blocks.field_9987.method_9564());
 					} else if (blockPos2.getY() < blockPos.getY()) {
-						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.getDefaultState());
+						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.method_9564());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.method_9564());
 				} else if (!bl) {
-					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.method_9564());
 				} else if (this.open) {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());
+					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.method_9564());
 				} else {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10124.getDefaultState());
+					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10124.method_9564());
 				}
 			}
 		}
 
 		for (int i = 0; i < 4; i++) {
-			this.setBlockState(iWorld, blockPos.up(i), Blocks.field_9987.getDefaultState());
+			this.setBlockState(iWorld, blockPos.up(i), Blocks.field_9987.method_9564());
 		}
 
 		BlockPos blockPos3 = blockPos.up(2);
 
 		for (Direction direction : Direction.Type.field_11062) {
-			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction));
+			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, direction));
 		}
 
 		return true;

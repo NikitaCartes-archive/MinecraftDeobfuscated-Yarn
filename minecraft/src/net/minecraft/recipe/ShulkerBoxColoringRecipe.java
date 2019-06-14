@@ -75,6 +75,6 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SHULKER_BOX;
+		return RecipeSerializer.field_9041;
 	}
 }

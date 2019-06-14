@@ -18,31 +18,31 @@ import net.minecraft.world.GameMode;
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
-	private final TutorialManager manager;
+	private final TutorialManager field_5634;
 	private TutorialToast field_5637;
 	private int ticks;
 	private int field_5635;
 
 	public PunchTreeTutorialStepHandler(TutorialManager tutorialManager) {
-		this.manager = tutorialManager;
+		this.field_5634 = tutorialManager;
 	}
 
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.field_5634.getGameMode() != GameMode.field_9215) {
+			this.field_5634.setStep(TutorialStep.field_5653);
 		} else {
 			if (this.ticks == 1) {
-				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
+				ClientPlayerEntity clientPlayerEntity = this.field_5634.getClient().field_1724;
 				if (clientPlayerEntity != null) {
 					if (clientPlayerEntity.inventory.contains(ItemTags.field_15539)) {
-						this.manager.setStep(TutorialStep.field_5655);
+						this.field_5634.setStep(TutorialStep.field_5655);
 						return;
 					}
 
 					if (FindTreeTutorialStepHandler.method_4896(clientPlayerEntity)) {
-						this.manager.setStep(TutorialStep.field_5655);
+						this.field_5634.setStep(TutorialStep.field_5655);
 						return;
 					}
 				}
@@ -50,7 +50,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
 				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
-				this.manager.getClient().getToastManager().add(this.field_5637);
+				this.field_5634.getClient().method_1566().add(this.field_5637);
 			}
 		}
 	}
@@ -72,7 +72,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (f >= 1.0F) {
-				this.manager.setStep(TutorialStep.field_5652);
+				this.field_5634.setStep(TutorialStep.field_5652);
 			}
 		} else if (this.field_5637 != null) {
 			this.field_5637.setProgress(0.0F);
@@ -84,7 +84,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void onSlotUpdate(ItemStack itemStack) {
 		if (ItemTags.field_15539.contains(itemStack.getItem())) {
-			this.manager.setStep(TutorialStep.field_5655);
+			this.field_5634.setStep(TutorialStep.field_5655);
 		}
 	}
 }

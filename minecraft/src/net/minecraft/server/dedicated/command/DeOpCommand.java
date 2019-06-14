@@ -20,7 +20,7 @@ public class DeOpCommand {
 			CommandManager.literal("deop")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
+					CommandManager.argument("targets", GameProfileArgumentType.create())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder

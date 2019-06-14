@@ -24,7 +24,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
 				for (int k = MathHelper.floor(-f); k <= MathHelper.ceil(f); k++) {
 					if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F)) {
-						this.setBlockState(iWorld, blockPos.add(j, i, k), Blocks.field_10471.getDefaultState());
+						this.setBlockState(iWorld, blockPos.add(j, i, k), Blocks.field_10471.method_9564());
 					}
 				}
 			}

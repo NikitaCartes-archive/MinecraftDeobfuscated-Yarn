@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
 	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
-	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
+	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.method_11620().blocksMovement();
 	private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
@@ -39,12 +39,12 @@ public class Heightmap {
 			for (int k = 0; k < 16; k++) {
 				for (int l = 0; l < 16; l++) {
 					for (Heightmap.Type type : set) {
-						objectList.add(chunk.getHeightmap(type));
+						objectList.add(chunk.method_12032(type));
 					}
 
 					for (int m = j - 1; m >= 0; m--) {
 						pooledMutable.method_10113(k, m, l);
-						BlockState blockState = chunk.getBlockState(pooledMutable);
+						BlockState blockState = chunk.method_8320(pooledMutable);
 						if (blockState.getBlock() != Blocks.field_10124) {
 							while (objectListIterator.hasNext()) {
 								Heightmap heightmap = (Heightmap)objectListIterator.next();
@@ -81,7 +81,7 @@ public class Heightmap {
 
 				for (int m = j - 1; m >= 0; m--) {
 					mutable.set(i, m, k);
-					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
+					if (this.blockPredicate.test(this.chunk.method_8320(mutable))) {
 						this.set(i, k, m + 1);
 						return true;
 					}
@@ -131,12 +131,12 @@ public class Heightmap {
 		field_13195("OCEAN_FLOOR_WG", Heightmap.Purpose.field_13207, Heightmap.SUFFOCATES),
 		field_13200("OCEAN_FLOOR", Heightmap.Purpose.field_13206, Heightmap.SUFFOCATES),
 		field_13197(
-			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()
+			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.method_11620().blocksMovement() || !blockState.method_11618().isEmpty()
 		),
 		field_13203(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.Purpose.field_13206,
-			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
+			blockState -> (blockState.method_11620().blocksMovement() || !blockState.method_11618().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
 		private final String name;

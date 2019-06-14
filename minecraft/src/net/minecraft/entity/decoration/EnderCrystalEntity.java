@@ -31,7 +31,7 @@ public class EnderCrystalEntity extends Entity {
 
 	public EnderCrystalEntity(EntityType<? extends EnderCrystalEntity> entityType, World world) {
 		super(entityType, world);
-		this.inanimate = true;
+		this.field_6033 = true;
 		this.field_7034 = this.random.nextInt(100000);
 	}
 
@@ -57,10 +57,10 @@ public class EnderCrystalEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		this.field_7034++;
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			BlockPos blockPos = new BlockPos(this);
-			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
-				this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
+			if (this.field_6002.field_9247 instanceof TheEndDimension && this.field_6002.method_8320(blockPos).isAir()) {
+				this.field_6002.method_8501(blockPos, Blocks.field_10036.method_9564());
 			}
 		}
 	}
@@ -97,10 +97,10 @@ public class EnderCrystalEntity extends Entity {
 		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.removed && !this.world.isClient) {
+			if (!this.removed && !this.field_6002.isClient) {
 				this.remove();
 				if (!damageSource.isExplosive()) {
-					this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
+					this.field_6002.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
 				}
 
 				this.crystalDestroyed(damageSource);
@@ -117,8 +117,8 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	private void crystalDestroyed(DamageSource damageSource) {
-		if (this.world.dimension instanceof TheEndDimension) {
-			TheEndDimension theEndDimension = (TheEndDimension)this.world.dimension;
+		if (this.field_6002.field_9247 instanceof TheEndDimension) {
+			TheEndDimension theEndDimension = (TheEndDimension)this.field_6002.field_9247;
 			EnderDragonFight enderDragonFight = theEndDimension.method_12513();
 			if (enderDragonFight != null) {
 				enderDragonFight.crystalDestroyed(this, damageSource);

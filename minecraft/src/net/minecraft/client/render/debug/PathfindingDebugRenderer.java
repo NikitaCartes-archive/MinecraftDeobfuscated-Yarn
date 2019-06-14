@@ -157,7 +157,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
@@ -181,6 +181,6 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private Camera method_20557() {
-		return this.client.gameRenderer.getCamera();
+		return this.client.field_1773.getCamera();
 	}
 }

@@ -27,13 +27,13 @@ public class SleepTask extends Task<LivingEntity> {
 			return false;
 		} else {
 			GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18438).get();
-			if (!Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension())) {
+			if (!Objects.equals(serverWorld.method_8597().method_12460(), globalPos.getDimension())) {
 				return false;
 			} else {
-				BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
-				return globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0)
+				BlockState blockState = serverWorld.method_8320(globalPos.getPos());
+				return globalPos.getPos().isWithinDistance(livingEntity.method_19538(), 2.0)
 					&& blockState.getBlock().matches(BlockTags.field_16443)
-					&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
+					&& !(Boolean)blockState.method_11654(BedBlock.field_9968);
 			}
 		}
 	}
@@ -47,7 +47,7 @@ public class SleepTask extends Task<LivingEntity> {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
 			return livingEntity.getBrain().hasActivity(Activity.field_18597)
 				&& livingEntity.y > (double)blockPos.getY() + 0.4
-				&& blockPos.isWithinDistance(livingEntity.getPos(), 1.14);
+				&& blockPos.isWithinDistance(livingEntity.method_19538(), 1.14);
 		}
 	}
 

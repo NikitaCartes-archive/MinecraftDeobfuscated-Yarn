@@ -38,7 +38,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 	protected void drawBackground(float f, int i, int j) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.method_1531().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -50,7 +50,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		boolean bl4 = false;
 		MapState mapState;
 		if (itemStack.getItem() == Items.field_8204) {
-			mapState = FilledMapItem.getMapState(itemStack, this.minecraft.world);
+			mapState = FilledMapItem.method_7997(itemStack, this.minecraft.field_1687);
 			if (mapState != null) {
 				if (mapState.locked) {
 					bl4 = true;
@@ -80,7 +80,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		} else if (bl) {
 			this.blit(i + 67 + 16, j + 13, this.containerWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 86, j + 16, 0.34F);
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.minecraft.method_1531().bindTexture(TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 			this.blit(i + 67, j + 13 + 16, this.containerWidth, 132, 50, 66);
@@ -89,7 +89,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		} else if (bl3) {
 			this.blit(i + 67, j + 13, this.containerWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.minecraft.method_1531().bindTexture(TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 			this.blit(i + 66, j + 12, 0, this.containerHeight, 66, 66);
@@ -105,7 +105,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)i, (float)j, 1.0F);
 			GlStateManager.scalef(f, f, 1.0F);
-			this.minecraft.gameRenderer.getMapRenderer().draw(mapState, true);
+			this.minecraft.field_1773.getMapRenderer().draw(mapState, true);
 			GlStateManager.popMatrix();
 		}
 	}

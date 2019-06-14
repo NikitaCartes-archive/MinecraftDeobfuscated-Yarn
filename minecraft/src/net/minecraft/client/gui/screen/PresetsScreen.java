@@ -58,11 +58,11 @@ public class PresetsScreen extends Screen {
 		this.field_2525 = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select"), buttonWidget -> {
 				this.parent.method_2139(this.customPresetField.getText());
-				this.minecraft.openScreen(this.parent);
+				this.minecraft.method_1507(this.parent);
 			})
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.parent))
 		);
 		this.method_20102(this.field_2521.getSelected() != null);
 	}
@@ -108,7 +108,7 @@ public class PresetsScreen extends Screen {
 	private static void addPreset(
 		String string, ItemConvertible itemConvertible, Biome biome, List<String> list, FlatChunkGeneratorLayer... flatChunkGeneratorLayers
 	) {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.method_12117();
 
 		for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
 			flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
@@ -310,7 +310,7 @@ public class PresetsScreen extends Screen {
 
 			private void method_2198(int i, int j) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+				SuperflatPresetsListWidget.this.minecraft.method_1531().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
 				DrawableHelper.blit(i, j, PresetsScreen.this.blitOffset, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

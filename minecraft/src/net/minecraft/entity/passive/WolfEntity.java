@@ -131,7 +131,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14772, 0.15F, 1.0F);
 	}
 
@@ -180,14 +180,14 @@ public class WolfEntity extends TameableEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
+		if (!this.field_6002.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
-			this.world.sendEntityStatus(this, (byte)8);
+			this.field_6002.sendEntityStatus(this, (byte)8);
 		}
 
-		if (!this.world.isClient && this.getTarget() == null && this.isAngry()) {
+		if (!this.field_6002.isClient && this.getTarget() == null && this.isAngry()) {
 			this.setAngry(false);
 		}
 	}
@@ -223,14 +223,14 @@ public class WolfEntity extends TameableEntity {
 				}
 
 				if (this.shakeProgress > 0.4F) {
-					float f = (float)this.getBoundingBox().minY;
+					float f = (float)this.method_5829().minY;
 					int i = (int)(MathHelper.sin((this.shakeProgress - 0.4F) * (float) Math.PI) * 7.0F);
-					Vec3d vec3d = this.getVelocity();
+					Vec3d vec3d = this.method_18798();
 
 					for (int j = 0; j < i; j++) {
 						float g = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
 						float h = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
-						this.world.addParticle(ParticleTypes.field_11202, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
+						this.field_6002.addParticle(ParticleTypes.field_11202, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
 					}
 				}
 			}
@@ -351,7 +351,7 @@ public class WolfEntity extends TameableEntity {
 				}
 			}
 
-			if (this.isOwner(playerEntity) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
+			if (this.isOwner(playerEntity) && !this.field_6002.isClient && !this.isBreedingItem(itemStack)) {
 				this.sitGoal.setEnabledWithOwner(!this.isSitting());
 				this.jumping = false;
 				this.navigation.stop();
@@ -362,7 +362,7 @@ public class WolfEntity extends TameableEntity {
 				itemStack.decrement(1);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(playerEntity);
 					this.navigation.stop();
@@ -370,10 +370,10 @@ public class WolfEntity extends TameableEntity {
 					this.sitGoal.setEnabledWithOwner(true);
 					this.setHealth(20.0F);
 					this.showEmoteParticle(true);
-					this.world.sendEntityStatus(this, (byte)7);
+					this.field_6002.sendEntityStatus(this, (byte)7);
 				} else {
 					this.showEmoteParticle(false);
-					this.world.sendEntityStatus(this, (byte)6);
+					this.field_6002.sendEntityStatus(this, (byte)6);
 				}
 			}
 
@@ -437,7 +437,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	public WolfEntity method_6717(PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.field_6055.create(this.world);
+		WolfEntity wolfEntity = EntityType.field_6055.method_5883(this.field_6002);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);

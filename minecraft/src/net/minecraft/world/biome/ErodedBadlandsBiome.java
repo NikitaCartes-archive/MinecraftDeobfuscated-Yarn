@@ -15,7 +15,7 @@ public final class ErodedBadlandsBiome extends Biome {
 	public ErodedBadlandsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15684, SurfaceBuilder.BADLANDS_CONFIG)
+				.method_8737(SurfaceBuilder.field_15684, SurfaceBuilder.field_15672)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.field_9354)
 				.depth(0.1F)
@@ -26,8 +26,8 @@ public final class ErodedBadlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("badlands")
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13691));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13691));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

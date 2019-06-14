@@ -11,15 +11,15 @@ import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
 public class SpawnerMinecartEntity extends AbstractMinecartEntity {
-	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
+	private final MobSpawnerLogic field_7746 = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(int i) {
-			SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
+			SpawnerMinecartEntity.this.field_6002.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override
-		public World getWorld() {
-			return SpawnerMinecartEntity.this.world;
+		public World method_8271() {
+			return SpawnerMinecartEntity.this.field_6002;
 		}
 
 		@Override
@@ -42,32 +42,32 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10260.getDefaultState();
+	public BlockState method_7517() {
+		return Blocks.field_10260.method_9564();
 	}
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.logic.deserialize(compoundTag);
+		this.field_7746.deserialize(compoundTag);
 	}
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		this.logic.serialize(compoundTag);
+		this.field_7746.serialize(compoundTag);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void handleStatus(byte b) {
-		this.logic.method_8275(b);
+		this.field_7746.method_8275(b);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		this.logic.update();
+		this.field_7746.update();
 	}
 
 	@Override

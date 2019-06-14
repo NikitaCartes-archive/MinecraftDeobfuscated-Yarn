@@ -361,7 +361,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		);
 		this.worlds.put(DimensionType.field_13072, serverWorld);
 		this.initScoreboard(serverWorld.getPersistentStateManager());
-		serverWorld.getWorldBorder().load(levelProperties);
+		serverWorld.method_8621().method_17905(levelProperties);
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.field_13072);
 		if (!levelProperties.isInitialized()) {
 			try {
@@ -438,7 +438,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
 		this.setLoadingStage(new TranslatableText("menu.generatingTerrain"));
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
-		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
+		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.field_9247.method_12460()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.method_14178();
@@ -502,7 +502,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (!bl) {
-				LOGGER.info("Saving chunks for level '{}'/{}", serverWorld.getLevelProperties().getLevelName(), DimensionType.getId(serverWorld.dimension.getType()));
+				LOGGER.info("Saving chunks for level '{}'/{}", serverWorld.method_8401().getLevelName(), DimensionType.getId(serverWorld.field_9247.method_12460()));
 			}
 
 			try {
@@ -515,8 +515,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.field_13072);
-		LevelProperties levelProperties = serverWorld2.getLevelProperties();
-		serverWorld2.getWorldBorder().save(levelProperties);
+		LevelProperties levelProperties = serverWorld2.method_8401();
+		serverWorld2.method_8621().method_17904(levelProperties);
 		levelProperties.setCustomBossEvents(this.getBossBarManager().toTag());
 		serverWorld2.getSaveHandler().saveWorld(levelProperties, this.getPlayerManager().getUserData());
 		return bl4;
@@ -791,15 +791,15 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			if (serverWorld.dimension.getType() == DimensionType.field_13072 || this.isNetherAllowed()) {
+			if (serverWorld.field_9247.method_12460() == DimensionType.field_13072 || this.isNetherAllowed()) {
 				this.profiler
-					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
+					.push((Supplier<String>)(() -> serverWorld.method_8401().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.field_9247.method_12460())));
 				if (this.ticks % 20 == 0) {
 					this.profiler.push("timeSync");
 					this.playerManager
 						.sendToDimension(
 							new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.field_19396)),
-							serverWorld.dimension.getType()
+							serverWorld.field_9247.method_12460()
 						);
 					this.profiler.pop();
 				}
@@ -1086,7 +1086,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 	public void setDifficulty(Difficulty difficulty, boolean bl) {
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			LevelProperties levelProperties = serverWorld.getLevelProperties();
+			LevelProperties levelProperties = serverWorld.method_8401();
 			if (bl || !levelProperties.isDifficultyLocked()) {
 				if (levelProperties.isHardcore()) {
 					levelProperties.setDifficulty(Difficulty.field_5807);
@@ -1106,7 +1106,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 	public void setDifficultyLocked(boolean bl) {
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			LevelProperties levelProperties = serverWorld.getLevelProperties();
+			LevelProperties levelProperties = serverWorld.method_8401();
 			levelProperties.setDifficultyLocked(bl);
 		}
 
@@ -1114,7 +1114,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	private void sendDifficulty(ServerPlayerEntity serverPlayerEntity) {
-		LevelProperties levelProperties = serverPlayerEntity.getServerWorld().getLevelProperties();
+		LevelProperties levelProperties = serverPlayerEntity.getServerWorld().method_8401();
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 	}
 
@@ -1169,8 +1169,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (serverWorld != null) {
-				LevelProperties levelProperties = serverWorld.getLevelProperties();
-				snooper.addInfo("world[" + i + "][dimension]", serverWorld.dimension.getType());
+				LevelProperties levelProperties = serverWorld.method_8401();
+				snooper.addInfo("world[" + i + "][dimension]", serverWorld.field_9247.method_12460());
 				snooper.addInfo("world[" + i + "][mode]", levelProperties.getGameMode());
 				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
 				snooper.addInfo("world[" + i + "][hardcore]", levelProperties.isHardcore());
@@ -1271,7 +1271,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 	public void setDefaultGameMode(GameMode gameMode) {
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			serverWorld.getLevelProperties().setGameMode(gameMode);
+			serverWorld.method_8401().setGameMode(gameMode);
 		}
 	}
 
@@ -1392,7 +1392,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		} else {
 			this.getPlayerManager().saveAllPlayerData();
 			this.dataPackContainerManager.callCreators();
-			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).getLevelProperties());
+			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).method_8401());
 			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}

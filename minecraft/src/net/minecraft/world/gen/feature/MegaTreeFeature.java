@@ -76,7 +76,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void makeSquaredLeafLayer(
+	protected void method_13528(
 		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
 	) {
 		int j = i * i;
@@ -88,14 +88,14 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (m + n < 7 && m * m + n * n <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
+						this.method_12773(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}
 		}
 	}
 
-	protected void makeRoundLeafLayer(
+	protected void method_13526(
 		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
 	) {
 		int j = i * i;
@@ -105,7 +105,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (k * k + l * l <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
+						this.method_12773(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}

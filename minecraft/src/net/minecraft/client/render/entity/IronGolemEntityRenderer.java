@@ -14,7 +14,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 
 	public IronGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new IronGolemEntityModel<>(), 0.7F);
-		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
+		this.method_4046(new IronGolemFlowerFeatureRenderer(this));
 	}
 
 	protected Identifier method_3987(IronGolemEntity ironGolemEntity) {

@@ -74,7 +74,7 @@ public class LootManager extends JsonDataLoader {
 
 	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootSupplier lootSupplier, Function<Identifier, LootSupplier> function) {
 		Set<Identifier> set = ImmutableSet.of(identifier);
-		lootSupplier.check(lootTableReporter.makeChild("{" + identifier.toString() + "}"), function, set, lootSupplier.getType());
+		lootSupplier.method_330(lootTableReporter.makeChild("{" + identifier.toString() + "}"), function, set, lootSupplier.method_322());
 	}
 
 	public static JsonElement toJson(LootSupplier lootSupplier) {

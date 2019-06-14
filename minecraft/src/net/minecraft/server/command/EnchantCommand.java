@@ -38,7 +38,7 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.itemEnchantment())
+							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -75,7 +75,7 @@ public class EnchantCommand {
 					ItemStack itemStack = livingEntity.getMainHandStack();
 					if (!itemStack.isEmpty()) {
 						if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.contains(EnchantmentHelper.getEnchantments(itemStack).keySet(), enchantment)) {
-							itemStack.addEnchantment(enchantment, i);
+							itemStack.method_7978(enchantment, i);
 							j++;
 						} else if (collection.size() == 1) {
 							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());

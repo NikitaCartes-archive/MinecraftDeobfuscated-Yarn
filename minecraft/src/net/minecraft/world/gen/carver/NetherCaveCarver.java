@@ -74,10 +74,10 @@ public class NetherCaveCarver extends CaveCarver {
 		} else {
 			bitSet.set(q);
 			mutable.set(l, o, m);
-			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+			if (this.canAlwaysCarveBlock(chunk.method_8320(mutable))) {
 				BlockState blockState;
 				if (o <= 31) {
-					blockState = LAVA.getBlockState();
+					blockState = field_13296.getBlockState();
 				} else {
 					blockState = CAVE_AIR;
 				}

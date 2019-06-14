@@ -18,14 +18,14 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TheEndBiomeSource extends BiomeSource {
-	private final SimplexNoiseSampler noise;
-	private final ChunkRandom random;
+	private final SimplexNoiseSampler field_9831;
+	private final ChunkRandom field_9829;
 	private final Biome[] biomes = new Biome[]{Biomes.field_9411, Biomes.field_9442, Biomes.field_9447, Biomes.field_9457, Biomes.field_9465};
 
 	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
-		this.random = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
-		this.random.consume(17292);
-		this.noise = new SimplexNoiseSampler(this.random);
+		this.field_9829 = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
+		this.field_9829.consume(17292);
+		this.field_9831 = new SimplexNoiseSampler(this.field_9829);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class TheEndBiomeSource extends BiomeSource {
 			for (int p = -12; p <= 12; p++) {
 				long q = (long)(k + o);
 				long r = (long)(l + p);
-				if (q * q + r * r > 4096L && this.noise.sample((double)q, (double)r) < -0.9F) {
+				if (q * q + r * r > 4096L && this.field_9831.sample((double)q, (double)r) < -0.9F) {
 					float g = (MathHelper.abs((float)q) * 3439.0F + MathHelper.abs((float)r) * 147.0F) % 13.0F + 9.0F;
 					float h = (float)(m - o * 2);
 					float s = (float)(n - p * 2);
@@ -136,10 +136,10 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
+	public boolean method_8754(StructureFeature<?> structureFeature) {
 		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.biomes) {
-				if (biome.hasStructureFeature(structureFeaturex)) {
+				if (biome.method_8684(structureFeaturex)) {
 					return true;
 				}
 			}
@@ -152,7 +152,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.biomes) {
-				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+				this.topMaterials.add(biome.method_8722().getTopMaterial());
 			}
 		}
 
