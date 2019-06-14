@@ -21,7 +21,7 @@ implements ArgumentType<Identifier> {
     private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:pig", "cow");
     public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("entity.notFound", object));
 
-    public static EntitySummonArgumentType entitySummon() {
+    public static EntitySummonArgumentType create() {
         return new EntitySummonArgumentType();
     }
 

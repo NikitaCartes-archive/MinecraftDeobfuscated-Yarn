@@ -105,7 +105,7 @@ implements DataProvider {
     }
 
     /*
-     * Opcode count of 15339 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
+     * Opcode count of 15344 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
      */
     private void generate(Consumer<RecipeJsonProvider> consumer) {
         ShapedRecipeJsonFactory.create(Blocks.ACACIA_WOOD, 3).input(Character.valueOf('#'), Blocks.ACACIA_LOG).pattern("##").pattern("##").group("bark").criterion("has_log", this.method_10426(Blocks.ACACIA_LOG)).offerTo(consumer);
@@ -688,6 +688,7 @@ implements DataProvider {
         ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR_FADE).offerTo(consumer, "firework_star_fade");
         ComplexRecipeJsonFactory.create(RecipeSerializer.MAP_CLONING).offerTo(consumer, "map_cloning");
         ComplexRecipeJsonFactory.create(RecipeSerializer.MAP_EXTENDING).offerTo(consumer, "map_extending");
+        ComplexRecipeJsonFactory.create(RecipeSerializer.field_19421).offerTo(consumer, "repair_item");
         ComplexRecipeJsonFactory.create(RecipeSerializer.SHIELD_DECORATION).offerTo(consumer, "shield_decoration");
         ComplexRecipeJsonFactory.create(RecipeSerializer.SHULKER_BOX).offerTo(consumer, "shulker_box_coloring");
         ComplexRecipeJsonFactory.create(RecipeSerializer.TIPPED_ARROW).offerTo(consumer, "tipped_arrow");

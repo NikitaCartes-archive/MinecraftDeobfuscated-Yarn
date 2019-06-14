@@ -30,14 +30,14 @@ implements Packet<ClientPlayPacketListener> {
     public PlayerListS2CPacket(Action action, ServerPlayerEntity ... serverPlayerEntitys) {
         this.action = action;
         for (ServerPlayerEntity serverPlayerEntity : serverPlayerEntitys) {
-            this.entries.add(new Entry(serverPlayerEntity.getGameProfile(), serverPlayerEntity.pingMilliseconds, serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.method_14206()));
+            this.entries.add(new Entry(serverPlayerEntity.getGameProfile(), serverPlayerEntity.field_13967, serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.method_14206()));
         }
     }
 
     public PlayerListS2CPacket(Action action, Iterable<ServerPlayerEntity> iterable) {
         this.action = action;
         for (ServerPlayerEntity serverPlayerEntity : iterable) {
-            this.entries.add(new Entry(serverPlayerEntity.getGameProfile(), serverPlayerEntity.pingMilliseconds, serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.method_14206()));
+            this.entries.add(new Entry(serverPlayerEntity.getGameProfile(), serverPlayerEntity.field_13967, serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.method_14206()));
         }
     }
 

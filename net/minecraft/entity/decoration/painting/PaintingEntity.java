@@ -82,11 +82,17 @@ extends AbstractDecorationEntity {
 
     @Override
     public int getWidthPixels() {
+        if (this.motive == null) {
+            return 1;
+        }
         return this.motive.getWidth();
     }
 
     @Override
     public int getHeightPixels() {
+        if (this.motive == null) {
+            return 1;
+        }
         return this.motive.getHeight();
     }
 
@@ -117,7 +123,7 @@ extends AbstractDecorationEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
         BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
         this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }

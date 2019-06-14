@@ -35,7 +35,7 @@ implements ArgumentType<GameProfileArgument> {
         return commandContext.getArgument(string, GameProfileArgument.class).getNames(commandContext.getSource());
     }
 
-    public static GameProfileArgumentType gameProfile() {
+    public static GameProfileArgumentType create() {
         return new GameProfileArgumentType();
     }
 

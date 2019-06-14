@@ -203,7 +203,7 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public boolean isAttackable() {
+    public boolean canPlayerAttack() {
         return false;
     }
 

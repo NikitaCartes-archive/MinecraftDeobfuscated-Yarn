@@ -30,7 +30,7 @@ implements ArgumentType<PosArgument> {
     public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.unloaded", new Object[0]));
     public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofworld", new Object[0]));
 
-    public static BlockPosArgumentType blockPos() {
+    public static BlockPosArgumentType create() {
         return new BlockPosArgumentType();
     }
 

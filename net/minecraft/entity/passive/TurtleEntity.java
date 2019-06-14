@@ -266,8 +266,8 @@ extends AnimalEntity {
     }
 
     @Override
-    protected float calculateStepDelta() {
-        return this.distanceWalked + 0.15f;
+    protected float method_5867() {
+        return this.field_5994 + 0.15f;
     }
 
     @Override

@@ -34,7 +34,7 @@ implements ArgumentType<PosArgument> {
         this.centerIntegers = bl;
     }
 
-    public static Vec2ArgumentType vec2() {
+    public static Vec2ArgumentType create() {
         return new Vec2ArgumentType(true);
     }
 

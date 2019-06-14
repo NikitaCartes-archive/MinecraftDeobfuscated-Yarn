@@ -26,7 +26,7 @@ implements ArgumentType<String> {
     private static final DynamicCommandExceptionType READONLY_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.objective.readonly", object));
     public static final DynamicCommandExceptionType LONG_NAME_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.scoreboard.objectives.add.longName", object));
 
-    public static ObjectiveArgumentType objective() {
+    public static ObjectiveArgumentType create() {
         return new ObjectiveArgumentType();
     }
 

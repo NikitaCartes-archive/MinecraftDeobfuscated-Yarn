@@ -130,7 +130,7 @@ implements FlyingItemEntity {
             for (LivingEntity livingEntity : list) {
                 double d = this.squaredDistanceTo(livingEntity);
                 if (!(d < 16.0) || !ThrownPotionEntity.doesWaterHurt(livingEntity)) continue;
-                livingEntity.damage(DamageSource.DROWN, 1.0f);
+                livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
             }
         }
     }

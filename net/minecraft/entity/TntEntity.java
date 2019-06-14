@@ -29,7 +29,7 @@ extends Entity {
 
     public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
         super(entityType, world);
-        this.inanimate = true;
+        this.field_6033 = true;
     }
 
     public TntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
@@ -79,7 +79,7 @@ extends Entity {
                 this.explode();
             }
         } else {
-            this.checkWaterState();
+            this.method_5713();
             this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
         }
     }

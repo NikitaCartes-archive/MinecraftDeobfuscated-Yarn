@@ -63,7 +63,7 @@ extends Entity {
     public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
         this((EntityType<? extends FallingBlockEntity>)EntityType.FALLING_BLOCK, world);
         this.block = blockState;
-        this.inanimate = true;
+        this.field_6033 = true;
         this.setPosition(d, e + (double)((1.0f - this.getHeight()) / 2.0f), f);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = d;
@@ -73,7 +73,7 @@ extends Entity {
     }
 
     @Override
-    public boolean isAttackable() {
+    public boolean canPlayerAttack() {
         return false;
     }
 

@@ -159,8 +159,8 @@ extends PersistentState {
             if (mapFrameMarker != null && itemFrameEntity.getEntityId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
                 this.icons.remove("frame-" + mapFrameMarker.getEntityId());
             }
-            MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
-            this.addIcon(MapIcon.Type.FRAME, playerEntity.world, "frame-" + itemFrameEntity.getEntityId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.facing.getHorizontal() * 90, null);
+            MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getEntityId());
+            this.addIcon(MapIcon.Type.FRAME, playerEntity.world, "frame-" + itemFrameEntity.getEntityId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
         if ((compoundTag = itemStack.getTag()) != null && compoundTag.containsKey("Decorations", 9)) {

@@ -134,7 +134,7 @@ implements Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.setPosition(d, e, f);
         this.setRotation(g, h);
     }
@@ -342,6 +342,7 @@ implements Projectile {
                 ((LivingEntity)entity2).onAttacking(entity);
             }
         }
+        int j = entity.method_20802();
         if (this.isOnFire() && !(entity instanceof EndermanEntity)) {
             entity.setOnFireFor(5);
         }
@@ -380,6 +381,7 @@ implements Projectile {
                 this.remove();
             }
         } else {
+            entity.method_20803(j);
             this.setVelocity(this.getVelocity().multiply(-0.1));
             this.yaw += 180.0f;
             this.prevYaw += 180.0f;
@@ -506,7 +508,7 @@ implements Projectile {
     }
 
     @Override
-    public boolean isAttackable() {
+    public boolean canPlayerAttack() {
         return false;
     }
 

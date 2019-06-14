@@ -70,6 +70,7 @@ implements AutoCloseable {
         this.enqueue(chunkPos.x, chunkPos.z, () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
             int i;
             super.method_20601(chunkPos, false);
+            super.suppressLight(chunkPos, false);
             for (i = -1; i < 17; ++i) {
                 super.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, i), null);
                 super.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, i), null);

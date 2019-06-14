@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -68,7 +68,7 @@ extends EntityRenderer<FishingBobberEntity> {
         }
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
-        int l = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
+        int l = playerEntity.getMainHand() == AbsoluteHand.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
         if (itemStack.getItem() != Items.FISHING_ROD) {
             l = -l;

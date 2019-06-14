@@ -115,7 +115,7 @@ implements ParsableText {
         @Nullable
         private PosArgument parsePos(String string) {
             try {
-                return BlockPosArgumentType.blockPos().method_9699(new StringReader(string));
+                return BlockPosArgumentType.create().method_9699(new StringReader(string));
             } catch (CommandSyntaxException commandSyntaxException) {
                 return null;
             }

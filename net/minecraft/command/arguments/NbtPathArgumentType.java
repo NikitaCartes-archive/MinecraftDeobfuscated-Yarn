@@ -37,7 +37,7 @@ implements ArgumentType<NbtPath> {
     public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.nbtpath.node.invalid", new Object[0]));
     public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.nbtpath.nothing_found", object));
 
-    public static NbtPathArgumentType nbtPath() {
+    public static NbtPathArgumentType create() {
         return new NbtPathArgumentType();
     }
 

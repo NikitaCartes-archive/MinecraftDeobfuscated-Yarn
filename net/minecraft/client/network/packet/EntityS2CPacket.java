@@ -25,11 +25,11 @@ implements Packet<ClientPlayPacketListener> {
     protected boolean onGround;
     protected boolean rotate;
 
-    public static long encodePacketCoordinate(double d) {
+    public static long method_18047(double d) {
         return MathHelper.lfloor(d * 4096.0);
     }
 
-    public static Vec3d decodePacketCoordinates(long l, long m, long n) {
+    public static Vec3d method_18695(long l, long m, long n) {
         return new Vec3d(l, m, n).multiply(2.44140625E-4);
     }
 

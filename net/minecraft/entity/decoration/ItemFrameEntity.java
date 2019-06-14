@@ -83,9 +83,6 @@ extends AbstractDecorationEntity {
 
     @Override
     protected void method_6895() {
-        if (this.facing == null) {
-            return;
-        }
         double d = 0.46875;
         this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
         this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
@@ -123,7 +120,7 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public float getTargetingMargin() {
+    public float getBoundingBoxMarginForTargeting() {
         return 0.0f;
     }
 
@@ -176,7 +173,7 @@ extends AbstractDecorationEntity {
         this.playSound(SoundEvents.ENTITY_ITEM_FRAME_PLACE, 1.0f, 1.0f);
     }
 
-    public void method_6936(@Nullable Entity entity, boolean bl) {
+    private void method_6936(@Nullable Entity entity, boolean bl) {
         if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             if (entity == null) {
                 this.removeFromFrame(this.getHeldItemStack());

@@ -13,7 +13,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -39,7 +39,7 @@ extends ZombieEntityModel<T> {
         this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
         ItemStack itemStack = ((LivingEntity)zombieEntity).getStackInHand(Hand.MAIN_HAND);
         if (itemStack.getItem() == Items.TRIDENT && ((MobEntity)zombieEntity).isAttacking()) {
-            if (((MobEntity)zombieEntity).getMainArm() == Arm.RIGHT) {
+            if (((MobEntity)zombieEntity).getMainHand() == AbsoluteHand.RIGHT) {
                 this.rightArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
             } else {
                 this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;

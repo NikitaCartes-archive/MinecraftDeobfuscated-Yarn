@@ -44,7 +44,7 @@ implements DataCommandObject {
 
         @Override
         public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function) {
-            return argumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("block").then(function.apply(CommandManager.argument(this.field_13787 + "Pos", BlockPosArgumentType.blockPos()))));
+            return argumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("block").then(function.apply(CommandManager.argument(this.field_13787 + "Pos", BlockPosArgumentType.create()))));
         }
     };
     private final BlockEntity blockEntity;

@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityModel
@@ -107,11 +107,11 @@ extends ArmorStandArmorEntityModel {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
-        Cuboid cuboid = this.getArm(arm);
+    public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+        Cuboid cuboid = this.getArm(absoluteHand);
         boolean bl = cuboid.visible;
         cuboid.visible = true;
-        super.setArmAngle(f, arm);
+        super.setArmAngle(f, absoluteHand);
         cuboid.visible = bl;
     }
 }

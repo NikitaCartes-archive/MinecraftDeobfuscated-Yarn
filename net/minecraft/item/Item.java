@@ -31,8 +31,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -54,7 +54,7 @@ implements ItemConvertible {
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
     private static final ItemPropertyGetter DAMAGED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> itemStack.isDamaged() ? 1.0f : 0.0f;
     private static final ItemPropertyGetter DAMAGE_PROPERTY_GETTER = (itemStack, world, livingEntity) -> MathHelper.clamp((float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0f, 1.0f);
-    private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity == null || livingEntity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f;
+    private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity == null || livingEntity.getMainHand() == AbsoluteHand.RIGHT ? 0.0f : 1.0f;
     private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity ? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0f) : 0.0f;
     private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (itemStack, world, livingEntity) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0f;
     protected static final UUID ATTACK_DAMAGE_MODIFIER_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");

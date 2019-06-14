@@ -199,7 +199,7 @@ implements ServerPlayPacketListener {
             this.floating = false;
             this.floatingTicks = 0;
         }
-        this.topmostRiddenEntity = this.player.getRootVehicle();
+        this.topmostRiddenEntity = this.player.getTopmostVehicle();
         if (this.topmostRiddenEntity == this.player || this.topmostRiddenEntity.getPrimaryPassenger() != this.player) {
             this.topmostRiddenEntity = null;
             this.ridingEntity = false;
@@ -211,7 +211,7 @@ implements ServerPlayPacketListener {
             this.updatedRiddenX = this.topmostRiddenEntity.x;
             this.updatedRiddenY = this.topmostRiddenEntity.y;
             this.updatedRiddenZ = this.topmostRiddenEntity.z;
-            if (this.ridingEntity && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
+            if (this.ridingEntity && this.player.getTopmostVehicle().getPrimaryPassenger() == this.player) {
                 if (++this.vehicleFloatingTicks > 80) {
                     LOGGER.warn("{} was kicked for floating a vehicle too long!", (Object)this.player.getName().getString());
                     this.disconnect(new TranslatableText("multiplayer.disconnect.flying", new Object[0]));
@@ -293,7 +293,7 @@ implements ServerPlayPacketListener {
             this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement", new Object[0]));
             return;
         }
-        Entity entity = this.player.getRootVehicle();
+        Entity entity = this.player.getTopmostVehicle();
         if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
             ServerWorld serverWorld = this.player.getServerWorld();
             double d = entity.x;
@@ -1248,7 +1248,7 @@ implements ServerPlayPacketListener {
     public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
         if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
             int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
-            this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
+            this.player.field_13967 = (this.player.field_13967 * 3 + i) / 4;
             this.waitingForKeepAlive = false;
         } else if (!this.isServerOwner()) {
             this.disconnect(new TranslatableText("disconnect.timeout", new Object[0]));

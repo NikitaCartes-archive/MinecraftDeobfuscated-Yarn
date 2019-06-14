@@ -26,7 +26,7 @@ implements ArgumentType<Integer> {
     private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.time.invalid_tick_count", object));
     private static final Object2IntMap<String> units = new Object2IntOpenHashMap<String>();
 
-    public static TimeArgumentType time() {
+    public static TimeArgumentType create() {
         return new TimeArgumentType();
     }
 

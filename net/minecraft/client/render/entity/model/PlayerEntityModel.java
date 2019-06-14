@@ -10,7 +10,7 @@ import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity>
@@ -131,10 +131,10 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
-        Cuboid cuboid = this.getArm(arm);
+    public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+        Cuboid cuboid = this.getArm(absoluteHand);
         if (this.thinArms) {
-            float g = 0.5f * (float)(arm == Arm.RIGHT ? 1 : -1);
+            float g = 0.5f * (float)(absoluteHand == AbsoluteHand.RIGHT ? 1 : -1);
             cuboid.rotationPointX += g;
             cuboid.applyTransform(f);
             cuboid.rotationPointX -= g;

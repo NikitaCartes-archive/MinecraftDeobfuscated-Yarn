@@ -60,7 +60,7 @@ implements ServerLoginPacketListener {
     public void tick() {
         ServerPlayerEntity serverPlayerEntity;
         if (this.state == State.READY_TO_ACCEPT) {
-            this.acceptPlayer();
+            this.method_14384();
         } else if (this.state == State.DELAY_ACCEPT && (serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId())) == null) {
             this.state = State.READY_TO_ACCEPT;
             this.server.getPlayerManager().onPlayerConnect(this.client, this.clientEntity);
@@ -73,7 +73,7 @@ implements ServerLoginPacketListener {
 
     public void disconnect(Text text) {
         try {
-            LOGGER.info("Disconnecting {}: {}", (Object)this.getConnectionInfo(), (Object)text.getString());
+            LOGGER.info("Disconnecting {}: {}", (Object)this.method_14383(), (Object)text.getString());
             this.client.send(new LoginDisconnectS2CPacket(text));
             this.client.disconnect(text);
         } catch (Exception exception) {
@@ -81,7 +81,7 @@ implements ServerLoginPacketListener {
         }
     }
 
-    public void acceptPlayer() {
+    public void method_14384() {
         Text text;
         if (!this.profile.isComplete()) {
             this.profile = this.toOfflineProfile(this.profile);
@@ -106,10 +106,10 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onDisconnected(Text text) {
-        LOGGER.info("{} lost connection: {}", (Object)this.getConnectionInfo(), (Object)text.getString());
+        LOGGER.info("{} lost connection: {}", (Object)this.method_14383(), (Object)text.getString());
     }
 
-    public String getConnectionInfo() {
+    public String method_14383() {
         if (this.profile != null) {
             return this.profile + " (" + this.client.getAddress() + ")";
         }

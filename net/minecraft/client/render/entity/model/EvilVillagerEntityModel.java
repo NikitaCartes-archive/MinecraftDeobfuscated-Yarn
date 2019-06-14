@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -127,7 +127,7 @@ ModelWithHead {
             this.field_3417.roll = 0.0f;
             this.field_3426.yaw = 0.15707964f;
             this.field_3417.yaw = -0.15707964f;
-            if (((MobEntity)illagerEntity).getMainArm() == Arm.RIGHT) {
+            if (((MobEntity)illagerEntity).getMainHand() == AbsoluteHand.RIGHT) {
                 this.field_3426.pitch = -1.8849558f + MathHelper.cos(h * 0.09f) * 0.15f;
                 this.field_3417.pitch = -0.0f + MathHelper.cos(h * 0.19f) * 0.5f;
                 this.field_3426.pitch += l * 2.2f - m * 0.4f;
@@ -190,8 +190,8 @@ ModelWithHead {
         super.animateModel(illagerEntity, f, g, h);
     }
 
-    private Cuboid method_2813(Arm arm) {
-        if (arm == Arm.LEFT) {
+    private Cuboid method_2813(AbsoluteHand absoluteHand) {
+        if (absoluteHand == AbsoluteHand.LEFT) {
             return this.field_3417;
         }
         return this.field_3426;
@@ -207,8 +207,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
-        this.method_2813(arm).applyTransform(0.0625f);
+    public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+        this.method_2813(absoluteHand).applyTransform(0.0625f);
     }
 
     @Override

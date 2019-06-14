@@ -280,7 +280,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
         serverPlayerEntity.incrementStat(Stats.LEAVE_GAME);
         this.savePlayerData(serverPlayerEntity);
-        if (serverPlayerEntity.hasVehicle() && (entity = serverPlayerEntity.getRootVehicle()).hasPlayerRider()) {
+        if (serverPlayerEntity.hasVehicle() && (entity = serverPlayerEntity.getTopmostVehicle()).method_5817()) {
             LOGGER.debug("Removing player mount");
             serverPlayerEntity.stopRiding();
             serverWorld.removeEntity(entity);
@@ -361,7 +361,7 @@ public abstract class PlayerManager {
         serverPlayerEntity2.networkHandler = serverPlayerEntity.networkHandler;
         serverPlayerEntity2.copyFrom(serverPlayerEntity, bl);
         serverPlayerEntity2.setEntityId(serverPlayerEntity.getEntityId());
-        serverPlayerEntity2.setMainArm(serverPlayerEntity.getMainArm());
+        serverPlayerEntity2.setMainHand(serverPlayerEntity.getMainHand());
         for (String string : serverPlayerEntity.getScoreboardTags()) {
             serverPlayerEntity2.addScoreboardTag(string);
         }

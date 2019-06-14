@@ -125,7 +125,7 @@ extends EntityRenderer<PaintingEntity> {
         int i = MathHelper.floor(paintingEntity.x);
         int j = MathHelper.floor(paintingEntity.y + (double)(g / 16.0f));
         int k = MathHelper.floor(paintingEntity.z);
-        Direction direction = paintingEntity.facing;
+        Direction direction = paintingEntity.getHorizontalFacing();
         if (direction == Direction.NORTH) {
             i = MathHelper.floor(paintingEntity.x + (double)(f / 16.0f));
         }

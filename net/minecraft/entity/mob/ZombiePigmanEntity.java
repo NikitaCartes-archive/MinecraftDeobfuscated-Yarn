@@ -81,18 +81,29 @@ extends ZombieEntity {
     @Override
     protected void mobTick() {
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+        LivingEntity livingEntity = this.getAttacker();
         if (this.isAngry()) {
+            LivingEntity livingEntity2;
             if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
                 entityAttributeInstance.addModifier(ATTACKING_SPEED_BOOST);
             }
             --this.anger;
+            LivingEntity livingEntity3 = livingEntity2 = livingEntity != null ? livingEntity : this.getTarget();
+            if (!this.isAngry() && livingEntity2 != null) {
+                if (!this.canSee(livingEntity2)) {
+                    this.setAttacker(null);
+                    this.setTarget(null);
+                } else {
+                    this.anger = this.method_20806();
+                }
+            }
         } else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
             entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
         }
         if (this.angrySoundDelay > 0 && --this.angrySoundDelay == 0) {
             this.playSound(SoundEvents.ENTITY_ZOMBIE_PIGMAN_ANGRY, this.getSoundVolume() * 2.0f, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f) * 1.8f);
         }
-        if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
+        if (this.isAngry() && this.angerTarget != null && livingEntity == null) {
             PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
             this.setAttacker(playerEntity);
             this.attackingPlayer = playerEntity;
@@ -144,20 +155,28 @@ extends ZombieEntity {
         }
         Entity entity = damageSource.getAttacker();
         if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
-            this.copyEntityData(entity, 400 + this.random.nextInt(400));
+            this.method_20804(entity);
         }
         return super.damage(damageSource, f);
     }
 
-    private void copyEntityData(Entity entity, int i) {
-        this.anger = i;
+    private boolean method_20804(Entity entity) {
+        if (!this.canSee(entity)) {
+            return false;
+        }
+        this.anger = this.method_20806();
         this.angrySoundDelay = this.random.nextInt(40);
         if (entity instanceof LivingEntity) {
             this.setAttacker((LivingEntity)entity);
         }
+        return true;
     }
 
-    public boolean isAngry() {
+    private int method_20806() {
+        return 400 + this.random.nextInt(400);
+    }
+
+    private boolean isAngry() {
         return this.anger > 0;
     }
 
@@ -217,10 +236,8 @@ extends ZombieEntity {
 
         @Override
         protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-            super.setMobEntityTarget(mobEntity, livingEntity);
-            int i = ((ZombiePigmanEntity)this.mob).anger;
-            if (mobEntity instanceof ZombiePigmanEntity && i > 0) {
-                ((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity, i);
+            if (mobEntity instanceof ZombiePigmanEntity && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
+                mobEntity.setTarget(livingEntity);
             }
         }
     }

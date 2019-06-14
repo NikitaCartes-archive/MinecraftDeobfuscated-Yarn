@@ -24,7 +24,7 @@ implements ArgumentType<FunctionArgument> {
     private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.function.tag.unknown", object));
     private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.function.unknown", object));
 
-    public static FunctionArgumentType function() {
+    public static FunctionArgumentType create() {
         return new FunctionArgumentType();
     }
 

@@ -28,7 +28,7 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
@@ -56,7 +56,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     }
 
     public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-        if (abstractClientPlayerEntity.isMainPlayer() && this.renderManager.camera.getFocusedEntity() != abstractClientPlayerEntity) {
+        if (abstractClientPlayerEntity.isMainPlayer() && (this.renderManager.camera == null || this.renderManager.camera.getFocusedEntity() != abstractClientPlayerEntity)) {
             return;
         }
         double i = e;
@@ -88,7 +88,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
             BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
             BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
-            if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
+            if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.RIGHT) {
                 playerEntityModel.rightArmPose = armPose;
                 playerEntityModel.leftArmPose = armPose2;
             } else {

@@ -150,7 +150,7 @@ extends Entity {
     }
 
     @Override
-    public float getTargetingMargin() {
+    public float getBoundingBoxMarginForTargeting() {
         return 1.0f;
     }
 

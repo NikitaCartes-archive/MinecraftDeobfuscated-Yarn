@@ -24,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterest;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
@@ -52,6 +53,9 @@ extends PersistentState {
         Iterator<Raid> iterator = this.raids.values().iterator();
         while (iterator.hasNext()) {
             Raid raid = iterator.next();
+            if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
+                raid.invalidate();
+            }
             if (raid.hasStopped()) {
                 iterator.remove();
                 this.markDirty();
@@ -76,6 +80,9 @@ extends PersistentState {
     public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
         BlockPos blockPos3;
         if (serverPlayerEntity.isSpectator()) {
+            return null;
+        }
+        if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
             return null;
         }
         DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();

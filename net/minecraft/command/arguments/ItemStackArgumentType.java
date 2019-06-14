@@ -19,7 +19,7 @@ public class ItemStackArgumentType
 implements ArgumentType<ItemStackArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
 
-    public static ItemStackArgumentType itemStack() {
+    public static ItemStackArgumentType create() {
         return new ItemStackArgumentType();
     }
 

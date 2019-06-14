@@ -17,7 +17,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>>
 extends ArgumentType<T> {
-    public static IntRangeArgumentType numberRange() {
+    public static IntRangeArgumentType create() {
         return new IntRangeArgumentType();
     }
 

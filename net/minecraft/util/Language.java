@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -29,8 +30,7 @@ public class Language {
     private long timeLoaded;
 
     public Language() {
-        try {
-            InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json");
+        try (InputStream inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json");){
             JsonElement jsonElement = new Gson().fromJson((Reader)new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonElement.class);
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
@@ -38,8 +38,8 @@ public class Language {
                 this.translations.put(entry.getKey(), string);
             }
             this.timeLoaded = SystemUtil.getMeasuringTimeMs();
-        } catch (JsonParseException jsonParseException) {
-            LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)jsonParseException);
+        } catch (JsonParseException | IOException exception) {
+            LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)exception);
         }
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.village;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -11,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,17 +66,17 @@ public class ZombieSiegeManager {
     private boolean spawn() {
         for (PlayerEntity playerEntity : this.world.getPlayers()) {
             BlockPos blockPos;
-            if (playerEntity.isSpectator() || !this.world.isNearOccupiedPointOfInterest(blockPos = new BlockPos(playerEntity))) continue;
+            if (playerEntity.isSpectator() || !this.world.isNearOccupiedPointOfInterest(blockPos = playerEntity.getBlockPos())) continue;
             for (int i = 0; i < 10; ++i) {
                 float f = this.world.random.nextFloat() * ((float)Math.PI * 2);
                 this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0f);
                 this.startY = blockPos.getY();
                 this.startZ = blockPos.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f);
+                if (this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ)) == null) continue;
+                this.countdown = 0;
+                this.remaining = 20;
+                break;
             }
-            Vec3d vec3d = this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ));
-            if (vec3d == null) continue;
-            this.countdown = 0;
-            this.remaining = 20;
             return true;
         }
         return false;
@@ -100,8 +102,11 @@ public class ZombieSiegeManager {
     @Nullable
     private Vec3d getSpawnVector(BlockPos blockPos) {
         for (int i = 0; i < 10; ++i) {
-            BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
-            if (!this.world.isNearOccupiedPointOfInterest(blockPos2) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos2, null)) continue;
+            int k;
+            int l;
+            int j = blockPos.getX() + this.world.random.nextInt(16) - 8;
+            BlockPos blockPos2 = new BlockPos(j, l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, j, k = blockPos.getZ() + this.world.random.nextInt(16) - 8), k);
+            if (!this.world.isNearOccupiedPointOfInterest(blockPos2) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos2, EntityType.ZOMBIE)) continue;
             return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
         }
         return null;

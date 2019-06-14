@@ -371,8 +371,8 @@ SynchronousResourceReloadListener {
             return;
         }
         PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-        float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
-        float h = -(playerEntity.horizontalSpeed + g * f);
+        float g = playerEntity.field_5973 - playerEntity.field_6039;
+        float h = -(playerEntity.field_5973 + g * f);
         float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
         GlStateManager.translatef(MathHelper.sin(h * (float)Math.PI) * i * 0.5f, -Math.abs(MathHelper.cos(h * (float)Math.PI) * i), 0.0f);
         GlStateManager.rotatef(MathHelper.sin(h * (float)Math.PI) * i * 3.0f, 0.0f, 0.0f, 1.0f);

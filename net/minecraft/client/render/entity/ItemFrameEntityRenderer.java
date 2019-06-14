@@ -77,7 +77,7 @@ extends EntityRenderer<ItemFrameEntity> {
         }
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
-        this.method_3995(itemFrameEntity, d + (double)((float)itemFrameEntity.facing.getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.facing.getOffsetZ() * 0.3f));
+        this.method_3995(itemFrameEntity, d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f));
     }
 
     @Nullable

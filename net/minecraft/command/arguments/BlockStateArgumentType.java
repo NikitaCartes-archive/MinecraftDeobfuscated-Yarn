@@ -20,7 +20,7 @@ public class BlockStateArgumentType
 implements ArgumentType<BlockStateArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "foo{bar=baz}");
 
-    public static BlockStateArgumentType blockState() {
+    public static BlockStateArgumentType create() {
         return new BlockStateArgumentType();
     }
 

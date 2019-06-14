@@ -72,7 +72,7 @@ extends Item {
 
             @Environment(value=EnvType.CLIENT)
             private double getYaw(ItemFrameEntity itemFrameEntity) {
-                return MathHelper.wrapDegrees(180 + itemFrameEntity.facing.getHorizontal() * 90);
+                return MathHelper.wrapDegrees(180 + itemFrameEntity.getHorizontalFacing().getHorizontal() * 90);
             }
 
             @Environment(value=EnvType.CLIENT)

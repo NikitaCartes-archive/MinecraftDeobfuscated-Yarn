@@ -8,10 +8,12 @@ import java.util.HashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -30,6 +32,7 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractTraderEntity
@@ -173,6 +176,23 @@ Trader {
             if (itemStack.isEmpty()) continue;
             this.inventory.add(itemStack);
         }
+    }
+
+    @Override
+    @Nullable
+    public Entity changeDimension(DimensionType dimensionType) {
+        this.resetCustomer();
+        return super.changeDimension(dimensionType);
+    }
+
+    protected void resetCustomer() {
+        this.setCurrentCustomer(null);
+    }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+        this.resetCustomer();
     }
 
     @Environment(value=EnvType.CLIENT)

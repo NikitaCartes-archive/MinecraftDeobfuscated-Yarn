@@ -24,7 +24,7 @@ implements ArgumentType<String> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "123");
     private static final DynamicCommandExceptionType UNKNOWN_TEAM_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("team.notFound", object));
 
-    public static TeamArgumentType team() {
+    public static TeamArgumentType create() {
         return new TeamArgumentType();
     }
 

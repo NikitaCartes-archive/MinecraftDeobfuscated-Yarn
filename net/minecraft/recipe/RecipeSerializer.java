@@ -4,6 +4,7 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.class_4317;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.BannerDuplicateRecipe;
 import net.minecraft.recipe.BlastingRecipe;
@@ -46,6 +47,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
     public static final SpecialRecipeSerializer<ShieldDecorationRecipe> SHIELD_DECORATION = RecipeSerializer.register("crafting_special_shielddecoration", new SpecialRecipeSerializer<ShieldDecorationRecipe>(ShieldDecorationRecipe::new));
     public static final SpecialRecipeSerializer<ShulkerBoxColoringRecipe> SHULKER_BOX = RecipeSerializer.register("crafting_special_shulkerboxcoloring", new SpecialRecipeSerializer<ShulkerBoxColoringRecipe>(ShulkerBoxColoringRecipe::new));
     public static final SpecialRecipeSerializer<SuspiciousStewRecipe> SUSPICIOUS_STEW = RecipeSerializer.register("crafting_special_suspiciousstew", new SpecialRecipeSerializer<SuspiciousStewRecipe>(SuspiciousStewRecipe::new));
+    public static final SpecialRecipeSerializer<class_4317> field_19421 = RecipeSerializer.register("crafting_special_repairitem", new SpecialRecipeSerializer<class_4317>(class_4317::new));
     public static final CookingRecipeSerializer<SmeltingRecipe> SMELTING = RecipeSerializer.register("smelting", new CookingRecipeSerializer<SmeltingRecipe>(SmeltingRecipe::new, 200));
     public static final CookingRecipeSerializer<BlastingRecipe> BLASTING = RecipeSerializer.register("blasting", new CookingRecipeSerializer<BlastingRecipe>(BlastingRecipe::new, 100));
     public static final CookingRecipeSerializer<SmokingRecipe> SMOKING = RecipeSerializer.register("smoking", new CookingRecipeSerializer<SmokingRecipe>(SmokingRecipe::new, 100));

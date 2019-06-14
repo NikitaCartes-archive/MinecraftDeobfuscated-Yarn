@@ -124,7 +124,7 @@ extends Entity {
         if (this.age != Short.MIN_VALUE) {
             ++this.age;
         }
-        this.velocityDirty |= this.checkWaterState();
+        this.velocityDirty |= this.method_5713();
         if (!this.world.isClient && (d = this.getVelocity().subtract(vec3d).lengthSquared()) > 0.01) {
             this.velocityDirty = true;
         }
@@ -281,7 +281,7 @@ extends Entity {
     }
 
     @Override
-    public boolean isAttackable() {
+    public boolean canPlayerAttack() {
         return false;
     }
 

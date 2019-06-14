@@ -20,7 +20,7 @@ implements ArgumentType<EnumSet<Direction.Axis>> {
     private static final Collection<String> EXAMPLES = Arrays.asList("xyz", "x");
     private static final SimpleCommandExceptionType INVALID_SWIZZLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.swizzle.invalid", new Object[0]));
 
-    public static SwizzleArgumentType swizzle() {
+    public static SwizzleArgumentType create() {
         return new SwizzleArgumentType();
     }
 

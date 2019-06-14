@@ -25,7 +25,7 @@ implements ArgumentType<StatusEffect> {
     private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
     public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("effect.effectNotFound", object));
 
-    public static MobEffectArgumentType mobEffect() {
+    public static MobEffectArgumentType create() {
         return new MobEffectArgumentType();
     }
 

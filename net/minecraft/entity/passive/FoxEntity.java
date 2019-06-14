@@ -142,8 +142,8 @@ extends AnimalEntity {
         this.goalSelector.add(0, new FoxSwimGoal());
         this.goalSelector.add(1, new StopWanderingGoal());
         this.goalSelector.add(2, new EscapeWhenNotAggresiveGoal(2.2));
-        this.goalSelector.add(3, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid())));
-        this.goalSelector.add(3, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed()));
+        this.goalSelector.add(3, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()));
+        this.goalSelector.add(3, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
         this.goalSelector.add(4, new MoveToHuntGoal());
         this.goalSelector.add(5, new JumpChasingGoal());
         this.goalSelector.add(5, new MateGoal(1.0));

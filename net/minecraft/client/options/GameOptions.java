@@ -44,7 +44,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
@@ -93,7 +93,7 @@ public class GameOptions {
     public boolean advancedItemTooltips;
     public boolean pauseOnLostFocus = true;
     private final Set<PlayerModelPart> enabledPlayerModelParts = Sets.newHashSet(PlayerModelPart.values());
-    public Arm mainArm = Arm.RIGHT;
+    public AbsoluteHand mainHand = AbsoluteHand.RIGHT;
     public int overrideWidth;
     public int overrideHeight;
     public boolean heldItemTooltips = true;
@@ -388,7 +388,7 @@ public class GameOptions {
                         this.useNativeTransport = "true".equals(string2);
                     }
                     if ("mainHand".equals(string)) {
-                        Arm arm = this.mainArm = "left".equals(string2) ? Arm.LEFT : Arm.RIGHT;
+                        AbsoluteHand absoluteHand = this.mainHand = "left".equals(string2) ? AbsoluteHand.LEFT : AbsoluteHand.RIGHT;
                     }
                     if ("narrator".equals(string)) {
                         this.narrator = NarratorOption.byId(Integer.parseInt(string2));
@@ -511,7 +511,7 @@ public class GameOptions {
             printWriter.println("chatWidth:" + this.chatWidth);
             printWriter.println("mipmapLevels:" + this.mipmapLevels);
             printWriter.println("useNativeTransport:" + this.useNativeTransport);
-            printWriter.println("mainHand:" + (this.mainArm == Arm.LEFT ? "left" : "right"));
+            printWriter.println("mainHand:" + (this.mainHand == AbsoluteHand.LEFT ? "left" : "right"));
             printWriter.println("attackIndicator:" + this.attackIndicator.getId());
             printWriter.println("narrator:" + this.narrator.getId());
             printWriter.println("tutorialStep:" + this.tutorialStep.getName());
@@ -550,7 +550,7 @@ public class GameOptions {
             for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
                 i |= playerModelPart.getBitFlag();
             }
-            this.client.player.networkHandler.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm));
+            this.client.player.networkHandler.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
         }
     }
 

@@ -31,8 +31,7 @@ extends Entity {
     protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
     private int field_7097;
     protected BlockPos blockPos;
-    @Nullable
-    public Direction facing;
+    protected Direction facing = Direction.SOUTH;
 
     protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
         super(entityType, world);
@@ -128,7 +127,7 @@ extends Entity {
     }
 
     @Override
-    public boolean handleAttack(Entity entity) {
+    public boolean handlePlayerAttack(Entity entity) {
         if (entity instanceof PlayerEntity) {
             return this.damage(DamageSource.player((PlayerEntity)entity), 0.0f);
         }
@@ -181,7 +180,7 @@ extends Entity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.blockPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
-        this.setFacing(Direction.fromHorizontal(compoundTag.getByte("Facing")));
+        this.facing = Direction.fromHorizontal(compoundTag.getByte("Facing"));
     }
 
     public abstract int getWidthPixels();
@@ -218,7 +217,7 @@ extends Entity {
 
     @Override
     public float applyRotation(BlockRotation blockRotation) {
-        if (this.facing != null && this.facing.getAxis() != Direction.Axis.Y) {
+        if (this.facing.getAxis() != Direction.Axis.Y) {
             switch (blockRotation) {
                 case CLOCKWISE_180: {
                     this.facing = this.facing.getOpposite();

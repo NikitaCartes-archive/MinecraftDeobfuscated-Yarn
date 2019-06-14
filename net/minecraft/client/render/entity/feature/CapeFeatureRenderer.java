@@ -51,7 +51,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
             r = 0.0f;
         }
         float t = MathHelper.lerp(h, abstractClientPlayerEntity.field_7505, abstractClientPlayerEntity.field_7483);
-        q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.prevHorizontalSpeed, abstractClientPlayerEntity.horizontalSpeed) * 6.0f) * 32.0f * t;
+        q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.field_6039, abstractClientPlayerEntity.field_5973) * 6.0f) * 32.0f * t;
         if (abstractClientPlayerEntity.isInSneakingPose()) {
             q += 25.0f;
         }

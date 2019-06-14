@@ -128,7 +128,7 @@ extends HostileEntity {
             this.field_7215 = 100;
             this.field_7214 = 0.5f + (float)this.random.nextGaussian() * 3.0f;
         }
-        if ((livingEntity = this.getTarget()) != null && livingEntity.y + (double)livingEntity.getStandingEyeHeight() > this.y + (double)this.getStandingEyeHeight() + (double)this.field_7214) {
+        if ((livingEntity = this.getTarget()) != null && livingEntity.y + (double)livingEntity.getStandingEyeHeight() > this.y + (double)this.getStandingEyeHeight() + (double)this.field_7214 && this.canTarget(livingEntity)) {
             Vec3d vec3d = this.getVelocity();
             this.setVelocity(this.getVelocity().add(0.0, ((double)0.3f - vec3d.y) * (double)0.3f, 0.0));
             this.velocityDirty = true;
@@ -160,6 +160,7 @@ extends HostileEntity {
         private final BlazeEntity blaze;
         private int field_7218;
         private int field_7217;
+        private int field_19420;
 
         public ShootFireballGoal(BlazeEntity blazeEntity) {
             this.blaze = blazeEntity;
@@ -169,7 +170,7 @@ extends HostileEntity {
         @Override
         public boolean canStart() {
             LivingEntity livingEntity = this.blaze.getTarget();
-            return livingEntity != null && livingEntity.isAlive();
+            return livingEntity != null && livingEntity.isAlive() && this.blaze.canTarget(livingEntity);
         }
 
         @Override
@@ -180,20 +181,29 @@ extends HostileEntity {
         @Override
         public void stop() {
             this.blaze.setFireActive(false);
+            this.field_19420 = 0;
         }
 
         @Override
         public void tick() {
             --this.field_7217;
             LivingEntity livingEntity = this.blaze.getTarget();
+            if (livingEntity == null) {
+                return;
+            }
+            boolean bl = this.blaze.getVisibilityCache().canSee(livingEntity);
+            this.field_19420 = bl ? ++this.field_19420 : 0;
             double d = this.blaze.squaredDistanceTo(livingEntity);
             if (d < 4.0) {
+                if (!bl) {
+                    return;
+                }
                 if (this.field_7217 <= 0) {
                     this.field_7217 = 20;
                     this.blaze.tryAttack(livingEntity);
                 }
                 this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
-            } else if (d < this.method_6995() * this.method_6995()) {
+            } else if (d < this.method_6995() * this.method_6995() && bl) {
                 double e = livingEntity.x - this.blaze.x;
                 double f = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0f) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0f));
                 double g = livingEntity.z - this.blaze.z;
@@ -222,7 +232,9 @@ extends HostileEntity {
                 this.blaze.getLookControl().lookAt(livingEntity, 10.0f, 10.0f);
             } else {
                 this.blaze.getNavigation().stop();
-                this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+                if (this.field_19420 < 5) {
+                    this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+                }
             }
             super.tick();
         }

@@ -89,7 +89,6 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerEntity
@@ -213,11 +212,6 @@ VillagerDataContainer {
         super.mobTick();
     }
 
-    private void resetCustomer() {
-        this.setCurrentCustomer(null);
-        this.clearCurrentBonus();
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -282,6 +276,18 @@ VillagerDataContainer {
     }
 
     @Override
+    protected void resetCustomer() {
+        super.resetCustomer();
+        this.clearCurrentBonus();
+    }
+
+    private void clearCurrentBonus() {
+        for (TradeOffer tradeOffer : this.getOffers()) {
+            tradeOffer.clearSpecialPrice();
+        }
+    }
+
+    @Override
     public boolean canRefreshTrades() {
         return true;
     }
@@ -312,12 +318,6 @@ VillagerDataContainer {
                 int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getCount());
                 tradeOffer2.increaseSpecialPrice(-Math.max(k, 1));
             }
-        }
-    }
-
-    private void clearCurrentBonus() {
-        for (TradeOffer tradeOffer : this.getOffers()) {
-            tradeOffer.clearSpecialPrice();
         }
     }
 
@@ -443,7 +443,6 @@ VillagerDataContainer {
         this.releaseTicketFor(MemoryModuleType.HOME);
         this.releaseTicketFor(MemoryModuleType.JOB_SITE);
         this.releaseTicketFor(MemoryModuleType.MEETING_POINT);
-        this.resetCustomer();
         super.onDeath(damageSource);
     }
 
@@ -457,13 +456,6 @@ VillagerDataContainer {
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
         optional.get().stream().filter(livingEntity -> livingEntity instanceof InteractionObserver).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, entity, (InteractionObserver)((Object)livingEntity)));
-    }
-
-    @Override
-    @Nullable
-    public Entity changeDimension(DimensionType dimensionType) {
-        this.resetCustomer();
-        return super.changeDimension(dimensionType);
     }
 
     public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {

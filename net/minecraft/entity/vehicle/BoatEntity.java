@@ -83,7 +83,7 @@ extends Entity {
 
     public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
         super(entityType, world);
-        this.inanimate = true;
+        this.field_6033 = true;
     }
 
     public BoatEntity(World world, double d, double e, double f) {
@@ -113,7 +113,7 @@ extends Entity {
 
     @Override
     @Nullable
-    public Box getHardCollisionBox(Entity entity) {
+    public Box method_5708(Entity entity) {
         if (entity.isPushable()) {
             return entity.getBoundingBox();
         }
@@ -225,7 +225,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.field_7686 = d;
         this.field_7700 = e;
         this.field_7685 = f;

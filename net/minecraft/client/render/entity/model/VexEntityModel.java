@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -46,7 +46,7 @@ extends BipedEntityModel<VexEntity> {
     public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
         super.method_17087(vexEntity, f, g, h, i, j, k);
         if (vexEntity.isCharging()) {
-            if (vexEntity.getMainArm() == Arm.RIGHT) {
+            if (vexEntity.getMainHand() == AbsoluteHand.RIGHT) {
                 this.rightArm.pitch = 3.7699115f;
             } else {
                 this.leftArm.pitch = 3.7699115f;

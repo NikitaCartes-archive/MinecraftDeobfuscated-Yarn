@@ -34,8 +34,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -719,8 +719,8 @@ extends LivingEntity {
     }
 
     @Override
-    public Arm getMainArm() {
-        return Arm.RIGHT;
+    public AbsoluteHand getMainHand() {
+        return AbsoluteHand.RIGHT;
     }
 
     @Override
@@ -753,7 +753,7 @@ extends LivingEntity {
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (ARMOR_STAND_FLAGS.equals(trackedData)) {
             this.calculateDimensions();
-            this.inanimate = !this.isMarker();
+            this.field_6033 = !this.isMarker();
         }
         super.onTrackedDataSet(trackedData);
     }

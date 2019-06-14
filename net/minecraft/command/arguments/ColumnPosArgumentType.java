@@ -29,7 +29,7 @@ implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~1 ~-2", "^ ^", "^-1 ^0");
     public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos2d.incomplete", new Object[0]));
 
-    public static ColumnPosArgumentType columnPos() {
+    public static ColumnPosArgumentType create() {
         return new ColumnPosArgumentType();
     }
 
