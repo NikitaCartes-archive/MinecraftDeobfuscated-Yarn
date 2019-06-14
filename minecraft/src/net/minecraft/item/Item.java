@@ -22,8 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -46,7 +46,7 @@ public class Item implements ItemConvertible {
 			(float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0F, 1.0F
 		);
 	private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity != null
-				&& livingEntity.getMainArm() != Arm.field_6183
+				&& livingEntity.getMainHand() != AbsoluteHand.field_6183
 			? 1.0F
 			: 0.0F;
 	private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity
@@ -78,7 +78,7 @@ public class Item implements ItemConvertible {
 	}
 
 	@Deprecated
-	public static Item fromBlock(Block block) {
+	public static Item method_7867(Block block) {
 		return (Item)BLOCK_ITEMS.getOrDefault(block, Items.AIR);
 	}
 
@@ -98,7 +98,7 @@ public class Item implements ItemConvertible {
 		}
 	}
 
-	public void usageTick(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
+	public void method_7852(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
 	}
 
 	@Nullable
@@ -116,7 +116,7 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return true;
 	}
 
@@ -133,11 +133,11 @@ public class Item implements ItemConvertible {
 		return ActionResult.field_5811;
 	}
 
-	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+	public float method_7865(ItemStack itemStack, BlockState blockState) {
 		return 1.0F;
 	}
 
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		if (this.isFood()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
@@ -151,8 +151,8 @@ public class Item implements ItemConvertible {
 		}
 	}
 
-	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		return this.isFood() ? livingEntity.eatFood(world, itemStack) : itemStack;
+	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		return this.isFood() ? livingEntity.method_18866(world, itemStack) : itemStack;
 	}
 
 	public final int getMaxCount() {
@@ -171,11 +171,11 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		return false;
 	}
 
-	public boolean isEffectiveOn(BlockState blockState) {
+	public boolean method_7856(BlockState blockState) {
 		return false;
 	}
 
@@ -221,10 +221,10 @@ public class Item implements ItemConvertible {
 		return this.recipeRemainder != null;
 	}
 
-	public void inventoryTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+	public void method_7888(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 	}
 
-	public void onCraft(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	public void method_7843(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 	}
 
 	public boolean isNetworkSynced() {
@@ -243,11 +243,11 @@ public class Item implements ItemConvertible {
 		}
 	}
 
-	public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+	public void method_7840(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 	}
 
 	public Text getName(ItemStack itemStack) {
@@ -280,10 +280,10 @@ public class Item implements ItemConvertible {
 		return this.getMaxCount() == 1 && this.isDamageable();
 	}
 
-	protected static HitResult rayTrace(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
+	protected static HitResult method_7872(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
 		float f = playerEntity.pitch;
 		float g = playerEntity.yaw;
-		Vec3d vec3d = playerEntity.getCameraPosVec(1.0F);
+		Vec3d vec3d = playerEntity.method_5836(1.0F);
 		float h = MathHelper.cos(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
 		float i = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
 		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
@@ -292,7 +292,7 @@ public class Item implements ItemConvertible {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, playerEntity));
+		return world.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, playerEntity));
 	}
 
 	public int getEnchantability() {

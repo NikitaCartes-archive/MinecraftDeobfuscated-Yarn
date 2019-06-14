@@ -66,7 +66,7 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
@@ -80,18 +80,18 @@ public class WrittenBookItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
+		World world = itemUsageContext.method_8045();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		BlockState blockState = world.getBlockState(blockPos);
+		BlockState blockState = world.method_8320(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
+			return LecternBlock.method_17472(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
 		} else {
 			return ActionResult.field_5811;
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openEditBookScreen(itemStack, hand);
 		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));

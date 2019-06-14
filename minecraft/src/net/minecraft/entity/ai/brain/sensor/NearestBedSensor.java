@@ -34,7 +34,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 			if (blockPos.equals(new BlockPos(mobEntity))) {
 				return true;
 			} else {
-				Path path = mobEntity.getNavigation().findPathTo(blockPos);
+				Path path = mobEntity.getNavigation().method_6348(blockPos);
 				return path != null && path.method_19313(blockPos);
 			}
 		};

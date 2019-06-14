@@ -9,13 +9,13 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 public class DarkOakSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11443(Random random) {
 		return new DarkOakTreeFeature(DefaultFeatureConfig::deserialize, true);
 	}
 }

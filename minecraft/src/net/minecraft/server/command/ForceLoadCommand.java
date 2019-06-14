@@ -37,7 +37,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("add")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
+							CommandManager.argument("from", ColumnPosArgumentType.create())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -47,7 +47,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
+									CommandManager.argument("to", ColumnPosArgumentType.create())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -63,7 +63,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("remove")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
+							CommandManager.argument("from", ColumnPosArgumentType.create())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -73,7 +73,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
+									CommandManager.argument("to", ColumnPosArgumentType.create())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -90,7 +90,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("query")
 						.executes(commandContext -> executeQuery(commandContext.getSource()))
 						.then(
-							CommandManager.argument("pos", ColumnPosArgumentType.columnPos())
+							CommandManager.argument("pos", ColumnPosArgumentType.create())
 								.executes(commandContext -> executeQuery(commandContext.getSource(), ColumnPosArgumentType.getColumnPos(commandContext, "pos")))
 						)
 				)
@@ -99,7 +99,7 @@ public class ForceLoadCommand {
 
 	private static int executeQuery(ServerCommandSource serverCommandSource, ColumnPos columnPos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(columnPos.x >> 4, columnPos.z >> 4);
-		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
+		DimensionType dimensionType = serverCommandSource.getWorld().method_8597().method_12460();
 		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
 			serverCommandSource.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
@@ -110,7 +110,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource serverCommandSource) {
-		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
+		DimensionType dimensionType = serverCommandSource.getWorld().method_8597().method_12460();
 		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
 		int i = longSet.size();
 		if (i > 0) {
@@ -128,7 +128,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeRemoveAll(ServerCommandSource serverCommandSource) {
-		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
+		DimensionType dimensionType = serverCommandSource.getWorld().method_8597().method_12460();
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
@@ -150,7 +150,7 @@ public class ForceLoadCommand {
 			if (q > 256L) {
 				throw TOOBIG_EXCEPTION.create(256, q);
 			} else {
-				DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
+				DimensionType dimensionType = serverCommandSource.getWorld().method_8597().method_12460();
 				ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
 				ChunkPos chunkPos = null;
 				int r = 0;

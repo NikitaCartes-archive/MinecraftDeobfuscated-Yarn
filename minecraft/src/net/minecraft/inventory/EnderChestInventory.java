@@ -7,14 +7,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
 public class EnderChestInventory extends BasicInventory {
-	private EnderChestBlockEntity currentBlockEntity;
+	private EnderChestBlockEntity field_7864;
 
 	public EnderChestInventory() {
 		super(27);
 	}
 
-	public void setCurrentBlockEntity(EnderChestBlockEntity enderChestBlockEntity) {
-		this.currentBlockEntity = enderChestBlockEntity;
+	public void method_7661(EnderChestBlockEntity enderChestBlockEntity) {
+		this.field_7864 = enderChestBlockEntity;
 	}
 
 	public void readTags(ListTag listTag) {
@@ -49,13 +49,13 @@ public class EnderChestInventory extends BasicInventory {
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(playerEntity) ? false : super.canPlayerUseInv(playerEntity);
+		return this.field_7864 != null && !this.field_7864.canPlayerUse(playerEntity) ? false : super.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
 	public void onInvOpen(PlayerEntity playerEntity) {
-		if (this.currentBlockEntity != null) {
-			this.currentBlockEntity.onOpen();
+		if (this.field_7864 != null) {
+			this.field_7864.onOpen();
 		}
 
 		super.onInvOpen(playerEntity);
@@ -63,11 +63,11 @@ public class EnderChestInventory extends BasicInventory {
 
 	@Override
 	public void onInvClose(PlayerEntity playerEntity) {
-		if (this.currentBlockEntity != null) {
-			this.currentBlockEntity.onClose();
+		if (this.field_7864 != null) {
+			this.field_7864.onClose();
 		}
 
 		super.onInvClose(playerEntity);
-		this.currentBlockEntity = null;
+		this.field_7864 = null;
 	}
 }

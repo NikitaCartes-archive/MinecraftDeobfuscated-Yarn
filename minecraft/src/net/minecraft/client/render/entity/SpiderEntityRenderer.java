@@ -13,7 +13,7 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 
 	public SpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SpiderEntityModel<>(), 0.8F);
-		this.addFeature(new SpiderEyesFeatureRenderer<>(this));
+		this.method_4046(new SpiderEyesFeatureRenderer<>(this));
 	}
 
 	protected float method_4124(T spiderEntity) {

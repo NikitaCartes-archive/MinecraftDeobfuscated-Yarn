@@ -7,9 +7,9 @@ import net.minecraft.structure.StructureStart;
 
 public interface BlockViewWithStructures extends BlockView {
 	@Nullable
-	StructureStart getStructureStart(String string);
+	StructureStart method_12181(String string);
 
-	void setStructureStart(String string, StructureStart structureStart);
+	void method_12184(String string, StructureStart structureStart);
 
 	LongSet getStructureReferences(String string);
 

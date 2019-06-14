@@ -32,7 +32,7 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void addPieces(
+	public static void method_14705(
 		StructureManager structureManager,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
@@ -62,24 +62,24 @@ public class IglooGenerator {
 			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(identifier);
 			this.pos = blockPos.add(blockPos2.getX(), blockPos2.getY() - i, blockPos2.getZ());
 			this.rotation = blockRotation;
-			this.initializeStructureData(structureManager);
+			this.method_14708(structureManager);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePieceType.IGLOO, compoundTag);
 			this.template = new Identifier(compoundTag.getString("Template"));
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
-			this.initializeStructureData(structureManager);
+			this.method_14708(structureManager);
 		}
 
-		private void initializeStructureData(StructureManager structureManager) {
-			Structure structure = structureManager.getStructureOrBlank(this.template);
+		private void method_14708(StructureManager structureManager) {
+			Structure structure = structureManager.method_15091(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-			this.setStructureData(structure, this.pos, structurePlacementData);
+				.method_16184(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
+			this.method_15027(structure, this.pos, structurePlacementData);
 		}
 
 		@Override
@@ -92,8 +92,8 @@ public class IglooGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
 			if ("chest".equals(string)) {
-				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
-				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.down());
+				iWorld.method_8652(blockPos, Blocks.field_10124.method_9564(), 3);
+				BlockEntity blockEntity = iWorld.method_8321(blockPos.down());
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity).setLootTable(LootTables.field_662, random.nextLong());
 				}
@@ -106,7 +106,7 @@ public class IglooGenerator {
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
+				.method_16184(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);
 			BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
 			int i = iWorld.getTop(Heightmap.Type.field_13194, blockPos2.getX(), blockPos2.getZ());
@@ -115,9 +115,9 @@ public class IglooGenerator {
 			boolean bl = super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
-				BlockState blockState = iWorld.getBlockState(blockPos4.down());
+				BlockState blockState = iWorld.method_8320(blockPos4.down());
 				if (!blockState.isAir() && blockState.getBlock() != Blocks.field_9983) {
-					iWorld.setBlockState(blockPos4, Blocks.field_10491.getDefaultState(), 3);
+					iWorld.method_8652(blockPos4, Blocks.field_10491.method_9564(), 3);
 				}
 			}
 

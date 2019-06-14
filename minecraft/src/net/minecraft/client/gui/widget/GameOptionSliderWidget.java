@@ -18,7 +18,7 @@ public class GameOptionSliderWidget extends SliderWidget {
 
 	@Override
 	public void renderButton(int i, int j, float f) {
-		if (this.option == Option.FULLSCREEN_RESOLUTION) {
+		if (this.option == Option.field_1931) {
 			this.updateMessage();
 		}
 

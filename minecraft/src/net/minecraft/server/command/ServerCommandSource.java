@@ -32,7 +32,7 @@ public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
 	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.entity"));
 	private final CommandOutput output;
-	private final Vec3d position;
+	private final Vec3d field_9817;
 	private final ServerWorld world;
 	private final int level;
 	private final String simpleName;
@@ -43,7 +43,7 @@ public class ServerCommandSource implements CommandSource {
 	private final Entity entity;
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
-	private final Vec2f rotation;
+	private final Vec2f field_9822;
 
 	public ServerCommandSource(
 		CommandOutput commandOutput,
@@ -75,7 +75,7 @@ public class ServerCommandSource implements CommandSource {
 		EntityAnchorArgumentType.EntityAnchor entityAnchor
 	) {
 		this.output = commandOutput;
-		this.position = vec3d;
+		this.field_9817 = vec3d;
 		this.world = serverWorld;
 		this.silent = bl;
 		this.entity = entity;
@@ -85,7 +85,7 @@ public class ServerCommandSource implements CommandSource {
 		this.minecraftServer = minecraftServer;
 		this.resultConsumer = resultConsumer;
 		this.entityAnchor = entityAnchor;
-		this.rotation = vec2f;
+		this.field_9822 = vec2f;
 	}
 
 	public ServerCommandSource withEntity(Entity entity) {
@@ -93,8 +93,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				this.level,
 				entity.getName().getString(),
@@ -107,13 +107,13 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource withPosition(Vec3d vec3d) {
-		return this.position.equals(vec3d)
+	public ServerCommandSource method_9208(Vec3d vec3d) {
+		return this.field_9817.equals(vec3d)
 			? this
 			: new ServerCommandSource(
 				this.output,
 				vec3d,
-				this.rotation,
+				this.field_9822,
 				this.world,
 				this.level,
 				this.simpleName,
@@ -126,12 +126,12 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource withRotation(Vec2f vec2f) {
-		return this.rotation.equals(vec2f)
+	public ServerCommandSource method_9216(Vec2f vec2f) {
+		return this.field_9822.equals(vec2f)
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
+				this.field_9817,
 				vec2f,
 				this.world,
 				this.level,
@@ -150,8 +150,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				this.level,
 				this.simpleName,
@@ -176,8 +176,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				this.level,
 				this.simpleName,
@@ -195,8 +195,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				i,
 				this.simpleName,
@@ -214,8 +214,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				i,
 				this.simpleName,
@@ -233,8 +233,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				this.world,
 				this.level,
 				this.simpleName,
@@ -252,8 +252,8 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.position,
-				this.rotation,
+				this.field_9817,
+				this.field_9822,
 				serverWorld,
 				this.level,
 				this.simpleName,
@@ -267,18 +267,18 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) throws CommandSyntaxException {
-		return this.withLookingAt(entityAnchor.positionAt(entity));
+		return this.method_9221(entityAnchor.method_9302(entity));
 	}
 
-	public ServerCommandSource withLookingAt(Vec3d vec3d) throws CommandSyntaxException {
-		Vec3d vec3d2 = this.entityAnchor.positionAt(this);
+	public ServerCommandSource method_9221(Vec3d vec3d) throws CommandSyntaxException {
+		Vec3d vec3d2 = this.entityAnchor.method_9299(this);
 		double d = vec3d.x - vec3d2.x;
 		double e = vec3d.y - vec3d2.y;
 		double f = vec3d.z - vec3d2.z;
 		double g = (double)MathHelper.sqrt(d * d + f * f);
 		float h = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI)));
 		float i = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F);
-		return this.withRotation(new Vec2f(h, i));
+		return this.method_9216(new Vec2f(h, i));
 	}
 
 	public Text getDisplayName() {
@@ -294,8 +294,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.level >= i;
 	}
 
-	public Vec3d getPosition() {
-		return this.position;
+	public Vec3d method_9222() {
+		return this.field_9817;
 	}
 
 	public ServerWorld getWorld() {
@@ -323,8 +323,8 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public Vec2f getRotation() {
-		return this.rotation;
+	public Vec2f method_9210() {
+		return this.field_9822;
 	}
 
 	public MinecraftServer getMinecraftServer() {

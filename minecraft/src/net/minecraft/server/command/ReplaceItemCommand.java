@@ -40,11 +40,11 @@ public class ReplaceItemCommand {
 				.then(
 					CommandManager.literal("block")
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+							CommandManager.argument("pos", BlockPosArgumentType.create())
 								.then(
-									CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
+									CommandManager.argument("slot", ItemSlotArgumentType.create())
 										.then(
-											CommandManager.argument("item", ItemStackArgumentType.itemStack())
+											CommandManager.argument("item", ItemStackArgumentType.create())
 												.executes(
 													commandContext -> executeBlock(
 															commandContext.getSource(),
@@ -73,9 +73,9 @@ public class ReplaceItemCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
+									CommandManager.argument("slot", ItemSlotArgumentType.create())
 										.then(
-											CommandManager.argument("item", ItemStackArgumentType.itemStack())
+											CommandManager.argument("item", ItemStackArgumentType.create())
 												.executes(
 													commandContext -> executeEntity(
 															commandContext.getSource(),
@@ -103,7 +103,7 @@ public class ReplaceItemCommand {
 	}
 
 	private static int executeBlock(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, ItemStack itemStack) throws CommandSyntaxException {
-		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
+		BlockEntity blockEntity = serverCommandSource.getWorld().method_8321(blockPos);
 		if (!(blockEntity instanceof Inventory)) {
 			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {

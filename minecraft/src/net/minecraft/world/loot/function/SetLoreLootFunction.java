@@ -37,7 +37,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+		return this.entity != null ? ImmutableSet.of(this.entity.method_315()) : ImmutableSet.of();
 	}
 
 	@Override

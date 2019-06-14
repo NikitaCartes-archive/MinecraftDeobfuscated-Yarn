@@ -83,7 +83,7 @@ public class MapState extends PersistentState {
 				MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(j));
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 				this.addIcon(
-					mapBannerMarker.getIconType(),
+					mapBannerMarker.method_72(),
 					null,
 					mapBannerMarker.getKey(),
 					(double)mapBannerMarker.getPos().getX(),
@@ -163,10 +163,10 @@ public class MapState extends PersistentState {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isInFrame())) {
-				if (!itemStack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
+				if (!itemStack.isInFrame() && playerUpdateTracker2.player.field_6026 == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.field_91,
-						playerUpdateTracker2.player.world,
+						playerUpdateTracker2.player.field_6002,
 						string,
 						playerUpdateTracker2.player.x,
 						playerUpdateTracker2.player.z,
@@ -189,14 +189,14 @@ public class MapState extends PersistentState {
 				this.icons.remove("frame-" + mapFrameMarker.getEntityId());
 			}
 
-			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
+			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getEntityId());
 			this.addIcon(
 				MapIcon.Type.field_95,
-				playerEntity.world,
+				playerEntity.field_6002,
 				"frame-" + itemFrameEntity.getEntityId(),
 				(double)blockPos.getX(),
 				(double)blockPos.getZ(),
-				(double)(itemFrameEntity.facing.getHorizontal() * 90),
+				(double)(itemFrameEntity.getHorizontalFacing().getHorizontal() * 90),
 				null
 			);
 			this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
@@ -211,7 +211,7 @@ public class MapState extends PersistentState {
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
 					this.addIcon(
 						MapIcon.Type.byId(compoundTag2.getByte("type")),
-						playerEntity.world,
+						playerEntity.field_6002,
 						compoundTag2.getString("id"),
 						compoundTag2.getDouble("x"),
 						compoundTag2.getDouble("z"),
@@ -257,7 +257,7 @@ public class MapState extends PersistentState {
 			f += f < 0.0 ? -8.0 : 8.0;
 			k = (byte)((int)(f * 16.0 / 360.0));
 			if (this.dimension == DimensionType.field_13076 && iWorld != null) {
-				int l = (int)(iWorld.getLevelProperties().getTimeOfDay() / 10L);
+				int l = (int)(iWorld.method_8401().getTimeOfDay() / 10L);
 				k = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
 			}
 		} else {
@@ -348,7 +348,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getIconType(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
+				this.addIcon(mapBannerMarker.method_72(), iWorld, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
 				bl = true;
 			}
 

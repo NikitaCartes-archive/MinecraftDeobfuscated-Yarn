@@ -26,7 +26,7 @@ public class BedBlockEntity extends BlockEntity {
 	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		if (this.color == null) {
-			this.color = ((BedBlock)this.getCachedState().getBlock()).getColor();
+			this.color = ((BedBlock)this.method_11010().getBlock()).getColor();
 		}
 
 		return this.color;

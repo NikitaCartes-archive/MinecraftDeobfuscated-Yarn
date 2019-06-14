@@ -33,7 +33,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -65,7 +65,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -80,7 +80,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -95,7 +95,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -127,7 +127,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -159,7 +159,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -174,7 +174,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
@@ -189,7 +189,7 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
+											CommandManager.argument("advancement", IdentifierArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(

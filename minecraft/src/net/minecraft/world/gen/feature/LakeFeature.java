@@ -17,7 +17,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class LakeFeature extends Feature<LakeFeatureConfig> {
-	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	private static final BlockState CAVE_AIR = Blocks.field_10543.method_9564();
 
 	public LakeFeature(Function<Dynamic<?>, ? extends LakeFeatureConfig> function) {
 		super(function);
@@ -35,7 +35,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 		} else {
 			blockPos = blockPos.down(4);
 			ChunkPos chunkPos = new ChunkPos(blockPos);
-			if (!iWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_16422).getStructureReferences(Feature.VILLAGE.getName()).isEmpty()) {
+			if (!iWorld.method_16956(chunkPos.x, chunkPos.z, ChunkStatus.field_16422).getStructureReferences(Feature.field_13587.getName()).isEmpty()) {
 				return false;
 			} else {
 				boolean[] bls = new boolean[2048];
@@ -77,12 +77,12 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 										|| t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]
 								);
 							if (bl) {
-								Material material = iWorld.getBlockState(blockPos.add(j, t, s)).getMaterial();
+								Material material = iWorld.method_8320(blockPos.add(j, t, s)).method_11620();
 								if (t >= 4 && material.isLiquid()) {
 									return false;
 								}
 
-								if (t < 4 && !material.isSolid() && iWorld.getBlockState(blockPos.add(j, t, s)) != lakeFeatureConfig.state) {
+								if (t < 4 && !material.isSolid() && iWorld.method_8320(blockPos.add(j, t, s)) != lakeFeatureConfig.state) {
 									return false;
 								}
 							}
@@ -94,7 +94,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 					for(int s = 0; s < 16; ++s) {
 						for(int t = 0; t < 8; ++t) {
 							if (bls[(j * 16 + s) * 8 + t]) {
-								iWorld.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : lakeFeatureConfig.state, 2);
+								iWorld.method_8652(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : lakeFeatureConfig.state, 2);
 							}
 						}
 					}
@@ -105,12 +105,12 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 						for(int t = 4; t < 8; ++t) {
 							if (bls[(j * 16 + s) * 8 + t]) {
 								BlockPos blockPos2 = blockPos.add(j, t - 1, s);
-								if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.field_9284, blockPos.add(j, t, s)) > 0) {
-									Biome biome = iWorld.getBiome(blockPos2);
-									if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.field_10402) {
-										iWorld.setBlockState(blockPos2, Blocks.field_10402.getDefaultState(), 2);
+								if (Block.isNaturalDirt(iWorld.method_8320(blockPos2).getBlock()) && iWorld.method_8314(LightType.field_9284, blockPos.add(j, t, s)) > 0) {
+									Biome biome = iWorld.method_8310(blockPos2);
+									if (biome.method_8722().getTopMaterial().getBlock() == Blocks.field_10402) {
+										iWorld.method_8652(blockPos2, Blocks.field_10402.method_9564(), 2);
 									} else {
-										iWorld.setBlockState(blockPos2, Blocks.field_10219.getDefaultState(), 2);
+										iWorld.method_8652(blockPos2, Blocks.field_10219.method_9564(), 2);
 									}
 								}
 							}
@@ -118,7 +118,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 					}
 				}
 
-				if (lakeFeatureConfig.state.getMaterial() == Material.LAVA) {
+				if (lakeFeatureConfig.state.method_11620() == Material.LAVA) {
 					for(int j = 0; j < 16; ++j) {
 						for(int s = 0; s < 16; ++s) {
 							for(int t = 0; t < 8; ++t) {
@@ -131,21 +131,21 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 											|| t < 7 && bls[(j * 16 + s) * 8 + t + 1]
 											|| t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]
 									);
-								if (bl && (t < 4 || random.nextInt(2) != 0) && iWorld.getBlockState(blockPos.add(j, t, s)).getMaterial().isSolid()) {
-									iWorld.setBlockState(blockPos.add(j, t, s), Blocks.field_10340.getDefaultState(), 2);
+								if (bl && (t < 4 || random.nextInt(2) != 0) && iWorld.method_8320(blockPos.add(j, t, s)).method_11620().isSolid()) {
+									iWorld.method_8652(blockPos.add(j, t, s), Blocks.field_10340.method_9564(), 2);
 								}
 							}
 						}
 					}
 				}
 
-				if (lakeFeatureConfig.state.getMaterial() == Material.WATER) {
+				if (lakeFeatureConfig.state.method_11620() == Material.WATER) {
 					for(int j = 0; j < 16; ++j) {
 						for(int s = 0; s < 16; ++s) {
 							int t = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
-							if (iWorld.getBiome(blockPos2).canSetSnow(iWorld, blockPos2, false)) {
-								iWorld.setBlockState(blockPos2, Blocks.field_10295.getDefaultState(), 2);
+							if (iWorld.method_8310(blockPos2).canSetSnow(iWorld, blockPos2, false)) {
+								iWorld.method_8652(blockPos2, Blocks.field_10295.method_9564(), 2);
 							}
 						}
 					}

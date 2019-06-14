@@ -61,7 +61,7 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		hashMap.put("horse.chest", 499);
 	});
 
-	public static ItemSlotArgumentType itemSlot() {
+	public static ItemSlotArgumentType create() {
 		return new ItemSlotArgumentType();
 	}
 

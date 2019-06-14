@@ -31,7 +31,7 @@ public class SlimeBlock extends TransparentBlock {
 		if (entity.isSneaking()) {
 			super.onEntityLand(blockView, entity);
 		} else {
-			Vec3d vec3d = entity.getVelocity();
+			Vec3d vec3d = entity.method_18798();
 			if (vec3d.y < 0.0) {
 				double d = entity instanceof LivingEntity ? 1.0 : 0.8;
 				entity.setVelocity(vec3d.x, -vec3d.y * d, vec3d.z);
@@ -41,10 +41,10 @@ public class SlimeBlock extends TransparentBlock {
 
 	@Override
 	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-		double d = Math.abs(entity.getVelocity().y);
+		double d = Math.abs(entity.method_18798().y);
 		if (d < 0.1 && !entity.isSneaking()) {
 			double e = 0.4 + d * 0.2;
-			entity.setVelocity(entity.getVelocity().multiply(e, 1.0, e));
+			entity.method_18799(entity.method_18798().multiply(e, 1.0, e));
 		}
 
 		super.onSteppedOn(world, blockPos, entity);

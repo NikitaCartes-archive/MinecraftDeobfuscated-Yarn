@@ -14,7 +14,7 @@ public class MoveIntoWaterGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.onGround && !this.mob.world.getFluidState(new BlockPos(this.mob)).matches(FluidTags.field_15517);
+		return this.mob.onGround && !this.mob.field_6002.method_8316(new BlockPos(this.mob)).matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class MoveIntoWaterGoal extends Goal {
 			MathHelper.floor(this.mob.y),
 			MathHelper.floor(this.mob.z + 2.0)
 		)) {
-			if (this.mob.world.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
+			if (this.mob.field_6002.method_8316(blockPos2).matches(FluidTags.field_15517)) {
 				blockPos = blockPos2;
 				break;
 			}

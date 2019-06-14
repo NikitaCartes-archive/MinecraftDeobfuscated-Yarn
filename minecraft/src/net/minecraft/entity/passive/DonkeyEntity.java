@@ -43,7 +43,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.field_6057 : EntityType.field_6067;
-		HorseBaseEntity horseBaseEntity = entityType.create(this.world);
+		HorseBaseEntity horseBaseEntity = entityType.method_5883(this.field_6002);
 		this.setChildAttributes(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;
 	}

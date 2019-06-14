@@ -31,13 +31,13 @@ public class TableBonusLootCondition implements LootCondition {
 	}
 
 	public boolean method_799(LootContext lootContext) {
-		ItemStack itemStack = lootContext.get(LootContextParameters.field_1229);
+		ItemStack itemStack = lootContext.method_296(LootContextParameters.field_1229);
 		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
 		float f = this.chances[Math.min(i, this.chances.length - 1)];
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
-	public static LootCondition.Builder builder(Enchantment enchantment, float... fs) {
+	public static LootCondition.Builder method_800(Enchantment enchantment, float... fs) {
 		return () -> new TableBonusLootCondition(enchantment, fs);
 	}
 

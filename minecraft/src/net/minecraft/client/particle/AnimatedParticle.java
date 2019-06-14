@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedParticle extends SpriteBillboardParticle {
-	protected final SpriteProvider spriteProvider;
+	protected final SpriteProvider field_17866;
 	private final float upwardsAcceleration;
 	private float resistance = 0.91F;
 	private float targetColorRed;
@@ -16,7 +16,7 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 
 	protected AnimatedParticle(World world, double d, double e, double f, SpriteProvider spriteProvider, float g) {
 		super(world, d, e, f);
-		this.spriteProvider = spriteProvider;
+		this.field_17866 = spriteProvider;
 		this.upwardsAcceleration = g;
 	}
 
@@ -36,7 +36,7 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 
@@ -48,7 +48,7 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.setSpriteForAge(this.spriteProvider);
+			this.setSpriteForAge(this.field_17866);
 			if (this.age > this.maxAge / 2) {
 				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
 				if (this.changesColor) {

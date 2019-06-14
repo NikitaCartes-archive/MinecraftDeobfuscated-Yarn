@@ -11,13 +11,13 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class DataQueryHandler {
-	private final ClientPlayNetworkHandler networkHandler;
+	private final ClientPlayNetworkHandler field_1640;
 	private int expectedTransactionId = -1;
 	@Nullable
 	private Consumer<CompoundTag> queryConsumer;
 
 	public DataQueryHandler(ClientPlayNetworkHandler clientPlayNetworkHandler) {
-		this.networkHandler = clientPlayNetworkHandler;
+		this.field_1640 = clientPlayNetworkHandler;
 	}
 
 	public boolean handleQueryResponse(int i, @Nullable CompoundTag compoundTag) {
@@ -37,11 +37,11 @@ public class DataQueryHandler {
 
 	public void queryEntityNbt(int i, Consumer<CompoundTag> consumer) {
 		int j = this.setNextQueryConsumer(consumer);
-		this.networkHandler.sendPacket(new QueryEntityNbtC2SPacket(j, i));
+		this.field_1640.sendPacket(new QueryEntityNbtC2SPacket(j, i));
 	}
 
 	public void queryBlockNbt(BlockPos blockPos, Consumer<CompoundTag> consumer) {
 		int i = this.setNextQueryConsumer(consumer);
-		this.networkHandler.sendPacket(new QueryBlockNbtC2SPacket(i, blockPos));
+		this.field_1640.sendPacket(new QueryBlockNbtC2SPacket(i, blockPos));
 	}
 }

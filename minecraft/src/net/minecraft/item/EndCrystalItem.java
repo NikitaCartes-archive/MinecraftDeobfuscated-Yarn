@@ -21,9 +21,9 @@ public class EndCrystalItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
+		World world = itemUsageContext.method_8045();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		BlockState blockState = world.getBlockState(blockPos);
+		BlockState blockState = world.method_8320(blockPos);
 		if (blockState.getBlock() != Blocks.field_10540 && blockState.getBlock() != Blocks.field_9987) {
 			return ActionResult.field_5814;
 		} else {
@@ -34,7 +34,7 @@ public class EndCrystalItem extends Item {
 				double d = (double)blockPos2.getX();
 				double e = (double)blockPos2.getY();
 				double f = (double)blockPos2.getZ();
-				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+				List<Entity> list = world.method_8335(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
 					return ActionResult.field_5814;
 				} else {
@@ -42,8 +42,8 @@ public class EndCrystalItem extends Item {
 						EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(world, d + 0.5, e, f + 0.5);
 						enderCrystalEntity.setShowBottom(false);
 						world.spawnEntity(enderCrystalEntity);
-						if (world.dimension instanceof TheEndDimension) {
-							EnderDragonFight enderDragonFight = ((TheEndDimension)world.dimension).method_12513();
+						if (world.field_9247 instanceof TheEndDimension) {
+							EnderDragonFight enderDragonFight = ((TheEndDimension)world.field_9247).method_12513();
 							enderDragonFight.respawnDragon();
 						}
 					}

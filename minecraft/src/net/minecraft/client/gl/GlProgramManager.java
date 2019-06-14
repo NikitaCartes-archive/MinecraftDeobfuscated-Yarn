@@ -24,8 +24,8 @@ public class GlProgramManager {
 	}
 
 	public void deleteProgram(GlProgram glProgram) {
-		glProgram.getFragmentShader().release();
-		glProgram.getVertexShader().release();
+		glProgram.method_1278().release();
+		glProgram.method_1274().release();
 		GLX.glDeleteProgram(glProgram.getProgramRef());
 	}
 
@@ -39,15 +39,13 @@ public class GlProgramManager {
 	}
 
 	public void linkProgram(GlProgram glProgram) throws IOException {
-		glProgram.getFragmentShader().attachTo(glProgram);
-		glProgram.getVertexShader().attachTo(glProgram);
+		glProgram.method_1278().attachTo(glProgram);
+		glProgram.method_1274().attachTo(glProgram);
 		GLX.glLinkProgram(glProgram.getProgramRef());
 		int i = GLX.glGetProgrami(glProgram.getProgramRef(), GLX.GL_LINK_STATUS);
 		if (i == 0) {
 			LOGGER.warn(
-				"Error encountered when linking program containing VS {} and FS {}. Log output:",
-				glProgram.getVertexShader().getName(),
-				glProgram.getFragmentShader().getName()
+				"Error encountered when linking program containing VS {} and FS {}. Log output:", glProgram.method_1274().getName(), glProgram.method_1278().getName()
 			);
 			LOGGER.warn(GLX.glGetProgramInfoLog(glProgram.getProgramRef(), 32768));
 		}

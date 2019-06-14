@@ -23,6 +23,6 @@ public interface Texture {
 	}
 
 	default void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
-		textureManager.registerTexture(identifier, this);
+		textureManager.method_4616(identifier, this);
 	}
 }

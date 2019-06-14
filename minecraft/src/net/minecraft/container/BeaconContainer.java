@@ -60,7 +60,7 @@ public class BeaconContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!playerEntity.world.isClient) {
+		if (!playerEntity.field_6002.isClient) {
 			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
 			if (!itemStack.isEmpty()) {
 				playerEntity.dropItem(itemStack, false);
@@ -70,7 +70,7 @@ public class BeaconContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10327);
+		return method_17695(this.context, playerEntity, Blocks.field_10327);
 	}
 
 	@Override

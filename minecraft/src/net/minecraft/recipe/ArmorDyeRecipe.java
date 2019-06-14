@@ -78,6 +78,6 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.ARMOR_DYE;
+		return RecipeSerializer.field_9028;
 	}
 }

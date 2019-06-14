@@ -30,7 +30,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			.getNames(commandContext.getSource());
 	}
 
-	public static GameProfileArgumentType gameProfile() {
+	public static GameProfileArgumentType create() {
 		return new GameProfileArgumentType();
 	}
 

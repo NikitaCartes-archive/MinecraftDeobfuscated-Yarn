@@ -31,7 +31,7 @@ public class GlyphRenderer {
 		this.yMax = m;
 	}
 
-	public void draw(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
+	public void method_2025(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
 		int l = 3;
 		float m = f + this.xMin;
 		float n = f + this.xMax;

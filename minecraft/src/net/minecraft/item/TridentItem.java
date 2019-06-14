@@ -37,7 +37,7 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return !playerEntity.isCreative();
 	}
 
@@ -58,7 +58,7 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+	public void method_7840(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
 			int j = this.getMaxUseTime(itemStack) - i;
@@ -98,7 +98,7 @@ public class TridentItem extends Item {
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
 							float p = 1.1999999F;
-							playerEntity.move(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
+							playerEntity.method_5784(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;
@@ -118,7 +118,7 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
 			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
@@ -137,7 +137,7 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
 			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}

@@ -48,7 +48,7 @@ public class LootTablesProvider implements DataProvider {
 		Path path = this.root.getOutput();
 		Map<Identifier, LootSupplier> map = Maps.<Identifier, LootSupplier>newHashMap();
 		this.field_11354.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((BiConsumer)(identifierx, builder) -> {
-				if (map.put(identifierx, builder.withType((LootContextType)pair.getSecond()).create()) != null) {
+				if (map.put(identifierx, builder.method_334((LootContextType)pair.getSecond()).create()) != null) {
 					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}
 			}));

@@ -114,7 +114,7 @@ public class LoomContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10083);
+		return method_17695(this.context, playerEntity, Blocks.field_10083);
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class LoomContainer extends Container {
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
-					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
+					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).method_7704().ordinal());
 				}
 			}
 		} else {
@@ -218,7 +218,7 @@ public class LoomContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, playerEntity.field_6002, this.inputInventory)));
 	}
 
 	private void updateOutputSlot() {

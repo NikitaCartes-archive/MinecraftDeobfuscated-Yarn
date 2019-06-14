@@ -42,8 +42,8 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		long m = this.field_4622.world.getTime();
-		Camera camera = this.field_4622.gameRenderer.getCamera();
+		long m = this.field_4622.field_1687.getTime();
+		Camera camera = this.field_4622.field_1773.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;

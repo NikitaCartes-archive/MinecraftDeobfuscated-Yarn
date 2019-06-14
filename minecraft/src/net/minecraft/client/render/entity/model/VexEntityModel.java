@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -39,7 +39,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(vexEntity, f, g, h, i, j, k);
 		if (vexEntity.isCharging()) {
-			if (vexEntity.getMainArm() == Arm.field_6183) {
+			if (vexEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.rightArm.pitch = 3.7699115F;
 			} else {
 				this.leftArm.pitch = 3.7699115F;

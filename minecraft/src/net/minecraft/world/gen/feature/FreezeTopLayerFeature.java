@@ -32,16 +32,16 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 				int m = iWorld.getTop(Heightmap.Type.field_13197, k, l);
 				mutable.set(k, m, l);
 				mutable2.set(mutable).setOffset(Direction.field_11033, 1);
-				Biome biome = iWorld.getBiome(mutable);
+				Biome biome = iWorld.method_8310(mutable);
 				if (biome.canSetSnow(iWorld, mutable2, false)) {
-					iWorld.setBlockState(mutable2, Blocks.field_10295.getDefaultState(), 2);
+					iWorld.method_8652(mutable2, Blocks.field_10295.method_9564(), 2);
 				}
 
 				if (biome.canSetIce(iWorld, mutable)) {
-					iWorld.setBlockState(mutable, Blocks.field_10477.getDefaultState(), 2);
-					BlockState blockState = iWorld.getBlockState(mutable2);
-					if (blockState.contains(SnowyBlock.SNOWY)) {
-						iWorld.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
+					iWorld.method_8652(mutable, Blocks.field_10477.method_9564(), 2);
+					BlockState blockState = iWorld.method_8320(mutable2);
+					if (blockState.method_11570(SnowyBlock.field_11522)) {
+						iWorld.method_8652(mutable2, blockState.method_11657(SnowyBlock.field_11522, Boolean.valueOf(true)), 2);
 					}
 				}
 			}

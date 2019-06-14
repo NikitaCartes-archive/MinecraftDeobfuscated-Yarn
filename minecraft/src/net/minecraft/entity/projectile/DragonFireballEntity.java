@@ -31,11 +31,11 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7469(HitResult hitResult) {
 		if (hitResult.getType() != HitResult.Type.field_1331 || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
-			if (!this.world.isClient) {
-				List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
-				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+			if (!this.field_6002.isClient) {
+				List<LivingEntity> list = this.field_6002.method_18467(LivingEntity.class, this.method_5829().expand(4.0, 2.0, 4.0));
+				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.field_6002, this.x, this.y, this.z);
 				areaEffectCloudEntity.setOwner(this.owner);
 				areaEffectCloudEntity.setParticleType(ParticleTypes.field_11216);
 				areaEffectCloudEntity.setRadius(3.0F);
@@ -52,8 +52,8 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					}
 				}
 
-				this.world.playLevelEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
-				this.world.spawnEntity(areaEffectCloudEntity);
+				this.field_6002.playLevelEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
+				this.field_6002.spawnEntity(areaEffectCloudEntity);
 				this.remove();
 			}
 		}

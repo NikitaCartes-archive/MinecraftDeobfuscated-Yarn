@@ -41,9 +41,9 @@ public class ArmorItem extends Item {
 	protected final ArmorMaterial type;
 
 	public static ItemStack dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
-		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
+		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().method_11654(DispenserBlock.field_10918));
 		List<LivingEntity> list = blockPointer.getWorld()
-			.getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
+			.method_8390(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
 		if (list.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
@@ -88,7 +88,7 @@ public class ArmorItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);

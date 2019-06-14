@@ -53,16 +53,16 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 		}
 	}
 
-	protected static void updateResult(
+	protected static void method_17399(
 		int i, World world, PlayerEntity playerEntity, CraftingInventory craftingInventory, CraftingResultInventory craftingResultInventory
 	) {
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
 			ItemStack itemStack = ItemStack.EMPTY;
-			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
+			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().method_8132(RecipeType.CRAFTING, craftingInventory, world);
 			if (optional.isPresent()) {
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
-				if (craftingResultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {
+				if (craftingResultInventory.method_7665(world, serverPlayerEntity, craftingRecipe)) {
 					itemStack = craftingRecipe.craft(craftingInventory);
 				}
 			}
@@ -74,7 +74,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> updateResult(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
 	}
 
 	@Override
@@ -90,18 +90,18 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public boolean matches(Recipe<? super CraftingInventory> recipe) {
-		return recipe.matches(this.craftingInv, this.player.world);
+		return recipe.method_8115(this.craftingInv, this.player.field_6002);
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInv)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_9980);
+		return method_17695(this.context, playerEntity, Blocks.field_9980);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (i == 0) {
-				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, playerEntity)));
+				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().method_7843(itemStack2, world, playerEntity)));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}

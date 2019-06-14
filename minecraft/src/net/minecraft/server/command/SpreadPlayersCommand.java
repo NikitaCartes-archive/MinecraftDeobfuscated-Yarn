@@ -40,7 +40,7 @@ public class SpreadPlayersCommand {
 			CommandManager.literal("spreadplayers")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("center", Vec2ArgumentType.vec2())
+					CommandManager.argument("center", Vec2ArgumentType.create())
 						.then(
 							CommandManager.argument("spreadDistance", FloatArgumentType.floatArg(0.0F))
 								.then(
@@ -88,7 +88,7 @@ public class SpreadPlayersCommand {
 
 		for(Entity entity : collection) {
 			if (entity instanceof PlayerEntity) {
-				set.add(entity.getScoreboardTeam());
+				set.add(entity.method_5781());
 			} else {
 				set.add(null);
 			}
@@ -176,7 +176,7 @@ public class SpreadPlayersCommand {
 		for(Entity entity : collection) {
 			SpreadPlayersCommand.Pile pile;
 			if (bl) {
-				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.getScoreboardTeam() : null;
+				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.method_5781() : null;
 				if (!map.containsKey(abstractTeam)) {
 					map.put(abstractTeam, piles[i++]);
 				}
@@ -186,7 +186,7 @@ public class SpreadPlayersCommand {
 				pile = piles[i++];
 			}
 
-			entity.teleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
+			entity.method_20620((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
 			double e = Double.MAX_VALUE;
 
 			for(SpreadPlayersCommand.Pile pile2 : piles) {
@@ -265,7 +265,7 @@ public class SpreadPlayersCommand {
 
 			while(blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				if (!blockView.getBlockState(blockPos).isAir()) {
+				if (!blockView.method_8320(blockPos).isAir()) {
 					return blockPos.getY() + 1;
 				}
 			}
@@ -278,9 +278,9 @@ public class SpreadPlayersCommand {
 
 			while(blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				BlockState blockState = blockView.getBlockState(blockPos);
+				BlockState blockState = blockView.method_8320(blockPos);
 				if (!blockState.isAir()) {
-					Material material = blockState.getMaterial();
+					Material material = blockState.method_11620();
 					return !material.isLiquid() && material != Material.FIRE;
 				}
 			}

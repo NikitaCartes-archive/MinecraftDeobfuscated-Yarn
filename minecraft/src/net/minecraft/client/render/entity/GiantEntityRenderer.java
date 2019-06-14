@@ -18,8 +18,8 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 	public GiantEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, float f) {
 		super(entityRenderDispatcher, new GiantEntityModel(), 0.5F * f);
 		this.scale = f;
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
+		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
 	protected void method_3980(GiantEntity giantEntity, float f) {

@@ -23,7 +23,7 @@ public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 		object -> new TranslatableText("effect.effectNotFound", object)
 	);
 
-	public static MobEffectArgumentType mobEffect() {
+	public static MobEffectArgumentType create() {
 		return new MobEffectArgumentType();
 	}
 

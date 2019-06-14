@@ -83,17 +83,17 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public int getWidthPixels() {
-		return this.motive.getWidth();
+		return this.motive == null ? 1 : this.motive.getWidth();
 	}
 
 	@Override
 	public int getHeightPixels() {
-		return this.motive.getHeight();
+		return this.motive == null ? 1 : this.motive.getHeight();
 	}
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+		if (this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
 			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -102,7 +102,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.field_8892);
+			this.method_5706(Items.field_8892);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
 		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}

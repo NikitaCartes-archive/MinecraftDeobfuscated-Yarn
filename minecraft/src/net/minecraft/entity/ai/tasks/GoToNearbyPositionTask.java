@@ -28,8 +28,8 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 	protected boolean method_19607(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
 		return optional.isPresent()
-			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
-			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
+			&& Objects.equals(serverWorld.method_8597().method_12460(), ((GlobalPos)optional.get()).getDimension())
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.method_19538(), (double)this.maxDistance);
 	}
 
 	protected void method_19608(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {

@@ -23,17 +23,17 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.skeletonHorse.world.isPlayerInRange(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, 10.0);
+		return this.skeletonHorse.field_6002.isPlayerInRange(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, 10.0);
 	}
 
 	@Override
 	public void tick() {
-		LocalDifficulty localDifficulty = this.skeletonHorse.world.getLocalDifficulty(new BlockPos(this.skeletonHorse));
+		LocalDifficulty localDifficulty = this.skeletonHorse.field_6002.getLocalDifficulty(new BlockPos(this.skeletonHorse));
 		this.skeletonHorse.setTrapped(false);
 		this.skeletonHorse.setTame(true);
 		this.skeletonHorse.setBreedingAge(0);
-		((ServerWorld)this.skeletonHorse.world)
-			.addLightning(new LightningEntity(this.skeletonHorse.world, this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, true));
+		((ServerWorld)this.skeletonHorse.field_6002)
+			.addLightning(new LightningEntity(this.skeletonHorse.field_6002, this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, true));
 		SkeletonEntity skeletonEntity = this.getSkeleton(localDifficulty, this.skeletonHorse);
 		skeletonEntity.startRiding(this.skeletonHorse);
 
@@ -46,22 +46,22 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.create(this.skeletonHorse.world);
-		skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.method_5883(this.skeletonHorse.field_6002);
+		skeletonHorseEntity.method_5943(this.skeletonHorse.field_6002, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z);
-		skeletonHorseEntity.timeUntilRegen = 60;
+		skeletonHorseEntity.field_6008 = 60;
 		skeletonHorseEntity.setPersistent();
 		skeletonHorseEntity.setTame(true);
 		skeletonHorseEntity.setBreedingAge(0);
-		skeletonHorseEntity.world.spawnEntity(skeletonHorseEntity);
+		skeletonHorseEntity.field_6002.spawnEntity(skeletonHorseEntity);
 		return skeletonHorseEntity;
 	}
 
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
-		SkeletonEntity skeletonEntity = EntityType.field_6137.create(horseBaseEntity.world);
-		skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonEntity skeletonEntity = EntityType.field_6137.method_5883(horseBaseEntity.field_6002);
+		skeletonEntity.method_5943(horseBaseEntity.field_6002, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
-		skeletonEntity.timeUntilRegen = 60;
+		skeletonEntity.field_6008 = 60;
 		skeletonEntity.setPersistent();
 		if (skeletonEntity.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
 			skeletonEntity.setEquippedStack(EquipmentSlot.field_6169, new ItemStack(Items.field_8743));
@@ -85,7 +85,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 				false
 			)
 		);
-		skeletonEntity.world.spawnEntity(skeletonEntity);
+		skeletonEntity.field_6002.spawnEntity(skeletonEntity);
 		return skeletonEntity;
 	}
 }

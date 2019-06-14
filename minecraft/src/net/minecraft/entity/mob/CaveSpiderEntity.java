@@ -33,9 +33,9 @@ public class CaveSpiderEntity extends SpiderEntity {
 		if (super.tryAttack(entity)) {
 			if (entity instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.field_5802) {
+				if (this.field_6002.getDifficulty() == Difficulty.field_5802) {
 					i = 7;
-				} else if (this.world.getDifficulty() == Difficulty.field_5807) {
+				} else if (this.field_6002.getDifficulty() == Difficulty.field_5807) {
 					i = 15;
 				}
 
@@ -52,7 +52,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		return entityData;

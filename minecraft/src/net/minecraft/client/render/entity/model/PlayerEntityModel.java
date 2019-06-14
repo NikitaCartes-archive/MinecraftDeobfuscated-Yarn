@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
@@ -132,10 +132,10 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
-		Cuboid cuboid = this.getArm(arm);
+	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+		Cuboid cuboid = this.getArm(absoluteHand);
 		if (this.thinArms) {
-			float g = 0.5F * (float)(arm == Arm.field_6183 ? 1 : -1);
+			float g = 0.5F * (float)(absoluteHand == AbsoluteHand.field_6183 ? 1 : -1);
 			cuboid.rotationPointX += g;
 			cuboid.applyTransform(f);
 			cuboid.rotationPointX -= g;

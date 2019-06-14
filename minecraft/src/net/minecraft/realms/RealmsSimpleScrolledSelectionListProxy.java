@@ -95,19 +95,19 @@ public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
 					q = this.field_2166;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(q + p), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)(q + p), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)q, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(q + p - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)(q + p - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)q, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();

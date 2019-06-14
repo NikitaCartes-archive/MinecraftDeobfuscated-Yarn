@@ -13,7 +13,7 @@ public final class SnowyBeachBiome extends Biome {
 	public SnowyBeachBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.SAND_CONFIG)
+				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15694)
 				.precipitation(Biome.Precipitation.SNOW)
 				.category(Biome.Category.field_9363)
 				.depth(0.0F)
@@ -24,9 +24,9 @@ public final class SnowyBeachBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
-		this.addStructureFeature(Feature.BURIED_TREASURE, new BuriedTreasureFeatureConfig(0.01F));
-		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(true));
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.method_8710(Feature.field_13538, new BuriedTreasureFeatureConfig(0.01F));
+		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(true));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

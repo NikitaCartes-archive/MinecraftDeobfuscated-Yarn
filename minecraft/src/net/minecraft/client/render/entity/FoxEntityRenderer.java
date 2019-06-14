@@ -19,7 +19,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 
 	public FoxEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new FoxEntityModel<>(), 0.4F);
-		this.addFeature(new FoxHeldItemFeatureRenderer(this));
+		this.method_4046(new FoxHeldItemFeatureRenderer(this));
 	}
 
 	protected void method_18334(FoxEntity foxEntity, float f, float g, float h) {

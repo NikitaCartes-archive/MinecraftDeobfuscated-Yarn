@@ -32,7 +32,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	}
 
 	@Nullable
-	public GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
+	public GlyphRenderer method_2022(RenderableGlyph renderableGlyph) {
 		if (renderableGlyph.hasColor() != this.hasColor) {
 			return null;
 		} else {

@@ -10,11 +10,11 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class DecoratedFeatureConfig implements FeatureConfig {
 	public final ConfiguredFeature<?> feature;
-	public final ConfiguredDecorator<?> decorator;
+	public final ConfiguredDecorator<?> field_13398;
 
 	public DecoratedFeatureConfig(ConfiguredFeature<?> configuredFeature, ConfiguredDecorator<?> configuredDecorator) {
 		this.feature = configuredFeature;
-		this.decorator = configuredDecorator;
+		this.field_13398 = configuredDecorator;
 	}
 
 	public <F extends FeatureConfig, D extends DecoratorConfig> DecoratedFeatureConfig(
@@ -32,7 +32,7 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 					dynamicOps.createString("feature"),
 					this.feature.serialize(dynamicOps).getValue(),
 					dynamicOps.createString("decorator"),
-					this.decorator.serialize(dynamicOps).getValue()
+					this.field_13398.serialize(dynamicOps).getValue()
 				)
 			)
 		);
@@ -40,7 +40,10 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 
 	public String toString() {
 		return String.format(
-			"< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(this.feature.feature), Registry.DECORATOR.getId(this.decorator.decorator)
+			"< %s [%s | %s] >",
+			this.getClass().getSimpleName(),
+			Registry.FEATURE.getId(this.feature.field_13376),
+			Registry.DECORATOR.getId(this.field_13398.field_14115)
 		);
 	}
 

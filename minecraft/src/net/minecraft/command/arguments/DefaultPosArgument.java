@@ -19,13 +19,13 @@ public class DefaultPosArgument implements PosArgument {
 
 	@Override
 	public Vec3d toAbsolutePos(ServerCommandSource serverCommandSource) {
-		Vec3d vec3d = serverCommandSource.getPosition();
+		Vec3d vec3d = serverCommandSource.method_9222();
 		return new Vec3d(this.x.toAbsoluteCoordinate(vec3d.x), this.y.toAbsoluteCoordinate(vec3d.y), this.z.toAbsoluteCoordinate(vec3d.z));
 	}
 
 	@Override
 	public Vec2f toAbsoluteRotation(ServerCommandSource serverCommandSource) {
-		Vec2f vec2f = serverCommandSource.getRotation();
+		Vec2f vec2f = serverCommandSource.method_9210();
 		return new Vec2f((float)this.x.toAbsoluteCoordinate((double)vec2f.x), (float)this.y.toAbsoluteCoordinate((double)vec2f.y));
 	}
 

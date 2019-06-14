@@ -19,7 +19,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9011 = Ingredient.ofItems(
+	private static final Ingredient field_9011 = Ingredient.method_8091(
 		Items.field_8814,
 		Items.field_8153,
 		Items.field_8397,
@@ -30,8 +30,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		Items.DRAGON_HEAD,
 		Items.ZOMBIE_HEAD
 	);
-	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
-	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
+	private static final Ingredient field_9010 = Ingredient.method_8091(Items.field_8477);
+	private static final Ingredient field_9014 = Ingredient.method_8091(Items.field_8601);
 	private static final Map<Item, FireworkItem.Type> field_9013 = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
 		hashMap.put(Items.field_8814, FireworkItem.Type.field_7977);
 		hashMap.put(Items.field_8153, FireworkItem.Type.field_7970);
@@ -43,7 +43,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.field_7974);
 		hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.field_7974);
 	});
-	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
+	private static final Ingredient field_9012 = Ingredient.method_8091(Items.field_8054);
 
 	public FireworkStarRecipe(Identifier identifier) {
 		super(identifier);
@@ -135,6 +135,6 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.FIREWORK_STAR;
+		return RecipeSerializer.field_9036;
 	}
 }

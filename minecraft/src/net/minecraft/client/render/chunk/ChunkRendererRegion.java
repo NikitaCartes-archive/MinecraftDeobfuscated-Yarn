@@ -78,8 +78,8 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 			int l = (blockPos3.getZ() >> 4) - j;
 			WorldChunk worldChunk = worldChunks[k][l];
 			int m = this.getIndex(blockPos3);
-			this.blockStates[m] = worldChunk.getBlockState(blockPos3);
-			this.fluidStates[m] = worldChunk.getFluidState(blockPos3);
+			this.blockStates[m] = worldChunk.method_8320(blockPos3);
+			this.fluidStates[m] = worldChunk.method_8316(blockPos3);
 		}
 	}
 
@@ -95,22 +95,22 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
+	public BlockState method_8320(BlockPos blockPos) {
 		return this.blockStates[this.getIndex(blockPos)];
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos blockPos) {
+	public FluidState method_8316(BlockPos blockPos) {
 		return this.fluidStates[this.getIndex(blockPos)];
 	}
 
 	@Override
-	public int getLightLevel(LightType lightType, BlockPos blockPos) {
-		return this.world.getLightLevel(lightType, blockPos);
+	public int method_8314(LightType lightType, BlockPos blockPos) {
+		return this.world.method_8314(lightType, blockPos);
 	}
 
 	@Override
-	public Biome getBiome(BlockPos blockPos) {
+	public Biome method_8310(BlockPos blockPos) {
 		int i = (blockPos.getX() >> 4) - this.chunkXOffset;
 		int j = (blockPos.getZ() >> 4) - this.chunkZOffset;
 		return this.chunks[i][j].getBiome(blockPos);
@@ -118,7 +118,7 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos) {
+	public BlockEntity method_8321(BlockPos blockPos) {
 		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
 	}
 

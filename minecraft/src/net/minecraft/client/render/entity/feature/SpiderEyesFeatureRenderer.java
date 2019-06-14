@@ -35,7 +35,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 		int o = m / 65536;
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)n, (float)o);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 		gameRenderer.setFogBlack(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);

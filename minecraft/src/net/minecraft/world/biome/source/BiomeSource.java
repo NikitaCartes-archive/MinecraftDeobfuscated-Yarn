@@ -53,7 +53,7 @@ public abstract class BiomeSource {
 		return 0.0F;
 	}
 
-	public abstract boolean hasStructureFeature(StructureFeature<?> structureFeature);
+	public abstract boolean method_8754(StructureFeature<?> structureFeature);
 
 	public abstract Set<BlockState> getTopMaterials();
 }

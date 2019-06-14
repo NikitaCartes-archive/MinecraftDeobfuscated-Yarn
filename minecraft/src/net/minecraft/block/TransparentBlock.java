@@ -11,7 +11,7 @@ public class TransparentBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
-		return blockState2.getBlock() == this ? true : super.isSideInvisible(blockState, blockState2, direction);
+	public boolean method_9522(BlockState blockState, BlockState blockState2, Direction direction) {
+		return blockState2.getBlock() == this ? true : super.method_9522(blockState, blockState2, direction);
 	}
 }

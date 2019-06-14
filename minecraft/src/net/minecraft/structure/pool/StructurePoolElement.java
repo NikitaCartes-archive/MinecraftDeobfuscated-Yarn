@@ -25,17 +25,17 @@ public abstract class StructurePoolElement {
 		this.projection = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.field_16687.getId()));
 	}
 
-	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
+	public abstract List<Structure.StructureBlockInfo> method_16627(
 		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
 	);
 
-	public abstract MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
+	public abstract MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
 
-	public abstract boolean generate(
+	public abstract boolean method_16626(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	);
 
-	public abstract StructurePoolElementType getType();
+	public abstract StructurePoolElementType method_16757();
 
 	public void method_16756(
 		IWorld iWorld,
@@ -66,7 +66,7 @@ public abstract class StructurePoolElement {
 	public <T> Dynamic<T> method_16755(DynamicOps<T> dynamicOps) {
 		T object = this.method_16625(dynamicOps).getValue();
 		T object2 = dynamicOps.mergeInto(
-			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.getType()).toString())
+			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.method_16757()).toString())
 		);
 		return new Dynamic<>(dynamicOps, dynamicOps.mergeInto(object2, dynamicOps.createString("projection"), dynamicOps.createString(this.projection.getId())));
 	}

@@ -15,7 +15,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 
 	public CreeperEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CreeperEntityModel<>(), 0.5F);
-		this.addFeature(new CreeperChargeFeatureRenderer(this));
+		this.method_4046(new CreeperChargeFeatureRenderer(this));
 	}
 
 	protected void method_3900(CreeperEntity creeperEntity, float f) {

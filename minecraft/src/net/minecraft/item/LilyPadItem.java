@@ -33,9 +33,9 @@ public class LilyPadItem extends BlockItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 		if (hitResult.getType() == HitResult.Type.field_1333) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
@@ -48,11 +48,11 @@ public class LilyPadItem extends BlockItem {
 				}
 
 				BlockPos blockPos2 = blockPos.up();
-				BlockState blockState = world.getBlockState(blockPos);
-				Material material = blockState.getMaterial();
-				FluidState fluidState = world.getFluidState(blockPos);
+				BlockState blockState = world.method_8320(blockPos);
+				Material material = blockState.method_11620();
+				FluidState fluidState = world.method_8316(blockPos);
 				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
-					world.setBlockState(blockPos2, Blocks.field_10588.getDefaultState(), 11);
+					world.method_8652(blockPos2, Blocks.field_10588.method_9564(), 11);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}

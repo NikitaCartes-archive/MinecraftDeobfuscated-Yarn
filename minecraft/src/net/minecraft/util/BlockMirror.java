@@ -20,7 +20,7 @@ public enum BlockMirror {
 		}
 	}
 
-	public BlockRotation getRotation(Direction direction) {
+	public BlockRotation method_10345(Direction direction) {
 		Direction.Axis axis = direction.getAxis();
 		return (this != field_11300 || axis != Direction.Axis.Z) && (this != field_11301 || axis != Direction.Axis.X)
 			? BlockRotation.field_11467

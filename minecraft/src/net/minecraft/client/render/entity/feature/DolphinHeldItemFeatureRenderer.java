@@ -13,19 +13,19 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	private final ItemRenderer field_4847 = MinecraftClient.getInstance().getItemRenderer();
+	private final ItemRenderer field_4847 = MinecraftClient.getInstance().method_1480();
 
 	public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	public void method_17160(DolphinEntity dolphinEntity, float f, float g, float h, float i, float j, float k, float l) {
-		boolean bl = dolphinEntity.getMainArm() == Arm.field_6183;
+		boolean bl = dolphinEntity.getMainHand() == AbsoluteHand.field_6183;
 		ItemStack itemStack = bl ? dolphinEntity.getOffHandStack() : dolphinEntity.getMainHandStack();
 		ItemStack itemStack2 = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {

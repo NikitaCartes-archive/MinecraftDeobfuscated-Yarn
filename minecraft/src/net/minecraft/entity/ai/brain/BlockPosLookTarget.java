@@ -6,11 +6,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class BlockPosLookTarget implements LookTarget {
 	private final BlockPos blockPos;
-	private final Vec3d pos;
+	private final Vec3d field_18341;
 
 	public BlockPosLookTarget(BlockPos blockPos) {
 		this.blockPos = blockPos;
-		this.pos = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+		this.field_18341 = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 	}
 
 	@Override
@@ -19,8 +19,8 @@ public class BlockPosLookTarget implements LookTarget {
 	}
 
 	@Override
-	public Vec3d getPos() {
-		return this.pos;
+	public Vec3d method_18991() {
+		return this.field_18341;
 	}
 
 	@Override

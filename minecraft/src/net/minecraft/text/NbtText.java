@@ -102,7 +102,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String string) {
 			try {
-				return BlockPosArgumentType.blockPos().method_9699(new StringReader(string));
+				return BlockPosArgumentType.create().method_9699(new StringReader(string));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}
@@ -130,7 +130,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				ServerWorld serverWorld = serverCommandSource.getWorld();
 				BlockPos blockPos = this.pos.toAbsoluteBlockPos(serverCommandSource);
 				if (serverWorld.isHeightValidAndBlockLoaded(blockPos)) {
-					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+					BlockEntity blockEntity = serverWorld.method_8321(blockPos);
 					if (blockEntity != null) {
 						return Stream.of(blockEntity.toTag(new CompoundTag()));
 					}

@@ -34,16 +34,16 @@ public class JigsawBlockScreen extends Screen {
 
 	private void onDone() {
 		this.updateServer();
-		this.minecraft.openScreen(null);
+		this.minecraft.method_1507(null);
 	}
 
 	private void onCancel() {
-		this.minecraft.openScreen(null);
+		this.minecraft.method_1507(null);
 	}
 
 	private void updateServer() {
 		this.minecraft
-			.getNetworkHandler()
+			.method_1562()
 			.sendPacket(
 				new UpdateJigsawC2SPacket(
 					this.jigsaw.getPos(), new Identifier(this.attachmentTypeField.getText()), new Identifier(this.targetPoolField.getText()), this.finalStateField.getText()
@@ -75,7 +75,7 @@ public class JigsawBlockScreen extends Screen {
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.children.add(this.finalStateField);
-		this.setInitialFocus(this.targetPoolField);
+		this.method_20085(this.targetPoolField);
 		this.method_20118();
 	}
 

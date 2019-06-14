@@ -12,12 +12,12 @@ import net.minecraft.text.TranslatableText;
 public class DisconnectedScreen extends Screen {
 	private final Text reason;
 	private List<String> reasonFormatted;
-	private final Screen parent;
+	private final Screen field_2456;
 	private int reasonHeight;
 
 	public DisconnectedScreen(Screen screen, String string, Text text) {
 		super(new TranslatableText(string));
-		this.parent = screen;
+		this.field_2456 = screen;
 		this.reason = text;
 	}
 
@@ -37,7 +37,7 @@ public class DisconnectedScreen extends Screen {
 				200,
 				20,
 				I18n.translate("gui.toMenu"),
-				buttonWidget -> this.minecraft.openScreen(this.parent)
+				buttonWidget -> this.minecraft.method_1507(this.field_2456)
 			)
 		);
 	}

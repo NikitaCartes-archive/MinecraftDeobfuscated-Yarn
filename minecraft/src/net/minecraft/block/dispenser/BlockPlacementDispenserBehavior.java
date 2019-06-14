@@ -16,14 +16,11 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 		this.success = false;
 		Item item = itemStack.getItem();
 		if (item instanceof BlockItem) {
-			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
+			Direction direction = blockPointer.getBlockState().method_11654(DispenserBlock.field_10918);
 			BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 			Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.field_11036;
 			this.success = ((BlockItem)item).place(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
 				== ActionResult.field_5812;
-			if (this.success) {
-				itemStack.decrement(1);
-			}
 		}
 
 		return itemStack;

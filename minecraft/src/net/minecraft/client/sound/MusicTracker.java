@@ -23,11 +23,11 @@ public class MusicTracker {
 		MusicTracker.MusicType musicType = this.client.getMusicType();
 		if (this.current != null) {
 			if (!musicType.getSound().getId().equals(this.current.getId())) {
-				this.client.getSoundManager().stop(this.current);
+				this.client.method_1483().stop(this.current);
 				this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicType.getMinDelay() / 2);
 			}
 
-			if (!this.client.getSoundManager().isPlaying(this.current)) {
+			if (!this.client.method_1483().isPlaying(this.current)) {
 				this.current = null;
 				this.timeUntilNextSong = Math.min(MathHelper.nextInt(this.random, musicType.getMinDelay(), musicType.getMaxDelay()), this.timeUntilNextSong);
 			}
@@ -41,13 +41,13 @@ public class MusicTracker {
 
 	public void play(MusicTracker.MusicType musicType) {
 		this.current = PositionedSoundInstance.music(musicType.getSound());
-		this.client.getSoundManager().play(this.current);
+		this.client.method_1483().play(this.current);
 		this.timeUntilNextSong = Integer.MAX_VALUE;
 	}
 
 	public void stop() {
 		if (this.current != null) {
-			this.client.getSoundManager().stop(this.current);
+			this.client.method_1483().stop(this.current);
 			this.current = null;
 			this.timeUntilNextSong = 0;
 		}

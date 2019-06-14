@@ -83,6 +83,6 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SHIELD_DECORATION;
+		return RecipeSerializer.field_9040;
 	}
 }

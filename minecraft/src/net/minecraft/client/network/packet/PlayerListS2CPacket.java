@@ -31,7 +31,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.pingMilliseconds,
+						serverPlayerEntity.field_13967,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)
@@ -47,7 +47,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.pingMilliseconds,
+						serverPlayerEntity.field_13967,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)

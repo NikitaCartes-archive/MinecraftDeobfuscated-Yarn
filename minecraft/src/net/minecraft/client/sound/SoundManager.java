@@ -144,7 +144,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	}
 
 	@Nullable
-	public WeightedSoundSet get(Identifier identifier) {
+	public WeightedSoundSet method_4869(Identifier identifier) {
 		return (WeightedSoundSet)this.sounds.get(identifier);
 	}
 
@@ -201,11 +201,11 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	}
 
 	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.registerListener(listenerSoundInstance);
+		this.soundSystem.method_4855(listenerSoundInstance);
 	}
 
 	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.unregisterListener(listenerSoundInstance);
+		this.soundSystem.method_4847(listenerSoundInstance);
 	}
 
 	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
@@ -286,7 +286,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 						throw new IllegalStateException("Unknown SoundEventRegistration type: " + sound.getRegistrationType());
 				}
 
-				weightedSoundSet.add(soundContainer);
+				weightedSoundSet.method_4885(soundContainer);
 			}
 		}
 

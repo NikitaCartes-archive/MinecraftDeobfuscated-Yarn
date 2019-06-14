@@ -41,11 +41,11 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.BLASTING);
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.field_17084);
 	}
 
 	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemConvertible itemConvertible, float f, int i) {
-		return create(ingredient, itemConvertible, f, i, RecipeSerializer.SMELTING);
+		return create(ingredient, itemConvertible, f, i, RecipeSerializer.field_9042);
 	}
 
 	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {

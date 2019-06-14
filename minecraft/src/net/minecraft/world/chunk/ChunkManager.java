@@ -14,22 +14,22 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
-	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
-		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803, bl);
+	public WorldChunk method_12126(int i, int j, boolean bl) {
+		return (WorldChunk)this.method_12121(i, j, ChunkStatus.field_12803, bl);
 	}
 
 	@Nullable
 	@Override
 	public BlockView getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12798, false);
+		return this.method_12121(i, j, ChunkStatus.field_12798, false);
 	}
 
 	public boolean isChunkLoaded(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12803, false) != null;
+		return this.method_12121(i, j, ChunkStatus.field_12803, false) != null;
 	}
 
 	@Nullable
-	public abstract Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
+	public abstract Chunk method_12121(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	@Environment(EnvType.CLIENT)
 	public abstract void tick(BooleanSupplier booleanSupplier);
@@ -41,7 +41,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	public void close() throws IOException {
 	}
 
-	public abstract LightingProvider getLightingProvider();
+	public abstract LightingProvider method_12130();
 
 	public void setMobSpawnOptions(boolean bl, boolean bl2) {
 	}

@@ -58,10 +58,10 @@ public class EntityPredicate {
 	}
 
 	public boolean test(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
-		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
+		return this.method_8909(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
 	}
 
-	public boolean test(ServerWorld serverWorld, Vec3d vec3d, @Nullable Entity entity) {
+	public boolean method_8909(ServerWorld serverWorld, Vec3d vec3d, @Nullable Entity entity) {
 		if (this == ANY) {
 			return true;
 		} else if (entity == null) {

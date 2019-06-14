@@ -49,7 +49,7 @@ public class PillagerSpawner {
 							)) {
 								return 0;
 							} else {
-								Biome biome = serverWorld.getBiome(mutable);
+								Biome biome = serverWorld.method_8310(mutable);
 								Biome.Category category = biome.getCategory();
 								if (category == Biome.Category.field_9365) {
 									return 0;
@@ -86,7 +86,7 @@ public class PillagerSpawner {
 		if (!PatrolEntity.method_20739(EntityType.field_6105, world, SpawnType.field_16527, blockPos, random)) {
 			return false;
 		} else {
-			PatrolEntity patrolEntity = EntityType.field_6105.create(world);
+			PatrolEntity patrolEntity = EntityType.field_6105.method_5883(world);
 			if (patrolEntity != null) {
 				if (bl) {
 					patrolEntity.setPatrolLeader(true);
@@ -94,7 +94,7 @@ public class PillagerSpawner {
 				}
 
 				patrolEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
-				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16527, null, null);
+				patrolEntity.method_5943(world, world.getLocalDifficulty(blockPos), SpawnType.field_16527, null, null);
 				world.spawnEntity(patrolEntity);
 				return true;
 			} else {

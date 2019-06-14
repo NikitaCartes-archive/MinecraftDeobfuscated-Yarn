@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 
 @FunctionalInterface
 public interface TimerCallback<T> {
-	void call(T object, Timer<T> timer, long l);
+	void method_974(T object, Timer<T> timer, long l);
 
 	public abstract static class Serializer<T, C extends TimerCallback<T>> {
 		private final Identifier id;

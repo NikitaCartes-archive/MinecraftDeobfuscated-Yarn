@@ -27,7 +27,7 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.id = paintingEntity.getEntityId();
 		this.uuid = paintingEntity.getUuid();
 		this.pos = paintingEntity.getDecorationBlockPos();
-		this.facing = paintingEntity.facing;
+		this.facing = paintingEntity.getHorizontalFacing();
 		this.motive = Registry.MOTIVE.getRawId(paintingEntity.motive);
 	}
 

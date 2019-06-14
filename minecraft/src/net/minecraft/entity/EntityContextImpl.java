@@ -9,7 +9,7 @@ import net.minecraft.util.shape.VoxelShape;
 public class EntityContextImpl implements EntityContext {
 	protected static final EntityContext ABSENT = new EntityContextImpl(false, -Double.MAX_VALUE, Items.AIR) {
 		@Override
-		public boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
+		public boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
 			return bl;
 		}
 	};
@@ -25,7 +25,7 @@ public class EntityContextImpl implements EntityContext {
 
 	@Deprecated
 	protected EntityContextImpl(Entity entity) {
-		this(entity.isSneaking(), entity.getBoundingBox().minY, entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
+		this(entity.isSneaking(), entity.method_5829().minY, entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class EntityContextImpl implements EntityContext {
 	}
 
 	@Override
-	public boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
+	public boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
 		return this.minY > (double)blockPos.getY() + voxelShape.getMaximum(Direction.Axis.Y) - 1.0E-5F;
 	}
 }

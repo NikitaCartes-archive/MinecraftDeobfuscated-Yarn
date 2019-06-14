@@ -38,8 +38,8 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		}
 
 		if (bedBlockEntity.hasWorld()) {
-			BlockState blockState = bedBlockEntity.getCachedState();
-			this.method_3558(blockState.get(BedBlock.PART) == BedPart.field_12560, d, e, f, blockState.get(BedBlock.FACING));
+			BlockState blockState = bedBlockEntity.method_11010();
+			this.method_3558(blockState.method_11654(BedBlock.field_9967) == BedPart.field_12560, d, e, f, blockState.method_11654(BedBlock.field_11177));
 		} else {
 			this.method_3558(true, d, e, f, Direction.field_11035);
 			this.method_3558(false, d, e, f - 1.0, Direction.field_11035);

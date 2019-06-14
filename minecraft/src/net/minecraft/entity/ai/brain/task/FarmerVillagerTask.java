@@ -89,10 +89,10 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_20640(BlockPos blockPos, ServerWorld serverWorld) {
-		BlockState blockState = serverWorld.getBlockState(blockPos);
+		BlockState blockState = serverWorld.method_8320(blockPos);
 		Block block = blockState.getBlock();
-		Block block2 = serverWorld.getBlockState(blockPos.down()).getBlock();
-		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860
+		Block block2 = serverWorld.method_8320(blockPos.down()).getBlock();
+		return block instanceof CropBlock && ((CropBlock)block).method_9825(blockState) && this.field_18860
 			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
 	}
 
@@ -112,10 +112,10 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 
 	protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (this.field_18858 != null && l > this.field_18861) {
-			BlockState blockState = serverWorld.getBlockState(this.field_18858);
+			BlockState blockState = serverWorld.method_8320(this.field_18858);
 			Block block = blockState.getBlock();
-			Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
-			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
+			Block block2 = serverWorld.method_8320(this.field_18858.down()).getBlock();
+			if (block instanceof CropBlock && ((CropBlock)block).method_9825(blockState) && this.field_18860) {
 				serverWorld.breakBlock(this.field_18858, true);
 			}
 
@@ -127,16 +127,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					boolean bl = false;
 					if (!itemStack.isEmpty()) {
 						if (itemStack.getItem() == Items.field_8317) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10293.getDefaultState(), 3);
+							serverWorld.method_8652(this.field_18858, Blocks.field_10293.method_9564(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8567) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10247.getDefaultState(), 3);
+							serverWorld.method_8652(this.field_18858, Blocks.field_10247.method_9564(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8179) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10609.getDefaultState(), 3);
+							serverWorld.method_8652(this.field_18858, Blocks.field_10609.method_9564(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8309) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10341.getDefaultState(), 3);
+							serverWorld.method_8652(this.field_18858, Blocks.field_10341.method_9564(), 3);
 							bl = true;
 						}
 					}
@@ -161,7 +161,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				}
 			}
 
-			if (block instanceof CropBlock && !((CropBlock)block).isMature(blockState)) {
+			if (block instanceof CropBlock && !((CropBlock)block).method_9825(blockState)) {
 				this.field_19351.remove(this.field_18858);
 				this.field_18858 = this.method_20641(serverWorld);
 				if (this.field_18858 != null) {

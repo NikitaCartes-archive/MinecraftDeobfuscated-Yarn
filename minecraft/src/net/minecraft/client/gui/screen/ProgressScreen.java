@@ -55,7 +55,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	public void render(int i, int j, float f) {
 		if (this.done) {
 			if (!this.minecraft.isConnectedToRealms()) {
-				this.minecraft.openScreen(null);
+				this.minecraft.method_1507(null);
 			}
 		} else {
 			this.renderBackground();

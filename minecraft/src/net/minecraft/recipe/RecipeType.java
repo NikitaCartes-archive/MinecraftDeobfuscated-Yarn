@@ -22,7 +22,7 @@ public interface RecipeType<T extends Recipe<?>> {
 		});
 	}
 
-	default <C extends Inventory> Optional<T> get(Recipe<C> recipe, World world, C inventory) {
-		return recipe.matches(inventory, world) ? Optional.of(recipe) : Optional.empty();
+	default <C extends Inventory> Optional<T> method_17725(Recipe<C> recipe, World world, C inventory) {
+		return recipe.method_8115(inventory, world) ? Optional.of(recipe) : Optional.empty();
 	}
 }

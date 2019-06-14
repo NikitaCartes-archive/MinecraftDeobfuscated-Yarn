@@ -29,7 +29,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 	private ObjectiveCriteriaArgumentType() {
 	}
 
-	public static ObjectiveCriteriaArgumentType objectiveCriteria() {
+	public static ObjectiveCriteriaArgumentType create() {
 		return new ObjectiveCriteriaArgumentType();
 	}
 

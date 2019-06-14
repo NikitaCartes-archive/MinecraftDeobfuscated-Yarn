@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
-	boolean matches(C inventory, World world);
+	boolean method_8115(C inventory, World world);
 
 	ItemStack craft(C inventory);
 

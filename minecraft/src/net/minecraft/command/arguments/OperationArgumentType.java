@@ -21,7 +21,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 	private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid"));
 	private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0"));
 
-	public static OperationArgumentType operation() {
+	public static OperationArgumentType create() {
 		return new OperationArgumentType();
 	}
 

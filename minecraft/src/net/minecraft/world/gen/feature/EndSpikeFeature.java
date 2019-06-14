@@ -66,9 +66,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
 			if (blockPos.isWithinDistance(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.field_10540.method_9564());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.field_10124.method_9564());
 			}
 		}
 
@@ -88,11 +88,11 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 							boolean bl4 = m == -2 || m == 2 || bl3;
 							boolean bl5 = n == -2 || n == 2 || bl3;
 							BlockState blockState = Blocks.field_10576
-								.getDefaultState()
-								.with(PaneBlock.NORTH, Boolean.valueOf(bl4 && n != -2))
-								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
-								.with(PaneBlock.WEST, Boolean.valueOf(bl5 && m != -2))
-								.with(PaneBlock.EAST, Boolean.valueOf(bl5 && m != 2));
+								.method_9564()
+								.method_11657(PaneBlock.field_10905, Boolean.valueOf(bl4 && n != -2))
+								.method_11657(PaneBlock.field_10904, Boolean.valueOf(bl4 && n != 2))
+								.method_11657(PaneBlock.field_10903, Boolean.valueOf(bl5 && m != -2))
+								.method_11657(PaneBlock.field_10907, Boolean.valueOf(bl5 && m != 2));
 							this.setBlockState(iWorld, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
 						}
 					}
@@ -100,14 +100,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = EntityType.field_6110.create(iWorld.getWorld());
+		EnderCrystalEntity enderCrystalEntity = EntityType.field_6110.method_5883(iWorld.getWorld());
 		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		iWorld.spawnEntity(enderCrystalEntity);
-		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.getDefaultState());
+		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.method_9564());
 	}
 
 	public static class Spike {
@@ -116,7 +116,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		private final int radius;
 		private final int height;
 		private final boolean guarded;
-		private final Box boundingBox;
+		private final Box field_13835;
 
 		public Spike(int i, int j, int k, int l, boolean bl) {
 			this.centerX = i;
@@ -124,7 +124,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			this.radius = k;
 			this.height = l;
 			this.guarded = bl;
-			this.boundingBox = new Box((double)(i - k), 0.0, (double)(j - k), (double)(i + k), 256.0, (double)(j + k));
+			this.field_13835 = new Box((double)(i - k), 0.0, (double)(j - k), (double)(i + k), 256.0, (double)(j + k));
 		}
 
 		public boolean isInChunk(BlockPos blockPos) {
@@ -151,8 +151,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			return this.guarded;
 		}
 
-		public Box getBoundingBox() {
-			return this.boundingBox;
+		public Box method_13968() {
+			return this.field_13835;
 		}
 
 		<T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

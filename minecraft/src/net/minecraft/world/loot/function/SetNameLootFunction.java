@@ -35,12 +35,12 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+		return this.entity != null ? ImmutableSet.of(this.entity.method_315()) : ImmutableSet.of();
 	}
 
 	public static UnaryOperator<Text> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
 		if (entityTarget != null) {
-			Entity entity = lootContext.get(entityTarget.getIdentifier());
+			Entity entity = lootContext.method_296(entityTarget.method_315());
 			if (entity != null) {
 				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
 				return text -> {

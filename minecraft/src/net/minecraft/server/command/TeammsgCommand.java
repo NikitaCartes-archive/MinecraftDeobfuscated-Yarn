@@ -24,7 +24,7 @@ public class TeammsgCommand {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			CommandManager.literal("teammsg")
 				.then(
-					CommandManager.argument("message", MessageArgumentType.message())
+					CommandManager.argument("message", MessageArgumentType.create())
 						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))
 				)
 		);
@@ -33,7 +33,7 @@ public class TeammsgCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, Text text) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
-		Team team = (Team)entity.getScoreboardTeam();
+		Team team = (Team)entity.method_5781();
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
@@ -50,7 +50,7 @@ public class TeammsgCommand {
 			for(ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
 					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.sent", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
-				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
+				} else if (serverPlayerEntity.method_5781() == team) {
 					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.text", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
 				}
 			}

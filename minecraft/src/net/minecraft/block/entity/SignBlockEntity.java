@@ -167,7 +167,7 @@ public class SignBlockEntity extends BlockEntity {
 		if (dyeColor != this.getTextColor()) {
 			this.textColor = dyeColor;
 			this.markDirty();
-			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+			this.world.method_8413(this.getPos(), this.method_11010(), this.method_11010(), 3);
 			return true;
 		} else {
 			return false;

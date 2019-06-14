@@ -24,9 +24,9 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	public TeleportToSpecificPlayerSpectatorCommand(GameProfile gameProfile) {
 		this.gameProfile = gameProfile;
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
+		Map<Type, MinecraftProfileTexture> map = minecraftClient.method_1582().getTextures(gameProfile);
 		if (map.containsKey(Type.SKIN)) {
-			this.skinId = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
+			this.skinId = minecraftClient.method_1582().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 		} else {
 			this.skinId = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 		}
@@ -34,7 +34,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 
 	@Override
 	public void use(SpectatorMenu spectatorMenu) {
-		MinecraftClient.getInstance().getNetworkHandler().sendPacket(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
+		MinecraftClient.getInstance().method_1562().sendPacket(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
+		MinecraftClient.getInstance().method_1531().bindTexture(this.skinId);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
 		DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 		DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);

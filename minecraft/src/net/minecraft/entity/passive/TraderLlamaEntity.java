@@ -34,7 +34,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected LlamaEntity createChild() {
-		return EntityType.field_17714.create(this.world);
+		return EntityType.field_17714.method_5883(this.field_6002);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.method_20501();
 		}
 	}
@@ -85,7 +85,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	private boolean method_20502() {
-		return !this.isTame() && !this.leashedByPlayer() && !this.hasPlayerRider();
+		return !this.isTame() && !this.leashedByPlayer() && !this.method_5817();
 	}
 
 	private boolean heldByTrader() {
@@ -98,10 +98,10 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (spawnType == SpawnType.field_16467) {
 			this.setBreedingAge(0);
 		}

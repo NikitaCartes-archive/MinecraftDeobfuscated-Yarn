@@ -37,7 +37,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.model.method_17128(witherEntity, f, g, h);
 			this.getModel().copyStateTo(this.model);
-			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+			GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 			gameRenderer.setFogBlack(true);
 			this.model.method_17129(witherEntity, f, g, i, j, k, l);
 			gameRenderer.setFogBlack(false);

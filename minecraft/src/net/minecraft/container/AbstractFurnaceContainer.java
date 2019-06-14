@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public abstract class AbstractFurnaceContainer extends CraftingContainer<Inventory> {
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
-	protected final World world;
+	protected final World field_7822;
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
 	protected AbstractFurnaceContainer(
@@ -43,7 +43,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 		checkContainerDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
-		this.world = playerInventory.player.world;
+		this.field_7822 = playerInventory.player.field_6002;
 		this.addSlot(new Slot(inventory, 0, 56, 17));
 		this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
 		this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
@@ -80,7 +80,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 
 	@Override
 	public boolean matches(Recipe<? super Inventory> recipe) {
-		return recipe.matches(this.inventory, this.world);
+		return recipe.method_8115(this.inventory, this.field_7822);
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new BasicInventory(itemStack), this.world).isPresent();
+		return this.field_7822.getRecipeManager().method_8132(this.recipeType, new BasicInventory(itemStack), this.field_7822).isPresent();
 	}
 
 	protected boolean isFuel(ItemStack itemStack) {

@@ -37,7 +37,7 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
-			if (chunkGenerator.hasStructure(biome, this)) {
+			if (chunkGenerator.method_12097(biome, this)) {
 				return true;
 			}
 		}
@@ -46,11 +46,11 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getTempleDistance();
+		return chunkGenerator.method_12109().getTempleDistance();
 	}
 
 	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getTempleSeparation();
+		return chunkGenerator.method_12109().getTempleSeparation();
 	}
 
 	protected abstract int getSeedModifier();

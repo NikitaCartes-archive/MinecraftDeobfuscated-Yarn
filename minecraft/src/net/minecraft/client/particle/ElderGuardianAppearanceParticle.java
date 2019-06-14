@@ -26,7 +26,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 
@@ -34,7 +34,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	public void tick() {
 		super.tick();
 		if (this.guardian == null) {
-			ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.create(this.world);
+			ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.method_5883(this.world);
 			elderGuardianEntity.straightenTail();
 			this.guardian = elderGuardianEntity;
 		}
@@ -43,7 +43,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	@Override
 	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
 		if (this.guardian != null) {
-			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
+			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().method_1561();
 			entityRenderDispatcher.setRenderPosition(Particle.cameraX, Particle.cameraY, Particle.cameraZ);
 			float l = 1.0F / ElderGuardianEntity.field_17492;
 			float m = ((float)this.age + f) / (float)this.maxAge;

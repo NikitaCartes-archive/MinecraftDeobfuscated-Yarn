@@ -13,22 +13,22 @@ public class SpiderNavigation extends MobNavigation {
 	}
 
 	@Override
-	public Path findPathTo(BlockPos blockPos) {
+	public Path method_6348(BlockPos blockPos) {
 		this.field_6687 = blockPos;
-		return super.findPathTo(blockPos);
+		return super.method_6348(blockPos);
 	}
 
 	@Override
-	public Path findPathTo(Entity entity) {
+	public Path method_6349(Entity entity) {
 		this.field_6687 = new BlockPos(entity);
-		return super.findPathTo(entity);
+		return super.method_6349(entity);
 	}
 
 	@Override
 	public boolean startMovingTo(Entity entity, double d) {
-		Path path = this.findPathTo(entity);
+		Path path = this.method_6349(entity);
 		if (path != null) {
-			return this.startMovingAlong(path, d);
+			return this.method_6334(path, d);
 		} else {
 			this.field_6687 = new BlockPos(entity);
 			this.speed = d;
@@ -42,11 +42,11 @@ public class SpiderNavigation extends MobNavigation {
 			super.tick();
 		} else {
 			if (this.field_6687 != null) {
-				if (!this.field_6687.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())
+				if (!this.field_6687.isWithinDistance(this.entity.method_19538(), (double)this.entity.getWidth())
 					&& (
 						!(this.entity.y > (double)this.field_6687.getY())
 							|| !new BlockPos((double)this.field_6687.getX(), this.entity.y, (double)this.field_6687.getZ())
-								.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())
+								.isWithinDistance(this.entity.method_19538(), (double)this.entity.getWidth())
 					)) {
 					this.entity.getMoveControl().moveTo((double)this.field_6687.getX(), (double)this.field_6687.getY(), (double)this.field_6687.getZ(), this.speed);
 				} else {

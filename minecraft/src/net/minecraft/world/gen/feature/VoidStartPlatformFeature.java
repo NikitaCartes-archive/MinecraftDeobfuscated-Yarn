@@ -36,9 +36,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (method_20403(field_19241.getX(), field_19241.getZ(), j, i) <= 16) {
 						mutable.set(j, field_19241.getY(), i);
 						if (mutable.equals(field_19241)) {
-							iWorld.setBlockState(mutable, Blocks.field_10445.getDefaultState(), 2);
+							iWorld.method_8652(mutable, Blocks.field_10445.method_9564(), 2);
 						} else {
-							iWorld.setBlockState(mutable, Blocks.field_10340.getDefaultState(), 2);
+							iWorld.method_8652(mutable, Blocks.field_10340.method_9564(), 2);
 						}
 					}
 				}

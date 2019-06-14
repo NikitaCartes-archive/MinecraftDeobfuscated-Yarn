@@ -48,10 +48,10 @@ public class DamageSourcePredicate {
 	}
 
 	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
-		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
+		return this.method_8845(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
 	}
 
-	public boolean test(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
+	public boolean method_8845(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
 		if (this == EMPTY) {
 			return true;
 		} else if (this.isProjectile != null && this.isProjectile != damageSource.isProjectile()) {
@@ -70,10 +70,10 @@ public class DamageSourcePredicate {
 			return false;
 		} else if (this.isLightning != null && this.isLightning != (damageSource == DamageSource.LIGHTNING_BOLT)) {
 			return false;
-		} else if (!this.directEntity.test(serverWorld, vec3d, damageSource.getSource())) {
+		} else if (!this.directEntity.method_8909(serverWorld, vec3d, damageSource.getSource())) {
 			return false;
 		} else {
-			return this.sourceEntity.test(serverWorld, vec3d, damageSource.getAttacker());
+			return this.sourceEntity.method_8909(serverWorld, vec3d, damageSource.getAttacker());
 		}
 	}
 

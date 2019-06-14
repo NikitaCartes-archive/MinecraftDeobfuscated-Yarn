@@ -55,7 +55,7 @@ public class StatusEffect {
 		} else if (this == StatusEffects.field_5903 && livingEntity instanceof PlayerEntity) {
 			((PlayerEntity)livingEntity).addExhaustion(0.005F * (float)(i + 1));
 		} else if (this == StatusEffects.field_5922 && livingEntity instanceof PlayerEntity) {
-			if (!livingEntity.world.isClient) {
+			if (!livingEntity.field_6002.isClient) {
 				((PlayerEntity)livingEntity).getHungerManager().add(i + 1, 1.0F);
 			}
 		} else if ((this != StatusEffects.field_5915 || livingEntity.isUndead()) && (this != StatusEffects.field_5921 || !livingEntity.isUndead())) {

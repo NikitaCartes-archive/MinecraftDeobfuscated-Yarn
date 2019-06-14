@@ -11,34 +11,34 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SoulSandBlock extends Block {
-	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
+	protected static final VoxelShape field_11521 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
 
 	public SoulSandBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return COLLISION_SHAPE;
+	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return field_11521;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		entity.setVelocity(entity.getVelocity().multiply(0.4, 1.0, 0.4));
+	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		entity.method_18799(entity.method_18798().multiply(0.4, 1.0, 0.4));
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.update(world, blockPos.up(), false);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		world.method_8397().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
@@ -48,17 +48,17 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		world.method_8397().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+	public boolean method_9523(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return true;
 	}
 }

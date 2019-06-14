@@ -35,6 +35,6 @@ public class AsyncTexture extends ResourceTexture {
 	@Override
 	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
 		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), SystemUtil.getServerWorkerExecutor());
-		this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), executor);
+		this.future.thenRunAsync(() -> textureManager.method_4616(this.location, this), executor);
 	}
 }

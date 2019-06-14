@@ -202,7 +202,7 @@ public class ItemPredicate {
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder item(ItemConvertible itemConvertible) {
+		public ItemPredicate.Builder method_8977(ItemConvertible itemConvertible) {
 			this.item = itemConvertible.asItem();
 			return this;
 		}

@@ -21,7 +21,7 @@ public class AnimalMateGoal extends Goal {
 		.includeHidden();
 	protected final AnimalEntity animal;
 	private final Class<? extends AnimalEntity> entityClass;
-	protected final World world;
+	protected final World field_6405;
 	protected AnimalEntity mate;
 	private int timer;
 	private final double chance;
@@ -32,7 +32,7 @@ public class AnimalMateGoal extends Goal {
 
 	public AnimalMateGoal(AnimalEntity animalEntity, double d, Class<? extends AnimalEntity> class_) {
 		this.animal = animalEntity;
-		this.world = animalEntity.world;
+		this.field_6405 = animalEntity.field_6002;
 		this.entityClass = class_;
 		this.chance = d;
 		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
@@ -71,7 +71,7 @@ public class AnimalMateGoal extends Goal {
 
 	@Nullable
 	private AnimalEntity findMate() {
-		List<AnimalEntity> list = this.world.getTargets(this.entityClass, VALID_MATE_PREDICATE, this.animal, this.animal.getBoundingBox().expand(8.0));
+		List<AnimalEntity> list = this.field_6405.method_18466(this.entityClass, VALID_MATE_PREDICATE, this.animal, this.animal.method_5829().expand(8.0));
 		double d = Double.MAX_VALUE;
 		AnimalEntity animalEntity = null;
 
@@ -104,10 +104,10 @@ public class AnimalMateGoal extends Goal {
 			this.mate.resetLoveTicks();
 			passiveEntity.setBreedingAge(-24000);
 			passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
-			this.world.spawnEntity(passiveEntity);
-			this.world.sendEntityStatus(this.animal, (byte)18);
-			if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
+			this.field_6405.spawnEntity(passiveEntity);
+			this.field_6405.sendEntityStatus(this.animal, (byte)18);
+			if (this.field_6405.getGameRules().getBoolean(GameRules.field_19391)) {
+				this.field_6405.spawnEntity(new ExperienceOrbEntity(this.field_6405, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
 			}
 		}
 	}

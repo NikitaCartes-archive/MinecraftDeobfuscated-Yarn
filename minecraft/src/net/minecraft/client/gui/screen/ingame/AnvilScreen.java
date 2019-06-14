@@ -42,7 +42,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 		this.nameField.setChangedListener(this::onRenamed);
 		this.children.add(this.nameField);
 		this.container.addListener(this);
-		this.setInitialFocus(this.nameField);
+		this.method_20085(this.nameField);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.minecraft.player.closeContainer();
+			this.minecraft.field_1724.closeContainer();
 		}
 
 		return !this.nameField.keyPressed(i, j, k) && !this.nameField.method_20315() ? super.keyPressed(i, j, k) : true;
@@ -78,7 +78,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 			int l = 8453920;
 			boolean bl = true;
 			String string = I18n.translate("container.repair.cost", k);
-			if (k >= 40 && !this.minecraft.player.abilities.creativeMode) {
+			if (k >= 40 && !this.minecraft.field_1724.abilities.creativeMode) {
 				string = I18n.translate("container.repair.expensive");
 				l = 16736352;
 			} else if (!this.container.getSlot(2).hasStack()) {
@@ -107,7 +107,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 			}
 
 			this.container.setNewItemName(string2);
-			this.minecraft.player.networkHandler.sendPacket(new RenameItemC2SPacket(string2));
+			this.minecraft.field_1724.networkHandler.sendPacket(new RenameItemC2SPacket(string2));
 		}
 	}
 
@@ -124,7 +124,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BG_TEX);
+		this.minecraft.method_1531().bindTexture(BG_TEX);
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);

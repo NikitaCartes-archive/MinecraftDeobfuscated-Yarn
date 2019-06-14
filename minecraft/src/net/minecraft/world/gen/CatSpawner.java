@@ -45,8 +45,8 @@ public class CatSpawner {
 								return this.spawnInHouse(serverWorld, blockPos);
 							}
 
-							if (Feature.SWAMP_HUT.isInsideStructure(serverWorld, blockPos)) {
-								return this.spawnInSwampHut(serverWorld, blockPos);
+							if (Feature.field_13520.isInsideStructure(serverWorld, blockPos)) {
+								return this.method_20260(serverWorld, blockPos);
 							}
 						}
 
@@ -64,27 +64,27 @@ public class CatSpawner {
 		if (serverWorld.getPointOfInterestStorage()
 				.count(PointOfInterestType.field_18517.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18488)
 			> 4L) {
-			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
+			List<CatEntity> list = serverWorld.method_18467(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
-				return this.spawn(blockPos, serverWorld);
+				return this.method_20262(blockPos, serverWorld);
 			}
 		}
 
 		return 0;
 	}
 
-	private int spawnInSwampHut(World world, BlockPos blockPos) {
+	private int method_20260(World world, BlockPos blockPos) {
 		int i = 16;
-		List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
-		return list.size() < 1 ? this.spawn(blockPos, world) : 0;
+		List<CatEntity> list = world.method_18467(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
+		return list.size() < 1 ? this.method_20262(blockPos, world) : 0;
 	}
 
-	private int spawn(BlockPos blockPos, World world) {
-		CatEntity catEntity = EntityType.field_16281.create(world);
+	private int method_20262(BlockPos blockPos, World world) {
+		CatEntity catEntity = EntityType.field_16281.method_5883(world);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16459, null, null);
+			catEntity.method_5943(world, world.getLocalDifficulty(blockPos), SpawnType.field_16459, null, null);
 			catEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;

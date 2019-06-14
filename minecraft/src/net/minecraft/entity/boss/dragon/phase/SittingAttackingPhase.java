@@ -13,7 +13,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	@Override
 	public void clientTick() {
 		this.dragon
-			.world
+			.field_6002
 			.playSound(
 				this.dragon.x,
 				this.dragon.y,

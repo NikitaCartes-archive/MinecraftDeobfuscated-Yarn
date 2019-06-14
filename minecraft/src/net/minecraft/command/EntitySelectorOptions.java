@@ -265,7 +265,7 @@ public class EntitySelectorOptions {
 					if (!(entity instanceof LivingEntity)) {
 						return false;
 					} else {
-						AbstractTeam abstractTeam = entity.getScoreboardTeam();
+						AbstractTeam abstractTeam = entity.method_5781();
 						String string2 = abstractTeam == null ? "" : abstractTeam.getName();
 						return string2.equals(string) != bl;
 					}

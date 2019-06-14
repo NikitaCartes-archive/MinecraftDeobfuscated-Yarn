@@ -23,7 +23,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.horse.isTame() && this.horse.hasPassengers()) {
-			Vec3d vec3d = PathfindingUtil.findTarget(this.horse, 5, 4);
+			Vec3d vec3d = PathfindingUtil.method_6375(this.horse, 5, 4);
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -68,7 +68,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 			this.horse.removeAllPassengers();
 			this.horse.playAngrySound();
-			this.horse.world.sendEntityStatus(this.horse, (byte)6);
+			this.horse.field_6002.sendEntityStatus(this.horse, (byte)6);
 		}
 	}
 }

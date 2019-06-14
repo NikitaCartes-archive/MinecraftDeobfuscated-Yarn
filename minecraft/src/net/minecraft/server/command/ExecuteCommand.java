@@ -97,7 +97,7 @@ public class ExecuteCommand {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 		
 					for(Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPosVector()).withRotation(entity.getRotationClient()));
+						list.add(commandContext.getSource().withWorld((ServerWorld)entity.field_6002).method_9208(entity.method_5812()).method_9216(entity.method_5802()));
 					}
 		
 					return list;
@@ -110,14 +110,14 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("positioned")
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.vec3())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withPosition(Vec3ArgumentType.getVec3(commandContext, "pos")))
+							CommandManager.argument("pos", Vec3ArgumentType.create())
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9208(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 				
 							for(Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().withPosition(entity.getPosVector()));
+								list.add(commandContext.getSource().method_9208(entity.method_5812()));
 							}
 				
 							return list;
@@ -126,18 +126,18 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("rotated")
 						.then(
-							CommandManager.argument("rot", RotationArgumentType.rotation())
+							CommandManager.argument("rot", RotationArgumentType.create())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.withRotation(RotationArgumentType.getRotation(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
+											.method_9216(RotationArgumentType.getRotation(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
 								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 				
 							for(Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().withRotation(entity.getRotationClient()));
+								list.add(commandContext.getSource().method_9216(entity.method_5802()));
 							}
 				
 							return list;
@@ -149,7 +149,7 @@ public class ExecuteCommand {
 							CommandManager.literal("entity")
 								.then(
 									CommandManager.argument("targets", EntityArgumentType.entities())
-										.then(CommandManager.argument("anchor", EntityAnchorArgumentType.entityAnchor()).fork(literalCommandNode, commandContext -> {
+										.then(CommandManager.argument("anchor", EntityAnchorArgumentType.create()).fork(literalCommandNode, commandContext -> {
 											List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 											EntityAnchorArgumentType.EntityAnchor entityAnchor = EntityAnchorArgumentType.getEntityAnchor(commandContext, "anchor");
 								
@@ -162,25 +162,25 @@ public class ExecuteCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.vec3())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withLookingAt(Vec3ArgumentType.getVec3(commandContext, "pos")))
+							CommandManager.argument("pos", Vec3ArgumentType.create())
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9221(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 				)
 				.then(
 					CommandManager.literal("align")
 						.then(
-							CommandManager.argument("axes", SwizzleArgumentType.swizzle())
+							CommandManager.argument("axes", SwizzleArgumentType.create())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.withPosition(commandContext.getSource().getPosition().floorAlongAxes(SwizzleArgumentType.getSwizzle(commandContext, "axes")))
+											.method_9208(commandContext.getSource().method_9222().floorAlongAxes(SwizzleArgumentType.getSwizzle(commandContext, "axes")))
 								)
 						)
 				)
 				.then(
 					CommandManager.literal("anchored")
 						.then(
-							CommandManager.argument("anchor", EntityAnchorArgumentType.entityAnchor())
+							CommandManager.argument("anchor", EntityAnchorArgumentType.create())
 								.redirect(
 									literalCommandNode, commandContext -> commandContext.getSource().withEntityAnchor(EntityAnchorArgumentType.getEntityAnchor(commandContext, "anchor"))
 								)
@@ -189,7 +189,7 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("in")
 						.then(
-							CommandManager.argument("dimension", DimensionArgumentType.dimension())
+							CommandManager.argument("dimension", DimensionArgumentType.create())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
@@ -209,7 +209,7 @@ public class ExecuteCommand {
 					CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 						.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 						.then(
-							CommandManager.argument("objective", ObjectiveArgumentType.objective())
+							CommandManager.argument("objective", ObjectiveArgumentType.create())
 								.redirect(
 									literalCommandNode,
 									commandContext -> executeStoreScore(
@@ -225,7 +225,7 @@ public class ExecuteCommand {
 		literalArgumentBuilder.then(
 			CommandManager.literal("bossbar")
 				.then(
-					CommandManager.argument("id", IdentifierArgumentType.identifier())
+					CommandManager.argument("id", IdentifierArgumentType.create())
 						.suggests(BossBarCommand.suggestionProvider)
 						.then(
 							CommandManager.literal("value")
@@ -246,7 +246,7 @@ public class ExecuteCommand {
 			objectType.addArgumentsToBuilder(
 				literalArgumentBuilder,
 				argumentBuilder -> argumentBuilder.then(
-						CommandManager.argument("path", NbtPathArgumentType.nbtPath())
+						CommandManager.argument("path", NbtPathArgumentType.create())
 							.then(
 								CommandManager.literal("int")
 									.then(
@@ -394,11 +394,11 @@ public class ExecuteCommand {
 		literalArgumentBuilder.then(
 				CommandManager.literal("block")
 					.then(
-						CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+						CommandManager.argument("pos", BlockPosArgumentType.create())
 							.then(
 								addConditionLogic(
 									commandNode,
-									CommandManager.argument("block", BlockPredicateArgumentType.blockPredicate()),
+									CommandManager.argument("block", BlockPredicateArgumentType.create()),
 									bl,
 									commandContext -> BlockPredicateArgumentType.getBlockPredicate(commandContext, "block")
 											.test(new CachedBlockPosition(commandContext.getSource().getWorld(), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), true))
@@ -413,7 +413,7 @@ public class ExecuteCommand {
 							.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 							.then(
 								((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument(
-															"targetObjective", ObjectiveArgumentType.objective()
+															"targetObjective", ObjectiveArgumentType.create()
 														)
 														.then(
 															CommandManager.literal("=")
@@ -423,7 +423,7 @@ public class ExecuteCommand {
 																		.then(
 																			addConditionLogic(
 																				commandNode,
-																				CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+																				CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
 																				bl,
 																				commandContext -> testScoreCondition(commandContext, Integer::equals)
 																			)
@@ -438,7 +438,7 @@ public class ExecuteCommand {
 																	.then(
 																		addConditionLogic(
 																			commandNode,
-																			CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+																			CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
 																			bl,
 																			commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer < integer2)
 																		)
@@ -453,7 +453,7 @@ public class ExecuteCommand {
 																.then(
 																	addConditionLogic(
 																		commandNode,
-																		CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+																		CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
 																		bl,
 																		commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer <= integer2)
 																	)
@@ -468,7 +468,7 @@ public class ExecuteCommand {
 															.then(
 																addConditionLogic(
 																	commandNode,
-																	CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+																	CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
 																	bl,
 																	commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer > integer2)
 																)
@@ -483,7 +483,7 @@ public class ExecuteCommand {
 														.then(
 															addConditionLogic(
 																commandNode,
-																CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+																CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
 																bl,
 																commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer >= integer2)
 															)
@@ -495,7 +495,7 @@ public class ExecuteCommand {
 											.then(
 												addConditionLogic(
 													commandNode,
-													CommandManager.argument("range", NumberRangeArgumentType.numberRange()),
+													CommandManager.argument("range", NumberRangeArgumentType.create()),
 													bl,
 													commandContext -> testScoreMatch(commandContext, NumberRangeArgumentType.IntRangeArgumentType.getRangeArgument(commandContext, "range"))
 												)
@@ -507,11 +507,11 @@ public class ExecuteCommand {
 			.then(
 				CommandManager.literal("blocks")
 					.then(
-						CommandManager.argument("start", BlockPosArgumentType.blockPos())
+						CommandManager.argument("start", BlockPosArgumentType.create())
 							.then(
-								CommandManager.argument("end", BlockPosArgumentType.blockPos())
+								CommandManager.argument("end", BlockPosArgumentType.create())
 									.then(
-										CommandManager.argument("destination", BlockPosArgumentType.blockPos())
+										CommandManager.argument("destination", BlockPosArgumentType.create())
 											.then(addBlocksConditionLogic(commandNode, CommandManager.literal("all"), bl, false))
 											.then(addBlocksConditionLogic(commandNode, CommandManager.literal("masked"), bl, true))
 									)
@@ -535,7 +535,7 @@ public class ExecuteCommand {
 				objectType.addArgumentsToBuilder(
 					CommandManager.literal("data"),
 					argumentBuilder -> argumentBuilder.then(
-							CommandManager.argument("path", NbtPathArgumentType.nbtPath())
+							CommandManager.argument("path", NbtPathArgumentType.create())
 								.fork(
 									commandNode,
 									commandContext -> getSourceOrEmptyForConditionFork(
@@ -679,14 +679,14 @@ public class ExecuteCommand {
 					for(int m = mutableIntBoundingBox.minX; m <= mutableIntBoundingBox.maxX; ++m) {
 						BlockPos blockPos5 = new BlockPos(m, l, k);
 						BlockPos blockPos6 = blockPos5.add(blockPos4);
-						BlockState blockState = serverWorld.getBlockState(blockPos5);
+						BlockState blockState = serverWorld.method_8320(blockPos5);
 						if (!bl || blockState.getBlock() != Blocks.field_10124) {
-							if (blockState != serverWorld.getBlockState(blockPos6)) {
+							if (blockState != serverWorld.method_8320(blockPos6)) {
 								return OptionalInt.empty();
 							}
 
-							BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos5);
-							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos6);
+							BlockEntity blockEntity = serverWorld.method_8321(blockPos5);
+							BlockEntity blockEntity2 = serverWorld.method_8321(blockPos6);
 							if (blockEntity != null) {
 								if (blockEntity2 == null) {
 									return OptionalInt.empty();

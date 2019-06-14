@@ -19,7 +19,7 @@ public abstract class StructureProcessor {
 		StructurePlacementData structurePlacementData
 	);
 
-	protected abstract StructureProcessorType getType();
+	protected abstract StructureProcessorType method_16772();
 
 	protected abstract <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps);
 
@@ -29,7 +29,7 @@ public abstract class StructureProcessor {
 			dynamicOps.mergeInto(
 				this.method_16666(dynamicOps).getValue(),
 				dynamicOps.createString("processor_type"),
-				dynamicOps.createString(Registry.STRUCTURE_PROCESSOR.getId(this.getType()).toString())
+				dynamicOps.createString(Registry.STRUCTURE_PROCESSOR.getId(this.method_16772()).toString())
 			)
 		);
 	}

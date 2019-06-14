@@ -15,14 +15,14 @@ import net.minecraft.util.shape.VoxelShape;
 
 public interface BlockView {
 	@Nullable
-	BlockEntity getBlockEntity(BlockPos blockPos);
+	BlockEntity method_8321(BlockPos blockPos);
 
-	BlockState getBlockState(BlockPos blockPos);
+	BlockState method_8320(BlockPos blockPos);
 
-	FluidState getFluidState(BlockPos blockPos);
+	FluidState method_8316(BlockPos blockPos);
 
 	default int getLuminance(BlockPos blockPos) {
-		return this.getBlockState(blockPos).getLuminance();
+		return this.method_8320(blockPos).getLuminance();
 	}
 
 	default int getMaxLightLevel() {
@@ -33,31 +33,38 @@ public interface BlockView {
 		return 256;
 	}
 
-	default BlockHitResult rayTrace(RayTraceContext rayTraceContext) {
-		return rayTrace(rayTraceContext, (rayTraceContextx, blockPos) -> {
-			BlockState blockState = this.getBlockState(blockPos);
-			FluidState fluidState = this.getFluidState(blockPos);
-			Vec3d vec3d = rayTraceContextx.getStart();
-			Vec3d vec3d2 = rayTraceContextx.getEnd();
-			VoxelShape voxelShape = rayTraceContextx.getBlockShape(blockState, this, blockPos);
-			BlockHitResult blockHitResult = this.rayTraceBlock(vec3d, vec3d2, blockPos, voxelShape, blockState);
-			VoxelShape voxelShape2 = rayTraceContextx.getFluidShape(fluidState, this, blockPos);
-			BlockHitResult blockHitResult2 = voxelShape2.rayTrace(vec3d, vec3d2, blockPos);
-			double d = blockHitResult == null ? Double.MAX_VALUE : rayTraceContextx.getStart().squaredDistanceTo(blockHitResult.getPos());
-			double e = blockHitResult2 == null ? Double.MAX_VALUE : rayTraceContextx.getStart().squaredDistanceTo(blockHitResult2.getPos());
-			return d <= e ? blockHitResult : blockHitResult2;
-		}, rayTraceContextx -> {
-			Vec3d vec3d = rayTraceContextx.getStart().subtract(rayTraceContextx.getEnd());
-			return BlockHitResult.createMissed(rayTraceContextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(rayTraceContextx.getEnd()));
-		});
+	default BlockHitResult method_17742(RayTraceContext rayTraceContext) {
+		return method_17744(
+			rayTraceContext,
+			(rayTraceContextx, blockPos) -> {
+				BlockState blockState = this.method_8320(blockPos);
+				FluidState fluidState = this.method_8316(blockPos);
+				Vec3d vec3d = rayTraceContextx.method_17750();
+				Vec3d vec3d2 = rayTraceContextx.method_17747();
+				VoxelShape voxelShape = rayTraceContextx.method_17748(blockState, this, blockPos);
+				BlockHitResult blockHitResult = this.method_17745(vec3d, vec3d2, blockPos, voxelShape, blockState);
+				VoxelShape voxelShape2 = rayTraceContextx.method_17749(fluidState, this, blockPos);
+				BlockHitResult blockHitResult2 = voxelShape2.rayTrace(vec3d, vec3d2, blockPos);
+				double d = blockHitResult == null ? Double.MAX_VALUE : rayTraceContextx.method_17750().squaredDistanceTo(blockHitResult.method_17784());
+				double e = blockHitResult2 == null ? Double.MAX_VALUE : rayTraceContextx.method_17750().squaredDistanceTo(blockHitResult2.method_17784());
+				return d <= e ? blockHitResult : blockHitResult2;
+			},
+			rayTraceContextx -> {
+				Vec3d vec3d = rayTraceContextx.method_17750().subtract(rayTraceContextx.method_17747());
+				return BlockHitResult.method_17778(
+					rayTraceContextx.method_17747(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(rayTraceContextx.method_17747())
+				);
+			}
+		);
 	}
 
 	@Nullable
-	default BlockHitResult rayTraceBlock(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos, VoxelShape voxelShape, BlockState blockState) {
+	default BlockHitResult method_17745(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos, VoxelShape voxelShape, BlockState blockState) {
 		BlockHitResult blockHitResult = voxelShape.rayTrace(vec3d, vec3d2, blockPos);
 		if (blockHitResult != null) {
-			BlockHitResult blockHitResult2 = blockState.getRayTraceShape(this, blockPos).rayTrace(vec3d, vec3d2, blockPos);
-			if (blockHitResult2 != null && blockHitResult2.getPos().subtract(vec3d).lengthSquared() < blockHitResult.getPos().subtract(vec3d).lengthSquared()) {
+			BlockHitResult blockHitResult2 = blockState.method_11607(this, blockPos).rayTrace(vec3d, vec3d2, blockPos);
+			if (blockHitResult2 != null
+				&& blockHitResult2.method_17784().subtract(vec3d).lengthSquared() < blockHitResult.method_17784().subtract(vec3d).lengthSquared()) {
 				return blockHitResult.withSide(blockHitResult2.getSide());
 			}
 		}
@@ -65,9 +72,9 @@ public interface BlockView {
 		return blockHitResult;
 	}
 
-	static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> biFunction, Function<RayTraceContext, T> function) {
-		Vec3d vec3d = rayTraceContext.getStart();
-		Vec3d vec3d2 = rayTraceContext.getEnd();
+	static <T> T method_17744(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> biFunction, Function<RayTraceContext, T> function) {
+		Vec3d vec3d = rayTraceContext.method_17750();
+		Vec3d vec3d2 = rayTraceContext.method_17747();
 		if (vec3d.equals(vec3d2)) {
 			return (T)function.apply(rayTraceContext);
 		} else {

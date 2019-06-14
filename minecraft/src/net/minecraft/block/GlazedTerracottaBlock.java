@@ -11,16 +11,16 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.method_11667(field_11177);
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_11177, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior method_9527(BlockState blockState) {
 		return PistonBehavior.field_15970;
 	}
 }

@@ -24,7 +24,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
-		if (!this.renderOutlines && MinecraftClient.getInstance().getEntityRenderManager().gameOptions != null) {
+		if (!this.renderOutlines && MinecraftClient.getInstance().method_1561().gameOptions != null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
 			this.bindEntityTexture(experienceOrbEntity);
@@ -54,7 +54,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			GlStateManager.scalef(0.3F, 0.3F, 0.3F);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
+			bufferBuilder.method_1328(7, VertexFormats.field_1577);
 			bufferBuilder.vertex(-0.5, -0.25, 0.0).texture((double)j, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, -0.25, 0.0).texture((double)k, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, 0.75, 0.0).texture((double)k, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();

@@ -10,15 +10,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DefaultedList;
 
 public class TraderInventory implements Inventory {
-	private final Trader trader;
+	private final Trader field_7844;
 	private final DefaultedList<ItemStack> inventory = DefaultedList.create(3, ItemStack.EMPTY);
 	@Nullable
-	private TradeOffer traderRecipe;
+	private TradeOffer field_7843;
 	private int recipeIndex;
 	private int traderRewardedExperience;
 
 	public TraderInventory(Trader trader) {
-		this.trader = trader;
+		this.field_7844 = trader;
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class TraderInventory implements Inventory {
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.trader.getCurrentCustomer() == playerEntity;
+		return this.field_7844.getCurrentCustomer() == playerEntity;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class TraderInventory implements Inventory {
 	}
 
 	public void updateRecipes() {
-		this.traderRecipe = null;
+		this.field_7843 = null;
 		ItemStack itemStack;
 		ItemStack itemStack2;
 		if (this.inventory.get(0).isEmpty()) {
@@ -104,16 +104,16 @@ public class TraderInventory implements Inventory {
 			this.setInvStack(2, ItemStack.EMPTY);
 			this.traderRewardedExperience = 0;
 		} else {
-			TraderOfferList traderOfferList = this.trader.getOffers();
+			TraderOfferList traderOfferList = this.field_7844.method_8264();
 			if (!traderOfferList.isEmpty()) {
 				TradeOffer tradeOffer = traderOfferList.getValidRecipe(itemStack, itemStack2, this.recipeIndex);
 				if (tradeOffer == null || tradeOffer.isDisabled()) {
-					this.traderRecipe = tradeOffer;
+					this.field_7843 = tradeOffer;
 					tradeOffer = traderOfferList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
 				}
 
 				if (tradeOffer != null && !tradeOffer.isDisabled()) {
-					this.traderRecipe = tradeOffer;
+					this.field_7843 = tradeOffer;
 					this.setInvStack(2, tradeOffer.getSellItem());
 					this.traderRewardedExperience = tradeOffer.getTraderExperience();
 				} else {
@@ -122,13 +122,13 @@ public class TraderInventory implements Inventory {
 				}
 			}
 
-			this.trader.onSellingItem(this.getInvStack(2));
+			this.field_7844.onSellingItem(this.getInvStack(2));
 		}
 	}
 
 	@Nullable
-	public TradeOffer getTradeOffer() {
-		return this.traderRecipe;
+	public TradeOffer method_7642() {
+		return this.field_7843;
 	}
 
 	public void setRecipeIndex(int i) {

@@ -15,12 +15,12 @@ public class WetSpongeBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		Direction direction = Direction.random(random);
 		if (direction != Direction.field_11036) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (!blockState.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, direction.getOpposite())) {
+			BlockState blockState2 = world.method_8320(blockPos2);
+			if (!blockState.isOpaque() || !Block.method_20045(blockState2, world, blockPos2, direction.getOpposite())) {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();

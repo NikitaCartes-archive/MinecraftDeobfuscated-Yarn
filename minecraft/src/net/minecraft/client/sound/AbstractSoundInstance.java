@@ -9,9 +9,9 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSoundInstance implements SoundInstance {
-	protected Sound sound;
+	protected Sound field_5444;
 	@Nullable
-	private WeightedSoundSet soundSet;
+	private WeightedSoundSet field_5443;
 	protected final SoundCategory category;
 	protected final Identifier id;
 	protected float volume = 1.0F;
@@ -21,7 +21,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected float z;
 	protected boolean repeat;
 	protected int repeatDelay;
-	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.field_5476;
+	protected SoundInstance.AttenuationType field_5440 = SoundInstance.AttenuationType.field_5476;
 	protected boolean field_18935;
 	protected boolean looping;
 
@@ -40,20 +40,20 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	@Override
-	public WeightedSoundSet getSoundSet(SoundManager soundManager) {
-		this.soundSet = soundManager.get(this.id);
-		if (this.soundSet == null) {
-			this.sound = SoundManager.MISSING_SOUND;
+	public WeightedSoundSet method_4783(SoundManager soundManager) {
+		this.field_5443 = soundManager.method_4869(this.id);
+		if (this.field_5443 == null) {
+			this.field_5444 = SoundManager.MISSING_SOUND;
 		} else {
-			this.sound = this.soundSet.method_4887();
+			this.field_5444 = this.field_5443.method_4887();
 		}
 
-		return this.soundSet;
+		return this.field_5443;
 	}
 
 	@Override
 	public Sound getSound() {
-		return this.sound;
+		return this.field_5444;
 	}
 
 	@Override
@@ -73,12 +73,12 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public float getVolume() {
-		return this.volume * this.sound.getVolume();
+		return this.volume * this.field_5444.getVolume();
 	}
 
 	@Override
 	public float getPitch() {
-		return this.pitch * this.sound.getPitch();
+		return this.pitch * this.field_5444.getPitch();
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public SoundInstance.AttenuationType getAttenuationType() {
-		return this.attenuationType;
+		return this.field_5440;
 	}
 
 	@Override

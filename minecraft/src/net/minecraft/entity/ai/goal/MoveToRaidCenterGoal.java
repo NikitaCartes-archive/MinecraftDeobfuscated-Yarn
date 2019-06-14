@@ -27,15 +27,15 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			&& !this.actor.hasPassengers()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& !((ServerWorld)this.actor.field_6002).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
 	}
 
 	@Override
 	public boolean shouldContinue() {
 		return this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& this.actor.world instanceof ServerWorld
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& this.actor.field_6002 instanceof ServerWorld
+			&& !((ServerWorld)this.actor.field_6002).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.actor.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+				blockPos = this.actor.field_6002.getTopPosition(Heightmap.Type.field_13203, blockPos);
 				if (!this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.moveToAlternativePosition();
 				}
@@ -65,10 +65,10 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		if (raid.isActive()) {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
 			List<RaiderEntity> list = this.actor
-				.world
-				.getEntities(
+				.field_6002
+				.method_8390(
 					RaiderEntity.class,
-					this.actor.getBoundingBox().expand(16.0),
+					this.actor.method_5829().expand(16.0),
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)
 				);
 			set.addAll(list);
@@ -82,7 +82,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private void moveToAlternativePosition() {
 		Random random = this.actor.getRand();
 		BlockPos blockPos = this.actor
-			.world
+			.field_6002
 			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}

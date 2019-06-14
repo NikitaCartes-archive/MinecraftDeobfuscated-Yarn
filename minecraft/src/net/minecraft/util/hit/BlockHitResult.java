@@ -10,7 +10,7 @@ public class BlockHitResult extends HitResult {
 	private final boolean missed;
 	private final boolean field_17591;
 
-	public static BlockHitResult createMissed(Vec3d vec3d, Direction direction, BlockPos blockPos) {
+	public static BlockHitResult method_17778(Vec3d vec3d, Direction direction, BlockPos blockPos) {
 		return new BlockHitResult(true, vec3d, direction, blockPos, false);
 	}
 
@@ -27,7 +27,7 @@ public class BlockHitResult extends HitResult {
 	}
 
 	public BlockHitResult withSide(Direction direction) {
-		return new BlockHitResult(this.missed, this.pos, direction, this.blockPos, this.field_17591);
+		return new BlockHitResult(this.missed, this.field_1329, direction, this.blockPos, this.field_17591);
 	}
 
 	public BlockPos getBlockPos() {

@@ -5,7 +5,7 @@ public interface MergingLayer extends CoordinateTransformer {
 		return () -> {
 			R layerSampler = layerFactory.make();
 			R layerSampler2 = layerFactory2.make();
-			return layerSampleContext.createSampler((i, j) -> {
+			return layerSampleContext.method_15828((i, j) -> {
 				layerSampleContext.initSeed((long)i, (long)j);
 				return this.sample(layerSampleContext, layerSampler, layerSampler2, i, j);
 			}, layerSampler, layerSampler2);

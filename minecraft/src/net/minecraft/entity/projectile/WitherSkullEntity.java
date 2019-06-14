@@ -50,15 +50,13 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public float getEffectiveExplosionResistance(
-		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
-	) {
-		return this.isCharged() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
+	public float method_5774(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f) {
+		return this.isCharged() && WitherEntity.method_6883(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isClient) {
+	protected void method_7469(HitResult hitResult) {
+		if (!this.field_6002.isClient) {
 			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
@@ -75,9 +73,9 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 				if (entity instanceof LivingEntity) {
 					int i = 0;
-					if (this.world.getDifficulty() == Difficulty.field_5802) {
+					if (this.field_6002.getDifficulty() == Difficulty.field_5802) {
 						i = 10;
-					} else if (this.world.getDifficulty() == Difficulty.field_5807) {
+					} else if (this.field_6002.getDifficulty() == Difficulty.field_5807) {
 						i = 40;
 					}
 
@@ -87,10 +85,10 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 			}
 
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+			Explosion.DestructionType destructionType = this.field_6002.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.field_18687
 				: Explosion.DestructionType.field_18685;
-			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
+			this.field_6002.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
 			this.remove();
 		}
 	}

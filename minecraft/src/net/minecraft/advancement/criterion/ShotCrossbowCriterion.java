@@ -79,7 +79,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		}
 
 		public static ShotCrossbowCriterion.Conditions create(ItemConvertible itemConvertible) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
+			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().method_8977(itemConvertible).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {
