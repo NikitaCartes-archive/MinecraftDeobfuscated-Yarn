@@ -34,7 +34,7 @@ extends TrackTargetGoal {
         for (LivingEntity livingEntity : list) {
             VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
             for (PlayerEntity playerEntity : list2) {
-                int i = villagerEntity.method_20594(playerEntity);
+                int i = villagerEntity.getReputation(playerEntity);
                 if (i > -100) continue;
                 this.target = playerEntity;
             }

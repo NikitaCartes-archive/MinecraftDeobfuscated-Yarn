@@ -6,7 +6,6 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.class_4316;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
@@ -16,6 +15,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
+import net.minecraft.util.Timestamp;
 
 public class VillagerWorkTask
 extends Task<VillagerEntity> {
@@ -38,7 +38,7 @@ extends Task<VillagerEntity> {
 
     protected void method_19039(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
-        brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, class_4316.method_20791(l));
+        brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
         if (!this.field_18403) {
             villagerEntity.restock();
             this.field_18403 = true;

@@ -7,7 +7,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.class_4316;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -18,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
@@ -46,8 +46,8 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<Long> HEARD_BELL_TIME = MemoryModuleType.method_20738("heard_bell_time");
     public static final MemoryModuleType<Long> CANT_REACH_WALK_TARGET_SINCE = MemoryModuleType.method_20738("cant_reach_walk_target_since");
     public static final MemoryModuleType<Long> GOLEM_LAST_SEEN_TIME = MemoryModuleType.method_20738("golem_last_seen_time");
-    public static final MemoryModuleType<class_4316> LAST_SLEPT = MemoryModuleType.register("last_slept", Optional.of(class_4316::method_20792));
-    public static final MemoryModuleType<class_4316> LAST_WORKED_AT_POI = MemoryModuleType.register("last_worked_at_poi", Optional.of(class_4316::method_20792));
+    public static final MemoryModuleType<Timestamp> LAST_SLEPT = MemoryModuleType.register("last_slept", Optional.of(Timestamp::of));
+    public static final MemoryModuleType<Timestamp> LAST_WORKED_AT_POI = MemoryModuleType.register("last_worked_at_poi", Optional.of(Timestamp::of));
     private final Optional<Function<Dynamic<?>, U>> factory;
 
     private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {

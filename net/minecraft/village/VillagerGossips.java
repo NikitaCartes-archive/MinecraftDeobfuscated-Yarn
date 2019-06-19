@@ -29,12 +29,12 @@ import net.minecraft.village.VillageGossipType;
 public class VillagerGossips {
     private final Map<UUID, Reputation> entityReputation = Maps.newHashMap();
 
-    public void method_20651() {
+    public void decay() {
         Iterator<Reputation> iterator = this.entityReputation.values().iterator();
         while (iterator.hasNext()) {
             Reputation reputation = iterator.next();
-            reputation.method_20652();
-            if (!reputation.method_20654()) continue;
+            reputation.decay();
+            if (!reputation.isObsolete()) continue;
             iterator.remove();
         }
     }
@@ -70,7 +70,7 @@ public class VillagerGossips {
     public void shareGossipFrom(VillagerGossips villagerGossips, Random random, int i) {
         Collection<GossipEntry> collection = villagerGossips.pickGossips(random, i);
         collection.forEach(gossipEntry -> {
-            int i = gossipEntry.value - gossipEntry.type.value;
+            int i = gossipEntry.value - gossipEntry.type.shareDecrement;
             if (i >= 2) {
                 this.getReputationFor(gossipEntry.target).associatedGossip.mergeInt(gossipEntry.type, i, VillagerGossips::max);
             }
@@ -79,14 +79,14 @@ public class VillagerGossips {
 
     public int getReputationFor(UUID uUID, Predicate<VillageGossipType> predicate) {
         Reputation reputation = this.entityReputation.get(uUID);
-        return reputation != null ? reputation.getValue(predicate) : 0;
+        return reputation != null ? reputation.getValueFor(predicate) : 0;
     }
 
     public void startGossip(UUID uUID, VillageGossipType villageGossipType, int i) {
         Reputation reputation = this.getReputationFor(uUID);
         reputation.associatedGossip.mergeInt(villageGossipType, i, (integer, integer2) -> this.mergeReputation(villageGossipType, (int)integer, (int)integer2));
-        reputation.method_20653(villageGossipType);
-        if (reputation.method_20654()) {
+        reputation.clamp(villageGossipType);
+        if (reputation.isObsolete()) {
             this.entityReputation.remove(uUID);
         }
     }
@@ -105,7 +105,7 @@ public class VillagerGossips {
 
     private int mergeReputation(VillageGossipType villageGossipType, int i, int j) {
         int k = i + j;
-        return k > villageGossipType.maxReputation ? Math.max(villageGossipType.maxReputation, i) : k;
+        return k > villageGossipType.maxValue ? Math.max(villageGossipType.maxValue, i) : k;
     }
 
     static class Reputation {
@@ -114,7 +114,7 @@ public class VillagerGossips {
         private Reputation() {
         }
 
-        public int getValue(Predicate<VillageGossipType> predicate) {
+        public int getValueFor(Predicate<VillageGossipType> predicate) {
             return this.associatedGossip.object2IntEntrySet().stream().filter(entry -> predicate.test((VillageGossipType)((Object)entry.getKey()))).mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)((Object)((Object)entry.getKey()))).multiplier).sum();
         }
 
@@ -122,11 +122,11 @@ public class VillagerGossips {
             return this.associatedGossip.object2IntEntrySet().stream().map(entry -> new GossipEntry(uUID, (VillageGossipType)((Object)((Object)entry.getKey())), entry.getIntValue()));
         }
 
-        public void method_20652() {
+        public void decay() {
             Iterator objectIterator = this.associatedGossip.object2IntEntrySet().iterator();
             while (objectIterator.hasNext()) {
                 Object2IntMap.Entry entry = (Object2IntMap.Entry)objectIterator.next();
-                int i = entry.getIntValue() - ((VillageGossipType)((Object)entry.getKey())).field_19354;
+                int i = entry.getIntValue() - ((VillageGossipType)((Object)entry.getKey())).decay;
                 if (i < 2) {
                     objectIterator.remove();
                     continue;
@@ -135,21 +135,21 @@ public class VillagerGossips {
             }
         }
 
-        public boolean method_20654() {
+        public boolean isObsolete() {
             return this.associatedGossip.isEmpty();
         }
 
-        public void method_20653(VillageGossipType villageGossipType) {
+        public void clamp(VillageGossipType villageGossipType) {
             int i = this.associatedGossip.getInt((Object)villageGossipType);
-            if (i > villageGossipType.maxReputation) {
-                this.associatedGossip.put(villageGossipType, villageGossipType.maxReputation);
+            if (i > villageGossipType.maxValue) {
+                this.associatedGossip.put(villageGossipType, villageGossipType.maxValue);
             }
             if (i < 2) {
-                this.method_20655(villageGossipType);
+                this.remove(villageGossipType);
             }
         }
 
-        public void method_20655(VillageGossipType villageGossipType) {
+        public void remove(VillageGossipType villageGossipType) {
             this.associatedGossip.removeInt((Object)villageGossipType);
         }
     }

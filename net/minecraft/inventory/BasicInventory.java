@@ -61,7 +61,7 @@ RecipeInputProvider {
         return itemStack;
     }
 
-    public ItemStack method_20631(Item item, int i) {
+    public ItemStack poll(Item item, int i) {
         ItemStack itemStack = new ItemStack(item, 0);
         for (int j = this.size - 1; j >= 0; --j) {
             ItemStack itemStack2 = this.getInvStack(j);

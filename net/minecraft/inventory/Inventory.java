@@ -41,7 +41,7 @@ extends Clearable {
         return true;
     }
 
-    default public int getInvAmountOf(Item item) {
+    default public int countInInv(Item item) {
         int i = 0;
         for (int j = 0; j < this.getInvSize(); ++j) {
             ItemStack itemStack = this.getInvStack(j);

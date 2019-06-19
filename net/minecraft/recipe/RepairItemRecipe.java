@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public class class_4317
+public class RepairItemRecipe
 extends SpecialCraftingRecipe {
-    public class_4317(Identifier identifier) {
+    public RepairItemRecipe(Identifier identifier) {
         super(identifier);
     }
 
@@ -75,7 +75,7 @@ extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return RecipeSerializer.field_19421;
+        return RecipeSerializer.REPAIR_ITEM;
     }
 }
 

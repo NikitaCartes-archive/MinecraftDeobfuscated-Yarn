@@ -16,7 +16,6 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -145,11 +144,11 @@ extends HostileEntity {
         return this.isFireActive();
     }
 
-    public boolean isFireActive() {
+    private boolean isFireActive() {
         return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
     }
 
-    public void setFireActive(boolean bl) {
+    private void setFireActive(boolean bl) {
         byte b = this.dataTracker.get(BLAZE_FLAGS);
         b = bl ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
         this.dataTracker.set(BLAZE_FLAGS, b);
@@ -192,7 +191,7 @@ extends HostileEntity {
                 return;
             }
             boolean bl = this.blaze.getVisibilityCache().canSee(livingEntity);
-            this.field_19420 = bl ? ++this.field_19420 : 0;
+            this.field_19420 = bl ? 0 : ++this.field_19420;
             double d = this.blaze.squaredDistanceTo(livingEntity);
             if (d < 4.0) {
                 if (!bl) {
@@ -230,18 +229,14 @@ extends HostileEntity {
                     }
                 }
                 this.blaze.getLookControl().lookAt(livingEntity, 10.0f, 10.0f);
-            } else {
-                this.blaze.getNavigation().stop();
-                if (this.field_19420 < 5) {
-                    this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
-                }
+            } else if (this.field_19420 < 5) {
+                this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
             }
             super.tick();
         }
 
         private double method_6995() {
-            EntityAttributeInstance entityAttributeInstance = this.blaze.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
-            return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
+            return this.blaze.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).getValue();
         }
     }
 }

@@ -83,6 +83,9 @@ extends AbstractDecorationEntity {
 
     @Override
     protected void method_6895() {
+        if (this.facing == null) {
+            return;
+        }
         double d = 0.46875;
         this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
         this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;

@@ -131,7 +131,11 @@ extends ExtendedBlockView {
         return Stream.empty();
     }
 
-    default public Stream<VoxelShape> getCollisionShapes(final @Nullable Entity entity, Box box, Set<Entity> set) {
+    default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, Box box, Set<Entity> set) {
+        return Streams.concat(this.method_20812(entity, box), this.method_20743(entity, box, set));
+    }
+
+    default public Stream<VoxelShape> method_20812(final @Nullable Entity entity, Box box) {
         int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
         int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
         int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -142,7 +146,7 @@ extends ExtendedBlockView {
         final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
         final BlockPos.Mutable mutable = new BlockPos.Mutable();
         final VoxelShape voxelShape = VoxelShapes.cuboid(box);
-        return Streams.concat(StreamSupport.stream(new Spliterators.AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280){
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280){
             boolean field_19296;
             {
                 super(l, i);
@@ -180,7 +184,7 @@ extends ExtendedBlockView {
                 }
                 return false;
             }
-        }, false), this.method_20743(entity, box, set));
+        }, false);
     }
 
     default public boolean isWaterAt(BlockPos blockPos) {

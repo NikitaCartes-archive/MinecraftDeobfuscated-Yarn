@@ -154,16 +154,13 @@ extends ZombieEntity {
             return false;
         }
         Entity entity = damageSource.getAttacker();
-        if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
+        if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
             this.method_20804(entity);
         }
         return super.damage(damageSource, f);
     }
 
     private boolean method_20804(Entity entity) {
-        if (!this.canSee(entity)) {
-            return false;
-        }
         this.anger = this.method_20806();
         this.angrySoundDelay = this.random.nextInt(40);
         if (entity instanceof LivingEntity) {
@@ -236,7 +233,7 @@ extends ZombieEntity {
 
         @Override
         protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-            if (mobEntity instanceof ZombiePigmanEntity && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
+            if (mobEntity instanceof ZombiePigmanEntity && this.mob.canSee(livingEntity) && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
                 mobEntity.setTarget(livingEntity);
             }
         }

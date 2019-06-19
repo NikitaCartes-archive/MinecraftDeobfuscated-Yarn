@@ -17,7 +17,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4316;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
@@ -71,6 +70,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -105,7 +105,7 @@ VillagerDataContainer {
     private byte foodLevel;
     private final VillagerGossips gossip = new VillagerGossips();
     private long gossipStartTime;
-    private long field_19357;
+    private long lastGossipDecay;
     private int experience;
     private long lastRestock;
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, new MemoryModuleType[]{MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
@@ -218,7 +218,7 @@ VillagerDataContainer {
         if (this.getHeadRollingTimeLeft() > 0) {
             this.setHeadRollingTimeLeft(this.getHeadRollingTimeLeft() - 1);
         }
-        this.method_20696();
+        this.decayGossip();
     }
 
     @Override
@@ -298,13 +298,13 @@ VillagerDataContainer {
             tradeOffer.resetUses();
         }
         if (this.getVillagerData().getProfession() == VillagerProfession.FARMER) {
-            this.method_20695();
+            this.craftBread();
         }
         this.lastRestock = this.world.getTimeOfDay() % 24000L;
     }
 
     private void prepareRecipesFor(PlayerEntity playerEntity) {
-        int i = this.method_20594(playerEntity);
+        int i = this.getReputation(playerEntity);
         if (i != 0) {
             for (TradeOffer tradeOffer : this.getOffers()) {
                 tradeOffer.increaseSpecialPrice(-MathHelper.floor((float)i * tradeOffer.getPriceMultiplier()));
@@ -335,7 +335,7 @@ VillagerDataContainer {
         compoundTag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
         compoundTag.putInt("Xp", this.experience);
         compoundTag.putLong("LastRestock", this.lastRestock);
-        compoundTag.putLong("LastGossipDecay", this.field_19357);
+        compoundTag.putLong("LastGossipDecay", this.lastGossipDecay);
     }
 
     @Override
@@ -356,7 +356,7 @@ VillagerDataContainer {
             this.experience = compoundTag.getInt("Xp");
         }
         this.lastRestock = compoundTag.getLong("LastRestock");
-        this.field_19357 = compoundTag.getLong("LastGossipDecay");
+        this.lastGossipDecay = compoundTag.getLong("LastGossipDecay");
         this.setCanPickUpLoot(true);
         this.reinitializeBrain((ServerWorld)this.world);
     }
@@ -438,7 +438,7 @@ VillagerDataContainer {
     public void onDeath(DamageSource damageSource) {
         Entity entity = damageSource.getAttacker();
         if (entity != null) {
-            this.method_20690(entity);
+            this.notifyDeath(entity);
         }
         this.releaseTicketFor(MemoryModuleType.HOME);
         this.releaseTicketFor(MemoryModuleType.JOB_SITE);
@@ -446,7 +446,7 @@ VillagerDataContainer {
         super.onDeath(damageSource);
     }
 
-    private void method_20690(Entity entity) {
+    private void notifyDeath(Entity entity) {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
@@ -479,12 +479,12 @@ VillagerDataContainer {
         return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
     }
 
-    private boolean method_20698() {
+    private boolean lacksFood() {
         return this.foodLevel < 12;
     }
 
     public void consumeAvailableFood() {
-        if (!this.method_20698() || this.getAvailableFood() == 0) {
+        if (!this.lacksFood() || this.getAvailableFood() == 0) {
             return;
         }
         for (int i = 0; i < this.getInventory().getInvSize(); ++i) {
@@ -495,13 +495,13 @@ VillagerDataContainer {
             for (int k = j = itemStack.getCount(); k > 0; --k) {
                 this.foodLevel = (byte)(this.foodLevel + integer);
                 this.getInventory().takeInvStack(i, 1);
-                if (this.method_20698()) continue;
+                if (this.lacksFood()) continue;
                 return;
             }
         }
     }
 
-    public int method_20594(PlayerEntity playerEntity) {
+    public int getReputation(PlayerEntity playerEntity) {
         return this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> true);
     }
 
@@ -509,7 +509,7 @@ VillagerDataContainer {
         this.foodLevel = (byte)(this.foodLevel - i);
     }
 
-    public void method_20697() {
+    public void eatForBreeding() {
         this.consumeAvailableFood();
         this.depleteFood(12);
     }
@@ -600,12 +600,12 @@ VillagerDataContainer {
         VillagerProfession villagerProfession = this.getVillagerData().getProfession();
         if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
             BasicInventory basicInventory = this.getInventory();
-            int i = basicInventory.getInvAmountOf(item);
+            int i = basicInventory.countInInv(item);
             if (i == 256) {
                 return;
             }
             if (i > 256) {
-                basicInventory.method_20631(item, i - 256);
+                basicInventory.poll(item, i - 256);
                 return;
             }
             this.sendPickup(itemEntity, itemStack.getCount());
@@ -628,18 +628,18 @@ VillagerDataContainer {
 
     private int getAvailableFood() {
         BasicInventory basicInventory = this.getInventory();
-        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.getInvAmountOf((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.countInInv((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
     }
 
-    private void method_20695() {
+    private void craftBread() {
         BasicInventory basicInventory = this.getInventory();
-        int i = basicInventory.getInvAmountOf(Items.WHEAT);
+        int i = basicInventory.countInInv(Items.WHEAT);
         int j = i / 3;
         if (j == 0) {
             return;
         }
         int k = j * 3;
-        basicInventory.method_20631(Items.WHEAT, k);
+        basicInventory.poll(Items.WHEAT, k);
         ItemStack itemStack = basicInventory.add(new ItemStack(Items.BREAD, j));
         if (!itemStack.isEmpty()) {
             this.dropStack(itemStack, 0.5f);
@@ -673,29 +673,29 @@ VillagerDataContainer {
         this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
         this.gossipStartTime = l;
         villagerEntity.gossipStartTime = l;
-        this.method_20688(l, 5);
+        this.summonGolem(l, 5);
     }
 
-    private void method_20696() {
+    private void decayGossip() {
         long l = this.world.getTime();
-        if (this.field_19357 == 0L) {
-            this.field_19357 = l;
+        if (this.lastGossipDecay == 0L) {
+            this.lastGossipDecay = l;
             return;
         }
-        if (l < this.field_19357 + 24000L) {
+        if (l < this.lastGossipDecay + 24000L) {
             return;
         }
-        this.gossip.method_20651();
-        this.field_19357 = l;
+        this.gossip.decay();
+        this.lastGossipDecay = l;
     }
 
-    public void method_20688(long l, int i) {
-        if (!this.method_20687(l)) {
+    public void summonGolem(long l, int i) {
+        if (!this.canSummonGolem(l)) {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
         List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
-        List list2 = list.stream().filter(villagerEntity -> villagerEntity.method_20687(l)).limit(5L).collect(Collectors.toList());
+        List list2 = list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(l)).limit(5L).collect(Collectors.toList());
         if (list2.size() < i) {
             return;
         }
@@ -703,14 +703,14 @@ VillagerDataContainer {
         if (ironGolemEntity == null) {
             return;
         }
-        list.forEach(villagerEntity -> villagerEntity.method_20692(l));
+        list.forEach(villagerEntity -> villagerEntity.setGolemLastSeenTime(l));
     }
 
-    private void method_20692(long l) {
+    private void setGolemLastSeenTime(long l) {
         this.brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, l);
     }
 
-    private boolean method_20694(long l) {
+    private boolean hasSeenGolemRecently(long l) {
         Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME);
         if (!optional.isPresent()) {
             return false;
@@ -719,15 +719,15 @@ VillagerDataContainer {
         return l - long_ <= 600L;
     }
 
-    public boolean method_20687(long l) {
+    public boolean canSummonGolem(long l) {
         VillagerData villagerData = this.getVillagerData();
         if (villagerData.getProfession() == VillagerProfession.NONE || villagerData.getProfession() == VillagerProfession.NITWIT) {
             return false;
         }
-        if (!this.method_20741(this.world.getTime())) {
+        if (!this.hasRecentlyWorkedAndSlept(this.world.getTime())) {
             return false;
         }
-        return !this.method_20694(l);
+        return !this.hasSeenGolemRecently(l);
     }
 
     @Nullable
@@ -790,14 +790,14 @@ VillagerDataContainer {
     @Override
     public void sleep(BlockPos blockPos) {
         super.sleep(blockPos);
-        this.brain.putMemory(MemoryModuleType.LAST_SLEPT, class_4316.method_20791(this.world.getTime()));
+        this.brain.putMemory(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
     }
 
-    private boolean method_20741(long l) {
-        Optional<class_4316> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
-        Optional<class_4316> optional2 = this.brain.getOptionalMemory(MemoryModuleType.LAST_WORKED_AT_POI);
+    private boolean hasRecentlyWorkedAndSlept(long l) {
+        Optional<Timestamp> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+        Optional<Timestamp> optional2 = this.brain.getOptionalMemory(MemoryModuleType.LAST_WORKED_AT_POI);
         if (optional.isPresent() && optional2.isPresent()) {
-            return l - optional.get().method_20790() < 24000L && l - optional2.get().method_20790() < 36000L;
+            return l - optional.get().getTime() < 24000L && l - optional2.get().getTime() < 36000L;
         }
         return false;
     }

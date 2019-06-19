@@ -677,12 +677,12 @@ CommandOutput {
         if (bl && bl2 || bl && bl3 || bl2 && bl3) {
             return Entity.method_17833(vec3d, box, world, entityContext, reusableStream);
         }
-        return Entity.method_20737(vec3d, box, world, entity);
+        ReusableStream<VoxelShape> reusableStream2 = new ReusableStream<VoxelShape>(Stream.concat(reusableStream.stream(), world.method_20812(entity, box.stretch(vec3d))));
+        return Entity.method_20737(vec3d, box, reusableStream2);
     }
 
-    public static Vec3d method_20737(Vec3d vec3d, Box box, ViewableWorld viewableWorld, @Nullable Entity entity) {
+    public static Vec3d method_20737(Vec3d vec3d, Box box, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
-        ReusableStream<VoxelShape> reusableStream = new ReusableStream<VoxelShape>(viewableWorld.getCollisionShapes(entity, box.stretch(vec3d), Collections.emptySet()));
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
