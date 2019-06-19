@@ -27,7 +27,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.method_8091(Items.field_8713, Items.field_8665);
+	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.field_8713, Items.field_8665);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -62,7 +62,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 		this.setLit(this.fuel > 0);
 		if (this.isLit() && this.random.nextInt(4) == 0) {
-			this.field_6002.addParticle(ParticleTypes.field_11237, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11237, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -74,8 +74,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (!damageSource.isExplosive() && this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.method_5706(Blocks.field_10181);
+		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.dropItem(Blocks.field_10181);
 		}
 	}
 
@@ -83,8 +83,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	protected void method_7513(BlockPos blockPos, BlockState blockState) {
 		super.method_7513(blockPos, blockState);
 		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
-		Vec3d vec3d = this.method_18798();
-		if (d > 1.0E-4 && method_17996(vec3d) > 0.001) {
+		Vec3d vec3d = this.getVelocity();
+		if (d > 1.0E-4 && squaredHorizontalLength(vec3d) > 0.001) {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
@@ -106,9 +106,9 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
-			this.method_18799(this.method_18798().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
+			this.setVelocity(this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
 		} else {
-			this.method_18799(this.method_18798().multiply(0.98, 0.0, 0.98));
+			this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
 		}
 
 		super.method_7525();
@@ -155,10 +155,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public BlockState method_7517() {
-		return Blocks.field_10181
-			.method_9564()
-			.method_11657(FurnaceBlock.field_11104, Direction.field_11043)
-			.method_11657(FurnaceBlock.field_11105, Boolean.valueOf(this.isLit()));
+	public BlockState getDefaultContainedBlock() {
+		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.field_11043).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
 	}
 }

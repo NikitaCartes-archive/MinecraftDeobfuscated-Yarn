@@ -54,12 +54,12 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getTeamNames() {
-		return this.networkHandler.method_2890().method_8428().getTeamNames();
+		return this.networkHandler.getWorld().getScoreboard().getTeamNames();
 	}
 
 	@Override
 	public Collection<Identifier> getSoundIds() {
-		return this.client.method_1483().getKeys();
+		return this.client.getSoundManager().getKeys();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public boolean hasPermissionLevel(int i) {
-		ClientPlayerEntity clientPlayerEntity = this.client.field_1724;
+		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		return clientPlayerEntity != null ? clientPlayerEntity.allowsPermissionLevel(i) : i == 0;
 	}
 
@@ -108,7 +108,7 @@ public class ClientCommandSource implements CommandSource {
 	public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
 		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
-			Vec3d vec3d = hitResult.method_17784();
+			Vec3d vec3d = hitResult.getPos();
 			return Collections.singleton(new CommandSource.RelativePosition(formatDouble(vec3d.x), formatDouble(vec3d.y), formatDouble(vec3d.z)));
 		} else {
 			return CommandSource.super.getPositionSuggestions();

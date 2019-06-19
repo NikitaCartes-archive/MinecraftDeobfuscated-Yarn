@@ -15,7 +15,7 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 
 	public WitherEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitherEntityModel<>(0.0F), 1.0F);
-		this.method_4046(new WitherArmorFeatureRenderer(this));
+		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
 	protected Identifier method_4153(WitherEntity witherEntity) {

@@ -150,7 +150,7 @@ public class TeleportCommand {
 			teleport(
 				serverCommandSource,
 				entity2,
-				(ServerWorld)entity.field_6002,
+				(ServerWorld)entity.world,
 				entity.x,
 				entity.y,
 				entity.z,
@@ -247,7 +247,7 @@ public class TeleportCommand {
 				((ServerPlayerEntity)entity).wakeUp(true, true, false);
 			}
 
-			if (serverWorld == entity.field_6002) {
+			if (serverWorld == entity.world) {
 				((ServerPlayerEntity)entity).networkHandler.teleportRequest(d, e, f, g, h, set);
 			} else {
 				((ServerPlayerEntity)entity).teleport(serverWorld, d, e, f, g, h);
@@ -258,14 +258,14 @@ public class TeleportCommand {
 			float i = MathHelper.wrapDegrees(g);
 			float j = MathHelper.wrapDegrees(h);
 			j = MathHelper.clamp(j, -90.0F, 90.0F);
-			if (serverWorld == entity.field_6002) {
+			if (serverWorld == entity.world) {
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 			} else {
 				entity.detach();
-				entity.field_6026 = serverWorld.field_9247.method_12460();
+				entity.dimension = serverWorld.dimension.getType();
 				Entity entity2 = entity;
-				entity = entity.getType().method_5883(serverWorld);
+				entity = entity.getType().create(serverWorld);
 				if (entity == null) {
 					return;
 				}
@@ -283,7 +283,7 @@ public class TeleportCommand {
 		}
 
 		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
-			entity.method_18799(entity.method_18798().multiply(1.0, 0.0, 1.0));
+			entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
 			entity.onGround = true;
 		}
 	}
@@ -296,7 +296,7 @@ public class TeleportCommand {
 		public LookTarget(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
 			this.targetEntity = entity;
 			this.targetEntityAnchor = entityAnchor;
-			this.targetPos = entityAnchor.method_9302(entity);
+			this.targetPos = entityAnchor.positionAt(entity);
 		}
 
 		public LookTarget(Vec3d vec3d) {
@@ -310,10 +310,10 @@ public class TeleportCommand {
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
 				} else {
-					entity.method_5702(serverCommandSource.getEntityAnchor(), this.targetPos);
+					entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 				}
 			} else {
-				entity.method_5702(serverCommandSource.getEntityAnchor(), this.targetPos);
+				entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 			}
 		}
 	}

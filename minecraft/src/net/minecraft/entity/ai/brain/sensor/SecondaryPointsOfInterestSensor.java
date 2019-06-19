@@ -18,7 +18,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 	}
 
 	protected void method_19617(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		DimensionType dimensionType = serverWorld.method_8597().method_12460();
+		DimensionType dimensionType = serverWorld.getDimension().getType();
 		BlockPos blockPos = new BlockPos(villagerEntity);
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 		int i = 4;
@@ -27,7 +27,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 			for (int k = -2; k <= 2; k++) {
 				for (int l = -4; l <= 4; l++) {
 					BlockPos blockPos2 = blockPos.add(j, k, l);
-					if (villagerEntity.getVillagerData().getProfession().getSecondaryJobSites().contains(serverWorld.method_8320(blockPos2).getBlock())) {
+					if (villagerEntity.getVillagerData().getProfession().getSecondaryJobSites().contains(serverWorld.getBlockState(blockPos2).getBlock())) {
 						list.add(GlobalPos.create(dimensionType, blockPos2));
 					}
 				}

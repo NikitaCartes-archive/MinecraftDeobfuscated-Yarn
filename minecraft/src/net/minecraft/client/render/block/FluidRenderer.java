@@ -26,30 +26,30 @@ import net.minecraft.world.ExtendedBlockView;
 
 @Environment(EnvType.CLIENT)
 public class FluidRenderer {
-	private final Sprite[] field_4165 = new Sprite[2];
-	private final Sprite[] field_4166 = new Sprite[2];
-	private Sprite field_4164;
+	private final Sprite[] lavaSprites = new Sprite[2];
+	private final Sprite[] waterSprites = new Sprite[2];
+	private Sprite waterOverlaySprite;
 
 	protected void onResourceReload() {
-		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().method_1549();
-		this.field_4165[0] = MinecraftClient.getInstance().method_1554().getBlockStateMaps().method_3335(Blocks.field_10164.method_9564()).getSprite();
-		this.field_4165[1] = spriteAtlasTexture.method_4608(ModelLoader.LAVA_FLOW);
-		this.field_4166[0] = MinecraftClient.getInstance().method_1554().getBlockStateMaps().method_3335(Blocks.field_10382.method_9564()).getSprite();
-		this.field_4166[1] = spriteAtlasTexture.method_4608(ModelLoader.WATER_FLOW);
-		this.field_4164 = spriteAtlasTexture.method_4608(ModelLoader.WATER_OVERLAY);
+		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
+		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.field_10164.getDefaultState()).getSprite();
+		this.lavaSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.LAVA_FLOW);
+		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.field_10382.getDefaultState()).getSprite();
+		this.waterSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.WATER_FLOW);
+		this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.WATER_OVERLAY);
 	}
 
 	private static boolean isSameFluid(BlockView blockView, BlockPos blockPos, Direction direction, FluidState fluidState) {
 		BlockPos blockPos2 = blockPos.offset(direction);
-		FluidState fluidState2 = blockView.method_8316(blockPos2);
+		FluidState fluidState2 = blockView.getFluidState(blockPos2);
 		return fluidState2.getFluid().matchesType(fluidState.getFluid());
 	}
 
 	private static boolean method_3344(BlockView blockView, BlockPos blockPos, Direction direction, float f) {
 		BlockPos blockPos2 = blockPos.offset(direction);
-		BlockState blockState = blockView.method_8320(blockPos2);
+		BlockState blockState = blockView.getBlockState(blockPos2);
 		if (blockState.isOpaque()) {
-			VoxelShape voxelShape = VoxelShapes.method_1081(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
+			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
 			VoxelShape voxelShape2 = blockState.method_11615(blockView, blockPos2);
 			return VoxelShapes.method_1083(voxelShape, voxelShape2, direction);
 		} else {
@@ -59,7 +59,7 @@ public class FluidRenderer {
 
 	public boolean tesselate(ExtendedBlockView extendedBlockView, BlockPos blockPos, BufferBuilder bufferBuilder, FluidState fluidState) {
 		boolean bl = fluidState.matches(FluidTags.field_15518);
-		Sprite[] sprites = bl ? this.field_4165 : this.field_4166;
+		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(extendedBlockView, blockPos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
@@ -93,7 +93,7 @@ public class FluidRenderer {
 				o -= 0.001F;
 				p -= 0.001F;
 				q -= 0.001F;
-				Vec3d vec3d = fluidState.method_15758(extendedBlockView, blockPos);
+				Vec3d vec3d = fluidState.getVelocity(extendedBlockView, blockPos);
 				float t;
 				float v;
 				float x;
@@ -229,9 +229,9 @@ public class FluidRenderer {
 					BlockPos blockPos2 = blockPos.offset(direction);
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
-						Block block = extendedBlockView.method_8320(blockPos2).getBlock();
+						Block block = extendedBlockView.getBlockState(blockPos2).getBlock();
 						if (block == Blocks.field_10033 || block instanceof StainedGlassBlock) {
-							sprite2 = this.field_4164;
+							sprite2 = this.waterOverlaySprite;
 						}
 					}
 
@@ -251,7 +251,7 @@ public class FluidRenderer {
 					bufferBuilder.vertex(as, e + (double)xx, au).color(bb, bc, bd, 1.0F).texture((double)aw, (double)ak).texture(ay, az).next();
 					bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0F).texture((double)aw, (double)al).texture(ay, az).next();
 					bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0F).texture((double)av, (double)al).texture(ay, az).next();
-					if (sprite2 != this.field_4164) {
+					if (sprite2 != this.waterOverlaySprite) {
 						bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0F).texture((double)av, (double)al).texture(ay, az).next();
 						bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0F).texture((double)aw, (double)al).texture(ay, az).next();
 						bufferBuilder.vertex(as, e + (double)xx, au).color(bb, bc, bd, 1.0F).texture((double)aw, (double)ak).texture(ay, az).next();
@@ -280,11 +280,11 @@ public class FluidRenderer {
 
 		for (int j = 0; j < 4; j++) {
 			BlockPos blockPos2 = blockPos.add(-(j & 1), 0, -(j >> 1 & 1));
-			if (blockView.method_8316(blockPos2.up()).getFluid().matchesType(fluid)) {
+			if (blockView.getFluidState(blockPos2.up()).getFluid().matchesType(fluid)) {
 				return 1.0F;
 			}
 
-			FluidState fluidState = blockView.method_8316(blockPos2);
+			FluidState fluidState = blockView.getFluidState(blockPos2);
 			if (fluidState.getFluid().matchesType(fluid)) {
 				float g = fluidState.getHeight(blockView, blockPos2);
 				if (g >= 0.8F) {
@@ -294,7 +294,7 @@ public class FluidRenderer {
 					f += g;
 					i++;
 				}
-			} else if (!blockView.method_8320(blockPos2).method_11620().isSolid()) {
+			} else if (!blockView.getBlockState(blockPos2).getMaterial().isSolid()) {
 				i++;
 			}
 		}

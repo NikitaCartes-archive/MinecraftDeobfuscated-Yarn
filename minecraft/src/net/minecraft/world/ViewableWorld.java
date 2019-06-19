@@ -28,7 +28,7 @@ import net.minecraft.world.dimension.Dimension;
 
 public interface ViewableWorld extends ExtendedBlockView {
 	default boolean isAir(BlockPos blockPos) {
-		return this.method_8320(blockPos).isAir();
+		return this.getBlockState(blockPos).isAir();
 	}
 
 	default boolean method_8626(BlockPos blockPos) {
@@ -40,8 +40,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 				return false;
 			} else {
 				for (BlockPos var4 = blockPos2.down(); var4.getY() > blockPos.getY(); var4 = var4.down()) {
-					BlockState blockState = this.method_8320(var4);
-					if (blockState.getLightSubtracted(this, var4) > 0 && !blockState.method_11620().isLiquid()) {
+					BlockState blockState = this.getBlockState(var4);
+					if (blockState.getLightSubtracted(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
 					}
 				}
@@ -54,7 +54,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	int getLightLevel(BlockPos blockPos, int i);
 
 	@Nullable
-	Chunk method_8402(int i, int j, ChunkStatus chunkStatus, boolean bl);
+	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	@Deprecated
 	boolean isChunkLoaded(int i, int j);
@@ -64,69 +64,73 @@ public interface ViewableWorld extends ExtendedBlockView {
 	int getTop(Heightmap.Type type, int i, int j);
 
 	default float getBrightness(BlockPos blockPos) {
-		return this.method_8597().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
+		return this.getDimension().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
 	}
 
 	int getAmbientDarkness();
 
-	WorldBorder method_8621();
+	WorldBorder getWorldBorder();
 
-	boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape);
+	boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape);
 
 	default int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
-		return this.method_8320(blockPos).getStrongRedstonePower(this, blockPos, direction);
+		return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
 	}
 
 	boolean isClient();
 
 	int getSeaLevel();
 
-	default Chunk method_16955(BlockPos blockPos) {
-		return this.method_8392(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+	default Chunk getChunk(BlockPos blockPos) {
+		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
-	default Chunk method_8392(int i, int j) {
-		return this.method_8402(i, j, ChunkStatus.field_12803, true);
+	default Chunk getChunk(int i, int j) {
+		return this.getChunk(i, j, ChunkStatus.field_12803, true);
 	}
 
-	default Chunk method_16956(int i, int j, ChunkStatus chunkStatus) {
-		return this.method_8402(i, j, chunkStatus, true);
+	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
+		return this.getChunk(i, j, chunkStatus, true);
 	}
 
-	default ChunkStatus method_20311() {
+	default ChunkStatus getLeastChunkStatusForCollisionCalculation() {
 		return ChunkStatus.field_12798;
 	}
 
-	default boolean method_8628(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
-		VoxelShape voxelShape = blockState.method_16337(this, blockPos, entityContext);
-		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+	default boolean canPlace(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
+		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, entityContext);
+		return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
 	default boolean intersectsEntities(Entity entity) {
-		return this.method_8611(entity, VoxelShapes.method_1078(entity.method_5829()));
+		return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
 	}
 
-	default boolean method_18026(Box box) {
-		return this.method_8590(null, box, Collections.emptySet());
+	default boolean doesNotCollide(Box box) {
+		return this.doesNotCollide(null, box, Collections.emptySet());
 	}
 
 	default boolean doesNotCollide(Entity entity) {
-		return this.method_8590(entity, entity.method_5829(), Collections.emptySet());
+		return this.doesNotCollide(entity, entity.getBoundingBox(), Collections.emptySet());
 	}
 
-	default boolean method_8587(Entity entity, Box box) {
-		return this.method_8590(entity, box, Collections.emptySet());
+	default boolean doesNotCollide(Entity entity, Box box) {
+		return this.doesNotCollide(entity, box, Collections.emptySet());
 	}
 
-	default boolean method_8590(@Nullable Entity entity, Box box, Set<Entity> set) {
-		return this.method_8600(entity, box, set).allMatch(VoxelShape::isEmpty);
+	default boolean doesNotCollide(@Nullable Entity entity, Box box, Set<Entity> set) {
+		return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
 	}
 
 	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
 		return Stream.empty();
 	}
 
-	default Stream<VoxelShape> method_8600(@Nullable Entity entity, Box box, Set<Entity> set) {
+	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, Box box, Set<Entity> set) {
+		return Streams.concat(this.method_20812(entity, box), this.method_20743(entity, box, set));
+	}
+
+	default Stream<VoxelShape> method_20812(@Nullable Entity entity, Box box) {
 		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
 		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
 		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -136,16 +140,16 @@ public interface ViewableWorld extends ExtendedBlockView {
 		final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
 		final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
 		final BlockPos.Mutable mutable = new BlockPos.Mutable();
-		final VoxelShape voxelShape = VoxelShapes.method_1078(box);
-		return Streams.concat(StreamSupport.stream(new AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280) {
+		final VoxelShape voxelShape = VoxelShapes.cuboid(box);
+		return StreamSupport.stream(new AbstractSpliterator<VoxelShape>(Long.MAX_VALUE, 1280) {
 			boolean field_19296 = entity == null;
 
 			public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
 				if (!this.field_19296) {
 					this.field_19296 = true;
-					VoxelShape voxelShape = ViewableWorld.this.method_8621().method_17903();
-					boolean bl = VoxelShapes.method_1074(voxelShape, VoxelShapes.method_1078(entity.method_5829().contract(1.0E-7)), BooleanBiFunction.AND);
-					boolean bl2 = VoxelShapes.method_1074(voxelShape, VoxelShapes.method_1078(entity.method_5829().expand(1.0E-7)), BooleanBiFunction.AND);
+					VoxelShape voxelShape = ViewableWorld.this.getWorldBorder().asVoxelShape();
+					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
+					boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
 					if (!bl && bl2) {
 						consumer.accept(voxelShape);
 						return true;
@@ -160,14 +164,14 @@ public interface ViewableWorld extends ExtendedBlockView {
 					if (l != 3) {
 						int m = i >> 4;
 						int n = k >> 4;
-						Chunk chunk = ViewableWorld.this.method_8402(m, n, ViewableWorld.this.method_20311(), false);
+						Chunk chunk = ViewableWorld.this.getChunk(m, n, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false);
 						if (chunk != null) {
 							mutable.set(i, j, k);
-							BlockState blockState = chunk.method_8320(mutable);
+							BlockState blockState = chunk.getBlockState(mutable);
 							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.field_10008)) {
-								VoxelShape voxelShape2 = blockState.method_16337(ViewableWorld.this, mutable, entityContext);
+								VoxelShape voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
-								if (VoxelShapes.method_1074(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
+								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
 									consumer.accept(voxelShape3);
 									return true;
 								}
@@ -178,14 +182,14 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 				return false;
 			}
-		}, false), this.method_20743(entity, box, set));
+		}, false);
 	}
 
 	default boolean isWaterAt(BlockPos blockPos) {
-		return this.method_8316(blockPos).matches(FluidTags.field_15517);
+		return this.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
-	default boolean method_8599(Box box) {
+	default boolean intersectsFluid(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -197,8 +201,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.method_8320(pooledMutable.method_10113(o, p, q));
-						if (!blockState.method_11618().isEmpty()) {
+						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+						if (!blockState.getFluidState().isEmpty()) {
 							return true;
 						}
 					}
@@ -251,5 +255,5 @@ public interface ViewableWorld extends ExtendedBlockView {
 		}
 	}
 
-	Dimension method_8597();
+	Dimension getDimension();
 }

@@ -17,14 +17,14 @@ public class EndGatewayBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new EndGatewayBlockEntity();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
 			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();
 
@@ -51,7 +51,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 }

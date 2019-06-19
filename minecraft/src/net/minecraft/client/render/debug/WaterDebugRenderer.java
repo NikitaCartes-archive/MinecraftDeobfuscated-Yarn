@@ -21,12 +21,12 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.field_1773.getCamera();
+		Camera camera = this.client.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		BlockPos blockPos = this.client.field_1724.getBlockPos();
-		ViewableWorld viewableWorld = this.client.field_1724.field_6002;
+		BlockPos blockPos = this.client.player.getBlockPos();
+		ViewableWorld viewableWorld = this.client.player.world;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -36,7 +36,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.lineWidth(6.0F);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-			FluidState fluidState = viewableWorld.method_8316(blockPos2);
+			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2));
 				DebugRenderer.method_19695(
@@ -58,7 +58,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		for (BlockPos blockPos2x : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-			FluidState fluidState = viewableWorld.method_8316(blockPos2x);
+			FluidState fluidState = viewableWorld.getFluidState(blockPos2x);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				DebugRenderer.method_3714(
 					String.valueOf(fluidState.getLevel()),

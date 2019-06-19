@@ -68,7 +68,7 @@ public class CartographyTableContainer extends Container {
 					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
 						if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.inventory.getInvStack(0));
+							ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableContainer.this.inventory.getInvStack(0));
 							if (itemStack2x != null) {
 								itemStack2x.setCount(1);
 								return itemStack2x;
@@ -90,7 +90,7 @@ public class CartographyTableContainer extends Container {
 
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-					itemStack.getItem().method_7843(itemStack, playerEntity.field_6002, playerEntity);
+					itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
 					blockContext.run(
 						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
@@ -112,7 +112,7 @@ public class CartographyTableContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_16336);
+		return canUse(this.context, playerEntity, Blocks.field_16336);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class CartographyTableContainer extends Container {
 	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			Item item = itemStack2.getItem();
-			MapState mapState = FilledMapItem.method_7997(itemStack, world);
+			MapState mapState = FilledMapItem.getMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
 				if (item == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
@@ -181,7 +181,7 @@ public class CartographyTableContainer extends Container {
 			if (i == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2x = FilledMapItem.method_17442(world, this.inventory.getInvStack(0));
+						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
 						if (itemStack2x != null) {
 							itemStack2x.setCount(1);
 							return itemStack2x;
@@ -191,7 +191,7 @@ public class CartographyTableContainer extends Container {
 					})).orElse(itemStack2);
 				}
 
-				item.method_7843(itemStack3, playerEntity.field_6002, playerEntity);
+				item.onCraft(itemStack3, playerEntity.world, playerEntity);
 				if (!this.insertItem(itemStack3, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -239,6 +239,6 @@ public class CartographyTableContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.resultSlot.removeInvStack(2);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, playerEntity.field_6002, this.inventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

@@ -45,8 +45,8 @@ public class BookScreen extends Screen {
 	private int pageIndex;
 	private List<Text> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
-	private PageTurnWidget field_17122;
-	private PageTurnWidget field_17123;
+	private PageTurnWidget lastPageButton;
+	private PageTurnWidget nextPageButton;
 	private final boolean pageTurnSound;
 
 	public BookScreen(BookScreen.Contents contents) {
@@ -93,14 +93,14 @@ public class BookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(null)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
 	}
 
 	protected void addPageButtons() {
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.field_17122 = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
-		this.field_17123 = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
+		this.lastPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
+		this.nextPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
 		this.updatePageButtons();
 	}
 
@@ -125,8 +125,8 @@ public class BookScreen extends Screen {
 	}
 
 	private void updatePageButtons() {
-		this.field_17122.visible = this.pageIndex < this.getPageCount() - 1;
-		this.field_17123.visible = this.pageIndex > 0;
+		this.lastPageButton.visible = this.pageIndex < this.getPageCount() - 1;
+		this.nextPageButton.visible = this.pageIndex > 0;
 	}
 
 	@Override
@@ -136,10 +136,10 @@ public class BookScreen extends Screen {
 		} else {
 			switch (i) {
 				case 266:
-					this.field_17123.onPress();
+					this.nextPageButton.onPress();
 					return true;
 				case 267:
-					this.field_17122.onPress();
+					this.lastPageButton.onPress();
 					return true;
 				default:
 					return false;
@@ -151,7 +151,7 @@ public class BookScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.method_1531().bindTexture(BOOK_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.blit(k, 2, 0, 0, 192, 192);
@@ -212,7 +212,7 @@ public class BookScreen extends Screen {
 		} else {
 			boolean bl = super.handleComponentClicked(text);
 			if (bl && clickEvent.getAction() == ClickEvent.Action.field_11750) {
-				this.minecraft.method_1507(null);
+				this.minecraft.openScreen(null);
 			}
 
 			return bl;
@@ -236,7 +236,7 @@ public class BookScreen extends Screen {
 
 						for (Text text2 : text) {
 							if (text2 instanceof LiteralText) {
-								m += this.minecraft.field_1772.getStringWidth(text2.asFormattedString());
+								m += this.minecraft.textRenderer.getStringWidth(text2.asFormattedString());
 								if (m > i) {
 									return text2;
 								}

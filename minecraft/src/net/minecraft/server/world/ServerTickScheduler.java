@@ -116,10 +116,10 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		int j = i + 16 + 2;
 		int k = (chunkPos.z << 4) - 2;
 		int l = k + 16 + 2;
-		return this.method_8672(new MutableIntBoundingBox(i, 0, k, j, 256, l), bl, bl2);
+		return this.getScheduledTicks(new MutableIntBoundingBox(i, 0, k, j, 256, l), bl, bl2);
 	}
 
-	public List<ScheduledTick<T>> method_8672(MutableIntBoundingBox mutableIntBoundingBox, boolean bl, boolean bl2) {
+	public List<ScheduledTick<T>> getScheduledTicks(MutableIntBoundingBox mutableIntBoundingBox, boolean bl, boolean bl2) {
 		List<ScheduledTick<T>> list = this.method_20596(null, this.field_19341, mutableIntBoundingBox, bl);
 		if (bl && list != null) {
 			this.ticksScheduled.removeAll(list);
@@ -161,12 +161,12 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		return list;
 	}
 
-	public void method_8666(MutableIntBoundingBox mutableIntBoundingBox, BlockPos blockPos) {
-		for (ScheduledTick<T> scheduledTick : this.method_8672(mutableIntBoundingBox, false, false)) {
+	public void copyScheduledTicks(MutableIntBoundingBox mutableIntBoundingBox, BlockPos blockPos) {
+		for (ScheduledTick<T> scheduledTick : this.getScheduledTicks(mutableIntBoundingBox, false, false)) {
 			if (mutableIntBoundingBox.contains(scheduledTick.pos)) {
 				BlockPos blockPos2 = scheduledTick.pos.add(blockPos);
 				T object = scheduledTick.getObject();
-				this.method_20514(new ScheduledTick<>(blockPos2, object, scheduledTick.time, scheduledTick.field_9320));
+				this.method_20514(new ScheduledTick<>(blockPos2, object, scheduledTick.time, scheduledTick.priority));
 			}
 		}
 	}
@@ -186,7 +186,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 			compoundTag.putInt("y", scheduledTick.pos.getY());
 			compoundTag.putInt("z", scheduledTick.pos.getZ());
 			compoundTag.putInt("t", (int)(scheduledTick.time - l));
-			compoundTag.putInt("p", scheduledTick.field_9320.getPriorityIndex());
+			compoundTag.putInt("p", scheduledTick.priority.getPriorityIndex());
 			listTag.add(compoundTag);
 		}
 
@@ -199,7 +199,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 		if (!this.invalidObjPredicate.test(object)) {
 			this.method_20514(new ScheduledTick<>(blockPos, object, (long)i + this.world.getTime(), taskPriority));
 		}

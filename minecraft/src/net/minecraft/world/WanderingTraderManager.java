@@ -27,7 +27,7 @@ public class WanderingTraderManager {
 	public WanderingTraderManager(ServerWorld serverWorld) {
 		this.world = serverWorld;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = serverWorld.method_8401();
+		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.field_17729 = levelProperties.getWanderingTraderSpawnDelay();
 		this.field_17730 = levelProperties.getWanderingTraderSpawnChance();
 		if (this.field_17729 == 0 && this.field_17730 == 0) {
@@ -41,7 +41,7 @@ public class WanderingTraderManager {
 	public void tick() {
 		if (--this.field_17728 <= 0) {
 			this.field_17728 = 1200;
-			LevelProperties levelProperties = this.world.method_8401();
+			LevelProperties levelProperties = this.world.getLevelProperties();
 			this.field_17729 -= 1200;
 			levelProperties.setWanderingTraderSpawnDelay(this.field_17729);
 			if (this.field_17729 <= 0) {
@@ -76,18 +76,17 @@ public class WanderingTraderManager {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
 			if (blockPos3 != null) {
-				if (this.world.method_8310(blockPos3) == Biomes.field_9473) {
+				if (this.world.getBiome(blockPos3) == Biomes.field_9473) {
 					return false;
 				}
 
-				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713
-					.method_5899(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
 						this.method_18016(wanderingTraderEntity, 4);
 					}
 
-					this.world.method_8401().setWanderingTraderId(wanderingTraderEntity.getUuid());
+					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
 					wanderingTraderEntity.setWanderTarget(blockPos2);
 					wanderingTraderEntity.setWalkTarget(blockPos2, 16);
@@ -102,7 +101,7 @@ public class WanderingTraderManager {
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.method_5899(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 			}

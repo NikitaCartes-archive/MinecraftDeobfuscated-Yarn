@@ -41,7 +41,7 @@ public class WanderAroundGoal extends Goal {
 				}
 			}
 
-			Vec3d vec3d = this.method_6302();
+			Vec3d vec3d = this.getWanderTarget();
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -55,8 +55,8 @@ public class WanderAroundGoal extends Goal {
 	}
 
 	@Nullable
-	protected Vec3d method_6302() {
-		return PathfindingUtil.method_6375(this.mob, 10, 7);
+	protected Vec3d getWanderTarget() {
+		return PathfindingUtil.findTarget(this.mob, 10, 7);
 	}
 
 	@Override

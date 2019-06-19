@@ -77,7 +77,7 @@ public class UpgradeData {
 
 	private static void method_12352(WorldChunk worldChunk, EightWayDirection eightWayDirection) {
 		World world = worldChunk.getWorld();
-		if (worldChunk.method_12003().sides.remove(eightWayDirection)) {
+		if (worldChunk.getUpgradeData().sides.remove(eightWayDirection)) {
 			Set<Direction> set = eightWayDirection.getDirections();
 			int i = 0;
 			int j = 15;
@@ -95,7 +95,7 @@ public class UpgradeData {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (BlockPos blockPos : BlockPos.iterate(k, 0, m, l, world.getHeight() - 1, n)) {
-				BlockState blockState = world.method_8320(blockPos);
+				BlockState blockState = world.getBlockState(blockPos);
 				BlockState blockState2 = blockState;
 
 				for (Direction direction : directions) {
@@ -103,14 +103,14 @@ public class UpgradeData {
 					blockState2 = method_12351(blockState2, direction, world, blockPos, mutable);
 				}
 
-				Block.method_9611(blockState, blockState2, world, blockPos, 18);
+				Block.replaceBlock(blockState, blockState2, world, blockPos, 18);
 			}
 		}
 	}
 
 	private static BlockState method_12351(BlockState blockState, Direction direction, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		return ((UpgradeData.class_2844)field_12953.getOrDefault(blockState.getBlock(), UpgradeData.class_2845.DEFAULT))
-			.method_12358(blockState, direction, iWorld.method_8320(blockPos2), iWorld, blockPos, blockPos2);
+			.method_12358(blockState, direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 	}
 
 	private void method_12348(WorldChunk worldChunk) {
@@ -122,12 +122,12 @@ public class UpgradeData {
 			IWorld iWorld = worldChunk.getWorld();
 
 			for (int i = 0; i < 16; i++) {
-				ChunkSection chunkSection = worldChunk.method_12006()[i];
+				ChunkSection chunkSection = worldChunk.getSectionArray()[i];
 				int[] is = this.indices[i];
 				this.indices[i] = null;
 				if (chunkSection != null && is != null && is.length > 0) {
 					Direction[] directions = Direction.values();
-					PalettedContainer<BlockState> palettedContainer = chunkSection.method_12265();
+					PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
 
 					for (int j : is) {
 						int k = j & 15;
@@ -144,7 +144,7 @@ public class UpgradeData {
 							}
 						}
 
-						Block.method_9611(blockState, blockState2, iWorld, pooledMutable, 18);
+						Block.replaceBlock(blockState, blockState2, iWorld, pooledMutable, 18);
 					}
 				}
 			}
@@ -249,7 +249,7 @@ public class UpgradeData {
 		DEFAULT {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				return blockState.getStateForNeighborUpdate(direction, iWorld.method_8320(blockPos2), iWorld, blockPos, blockPos2);
+				return blockState.getStateForNeighborUpdate(direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 			}
 		},
 		CHEST(Blocks.field_10034, Blocks.field_10380) {
@@ -257,21 +257,21 @@ public class UpgradeData {
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if (blockState2.getBlock() == blockState.getBlock()
 					&& direction.getAxis().isHorizontal()
-					&& blockState.method_11654(ChestBlock.field_10770) == ChestType.field_12569
-					&& blockState2.method_11654(ChestBlock.field_10770) == ChestType.field_12569) {
-					Direction direction2 = blockState.method_11654(ChestBlock.field_10768);
-					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.method_11654(ChestBlock.field_10768)) {
+					&& blockState.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569
+					&& blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569) {
+					Direction direction2 = blockState.get(ChestBlock.FACING);
+					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.field_12574 : ChestType.field_12571;
-						iWorld.method_8652(blockPos2, blockState2.method_11657(ChestBlock.field_10770, chestType.getOpposite()), 18);
+						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
 						if (direction2 == Direction.field_11043 || direction2 == Direction.field_11034) {
-							BlockEntity blockEntity = iWorld.method_8321(blockPos);
-							BlockEntity blockEntity2 = iWorld.method_8321(blockPos2);
+							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+							BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos2);
 							if (blockEntity instanceof ChestBlockEntity && blockEntity2 instanceof ChestBlockEntity) {
 								ChestBlockEntity.copyInventory((ChestBlockEntity)blockEntity, (ChestBlockEntity)blockEntity2);
 							}
 						}
 
-						return blockState.method_11657(ChestBlock.field_10770, chestType);
+						return blockState.with(ChestBlock.CHEST_TYPE, chestType);
 					}
 				}
 
@@ -283,9 +283,9 @@ public class UpgradeData {
 
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, iWorld.method_8320(blockPos2), iWorld, blockPos, blockPos2);
+				BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 				if (blockState != blockState3) {
-					int i = (Integer)blockState3.method_11654(Properties.field_12541);
+					int i = (Integer)blockState3.get(Properties.DISTANCE_1_7);
 					List<ObjectSet<BlockPos>> list = (List<ObjectSet<BlockPos>>)this.field_12964.get();
 					if (list.isEmpty()) {
 						for (int j = 0; j < 7; j++) {
@@ -310,14 +310,14 @@ public class UpgradeData {
 					ObjectSet<BlockPos> objectSet2 = (ObjectSet<BlockPos>)list.get(i);
 
 					for (BlockPos blockPos : objectSet) {
-						BlockState blockState = iWorld.method_8320(blockPos);
-						if ((Integer)blockState.method_11654(Properties.field_12541) >= j) {
-							iWorld.method_8652(blockPos, blockState.method_11657(Properties.field_12541, Integer.valueOf(j)), 18);
+						BlockState blockState = iWorld.getBlockState(blockPos);
+						if ((Integer)blockState.get(Properties.DISTANCE_1_7) >= j) {
+							iWorld.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), 18);
 							if (i != 7) {
 								for (Direction direction : field_12959) {
 									mutable.set(blockPos).setOffset(direction);
-									BlockState blockState2 = iWorld.method_8320(mutable);
-									if (blockState2.method_11570(Properties.field_12541) && (Integer)blockState.method_11654(Properties.field_12541) > i) {
+									BlockState blockState2 = iWorld.getBlockState(mutable);
+									if (blockState2.contains(Properties.DISTANCE_1_7) && (Integer)blockState.get(Properties.DISTANCE_1_7) > i) {
 										objectSet2.add(mutable.toImmutable());
 									}
 								}
@@ -332,10 +332,10 @@ public class UpgradeData {
 		STEM_BLOCK(Blocks.field_10168, Blocks.field_9984) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				if ((Integer)blockState.method_11654(StemBlock.field_11584) == 7) {
-					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).method_10694();
+				if ((Integer)blockState.get(StemBlock.AGE) == 7) {
+					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
 					if (blockState2.getBlock() == gourdBlock) {
-						return gourdBlock.getAttachedStem().method_9564().method_11657(HorizontalFacingBlock.field_11177, direction);
+						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
 					}
 				}
 

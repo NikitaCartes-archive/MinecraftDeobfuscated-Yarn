@@ -59,14 +59,14 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	protected void method_18982(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		mobEntity.getBrain().putMemory(MemoryModuleType.field_18449, this.field_18369);
-		mobEntity.getNavigation().method_6334(this.field_18369, (double)this.field_18371);
+		mobEntity.getNavigation().startMovingAlong(this.field_18369, (double)this.field_18371);
 		this.field_18964 = serverWorld.getRandom().nextInt(10);
 	}
 
 	protected void method_18983(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		this.field_18964--;
 		if (this.field_18964 <= 0) {
-			Path path = mobEntity.getNavigation().method_6345();
+			Path path = mobEntity.getNavigation().getCurrentPath();
 			Brain<?> brain = mobEntity.getBrain();
 			if (this.field_18369 != path) {
 				this.field_18369 = path;
@@ -85,7 +85,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget, long l) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
-		this.field_18369 = mobEntity.getNavigation().method_6348(blockPos);
+		this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos);
 		this.field_18371 = walkTarget.getSpeed();
 		if (!this.method_18980(mobEntity, walkTarget)) {
 			Brain<?> brain = mobEntity.getBrain();
@@ -102,7 +102,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 			Vec3d vec3d = PathfindingUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
-				this.field_18369 = mobEntity.getNavigation().method_6352(vec3d.x, vec3d.y, vec3d.z);
+				this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z);
 				return this.field_18369 != null;
 			}
 		}

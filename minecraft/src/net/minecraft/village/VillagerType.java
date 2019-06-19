@@ -71,7 +71,7 @@ public interface VillagerType {
 		});
 	}
 
-	static VillagerType method_16930(Biome biome) {
+	static VillagerType forBiome(Biome biome) {
 		return (VillagerType)BIOME_TO_TYPE.getOrDefault(biome, PLAINS);
 	}
 }

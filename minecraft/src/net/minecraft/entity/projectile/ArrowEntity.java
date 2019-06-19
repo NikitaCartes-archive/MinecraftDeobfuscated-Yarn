@@ -87,7 +87,7 @@ public class ArrowEntity extends ProjectileEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			if (this.inGround) {
 				if (this.inGroundTime % 5 == 0) {
 					this.spawnParticles(1);
@@ -96,7 +96,7 @@ public class ArrowEntity extends ProjectileEntity {
 				this.spawnParticles(2);
 			}
 		} else if (this.inGround && this.inGroundTime != 0 && !this.effects.isEmpty() && this.inGroundTime >= 600) {
-			this.field_6002.sendEntityStatus(this, (byte)0);
+			this.world.sendEntityStatus(this, (byte)0);
 			this.potion = Potions.field_8984;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);
@@ -111,7 +111,7 @@ public class ArrowEntity extends ProjectileEntity {
 			double f = (double)(j >> 0 & 0xFF) / 255.0;
 
 			for (int k = 0; k < i; k++) {
-				this.field_6002
+				this.world
 					.addParticle(
 						ParticleTypes.field_11226,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
@@ -224,7 +224,7 @@ public class ArrowEntity extends ProjectileEntity {
 				double f = (double)(i >> 0 & 0xFF) / 255.0;
 
 				for (int j = 0; j < 20; j++) {
-					this.field_6002
+					this.world
 						.addParticle(
 							ParticleTypes.field_11226,
 							this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),

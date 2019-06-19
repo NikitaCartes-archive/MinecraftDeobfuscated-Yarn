@@ -317,7 +317,7 @@ public class ScoreboardCommand {
 		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 
 		for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-			if (scoreboardObjective.method_1116() == ScoreboardCriterion.field_1462) {
+			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462) {
 				boolean bl = false;
 
 				for (String string : collection) {
@@ -385,7 +385,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeEnable(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		if (scoreboardObjective.method_1116() != ScoreboardCriterion.field_1462) {
+		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.field_1462) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
@@ -613,7 +613,7 @@ public class ScoreboardCommand {
 		} else if (string.length() > 16) {
 			throw ObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
 		} else {
-			scoreboard.method_1168(string, scoreboardCriterion, text, scoreboardCriterion.getCriterionType());
+			scoreboard.addObjective(string, scoreboardCriterion, text, scoreboardCriterion.getCriterionType());
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 			serverCommandSource.sendFeedback(new TranslatableText("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
 			return scoreboard.getObjectives().size();

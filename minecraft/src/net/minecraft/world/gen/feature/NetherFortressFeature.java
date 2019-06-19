@@ -42,7 +42,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 			return false;
 		} else {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			return chunkGenerator.method_12097(biome, Feature.field_13569);
+			return chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
 			this.children.add(start);
 			start.method_14918(start, this.children, this.random);

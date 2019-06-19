@@ -39,7 +39,7 @@ public class Timer<T> {
 
 			this.events.remove();
 			this.eventsByName.remove(event.name);
-			event.callback.method_974(object, this, l);
+			event.callback.call(object, this, l);
 		}
 	}
 

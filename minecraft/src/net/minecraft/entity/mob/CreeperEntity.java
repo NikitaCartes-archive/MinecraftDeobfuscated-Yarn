@@ -166,7 +166,7 @@ public class CreeperEntity extends HostileEntity {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
 				creeperEntity.onHeadDropped();
-				this.method_5706(Items.CREEPER_HEAD);
+				this.dropItem(Items.CREEPER_HEAD);
 			}
 		}
 	}
@@ -203,10 +203,9 @@ public class CreeperEntity extends HostileEntity {
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8884) {
-			this.field_6002
-				.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+			this.world.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			playerEntity.swingHand(hand);
-			if (!this.field_6002.isClient) {
+			if (!this.world.isClient) {
 				this.setIgnited();
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				return true;
@@ -217,13 +216,13 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	private void explode() {
-		if (!this.field_6002.isClient) {
-			Explosion.DestructionType destructionType = this.field_6002.getGameRules().getBoolean(GameRules.field_19388)
+		if (!this.world.isClient) {
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.field_18687
 				: Explosion.DestructionType.field_18685;
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
-			this.field_6002.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
+			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
 			this.remove();
 			this.spawnEffectsCloud();
 		}
@@ -232,7 +231,7 @@ public class CreeperEntity extends HostileEntity {
 	private void spawnEffectsCloud() {
 		Collection<StatusEffectInstance> collection = this.getStatusEffects();
 		if (!collection.isEmpty()) {
-			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.field_6002, this.x, this.y, this.z);
+			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 			areaEffectCloudEntity.setRadius(2.5F);
 			areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 			areaEffectCloudEntity.setWaitTime(10);
@@ -243,7 +242,7 @@ public class CreeperEntity extends HostileEntity {
 				areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 			}
 
-			this.field_6002.spawnEntity(areaEffectCloudEntity);
+			this.world.spawnEntity(areaEffectCloudEntity);
 		}
 	}
 

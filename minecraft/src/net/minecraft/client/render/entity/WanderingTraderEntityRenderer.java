@@ -15,8 +15,8 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 
 	public WanderingTraderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new VillagerResemblingModel<>(0.0F), 0.5F);
-		this.method_4046(new HeadFeatureRenderer<>(this));
-		this.method_4046(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {

@@ -26,11 +26,11 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 	}
 
 	public void draw() {
-		if (!this.enabled && this.client.field_1690.showSubtitles) {
-			this.client.method_1483().registerListener(this);
+		if (!this.enabled && this.client.options.showSubtitles) {
+			this.client.getSoundManager().registerListener(this);
 			this.enabled = true;
-		} else if (this.enabled && !this.client.field_1690.showSubtitles) {
-			this.client.method_1483().unregisterListener(this);
+		} else if (this.enabled && !this.client.options.showSubtitles) {
+			this.client.getSoundManager().unregisterListener(this);
 			this.enabled = false;
 		}
 
@@ -40,13 +40,13 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			Vec3d vec3d = new Vec3d(this.client.field_1724.x, this.client.field_1724.y + (double)this.client.field_1724.getStandingEyeHeight(), this.client.field_1724.z);
+			Vec3d vec3d = new Vec3d(this.client.player.x, this.client.player.y + (double)this.client.player.getStandingEyeHeight(), this.client.player.z);
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)
-				.rotateX(-this.client.field_1724.pitch * (float) (Math.PI / 180.0))
-				.rotateY(-this.client.field_1724.yaw * (float) (Math.PI / 180.0));
+				.rotateX(-this.client.player.pitch * (float) (Math.PI / 180.0))
+				.rotateY(-this.client.player.yaw * (float) (Math.PI / 180.0));
 			Vec3d vec3d3 = new Vec3d(0.0, 1.0, 0.0)
-				.rotateX(-this.client.field_1724.pitch * (float) (Math.PI / 180.0))
-				.rotateY(-this.client.field_1724.yaw * (float) (Math.PI / 180.0));
+				.rotateX(-this.client.player.pitch * (float) (Math.PI / 180.0))
+				.rotateY(-this.client.player.yaw * (float) (Math.PI / 180.0));
 			Vec3d vec3d4 = vec3d2.crossProduct(vec3d3);
 			int i = 0;
 			int j = 0;
@@ -57,14 +57,14 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 				if (subtitleEntry.getTime() + 3000L <= SystemUtil.getMeasuringTimeMs()) {
 					iterator.remove();
 				} else {
-					j = Math.max(j, this.client.field_1772.getStringWidth(subtitleEntry.getText()));
+					j = Math.max(j, this.client.textRenderer.getStringWidth(subtitleEntry.getText()));
 				}
 			}
 
-			j += this.client.field_1772.getStringWidth("<")
-				+ this.client.field_1772.getStringWidth(" ")
-				+ this.client.field_1772.getStringWidth(">")
-				+ this.client.field_1772.getStringWidth(" ");
+			j += this.client.textRenderer.getStringWidth("<")
+				+ this.client.textRenderer.getStringWidth(" ")
+				+ this.client.textRenderer.getStringWidth(">")
+				+ this.client.textRenderer.getStringWidth(" ");
 
 			for (SubtitlesHud.SubtitleEntry subtitleEntry : this.entries) {
 				int k = 255;
@@ -77,7 +77,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 				int m = 9;
 				int n = m / 2;
 				float f = 1.0F;
-				int o = this.client.field_1772.getStringWidth(string);
+				int o = this.client.textRenderer.getStringWidth(string);
 				int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
 				GlStateManager.pushMatrix();
@@ -87,17 +87,17 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 					0.0F
 				);
 				GlStateManager.scalef(1.0F, 1.0F, 1.0F);
-				fill(-l - 1, -n - 1, l + 1, n + 1, this.client.field_1690.getTextBackgroundColor(0.8F));
+				fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
 				GlStateManager.enableBlend();
 				if (!bl) {
 					if (d > 0.0) {
-						this.client.field_1772.draw(">", (float)(l - this.client.field_1772.getStringWidth(">")), (float)(-n), q + -16777216);
+						this.client.textRenderer.draw(">", (float)(l - this.client.textRenderer.getStringWidth(">")), (float)(-n), q + -16777216);
 					} else if (d < 0.0) {
-						this.client.field_1772.draw("<", (float)(-l), (float)(-n), q + -16777216);
+						this.client.textRenderer.draw("<", (float)(-l), (float)(-n), q + -16777216);
 					}
 				}
 
-				this.client.field_1772.draw(string, (float)(-o / 2), (float)(-n), q + -16777216);
+				this.client.textRenderer.draw(string, (float)(-o / 2), (float)(-n), q + -16777216);
 				GlStateManager.popMatrix();
 				i++;
 			}
@@ -108,7 +108,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 	}
 
 	@Override
-	public void method_4884(SoundInstance soundInstance, WeightedSoundSet weightedSoundSet) {
+	public void onSoundPlayed(SoundInstance soundInstance, WeightedSoundSet weightedSoundSet) {
 		if (weightedSoundSet.getSubtitle() != null) {
 			String string = weightedSoundSet.getSubtitle().asFormattedString();
 			if (!this.entries.isEmpty()) {

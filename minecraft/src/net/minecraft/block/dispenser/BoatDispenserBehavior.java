@@ -19,17 +19,17 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-		Direction direction = blockPointer.getBlockState().method_11654(DispenserBlock.field_10918);
+		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 		World world = blockPointer.getWorld();
 		double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
 		double e = blockPointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
 		double f = blockPointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125F);
 		BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 		double g;
-		if (world.method_8316(blockPos).matches(FluidTags.field_15517)) {
+		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 			g = 1.0;
 		} else {
-			if (!world.method_8320(blockPos).isAir() || !world.method_8316(blockPos.down()).matches(FluidTags.field_15517)) {
+			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).matches(FluidTags.field_15517)) {
 				return this.itemDispenser.dispense(blockPointer, itemStack);
 			}
 

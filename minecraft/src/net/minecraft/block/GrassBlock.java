@@ -15,19 +15,19 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9651(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return blockView.method_8320(blockPos.up()).isAir();
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+		return blockView.getBlockState(blockPos.up()).isAir();
 	}
 
 	@Override
-	public boolean method_9650(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void method_9652(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
-		BlockState blockState2 = Blocks.field_10479.method_9564();
+		BlockState blockState2 = Blocks.field_10479.getDefaultState();
 
 		label48:
 		for (int i = 0; i < 128; i++) {
@@ -35,39 +35,38 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-				if (world.method_8320(blockPos3.down()).getBlock() != this || method_9614(world.method_8320(blockPos3).method_11628(world, blockPos3))) {
+				if (world.getBlockState(blockPos3.down()).getBlock() != this || isShapeFullCube(world.getBlockState(blockPos3).getCollisionShape(world, blockPos3))) {
 					continue label48;
 				}
 			}
 
-			BlockState blockState3 = world.method_8320(blockPos3);
+			BlockState blockState3 = world.getBlockState(blockPos3);
 			if (blockState3.getBlock() == blockState2.getBlock() && random.nextInt(10) == 0) {
-				((Fertilizable)blockState2.getBlock()).method_9652(world, random, blockPos3, blockState3);
+				((Fertilizable)blockState2.getBlock()).grow(world, random, blockPos3, blockState3);
 			}
 
 			if (blockState3.isAir()) {
 				BlockState blockState4;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?>> list = world.method_8310(blockPos3).getFlowerFeatures();
+					List<ConfiguredFeature<?>> list = world.getBiome(blockPos3).getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
 
-					blockState4 = ((FlowerFeature)((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).field_13375).feature.field_13376)
-						.getFlowerToPlace(random, blockPos3);
+					blockState4 = ((FlowerFeature)((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).config).feature.feature).getFlowerToPlace(random, blockPos3);
 				} else {
 					blockState4 = blockState2;
 				}
 
 				if (blockState4.canPlaceAt(world, blockPos3)) {
-					world.method_8652(blockPos3, blockState4, 3);
+					world.setBlockState(blockPos3, blockState4, 3);
 				}
 			}
 		}
 	}
 
 	@Override
-	public boolean method_9601(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return true;
 	}
 

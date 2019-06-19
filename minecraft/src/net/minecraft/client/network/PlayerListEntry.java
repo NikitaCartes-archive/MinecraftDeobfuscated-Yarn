@@ -89,14 +89,14 @@ public class PlayerListEntry {
 
 	@Nullable
 	public Team getScoreboardTeam() {
-		return MinecraftClient.getInstance().field_1687.method_8428().getPlayerTeam(this.getProfile().getName());
+		return MinecraftClient.getInstance().world.getScoreboard().getPlayerTeam(this.getProfile().getName());
 	}
 
 	protected void loadTextures() {
 		synchronized (this) {
 			if (!this.texturesLoaded) {
 				this.texturesLoaded = true;
-				MinecraftClient.getInstance().method_1582().loadSkin(this.profile, (type, identifier, minecraftProfileTexture) -> {
+				MinecraftClient.getInstance().getSkinProvider().loadSkin(this.profile, (type, identifier, minecraftProfileTexture) -> {
 					switch (type) {
 						case SKIN:
 							this.textures.put(Type.SKIN, identifier);

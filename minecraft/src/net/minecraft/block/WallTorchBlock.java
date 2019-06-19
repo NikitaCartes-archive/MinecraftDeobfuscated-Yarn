@@ -23,23 +23,23 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallTorchBlock extends TorchBlock {
-	public static final DirectionProperty field_11731 = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.field_11043,
-			Block.method_9541(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
+			Block.createCuboidShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
 			Direction.field_11035,
-			Block.method_9541(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
+			Block.createCuboidShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
 			Direction.field_11039,
-			Block.method_9541(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
+			Block.createCuboidShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
 			Direction.field_11034,
-			Block.method_9541(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
+			Block.createCuboidShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
 		)
 	);
 
 	protected WallTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_11731, Direction.field_11043));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
@@ -48,34 +48,34 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return method_10841(blockState);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return getBoundingShape(blockState);
 	}
 
-	public static VoxelShape method_10841(BlockState blockState) {
-		return (VoxelShape)BOUNDING_SHAPES.get(blockState.method_11654(field_11731));
+	public static VoxelShape getBoundingShape(BlockState blockState) {
+		return (VoxelShape)BOUNDING_SHAPES.get(blockState.get(FACING));
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.method_11654(field_11731);
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-		BlockState blockState2 = viewableWorld.method_8320(blockPos2);
-		return Block.method_20045(blockState2, viewableWorld, blockPos2, direction);
+		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+		return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, direction);
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.method_9564();
-		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.getDefaultState();
+		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.method_11657(field_11731, direction2);
+				blockState = blockState.with(FACING, direction2);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState;
 				}
@@ -86,16 +86,16 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return direction.getOpposite() == blockState.method_11654(field_11731) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.method_9564()
-			: blockState;
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		Direction direction = blockState.method_11654(field_11731);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		Direction direction = blockState.get(FACING);
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.7;
 		double f = (double)blockPos.getZ() + 0.5;
@@ -107,17 +107,17 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_11731, blockRotation.rotate(blockState.method_11654(field_11731)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_11731)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11731);
+		builder.add(FACING);
 	}
 }

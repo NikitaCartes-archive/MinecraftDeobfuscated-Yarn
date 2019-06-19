@@ -10,24 +10,24 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ViewableWorld;
 
 public class WallStandingBlockItem extends BlockItem {
-	protected final Block field_8918;
+	protected final Block wallBlock;
 
 	public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
 		super(block, settings);
-		this.field_8918 = block2;
+		this.wallBlock = block2;
 	}
 
 	@Nullable
 	@Override
-	protected BlockState method_7707(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.field_8918.method_9605(itemPlacementContext);
+	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
 		BlockState blockState2 = null;
-		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
+		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction != Direction.field_11036) {
-				BlockState blockState3 = direction == Direction.field_11033 ? this.method_7711().method_9605(itemPlacementContext) : blockState;
+				BlockState blockState3 = direction == Direction.field_11033 ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
 				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
 					blockState2 = blockState3;
 					break;
@@ -35,12 +35,12 @@ public class WallStandingBlockItem extends BlockItem {
 			}
 		}
 
-		return blockState2 != null && viewableWorld.method_8628(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
+		return blockState2 != null && viewableWorld.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
 	}
 
 	@Override
 	public void appendBlocks(Map<Block, Item> map, Item item) {
 		super.appendBlocks(map, item);
-		map.put(this.field_8918, item);
+		map.put(this.wallBlock, item);
 	}
 }

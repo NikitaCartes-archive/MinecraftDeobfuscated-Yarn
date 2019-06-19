@@ -10,46 +10,46 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
-	private final ChunkRenderer field_4418;
+	private final ChunkRenderer chunkRenderer;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final List<Runnable> completionActions = Lists.<Runnable>newArrayList();
 	private final ChunkRenderTask.Mode mode;
 	private final double squaredCameraDistance;
 	@Nullable
-	private ChunkRendererRegion field_4414;
+	private ChunkRendererRegion region;
 	private BlockLayeredBufferBuilder bufferBuilder;
-	private ChunkRenderData field_4417;
+	private ChunkRenderData renderData;
 	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
 	private boolean cancelled;
 
 	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
-		this.field_4418 = chunkRenderer;
+		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
 		this.squaredCameraDistance = d;
-		this.field_4414 = chunkRendererRegion;
+		this.region = chunkRendererRegion;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
 		return this.stage;
 	}
 
-	public ChunkRenderer method_3608() {
-		return this.field_4418;
+	public ChunkRenderer getChunkRenderer() {
+		return this.chunkRenderer;
 	}
 
 	@Nullable
-	public ChunkRendererRegion method_3606() {
-		ChunkRendererRegion chunkRendererRegion = this.field_4414;
-		this.field_4414 = null;
+	public ChunkRendererRegion takeRegion() {
+		ChunkRendererRegion chunkRendererRegion = this.region;
+		this.region = null;
 		return chunkRendererRegion;
 	}
 
-	public ChunkRenderData method_3609() {
-		return this.field_4417;
+	public ChunkRenderData getRenderData() {
+		return this.renderData;
 	}
 
-	public void method_3598(ChunkRenderData chunkRenderData) {
-		this.field_4417 = chunkRenderData;
+	public void setRenderData(ChunkRenderData chunkRenderData) {
+		this.renderData = chunkRenderData;
 	}
 
 	public BlockLayeredBufferBuilder getBufferBuilders() {
@@ -74,9 +74,9 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		this.lock.lock();
 
 		try {
-			this.field_4414 = null;
+			this.region = null;
 			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
-				this.field_4418.scheduleRebuild(false);
+				this.chunkRenderer.scheduleRebuild(false);
 			}
 
 			this.cancelled = true;

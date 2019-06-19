@@ -20,24 +20,26 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
 		super.init(viewableWorld, mobEntity);
-		mobEntity.method_5941(PathNodeType.field_18, 0.0F);
-		this.field_65 = mobEntity.method_5944(PathNodeType.field_12);
-		mobEntity.method_5941(PathNodeType.field_12, 6.0F);
-		this.field_64 = mobEntity.method_5944(PathNodeType.field_4);
-		mobEntity.method_5941(PathNodeType.field_4, 4.0F);
+		mobEntity.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_65 = mobEntity.getPathNodeTypeWeight(PathNodeType.field_12);
+		mobEntity.setPathNodeTypeWeight(PathNodeType.field_12, 6.0F);
+		this.field_64 = mobEntity.getPathNodeTypeWeight(PathNodeType.field_4);
+		mobEntity.setPathNodeTypeWeight(PathNodeType.field_4, 4.0F);
 	}
 
 	@Override
 	public void clear() {
-		this.entity.method_5941(PathNodeType.field_12, this.field_65);
-		this.entity.method_5941(PathNodeType.field_4, this.field_64);
+		this.entity.setPathNodeTypeWeight(PathNodeType.field_12, this.field_65);
+		this.entity.setPathNodeTypeWeight(PathNodeType.field_4, this.field_64);
 		super.clear();
 	}
 
 	@Override
 	public PathNode getStart() {
 		return this.getPathNode(
-			MathHelper.floor(this.entity.method_5829().minX), MathHelper.floor(this.entity.method_5829().minY + 0.5), MathHelper.floor(this.entity.method_5829().minZ)
+			MathHelper.floor(this.entity.getBoundingBox().minX),
+			MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
+			MathHelper.floor(this.entity.getBoundingBox().minZ)
 		);
 	}
 
@@ -120,7 +122,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	private double method_66(BlockPos blockPos) {
 		if (!this.entity.isInsideWater()) {
 			BlockPos blockPos2 = blockPos.down();
-			VoxelShape voxelShape = this.blockView.method_8320(blockPos2).method_11628(this.blockView, blockPos2);
+			VoxelShape voxelShape = this.blockView.getBlockState(blockPos2).getCollisionShape(this.blockView, blockPos2);
 			return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 		} else {
 			return (double)blockPos.getY() + 0.5;
@@ -136,7 +138,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			return null;
 		} else {
 			PathNodeType pathNodeType = this.getPathNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
-			float f = this.entity.method_5944(pathNodeType);
+			float f = this.entity.getPathNodeTypeWeight(pathNodeType);
 			double g = (double)this.entity.getWidth() / 2.0;
 			if (f >= 0.0F) {
 				pathNode = this.getPathNode(i, j, k);
@@ -153,7 +155,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 					Box box = new Box(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.entity.field_6002.method_8587(this.entity, box)) {
+					if (!this.entity.world.doesNotCollide(this.entity, box)) {
 						return null;
 					}
 
@@ -181,7 +183,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 						}
 
 						pathNodeType = this.getPathNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
-						f = this.entity.method_5944(pathNodeType);
+						f = this.entity.getPathNodeTypeWeight(pathNodeType);
 						if (pathNodeType != PathNodeType.field_7 && f >= 0.0F) {
 							pathNode = this.getPathNode(i, j, k);
 							pathNode.type = pathNodeType;
@@ -197,7 +199,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 				return pathNode;
 			} else {
-				if (j < this.entity.field_6002.getSeaLevel() - 10 && pathNode != null) {
+				if (j < this.entity.world.getSeaLevel() - 10 && pathNode != null) {
 					pathNode.field_43++;
 				}
 
@@ -209,8 +211,8 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	protected PathNodeType method_61(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
 		if (pathNodeType == PathNodeType.field_21
-			&& !(blockView.method_8320(blockPos).getBlock() instanceof AbstractRailBlock)
-			&& !(blockView.method_8320(blockPos.down()).getBlock() instanceof AbstractRailBlock)) {
+			&& !(blockView.getBlockState(blockPos).getBlock() instanceof AbstractRailBlock)
+			&& !(blockView.getBlockState(blockPos.down()).getBlock() instanceof AbstractRailBlock)) {
 			pathNodeType = PathNodeType.field_10;
 		}
 
@@ -239,7 +241,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			return PathNodeType.field_18;
 		} else {
 			if (pathNodeType == PathNodeType.field_7 && j >= 1) {
-				Block block = blockView.method_8320(new BlockPos(i, j - 1, k)).getBlock();
+				Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
 				PathNodeType pathNodeType3 = this.getBasicPathNodeType(blockView, i, j - 1, k);
 				if (pathNodeType3 != PathNodeType.field_12 && pathNodeType3 != PathNodeType.field_7 && pathNodeType3 != PathNodeType.field_14) {
 					pathNodeType = PathNodeType.field_12;

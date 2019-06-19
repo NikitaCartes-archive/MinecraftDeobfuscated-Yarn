@@ -17,13 +17,13 @@ public class LeadItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		Block block = world.method_8320(blockPos).getBlock();
+		Block block = world.getBlockState(blockPos).getBlock();
 		if (block.matches(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			if (!world.isClient && playerEntity != null) {
-				method_7994(playerEntity, world, blockPos);
+				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
 
 			return ActionResult.field_5812;
@@ -32,7 +32,7 @@ public class LeadItem extends Item {
 		}
 	}
 
-	public static boolean method_7994(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+	public static boolean attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
 		LeadKnotEntity leadKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
@@ -40,12 +40,12 @@ public class LeadItem extends Item {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (MobEntity mobEntity : world.method_18467(
+		for (MobEntity mobEntity : world.getEntities(
 			MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
 			if (mobEntity.getHoldingEntity() == playerEntity) {
 				if (leadKnotEntity == null) {
-					leadKnotEntity = LeadKnotEntity.method_6932(world, blockPos);
+					leadKnotEntity = LeadKnotEntity.getOrCreate(world, blockPos);
 				}
 
 				mobEntity.attachLeash(leadKnotEntity, true);

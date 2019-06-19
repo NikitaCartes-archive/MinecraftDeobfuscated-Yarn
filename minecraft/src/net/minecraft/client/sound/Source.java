@@ -19,7 +19,7 @@ public class Source {
 	private AtomicBoolean playing = new AtomicBoolean(true);
 	private int bufferSize = 16384;
 	@Nullable
-	private AudioStream field_18896;
+	private AudioStream stream;
 
 	@Nullable
 	static Source create() {
@@ -36,15 +36,15 @@ public class Source {
 		if (this.playing.compareAndSet(true, false)) {
 			AL10.alSourceStop(this.pointer);
 			AlUtil.checkErrors("Stop");
-			if (this.field_18896 != null) {
+			if (this.stream != null) {
 				try {
-					this.field_18896.close();
+					this.stream.close();
 				} catch (IOException var2) {
 					LOGGER.error("Failed to close audio stream", (Throwable)var2);
 				}
 
 				this.removeProcessedBuffers();
-				this.field_18896 = null;
+				this.stream = null;
 			}
 
 			AL10.alDeleteSources(new int[]{this.pointer});
@@ -114,12 +114,12 @@ public class Source {
 		AL10.alSourcei(this.pointer, 514, bl ? 1 : 0);
 	}
 
-	public void method_19642(StaticSound staticSound) {
+	public void setBuffer(StaticSound staticSound) {
 		staticSound.getStreamBufferPointer().ifPresent(i -> AL10.alSourcei(this.pointer, 4105, i));
 	}
 
-	public void method_19643(AudioStream audioStream) {
-		this.field_18896 = audioStream;
+	public void setStream(AudioStream audioStream) {
+		this.stream = audioStream;
 		AudioFormat audioFormat = audioStream.getFormat();
 		this.bufferSize = getBufferSize(audioFormat, 1);
 		this.method_19640(4);
@@ -130,14 +130,12 @@ public class Source {
 	}
 
 	private void method_19640(int i) {
-		if (this.field_18896 != null) {
+		if (this.stream != null) {
 			try {
 				for (int j = 0; j < i; j++) {
-					ByteBuffer byteBuffer = this.field_18896.method_19720(this.bufferSize);
+					ByteBuffer byteBuffer = this.stream.method_19720(this.bufferSize);
 					if (byteBuffer != null) {
-						new StaticSound(byteBuffer, this.field_18896.getFormat())
-							.takeStreamBufferPointer()
-							.ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
+						new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
 					}
 				}
 			} catch (IOException var4) {
@@ -147,7 +145,7 @@ public class Source {
 	}
 
 	public void tick() {
-		if (this.field_18896 != null) {
+		if (this.stream != null) {
 			int i = this.removeProcessedBuffers();
 			this.method_19640(i);
 		}

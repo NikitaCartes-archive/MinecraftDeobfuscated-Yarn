@@ -63,7 +63,7 @@ public class GiveCommand {
 						itemEntity.method_6987();
 					}
 
-					serverPlayerEntity.field_6002
+					serverPlayerEntity.world
 						.playSound(
 							null,
 							serverPlayerEntity.x,

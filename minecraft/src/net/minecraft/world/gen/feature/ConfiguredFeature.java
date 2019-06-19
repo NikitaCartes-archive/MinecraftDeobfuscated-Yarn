@@ -12,16 +12,16 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ConfiguredFeature<FC extends FeatureConfig> {
-	public final Feature<FC> field_13376;
-	public final FC field_13375;
+	public final Feature<FC> feature;
+	public final FC config;
 
 	public ConfiguredFeature(Feature<FC> feature, FC featureConfig) {
-		this.field_13376 = feature;
-		this.field_13375 = featureConfig;
+		this.feature = feature;
+		this.config = featureConfig;
 	}
 
 	public ConfiguredFeature(Feature<FC> feature, Dynamic<?> dynamic) {
-		this(feature, feature.method_13148(dynamic));
+		this(feature, feature.deserializeConfig(dynamic));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -30,16 +30,16 @@ public class ConfiguredFeature<FC extends FeatureConfig> {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("name"),
-					dynamicOps.createString(Registry.FEATURE.getId(this.field_13376).toString()),
+					dynamicOps.createString(Registry.FEATURE.getId(this.feature).toString()),
 					dynamicOps.createString("config"),
-					this.field_13375.serialize(dynamicOps).getValue()
+					this.config.serialize(dynamicOps).getValue()
 				)
 			)
 		);
 	}
 
 	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.field_13376.method_13151(iWorld, chunkGenerator, random, blockPos, this.field_13375);
+		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> ConfiguredFeature<?> deserialize(Dynamic<T> dynamic) {

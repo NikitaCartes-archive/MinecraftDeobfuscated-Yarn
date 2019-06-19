@@ -1337,7 +1337,7 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.field_8814, 3)
 			.input(Items.field_8054)
 			.input(Items.field_8183)
-			.input(Ingredient.method_8091(Items.field_8713, Items.field_8665))
+			.input(Ingredient.ofItems(Items.field_8713, Items.field_8665))
 			.criterion("has_blaze_powder", this.method_10426(Items.field_8183))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8378)
@@ -3015,12 +3015,12 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10175, 6)
-			.input('#', Ingredient.method_8091(Blocks.field_10286, Blocks.field_10505))
+			.input('#', Ingredient.ofItems(Blocks.field_10286, Blocks.field_10505))
 			.pattern("###")
 			.criterion("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_9992, 4)
-			.input('#', Ingredient.method_8091(Blocks.field_10286, Blocks.field_10505))
+			.input('#', Ingredient.ofItems(Blocks.field_10286, Blocks.field_10505))
 			.pattern("#  ")
 			.pattern("## ")
 			.pattern("###")
@@ -3033,14 +3033,14 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_quartz", this.method_10426(Items.field_8155))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10237, 6)
-			.input('#', Ingredient.method_8091(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
+			.input('#', Ingredient.ofItems(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
 			.pattern("###")
 			.criterion("has_chiseled_quartz_block", this.method_10426(Blocks.field_10044))
 			.criterion("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.criterion("has_quartz_pillar", this.method_10426(Blocks.field_10437))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10451, 4)
-			.input('#', Ingredient.method_8091(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
+			.input('#', Ingredient.ofItems(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
 			.pattern("#  ")
 			.pattern("## ")
 			.pattern("###")
@@ -3182,7 +3182,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_sand", this.method_10426(Blocks.field_10534))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10624, 6)
-			.input('#', Ingredient.method_8091(Blocks.field_10344, Blocks.field_10117))
+			.input('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117))
 			.pattern("###")
 			.criterion("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.criterion("has_chiseled_red_sandstone", this.method_10426(Blocks.field_10117))
@@ -3193,7 +3193,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_cut_red_sandstone", this.method_10426(Blocks.field_10518))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10420, 4)
-			.input('#', Ingredient.method_8091(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
+			.input('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
 			.pattern("#  ")
 			.pattern("## ")
 			.pattern("###")
@@ -3257,7 +3257,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_sand", this.method_10426(Blocks.field_10102))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10007, 6)
-			.input('#', Ingredient.method_8091(Blocks.field_9979, Blocks.field_10292))
+			.input('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292))
 			.pattern("###")
 			.criterion("has_sandstone", this.method_10426(Blocks.field_9979))
 			.criterion("has_chiseled_sandstone", this.method_10426(Blocks.field_10292))
@@ -3268,7 +3268,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_cut_sandstone", this.method_10426(Blocks.field_10361))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10142, 4)
-			.input('#', Ingredient.method_8091(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
+			.input('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
 			.pattern("#  ")
 			.pattern("## ")
 			.pattern("###")
@@ -3585,7 +3585,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer, "white_wool_from_string");
 		ShapelessRecipeJsonFactory.create(Items.field_8479).input(Blocks.field_10424).criterion("has_reeds", this.method_10426(Blocks.field_10424)).offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10375)
-			.input('#', Ingredient.method_8091(Blocks.field_10102, Blocks.field_10534))
+			.input('#', Ingredient.ofItems(Blocks.field_10102, Blocks.field_10534))
 			.input('X', Items.field_8054)
 			.pattern("X#X")
 			.pattern("#X#")
@@ -3601,7 +3601,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10336, 4)
 			.input('#', Items.field_8600)
-			.input('X', Ingredient.method_8091(Items.field_8713, Items.field_8665))
+			.input('X', Ingredient.ofItems(Items.field_8713, Items.field_8665))
 			.pattern("X")
 			.pattern("#")
 			.criterion("has_stone_pickaxe", this.method_10426(Items.field_8387))
@@ -4206,81 +4206,81 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer);
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9028).offerTo(consumer, "armor_dye");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9038).offerTo(consumer, "banner_duplicate");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9029).offerTo(consumer, "book_cloning");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9043).offerTo(consumer, "firework_rocket");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9036).offerTo(consumer, "firework_star");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9034).offerTo(consumer, "firework_star_fade");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9044).offerTo(consumer, "map_cloning");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9039).offerTo(consumer, "map_extending");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_19421).offerTo(consumer, "repair_item");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9040).offerTo(consumer, "shield_decoration");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9041).offerTo(consumer, "shulker_box_coloring");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9037).offerTo(consumer, "tipped_arrow");
-		ComplexRecipeJsonFactory.create(RecipeSerializer.field_9030).offerTo(consumer, "suspicious_stew");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8567), Items.field_8512, 0.35F, 200)
+		ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(consumer, "book_cloning");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_ROCKET).offerTo(consumer, "firework_rocket");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR).offerTo(consumer, "firework_star");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.FIREWORK_STAR_FADE).offerTo(consumer, "firework_star_fade");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.MAP_CLONING).offerTo(consumer, "map_cloning");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.MAP_EXTENDING).offerTo(consumer, "map_extending");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.REPAIR_ITEM).offerTo(consumer, "repair_item");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.SHIELD_DECORATION).offerTo(consumer, "shield_decoration");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.SHULKER_BOX).offerTo(consumer, "shulker_box_coloring");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.TIPPED_ARROW).offerTo(consumer, "tipped_arrow");
+		ComplexRecipeJsonFactory.create(RecipeSerializer.SUSPICIOUS_STEW).offerTo(consumer, "suspicious_stew");
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8567), Items.field_8512, 0.35F, 200)
 			.criterion("has_potato", this.method_10426(Items.field_8567))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8696), Items.field_8621, 0.3F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8696), Items.field_8621, 0.3F, 200)
 			.criterion("has_clay_ball", this.method_10426(Items.field_8696))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.field_15539), Items.field_8665, 0.15F, 200)
 			.criterion("has_log", this.method_10420(ItemTags.field_15539))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8233), Items.field_8882, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8233), Items.field_8882, 0.1F, 200)
 			.criterion("has_chorus_fruit", this.method_10426(Items.field_8233))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10418.asItem()), Items.field_8713, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10418.asItem()), Items.field_8713, 0.1F, 200)
 			.criterion("has_coal_ore", this.method_10426(Blocks.field_10418))
 			.offerTo(consumer, "coal_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8046), Items.field_8176, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8046), Items.field_8176, 0.35F, 200)
 			.criterion("has_beef", this.method_10426(Items.field_8046))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8726), Items.field_8544, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8726), Items.field_8544, 0.35F, 200)
 			.criterion("has_chicken", this.method_10426(Items.field_8726))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8429), Items.field_8373, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8429), Items.field_8373, 0.35F, 200)
 			.criterion("has_cod", this.method_10426(Items.field_8429))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_9993), Items.field_8551, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_9993), Items.field_8551, 0.1F, 200)
 			.criterion("has_kelp", this.method_10426(Blocks.field_9993))
 			.offerTo(consumer, "dried_kelp_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8209), Items.field_8509, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8209), Items.field_8509, 0.35F, 200)
 			.criterion("has_salmon", this.method_10426(Items.field_8209))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8748), Items.field_8347, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8748), Items.field_8347, 0.35F, 200)
 			.criterion("has_mutton", this.method_10426(Items.field_8748))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8389), Items.field_8261, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8389), Items.field_8261, 0.35F, 200)
 			.criterion("has_porkchop", this.method_10426(Items.field_8389))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Items.field_8504), Items.field_8752, 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.field_8504), Items.field_8752, 0.35F, 200)
 			.criterion("has_rabbit", this.method_10426(Items.field_8504))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10442.asItem()), Items.field_8477, 1.0F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10442.asItem()), Items.field_8477, 1.0F, 200)
 			.criterion("has_diamond_ore", this.method_10426(Blocks.field_10442))
 			.offerTo(consumer, "diamond_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10090.asItem()), Items.field_8759, 0.2F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10090.asItem()), Items.field_8759, 0.2F, 200)
 			.criterion("has_lapis_ore", this.method_10426(Blocks.field_10090))
 			.offerTo(consumer, "lapis_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10013.asItem()), Items.field_8687, 1.0F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10013.asItem()), Items.field_8687, 1.0F, 200)
 			.criterion("has_emerald_ore", this.method_10426(Blocks.field_10013))
 			.offerTo(consumer, "emerald_from_smelting");
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.field_15532), Blocks.field_10033.asItem(), 0.1F, 200)
 			.criterion("has_sand", this.method_10420(ItemTags.field_15532))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10571.asItem()), Items.field_8695, 1.0F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10571.asItem()), Items.field_8695, 1.0F, 200)
 			.criterion("has_gold_ore", this.method_10426(Blocks.field_10571))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10476.asItem()), Items.field_8131, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10476.asItem()), Items.field_8131, 0.1F, 200)
 			.criterion("has_sea_pickle", this.method_10426(Blocks.field_10476))
 			.offerTo(consumer, "lime_dye_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10029.asItem()), Items.field_8408, 1.0F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10029.asItem()), Items.field_8408, 1.0F, 200)
 			.criterion("has_cactus", this.method_10426(Blocks.field_10029))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(
-				Ingredient.method_8091(
+				Ingredient.ofItems(
 					Items.field_8335,
 					Items.field_8322,
 					Items.field_8825,
@@ -4308,7 +4308,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_horse_armor", this.method_10426(Items.field_8560))
 			.offerTo(consumer, "gold_nugget_from_smelting");
 		CookingRecipeJsonFactory.createSmelting(
-				Ingredient.method_8091(
+				Ingredient.ofItems(
 					Items.field_8403,
 					Items.field_8699,
 					Items.field_8475,
@@ -4343,116 +4343,116 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_leggings", this.method_10426(Items.field_8218))
 			.criterion("has_chainmail_boots", this.method_10426(Items.field_8313))
 			.offerTo(consumer, "iron_nugget_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10212.asItem()), Items.field_8620, 0.7F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10212.asItem()), Items.field_8620, 0.7F, 200)
 			.criterion("has_iron_ore", this.method_10426(Blocks.field_10212.asItem()))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10460), Blocks.field_10415.asItem(), 0.35F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10460), Blocks.field_10415.asItem(), 0.35F, 200)
 			.criterion("has_clay_block", this.method_10426(Blocks.field_10460))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10515), Items.field_8729, 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10515), Items.field_8729, 0.1F, 200)
 			.criterion("has_netherrack", this.method_10426(Blocks.field_10515))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10213), Items.field_8155, 0.2F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10213), Items.field_8155, 0.2F, 200)
 			.criterion("has_nether_quartz_ore", this.method_10426(Blocks.field_10213))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10080), Items.field_8725, 0.7F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10080), Items.field_8725, 0.7F, 200)
 			.criterion("has_redstone_ore", this.method_10426(Blocks.field_10080))
 			.offerTo(consumer, "redstone_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10562), Blocks.field_10258.asItem(), 0.15F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10562), Blocks.field_10258.asItem(), 0.15F, 200)
 			.criterion("has_wet_sponge", this.method_10426(Blocks.field_10562))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10445), Blocks.field_10340.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10340.asItem(), 0.1F, 200)
 			.criterion("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10360.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10360.asItem(), 0.1F, 200)
 			.criterion("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10467.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10467.asItem(), 0.1F, 200)
 			.criterion("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10483.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10483.asItem(), 0.1F, 200)
 			.criterion("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10153), Blocks.field_9978.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10153), Blocks.field_9978.asItem(), 0.1F, 200)
 			.criterion("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10416.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10416.asItem(), 0.1F, 200)
 			.criterion("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10626), Blocks.field_10501.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10626), Blocks.field_10501.asItem(), 0.1F, 200)
 			.criterion("has_black_terracotta", this.method_10426(Blocks.field_10626))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10409), Blocks.field_10550.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10409), Blocks.field_10550.asItem(), 0.1F, 200)
 			.criterion("has_blue_terracotta", this.method_10426(Blocks.field_10409))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10123), Blocks.field_10004.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10123), Blocks.field_10004.asItem(), 0.1F, 200)
 			.criterion("has_brown_terracotta", this.method_10426(Blocks.field_10123))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10235), Blocks.field_10078.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10235), Blocks.field_10078.asItem(), 0.1F, 200)
 			.criterion("has_cyan_terracotta", this.method_10426(Blocks.field_10235))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10349), Blocks.field_10220.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10349), Blocks.field_10220.asItem(), 0.1F, 200)
 			.criterion("has_gray_terracotta", this.method_10426(Blocks.field_10349))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10526), Blocks.field_10475.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10526), Blocks.field_10475.asItem(), 0.1F, 200)
 			.criterion("has_green_terracotta", this.method_10426(Blocks.field_10526))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10325), Blocks.field_10345.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10325), Blocks.field_10345.asItem(), 0.1F, 200)
 			.criterion("has_light_blue_terracotta", this.method_10426(Blocks.field_10325))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10590), Blocks.field_10052.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10590), Blocks.field_10052.asItem(), 0.1F, 200)
 			.criterion("has_light_gray_terracotta", this.method_10426(Blocks.field_10590))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10014), Blocks.field_10046.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10014), Blocks.field_10046.asItem(), 0.1F, 200)
 			.criterion("has_lime_terracotta", this.method_10426(Blocks.field_10014))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10015), Blocks.field_10538.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10015), Blocks.field_10538.asItem(), 0.1F, 200)
 			.criterion("has_magenta_terracotta", this.method_10426(Blocks.field_10015))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10184), Blocks.field_10280.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10184), Blocks.field_10280.asItem(), 0.1F, 200)
 			.criterion("has_orange_terracotta", this.method_10426(Blocks.field_10184))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10444), Blocks.field_10567.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10444), Blocks.field_10567.asItem(), 0.1F, 200)
 			.criterion("has_pink_terracotta", this.method_10426(Blocks.field_10444))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10570), Blocks.field_10426.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10570), Blocks.field_10426.asItem(), 0.1F, 200)
 			.criterion("has_purple_terracotta", this.method_10426(Blocks.field_10570))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10328), Blocks.field_10383.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10328), Blocks.field_10383.asItem(), 0.1F, 200)
 			.criterion("has_red_terracotta", this.method_10426(Blocks.field_10328))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10611), Blocks.field_10595.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10611), Blocks.field_10595.asItem(), 0.1F, 200)
 			.criterion("has_white_terracotta", this.method_10426(Blocks.field_10611))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.method_8091(Blocks.field_10143), Blocks.field_10096.asItem(), 0.1F, 200)
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.field_10143), Blocks.field_10096.asItem(), 0.1F, 200)
 			.criterion("has_yellow_terracotta", this.method_10426(Blocks.field_10143))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10212.asItem()), Items.field_8620, 0.7F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10212.asItem()), Items.field_8620, 0.7F, 100)
 			.criterion("has_iron_ore", this.method_10426(Blocks.field_10212.asItem()))
 			.offerTo(consumer, "iron_ingot_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10571.asItem()), Items.field_8695, 1.0F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10571.asItem()), Items.field_8695, 1.0F, 100)
 			.criterion("has_gold_ore", this.method_10426(Blocks.field_10571))
 			.offerTo(consumer, "gold_ingot_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10442.asItem()), Items.field_8477, 1.0F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10442.asItem()), Items.field_8477, 1.0F, 100)
 			.criterion("has_diamond_ore", this.method_10426(Blocks.field_10442))
 			.offerTo(consumer, "diamond_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10090.asItem()), Items.field_8759, 0.2F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10090.asItem()), Items.field_8759, 0.2F, 100)
 			.criterion("has_lapis_ore", this.method_10426(Blocks.field_10090))
 			.offerTo(consumer, "lapis_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10080), Items.field_8725, 0.7F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10080), Items.field_8725, 0.7F, 100)
 			.criterion("has_redstone_ore", this.method_10426(Blocks.field_10080))
 			.offerTo(consumer, "redstone_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10418.asItem()), Items.field_8713, 0.1F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10418.asItem()), Items.field_8713, 0.1F, 100)
 			.criterion("has_coal_ore", this.method_10426(Blocks.field_10418))
 			.offerTo(consumer, "coal_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10013.asItem()), Items.field_8687, 1.0F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10013.asItem()), Items.field_8687, 1.0F, 100)
 			.criterion("has_emerald_ore", this.method_10426(Blocks.field_10013))
 			.offerTo(consumer, "emerald_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.method_8091(Blocks.field_10213), Items.field_8155, 0.2F, 100)
+		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.field_10213), Items.field_8155, 0.2F, 100)
 			.criterion("has_nether_quartz_ore", this.method_10426(Blocks.field_10213))
 			.offerTo(consumer, "quartz_from_blasting");
 		CookingRecipeJsonFactory.createBlasting(
-				Ingredient.method_8091(
+				Ingredient.ofItems(
 					Items.field_8335,
 					Items.field_8322,
 					Items.field_8825,
@@ -4480,7 +4480,7 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_golden_horse_armor", this.method_10426(Items.field_8560))
 			.offerTo(consumer, "gold_nugget_from_blasting");
 		CookingRecipeJsonFactory.createBlasting(
-				Ingredient.method_8091(
+				Ingredient.ofItems(
 					Items.field_8403,
 					Items.field_8699,
 					Items.field_8475,
@@ -4515,321 +4515,321 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_chainmail_leggings", this.method_10426(Items.field_8218))
 			.criterion("has_chainmail_boots", this.method_10426(Items.field_8313))
 			.offerTo(consumer, "iron_nugget_from_blasting");
-		this.method_17585(consumer, "smoking", RecipeSerializer.field_17085, 100);
-		this.method_17585(consumer, "campfire_cooking", RecipeSerializer.field_17347, 600);
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10454, 2)
+		this.method_17585(consumer, "smoking", RecipeSerializer.SMOKING, 100);
+		this.method_17585(consumer, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10454, 2)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_slab_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10440)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10440)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_stairs_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10056)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10056)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_bricks_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10131, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10131, 2)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_brick_slab_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10392)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10392)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_brick_stairs_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10552)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10552)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "chiseled_stone_bricks_stone_from_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10252)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10252)
 			.create("has_stone", this.method_10426(Blocks.field_10340))
 			.offerTo(consumer, "stone_brick_walls_from_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10361)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10361)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "cut_sandstone_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10007, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10007, 2)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "sandstone_slab_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_18890, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_18890, 2)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "cut_sandstone_slab_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10361), Blocks.field_18890, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10361), Blocks.field_18890, 2)
 			.create("has_cut_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "cut_sandstone_slab_from_cut_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10142)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10142)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "sandstone_stairs_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10630)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10630)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "sandstone_wall_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10292)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10292)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "chiseled_sandstone_from_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10518)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10518)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "cut_red_sandstone_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10624, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10624, 2)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "red_sandstone_slab_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_18891, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_18891, 2)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "cut_red_sandstone_slab_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10518), Blocks.field_18891, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10518), Blocks.field_18891, 2)
 			.create("has_cut_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "cut_red_sandstone_slab_from_cut_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10420)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10420)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "red_sandstone_stairs_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10413)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10413)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "red_sandstone_wall_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10117)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10117)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "chiseled_red_sandstone_from_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10153), Blocks.field_10237, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10237, 2)
 			.create("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.offerTo(consumer, "quartz_slab_from_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10153), Blocks.field_10451)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10451)
 			.create("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.offerTo(consumer, "quartz_stairs_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10153), Blocks.field_10437)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10437)
 			.create("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.offerTo(consumer, "quartz_pillar_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10153), Blocks.field_10044)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10044)
 			.create("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.offerTo(consumer, "chiseled_quartz_block_from_quartz_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10445), Blocks.field_10596)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10596)
 			.create("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.offerTo(consumer, "cobblestone_stairs_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10445), Blocks.field_10351, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10351, 2)
 			.create("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.offerTo(consumer, "cobblestone_slab_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10445), Blocks.field_10625)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10625)
 			.create("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.offerTo(consumer, "cobblestone_wall_from_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10131, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10131, 2)
 			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer, "stone_brick_slab_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10392)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10392)
 			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer, "stone_brick_stairs_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10252)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10252)
 			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer, "stone_brick_wall_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10552)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10552)
 			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer, "chiseled_stone_bricks_from_stone_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10104), Blocks.field_10191, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10191, 2)
 			.create("has_bricks", this.method_10426(Blocks.field_10104))
 			.offerTo(consumer, "brick_slab_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10104), Blocks.field_10089)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10089)
 			.create("has_bricks", this.method_10426(Blocks.field_10104))
 			.offerTo(consumer, "brick_stairs_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10104), Blocks.field_10269)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10269)
 			.create("has_bricks", this.method_10426(Blocks.field_10104))
 			.offerTo(consumer, "brick_wall_from_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10266), Blocks.field_10390, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10390, 2)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_10266))
 			.offerTo(consumer, "nether_brick_slab_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10266), Blocks.field_10159)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10159)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_10266))
 			.offerTo(consumer, "nether_brick_stairs_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10266), Blocks.field_10127)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10127)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_10266))
 			.offerTo(consumer, "nether_brick_wall_from_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9986), Blocks.field_10478, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10478, 2)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_9986))
 			.offerTo(consumer, "red_nether_brick_slab_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9986), Blocks.field_10497)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10497)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_9986))
 			.offerTo(consumer, "red_nether_brick_stairs_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9986), Blocks.field_10311)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10311)
 			.create("has_nether_bricks", this.method_10426(Blocks.field_9986))
 			.offerTo(consumer, "red_nether_brick_wall_from_red_nether_bricks_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10286), Blocks.field_10175, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10286), Blocks.field_10175, 2)
 			.create("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.offerTo(consumer, "purpur_slab_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10286), Blocks.field_9992)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10286), Blocks.field_9992)
 			.create("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.offerTo(consumer, "purpur_stairs_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10286), Blocks.field_10505)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10286), Blocks.field_10505)
 			.create("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.offerTo(consumer, "purpur_pillar_from_purpur_block_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10135), Blocks.field_10389, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10389, 2)
 			.create("has_prismarine", this.method_10426(Blocks.field_10135))
 			.offerTo(consumer, "prismarine_slab_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10135), Blocks.field_10350)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10350)
 			.create("has_prismarine", this.method_10426(Blocks.field_10135))
 			.offerTo(consumer, "prismarine_stairs_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10135), Blocks.field_10530)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10530)
 			.create("has_prismarine", this.method_10426(Blocks.field_10135))
 			.offerTo(consumer, "prismarine_wall_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10006), Blocks.field_10236, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10006), Blocks.field_10236, 2)
 			.create("has_prismarine_brick", this.method_10426(Blocks.field_10006))
 			.offerTo(consumer, "prismarine_brick_slab_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10006), Blocks.field_10190)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10006), Blocks.field_10190)
 			.create("has_prismarine_brick", this.method_10426(Blocks.field_10006))
 			.offerTo(consumer, "prismarine_brick_stairs_from_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10297), Blocks.field_10623, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10297), Blocks.field_10623, 2)
 			.create("has_dark_prismarine", this.method_10426(Blocks.field_10297))
 			.offerTo(consumer, "dark_prismarine_slab_from_dark_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10297), Blocks.field_10130)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10297), Blocks.field_10130)
 			.create("has_dark_prismarine", this.method_10426(Blocks.field_10297))
 			.offerTo(consumer, "dark_prismarine_stairs_from_dark_prismarine_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_10016, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10016, 2)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "andesite_slab_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_10386)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10386)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "andesite_stairs_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_10489)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10489)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "andesite_wall_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_10093)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10093)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "polished_andesite_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_10322, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10322, 2)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "polished_andesite_slab_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10115), Blocks.field_9994)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10115), Blocks.field_9994)
 			.create("has_andesite", this.method_10426(Blocks.field_10115))
 			.offerTo(consumer, "polished_andesite_stairs_from_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10093), Blocks.field_10322, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10093), Blocks.field_10322, 2)
 			.create("has_polished_andesite", this.method_10426(Blocks.field_10093))
 			.offerTo(consumer, "polished_andesite_slab_from_polished_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10093), Blocks.field_9994)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10093), Blocks.field_9994)
 			.create("has_polished_andesite", this.method_10426(Blocks.field_10093))
 			.offerTo(consumer, "polished_andesite_stairs_from_polished_andesite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10189, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10189, 2)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "granite_slab_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10607)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10607)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "granite_stairs_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10072)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10072)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "granite_wall_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10289)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10289)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "polished_granite_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10329, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10329, 2)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "polished_granite_slab_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10474), Blocks.field_10435)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10435)
 			.create("has_granite", this.method_10426(Blocks.field_10474))
 			.offerTo(consumer, "polished_granite_stairs_from_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10289), Blocks.field_10329, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10289), Blocks.field_10329, 2)
 			.create("has_polished_granite", this.method_10426(Blocks.field_10289))
 			.offerTo(consumer, "polished_granite_slab_from_polished_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10289), Blocks.field_10435)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10289), Blocks.field_10435)
 			.create("has_polished_granite", this.method_10426(Blocks.field_10289))
 			.offerTo(consumer, "polished_granite_stairs_from_polished_granite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10507, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10507, 2)
 			.create("has_diorite", this.method_10426(Blocks.field_10508))
 			.offerTo(consumer, "diorite_slab_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10216)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10216)
 			.create("has_diorite", this.method_10426(Blocks.field_10508))
 			.offerTo(consumer, "diorite_stairs_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10517)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10517)
 			.create("has_diorite", this.method_10426(Blocks.field_10508))
 			.offerTo(consumer, "diorite_wall_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10346)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10346)
 			.create("has_diorite", this.method_10426(Blocks.field_10508))
 			.offerTo(consumer, "polished_diorite_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10412, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10412, 2)
 			.create("has_diorite", this.method_10426(Blocks.field_10346))
 			.offerTo(consumer, "polished_diorite_slab_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10508), Blocks.field_10310)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10310)
 			.create("has_diorite", this.method_10426(Blocks.field_10346))
 			.offerTo(consumer, "polished_diorite_stairs_from_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10346), Blocks.field_10412, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10346), Blocks.field_10412, 2)
 			.create("has_polished_diorite", this.method_10426(Blocks.field_10346))
 			.offerTo(consumer, "polished_diorite_slab_from_polished_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10346), Blocks.field_10310)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10346), Blocks.field_10310)
 			.create("has_polished_diorite", this.method_10426(Blocks.field_10346))
 			.offerTo(consumer, "polished_diorite_stairs_from_polished_diorite_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10065), Blocks.field_10024, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10024, 2)
 			.create("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
 			.offerTo(consumer, "mossy_stone_brick_slab_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10065), Blocks.field_10173)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10173)
 			.create("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
 			.offerTo(consumer, "mossy_stone_brick_stairs_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10065), Blocks.field_10059)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10059)
 			.create("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
 			.offerTo(consumer, "mossy_stone_brick_wall_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9989), Blocks.field_10405, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9989), Blocks.field_10405, 2)
 			.create("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
 			.offerTo(consumer, "mossy_cobblestone_slab_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9989), Blocks.field_10207)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9989), Blocks.field_10207)
 			.create("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
 			.offerTo(consumer, "mossy_cobblestone_stairs_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9989), Blocks.field_9990)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9989), Blocks.field_9990)
 			.create("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
 			.offerTo(consumer, "mossy_cobblestone_wall_from_mossy_cobblestone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10467), Blocks.field_10262, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10467), Blocks.field_10262, 2)
 			.create("has_smooth_sandstone", this.method_10426(Blocks.field_10467))
 			.offerTo(consumer, "smooth_sandstone_slab_from_smooth_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10467), Blocks.field_10549)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10467), Blocks.field_10549)
 			.create("has_mossy_cobblestone", this.method_10426(Blocks.field_10467))
 			.offerTo(consumer, "smooth_sandstone_stairs_from_smooth_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10483), Blocks.field_10283, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10483), Blocks.field_10283, 2)
 			.create("has_smooth_red_sandstone", this.method_10426(Blocks.field_10483))
 			.offerTo(consumer, "smooth_red_sandstone_slab_from_smooth_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10483), Blocks.field_10039)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10483), Blocks.field_10039)
 			.create("has_smooth_red_sandstone", this.method_10426(Blocks.field_10483))
 			.offerTo(consumer, "smooth_red_sandstone_stairs_from_smooth_red_sandstone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9978), Blocks.field_10601, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9978), Blocks.field_10601, 2)
 			.create("has_smooth_quartz", this.method_10426(Blocks.field_9978))
 			.offerTo(consumer, "smooth_quartz_slab_from_smooth_quartz_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9978), Blocks.field_10245)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9978), Blocks.field_10245)
 			.create("has_smooth_quartz", this.method_10426(Blocks.field_9978))
 			.offerTo(consumer, "smooth_quartz_stairs_from_smooth_quartz_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10462), Blocks.field_10064, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10064, 2)
 			.create("has_end_stone_brick", this.method_10426(Blocks.field_10462))
 			.offerTo(consumer, "end_stone_brick_slab_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10462), Blocks.field_10012)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10012)
 			.create("has_end_stone_brick", this.method_10426(Blocks.field_10462))
 			.offerTo(consumer, "end_stone_brick_stairs_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10462), Blocks.field_10001)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10001)
 			.create("has_end_stone_brick", this.method_10426(Blocks.field_10462))
 			.offerTo(consumer, "end_stone_brick_wall_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10471), Blocks.field_10462)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10462)
 			.create("has_end_stone", this.method_10426(Blocks.field_10471))
 			.offerTo(consumer, "end_stone_bricks_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10471), Blocks.field_10064, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10064, 2)
 			.create("has_end_stone", this.method_10426(Blocks.field_10471))
 			.offerTo(consumer, "end_stone_brick_slab_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10471), Blocks.field_10012)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10012)
 			.create("has_end_stone", this.method_10426(Blocks.field_10471))
 			.offerTo(consumer, "end_stone_brick_stairs_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10471), Blocks.field_10001)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10001)
 			.create("has_end_stone", this.method_10426(Blocks.field_10471))
 			.offerTo(consumer, "end_stone_brick_wall_from_end_stone_stonecutting");
-		SingleItemRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_10360), Blocks.field_10136, 2)
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10360), Blocks.field_10136, 2)
 			.create("has_smooth_stone", this.method_10426(Blocks.field_10360))
 			.offerTo(consumer, "smooth_stone_slab_from_smooth_stone_stonecutting");
 	}
 
 	private void method_17585(Consumer<RecipeJsonProvider> consumer, String string, CookingRecipeSerializer<?> cookingRecipeSerializer, int i) {
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8046), Items.field_8176, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8046), Items.field_8176, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_beef", this.method_10426(Items.field_8046))
 			.offerTo(consumer, "cooked_beef_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8726), Items.field_8544, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8726), Items.field_8544, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_chicken", this.method_10426(Items.field_8726))
 			.offerTo(consumer, "cooked_chicken_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8429), Items.field_8373, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8429), Items.field_8373, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_cod", this.method_10426(Items.field_8429))
 			.offerTo(consumer, "cooked_cod_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Blocks.field_9993), Items.field_8551, 0.1F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9993), Items.field_8551, 0.1F, i, cookingRecipeSerializer)
 			.criterion("has_kelp", this.method_10426(Blocks.field_9993))
 			.offerTo(consumer, "dried_kelp_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8209), Items.field_8509, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8209), Items.field_8509, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_salmon", this.method_10426(Items.field_8209))
 			.offerTo(consumer, "cooked_salmon_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8748), Items.field_8347, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8748), Items.field_8347, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_mutton", this.method_10426(Items.field_8748))
 			.offerTo(consumer, "cooked_mutton_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8389), Items.field_8261, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8389), Items.field_8261, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_porkchop", this.method_10426(Items.field_8389))
 			.offerTo(consumer, "cooked_porkchop_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8567), Items.field_8512, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8567), Items.field_8512, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_potato", this.method_10426(Items.field_8567))
 			.offerTo(consumer, "baked_potato_from_" + string);
-		CookingRecipeJsonFactory.create(Ingredient.method_8091(Items.field_8504), Items.field_8752, 0.35F, i, cookingRecipeSerializer)
+		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.field_8504), Items.field_8752, 0.35F, i, cookingRecipeSerializer)
 			.criterion("has_rabbit", this.method_10426(Items.field_8504))
 			.offerTo(consumer, "cooked_rabbit_from_" + string);
 	}
@@ -4839,11 +4839,11 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private InventoryChangedCriterion.Conditions method_10424(NumberRange.IntRange intRange, ItemConvertible itemConvertible) {
-		return this.method_10423(ItemPredicate.Builder.create().method_8977(itemConvertible).count(intRange).build());
+		return this.method_10423(ItemPredicate.Builder.create().item(itemConvertible).count(intRange).build());
 	}
 
 	private InventoryChangedCriterion.Conditions method_10426(ItemConvertible itemConvertible) {
-		return this.method_10423(ItemPredicate.Builder.create().method_8977(itemConvertible).build());
+		return this.method_10423(ItemPredicate.Builder.create().item(itemConvertible).build());
 	}
 
 	private InventoryChangedCriterion.Conditions method_10420(Tag<Item> tag) {

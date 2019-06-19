@@ -12,25 +12,25 @@ import net.minecraft.world.World;
 public class ItemScatterer {
 	private static final Random RANDOM = new Random();
 
-	public static void method_5451(World world, BlockPos blockPos, Inventory inventory) {
-		method_5450(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), inventory);
+	public static void spawn(World world, BlockPos blockPos, Inventory inventory) {
+		spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), inventory);
 	}
 
-	public static void method_5452(World world, Entity entity, Inventory inventory) {
-		method_5450(world, entity.x, entity.y, entity.z, inventory);
+	public static void spawn(World world, Entity entity, Inventory inventory) {
+		spawn(world, entity.x, entity.y, entity.z, inventory);
 	}
 
-	private static void method_5450(World world, double d, double e, double f, Inventory inventory) {
+	private static void spawn(World world, double d, double e, double f, Inventory inventory) {
 		for (int i = 0; i < inventory.getInvSize(); i++) {
-			method_5449(world, d, e, f, inventory.getInvStack(i));
+			spawn(world, d, e, f, inventory.getInvStack(i));
 		}
 	}
 
-	public static void method_17349(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
-		defaultedList.forEach(itemStack -> method_5449(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack));
+	public static void spawn(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
+		defaultedList.forEach(itemStack -> spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack));
 	}
 
-	public static void method_5449(World world, double d, double e, double f, ItemStack itemStack) {
+	public static void spawn(World world, double d, double e, double f, ItemStack itemStack) {
 		double g = (double)EntityType.field_6052.getWidth();
 		double h = 1.0 - g;
 		double i = g / 2.0;

@@ -31,46 +31,44 @@ public class PlainsVillageData {
 		ImmutableList<StructureProcessor> immutableList = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564()),
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_9989, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10611, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10431, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10161, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10563, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10519, 0.02F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10285, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState()),
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_9989, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10611, 0.07F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10431, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10161, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10563, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10519, 0.02F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10285, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(
 						new BlockStateMatchRuleTest(
-							Blocks.field_10285.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true))
+							Blocks.field_10285.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
 						),
 						AlwaysTrueRuleTest.INSTANCE,
-						Blocks.field_10163.method_9564().method_11657(PaneBlock.field_10905, Boolean.valueOf(true)).method_11657(PaneBlock.field_10904, Boolean.valueOf(true))
+						Blocks.field_10163.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
 					),
 					new StructureProcessorRule(
-						new BlockStateMatchRuleTest(
-							Blocks.field_10285.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)).method_11657(PaneBlock.field_10903, Boolean.valueOf(true))
-						),
+						new BlockStateMatchRuleTest(Blocks.field_10285.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))),
 						AlwaysTrueRuleTest.INSTANCE,
-						Blocks.field_10163.method_9564().method_11657(PaneBlock.field_10907, Boolean.valueOf(true)).method_11657(PaneBlock.field_10903, Boolean.valueOf(true))
+						Blocks.field_10163.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))
 					),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.method_9564())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState())
 				)
 			)
 		);
 		ImmutableList<StructureProcessor> immutableList2 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
 				)
 			)
 		);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/town_centers"),
@@ -82,7 +80,7 @@ public class PlainsVillageData {
 								ImmutableList.of(
 									new RuleStructureProcessor(
 										ImmutableList.of(
-											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564())
+											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
 										)
 									)
 								)
@@ -95,7 +93,7 @@ public class PlainsVillageData {
 								ImmutableList.of(
 									new RuleStructureProcessor(
 										ImmutableList.of(
-											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564())
+											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
 										)
 									)
 								)
@@ -109,7 +107,7 @@ public class PlainsVillageData {
 								ImmutableList.of(
 									new RuleStructureProcessor(
 										ImmutableList.of(
-											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.7F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564())
+											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.7F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
 										)
 									)
 								)
@@ -127,14 +125,14 @@ public class PlainsVillageData {
 		ImmutableList<StructureProcessor> immutableList3 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10194), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10161.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10194, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10219.method_9564()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10219), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.method_9564()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10566), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.method_9564())
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10194), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10161.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10194, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10219.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10219), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10566), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.getDefaultState())
 				)
 			)
 		);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/streets"),
@@ -160,7 +158,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16686
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/zombie/streets"),
@@ -189,13 +187,13 @@ public class PlainsVillageData {
 		ImmutableList<StructureProcessor> immutableList4 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.method_9564()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.method_9564())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState())
 				)
 			)
 		);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/houses"),
@@ -241,7 +239,7 @@ public class PlainsVillageData {
 								ImmutableList.of(
 									new RuleStructureProcessor(
 										ImmutableList.of(
-											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.7F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.method_9564())
+											new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.7F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
 										)
 									)
 								)
@@ -254,7 +252,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/zombie/houses"),
@@ -300,7 +298,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/terminators"),
@@ -314,46 +312,46 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16686
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.field_13603)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.DEFAULT)), 1)),
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/decor"),
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1"), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.field_13603)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13549, FeatureConfig.field_13603)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.field_13603)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PLAIN_FLOWER, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/zombie/decor"),
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1", immutableList), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.field_13603)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13549, FeatureConfig.field_13603)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.field_13603)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13510, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PLAIN_FLOWER, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/villagers"),
@@ -366,7 +364,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/plains/zombie/villagers"),
@@ -378,7 +376,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/animals"),
@@ -398,7 +396,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/sheep"),
@@ -409,7 +407,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/cats"),
@@ -430,7 +428,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/butcher_animals"),
@@ -444,7 +442,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/iron_golem"),
@@ -453,7 +451,7 @@ public class PlainsVillageData {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("village/common/well_bottoms"),

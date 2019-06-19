@@ -62,42 +62,42 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
 	}
 
-	public void method_8794(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
 		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_8797(dimensionType, dimensionType2);
+			handler.handle(dimensionType, dimensionType2);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		@Nullable
-		private final DimensionType field_9497;
+		private final DimensionType from;
 		@Nullable
-		private final DimensionType field_9498;
+		private final DimensionType to;
 
 		public Conditions(@Nullable DimensionType dimensionType, @Nullable DimensionType dimensionType2) {
 			super(ChangedDimensionCriterion.ID);
-			this.field_9497 = dimensionType;
-			this.field_9498 = dimensionType2;
+			this.from = dimensionType;
+			this.to = dimensionType2;
 		}
 
-		public static ChangedDimensionCriterion.Conditions method_8799(DimensionType dimensionType) {
+		public static ChangedDimensionCriterion.Conditions to(DimensionType dimensionType) {
 			return new ChangedDimensionCriterion.Conditions(null, dimensionType);
 		}
 
-		public boolean method_8800(DimensionType dimensionType, DimensionType dimensionType2) {
-			return this.field_9497 != null && this.field_9497 != dimensionType ? false : this.field_9498 == null || this.field_9498 == dimensionType2;
+		public boolean matches(DimensionType dimensionType, DimensionType dimensionType2) {
+			return this.from != null && this.from != dimensionType ? false : this.to == null || this.to == dimensionType2;
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			if (this.field_9497 != null) {
-				jsonObject.addProperty("from", DimensionType.getId(this.field_9497).toString());
+			if (this.from != null) {
+				jsonObject.addProperty("from", DimensionType.getId(this.from).toString());
 			}
 
-			if (this.field_9498 != null) {
-				jsonObject.addProperty("to", DimensionType.getId(this.field_9498).toString());
+			if (this.to != null) {
+				jsonObject.addProperty("to", DimensionType.getId(this.to).toString());
 			}
 
 			return jsonObject;
@@ -124,11 +124,11 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8797(DimensionType dimensionType, DimensionType dimensionType2) {
+		public void handle(DimensionType dimensionType, DimensionType dimensionType2) {
 			List<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().method_8800(dimensionType, dimensionType2)) {
+				if (conditionsContainer.getConditions().matches(dimensionType, dimensionType2)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>>newArrayList();
 					}

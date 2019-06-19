@@ -76,32 +76,32 @@ public class ItemEntity extends Entity {
 			this.prevX = this.x;
 			this.prevY = this.y;
 			this.prevZ = this.z;
-			Vec3d vec3d = this.method_18798();
+			Vec3d vec3d = this.getVelocity();
 			if (this.isInFluid(FluidTags.field_15517)) {
 				this.method_6974();
 			} else if (!this.hasNoGravity()) {
-				this.method_18799(this.method_18798().add(0.0, -0.04, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			if (this.field_6002.isClient) {
+			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.field_6002.doesNotCollide(this);
+				this.noClip = !this.world.doesNotCollide(this);
 				if (this.noClip) {
-					this.pushOutOfBlocks(this.x, (this.method_5829().minY + this.method_5829().maxY) / 2.0, this.z);
+					this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 				}
 			}
 
-			if (!this.onGround || method_17996(this.method_18798()) > 1.0E-5F || (this.age + this.getEntityId()) % 4 == 0) {
-				this.method_5784(MovementType.field_6308, this.method_18798());
+			if (!this.onGround || squaredHorizontalLength(this.getVelocity()) > 1.0E-5F || (this.age + this.getEntityId()) % 4 == 0) {
+				this.move(MovementType.field_6308, this.getVelocity());
 				float f = 0.98F;
 				if (this.onGround) {
-					f = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
+					f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
 				}
 
-				this.method_18799(this.method_18798().multiply((double)f, 0.98, (double)f));
+				this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
 				if (this.onGround) {
-					this.method_18799(this.method_18798().multiply(1.0, -0.5, 1.0));
+					this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
 				}
 			}
 
@@ -110,14 +110,14 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.z);
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
-				if (this.field_6002.method_8316(new BlockPos(this)).matches(FluidTags.field_15518)) {
+				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
 					this.setVelocity(
 						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 					);
 					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
-				if (!this.field_6002.isClient && this.method_20397()) {
+				if (!this.world.isClient && this.method_20397()) {
 					this.tryMerge();
 				}
 			}
@@ -127,27 +127,27 @@ public class ItemEntity extends Entity {
 			}
 
 			this.velocityDirty = this.velocityDirty | this.method_5713();
-			if (!this.field_6002.isClient) {
-				double d = this.method_18798().subtract(vec3d).lengthSquared();
+			if (!this.world.isClient) {
+				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {
 					this.velocityDirty = true;
 				}
 			}
 
-			if (!this.field_6002.isClient && this.age >= 6000) {
+			if (!this.world.isClient && this.age >= 6000) {
 				this.remove();
 			}
 		}
 	}
 
 	private void method_6974() {
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.field_6002
-			.method_8390(ItemEntity.class, this.method_5829().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.method_20397());
+		List<ItemEntity> list = this.world
+			.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.method_20397());
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
 				if (!this.method_20397()) {
@@ -265,7 +265,7 @@ public class ItemEntity extends Entity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity playerEntity) {
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getCount();
@@ -296,9 +296,9 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity method_5731(DimensionType dimensionType) {
-		Entity entity = super.method_5731(dimensionType);
-		if (!this.field_6002.isClient && entity instanceof ItemEntity) {
+	public Entity changeDimension(DimensionType dimensionType) {
+		Entity entity = super.changeDimension(dimensionType);
+		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}
 

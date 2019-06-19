@@ -201,7 +201,7 @@ public class ChunkHolder {
 				int k = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
 				BlockPos blockPos = new BlockPos(i, j, k);
 				this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(world, blockPos), false);
-				if (world.method_8320(blockPos).getBlock().hasBlockEntity()) {
+				if (world.getBlockState(blockPos).getBlock().hasBlockEntity()) {
 					this.sendBlockEntityUpdatePacket(world, blockPos);
 				}
 			} else if (this.blockUpdateCount == 64) {
@@ -214,7 +214,7 @@ public class ChunkHolder {
 					int k = this.blockUpdatePositions[i] & 255;
 					int l = (this.blockUpdatePositions[i] >> 8 & 15) + this.pos.z * 16;
 					BlockPos blockPos2 = new BlockPos(j, k, l);
-					if (world.method_8320(blockPos2).getBlock().hasBlockEntity()) {
+					if (world.getBlockState(blockPos2).getBlock().hasBlockEntity()) {
 						this.sendBlockEntityUpdatePacket(world, blockPos2);
 					}
 				}
@@ -226,7 +226,7 @@ public class ChunkHolder {
 	}
 
 	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity != null) {
 			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateS2CPacket != null) {
@@ -388,7 +388,7 @@ public class ChunkHolder {
 			}
 		}
 
-		this.updateFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.method_12240())));
+		this.updateFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())));
 	}
 
 	public static enum LevelType {

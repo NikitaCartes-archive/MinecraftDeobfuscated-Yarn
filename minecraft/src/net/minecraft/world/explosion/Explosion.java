@@ -40,7 +40,7 @@ public class Explosion {
 	private final boolean createFire;
 	private final Explosion.DestructionType blockDestructionType;
 	private final Random random = new Random();
-	private final World field_9187;
+	private final World world;
 	private final double x;
 	private final double y;
 	private final double z;
@@ -64,7 +64,7 @@ public class Explosion {
 	}
 
 	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
-		this.field_9187 = world;
+		this.world = world;
 		this.entity = entity;
 		this.power = g;
 		this.x = d;
@@ -72,11 +72,11 @@ public class Explosion {
 		this.z = f;
 		this.createFire = bl;
 		this.blockDestructionType = destructionType;
-		this.damageSource = DamageSource.method_5531(this);
+		this.damageSource = DamageSource.explosion(this);
 	}
 
-	public static float method_17752(Vec3d vec3d, Entity entity) {
-		Box box = entity.method_5829();
+	public static float getExposure(Vec3d vec3d, Entity entity) {
+		Box box = entity.getBoundingBox();
 		double d = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
 		double e = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
 		double f = 1.0 / ((box.maxZ - box.minZ) * 2.0 + 1.0);
@@ -93,8 +93,8 @@ public class Explosion {
 						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
 						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
 						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
-						if (entity.field_6002
-								.method_17742(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
+						if (entity.world
+								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
 								.getType()
 							== HitResult.Type.field_1333) {
 							i++;
@@ -126,25 +126,25 @@ public class Explosion {
 						d /= g;
 						e /= g;
 						f /= g;
-						float h = this.power * (0.7F + this.field_9187.random.nextFloat() * 0.6F);
+						float h = this.power * (0.7F + this.world.random.nextFloat() * 0.6F);
 						double m = this.x;
 						double n = this.y;
 						double o = this.z;
 
 						for (float p = 0.3F; h > 0.0F; h -= 0.22500001F) {
 							BlockPos blockPos = new BlockPos(m, n, o);
-							BlockState blockState = this.field_9187.method_8320(blockPos);
-							FluidState fluidState = this.field_9187.method_8316(blockPos);
+							BlockState blockState = this.world.getBlockState(blockPos);
+							FluidState fluidState = this.world.getFluidState(blockPos);
 							if (!blockState.isAir() || !fluidState.isEmpty()) {
 								float q = Math.max(blockState.getBlock().getBlastResistance(), fluidState.getBlastResistance());
 								if (this.entity != null) {
-									q = this.entity.method_5774(this, this.field_9187, blockPos, blockState, fluidState, q);
+									q = this.entity.getEffectiveExplosionResistance(this, this.world, blockPos, blockState, fluidState, q);
 								}
 
 								h -= (q + 0.3F) * 0.3F;
 							}
 
-							if (h > 0.0F && (this.entity == null || this.entity.method_5853(this, this.field_9187, blockPos, blockState, h))) {
+							if (h > 0.0F && (this.entity == null || this.entity.canExplosionDestroyBlock(this, this.world, blockPos, blockState, h))) {
 								set.add(blockPos);
 							}
 
@@ -165,13 +165,13 @@ public class Explosion {
 		int t = MathHelper.floor(this.y + (double)r + 1.0);
 		int u = MathHelper.floor(this.z - (double)r - 1.0);
 		int v = MathHelper.floor(this.z + (double)r + 1.0);
-		List<Entity> list = this.field_9187.method_8335(this.entity, new Box((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
+		List<Entity> list = this.world.getEntities(this.entity, new Box((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
 		for (int w = 0; w < list.size(); w++) {
 			Entity entity = (Entity)list.get(w);
 			if (!entity.isImmuneToExplosion()) {
-				double x = (double)(MathHelper.sqrt(entity.method_5707(new Vec3d(this.x, this.y, this.z))) / r);
+				double x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(new Vec3d(this.x, this.y, this.z))) / r);
 				if (x <= 1.0) {
 					double y = entity.x - this.x;
 					double z = entity.y + (double)entity.getStandingEyeHeight() - this.y;
@@ -181,7 +181,7 @@ public class Explosion {
 						y /= ab;
 						z /= ab;
 						aa /= ab;
-						double ac = (double)method_17752(vec3d, entity);
+						double ac = (double)getExposure(vec3d, entity);
 						double ad = (1.0 - x) * ac;
 						entity.damage(this.getDamageSource(), (float)((int)((ad * ad + ad) / 2.0 * 7.0 * (double)r + 1.0)));
 						double ae = ad;
@@ -189,7 +189,7 @@ public class Explosion {
 							ae = ProtectionEnchantment.transformExplosionKnockback((LivingEntity)entity, ad);
 						}
 
-						entity.method_18799(entity.method_18798().add(y * ae, z * ae, aa * ae));
+						entity.setVelocity(entity.getVelocity().add(y * ae, z * ae, aa * ae));
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity playerEntity = (PlayerEntity)entity;
 							if (!playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.abilities.flying)) {
@@ -203,7 +203,7 @@ public class Explosion {
 	}
 
 	public void affectWorld(boolean bl) {
-		this.field_9187
+		this.world
 			.playSound(
 				null,
 				this.x,
@@ -212,23 +212,23 @@ public class Explosion {
 				SoundEvents.field_15152,
 				SoundCategory.field_15245,
 				4.0F,
-				(1.0F + (this.field_9187.random.nextFloat() - this.field_9187.random.nextFloat()) * 0.2F) * 0.7F
+				(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F
 			);
 		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.field_18685;
 		if (!(this.power < 2.0F) && bl2) {
-			this.field_9187.addParticle(ParticleTypes.field_11221, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11221, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		} else {
-			this.field_9187.addParticle(ParticleTypes.field_11236, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		}
 
 		if (bl2) {
 			for (BlockPos blockPos : this.affectedBlocks) {
-				BlockState blockState = this.field_9187.method_8320(blockPos);
+				BlockState blockState = this.world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (bl) {
-					double d = (double)((float)blockPos.getX() + this.field_9187.random.nextFloat());
-					double e = (double)((float)blockPos.getY() + this.field_9187.random.nextFloat());
-					double f = (double)((float)blockPos.getZ() + this.field_9187.random.nextFloat());
+					double d = (double)((float)blockPos.getX() + this.world.random.nextFloat());
+					double e = (double)((float)blockPos.getY() + this.world.random.nextFloat());
+					double f = (double)((float)blockPos.getZ() + this.world.random.nextFloat());
 					double g = d - this.x;
 					double h = e - this.y;
 					double i = f - this.z;
@@ -237,41 +237,41 @@ public class Explosion {
 					h /= j;
 					i /= j;
 					double k = 0.5 / (j / (double)this.power + 0.1);
-					k *= (double)(this.field_9187.random.nextFloat() * this.field_9187.random.nextFloat() + 0.3F);
+					k *= (double)(this.world.random.nextFloat() * this.world.random.nextFloat() + 0.3F);
 					g *= k;
 					h *= k;
 					i *= k;
-					this.field_9187.addParticle(ParticleTypes.field_11203, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
-					this.field_9187.addParticle(ParticleTypes.field_11251, d, e, f, g, h, i);
+					this.world.addParticle(ParticleTypes.field_11203, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
+					this.world.addParticle(ParticleTypes.field_11251, d, e, f, g, h, i);
 				}
 
 				if (!blockState.isAir()) {
-					if (block.shouldDropItemsOnExplosion(this) && this.field_9187 instanceof ServerWorld) {
-						BlockEntity blockEntity = block.hasBlockEntity() ? this.field_9187.method_8321(blockPos) : null;
-						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.field_9187)
-							.setRandom(this.field_9187.random)
-							.method_312(LootContextParameters.field_1232, blockPos)
-							.method_312(LootContextParameters.field_1229, ItemStack.EMPTY)
-							.method_306(LootContextParameters.field_1228, blockEntity);
+					if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
+						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
+						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+							.setRandom(this.world.random)
+							.put(LootContextParameters.field_1232, blockPos)
+							.put(LootContextParameters.field_1229, ItemStack.EMPTY)
+							.putNullable(LootContextParameters.field_1228, blockEntity);
 						if (this.blockDestructionType == Explosion.DestructionType.field_18687) {
-							builder.method_312(LootContextParameters.field_1225, this.power);
+							builder.put(LootContextParameters.field_1225, this.power);
 						}
 
-						Block.method_9566(blockState, builder);
+						Block.dropStacks(blockState, builder);
 					}
 
-					this.field_9187.method_8652(blockPos, Blocks.field_10124.method_9564(), 3);
-					block.onDestroyedByExplosion(this.field_9187, blockPos, this);
+					this.world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+					block.onDestroyedByExplosion(this.world, blockPos, this);
 				}
 			}
 		}
 
 		if (this.createFire) {
 			for (BlockPos blockPos : this.affectedBlocks) {
-				if (this.field_9187.method_8320(blockPos).isAir()
-					&& this.field_9187.method_8320(blockPos.down()).isFullOpaque(this.field_9187, blockPos.down())
+				if (this.world.getBlockState(blockPos).isAir()
+					&& this.world.getBlockState(blockPos.down()).isFullOpaque(this.world, blockPos.down())
 					&& this.random.nextInt(3) == 0) {
-					this.field_9187.method_8501(blockPos, Blocks.field_10036.method_9564());
+					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 				}
 			}
 		}

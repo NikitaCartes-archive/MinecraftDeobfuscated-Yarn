@@ -15,7 +15,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 
 	public SlimeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SlimeEntityModel<>(16), 0.25F);
-		this.method_4046(new SlimeOverlayFeatureRenderer<>(this));
+		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
 	public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {

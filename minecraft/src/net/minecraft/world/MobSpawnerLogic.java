@@ -29,7 +29,7 @@ public abstract class MobSpawnerLogic {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private int spawnDelay = 20;
 	private final List<MobSpawnerEntry> spawnPotentials = Lists.<MobSpawnerEntry>newArrayList();
-	private MobSpawnerEntry field_9155 = new MobSpawnerEntry();
+	private MobSpawnerEntry spawnEntry = new MobSpawnerEntry();
 	private double field_9161;
 	private double field_9159;
 	private int minSpawnDelay = 200;
@@ -42,26 +42,26 @@ public abstract class MobSpawnerLogic {
 
 	@Nullable
 	private Identifier getEntityId() {
-		String string = this.field_9155.getEntityTag().getString("id");
+		String string = this.spawnEntry.getEntityTag().getString("id");
 
 		try {
 			return ChatUtil.isEmpty(string) ? null : new Identifier(string);
 		} catch (InvalidIdentifierException var4) {
 			BlockPos blockPos = this.getPos();
 			LOGGER.warn(
-				"Invalid entity id '{}' at spawner {}:[{},{},{}]", string, this.method_8271().field_9247.method_12460(), blockPos.getX(), blockPos.getY(), blockPos.getZ()
+				"Invalid entity id '{}' at spawner {}:[{},{},{}]", string, this.getWorld().dimension.getType(), blockPos.getX(), blockPos.getY(), blockPos.getZ()
 			);
 			return null;
 		}
 	}
 
 	public void setEntityId(EntityType<?> entityType) {
-		this.field_9155.getEntityTag().putString("id", Registry.ENTITY_TYPE.getId(entityType).toString());
+		this.spawnEntry.getEntityTag().putString("id", Registry.ENTITY_TYPE.getId(entityType).toString());
 	}
 
 	private boolean isPlayerInRange() {
 		BlockPos blockPos = this.getPos();
-		return this.method_8271()
+		return this.getWorld()
 			.isPlayerInRange((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, (double)this.requiredPlayerRange);
 	}
 
@@ -69,7 +69,7 @@ public abstract class MobSpawnerLogic {
 		if (!this.isPlayerInRange()) {
 			this.field_9159 = this.field_9161;
 		} else {
-			World world = this.method_8271();
+			World world = this.getWorld();
 			BlockPos blockPos = this.getPos();
 			if (world.isClient) {
 				double d = (double)((float)blockPos.getX() + world.random.nextFloat());
@@ -96,7 +96,7 @@ public abstract class MobSpawnerLogic {
 				boolean bl = false;
 
 				for (int i = 0; i < this.spawnCount; i++) {
-					CompoundTag compoundTag = this.field_9155.getEntityTag();
+					CompoundTag compoundTag = this.spawnEntry.getEntityTag();
 					Optional<EntityType<?>> optional = EntityType.fromTag(compoundTag);
 					if (!optional.isPresent()) {
 						this.updateSpawns();
@@ -112,9 +112,9 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.method_18026(((EntityType)optional.get()).method_17683(g, h, k))
+					if (world.doesNotCollide(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))
 						&& SpawnRestriction.method_20638((EntityType)optional.get(), world.getWorld(), SpawnType.field_16469, new BlockPos(g, h, k), world.getRandom())) {
-						Entity entity = EntityType.method_17842(compoundTag, world, entityx -> {
+						Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> {
 							entityx.setPositionAndAngles(g, h, k, entityx.yaw, entityx.pitch);
 							return entityx;
 						});
@@ -123,7 +123,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						int l = world.method_18467(
+						int l = world.getEntities(
 								entity.getClass(),
 								new Box(
 										(double)blockPos.getX(),
@@ -144,12 +144,12 @@ public abstract class MobSpawnerLogic {
 						entity.setPositionAndAngles(entity.x, entity.y, entity.z, world.random.nextFloat() * 360.0F, 0.0F);
 						if (entity instanceof MobEntity) {
 							MobEntity mobEntity = (MobEntity)entity;
-							if (!mobEntity.method_5979(world, SpawnType.field_16469) || !mobEntity.method_5957(world)) {
+							if (!mobEntity.canSpawn(world, SpawnType.field_16469) || !mobEntity.canSpawn(world)) {
 								continue;
 							}
 
-							if (this.field_9155.getEntityTag().getSize() == 1 && this.field_9155.getEntityTag().containsKey("id", 8)) {
-								((MobEntity)entity).method_5943(world, world.getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16469, null, null);
+							if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8)) {
+								((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16469, null, null);
 							}
 						}
 
@@ -171,7 +171,7 @@ public abstract class MobSpawnerLogic {
 	}
 
 	private void spawnEntity(Entity entity) {
-		if (this.method_8271().spawnEntity(entity)) {
+		if (this.getWorld().spawnEntity(entity)) {
 			for (Entity entity2 : entity.getPassengerList()) {
 				this.spawnEntity(entity2);
 			}
@@ -182,11 +182,11 @@ public abstract class MobSpawnerLogic {
 		if (this.maxSpawnDelay <= this.minSpawnDelay) {
 			this.spawnDelay = this.minSpawnDelay;
 		} else {
-			this.spawnDelay = this.minSpawnDelay + this.method_8271().random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
+			this.spawnDelay = this.minSpawnDelay + this.getWorld().random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
 		}
 
 		if (!this.spawnPotentials.isEmpty()) {
-			this.method_8277(WeightedPicker.getRandom(this.method_8271().random, this.spawnPotentials));
+			this.setSpawnEntry(WeightedPicker.getRandom(this.getWorld().random, this.spawnPotentials));
 		}
 
 		this.sendStatus(1);
@@ -204,9 +204,9 @@ public abstract class MobSpawnerLogic {
 		}
 
 		if (compoundTag.containsKey("SpawnData", 10)) {
-			this.method_8277(new MobSpawnerEntry(1, compoundTag.getCompound("SpawnData")));
+			this.setSpawnEntry(new MobSpawnerEntry(1, compoundTag.getCompound("SpawnData")));
 		} else if (!this.spawnPotentials.isEmpty()) {
-			this.method_8277(WeightedPicker.getRandom(this.method_8271().random, this.spawnPotentials));
+			this.setSpawnEntry(WeightedPicker.getRandom(this.getWorld().random, this.spawnPotentials));
 		}
 
 		if (compoundTag.containsKey("MinSpawnDelay", 99)) {
@@ -224,7 +224,7 @@ public abstract class MobSpawnerLogic {
 			this.spawnRange = compoundTag.getShort("SpawnRange");
 		}
 
-		if (this.method_8271() != null) {
+		if (this.getWorld() != null) {
 			this.renderedEntity = null;
 		}
 	}
@@ -241,10 +241,10 @@ public abstract class MobSpawnerLogic {
 			compoundTag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
 			compoundTag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
 			compoundTag.putShort("SpawnRange", (short)this.spawnRange);
-			compoundTag.put("SpawnData", this.field_9155.getEntityTag().method_10553());
+			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().method_10553());
 			ListTag listTag = new ListTag();
 			if (this.spawnPotentials.isEmpty()) {
-				listTag.add(this.field_9155.serialize());
+				listTag.add(this.spawnEntry.serialize());
 			} else {
 				for (MobSpawnerEntry mobSpawnerEntry : this.spawnPotentials) {
 					listTag.add(mobSpawnerEntry.serialize());
@@ -259,10 +259,10 @@ public abstract class MobSpawnerLogic {
 	@Environment(EnvType.CLIENT)
 	public Entity getRenderedEntity() {
 		if (this.renderedEntity == null) {
-			this.renderedEntity = EntityType.method_17842(this.field_9155.getEntityTag(), this.method_8271(), Function.identity());
-			if (this.field_9155.getEntityTag().getSize() == 1 && this.field_9155.getEntityTag().containsKey("id", 8) && this.renderedEntity instanceof MobEntity) {
+			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityTag(), this.getWorld(), Function.identity());
+			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && this.renderedEntity instanceof MobEntity) {
 				((MobEntity)this.renderedEntity)
-					.method_5943(this.method_8271(), this.method_8271().getLocalDifficulty(new BlockPos(this.renderedEntity)), SpawnType.field_16469, null, null);
+					.initialize(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.renderedEntity)), SpawnType.field_16469, null, null);
 			}
 		}
 
@@ -270,7 +270,7 @@ public abstract class MobSpawnerLogic {
 	}
 
 	public boolean method_8275(int i) {
-		if (i == 1 && this.method_8271().isClient) {
+		if (i == 1 && this.getWorld().isClient) {
 			this.spawnDelay = this.minSpawnDelay;
 			return true;
 		} else {
@@ -278,13 +278,13 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public void method_8277(MobSpawnerEntry mobSpawnerEntry) {
-		this.field_9155 = mobSpawnerEntry;
+	public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
+		this.spawnEntry = mobSpawnerEntry;
 	}
 
 	public abstract void sendStatus(int i);
 
-	public abstract World method_8271();
+	public abstract World getWorld();
 
 	public abstract BlockPos getPos();
 

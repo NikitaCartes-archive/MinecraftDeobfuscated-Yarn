@@ -93,7 +93,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	private boolean isBedAt(ServerWorld serverWorld, BlockPos blockPos) {
-		return serverWorld.method_8320(blockPos).matches(BlockTags.field_16443);
+		return serverWorld.getBlockState(blockPos).matches(BlockTags.field_16443);
 	}
 
 	private Optional<BlockPos> getNearestBed(MobEntity mobEntity) {

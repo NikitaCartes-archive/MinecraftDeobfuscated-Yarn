@@ -46,7 +46,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 		for (ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord chunkDeltaRecord : this.records) {
 			packetByteBuf.writeShort(chunkDeltaRecord.getPosShort());
-			packetByteBuf.writeVarInt(Block.method_9507(chunkDeltaRecord.getState()));
+			packetByteBuf.writeVarInt(Block.getRawIdFromState(chunkDeltaRecord.getState()));
 		}
 	}
 
@@ -70,7 +70,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 		public ChunkDeltaRecord(short s, WorldChunk worldChunk) {
 			this.pos = s;
-			this.state = worldChunk.method_8320(this.getBlockPos());
+			this.state = worldChunk.getBlockState(this.getBlockPos());
 		}
 
 		public BlockPos getBlockPos() {

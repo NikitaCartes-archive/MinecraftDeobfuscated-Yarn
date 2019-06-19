@@ -37,7 +37,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.125F);
 	}
 

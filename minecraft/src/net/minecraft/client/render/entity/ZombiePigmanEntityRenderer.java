@@ -13,7 +13,7 @@ public class ZombiePigmanEntityRenderer extends BipedEntityRenderer<ZombiePigman
 
 	public ZombiePigmanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ZombieEntityModel<>(), 0.5F);
-		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new ZombieEntityModel(0.5F, true), new ZombieEntityModel(1.0F, true)));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieEntityModel(0.5F, true), new ZombieEntityModel(1.0F, true)));
 	}
 
 	protected Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {

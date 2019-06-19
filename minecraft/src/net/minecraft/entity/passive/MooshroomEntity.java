@@ -43,12 +43,12 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.method_8320(blockPos.down()).getBlock() == Blocks.field_10402 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 
 	public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.method_8320(blockPos.down()).getBlock() == Blocks.field_10402 && iWorld.getLightLevel(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 && iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -100,10 +100,10 @@ public class MooshroomEntity extends CowEntity {
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
 		} else if (itemStack.getItem() == Items.field_8868 && this.getBreedingAge() >= 0) {
-			this.field_6002.addParticle(ParticleTypes.field_11236, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
-			if (!this.field_6002.isClient) {
+			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
+			if (!this.world.isClient) {
 				this.remove();
-				CowEntity cowEntity = EntityType.field_6085.method_5883(this.field_6002);
+				CowEntity cowEntity = EntityType.field_6085.create(this.world);
 				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.field_6283 = this.field_6283;
@@ -111,13 +111,11 @@ public class MooshroomEntity extends CowEntity {
 					cowEntity.setCustomName(this.getCustomName());
 				}
 
-				this.field_6002.spawnEntity(cowEntity);
+				this.world.spawnEntity(cowEntity);
 
 				for (int i = 0; i < 5; i++) {
-					this.field_6002
-						.spawnEntity(
-							new ItemEntity(this.field_6002, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().field_18112.getBlock()))
-						);
+					this.world
+						.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
@@ -129,7 +127,7 @@ public class MooshroomEntity extends CowEntity {
 			if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().isIn(ItemTags.field_15543)) {
 				if (this.stewEffect != null) {
 					for (int j = 0; j < 2; j++) {
-						this.field_6002
+						this.world
 							.addParticle(
 								ParticleTypes.field_11251,
 								this.x + (double)(this.random.nextFloat() / 2.0F),
@@ -147,7 +145,7 @@ public class MooshroomEntity extends CowEntity {
 					}
 
 					for (int i = 0; i < 4; i++) {
-						this.field_6002
+						this.world
 							.addParticle(
 								ParticleTypes.field_11245,
 								this.x + (double)(this.random.nextFloat() / 2.0F),
@@ -193,7 +191,7 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	private Pair<StatusEffect, Integer> getStewEffectFrom(ItemStack itemStack) {
-		FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).method_7711();
+		FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
 		return Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration());
 	}
 
@@ -206,7 +204,7 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.field_6143.method_5883(this.field_6002);
+		MooshroomEntity mooshroomEntity = EntityType.field_6143.create(this.world);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;
 	}
@@ -225,20 +223,20 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	public static enum Type {
-		field_18109("red", Blocks.field_10559.method_9564()),
-		field_18110("brown", Blocks.field_10251.method_9564());
+		field_18109("red", Blocks.field_10559.getDefaultState()),
+		field_18110("brown", Blocks.field_10251.getDefaultState());
 
 		private final String name;
-		private final BlockState field_18112;
+		private final BlockState mushroom;
 
 		private Type(String string2, BlockState blockState) {
 			this.name = string2;
-			this.field_18112 = blockState;
+			this.mushroom = blockState;
 		}
 
 		@Environment(EnvType.CLIENT)
-		public BlockState method_18437() {
-			return this.field_18112;
+		public BlockState getMushroomState() {
+			return this.mushroom;
 		}
 
 		private static MooshroomEntity.Type fromName(String string) {

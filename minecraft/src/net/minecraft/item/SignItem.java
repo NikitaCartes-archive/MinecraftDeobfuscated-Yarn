@@ -14,10 +14,10 @@ public class SignItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	protected boolean method_7710(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		boolean bl = super.method_7710(blockPos, world, playerEntity, itemStack, blockState);
+	protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
+		boolean bl = super.postPlacement(blockPos, world, playerEntity, itemStack, blockState);
 		if (!world.isClient && !bl && playerEntity != null) {
-			playerEntity.method_7311((SignBlockEntity)world.method_8321(blockPos));
+			playerEntity.openEditSignScreen((SignBlockEntity)world.getBlockEntity(blockPos));
 		}
 
 		return bl;

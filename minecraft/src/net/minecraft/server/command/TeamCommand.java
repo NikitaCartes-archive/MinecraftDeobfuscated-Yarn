@@ -371,7 +371,7 @@ public class TeamCommand {
 		if (team.getCollisionRule() == collisionRule) {
 			throw OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION.create();
 		} else {
-			team.method_1145(collisionRule);
+			team.setCollisionRule(collisionRule);
 			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getTranslationKey()), true
 			);

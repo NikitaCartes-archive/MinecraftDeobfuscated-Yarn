@@ -37,31 +37,31 @@ public class WeatherCommand {
 	}
 
 	private static int executeClear(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().method_8401().setClearWeatherTime(i);
-		serverCommandSource.getWorld().method_8401().setRainTime(0);
-		serverCommandSource.getWorld().method_8401().setThunderTime(0);
-		serverCommandSource.getWorld().method_8401().setRaining(false);
-		serverCommandSource.getWorld().method_8401().setThundering(false);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(false);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
 		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
 		return i;
 	}
 
 	private static int executeRain(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().method_8401().setClearWeatherTime(0);
-		serverCommandSource.getWorld().method_8401().setRainTime(i);
-		serverCommandSource.getWorld().method_8401().setThunderTime(i);
-		serverCommandSource.getWorld().method_8401().setRaining(true);
-		serverCommandSource.getWorld().method_8401().setThundering(false);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
 		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
 		return i;
 	}
 
 	private static int executeThunder(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().method_8401().setClearWeatherTime(0);
-		serverCommandSource.getWorld().method_8401().setRainTime(i);
-		serverCommandSource.getWorld().method_8401().setThunderTime(i);
-		serverCommandSource.getWorld().method_8401().setRaining(true);
-		serverCommandSource.getWorld().method_8401().setThundering(true);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(true);
 		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
 		return i;
 	}

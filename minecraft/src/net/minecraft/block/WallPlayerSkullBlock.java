@@ -14,12 +14,12 @@ public class WallPlayerSkullBlock extends WallSkullBlock {
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		Blocks.field_10432.method_9567(world, blockPos, blockState, livingEntity, itemStack);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		Blocks.field_10432.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
 	}
 
 	@Override
-	public List<ItemStack> method_9560(BlockState blockState, LootContext.Builder builder) {
-		return Blocks.field_10432.method_9560(blockState, builder);
+	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
+		return Blocks.field_10432.getDroppedStacks(blockState, builder);
 	}
 }

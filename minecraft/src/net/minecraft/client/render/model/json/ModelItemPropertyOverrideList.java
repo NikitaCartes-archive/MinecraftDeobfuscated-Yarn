@@ -36,7 +36,7 @@ public class ModelItemPropertyOverrideList {
 					UnbakedModel unbakedModel = (UnbakedModel)function.apply(modelItemOverride.getModelId());
 					return Objects.equals(unbakedModel, jsonUnbakedModel)
 						? null
-						: modelLoader.method_15878(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.field_5350);
+						: modelLoader.bake(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.field_5350);
 				}
 			)
 			.collect(Collectors.toList());
@@ -48,7 +48,7 @@ public class ModelItemPropertyOverrideList {
 	}
 
 	@Nullable
-	public BakedModel method_3495(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+	public BakedModel apply(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		if (!this.overrides.isEmpty()) {
 			for (int i = 0; i < this.overrides.size(); i++) {
 				ModelItemOverride modelItemOverride = (ModelItemOverride)this.overrides.get(i);

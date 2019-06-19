@@ -71,7 +71,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public void setRadius(float f) {
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.getDataTracker().set(RADIUS, f);
 		}
 	}
@@ -149,7 +149,7 @@ public class AreaEffectCloudEntity extends Entity {
 		super.tick();
 		boolean bl = this.isWaiting();
 		float f = this.getRadius();
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			ParticleEffect particleEffect = this.getParticleType();
 			if (bl) {
 				if (this.random.nextBoolean()) {
@@ -163,12 +163,12 @@ public class AreaEffectCloudEntity extends Entity {
 							int m = l >> 16 & 0xFF;
 							int n = l >> 8 & 0xFF;
 							int o = l & 0xFF;
-							this.field_6002
+							this.world
 								.addImportantParticle(
 									particleEffect, this.x + (double)j, this.y, this.z + (double)k, (double)((float)m / 255.0F), (double)((float)n / 255.0F), (double)((float)o / 255.0F)
 								);
 						} else {
-							this.field_6002.addImportantParticle(particleEffect, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
+							this.world.addImportantParticle(particleEffect, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -185,12 +185,12 @@ public class AreaEffectCloudEntity extends Entity {
 						int n = m >> 16 & 0xFF;
 						int o = m >> 8 & 0xFF;
 						int s = m & 0xFF;
-						this.field_6002
+						this.world
 							.addImportantParticle(
 								particleEffect, this.x + (double)k, this.y, this.z + (double)r, (double)((float)n / 255.0F), (double)((float)o / 255.0F), (double)((float)s / 255.0F)
 							);
 					} else {
-						this.field_6002
+						this.world
 							.addImportantParticle(
 								particleEffect, this.x + (double)k, this.y, this.z + (double)r, (0.5 - this.random.nextDouble()) * 0.15, 0.01F, (0.5 - this.random.nextDouble()) * 0.15
 							);
@@ -250,7 +250,7 @@ public class AreaEffectCloudEntity extends Entity {
 				if (list.isEmpty()) {
 					this.affectedEntities.clear();
 				} else {
-					List<LivingEntity> list2 = this.field_6002.method_18467(LivingEntity.class, this.method_5829());
+					List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.method_6086()) {
@@ -313,8 +313,8 @@ public class AreaEffectCloudEntity extends Entity {
 
 	@Nullable
 	public LivingEntity getOwner() {
-		if (this.owner == null && this.ownerUuid != null && this.field_6002 instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.field_6002).getEntity(this.ownerUuid);
+		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}
@@ -407,7 +407,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public PistonBehavior method_5657() {
+	public PistonBehavior getPistonBehavior() {
 		return PistonBehavior.field_15975;
 	}
 
@@ -417,7 +417,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public EntityDimensions method_18377(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		return EntityDimensions.changing(this.getRadius() * 2.0F, 0.5F);
 	}
 }

@@ -15,7 +15,7 @@ public class EndMidlandsBiome extends Biome {
 	public EndMidlandsBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15671)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.END_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.THEEND)
 				.depth(0.1F)
@@ -26,10 +26,8 @@ public class EndMidlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13553, FeatureConfig.field_13603);
-		this.method_8719(
-			GenerationStep.Feature.field_13173, method_8699(Feature.field_13553, FeatureConfig.field_13603, Decorator.field_14250, DecoratorConfig.field_13436)
-		);
+		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
+		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT));
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 4, 4));
 	}
 

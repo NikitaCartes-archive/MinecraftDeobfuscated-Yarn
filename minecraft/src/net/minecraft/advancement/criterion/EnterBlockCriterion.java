@@ -77,10 +77,10 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 				throw new JsonSyntaxException("Can't define block state without a specific block type");
 			}
 
-			StateFactory<Block, BlockState> stateFactory = block.method_9595();
+			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 
 			for (Entry<String, JsonElement> entry : JsonHelper.getObject(jsonObject, "state").entrySet()) {
-				Property<?> property = stateFactory.method_11663((String)entry.getKey());
+				Property<?> property = stateFactory.getProperty((String)entry.getKey());
 				if (property == null) {
 					throw new JsonSyntaxException("Unknown block state property '" + (String)entry.getKey() + "' for block '" + Registry.BLOCK.getId(block) + "'");
 				}
@@ -104,32 +104,32 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 		return new EnterBlockCriterion.Conditions(block, map);
 	}
 
-	public void method_8885(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
 		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_8888(blockState);
+			handler.handle(blockState);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final Block field_9576;
+		private final Block block;
 		private final Map<Property<?>, Object> state;
 
 		public Conditions(@Nullable Block block, @Nullable Map<Property<?>, Object> map) {
 			super(EnterBlockCriterion.ID);
-			this.field_9576 = block;
+			this.block = block;
 			this.state = map;
 		}
 
-		public static EnterBlockCriterion.Conditions method_8890(Block block) {
+		public static EnterBlockCriterion.Conditions block(Block block) {
 			return new EnterBlockCriterion.Conditions(block, null);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			if (this.field_9576 != null) {
-				jsonObject.addProperty("block", Registry.BLOCK.getId(this.field_9576).toString());
+			if (this.block != null) {
+				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
 				if (this.state != null && !this.state.isEmpty()) {
 					JsonObject jsonObject2 = new JsonObject();
 
@@ -144,13 +144,13 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 			return jsonObject;
 		}
 
-		public boolean method_8891(BlockState blockState) {
-			if (this.field_9576 != null && blockState.getBlock() != this.field_9576) {
+		public boolean matches(BlockState blockState) {
+			if (this.block != null && blockState.getBlock() != this.block) {
 				return false;
 			} else {
 				if (this.state != null) {
 					for (Entry<Property<?>, Object> entry : this.state.entrySet()) {
-						if (blockState.method_11654((Property)entry.getKey()) != entry.getValue()) {
+						if (blockState.get((Property)entry.getKey()) != entry.getValue()) {
 							return false;
 						}
 					}
@@ -181,11 +181,11 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8888(BlockState blockState) {
+		public void handle(BlockState blockState) {
 			List<Criterion.ConditionsContainer<EnterBlockCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().method_8891(blockState)) {
+				if (conditionsContainer.getConditions().matches(blockState)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<EnterBlockCriterion.Conditions>>newArrayList();
 					}

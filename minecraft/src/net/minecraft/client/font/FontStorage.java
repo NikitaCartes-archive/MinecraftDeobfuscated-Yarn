@@ -22,12 +22,12 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class FontStorage implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final EmptyGlyphRenderer field_2250 = new EmptyGlyphRenderer();
+	private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
 	private static final Glyph SPACE = () -> 4.0F;
 	private static final Random RANDOM = new Random();
-	private final TextureManager field_2248;
+	private final TextureManager textureManager;
 	private final Identifier id;
-	private GlyphRenderer field_2256;
+	private GlyphRenderer blankGlyphRenderer;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
 	private final Char2ObjectMap<GlyphRenderer> glyphRendererCache = new Char2ObjectOpenHashMap<>();
 	private final Char2ObjectMap<Glyph> glyphCache = new Char2ObjectOpenHashMap<>();
@@ -35,7 +35,7 @@ public class FontStorage implements AutoCloseable {
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
 	public FontStorage(TextureManager textureManager, Identifier identifier) {
-		this.field_2248 = textureManager;
+		this.textureManager = textureManager;
 		this.id = identifier;
 	}
 
@@ -50,12 +50,12 @@ public class FontStorage implements AutoCloseable {
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
-		this.field_2256 = this.method_2012(BlankGlyph.field_2283);
+		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.field_2283);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
 			for (Font font2 : list) {
-				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.method_2040(c));
+				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.getGlyph(c));
 				if (glyph != null) {
 					set.add(font2);
 					if (glyph != BlankGlyph.field_2283) {
@@ -85,7 +85,7 @@ public class FontStorage implements AutoCloseable {
 
 	private RenderableGlyph getRenderableGlyph(char c) {
 		for (Font font : this.fonts) {
-			RenderableGlyph renderableGlyph = font.method_2040(c);
+			RenderableGlyph renderableGlyph = font.getGlyph(c);
 			if (renderableGlyph != null) {
 				return renderableGlyph;
 			}
@@ -94,13 +94,14 @@ public class FontStorage implements AutoCloseable {
 		return BlankGlyph.field_2283;
 	}
 
-	public GlyphRenderer method_2014(char c) {
-		return this.glyphRendererCache.computeIfAbsent(c, i -> (GlyphRenderer)(i == 32 ? field_2250 : this.method_2012(this.getRenderableGlyph((char)i))));
+	public GlyphRenderer getGlyphRenderer(char c) {
+		return this.glyphRendererCache
+			.computeIfAbsent(c, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
 	}
 
-	private GlyphRenderer method_2012(RenderableGlyph renderableGlyph) {
+	private GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
 		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
-			GlyphRenderer glyphRenderer = glyphAtlasTexture.method_2022(renderableGlyph);
+			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(renderableGlyph);
 			if (glyphRenderer != null) {
 				return glyphRenderer;
 			}
@@ -110,13 +111,13 @@ public class FontStorage implements AutoCloseable {
 			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), renderableGlyph.hasColor()
 		);
 		this.glyphAtlases.add(glyphAtlasTexture2);
-		this.field_2248.method_4616(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
-		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.method_2022(renderableGlyph);
-		return glyphRenderer2 == null ? this.field_2256 : glyphRenderer2;
+		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
+		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(renderableGlyph);
+		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
 	}
 
-	public GlyphRenderer method_2013(Glyph glyph) {
+	public GlyphRenderer getObfuscatedGlyphRenderer(Glyph glyph) {
 		CharList charList = this.charactersByWidth.get(MathHelper.ceil(glyph.getAdvance(false)));
-		return charList != null && !charList.isEmpty() ? this.method_2014(charList.get(RANDOM.nextInt(charList.size()))) : this.field_2256;
+		return charList != null && !charList.isEmpty() ? this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size()))) : this.blankGlyphRenderer;
 	}
 }

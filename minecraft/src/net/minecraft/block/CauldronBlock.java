@@ -30,53 +30,56 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CauldronBlock extends Block {
-	public static final IntProperty field_10745 = Properties.field_12513;
-	private static final VoxelShape field_10747 = method_9541(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
-	protected static final VoxelShape field_10746 = VoxelShapes.method_1072(
-		VoxelShapes.method_1077(),
-		VoxelShapes.method_17786(
-			method_9541(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), method_9541(4.0, 0.0, 0.0, 12.0, 3.0, 16.0), method_9541(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), field_10747
+	public static final IntProperty LEVEL = Properties.LEVEL_3;
+	private static final VoxelShape RAY_TRACE_SHAPE = createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
+	protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(
+		VoxelShapes.fullCube(),
+		VoxelShapes.union(
+			createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0),
+			createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0),
+			createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0),
+			RAY_TRACE_SHAPE
 		),
 		BooleanBiFunction.ONLY_FIRST
 	);
 
 	public CauldronBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10745, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_10746;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return OUTLINE_SHAPE;
 	}
 
 	@Override
-	public boolean method_9601(BlockState blockState) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 
 	@Override
-	public VoxelShape method_9584(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return field_10747;
+	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return RAY_TRACE_SHAPE;
 	}
 
 	@Override
-	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		int i = (Integer)blockState.method_11654(field_10745);
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		int i = (Integer)blockState.get(LEVEL);
 		float f = (float)blockPos.getY() + (6.0F + (float)(3 * i)) / 16.0F;
-		if (!world.isClient && entity.isOnFire() && i > 0 && entity.method_5829().minY <= (double)f) {
+		if (!world.isClient && entity.isOnFire() && i > 0 && entity.getBoundingBox().minY <= (double)f) {
 			entity.extinguish();
-			this.method_9726(world, blockPos, blockState, i - 1);
+			this.setLevel(world, blockPos, blockState, i - 1);
 		}
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.isEmpty()) {
 			return true;
 		} else {
-			int i = (Integer)blockState.method_11654(field_10745);
+			int i = (Integer)blockState.get(LEVEL);
 			Item item = itemStack.getItem();
 			if (item == Items.field_8705) {
 				if (i < 3 && !world.isClient) {
@@ -85,7 +88,7 @@ public class CauldronBlock extends Block {
 					}
 
 					playerEntity.incrementStat(Stats.field_15430);
-					this.method_9726(world, blockPos, blockState, 3);
+					this.setLevel(world, blockPos, blockState, 3);
 					world.playSound(null, blockPos, SoundEvents.field_14834, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
 
@@ -102,7 +105,7 @@ public class CauldronBlock extends Block {
 					}
 
 					playerEntity.incrementStat(Stats.field_15373);
-					this.method_9726(world, blockPos, blockState, 0);
+					this.setLevel(world, blockPos, blockState, 0);
 					world.playSound(null, blockPos, SoundEvents.field_15126, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
 
@@ -123,7 +126,7 @@ public class CauldronBlock extends Block {
 					}
 
 					world.playSound(null, blockPos, SoundEvents.field_14779, SoundCategory.field_15245, 1.0F, 1.0F);
-					this.method_9726(world, blockPos, blockState, i - 1);
+					this.setLevel(world, blockPos, blockState, i - 1);
 				}
 
 				return true;
@@ -139,7 +142,7 @@ public class CauldronBlock extends Block {
 					}
 
 					world.playSound(null, blockPos, SoundEvents.field_14826, SoundCategory.field_15245, 1.0F, 1.0F);
-					this.method_9726(world, blockPos, blockState, i + 1);
+					this.setLevel(world, blockPos, blockState, i + 1);
 				}
 
 				return true;
@@ -148,7 +151,7 @@ public class CauldronBlock extends Block {
 					DyeableItem dyeableItem = (DyeableItem)item;
 					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
 						dyeableItem.removeColor(itemStack);
-						this.method_9726(world, blockPos, blockState, i - 1);
+						this.setLevel(world, blockPos, blockState, i - 1);
 						playerEntity.incrementStat(Stats.field_15382);
 						return true;
 					}
@@ -162,7 +165,7 @@ public class CauldronBlock extends Block {
 						playerEntity.incrementStat(Stats.field_15390);
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
-							this.method_9726(world, blockPos, blockState, i - 1);
+							this.setLevel(world, blockPos, blockState, i - 1);
 						}
 
 						if (itemStack.isEmpty()) {
@@ -176,7 +179,7 @@ public class CauldronBlock extends Block {
 
 					return true;
 				} else if (i > 0 && item instanceof BlockItem) {
-					Block block = ((BlockItem)item).method_7711();
+					Block block = ((BlockItem)item).getBlock();
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
 						ItemStack itemStack3 = new ItemStack(Blocks.field_10603, 1);
 						if (itemStack.hasTag()) {
@@ -184,7 +187,7 @@ public class CauldronBlock extends Block {
 						}
 
 						playerEntity.setStackInHand(hand, itemStack3);
-						this.method_9726(world, blockPos, blockState, i - 1);
+						this.setLevel(world, blockPos, blockState, i - 1);
 						playerEntity.incrementStat(Stats.field_15398);
 					}
 
@@ -196,41 +199,41 @@ public class CauldronBlock extends Block {
 		}
 	}
 
-	public void method_9726(World world, BlockPos blockPos, BlockState blockState, int i) {
-		world.method_8652(blockPos, blockState.method_11657(field_10745, Integer.valueOf(MathHelper.clamp(i, 0, 3))), 2);
-		world.method_8455(blockPos, this);
+	public void setLevel(World world, BlockPos blockPos, BlockState blockState, int i) {
+		world.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(MathHelper.clamp(i, 0, 3))), 2);
+		world.updateHorizontalAdjacent(blockPos, this);
 	}
 
 	@Override
 	public void onRainTick(World world, BlockPos blockPos) {
 		if (world.random.nextInt(20) == 1) {
-			float f = world.method_8310(blockPos).getTemperature(blockPos);
+			float f = world.getBiome(blockPos).getTemperature(blockPos);
 			if (!(f < 0.15F)) {
-				BlockState blockState = world.method_8320(blockPos);
-				if ((Integer)blockState.method_11654(field_10745) < 3) {
-					world.method_8652(blockPos, blockState.method_11572(field_10745), 2);
+				BlockState blockState = world.getBlockState(blockPos);
+				if ((Integer)blockState.get(LEVEL) < 3) {
+					world.setBlockState(blockPos, blockState.cycle(LEVEL), 2);
 				}
 			}
 		}
 	}
 
 	@Override
-	public boolean method_9498(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
-		return (Integer)blockState.method_11654(field_10745);
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		return (Integer)blockState.get(LEVEL);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10745);
+		builder.add(LEVEL);
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

@@ -405,7 +405,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private Advancement.Task method_10337(Advancement.Task task) {
 		for (Biome biome : BIOMES) {
-			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.method_9022(biome)));
+			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
 		}
 
 		return task;

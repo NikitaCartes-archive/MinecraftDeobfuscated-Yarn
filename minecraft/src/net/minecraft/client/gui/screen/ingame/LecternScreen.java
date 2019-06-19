@@ -50,7 +50,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 
 	@Override
 	public void onClose() {
-		this.minecraft.field_1724.closeContainer();
+		this.minecraft.player.closeContainer();
 		super.onClose();
 	}
 
@@ -62,8 +62,8 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 
 	@Override
 	protected void addCloseButton() {
-		if (this.minecraft.field_1724.canModifyWorld()) {
-			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(null)));
+		if (this.minecraft.player.canModifyWorld()) {
+			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
 			this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
 		} else {
 			super.addCloseButton();
@@ -91,7 +91,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 	}
 
 	private void sendButtonPressPacket(int i) {
-		this.minecraft.field_1761.clickButton(this.lecternContainer.syncId, i);
+		this.minecraft.interactionManager.clickButton(this.lecternContainer.syncId, i);
 	}
 
 	@Override

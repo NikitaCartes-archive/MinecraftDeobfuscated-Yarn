@@ -87,7 +87,7 @@ public class SpreadPlayersCommand {
 
 		for (Entity entity : collection) {
 			if (entity instanceof PlayerEntity) {
-				set.add(entity.method_5781());
+				set.add(entity.getScoreboardTeam());
 			} else {
 				set.add(null);
 			}
@@ -175,7 +175,7 @@ public class SpreadPlayersCommand {
 		for (Entity entity : collection) {
 			SpreadPlayersCommand.Pile pile;
 			if (bl) {
-				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.method_5781() : null;
+				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.getScoreboardTeam() : null;
 				if (!map.containsKey(abstractTeam)) {
 					map.put(abstractTeam, piles[i++]);
 				}
@@ -264,7 +264,7 @@ public class SpreadPlayersCommand {
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				if (!blockView.method_8320(blockPos).isAir()) {
+				if (!blockView.getBlockState(blockPos).isAir()) {
 					return blockPos.getY() + 1;
 				}
 			}
@@ -277,9 +277,9 @@ public class SpreadPlayersCommand {
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				BlockState blockState = blockView.method_8320(blockPos);
+				BlockState blockState = blockView.getBlockState(blockPos);
 				if (!blockState.isAir()) {
-					Material material = blockState.method_11620();
+					Material material = blockState.getMaterial();
 					return !material.isLiquid() && material != Material.FIRE;
 				}
 			}

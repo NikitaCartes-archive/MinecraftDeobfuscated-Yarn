@@ -145,7 +145,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
-			ChunkSection[] chunkSections = chunk.method_12006();
+			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];

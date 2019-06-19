@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class TextureResourceMetadata {
-	public static final TextureResourceMetadataReader field_5344 = new TextureResourceMetadataReader();
+	public static final TextureResourceMetadataReader READER = new TextureResourceMetadataReader();
 	private final boolean blur;
 	private final boolean clamp;
 

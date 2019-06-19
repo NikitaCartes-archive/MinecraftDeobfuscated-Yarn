@@ -14,72 +14,74 @@ import net.minecraft.world.World;
 public class ChorusPlantBlock extends ConnectedPlantBlock {
 	protected ChorusPlantBlock(Block.Settings settings) {
 		super(0.3125F, settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_11332, Boolean.valueOf(false))
-				.method_11657(field_11335, Boolean.valueOf(false))
-				.method_11657(field_11331, Boolean.valueOf(false))
-				.method_11657(field_11328, Boolean.valueOf(false))
-				.method_11657(field_11327, Boolean.valueOf(false))
-				.method_11657(field_11330, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory
+				.getDefaultState()
+				.with(NORTH, Boolean.valueOf(false))
+				.with(EAST, Boolean.valueOf(false))
+				.with(SOUTH, Boolean.valueOf(false))
+				.with(WEST, Boolean.valueOf(false))
+				.with(UP, Boolean.valueOf(false))
+				.with(DOWN, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9759(itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.withConnectionProperties(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos());
 	}
 
-	public BlockState method_9759(BlockView blockView, BlockPos blockPos) {
-		Block block = blockView.method_8320(blockPos.down()).getBlock();
-		Block block2 = blockView.method_8320(blockPos.up()).getBlock();
-		Block block3 = blockView.method_8320(blockPos.north()).getBlock();
-		Block block4 = blockView.method_8320(blockPos.east()).getBlock();
-		Block block5 = blockView.method_8320(blockPos.south()).getBlock();
-		Block block6 = blockView.method_8320(blockPos.west()).getBlock();
-		return this.method_9564()
-			.method_11657(field_11330, Boolean.valueOf(block == this || block == Blocks.field_10528 || block == Blocks.field_10471))
-			.method_11657(field_11327, Boolean.valueOf(block2 == this || block2 == Blocks.field_10528))
-			.method_11657(field_11332, Boolean.valueOf(block3 == this || block3 == Blocks.field_10528))
-			.method_11657(field_11335, Boolean.valueOf(block4 == this || block4 == Blocks.field_10528))
-			.method_11657(field_11331, Boolean.valueOf(block5 == this || block5 == Blocks.field_10528))
-			.method_11657(field_11328, Boolean.valueOf(block6 == this || block6 == Blocks.field_10528));
+	public BlockState withConnectionProperties(BlockView blockView, BlockPos blockPos) {
+		Block block = blockView.getBlockState(blockPos.down()).getBlock();
+		Block block2 = blockView.getBlockState(blockPos.up()).getBlock();
+		Block block3 = blockView.getBlockState(blockPos.north()).getBlock();
+		Block block4 = blockView.getBlockState(blockPos.east()).getBlock();
+		Block block5 = blockView.getBlockState(blockPos.south()).getBlock();
+		Block block6 = blockView.getBlockState(blockPos.west()).getBlock();
+		return this.getDefaultState()
+			.with(DOWN, Boolean.valueOf(block == this || block == Blocks.field_10528 || block == Blocks.field_10471))
+			.with(UP, Boolean.valueOf(block2 == this || block2 == Blocks.field_10528))
+			.with(NORTH, Boolean.valueOf(block3 == this || block3 == Blocks.field_10528))
+			.with(EAST, Boolean.valueOf(block4 == this || block4 == Blocks.field_10528))
+			.with(SOUTH, Boolean.valueOf(block5 == this || block5 == Blocks.field_10528))
+			.with(WEST, Boolean.valueOf(block6 == this || block6 == Blocks.field_10528));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.method_8397().schedule(blockPos, this, 1);
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
 			boolean bl = block == this || block == Blocks.field_10528 || direction == Direction.field_11033 && block == Blocks.field_10471;
-			return blockState.method_11657((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
+			return blockState.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
 		}
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			world.breakBlock(blockPos, true);
 		}
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.method_8320(blockPos.down());
-		boolean bl = !viewableWorld.method_8320(blockPos.up()).isAir() && !blockState2.isAir();
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+		boolean bl = !viewableWorld.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
 		for (Direction direction : Direction.Type.field_11062) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			Block block = viewableWorld.method_8320(blockPos2).getBlock();
+			Block block = viewableWorld.getBlockState(blockPos2).getBlock();
 			if (block == this) {
 				if (bl) {
 					return false;
 				}
 
-				Block block2 = viewableWorld.method_8320(blockPos2.down()).getBlock();
+				Block block2 = viewableWorld.getBlockState(blockPos2.down()).getBlock();
 				if (block2 == this || block2 == Blocks.field_10471) {
 					return true;
 				}
@@ -97,11 +99,11 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11332, field_11335, field_11331, field_11328, field_11327, field_11330);
+		builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN);
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

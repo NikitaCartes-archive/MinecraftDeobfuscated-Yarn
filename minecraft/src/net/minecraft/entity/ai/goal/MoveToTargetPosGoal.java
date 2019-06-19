@@ -47,7 +47,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.method_6296(this.mob.field_6002, this.targetPos);
+		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.mob.world, this.targetPos);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (!this.targetPos.up().isWithinDistance(this.mob.method_19538(), this.getDesiredSquaredDistanceToTarget())) {
+		if (!this.targetPos.up().isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
@@ -102,7 +102,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
 						mutable.set(blockPos).setOffset(m, k - 1, n);
-						if (this.mob.isInWalkTargetRange(mutable) && this.method_6296(this.mob.field_6002, mutable)) {
+						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
 							this.targetPos = mutable;
 							return true;
 						}
@@ -114,5 +114,5 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return false;
 	}
 
-	protected abstract boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos);
+	protected abstract boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos);
 }

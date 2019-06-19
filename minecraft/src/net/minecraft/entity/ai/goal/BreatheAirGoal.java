@@ -51,7 +51,7 @@ public class BreatheAirGoal extends Goal {
 		BlockPos blockPos = null;
 
 		for (BlockPos blockPos2 : iterable) {
-			if (this.method_6253(this.mob.field_6002, blockPos2)) {
+			if (this.isAirPos(this.mob.world, blockPos2)) {
 				blockPos = blockPos2;
 				break;
 			}
@@ -67,13 +67,13 @@ public class BreatheAirGoal extends Goal {
 	@Override
 	public void tick() {
 		this.moveToAir();
-		this.mob.method_5724(0.02F, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
-		this.mob.method_5784(MovementType.field_6308, this.mob.method_18798());
+		this.mob.updateVelocity(0.02F, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
+		this.mob.move(MovementType.field_6308, this.mob.getVelocity());
 	}
 
-	private boolean method_6253(ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState = viewableWorld.method_8320(blockPos);
-		return (viewableWorld.method_8316(blockPos).isEmpty() || blockState.getBlock() == Blocks.field_10422)
-			&& blockState.method_11609(viewableWorld, blockPos, BlockPlacementEnvironment.field_50);
+	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState = viewableWorld.getBlockState(blockPos);
+		return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.field_10422)
+			&& blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.field_50);
 	}
 }

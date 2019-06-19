@@ -14,8 +14,8 @@ public class MyceliumBlock extends SpreadableBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		super.method_9496(blockState, world, blockPos, random);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		super.randomDisplayTick(blockState, world, blockPos, random);
 		if (random.nextInt(10) == 0) {
 			world.addParticle(
 				ParticleTypes.field_11219,

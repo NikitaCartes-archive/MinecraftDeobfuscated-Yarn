@@ -92,7 +92,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	) {
 		float m = (float)entity.age + h;
 		consumer.accept(SKIN);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
 		GlStateManager.enableBlend();
 		GlStateManager.depthFunc(514);

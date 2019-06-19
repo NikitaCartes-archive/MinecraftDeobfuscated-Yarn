@@ -12,17 +12,17 @@ public class MaterialPredicate implements Predicate<BlockState> {
 			return blockState != null && blockState.isAir();
 		}
 	};
-	private final Material field_12405;
+	private final Material material;
 
 	private MaterialPredicate(Material material) {
-		this.field_12405 = material;
+		this.material = material;
 	}
 
-	public static MaterialPredicate method_11746(Material material) {
+	public static MaterialPredicate create(Material material) {
 		return material == Material.AIR ? IS_AIR : new MaterialPredicate(material);
 	}
 
 	public boolean method_11745(@Nullable BlockState blockState) {
-		return blockState != null && blockState.method_11620() == this.field_12405;
+		return blockState != null && blockState.getMaterial() == this.material;
 	}
 }

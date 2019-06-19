@@ -54,8 +54,8 @@ public class LightningEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.ambientTick == 2) {
-			this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
-			this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
+			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
+			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
 		}
 
 		this.ambientTick--;
@@ -71,12 +71,12 @@ public class LightningEntity extends Entity {
 		}
 
 		if (this.ambientTick >= 0) {
-			if (this.field_6002.isClient) {
-				this.field_6002.setTicksSinceLightning(2);
+			if (this.world.isClient) {
+				this.world.setTicksSinceLightning(2);
 			} else if (!this.cosmetic) {
 				double d = 3.0;
-				List<Entity> list = this.field_6002
-					.method_8333(this, new Box(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isAlive);
+				List<Entity> list = this.world
+					.getEntities(this, new Box(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isAlive);
 
 				for (Entity entity : list) {
 					entity.onStruckByLightning(this);
@@ -90,17 +90,17 @@ public class LightningEntity extends Entity {
 	}
 
 	private void spawnFire(int i) {
-		if (!this.cosmetic && !this.field_6002.isClient && this.field_6002.getGameRules().getBoolean(GameRules.field_19387)) {
-			BlockState blockState = Blocks.field_10036.method_9564();
+		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19387)) {
+			BlockState blockState = Blocks.field_10036.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
-			if (this.field_6002.method_8320(blockPos).isAir() && blockState.canPlaceAt(this.field_6002, blockPos)) {
-				this.field_6002.method_8501(blockPos, blockState);
+			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
+				this.world.setBlockState(blockPos, blockState);
 			}
 
 			for (int j = 0; j < i; j++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
-				if (this.field_6002.method_8320(blockPos2).isAir() && blockState.canPlaceAt(this.field_6002, blockPos2)) {
-					this.field_6002.method_8501(blockPos2, blockState);
+				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
+					this.world.setBlockState(blockPos2, blockState);
 				}
 			}
 		}

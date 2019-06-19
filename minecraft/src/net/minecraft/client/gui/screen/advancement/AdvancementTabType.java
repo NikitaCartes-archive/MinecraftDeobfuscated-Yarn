@@ -45,7 +45,7 @@ enum AdvancementTabType {
 		drawableHelper.blit(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
 	}
 
-	public void method_2306(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
+	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
 		int l = i + this.method_2302(k);
 		int m = j + this.method_2305(k);
 		switch (this) {

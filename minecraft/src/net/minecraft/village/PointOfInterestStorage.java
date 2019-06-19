@@ -52,14 +52,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		int j = i * i;
 		return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16))
 			.flatMap(
-				chunkPos -> this.method_19123(predicate, chunkPos, occupationStatus)
-						.filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j)
+				chunkPos -> this.get(predicate, chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j)
 			);
 	}
 
-	public Stream<PointOfInterest> method_19123(
-		Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus
-	) {
+	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus) {
 		return IntStream.range(0, 16).boxed().flatMap(integer -> this.get(predicate, ChunkSectionPos.from(chunkPos, integer).asLong(), occupationStatus));
 	}
 
@@ -162,32 +159,32 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		this.pointOfInterestDistanceTracker.update(l, this.pointOfInterestDistanceTracker.getInitialLevel(l), false);
 	}
 
-	public void method_19510(ChunkPos chunkPos, ChunkSection chunkSection) {
+	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
 		SystemUtil.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
-				if (method_20345(chunkSection)) {
-					this.method_20348(chunkSection, chunkSectionPos, biConsumer);
+				if (shouldScan(chunkSection)) {
+					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
 				}
 			}), () -> {
-			if (method_20345(chunkSection)) {
+			if (shouldScan(chunkSection)) {
 				PointOfInterestSet pointOfInterestSet = this.getOrCreate(chunkSectionPos.asLong());
-				this.method_20348(chunkSection, chunkSectionPos, pointOfInterestSet::add);
+				this.scanAndPopulate(chunkSection, chunkSectionPos, pointOfInterestSet::add);
 			}
 		});
 	}
 
-	private static boolean method_20345(ChunkSection chunkSection) {
+	private static boolean shouldScan(ChunkSection chunkSection) {
 		return PointOfInterestType.getAllAssociatedStates().anyMatch(chunkSection::method_19523);
 	}
 
-	private void method_20348(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
+	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
 		chunkSectionPos.streamBlocks()
 			.forEach(
 				blockPos -> {
 					BlockState blockState = chunkSection.getBlockState(
 						ChunkSectionPos.toLocalCoord(blockPos.getX()), ChunkSectionPos.toLocalCoord(blockPos.getY()), ChunkSectionPos.toLocalCoord(blockPos.getZ())
 					);
-					PointOfInterestType.method_19516(blockState).ifPresent(pointOfInterestType -> biConsumer.accept(blockPos, pointOfInterestType));
+					PointOfInterestType.from(blockState).ifPresent(pointOfInterestType -> biConsumer.accept(blockPos, pointOfInterestType));
 				}
 			);
 	}

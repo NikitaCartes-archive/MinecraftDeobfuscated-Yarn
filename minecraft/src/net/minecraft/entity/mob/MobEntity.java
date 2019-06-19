@@ -107,7 +107,7 @@ public abstract class MobEntity extends LivingEntity {
 		this.moveControl = new MoveControl(this);
 		this.jumpControl = new JumpControl(this);
 		this.bodyControl = this.createBodyControl();
-		this.navigation = this.method_5965(world);
+		this.navigation = this.createNavigation(world);
 		this.visibilityCache = new MobVisibilityCache(this);
 		Arrays.fill(this.armorDropChances, 0.085F);
 		Arrays.fill(this.handDropChances, 0.085F);
@@ -126,16 +126,16 @@ public abstract class MobEntity extends LivingEntity {
 		this.getAttributeContainer().register(EntityAttributes.ATTACK_KNOCKBACK);
 	}
 
-	protected EntityNavigation method_5965(World world) {
+	protected EntityNavigation createNavigation(World world) {
 		return new MobNavigation(this, world);
 	}
 
-	public float method_5944(PathNodeType pathNodeType) {
+	public float getPathNodeTypeWeight(PathNodeType pathNodeType) {
 		Float float_ = (Float)this.pathNodeTypeWeights.get(pathNodeType);
 		return float_ == null ? pathNodeType.getWeight() : float_;
 	}
 
-	public void method_5941(PathNodeType pathNodeType, float f) {
+	public void setPathNodeTypeWeight(PathNodeType pathNodeType, float f) {
 		this.pathNodeTypeWeights.put(pathNodeType, f);
 	}
 
@@ -210,13 +210,13 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void baseTick() {
 		super.baseTick();
-		this.field_6002.getProfiler().push("mobBaseTick");
+		this.world.getProfiler().push("mobBaseTick");
 		if (this.isAlive() && this.random.nextInt(1000) < this.ambientSoundChance++) {
 			this.resetSoundDelay();
 			this.playAmbientSound();
 		}
 
-		this.field_6002.getProfiler().pop();
+		this.world.getProfiler().pop();
 	}
 
 	@Override
@@ -253,13 +253,13 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public void playSpawnEffects() {
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			for (int i = 0; i < 20; i++) {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
 				double g = 10.0;
-				this.field_6002
+				this.world
 					.addParticle(
 						ParticleTypes.field_11203,
 						this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth() - d * 10.0,
@@ -271,7 +271,7 @@ public abstract class MobEntity extends LivingEntity {
 					);
 			}
 		} else {
-			this.field_6002.sendEntityStatus(this, (byte)20);
+			this.world.sendEntityStatus(this, (byte)20);
 		}
 	}
 
@@ -288,7 +288,7 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.updateLeash();
 			if (this.age % 5 == 0) {
 				this.method_20417();
@@ -446,8 +446,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected LootContext.Builder method_16079(boolean bl, DamageSource damageSource) {
-		return super.method_16079(bl, damageSource).setRandom(this.lootTableSeed, this.random);
+	protected LootContext.Builder getLootContextBuilder(boolean bl, DamageSource damageSource) {
+		return super.getLootContextBuilder(bl, damageSource).setRandom(this.lootTableSeed, this.random);
 	}
 
 	@Override
@@ -480,16 +480,16 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		this.field_6002.getProfiler().push("looting");
-		if (!this.field_6002.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
-			for (ItemEntity itemEntity : this.field_6002.method_18467(ItemEntity.class, this.method_5829().expand(1.0, 0.0, 1.0))) {
+		this.world.getProfiler().push("looting");
+		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			for (ItemEntity itemEntity : this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
 				if (!itemEntity.removed && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup()) {
 					this.loot(itemEntity);
 				}
 			}
 		}
 
-		this.field_6002.getProfiler().pop();
+		this.world.getProfiler().pop();
 	}
 
 	protected void loot(ItemEntity itemEntity) {
@@ -569,7 +569,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void checkDespawn() {
 		if (!this.isPersistent() && !this.cannotDespawn()) {
-			Entity entity = this.field_6002.getClosestPlayer(this, -1.0);
+			Entity entity = this.world.getClosestPlayer(this, -1.0);
 			if (entity != null) {
 				double d = entity.squaredDistanceTo(this);
 				if (d > 16384.0 && this.canImmediatelyDespawn(d)) {
@@ -590,38 +590,38 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	protected final void tickNewAi() {
 		this.despawnCounter++;
-		this.field_6002.getProfiler().push("checkDespawn");
+		this.world.getProfiler().push("checkDespawn");
 		this.checkDespawn();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("sensing");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("sensing");
 		this.visibilityCache.clear();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("targetSelector");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("targetSelector");
 		this.targetSelector.tick();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("goalSelector");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("goalSelector");
 		this.goalSelector.tick();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("navigation");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("navigation");
 		this.navigation.tick();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("mob tick");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("mob tick");
 		this.mobTick();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().push("controls");
-		this.field_6002.getProfiler().push("move");
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("controls");
+		this.world.getProfiler().push("move");
 		this.moveControl.tick();
-		this.field_6002.getProfiler().swap("look");
+		this.world.getProfiler().swap("look");
 		this.lookControl.tick();
-		this.field_6002.getProfiler().swap("jump");
+		this.world.getProfiler().swap("jump");
 		this.jumpControl.tick();
-		this.field_6002.getProfiler().pop();
-		this.field_6002.getProfiler().pop();
+		this.world.getProfiler().pop();
+		this.world.getProfiler().pop();
 		this.sendAiDebugData();
 	}
 
 	protected void sendAiDebugData() {
-		DebugRendererInfoManager.sendGoalSelector(this.field_6002, this, this.goalSelector);
+		DebugRendererInfoManager.sendGoalSelector(this.world, this, this.goalSelector);
 	}
 
 	protected void mobTick() {
@@ -647,7 +647,7 @@ public abstract class MobEntity extends LivingEntity {
 			LivingEntity livingEntity = (LivingEntity)entity;
 			h = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - (this.y + (double)this.getStandingEyeHeight());
 		} else {
-			h = (entity.method_5829().minY + entity.method_5829().maxY) / 2.0 - (this.y + (double)this.getStandingEyeHeight());
+			h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - (this.y + (double)this.getStandingEyeHeight());
 		}
 
 		double i = (double)MathHelper.sqrt(d * d + e * e);
@@ -672,15 +672,15 @@ public abstract class MobEntity extends LivingEntity {
 
 	public static boolean method_20636(EntityType<? extends MobEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.down();
-		return spawnType == SpawnType.field_16469 || iWorld.method_8320(blockPos2).allowsSpawning(iWorld, blockPos2, entityType);
+		return spawnType == SpawnType.field_16469 || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, entityType);
 	}
 
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return true;
 	}
 
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return !viewableWorld.method_8599(this.method_5829()) && viewableWorld.intersectsEntities(this);
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return !viewableWorld.intersectsFluid(this.getBoundingBox()) && viewableWorld.intersectsEntities(this);
 	}
 
 	public int getLimitPerChunk() {
@@ -697,7 +697,7 @@ public abstract class MobEntity extends LivingEntity {
 			return 3;
 		} else {
 			int i = (int)(this.getHealth() - this.getHealthMaximum() * 0.33F);
-			i -= (3 - this.field_6002.getDifficulty().getId()) * 4;
+			i -= (3 - this.world.getDifficulty().getId()) * 4;
 			if (i < 0) {
 				i = 0;
 			}
@@ -776,7 +776,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		if (this.random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
 			int i = this.random.nextInt(2);
-			float f = this.field_6002.getDifficulty() == Difficulty.field_5807 ? 0.1F : 0.25F;
+			float f = this.world.getDifficulty() == Difficulty.field_5807 ? 0.1F : 0.25F;
 			if (this.random.nextFloat() < 0.095F) {
 				i++;
 			}
@@ -812,7 +812,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	public static EquipmentSlot getPreferredEquipmentSlot(ItemStack itemStack) {
 		Item item = itemStack.getItem();
-		if (item != Blocks.field_10147.asItem() && (!(item instanceof BlockItem) || !(((BlockItem)item).method_7711() instanceof AbstractSkullBlock))) {
+		if (item != Blocks.field_10147.asItem() && (!(item instanceof BlockItem) || !(((BlockItem)item).getBlock() instanceof AbstractSkullBlock))) {
 			if (item instanceof ArmorItem) {
 				return ((ArmorItem)item).getSlotType();
 			} else if (item == Items.field_8833) {
@@ -900,7 +900,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Nullable
-	public EntityData method_5943(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE)
@@ -1018,12 +1018,12 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.holdingEntity = null;
-			if (!this.field_6002.isClient && bl2) {
-				this.method_5706(Items.field_8719);
+			if (!this.world.isClient && bl2) {
+				this.dropItem(Items.field_8719);
 			}
 
-			if (!this.field_6002.isClient && bl && this.field_6002 instanceof ServerWorld) {
-				((ServerWorld)this.field_6002).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
+			if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
+				((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
 			}
 		}
 	}
@@ -1038,8 +1038,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public Entity getHoldingEntity() {
-		if (this.holdingEntity == null && this.holdingEntityId != 0 && this.field_6002.isClient) {
-			this.holdingEntity = this.field_6002.getEntityById(this.holdingEntityId);
+		if (this.holdingEntity == null && this.holdingEntityId != 0 && this.world.isClient) {
+			this.holdingEntity = this.world.getEntityById(this.holdingEntityId);
 		}
 
 		return this.holdingEntity;
@@ -1052,8 +1052,8 @@ public abstract class MobEntity extends LivingEntity {
 			this.holdingEntity.teleporting = true;
 		}
 
-		if (!this.field_6002.isClient && bl && this.field_6002 instanceof ServerWorld) {
-			((ServerWorld)this.field_6002).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
+		if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
+			((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}
 
 		if (this.hasVehicle()) {
@@ -1078,16 +1078,16 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	private void deserializeLeashTag() {
-		if (this.leashTag != null && this.field_6002 instanceof ServerWorld) {
+		if (this.leashTag != null && this.world instanceof ServerWorld) {
 			if (this.leashTag.hasUuid("UUID")) {
 				UUID uUID = this.leashTag.getUuid("UUID");
-				Entity entity = ((ServerWorld)this.field_6002).getEntity(uUID);
+				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
 				}
 			} else if (this.leashTag.containsKey("X", 99) && this.leashTag.containsKey("Y", 99) && this.leashTag.containsKey("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
-				this.attachLeash(LeadKnotEntity.method_6932(this.field_6002, blockPos), true);
+				this.attachLeash(LeadKnotEntity.getOrCreate(this.world, blockPos), true);
 			} else {
 				this.detachLeash(false, true);
 			}
@@ -1200,7 +1200,7 @@ public abstract class MobEntity extends LivingEntity {
 					.takeKnockback(
 						this, g * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
 					);
-				this.method_18799(this.method_18798().multiply(0.6, 1.0, 0.6));
+				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
 			if (entity instanceof PlayerEntity) {
@@ -1211,7 +1211,7 @@ public abstract class MobEntity extends LivingEntity {
 					float h = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
 					if (this.random.nextFloat() < h) {
 						playerEntity.getItemCooldownManager().set(Items.field_8255, 100);
-						this.field_6002.sendEntityStatus(playerEntity, (byte)30);
+						this.world.sendEntityStatus(playerEntity, (byte)30);
 					}
 				}
 			}
@@ -1223,12 +1223,12 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	protected boolean isInDaylight() {
-		if (this.field_6002.isDaylight() && !this.field_6002.isClient) {
+		if (this.world.isDaylight() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
 			BlockPos blockPos = this.getVehicle() instanceof BoatEntity
 				? new BlockPos(this.x, (double)Math.round(this.y), this.z).up()
 				: new BlockPos(this.x, (double)Math.round(this.y), this.z);
-			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.field_6002.isSkyVisible(blockPos)) {
+			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.isSkyVisible(blockPos)) {
 				return true;
 			}
 		}
@@ -1241,7 +1241,7 @@ public abstract class MobEntity extends LivingEntity {
 		if (this.getNavigation().canSwim()) {
 			super.swimUpward(tag);
 		} else {
-			this.method_18799(this.method_18798().add(0.0, 0.3, 0.0));
+			this.setVelocity(this.getVelocity().add(0.0, 0.3, 0.0));
 		}
 	}
 

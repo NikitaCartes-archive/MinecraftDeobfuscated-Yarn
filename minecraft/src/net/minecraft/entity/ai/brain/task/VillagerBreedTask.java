@@ -42,8 +42,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 			if (l >= this.field_18368) {
-				villagerEntity.method_20697();
-				villagerEntity2.method_20697();
+				villagerEntity.eatForBreeding();
+				villagerEntity2.eatForBreeding();
 				this.method_20643(serverWorld, villagerEntity, villagerEntity2);
 			} else if (villagerEntity.getRand().nextInt(35) == 0) {
 				serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
@@ -95,7 +95,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
-		Path path = villagerEntity.getNavigation().method_6348(blockPos);
+		Path path = villagerEntity.getNavigation().findPathTo(blockPos);
 		return path != null && path.method_19313(blockPos);
 	}
 
@@ -108,14 +108,14 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			villagerEntity2.setBreedingAge(6000);
 			villagerEntity3.setBreedingAge(-24000);
 			villagerEntity3.setPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0F, 0.0F);
-			villagerEntity.field_6002.spawnEntity(villagerEntity3);
-			villagerEntity.field_6002.sendEntityStatus(villagerEntity3, (byte)12);
+			villagerEntity.world.spawnEntity(villagerEntity3);
+			villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
 			return Optional.of(villagerEntity3);
 		}
 	}
 
 	private void method_19572(ServerWorld serverWorld, VillagerEntity villagerEntity, BlockPos blockPos) {
-		GlobalPos globalPos = GlobalPos.create(serverWorld.method_8597().method_12460(), blockPos);
+		GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
 		villagerEntity.getBrain().putMemory(MemoryModuleType.field_18438, globalPos);
 	}
 }

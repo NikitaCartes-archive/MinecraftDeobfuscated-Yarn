@@ -70,13 +70,13 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 		for (int q = k; q >= 0; q--) {
 			mutable.set(o, q, p);
-			BlockState blockState8 = chunk.method_8320(mutable);
+			BlockState blockState8 = chunk.getBlockState(mutable);
 			if (blockState8.isAir()) {
 				m = -1;
 			} else if (blockState8.getBlock() == blockState.getBlock()) {
 				if (m == -1) {
 					if (n <= 0) {
-						blockState6 = Blocks.field_10124.method_9564();
+						blockState6 = Blocks.field_10124.getDefaultState();
 						blockState7 = blockState;
 					} else if (q >= l - 4 && q <= l + 1) {
 						blockState6 = blockState3;
@@ -85,7 +85,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 					if (q < l && (blockState6 == null || blockState6.isAir())) {
 						if (biome.getTemperature(mutable.set(i, q, j)) < 0.15F) {
-							blockState6 = Blocks.field_10295.method_9564();
+							blockState6 = Blocks.field_10295.getDefaultState();
 						} else {
 							blockState6 = blockState2;
 						}
@@ -97,7 +97,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					if (q >= l - 1) {
 						chunk.setBlockState(mutable, blockState6, false);
 					} else if (q < l - 7 - n) {
-						blockState6 = Blocks.field_10124.method_9564();
+						blockState6 = Blocks.field_10124.getDefaultState();
 						blockState7 = blockState;
 						chunk.setBlockState(mutable, blockState5, false);
 					} else {
@@ -108,7 +108,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					chunk.setBlockState(mutable, blockState7, false);
 					if (m == 0 && blockState7.getBlock() == Blocks.field_10102 && n > 1) {
 						m = random.nextInt(4) + Math.max(0, q - 63);
-						blockState7 = blockState7.getBlock() == Blocks.field_10534 ? Blocks.field_10344.method_9564() : Blocks.field_9979.method_9564();
+						blockState7 = blockState7.getBlock() == Blocks.field_10534 ? Blocks.field_10344.getDefaultState() : Blocks.field_9979.getDefaultState();
 					}
 				}
 			}

@@ -16,7 +16,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 
 	public WolfEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WolfEntityModel<>(), 0.5F);
-		this.method_4046(new WolfCollarFeatureRenderer(this));
+		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 
 	protected float method_4167(WolfEntity wolfEntity, float f) {

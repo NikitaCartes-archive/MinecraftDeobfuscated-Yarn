@@ -113,7 +113,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Override
 	public void tickMovement() {
-		if (!this.field_6002.isClient && this.isAlive()) {
+		if (!this.world.isClient && this.isAlive()) {
 			this.raidGoal.decreaseCooldown();
 			if (this.raidGoal.getCooldown() <= 0) {
 				this.attackPlayerGoal.setEnabled(true);
@@ -158,7 +158,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.setEquippedStack(EquipmentSlot.field_6173, PotionUtil.setPotion(new ItemStack(Items.field_8574), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
-					this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_14565, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+					this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14565, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 					entityAttributeInstance.addModifier(DRINKING_SPEED_PENALTY_MODIFIER);
@@ -166,7 +166,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			}
 
 			if (this.random.nextFloat() < 7.5E-4F) {
-				this.field_6002.sendEntityStatus(this, (byte)15);
+				this.world.sendEntityStatus(this, (byte)15);
 			}
 		}
 
@@ -183,11 +183,11 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	public void handleStatus(byte b) {
 		if (b == 15) {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
-				this.field_6002
+				this.world
 					.addParticle(
 						ParticleTypes.field_11249,
 						this.x + this.random.nextGaussian() * 0.13F,
-						this.method_5829().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
+						this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
 						this.z + this.random.nextGaussian() * 0.13F,
 						0.0,
 						0.0,
@@ -216,7 +216,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
 		if (!this.isDrinking()) {
-			Vec3d vec3d = livingEntity.method_18798();
+			Vec3d vec3d = livingEntity.getVelocity();
 			double d = livingEntity.x + vec3d.x - this.x;
 			double e = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F - this.y;
 			double g = livingEntity.z + vec3d.z - this.z;
@@ -238,12 +238,12 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				potion = Potions.field_8975;
 			}
 
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.field_6002, this);
+			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
 			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.field_8436), potion));
 			thrownPotionEntity.pitch -= -20.0F;
 			thrownPotionEntity.setVelocity(d, e + (double)(h * 0.2F), g, 0.75F, 8.0F);
-			this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_15067, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
-			this.field_6002.spawnEntity(thrownPotionEntity);
+			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15067, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+			this.world.spawnEntity(thrownPotionEntity);
 		}
 	}
 

@@ -38,12 +38,12 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		super.method_7851(itemStack, world, list, tooltipContext);
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		super.appendTooltip(itemStack, world, list, tooltipContext);
 		ItemStack.appendEnchantments(list, getEnchantmentTag(itemStack));
 	}
 
-	public static void method_7807(ItemStack itemStack, InfoEnchantment infoEnchantment) {
+	public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {
 		ListTag listTag = getEnchantmentTag(itemStack);
 		boolean bl = true;
 		Identifier identifier = Registry.ENCHANTMENT.getId(infoEnchantment.enchantment);
@@ -71,9 +71,9 @@ public class EnchantedBookItem extends Item {
 		itemStack.getOrCreateTag().put("StoredEnchantments", listTag);
 	}
 
-	public static ItemStack method_7808(InfoEnchantment infoEnchantment) {
+	public static ItemStack forEnchantment(InfoEnchantment infoEnchantment) {
 		ItemStack itemStack = new ItemStack(Items.field_8598);
-		method_7807(itemStack, infoEnchantment);
+		addEnchantment(itemStack, infoEnchantment);
 		return itemStack;
 	}
 
@@ -81,16 +81,16 @@ public class EnchantedBookItem extends Item {
 	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (itemGroup == ItemGroup.SEARCH) {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (enchantment.field_9083 != null) {
+				if (enchantment.type != null) {
 					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
-						defaultedList.add(method_7808(new InfoEnchantment(enchantment, i)));
+						defaultedList.add(forEnchantment(new InfoEnchantment(enchantment, i)));
 					}
 				}
 			}
-		} else if (itemGroup.method_7744().length != 0) {
+		} else if (itemGroup.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
-				if (itemGroup.method_7740(enchantmentx.field_9083)) {
-					defaultedList.add(method_7808(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
+				if (itemGroup.containsEnchantments(enchantmentx.type)) {
+					defaultedList.add(forEnchantment(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}
 		}

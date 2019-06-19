@@ -4,7 +4,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.class_4316;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.damage.DamageSource;
@@ -13,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
@@ -41,8 +41,8 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Long> field_19009 = method_20738("heard_bell_time");
 	public static final MemoryModuleType<Long> field_19293 = method_20738("cant_reach_walk_target_since");
 	public static final MemoryModuleType<Long> field_19355 = method_20738("golem_last_seen_time");
-	public static final MemoryModuleType<class_4316> field_19385 = register("last_slept", Optional.of(class_4316::method_20792));
-	public static final MemoryModuleType<class_4316> field_19386 = register("last_worked_at_poi", Optional.of(class_4316::method_20792));
+	public static final MemoryModuleType<Timestamp> field_19385 = register("last_slept", Optional.of(Timestamp::of));
+	public static final MemoryModuleType<Timestamp> field_19386 = register("last_worked_at_poi", Optional.of(Timestamp::of));
 	private final Optional<Function<Dynamic<?>, U>> factory;
 
 	private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {

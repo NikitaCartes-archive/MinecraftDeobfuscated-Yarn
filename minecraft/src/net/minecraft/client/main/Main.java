@@ -118,7 +118,7 @@ public class Main {
 			public void run() {
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				if (minecraftClient != null) {
-					IntegratedServer integratedServer = minecraftClient.method_1576();
+					IntegratedServer integratedServer = minecraftClient.getServer();
 					if (integratedServer != null) {
 						integratedServer.stop(true);
 					}

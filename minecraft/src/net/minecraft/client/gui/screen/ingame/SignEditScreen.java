@@ -43,7 +43,7 @@ public class SignEditScreen extends Screen {
 	@Override
 	public void removed() {
 		this.minecraft.keyboard.enableRepeatEvents(false);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.method_1562();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
 				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
@@ -56,14 +56,14 @@ public class SignEditScreen extends Screen {
 	@Override
 	public void tick() {
 		this.ticksSinceOpened++;
-		if (!this.sign.method_11017().supports(this.sign.method_11010().getBlock())) {
+		if (!this.sign.getType().supports(this.sign.getCachedState().getBlock())) {
 			this.finishEditing();
 		}
 	}
 
 	private void finishEditing() {
 		this.sign.markDirty();
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -102,12 +102,12 @@ public class SignEditScreen extends Screen {
 		float g = 93.75F;
 		GlStateManager.scalef(-93.75F, -93.75F, -93.75F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-		BlockState blockState = this.sign.method_11010();
+		BlockState blockState = this.sign.getCachedState();
 		float h;
 		if (blockState.getBlock() instanceof SignBlock) {
-			h = (float)((Integer)blockState.method_11654(SignBlock.field_11559) * 360) / 16.0F;
+			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
-			h = ((Direction)blockState.method_11654(WallSignBlock.field_11726)).asRotation();
+			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}
 
 		GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);

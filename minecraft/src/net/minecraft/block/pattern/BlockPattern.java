@@ -206,13 +206,13 @@ public class BlockPattern {
 	}
 
 	public static class TeleportTarget {
-		public final Vec3d field_19281;
-		public final Vec3d field_19282;
+		public final Vec3d pos;
+		public final Vec3d velocity;
 		public final int yaw;
 
 		public TeleportTarget(Vec3d vec3d, Vec3d vec3d2, int i) {
-			this.field_19281 = vec3d;
-			this.field_19282 = vec3d2;
+			this.pos = vec3d;
+			this.velocity = vec3d2;
 			this.yaw = i;
 		}
 	}

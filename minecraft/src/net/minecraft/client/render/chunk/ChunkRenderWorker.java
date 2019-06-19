@@ -56,7 +56,7 @@ public class ChunkRenderWorker implements Runnable {
 				return;
 			}
 
-			if (!chunkRenderTask.method_3608().shouldBuild()) {
+			if (!chunkRenderTask.getChunkRenderer().shouldBuild()) {
 				chunkRenderTask.cancel();
 				return;
 			}
@@ -85,9 +85,9 @@ public class ChunkRenderWorker implements Runnable {
 		float h = (float)vec3d.z;
 		ChunkRenderTask.Mode mode = chunkRenderTask.getMode();
 		if (mode == ChunkRenderTask.Mode.field_4426) {
-			chunkRenderTask.method_3608().rebuildChunk(f, g, h, chunkRenderTask);
+			chunkRenderTask.getChunkRenderer().rebuildChunk(f, g, h, chunkRenderTask);
 		} else if (mode == ChunkRenderTask.Mode.field_4427) {
-			chunkRenderTask.method_3608().resortTransparency(f, g, h, chunkRenderTask);
+			chunkRenderTask.getChunkRenderer().resortTransparency(f, g, h, chunkRenderTask);
 		}
 
 		chunkRenderTask.getLock().lock();
@@ -103,17 +103,17 @@ public class ChunkRenderWorker implements Runnable {
 			chunkRenderTask.getLock().unlock();
 		}
 
-		final ChunkRenderData chunkRenderData = chunkRenderTask.method_3609();
+		final ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
 		ArrayList list = Lists.newArrayList();
 		if (mode == ChunkRenderTask.Mode.field_4426) {
 			for (BlockRenderLayer blockRenderLayer : BlockRenderLayer.values()) {
 				if (chunkRenderData.isBufferInitialized(blockRenderLayer)) {
 					list.add(
 						this.batcher
-							.method_3635(
+							.upload(
 								blockRenderLayer,
 								chunkRenderTask.getBufferBuilders().get(blockRenderLayer),
-								chunkRenderTask.method_3608(),
+								chunkRenderTask.getChunkRenderer(),
 								chunkRenderData,
 								chunkRenderTask.getSquaredCameraDistance()
 							)
@@ -123,10 +123,10 @@ public class ChunkRenderWorker implements Runnable {
 		} else if (mode == ChunkRenderTask.Mode.field_4427) {
 			list.add(
 				this.batcher
-					.method_3635(
+					.upload(
 						BlockRenderLayer.field_9179,
 						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179),
-						chunkRenderTask.method_3608(),
+						chunkRenderTask.getChunkRenderer(),
 						chunkRenderData,
 						chunkRenderTask.getSquaredCameraDistance()
 					)
@@ -153,7 +153,7 @@ public class ChunkRenderWorker implements Runnable {
 					return;
 				}
 
-				chunkRenderTask.method_3608().setData(chunkRenderData);
+				chunkRenderTask.getChunkRenderer().setData(chunkRenderData);
 			}
 
 			@Override

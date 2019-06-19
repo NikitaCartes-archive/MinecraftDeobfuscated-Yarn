@@ -97,8 +97,8 @@ public final class Material {
 	public static final Material PUMPKIN = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material EGG = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material CAKE = new Material.Builder(MaterialColor.AIR).destroyedByPiston().build();
-	private final MaterialColor field_15944;
-	private final PistonBehavior field_15960;
+	private final MaterialColor color;
+	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;
 	private final boolean burnable;
 	private final boolean breakByHand;
@@ -110,7 +110,7 @@ public final class Material {
 	public Material(
 		MaterialColor materialColor, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, boolean bl6, boolean bl7, PistonBehavior pistonBehavior
 	) {
-		this.field_15944 = materialColor;
+		this.color = materialColor;
 		this.liquid = bl;
 		this.solid = bl2;
 		this.blocksMovement = bl3;
@@ -118,7 +118,7 @@ public final class Material {
 		this.breakByHand = bl5;
 		this.burnable = bl6;
 		this.replaceable = bl7;
-		this.field_15960 = pistonBehavior;
+		this.pistonBehavior = pistonBehavior;
 	}
 
 	public boolean isLiquid() {
@@ -149,27 +149,27 @@ public final class Material {
 		return this.breakByHand;
 	}
 
-	public PistonBehavior method_15798() {
-		return this.field_15960;
+	public PistonBehavior getPistonBehavior() {
+		return this.pistonBehavior;
 	}
 
-	public MaterialColor method_15803() {
-		return this.field_15944;
+	public MaterialColor getColor() {
+		return this.color;
 	}
 
 	public static class Builder {
-		private PistonBehavior field_15968 = PistonBehavior.field_15974;
+		private PistonBehavior pistonBehavior = PistonBehavior.field_15974;
 		private boolean blocksMovement = true;
 		private boolean burnable;
 		private boolean breakByHand = true;
 		private boolean liquid;
 		private boolean replaceable;
 		private boolean solid = true;
-		private final MaterialColor field_15961;
+		private final MaterialColor color;
 		private boolean blocksLight = true;
 
 		public Builder(MaterialColor materialColor) {
-			this.field_15961 = materialColor;
+			this.color = materialColor;
 		}
 
 		public Material.Builder liquid() {
@@ -208,18 +208,18 @@ public final class Material {
 		}
 
 		protected Material.Builder destroyedByPiston() {
-			this.field_15968 = PistonBehavior.field_15971;
+			this.pistonBehavior = PistonBehavior.field_15971;
 			return this;
 		}
 
 		protected Material.Builder blocksPistons() {
-			this.field_15968 = PistonBehavior.field_15972;
+			this.pistonBehavior = PistonBehavior.field_15972;
 			return this;
 		}
 
 		public Material build() {
 			return new Material(
-				this.field_15961, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.breakByHand, this.burnable, this.replaceable, this.field_15968
+				this.color, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.breakByHand, this.burnable, this.replaceable, this.pistonBehavior
 			);
 		}
 	}

@@ -34,7 +34,7 @@ public class HungerManager {
 	}
 
 	public void update(PlayerEntity playerEntity) {
-		Difficulty difficulty = playerEntity.field_6002.getDifficulty();
+		Difficulty difficulty = playerEntity.world.getDifficulty();
 		this.prevFoodLevel = this.foodLevel;
 		if (this.exhaustion > 4.0F) {
 			this.exhaustion -= 4.0F;
@@ -45,7 +45,7 @@ public class HungerManager {
 			}
 		}
 
-		boolean bl = playerEntity.field_6002.getGameRules().getBoolean(GameRules.field_19395);
+		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.field_19395);
 		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 10) {

@@ -28,9 +28,7 @@ public class BlockColors {
 		BlockColors blockColors = new BlockColors();
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
-					? BiomeColors.getGrassColor(
-						extendedBlockView, blockState.method_11654(ReplaceableTallPlantBlock.field_11484) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos
-					)
+					? BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos)
 					: -1,
 			Blocks.field_10313,
 			Blocks.field_10214
@@ -63,8 +61,7 @@ public class BlockColors {
 			Blocks.field_10593
 		);
 		blockColors.register(
-			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.method_11654(RedstoneWireBlock.field_11432)),
-			Blocks.field_10091
+			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.POWER)), Blocks.field_10091
 		);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? BiomeColors.getGrassColor(extendedBlockView, blockPos) : -1,
@@ -72,7 +69,7 @@ public class BlockColors {
 		);
 		blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.field_10150, Blocks.field_10331);
 		blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
-			int j = (Integer)blockState.method_11654(StemBlock.field_11584);
+			int j = (Integer)blockState.get(StemBlock.AGE);
 			int k = j * 32;
 			int l = 255 - j * 8;
 			int m = j * 4;
@@ -87,7 +84,7 @@ public class BlockColors {
 		if (blockColorProvider != null) {
 			return blockColorProvider.getColor(blockState, null, null, 0);
 		} else {
-			MaterialColor materialColor = blockState.method_11625(world, blockPos);
+			MaterialColor materialColor = blockState.getTopMaterialColor(world, blockPos);
 			return materialColor != null ? materialColor.color : -1;
 		}
 	}

@@ -17,11 +17,11 @@ public class LocationCheckLootCondition implements LootCondition {
 	}
 
 	public boolean method_881(LootContext lootContext) {
-		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
+		BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
 		return blockPos != null && this.predicate.test(lootContext.getWorld(), (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
 	}
 
-	public static LootCondition.Builder method_884(LocationPredicate.Builder builder) {
+	public static LootCondition.Builder builder(LocationPredicate.Builder builder) {
 		return () -> new LocationCheckLootCondition(builder.build());
 	}
 

@@ -40,11 +40,11 @@ public class BlockPointerImpl implements BlockPointer {
 
 	@Override
 	public BlockState getBlockState() {
-		return this.world.method_8320(this.pos);
+		return this.world.getBlockState(this.pos);
 	}
 
 	@Override
 	public <T extends BlockEntity> T getBlockEntity() {
-		return (T)this.world.method_8321(this.pos);
+		return (T)this.world.getBlockEntity(this.pos);
 	}
 }

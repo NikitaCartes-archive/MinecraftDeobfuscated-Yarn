@@ -34,7 +34,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 			return false;
 		} else {
 			for (Property<?> property : this.properties) {
-				if (blockState.method_11654(property) != this.state.method_11654(property)) {
+				if (blockState.get(property) != this.state.get(property)) {
 					return false;
 				}
 			}
@@ -49,11 +49,11 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 	}
 
 	public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
-		if (!serverWorld.method_8652(blockPos, this.state, i)) {
+		if (!serverWorld.setBlockState(blockPos, this.state, i)) {
 			return false;
 		} else {
 			if (this.data != null) {
-				BlockEntity blockEntity = serverWorld.method_8321(blockPos);
+				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
 					CompoundTag compoundTag = this.data.method_10553();
 					compoundTag.putInt("x", blockPos.getX());

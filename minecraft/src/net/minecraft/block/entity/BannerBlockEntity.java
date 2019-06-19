@@ -89,7 +89,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		}
 
 		if (this.hasWorld()) {
-			this.baseColor = ((AbstractBannerBlock)this.method_11010().getBlock()).getColor();
+			this.baseColor = ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor();
 		} else {
 			this.baseColor = null;
 		}
@@ -143,7 +143,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			} else {
 				this.patterns = Lists.<BannerPattern>newArrayList();
 				this.patternColors = Lists.<DyeColor>newArrayList();
-				DyeColor dyeColor = this.getColorForState(this::method_11010);
+				DyeColor dyeColor = this.getColorForState(this::getCachedState);
 				if (dyeColor == null) {
 					this.patternCacheKey = "banner_missing";
 				} else {
@@ -181,8 +181,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack method_10907(BlockState blockState) {
-		ItemStack itemStack = new ItemStack(BannerBlock.method_9398(this.getColorForState(() -> blockState)));
+	public ItemStack getPickStack(BlockState blockState) {
+		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
 			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
 		}

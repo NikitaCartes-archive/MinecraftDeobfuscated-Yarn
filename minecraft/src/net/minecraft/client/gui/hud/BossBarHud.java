@@ -30,13 +30,13 @@ public class BossBarHud extends DrawableHelper {
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.method_1531().bindTexture(BAR_TEX);
+				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.drawBossBar(k, j, clientBossBar);
 				String string = clientBossBar.getName().asFormattedString();
-				int m = this.client.field_1772.getStringWidth(string);
+				int m = this.client.textRenderer.getStringWidth(string);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				this.client.field_1772.drawWithShadow(string, (float)n, (float)o, 16777215);
+				this.client.textRenderer.drawWithShadow(string, (float)n, (float)o, 16777215);
 				j += 10 + 9;
 				if (j >= this.client.window.getScaledHeight() / 3) {
 					break;

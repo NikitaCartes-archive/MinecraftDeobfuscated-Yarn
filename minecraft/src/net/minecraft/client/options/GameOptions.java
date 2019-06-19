@@ -188,7 +188,7 @@ public class GameOptions {
 	public double fov = 70.0;
 	public double gamma;
 	public int guiScale;
-	public ParticlesOption field_1882 = ParticlesOption.ALL;
+	public ParticlesOption particles = ParticlesOption.ALL;
 	public NarratorOption narrator = NarratorOption.OFF;
 	public String language = "en_us";
 
@@ -196,9 +196,9 @@ public class GameOptions {
 		this.client = minecraftClient;
 		this.optionsFile = new File(file, "options.txt");
 		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-			Option.field_1933.setMax(32.0F);
+			Option.RENDER_DISTANCE.setMax(32.0F);
 		} else {
-			Option.field_1933.setMax(16.0F);
+			Option.RENDER_DISTANCE.setMax(16.0F);
 		}
 
 		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
@@ -248,71 +248,71 @@ public class GameOptions {
 
 				try {
 					if ("autoJump".equals(string)) {
-						Option.AUTO_JUMP.method_18492(this, string2);
+						Option.AUTO_JUMP.set(this, string2);
 					}
 
 					if ("autoSuggestions".equals(string)) {
-						Option.AUTO_SUGGESTIONS.method_18492(this, string2);
+						Option.AUTO_SUGGESTIONS.set(this, string2);
 					}
 
 					if ("chatColors".equals(string)) {
-						Option.CHAT_COLOR.method_18492(this, string2);
+						Option.CHAT_COLOR.set(this, string2);
 					}
 
 					if ("chatLinks".equals(string)) {
-						Option.CHAT_LINKS.method_18492(this, string2);
+						Option.CHAT_LINKS.set(this, string2);
 					}
 
 					if ("chatLinksPrompt".equals(string)) {
-						Option.CHAT_LINKS_PROMPT.method_18492(this, string2);
+						Option.CHAT_LINKS_PROMPT.set(this, string2);
 					}
 
 					if ("enableVsync".equals(string)) {
-						Option.VSYNC.method_18492(this, string2);
+						Option.VSYNC.set(this, string2);
 					}
 
 					if ("entityShadows".equals(string)) {
-						Option.ENTITY_SHADOWS.method_18492(this, string2);
+						Option.ENTITY_SHADOWS.set(this, string2);
 					}
 
 					if ("forceUnicodeFont".equals(string)) {
-						Option.FORCE_UNICODE_FONT.method_18492(this, string2);
+						Option.FORCE_UNICODE_FONT.set(this, string2);
 					}
 
 					if ("discrete_mouse_scroll".equals(string)) {
-						Option.DISCRETE_MOUSE_SCROLL.method_18492(this, string2);
+						Option.DISCRETE_MOUSE_SCROLL.set(this, string2);
 					}
 
 					if ("invertYMouse".equals(string)) {
-						Option.INVERT_MOUSE.method_18492(this, string2);
+						Option.INVERT_MOUSE.set(this, string2);
 					}
 
 					if ("realmsNotifications".equals(string)) {
-						Option.REALMS_NOTIFICATIONS.method_18492(this, string2);
+						Option.REALMS_NOTIFICATIONS.set(this, string2);
 					}
 
 					if ("reducedDebugInfo".equals(string)) {
-						Option.REDUCED_DEBUG_INFO.method_18492(this, string2);
+						Option.REDUCED_DEBUG_INFO.set(this, string2);
 					}
 
 					if ("showSubtitles".equals(string)) {
-						Option.SUBTITLES.method_18492(this, string2);
+						Option.SUBTITLES.set(this, string2);
 					}
 
 					if ("snooperEnabled".equals(string)) {
-						Option.SNOOPER.method_18492(this, string2);
+						Option.SNOOPER.set(this, string2);
 					}
 
 					if ("touchscreen".equals(string)) {
-						Option.TOUCHSCREEN.method_18492(this, string2);
+						Option.TOUCHSCREEN.set(this, string2);
 					}
 
 					if ("fullscreen".equals(string)) {
-						Option.FULLSCREEN.method_18492(this, string2);
+						Option.FULLSCREEN.set(this, string2);
 					}
 
 					if ("bobView".equals(string)) {
-						Option.VIEW_BOBBING.method_18492(this, string2);
+						Option.VIEW_BOBBING.set(this, string2);
 					}
 
 					if ("mouseSensitivity".equals(string)) {
@@ -336,7 +336,7 @@ public class GameOptions {
 					}
 
 					if ("particles".equals(string)) {
-						this.field_1882 = ParticlesOption.byId(Integer.parseInt(string2));
+						this.particles = ParticlesOption.byId(Integer.parseInt(string2));
 					}
 
 					if ("maxFps".equals(string)) {
@@ -546,29 +546,29 @@ public class GameOptions {
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
-				printWriter.println("autoJump:" + Option.AUTO_JUMP.method_18494(this));
-				printWriter.println("autoSuggestions:" + Option.AUTO_SUGGESTIONS.method_18494(this));
-				printWriter.println("chatColors:" + Option.CHAT_COLOR.method_18494(this));
-				printWriter.println("chatLinks:" + Option.CHAT_LINKS.method_18494(this));
-				printWriter.println("chatLinksPrompt:" + Option.CHAT_LINKS_PROMPT.method_18494(this));
-				printWriter.println("enableVsync:" + Option.VSYNC.method_18494(this));
-				printWriter.println("entityShadows:" + Option.ENTITY_SHADOWS.method_18494(this));
-				printWriter.println("forceUnicodeFont:" + Option.FORCE_UNICODE_FONT.method_18494(this));
-				printWriter.println("discrete_mouse_scroll:" + Option.DISCRETE_MOUSE_SCROLL.method_18494(this));
-				printWriter.println("invertYMouse:" + Option.INVERT_MOUSE.method_18494(this));
-				printWriter.println("realmsNotifications:" + Option.REALMS_NOTIFICATIONS.method_18494(this));
-				printWriter.println("reducedDebugInfo:" + Option.REDUCED_DEBUG_INFO.method_18494(this));
-				printWriter.println("snooperEnabled:" + Option.SNOOPER.method_18494(this));
-				printWriter.println("showSubtitles:" + Option.SUBTITLES.method_18494(this));
-				printWriter.println("touchscreen:" + Option.TOUCHSCREEN.method_18494(this));
-				printWriter.println("fullscreen:" + Option.FULLSCREEN.method_18494(this));
-				printWriter.println("bobView:" + Option.VIEW_BOBBING.method_18494(this));
+				printWriter.println("autoJump:" + Option.AUTO_JUMP.get(this));
+				printWriter.println("autoSuggestions:" + Option.AUTO_SUGGESTIONS.get(this));
+				printWriter.println("chatColors:" + Option.CHAT_COLOR.get(this));
+				printWriter.println("chatLinks:" + Option.CHAT_LINKS.get(this));
+				printWriter.println("chatLinksPrompt:" + Option.CHAT_LINKS_PROMPT.get(this));
+				printWriter.println("enableVsync:" + Option.VSYNC.get(this));
+				printWriter.println("entityShadows:" + Option.ENTITY_SHADOWS.get(this));
+				printWriter.println("forceUnicodeFont:" + Option.FORCE_UNICODE_FONT.get(this));
+				printWriter.println("discrete_mouse_scroll:" + Option.DISCRETE_MOUSE_SCROLL.get(this));
+				printWriter.println("invertYMouse:" + Option.INVERT_MOUSE.get(this));
+				printWriter.println("realmsNotifications:" + Option.REALMS_NOTIFICATIONS.get(this));
+				printWriter.println("reducedDebugInfo:" + Option.REDUCED_DEBUG_INFO.get(this));
+				printWriter.println("snooperEnabled:" + Option.SNOOPER.get(this));
+				printWriter.println("showSubtitles:" + Option.SUBTITLES.get(this));
+				printWriter.println("touchscreen:" + Option.TOUCHSCREEN.get(this));
+				printWriter.println("fullscreen:" + Option.FULLSCREEN.get(this));
+				printWriter.println("bobView:" + Option.VIEW_BOBBING.get(this));
 				printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
 				printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
 				printWriter.println("gamma:" + this.gamma);
 				printWriter.println("renderDistance:" + this.viewDistance);
 				printWriter.println("guiScale:" + this.guiScale);
-				printWriter.println("particles:" + this.field_1882.getId());
+				printWriter.println("particles:" + this.particles.getId());
 				printWriter.println("maxFps:" + this.maxFps);
 				printWriter.println("difficulty:" + this.difficulty.getId());
 				printWriter.println("fancyGraphics:" + this.fancyGraphics);
@@ -656,11 +656,11 @@ public class GameOptions {
 
 	public void setSoundVolume(SoundCategory soundCategory, float f) {
 		this.soundVolumeLevels.put(soundCategory, f);
-		this.client.method_1483().updateSoundVolume(soundCategory, f);
+		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
 	}
 
 	public void onPlayerModelPartChange() {
-		if (this.client.field_1724 != null) {
+		if (this.client.player != null) {
 			int i = 0;
 
 			for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
@@ -668,7 +668,7 @@ public class GameOptions {
 			}
 
 			this.client
-				.field_1724
+				.player
 				.networkHandler
 				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
 		}

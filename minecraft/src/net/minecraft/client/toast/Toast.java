@@ -13,7 +13,7 @@ public interface Toast {
 	Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
 	Object field_2208 = new Object();
 
-	Toast.Visibility method_1986(ToastManager toastManager, long l);
+	Toast.Visibility draw(ToastManager toastManager, long l);
 
 	default Object getType() {
 		return field_2208;
@@ -30,7 +30,7 @@ public interface Toast {
 			this.sound = soundEvent;
 		}
 
-		public void method_1988(SoundManager soundManager) {
+		public void play(SoundManager soundManager) {
 			soundManager.play(PositionedSoundInstance.master(this.sound, 1.0F, 1.0F));
 		}
 	}

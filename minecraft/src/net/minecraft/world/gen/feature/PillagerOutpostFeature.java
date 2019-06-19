@@ -50,10 +50,10 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 			}
 
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			if (chunkGenerator.method_12097(biome, Feature.field_16655)) {
+			if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
 				for (int m = i - 10; m <= i + 10; m++) {
 					for (int n = j - 10; n <= j + 10; n++) {
-						if (Feature.field_13587.shouldStartAt(chunkGenerator, random, m, n)) {
+						if (Feature.VILLAGE.shouldStartAt(chunkGenerator, random, m, n)) {
 							return false;
 						}
 					}
@@ -82,9 +82,9 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			PillagerOutpostGenerator.method_16650(chunkGenerator, structureManager, blockPos, this.children, this.random);
+			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 		}
 	}

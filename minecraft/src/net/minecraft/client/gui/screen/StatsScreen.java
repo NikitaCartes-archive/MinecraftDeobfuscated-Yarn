@@ -54,7 +54,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Override
 	protected void init() {
 		this.field_2645 = true;
-		this.minecraft.method_1562().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
+		this.minecraft.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
 	}
 
 	public void method_2270() {
@@ -76,7 +76,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.mobsButton))
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.openScreen(this.parent))
 		);
 		if (this.itemsButton.children().isEmpty()) {
 			buttonWidget.active = false;
@@ -151,7 +151,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void method_2282(int i, int j, int k, int l) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.method_1531().bindTexture(STATS_ICON_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(STATS_ICON_LOCATION);
 		blit(i, j, this.blitOffset, (float)k, (float)l, 18, 18, 128, 128);
 	}
 
@@ -296,7 +296,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 		@Override
 		protected void renderHeader(int i, int j, Tessellator tessellator) {
-			if (!this.minecraft.field_1729.wasLeftButtonClicked()) {
+			if (!this.minecraft.mouse.wasLeftButtonClicked()) {
 				this.field_18756 = -1;
 			}
 
@@ -345,7 +345,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.field_18756 >= 0) {
 				this.method_19408(this.method_19410(this.field_18756));
-				this.minecraft.method_1483().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+				this.minecraft.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 			}
 		}
 
@@ -434,7 +434,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				for (int p = 0; p < StatsScreen.this.itemsButton.field_18754.size(); p++) {
 					Stat<Block> stat;
 					if (item instanceof BlockItem) {
-						stat = ((StatType)StatsScreen.this.itemsButton.field_18754.get(p)).getOrCreateStat(((BlockItem)item).method_7711());
+						stat = ((StatType)StatsScreen.this.itemsButton.field_18754.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
 					} else {
 						stat = null;
 					}
@@ -471,8 +471,8 @@ public class StatsScreen extends Screen implements StatsListener {
 					j = 0;
 				} else if (ItemStatsListWidget.this.field_18754.contains(ItemStatsListWidget.this.field_18759)) {
 					StatType<Block> statType = (StatType<Block>)ItemStatsListWidget.this.field_18759;
-					i = item instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item).method_7711()) : -1;
-					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item2).method_7711()) : -1;
+					i = item instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item).getBlock()) : -1;
+					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item2).getBlock()) : -1;
 				} else {
 					StatType<Item> statType = (StatType<Item>)ItemStatsListWidget.this.field_18759;
 					i = StatsScreen.this.statHandler.getStat(statType, item);

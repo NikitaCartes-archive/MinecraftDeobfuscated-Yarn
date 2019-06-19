@@ -18,7 +18,7 @@ public class SaddleItem extends Item {
 			PigEntity pigEntity = (PigEntity)livingEntity;
 			if (pigEntity.isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
 				pigEntity.setSaddled(true);
-				pigEntity.field_6002.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.field_14824, SoundCategory.field_15254, 0.5F, 1.0F);
+				pigEntity.world.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.field_14824, SoundCategory.field_15254, 0.5F, 1.0F);
 				itemStack.decrement(1);
 			}
 

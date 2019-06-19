@@ -15,12 +15,12 @@ public class EscapeSunlightGoal extends Goal {
 	private double targetY;
 	private double targetZ;
 	private final double speed;
-	private final World field_6418;
+	private final World world;
 
 	public EscapeSunlightGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
-		this.field_6418 = mobEntityWithAi.field_6002;
+		this.world = mobEntityWithAi.world;
 		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
@@ -28,11 +28,11 @@ public class EscapeSunlightGoal extends Goal {
 	public boolean canStart() {
 		if (this.mob.getTarget() != null) {
 			return false;
-		} else if (!this.field_6418.isDaylight()) {
+		} else if (!this.world.isDaylight()) {
 			return false;
 		} else if (!this.mob.isOnFire()) {
 			return false;
-		} else if (!this.field_6418.isSkyVisible(new BlockPos(this.mob.x, this.mob.method_5829().minY, this.mob.z))) {
+		} else if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z))) {
 			return false;
 		} else {
 			return !this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() ? false : this.method_18250();
@@ -40,7 +40,7 @@ public class EscapeSunlightGoal extends Goal {
 	}
 
 	protected boolean method_18250() {
-		Vec3d vec3d = this.method_6257();
+		Vec3d vec3d = this.locateShadedPos();
 		if (vec3d == null) {
 			return false;
 		} else {
@@ -62,13 +62,13 @@ public class EscapeSunlightGoal extends Goal {
 	}
 
 	@Nullable
-	protected Vec3d method_6257() {
+	protected Vec3d locateShadedPos() {
 		Random random = this.mob.getRand();
-		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.method_5829().minY, this.mob.z);
+		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (!this.field_6418.isSkyVisible(blockPos2) && this.mob.getPathfindingFavor(blockPos2) < 0.0F) {
+			if (!this.world.isSkyVisible(blockPos2) && this.mob.getPathfindingFavor(blockPos2) < 0.0F) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

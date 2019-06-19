@@ -80,7 +80,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			j /= 32.0;
 			k /= 32.0;
 			l /= 32.0;
-			this.method_5857(new Box(d - j, e - k, f - l, d + j, e + k, f + l));
+			this.setBoundingBox(new Box(d - j, e - k, f - l, d + j, e + k, f + l));
 		}
 	}
 
@@ -93,7 +93,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.field_7097++ == 100 && !this.field_6002.isClient) {
+		if (this.field_7097++ == 100 && !this.world.isClient) {
 			this.field_7097 = 0;
 			if (!this.removed && !this.method_6888()) {
 				this.remove();
@@ -103,7 +103,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	public boolean method_6888() {
-		if (!this.field_6002.doesNotCollide(this)) {
+		if (!this.world.doesNotCollide(this)) {
 			return false;
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);
@@ -117,14 +117,14 @@ public abstract class AbstractDecorationEntity extends Entity {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
 					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.field_11036, l + n);
-					BlockState blockState = this.field_6002.method_8320(mutable);
-					if (!blockState.method_11620().isSolid() && !AbstractRedstoneGateBlock.method_9999(blockState)) {
+					BlockState blockState = this.world.getBlockState(mutable);
+					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;
 					}
 				}
 			}
 
-			return this.field_6002.method_8333(this, this.method_5829(), PREDICATE).isEmpty();
+			return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
 		}
 	}
 
@@ -148,7 +148,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.removed && !this.field_6002.isClient) {
+			if (!this.removed && !this.world.isClient) {
 				this.remove();
 				this.scheduleVelocityUpdate();
 				this.onBreak(damageSource.getAttacker());
@@ -159,8 +159,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void method_5784(MovementType movementType, Vec3d vec3d) {
-		if (!this.field_6002.isClient && !this.removed && vec3d.lengthSquared() > 0.0) {
+	public void move(MovementType movementType, Vec3d vec3d) {
+		if (!this.world.isClient && !this.removed && vec3d.lengthSquared() > 0.0) {
 			this.remove();
 			this.onBreak(null);
 		}
@@ -168,7 +168,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void addVelocity(double d, double e, double f) {
-		if (!this.field_6002.isClient && !this.removed && d * d + e * e + f * f > 0.0) {
+		if (!this.world.isClient && !this.removed && d * d + e * e + f * f > 0.0) {
 			this.remove();
 			this.onBreak(null);
 		}
@@ -200,14 +200,14 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Override
 	public ItemEntity dropStack(ItemStack itemStack, float f) {
 		ItemEntity itemEntity = new ItemEntity(
-			this.field_6002,
+			this.world,
 			this.x + (double)((float)this.facing.getOffsetX() * 0.15F),
 			this.y + (double)f,
 			this.z + (double)((float)this.facing.getOffsetZ() * 0.15F),
 			itemStack
 		);
 		itemEntity.setToDefaultPickupDelay();
-		this.field_6002.spawnEntity(itemEntity);
+		this.world.spawnEntity(itemEntity);
 		return itemEntity;
 	}
 
@@ -228,7 +228,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float method_5832(BlockRotation blockRotation) {
+	public float applyRotation(BlockRotation blockRotation) {
 		if (this.facing.getAxis() != Direction.Axis.Y) {
 			switch (blockRotation) {
 				case field_11464:
@@ -256,8 +256,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float method_5763(BlockMirror blockMirror) {
-		return this.method_5832(blockMirror.method_10345(this.facing));
+	public float applyMirror(BlockMirror blockMirror) {
+		return this.applyRotation(blockMirror.getRotation(this.facing));
 	}
 
 	@Override

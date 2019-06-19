@@ -72,7 +72,7 @@ public class OptimizeWorldScreen extends Screen {
 			int o = 0;
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {
-				int p = MathHelper.floor(this.updater.method_5393(dimensionType) * (float)(l - k));
+				int p = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(l - k));
 				fill(k + o, m, k + o + p, n, field_3232.getInt(dimensionType));
 				o += p;
 			}

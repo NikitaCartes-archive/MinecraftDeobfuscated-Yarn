@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class SpriteBillboardParticle extends BillboardParticle {
-	protected Sprite field_17886;
+	protected Sprite sprite;
 
 	protected SpriteBillboardParticle(World world, double d, double e, double f) {
 		super(world, d, e, f);
@@ -17,35 +17,35 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 		super(world, d, e, f, g, h, i);
 	}
 
-	protected void method_18141(Sprite sprite) {
-		this.field_17886 = sprite;
+	protected void setSprite(Sprite sprite) {
+		this.sprite = sprite;
 	}
 
 	@Override
 	protected float getMinU() {
-		return this.field_17886.getMinU();
+		return this.sprite.getMinU();
 	}
 
 	@Override
 	protected float getMaxU() {
-		return this.field_17886.getMaxU();
+		return this.sprite.getMaxU();
 	}
 
 	@Override
 	protected float getMinV() {
-		return this.field_17886.getMinV();
+		return this.sprite.getMinV();
 	}
 
 	@Override
 	protected float getMaxV() {
-		return this.field_17886.getMaxV();
+		return this.sprite.getMaxV();
 	}
 
 	public void setSprite(SpriteProvider spriteProvider) {
-		this.method_18141(spriteProvider.method_18139(this.random));
+		this.setSprite(spriteProvider.getSprite(this.random));
 	}
 
 	public void setSpriteForAge(SpriteProvider spriteProvider) {
-		this.method_18141(spriteProvider.method_18138(this.age, this.maxAge));
+		this.setSprite(spriteProvider.getSprite(this.age, this.maxAge));
 	}
 }

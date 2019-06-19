@@ -22,13 +22,13 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new FurnaceBlockEntity();
 	}
 
 	@Override
 	protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof FurnaceBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
 			playerEntity.incrementStat(Stats.field_15379);
@@ -37,8 +37,8 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.method_11654(field_11105)) {
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT)) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ() + 0.5;
@@ -46,7 +46,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 				world.playSound(d, e, f, SoundEvents.field_15006, SoundCategory.field_15245, 1.0F, 1.0F, false);
 			}
 
-			Direction direction = blockState.method_11654(field_11104);
+			Direction direction = blockState.get(FACING);
 			Direction.Axis axis = direction.getAxis();
 			double g = 0.52;
 			double h = random.nextDouble() * 0.6 - 0.3;

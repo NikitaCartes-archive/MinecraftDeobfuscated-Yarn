@@ -25,7 +25,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	public TeamTeleportSpectatorMenu() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 
-		for (Team team : minecraftClient.field_1687.method_8428().getTeams()) {
+		for (Team team : minecraftClient.world.getScoreboard().getTeams()) {
 			this.commands.add(new TeamTeleportSpectatorMenu.TeleportToSpecificTeamCommand(team));
 		}
 	}
@@ -42,7 +42,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public void use(SpectatorMenu spectatorMenu) {
-		spectatorMenu.method_2778(this);
+		spectatorMenu.selectElement(this);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().method_1531().bindTexture(SpectatorHud.SPECTATOR_TEX);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 		DrawableHelper.blit(0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
 
@@ -78,7 +78,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			this.scoreboardEntries = Lists.<PlayerListEntry>newArrayList();
 
 			for (String string : team.getPlayerList()) {
-				PlayerListEntry playerListEntry = MinecraftClient.getInstance().method_1562().method_2874(string);
+				PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(string);
 				if (playerListEntry != null) {
 					this.scoreboardEntries.add(playerListEntry);
 				}
@@ -89,13 +89,13 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			} else {
 				String string2 = ((PlayerListEntry)this.scoreboardEntries.get(new Random().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
 				this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
-				AbstractClientPlayerEntity.method_3120(this.skinId, string2);
+				AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
 			}
 		}
 
 		@Override
 		public void use(SpectatorMenu spectatorMenu) {
-			spectatorMenu.method_2778(new TeleportSpectatorMenu(this.scoreboardEntries));
+			spectatorMenu.selectElement(new TeleportSpectatorMenu(this.scoreboardEntries));
 		}
 
 		@Override
@@ -113,7 +113,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 				DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
-			MinecraftClient.getInstance().method_1531().bindTexture(this.skinId);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 			GlStateManager.color4f(f, f, f, (float)i / 255.0F);
 			DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 			DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);

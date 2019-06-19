@@ -22,11 +22,11 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 				return "<NULL>";
 			} else {
 				Property<?> property = (Property<?>)entry.getKey();
-				return property.getName() + "=" + this.method_11575(property, (Comparable<?>)entry.getValue());
+				return property.getName() + "=" + this.valueToString(property, (Comparable<?>)entry.getValue());
 			}
 		}
 
-		private <T extends Comparable<T>> String method_11575(Property<T> property, Comparable<?> comparable) {
+		private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
 			return property.getName((T)comparable);
 		}
 	};
@@ -41,8 +41,8 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		this.hashCode = immutableMap.hashCode();
 	}
 
-	public <T extends Comparable<T>> S method_11572(Property<T> property) {
-		return this.method_11657(property, getNext(property.getValues(), this.method_11654(property)));
+	public <T extends Comparable<T>> S cycle(Property<T> property) {
+		return this.with(property, getNext(property.getValues(), this.get(property)));
 	}
 
 	protected static <T> T getNext(Collection<T> collection, T object) {
@@ -77,12 +77,12 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		return Collections.unmodifiableCollection(this.entries.keySet());
 	}
 
-	public <T extends Comparable<T>> boolean method_11570(Property<T> property) {
+	public <T extends Comparable<T>> boolean contains(Property<T> property) {
 		return this.entries.containsKey(property);
 	}
 
 	@Override
-	public <T extends Comparable<T>> T method_11654(Property<T> property) {
+	public <T extends Comparable<T>> T get(Property<T> property) {
 		Comparable<?> comparable = this.entries.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
@@ -92,7 +92,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 	}
 
 	@Override
-	public <T extends Comparable<T>, V extends T> S method_11657(Property<T> property, V comparable) {
+	public <T extends Comparable<T>, V extends T> S with(Property<T> property, V comparable) {
 		Comparable<?> comparable2 = this.entries.get(property);
 		if (comparable2 == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
@@ -119,7 +119,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 
 				for (Comparable<?> comparable : property.getValues()) {
 					if (comparable != entry.getValue()) {
-						table.put(property, comparable, (S)map.get(this.method_11573(property, comparable)));
+						table.put(property, comparable, (S)map.get(this.toMapWith(property, comparable)));
 					}
 				}
 			}
@@ -128,7 +128,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		}
 	}
 
-	private Map<Property<?>, Comparable<?>> method_11573(Property<?> property, Comparable<?> comparable) {
+	private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> comparable) {
 		Map<Property<?>, Comparable<?>> map = Maps.<Property<?>, Comparable<?>>newHashMap(this.entries);
 		map.put(property, comparable);
 		return map;

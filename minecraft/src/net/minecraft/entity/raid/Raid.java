@@ -142,7 +142,7 @@ public class Raid {
 		return this.status == Raid.Status.field_19028;
 	}
 
-	public World method_16831() {
+	public World getWorld() {
 		return this.world;
 	}
 
@@ -410,7 +410,7 @@ public class Raid {
 
 			for (RaiderEntity raiderEntity : set2) {
 				BlockPos blockPos = new BlockPos(raiderEntity);
-				if (raiderEntity.removed || raiderEntity.field_6026 != this.world.method_8597().method_12460() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
+				if (raiderEntity.removed || raiderEntity.dimension != this.world.getDimension().getType() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
 					set.add(raiderEntity);
 				} else if (raiderEntity.age > 600) {
 					if (this.world.getEntity(raiderEntity.getUuid()) == null) {
@@ -463,7 +463,7 @@ public class Raid {
 			int k = 0;
 
 			for (int l = 0; l < j; l++) {
-				RaiderEntity raiderEntity = member.type.method_5883(this.world);
+				RaiderEntity raiderEntity = member.type.create(this.world);
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
 					this.setWaveCaptain(i, raiderEntity);
@@ -474,12 +474,12 @@ public class Raid {
 				if (member.type == EntityType.field_6134) {
 					RaiderEntity raiderEntity2 = null;
 					if (i == this.getMaxWaves(Difficulty.field_5802)) {
-						raiderEntity2 = EntityType.field_6105.method_5883(this.world);
+						raiderEntity2 = EntityType.field_6105.create(this.world);
 					} else if (i >= this.getMaxWaves(Difficulty.field_5807)) {
 						if (k == 0) {
-							raiderEntity2 = EntityType.field_6090.method_5883(this.world);
+							raiderEntity2 = EntityType.field_6090.create(this.world);
 						} else {
-							raiderEntity2 = EntityType.field_6117.method_5883(this.world);
+							raiderEntity2 = EntityType.field_6117.create(this.world);
 						}
 					}
 
@@ -508,7 +508,7 @@ public class Raid {
 			raiderEntity.setOutOfRaidCounter(0);
 			if (!bl && blockPos != null) {
 				raiderEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.0, (double)blockPos.getZ() + 0.5);
-				raiderEntity.method_5943(this.world, this.world.getLocalDifficulty(blockPos), SpawnType.field_16467, null, null);
+				raiderEntity.initialize(this.world, this.world.getLocalDifficulty(blockPos), SpawnType.field_16467, null, null);
 				raiderEntity.addBonusForWave(i, false);
 				raiderEntity.onGround = true;
 				this.world.spawnEntity(raiderEntity);
@@ -599,7 +599,7 @@ public class Raid {
 				&& this.world.method_14178().shouldTickChunk(new ChunkPos(mutable))
 				&& (
 					SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, mutable, EntityType.field_6134)
-						|| this.world.method_8320(mutable.down()).getBlock() == Blocks.field_10477 && this.world.method_8320(mutable).isAir()
+						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.field_10477 && this.world.getBlockState(mutable).isAir()
 				)) {
 				return mutable;
 			}

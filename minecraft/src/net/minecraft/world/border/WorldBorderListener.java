@@ -1,60 +1,60 @@
 package net.minecraft.world.border;
 
 public interface WorldBorderListener {
-	void method_11934(WorldBorder worldBorder, double d);
+	void onSizeChange(WorldBorder worldBorder, double d);
 
-	void method_11931(WorldBorder worldBorder, double d, double e, long l);
+	void onInterpolateSize(WorldBorder worldBorder, double d, double e, long l);
 
-	void method_11930(WorldBorder worldBorder, double d, double e);
+	void onCenterChanged(WorldBorder worldBorder, double d, double e);
 
-	void method_11932(WorldBorder worldBorder, int i);
+	void onWarningTimeChanged(WorldBorder worldBorder, int i);
 
-	void method_11933(WorldBorder worldBorder, int i);
+	void onWarningBlocksChanged(WorldBorder worldBorder, int i);
 
-	void method_11929(WorldBorder worldBorder, double d);
+	void onDamagePerBlockChanged(WorldBorder worldBorder, double d);
 
-	void method_11935(WorldBorder worldBorder, double d);
+	void onSafeZoneChanged(WorldBorder worldBorder, double d);
 
 	public static class WorldBorderSyncer implements WorldBorderListener {
-		private final WorldBorder field_17652;
+		private final WorldBorder border;
 
 		public WorldBorderSyncer(WorldBorder worldBorder) {
-			this.field_17652 = worldBorder;
+			this.border = worldBorder;
 		}
 
 		@Override
-		public void method_11934(WorldBorder worldBorder, double d) {
-			this.field_17652.setSize(d);
+		public void onSizeChange(WorldBorder worldBorder, double d) {
+			this.border.setSize(d);
 		}
 
 		@Override
-		public void method_11931(WorldBorder worldBorder, double d, double e, long l) {
-			this.field_17652.interpolateSize(d, e, l);
+		public void onInterpolateSize(WorldBorder worldBorder, double d, double e, long l) {
+			this.border.interpolateSize(d, e, l);
 		}
 
 		@Override
-		public void method_11930(WorldBorder worldBorder, double d, double e) {
-			this.field_17652.setCenter(d, e);
+		public void onCenterChanged(WorldBorder worldBorder, double d, double e) {
+			this.border.setCenter(d, e);
 		}
 
 		@Override
-		public void method_11932(WorldBorder worldBorder, int i) {
-			this.field_17652.setWarningTime(i);
+		public void onWarningTimeChanged(WorldBorder worldBorder, int i) {
+			this.border.setWarningTime(i);
 		}
 
 		@Override
-		public void method_11933(WorldBorder worldBorder, int i) {
-			this.field_17652.setWarningBlocks(i);
+		public void onWarningBlocksChanged(WorldBorder worldBorder, int i) {
+			this.border.setWarningBlocks(i);
 		}
 
 		@Override
-		public void method_11929(WorldBorder worldBorder, double d) {
-			this.field_17652.setDamagePerBlock(d);
+		public void onDamagePerBlockChanged(WorldBorder worldBorder, double d) {
+			this.border.setDamagePerBlock(d);
 		}
 
 		@Override
-		public void method_11935(WorldBorder worldBorder, double d) {
-			this.field_17652.setBuffer(d);
+		public void onSafeZoneChanged(WorldBorder worldBorder, double d) {
+			this.border.setBuffer(d);
 		}
 	}
 }

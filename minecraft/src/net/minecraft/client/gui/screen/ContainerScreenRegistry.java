@@ -107,9 +107,9 @@ public class ContainerScreenRegistry {
 	@Environment(EnvType.CLIENT)
 	interface GuiFactory<T extends Container, U extends Screen & ContainerProvider<T>> {
 		default void openScreen(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
-			U screen = this.create(containerType.create(i, minecraftClient.field_1724.inventory), minecraftClient.field_1724.inventory, text);
-			minecraftClient.field_1724.container = screen.getContainer();
-			minecraftClient.method_1507(screen);
+			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, text);
+			minecraftClient.player.container = screen.getContainer();
+			minecraftClient.openScreen(screen);
 		}
 
 		U create(T container, PlayerInventory playerInventory, Text text);

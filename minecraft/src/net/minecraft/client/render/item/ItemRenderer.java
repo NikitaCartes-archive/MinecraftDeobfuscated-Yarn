@@ -47,16 +47,16 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public float zOffset;
 	private final ItemModels models;
-	private final TextureManager field_4729;
+	private final TextureManager textureManager;
 	private final ItemColors colorMap;
 
 	public ItemRenderer(TextureManager textureManager, BakedModelManager bakedModelManager, ItemColors itemColors) {
-		this.field_4729 = textureManager;
+		this.textureManager = textureManager;
 		this.models = new ItemModels(bakedModelManager);
 
 		for (Item item : Registry.ITEM) {
 			if (!WITHOUT_MODELS.contains(item)) {
-				this.models.method_3309(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
+				this.models.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
 			}
 		}
 
@@ -67,18 +67,18 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		return this.models;
 	}
 
-	private void method_4018(BakedModel bakedModel, ItemStack itemStack) {
-		this.method_4027(bakedModel, -1, itemStack);
+	private void renderItemModel(BakedModel bakedModel, ItemStack itemStack) {
+		this.renderModel(bakedModel, -1, itemStack);
 	}
 
-	private void method_4013(BakedModel bakedModel, int i) {
-		this.method_4027(bakedModel, i, ItemStack.EMPTY);
+	private void renderModelWithTint(BakedModel bakedModel, int i) {
+		this.renderModel(bakedModel, i, ItemStack.EMPTY);
 	}
 
-	private void method_4027(BakedModel bakedModel, int i, ItemStack itemStack) {
+	private void renderModel(BakedModel bakedModel, int i, ItemStack itemStack) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1590);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
 		Random random = new Random();
 		long l = 42L;
 
@@ -92,7 +92,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		tessellator.draw();
 	}
 
-	public void method_4006(ItemStack itemStack, BakedModel bakedModel) {
+	public void renderItemAndGlow(ItemStack itemStack, BakedModel bakedModel) {
 		if (!itemStack.isEmpty()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
@@ -101,9 +101,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				GlStateManager.enableRescaleNormal();
 				ItemDynamicRenderer.INSTANCE.render(itemStack);
 			} else {
-				this.method_4018(bakedModel, itemStack);
+				this.renderItemModel(bakedModel, itemStack);
 				if (itemStack.hasEnchantmentGlint()) {
-					method_4011(this.field_4729, () -> this.method_4013(bakedModel, -8372020), 8);
+					renderGlint(this.textureManager, () -> this.renderModelWithTint(bakedModel, -8372020), 8);
 				}
 			}
 
@@ -111,7 +111,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public static void method_4011(TextureManager textureManager, Runnable runnable, int i) {
+	public static void renderGlint(TextureManager textureManager, Runnable runnable, int i) {
 		GlStateManager.depthMask(false);
 		GlStateManager.depthFunc(514);
 		GlStateManager.disableLighting();
@@ -168,55 +168,55 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public boolean hasDepthInGui(ItemStack itemStack) {
-		BakedModel bakedModel = this.models.method_3308(itemStack);
+		BakedModel bakedModel = this.models.getModel(itemStack);
 		return bakedModel == null ? false : bakedModel.hasDepthInGui();
 	}
 
 	public void renderItem(ItemStack itemStack, ModelTransformation.Type type) {
 		if (!itemStack.isEmpty()) {
-			BakedModel bakedModel = this.method_4007(itemStack);
-			this.method_4024(itemStack, bakedModel, type, false);
+			BakedModel bakedModel = this.getModel(itemStack);
+			this.renderItem(itemStack, bakedModel, type, false);
 		}
 	}
 
-	public BakedModel method_4028(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-		BakedModel bakedModel = this.models.method_3308(itemStack);
+	public BakedModel getModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+		BakedModel bakedModel = this.models.getModel(itemStack);
 		Item item = itemStack.getItem();
-		return !item.hasPropertyGetters() ? bakedModel : this.method_4020(bakedModel, itemStack, world, livingEntity);
+		return !item.hasPropertyGetters() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
-	public BakedModel method_4019(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		Item item = itemStack.getItem();
 		BakedModel bakedModel;
 		if (item == Items.field_8547) {
-			bakedModel = this.models.method_3303().method_4742(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
 		} else {
-			bakedModel = this.models.method_3308(itemStack);
+			bakedModel = this.models.getModel(itemStack);
 		}
 
-		return !item.hasPropertyGetters() ? bakedModel : this.method_4020(bakedModel, itemStack, world, livingEntity);
+		return !item.hasPropertyGetters() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
-	public BakedModel method_4007(ItemStack itemStack) {
-		return this.method_4028(itemStack, null, null);
+	public BakedModel getModel(ItemStack itemStack) {
+		return this.getModel(itemStack, null, null);
 	}
 
-	private BakedModel method_4020(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-		BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().method_3495(bakedModel, itemStack, world, livingEntity);
-		return bakedModel2 == null ? this.models.method_3303().getMissingModel() : bakedModel2;
+	private BakedModel getOverriddenModel(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+		BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().apply(bakedModel, itemStack, world, livingEntity);
+		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 
 	public void renderHeldItem(ItemStack itemStack, LivingEntity livingEntity, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty() && livingEntity != null) {
-			BakedModel bakedModel = this.method_4019(itemStack, livingEntity.field_6002, livingEntity);
-			this.method_4024(itemStack, bakedModel, type, bl);
+			BakedModel bakedModel = this.getHeldItemModel(itemStack, livingEntity.world, livingEntity);
+			this.renderItem(itemStack, bakedModel, type, bl);
 		}
 	}
 
-	protected void method_4024(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
+	protected void renderItem(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty()) {
-			this.field_4729.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.field_4729.method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.alphaFunc(516, 0.1F);
@@ -231,13 +231,13 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
 			}
 
-			this.method_4006(itemStack, bakedModel);
+			this.renderItemAndGlow(itemStack, bakedModel);
 			GlStateManager.cullFace(GlStateManager.FaceSides.field_5070);
 			GlStateManager.popMatrix();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableBlend();
-			this.field_4729.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.field_4729.method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		}
 	}
 
@@ -246,13 +246,13 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {
-		this.method_4021(itemStack, i, j, this.method_4007(itemStack));
+		this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack));
 	}
 
-	protected void method_4021(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
+	protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
 		GlStateManager.pushMatrix();
-		this.field_4729.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		this.field_4729.method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableAlphaTest();
 		GlStateManager.alphaFunc(516, 0.1F);
@@ -261,13 +261,13 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
 		bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4317);
-		this.method_4006(itemStack, bakedModel);
+		this.renderItemAndGlow(itemStack, bakedModel);
 		GlStateManager.disableAlphaTest();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 		GlStateManager.popMatrix();
-		this.field_4729.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		this.field_4729.method_4619(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 	}
 
 	private void prepareGuiItemRender(int i, int j, boolean bl) {
@@ -283,7 +283,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public void renderGuiItem(ItemStack itemStack, int i, int j) {
-		this.renderGuiItem(MinecraftClient.getInstance().field_1724, itemStack, i, j);
+		this.renderGuiItem(MinecraftClient.getInstance().player, itemStack, i, j);
 	}
 
 	public void renderGuiItem(@Nullable LivingEntity livingEntity, ItemStack itemStack, int i, int j) {
@@ -291,7 +291,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			this.zOffset += 50.0F;
 
 			try {
-				this.method_4021(itemStack, i, j, this.method_4028(itemStack, null, livingEntity));
+				this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack, null, livingEntity));
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Rendering item");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
@@ -345,7 +345,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				GlStateManager.enableDepthTest();
 			}
 
-			ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().field_1724;
+			ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 			float m = clientPlayerEntity == null
 				? 0.0F
 				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(itemStack.getItem(), MinecraftClient.getInstance().getTickDelta());
@@ -364,7 +364,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	private void renderGuiQuad(BufferBuilder bufferBuilder, int i, int j, int k, int l, int m, int n, int o, int p) {
-		bufferBuilder.method_1328(7, VertexFormats.field_1576);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), 0.0).color(m, n, o, p).next();
 		bufferBuilder.vertex((double)(i + 0), (double)(j + l), 0.0).color(m, n, o, p).next();
 		bufferBuilder.vertex((double)(i + k), (double)(j + l), 0.0).color(m, n, o, p).next();

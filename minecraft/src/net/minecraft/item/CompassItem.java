@@ -32,21 +32,21 @@ public class CompassItem extends Item {
 					boolean bl = livingEntity != null;
 					Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
 					if (world == null) {
-						world = entity.field_6002;
+						world = entity.world;
 					}
 
 					double f;
-					if (world.field_9247.hasVisibleSky()) {
+					if (world.dimension.hasVisibleSky()) {
 						double d = bl ? (double)entity.yaw : this.getYaw((ItemFrameEntity)entity);
 						d = MathHelper.floorMod(d / 360.0, 1.0);
-						double e = this.method_7734(world, entity) / (float) (Math.PI * 2);
+						double e = this.getAngleToSpawn(world, entity) / (float) (Math.PI * 2);
 						f = 0.5 - (d - 0.25 - e);
 					} else {
 						f = Math.random();
 					}
 
 					if (bl) {
-						f = this.method_7735(world, f);
+						f = this.getAngle(world, f);
 					}
 
 					return MathHelper.floorMod((float)f, 1.0F);
@@ -54,7 +54,7 @@ public class CompassItem extends Item {
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double method_7735(World world, double d) {
+			private double getAngle(World world, double d) {
 				if (world.getTime() != this.lastTick) {
 					this.lastTick = world.getTime();
 					double e = d - this.angle;
@@ -73,7 +73,7 @@ public class CompassItem extends Item {
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double method_7734(IWorld iWorld, Entity entity) {
+			private double getAngleToSpawn(IWorld iWorld, Entity entity) {
 				BlockPos blockPos = iWorld.getSpawnPos();
 				return Math.atan2((double)blockPos.getZ() - entity.z, (double)blockPos.getX() - entity.x);
 			}

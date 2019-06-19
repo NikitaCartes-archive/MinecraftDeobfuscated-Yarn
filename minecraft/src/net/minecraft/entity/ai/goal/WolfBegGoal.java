@@ -12,14 +12,14 @@ import net.minecraft.world.World;
 public class WolfBegGoal extends Goal {
 	private final WolfEntity wolf;
 	private PlayerEntity begFrom;
-	private final World field_6381;
+	private final World world;
 	private final float begDistance;
 	private int timer;
 	private final TargetPredicate validPlayerPredicate;
 
 	public WolfBegGoal(WolfEntity wolfEntity, float f) {
 		this.wolf = wolfEntity;
-		this.field_6381 = wolfEntity.field_6002;
+		this.world = wolfEntity.world;
 		this.begDistance = f;
 		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
 		this.setControls(EnumSet.of(Goal.Control.field_18406));
@@ -27,7 +27,7 @@ public class WolfBegGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		this.begFrom = this.field_6381.getClosestPlayer(this.validPlayerPredicate, this.wolf);
+		this.begFrom = this.world.getClosestPlayer(this.validPlayerPredicate, this.wolf);
 		return this.begFrom == null ? false : this.isAttractive(this.begFrom);
 	}
 

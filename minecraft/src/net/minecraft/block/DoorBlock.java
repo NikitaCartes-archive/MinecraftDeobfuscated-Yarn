@@ -32,160 +32,162 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DoorBlock extends Block {
-	public static final DirectionProperty field_10938 = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_10945 = Properties.field_12537;
-	public static final EnumProperty<DoorHinge> field_10941 = Properties.field_12520;
-	public static final BooleanProperty field_10940 = Properties.field_12484;
-	public static final EnumProperty<DoubleBlockHalf> field_10946 = Properties.field_12533;
-	protected static final VoxelShape field_10942 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
-	protected static final VoxelShape field_10939 = Block.method_9541(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_10944 = Block.method_9541(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_10943 = Block.method_9541(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty OPEN = Properties.OPEN;
+	public static final EnumProperty<DoorHinge> HINGE = Properties.DOOR_HINGE;
+	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
+	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
+	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
 
 	protected DoorBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_10938, Direction.field_11043)
-				.method_11657(field_10945, Boolean.valueOf(false))
-				.method_11657(field_10941, DoorHinge.field_12588)
-				.method_11657(field_10940, Boolean.valueOf(false))
-				.method_11657(field_10946, DoubleBlockHalf.field_12607)
+		this.setDefaultState(
+			this.stateFactory
+				.getDefaultState()
+				.with(FACING, Direction.field_11043)
+				.with(OPEN, Boolean.valueOf(false))
+				.with(HINGE, DoorHinge.field_12588)
+				.with(POWERED, Boolean.valueOf(false))
+				.with(HALF, DoubleBlockHalf.field_12607)
 		);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		Direction direction = blockState.method_11654(field_10938);
-		boolean bl = !(Boolean)blockState.method_11654(field_10945);
-		boolean bl2 = blockState.method_11654(field_10941) == DoorHinge.field_12586;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		Direction direction = blockState.get(FACING);
+		boolean bl = !(Boolean)blockState.get(OPEN);
+		boolean bl2 = blockState.get(HINGE) == DoorHinge.field_12586;
 		switch (direction) {
 			case field_11034:
 			default:
-				return bl ? field_10943 : (bl2 ? field_10939 : field_10942);
+				return bl ? WEST_SHAPE : (bl2 ? SOUTH_SHAPE : NORTH_SHAPE);
 			case field_11035:
-				return bl ? field_10942 : (bl2 ? field_10943 : field_10944);
+				return bl ? NORTH_SHAPE : (bl2 ? WEST_SHAPE : EAST_SHAPE);
 			case field_11039:
-				return bl ? field_10944 : (bl2 ? field_10942 : field_10939);
+				return bl ? EAST_SHAPE : (bl2 ? NORTH_SHAPE : SOUTH_SHAPE);
 			case field_11043:
-				return bl ? field_10939 : (bl2 ? field_10944 : field_10943);
+				return bl ? SOUTH_SHAPE : (bl2 ? EAST_SHAPE : WEST_SHAPE);
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		DoubleBlockHalf doubleBlockHalf = blockState.method_11654(field_10946);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.field_11036)) {
 			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-				? Blocks.field_10124.method_9564()
-				: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+				? Blocks.field_10124.getDefaultState()
+				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			return blockState2.getBlock() == this && blockState2.method_11654(field_10946) != doubleBlockHalf
-				? blockState.method_11657(field_10938, blockState2.method_11654(field_10938))
-					.method_11657(field_10945, blockState2.method_11654(field_10945))
-					.method_11657(field_10941, blockState2.method_11654(field_10941))
-					.method_11657(field_10940, blockState2.method_11654(field_10940))
-				: Blocks.field_10124.method_9564();
+			return blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf
+				? blockState.with(FACING, blockState2.get(FACING))
+					.with(OPEN, blockState2.get(OPEN))
+					.with(HINGE, blockState2.get(HINGE))
+					.with(POWERED, blockState2.get(POWERED))
+				: Blocks.field_10124.getDefaultState();
 		}
 	}
 
 	@Override
-	public void method_9556(
+	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.method_9556(world, playerEntity, blockPos, Blocks.field_10124.method_9564(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
-	public void method_9576(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		DoubleBlockHalf doubleBlockHalf = blockState.method_11654(field_10946);
+	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.field_12607 ? blockPos.up() : blockPos.down();
-		BlockState blockState2 = world.method_8320(blockPos2);
-		if (blockState2.getBlock() == this && blockState2.method_11654(field_10946) != doubleBlockHalf) {
-			world.method_8652(blockPos2, Blocks.field_10124.method_9564(), 35);
-			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.method_9507(blockState2));
+		BlockState blockState2 = world.getBlockState(blockPos2);
+		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
+			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
+			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (!world.isClient && !playerEntity.isCreative()) {
-				Block.method_9511(blockState, world, blockPos, null, playerEntity, itemStack);
-				Block.method_9511(blockState2, world, blockPos2, null, playerEntity, itemStack);
+				Block.dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
+				Block.dropStacks(blockState2, world, blockPos2, null, playerEntity, itemStack);
 			}
 		}
 
-		super.method_9576(world, blockPos, blockState, playerEntity);
+		super.onBreak(world, blockPos, blockState, playerEntity);
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
-				return (Boolean)blockState.method_11654(field_10945);
+				return (Boolean)blockState.get(OPEN);
 			case field_48:
 				return false;
 			case field_51:
-				return (Boolean)blockState.method_11654(field_10945);
+				return (Boolean)blockState.get(OPEN);
 			default:
 				return false;
 		}
 	}
 
 	private int getOpenSoundEventId() {
-		return this.field_10635 == Material.METAL ? 1011 : 1012;
+		return this.material == Material.METAL ? 1011 : 1012;
 	}
 
 	private int getCloseSoundEventId() {
-		return this.field_10635 == Material.METAL ? 1005 : 1006;
+		return this.material == Material.METAL ? 1005 : 1006;
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		if (blockPos.getY() < 255 && itemPlacementContext.method_8045().method_8320(blockPos.up()).canReplace(itemPlacementContext)) {
-			World world = itemPlacementContext.method_8045();
+		if (blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).canReplace(itemPlacementContext)) {
+			World world = itemPlacementContext.getWorld();
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
-			return this.method_9564()
-				.method_11657(field_10938, itemPlacementContext.getPlayerFacing())
-				.method_11657(field_10941, this.method_10035(itemPlacementContext))
-				.method_11657(field_10940, Boolean.valueOf(bl))
-				.method_11657(field_10945, Boolean.valueOf(bl))
-				.method_11657(field_10946, DoubleBlockHalf.field_12607);
+			return this.getDefaultState()
+				.with(FACING, itemPlacementContext.getPlayerFacing())
+				.with(HINGE, this.getHinge(itemPlacementContext))
+				.with(POWERED, Boolean.valueOf(bl))
+				.with(OPEN, Boolean.valueOf(bl))
+				.with(HALF, DoubleBlockHalf.field_12607);
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		world.method_8652(blockPos.up(), blockState.method_11657(field_10946, DoubleBlockHalf.field_12609), 3);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+		world.setBlockState(blockPos.up(), blockState.with(HALF, DoubleBlockHalf.field_12609), 3);
 	}
 
-	private DoorHinge method_10035(ItemPlacementContext itemPlacementContext) {
-		BlockView blockView = itemPlacementContext.method_8045();
+	private DoorHinge getHinge(ItemPlacementContext itemPlacementContext) {
+		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction direction = itemPlacementContext.getPlayerFacing();
 		BlockPos blockPos2 = blockPos.up();
 		Direction direction2 = direction.rotateYCounterclockwise();
 		BlockPos blockPos3 = blockPos.offset(direction2);
-		BlockState blockState = blockView.method_8320(blockPos3);
+		BlockState blockState = blockView.getBlockState(blockPos3);
 		BlockPos blockPos4 = blockPos2.offset(direction2);
-		BlockState blockState2 = blockView.method_8320(blockPos4);
+		BlockState blockState2 = blockView.getBlockState(blockPos4);
 		Direction direction3 = direction.rotateYClockwise();
 		BlockPos blockPos5 = blockPos.offset(direction3);
-		BlockState blockState3 = blockView.method_8320(blockPos5);
+		BlockState blockState3 = blockView.getBlockState(blockPos5);
 		BlockPos blockPos6 = blockPos2.offset(direction3);
-		BlockState blockState4 = blockView.method_8320(blockPos6);
-		int i = (method_9614(blockState.method_11628(blockView, blockPos3)) ? -1 : 0)
-			+ (method_9614(blockState2.method_11628(blockView, blockPos4)) ? -1 : 0)
-			+ (method_9614(blockState3.method_11628(blockView, blockPos5)) ? 1 : 0)
-			+ (method_9614(blockState4.method_11628(blockView, blockPos6)) ? 1 : 0);
-		boolean bl = blockState.getBlock() == this && blockState.method_11654(field_10946) == DoubleBlockHalf.field_12607;
-		boolean bl2 = blockState3.getBlock() == this && blockState3.method_11654(field_10946) == DoubleBlockHalf.field_12607;
+		BlockState blockState4 = blockView.getBlockState(blockPos6);
+		int i = (isShapeFullCube(blockState.getCollisionShape(blockView, blockPos3)) ? -1 : 0)
+			+ (isShapeFullCube(blockState2.getCollisionShape(blockView, blockPos4)) ? -1 : 0)
+			+ (isShapeFullCube(blockState3.getCollisionShape(blockView, blockPos5)) ? 1 : 0)
+			+ (isShapeFullCube(blockState4.getCollisionShape(blockView, blockPos6)) ? 1 : 0);
+		boolean bl = blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.field_12607;
+		boolean bl2 = blockState3.getBlock() == this && blockState3.get(HALF) == DoubleBlockHalf.field_12607;
 		if ((!bl || bl2) && i <= 0) {
 			if ((!bl2 || bl) && i >= 0) {
 				int j = direction.getOffsetX();
 				int k = direction.getOffsetZ();
-				Vec3d vec3d = itemPlacementContext.method_17698();
+				Vec3d vec3d = itemPlacementContext.getHitPos();
 				double d = vec3d.x - (double)blockPos.getX();
 				double e = vec3d.z - (double)blockPos.getZ();
 				return (j >= 0 || !(e < 0.5)) && (j <= 0 || !(e > 0.5)) && (k >= 0 || !(d > 0.5)) && (k <= 0 || !(d < 0.5)) ? DoorHinge.field_12588 : DoorHinge.field_12586;
@@ -198,46 +200,44 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (this.field_10635 == Material.METAL) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (this.material == Material.METAL) {
 			return false;
 		} else {
-			blockState = blockState.method_11572(field_10945);
-			world.method_8652(blockPos, blockState, 10);
-			world.playLevelEvent(playerEntity, blockState.method_11654(field_10945) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
+			blockState = blockState.cycle(OPEN);
+			world.setBlockState(blockPos, blockState, 10);
+			world.playLevelEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 			return true;
 		}
 	}
 
 	public void setOpen(World world, BlockPos blockPos, boolean bl) {
-		BlockState blockState = world.method_8320(blockPos);
-		if (blockState.getBlock() == this && (Boolean)blockState.method_11654(field_10945) != bl) {
-			world.method_8652(blockPos, blockState.method_11657(field_10945, Boolean.valueOf(bl)), 10);
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getBlock() == this && (Boolean)blockState.get(OPEN) != bl) {
+			world.setBlockState(blockPos, blockState.with(OPEN, Boolean.valueOf(bl)), 10);
 			this.playOpenCloseSound(world, blockPos, bl);
 		}
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		boolean bl2 = world.isReceivingRedstonePower(blockPos)
-			|| world.isReceivingRedstonePower(
-				blockPos.offset(blockState.method_11654(field_10946) == DoubleBlockHalf.field_12607 ? Direction.field_11036 : Direction.field_11033)
-			);
-		if (block != this && bl2 != (Boolean)blockState.method_11654(field_10940)) {
-			if (bl2 != (Boolean)blockState.method_11654(field_10945)) {
+			|| world.isReceivingRedstonePower(blockPos.offset(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? Direction.field_11036 : Direction.field_11033));
+		if (block != this && bl2 != (Boolean)blockState.get(POWERED)) {
+			if (bl2 != (Boolean)blockState.get(OPEN)) {
 				this.playOpenCloseSound(world, blockPos, bl2);
 			}
 
-			world.method_8652(blockPos, blockState.method_11657(field_10940, Boolean.valueOf(bl2)).method_11657(field_10945, Boolean.valueOf(bl2)), 2);
+			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)).with(OPEN, Boolean.valueOf(bl2)), 2);
 		}
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.method_8320(blockPos2);
-		return blockState.method_11654(field_10946) == DoubleBlockHalf.field_12607
-			? Block.method_20045(blockState2, viewableWorld, blockPos2, Direction.field_11036)
+		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+		return blockState.get(HALF) == DoubleBlockHalf.field_12607
+			? Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.field_11036)
 			: blockState2.getBlock() == this;
 	}
 
@@ -246,7 +246,7 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public PistonBehavior method_9527(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState blockState) {
 		return PistonBehavior.field_15971;
 	}
 
@@ -256,27 +256,23 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_10938, blockRotation.rotate(blockState.method_11654(field_10938)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockMirror == BlockMirror.field_11302
-			? blockState
-			: blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_10938))).method_11572(field_10941);
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockMirror == BlockMirror.field_11302 ? blockState : blockState.rotate(blockMirror.getRotation(blockState.get(FACING))).cycle(HINGE);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public long method_9535(BlockState blockState, BlockPos blockPos) {
-		return MathHelper.hashCode(
-			blockPos.getX(), blockPos.down(blockState.method_11654(field_10946) == DoubleBlockHalf.field_12607 ? 0 : 1).getY(), blockPos.getZ()
-		);
+	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
+		return MathHelper.hashCode(blockPos.getX(), blockPos.down(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? 0 : 1).getY(), blockPos.getZ());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10946, field_10938, field_10945, field_10941, field_10940);
+		builder.add(HALF, FACING, OPEN, HINGE, POWERED);
 	}
 }

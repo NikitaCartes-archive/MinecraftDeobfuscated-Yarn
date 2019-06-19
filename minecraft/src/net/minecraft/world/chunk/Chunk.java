@@ -36,8 +36,8 @@ public interface Chunk extends BlockViewWithStructures {
 	void addEntity(Entity entity);
 
 	@Nullable
-	default ChunkSection method_12040() {
-		ChunkSection[] chunkSections = this.method_12006();
+	default ChunkSection getHighestNonEmptySection() {
+		ChunkSection[] chunkSections = this.getSectionArray();
 
 		for (int i = chunkSections.length - 1; i >= 0; i--) {
 			ChunkSection chunkSection = chunkSections[i];
@@ -50,20 +50,20 @@ public interface Chunk extends BlockViewWithStructures {
 	}
 
 	default int getHighestNonEmptySectionYOffset() {
-		ChunkSection chunkSection = this.method_12040();
+		ChunkSection chunkSection = this.getHighestNonEmptySection();
 		return chunkSection == null ? 0 : chunkSection.getYOffset();
 	}
 
 	Set<BlockPos> getBlockEntityPositions();
 
-	ChunkSection[] method_12006();
+	ChunkSection[] getSectionArray();
 
 	@Nullable
-	LightingProvider method_12023();
+	LightingProvider getLightingProvider();
 
 	default int getLightLevel(BlockPos blockPos, int i, boolean bl) {
-		LightingProvider lightingProvider = this.method_12023();
-		if (lightingProvider != null && this.method_12009().isAtLeast(ChunkStatus.field_12805)) {
+		LightingProvider lightingProvider = this.getLightingProvider();
+		if (lightingProvider != null && this.getStatus().isAtLeast(ChunkStatus.field_12805)) {
 			int j = bl ? lightingProvider.get(LightType.field_9284).getLightLevel(blockPos) - i : 0;
 			int k = lightingProvider.get(LightType.field_9282).getLightLevel(blockPos);
 			return Math.max(k, j);
@@ -76,7 +76,7 @@ public interface Chunk extends BlockViewWithStructures {
 
 	void setHeightmap(Heightmap.Type type, long[] ls);
 
-	Heightmap method_12032(Heightmap.Type type);
+	Heightmap getHeightmap(Heightmap.Type type);
 
 	int sampleHeightmap(Heightmap.Type type, int i, int j);
 
@@ -104,7 +104,7 @@ public interface Chunk extends BlockViewWithStructures {
 		}
 
 		for (int k = i; k <= j; k += 16) {
-			if (!ChunkSection.isEmpty(this.method_12006()[k >> 4])) {
+			if (!ChunkSection.isEmpty(this.getSectionArray()[k >> 4])) {
 				return false;
 			}
 		}
@@ -118,11 +118,11 @@ public interface Chunk extends BlockViewWithStructures {
 
 	boolean needsSaving();
 
-	ChunkStatus method_12009();
+	ChunkStatus getStatus();
 
 	void removeBlockEntity(BlockPos blockPos);
 
-	void method_17032(LightingProvider lightingProvider);
+	void setLightingProvider(LightingProvider lightingProvider);
 
 	default void markBlockForPostProcessing(BlockPos blockPos) {
 		LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", blockPos);
@@ -154,11 +154,11 @@ public interface Chunk extends BlockViewWithStructures {
 
 	TickScheduler<Fluid> getFluidTickScheduler();
 
-	default BitSet method_12025(GenerationStep.Carver carver) {
+	default BitSet getCarvingMask(GenerationStep.Carver carver) {
 		throw new RuntimeException("Meaningless in this context");
 	}
 
-	UpgradeData method_12003();
+	UpgradeData getUpgradeData();
 
 	void setInhabitedTime(long l);
 

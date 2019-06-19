@@ -125,7 +125,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.leftArm.rotationPointX = 5.0F;
 		float l = 1.0F;
 		if (bl) {
-			l = (float)livingEntity.method_18798().lengthSquared();
+			l = (float)livingEntity.getVelocity().lengthSquared();
 			l /= 0.2F;
 			l *= l * l;
 		}

@@ -18,16 +18,16 @@ public interface Trader {
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	TraderOfferList method_8264();
+	TraderOfferList getOffers();
 
 	@Environment(EnvType.CLIENT)
-	void method_8261(@Nullable TraderOfferList traderOfferList);
+	void setOffersFromServer(@Nullable TraderOfferList traderOfferList);
 
-	void method_8262(TradeOffer tradeOffer);
+	void trade(TradeOffer tradeOffer);
 
 	void onSellingItem(ItemStack itemStack);
 
-	World method_8260();
+	World getTraderWorld();
 
 	int getExperience();
 
@@ -46,9 +46,9 @@ public interface Trader {
 			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), text)
 		);
 		if (optionalInt.isPresent()) {
-			TraderOfferList traderOfferList = this.method_8264();
+			TraderOfferList traderOfferList = this.getOffers();
 			if (!traderOfferList.isEmpty()) {
-				playerEntity.method_17354(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
+				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
 			}
 		}
 	}

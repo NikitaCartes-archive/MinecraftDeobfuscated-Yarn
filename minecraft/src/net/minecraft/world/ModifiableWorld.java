@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 public interface ModifiableWorld {
-	boolean method_8652(BlockPos blockPos, BlockState blockState, int i);
+	boolean setBlockState(BlockPos blockPos, BlockState blockState, int i);
 
 	boolean clearBlockState(BlockPos blockPos, boolean bl);
 

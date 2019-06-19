@@ -32,7 +32,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public RaidManager(ServerWorld serverWorld) {
-		super(method_16533(serverWorld.field_9247));
+		super(nameFor(serverWorld.dimension));
 		this.world = serverWorld;
 		this.nextAvailableId = 1;
 		this.markDirty();
@@ -68,11 +68,11 @@ public class RaidManager extends PersistentState {
 	}
 
 	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
-		return raiderEntity != null && raid != null && raid.method_16831() != null
+		return raiderEntity != null && raid != null && raid.getWorld() != null
 			? raiderEntity.isAlive()
 				&& raiderEntity.canJoinRaid()
 				&& raiderEntity.getDespawnCounter() <= 2400
-				&& raiderEntity.field_6002.method_8597().method_12460() == raid.method_16831().method_8597().method_12460()
+				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
 			: false;
 	}
 
@@ -83,7 +83,7 @@ public class RaidManager extends PersistentState {
 		} else if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
 			return null;
 		} else {
-			DimensionType dimensionType = serverPlayerEntity.field_6002.method_8597().method_12460();
+			DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();
 			if (dimensionType == DimensionType.field_13076) {
 				return null;
 			} else {
@@ -173,8 +173,8 @@ public class RaidManager extends PersistentState {
 		return compoundTag;
 	}
 
-	public static String method_16533(Dimension dimension) {
-		return "raids" + dimension.method_12460().getSuffix();
+	public static String nameFor(Dimension dimension) {
+		return "raids" + dimension.getType().getSuffix();
 	}
 
 	private int nextId() {

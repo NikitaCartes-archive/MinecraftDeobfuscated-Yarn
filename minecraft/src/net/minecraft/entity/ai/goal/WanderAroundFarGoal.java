@@ -19,12 +19,12 @@ public class WanderAroundFarGoal extends WanderAroundGoal {
 
 	@Nullable
 	@Override
-	protected Vec3d method_6302() {
+	protected Vec3d getWanderTarget() {
 		if (this.mob.isInsideWaterOrBubbleColumn()) {
-			Vec3d vec3d = PathfindingUtil.method_6378(this.mob, 15, 7);
-			return vec3d == null ? super.method_6302() : vec3d;
+			Vec3d vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 7);
+			return vec3d == null ? super.getWanderTarget() : vec3d;
 		} else {
-			return this.mob.getRand().nextFloat() >= this.probability ? PathfindingUtil.method_6378(this.mob, 10, 7) : super.method_6302();
+			return this.mob.getRand().nextFloat() >= this.probability ? PathfindingUtil.findTargetStraight(this.mob, 10, 7) : super.getWanderTarget();
 		}
 	}
 }

@@ -18,17 +18,17 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 
 	@Nullable
 	@Override
-	protected Vec3d method_6302() {
+	protected Vec3d getWanderTarget() {
 		Vec3d vec3d = null;
 		if (this.mob.isInsideWater()) {
-			vec3d = PathfindingUtil.method_6378(this.mob, 15, 15);
+			vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 15);
 		}
 
 		if (this.mob.getRand().nextFloat() >= this.probability) {
 			vec3d = this.method_6314();
 		}
 
-		return vec3d == null ? super.method_6302() : vec3d;
+		return vec3d == null ? super.getWanderTarget() : vec3d;
 	}
 
 	@Nullable
@@ -46,9 +46,9 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 			MathHelper.floor(this.mob.z + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
-				Block block = this.mob.field_6002.method_8320(mutable2.set(blockPos2).setOffset(Direction.field_11033)).getBlock();
+				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.field_11033)).getBlock();
 				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.field_15475);
-				if (bl && this.mob.field_6002.isAir(blockPos2) && this.mob.field_6002.isAir(mutable.set(blockPos2).setOffset(Direction.field_11036))) {
+				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.field_11036))) {
 					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}

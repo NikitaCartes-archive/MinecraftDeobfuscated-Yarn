@@ -88,7 +88,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setIsEditable(false);
 		this.previousOutputTextField.setText("-");
 		this.children.add(this.previousOutputTextField);
-		this.method_20085(this.consoleCommandTextField);
+		this.setInitialFocus(this.consoleCommandTextField);
 		this.consoleCommandTextField.method_1876(true);
 		this.updateCommand();
 	}
@@ -118,7 +118,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void onClose() {
 		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void onCommandChanged(String string) {
@@ -181,7 +181,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.exceptions.clear();
-		CommandDispatcher<CommandSource> commandDispatcher = this.minecraft.field_1724.networkHandler.getCommandDispatcher();
+		CommandDispatcher<CommandSource> commandDispatcher = this.minecraft.player.networkHandler.getCommandDispatcher();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -189,7 +189,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		int i = stringReader.getCursor();
 		if (this.parsedCommand == null) {
-			this.parsedCommand = commandDispatcher.parse(stringReader, this.minecraft.field_1724.networkHandler.method_2875());
+			this.parsedCommand = commandDispatcher.parse(stringReader, this.minecraft.player.networkHandler.getCommandSource());
 		}
 
 		int j = this.consoleCommandTextField.getCursor();
@@ -230,7 +230,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.suggestionWindow = null;
-		if (this.minecraft.field_1690.autoSuggestions) {
+		if (this.minecraft.options.autoSuggestions) {
 			this.showSuggestions();
 		}
 	}
@@ -243,10 +243,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.minecraft
-			.field_1724
+			.player
 			.networkHandler
 			.getCommandDispatcher()
-			.getSmartUsage(suggestionContext.parent, this.minecraft.field_1724.networkHandler.method_2875());
+			.getSmartUsage(suggestionContext.parent, this.minecraft.player.networkHandler.getCommandSource());
 		List<String> list = Lists.<String>newArrayList();
 		int i = 0;
 
@@ -326,7 +326,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class SuggestionWindow {
-		private final Rect2i field_2771;
+		private final Rect2i area;
 		private final Suggestions suggestions;
 		private final String typedText;
 		private int inWindowIndex;
@@ -335,7 +335,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		private boolean completed;
 
 		private SuggestionWindow(int i, int j, int k, Suggestions suggestions) {
-			this.field_2771 = new Rect2i(i - 1, j, k + 1, Math.min(suggestions.getList().size(), 7) * 12);
+			this.area = new Rect2i(i - 1, j, k + 1, Math.min(suggestions.getList().size(), 7) * 12);
 			this.suggestions = suggestions;
 			this.typedText = AbstractCommandBlockScreen.this.consoleCommandTextField.getText();
 			this.select(0);
@@ -354,33 +354,27 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			}
 
 			if (bl3) {
+				DrawableHelper.fill(this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), Integer.MIN_VALUE);
 				DrawableHelper.fill(
-					this.field_2771.getX(), this.field_2771.getY() - 1, this.field_2771.getX() + this.field_2771.getWidth(), this.field_2771.getY(), Integer.MIN_VALUE
-				);
-				DrawableHelper.fill(
-					this.field_2771.getX(),
-					this.field_2771.getY() + this.field_2771.getHeight(),
-					this.field_2771.getX() + this.field_2771.getWidth(),
-					this.field_2771.getY() + this.field_2771.getHeight() + 1,
+					this.area.getX(),
+					this.area.getY() + this.area.getHeight(),
+					this.area.getX() + this.area.getWidth(),
+					this.area.getY() + this.area.getHeight() + 1,
 					Integer.MIN_VALUE
 				);
 				if (bl) {
-					for (int n = 0; n < this.field_2771.getWidth(); n++) {
+					for (int n = 0; n < this.area.getWidth(); n++) {
 						if (n % 2 == 0) {
-							DrawableHelper.fill(this.field_2771.getX() + n, this.field_2771.getY() - 1, this.field_2771.getX() + n + 1, this.field_2771.getY(), -1);
+							DrawableHelper.fill(this.area.getX() + n, this.area.getY() - 1, this.area.getX() + n + 1, this.area.getY(), -1);
 						}
 					}
 				}
 
 				if (bl2) {
-					for (int nx = 0; nx < this.field_2771.getWidth(); nx++) {
+					for (int nx = 0; nx < this.area.getWidth(); nx++) {
 						if (nx % 2 == 0) {
 							DrawableHelper.fill(
-								this.field_2771.getX() + nx,
-								this.field_2771.getY() + this.field_2771.getHeight(),
-								this.field_2771.getX() + nx + 1,
-								this.field_2771.getY() + this.field_2771.getHeight() + 1,
-								-1
+								this.area.getX() + nx, this.area.getY() + this.area.getHeight(), this.area.getX() + nx + 1, this.area.getY() + this.area.getHeight() + 1, -1
 							);
 						}
 					}
@@ -391,17 +385,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 			for (int o = 0; o < k; o++) {
 				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(o + this.inWindowIndex);
-				DrawableHelper.fill(
-					this.field_2771.getX(),
-					this.field_2771.getY() + 12 * o,
-					this.field_2771.getX() + this.field_2771.getWidth(),
-					this.field_2771.getY() + 12 * o + 12,
-					Integer.MIN_VALUE
-				);
-				if (i > this.field_2771.getX()
-					&& i < this.field_2771.getX() + this.field_2771.getWidth()
-					&& j > this.field_2771.getY() + 12 * o
-					&& j < this.field_2771.getY() + 12 * o + 12) {
+				DrawableHelper.fill(this.area.getX(), this.area.getY() + 12 * o, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * o + 12, Integer.MIN_VALUE);
+				if (i > this.area.getX() && i < this.area.getX() + this.area.getWidth() && j > this.area.getY() + 12 * o && j < this.area.getY() + 12 * o + 12) {
 					if (bl4) {
 						this.select(o + this.inWindowIndex);
 					}
@@ -411,10 +396,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 				AbstractCommandBlockScreen.this.font
 					.drawWithShadow(
-						suggestion.getText(),
-						(float)(this.field_2771.getX() + 1),
-						(float)(this.field_2771.getY() + 2 + 12 * o),
-						o + this.inWindowIndex == this.selection ? -256 : -5592406
+						suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * o), o + this.inWindowIndex == this.selection ? -256 : -5592406
 					);
 			}
 
@@ -427,10 +409,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		public boolean mouseClicked(int i, int j, int k) {
-			if (!this.field_2771.contains(i, j)) {
+			if (!this.area.contains(i, j)) {
 				return false;
 			} else {
-				int l = (j - this.field_2771.getY()) / 12 + this.inWindowIndex;
+				int l = (j - this.area.getY()) / 12 + this.inWindowIndex;
 				if (l >= 0 && l < this.suggestions.getList().size()) {
 					this.select(l);
 					this.complete();
@@ -442,16 +424,16 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		public boolean mouseScrolled(double d) {
 			int i = (int)(
-				AbstractCommandBlockScreen.this.minecraft.field_1729.getX()
+				AbstractCommandBlockScreen.this.minecraft.mouse.getX()
 					* (double)AbstractCommandBlockScreen.this.minecraft.window.getScaledWidth()
 					/ (double)AbstractCommandBlockScreen.this.minecraft.window.getWidth()
 			);
 			int j = (int)(
-				AbstractCommandBlockScreen.this.minecraft.field_1729.getY()
+				AbstractCommandBlockScreen.this.minecraft.mouse.getY()
 					* (double)AbstractCommandBlockScreen.this.minecraft.window.getScaledHeight()
 					/ (double)AbstractCommandBlockScreen.this.minecraft.window.getHeight()
 			);
-			if (this.field_2771.contains(i, j)) {
+			if (this.area.contains(i, j)) {
 				this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 7, 0));
 				return true;
 			} else {

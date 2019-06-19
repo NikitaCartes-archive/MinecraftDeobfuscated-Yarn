@@ -21,7 +21,7 @@ public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
 	private final Enchantment.Weight weight;
 	@Nullable
-	public EnchantmentTarget field_9083;
+	public EnchantmentTarget type;
 	@Nullable
 	protected String translationKey;
 
@@ -33,7 +33,7 @@ public abstract class Enchantment {
 
 	protected Enchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot[] equipmentSlots) {
 		this.weight = weight;
-		this.field_9083 = enchantmentTarget;
+		this.type = enchantmentTarget;
 		this.slotTypes = equipmentSlots;
 	}
 
@@ -114,7 +114,7 @@ public abstract class Enchantment {
 	}
 
 	public boolean isAcceptableItem(ItemStack itemStack) {
-		return this.field_9083.isAcceptableItem(itemStack.getItem());
+		return this.type.isAcceptableItem(itemStack.getItem());
 	}
 
 	public void onTargetDamaged(LivingEntity livingEntity, Entity entity, int i) {

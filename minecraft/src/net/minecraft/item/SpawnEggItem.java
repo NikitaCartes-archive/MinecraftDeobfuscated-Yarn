@@ -45,37 +45,37 @@ public class SpawnEggItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
 			ItemStack itemStack = itemUsageContext.getStack();
 			BlockPos blockPos = itemUsageContext.getBlockPos();
 			Direction direction = itemUsageContext.getSide();
-			BlockState blockState = world.method_8320(blockPos);
+			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10260) {
-				BlockEntity blockEntity = world.method_8321(blockPos);
+				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
-					world.method_8413(blockPos, blockState, blockState, 3);
+					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.decrement(1);
 					return ActionResult.field_5812;
 				}
 			}
 
 			BlockPos blockPos2;
-			if (blockState.method_11628(world, blockPos).isEmpty()) {
+			if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
 				blockPos2 = blockPos;
 			} else {
 				blockPos2 = blockPos.offset(direction);
 			}
 
 			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
-			if (entityType2.method_5894(
+			if (entityType2.spawnFromItemStack(
 					world,
 					itemStack,
 					itemUsageContext.getPlayer(),
@@ -93,22 +93,22 @@ public class SpawnEggItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.field_1332) {
 				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
-				if (!(world.method_8320(blockPos).getBlock() instanceof FluidBlock)) {
+				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-					if (entityType.method_5894(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
+					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {

@@ -21,13 +21,13 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new SmokerBlockEntity();
 	}
 
 	@Override
 	protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof SmokerBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
 			playerEntity.incrementStat(Stats.field_17273);
@@ -36,8 +36,8 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.method_11654(field_11105)) {
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT)) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ() + 0.5;

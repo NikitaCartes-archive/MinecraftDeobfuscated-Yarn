@@ -31,8 +31,8 @@ public class PauseScreen extends Screen {
 		int i = -16;
 		int j = 98;
 		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame"), buttonWidgetx -> {
-			this.minecraft.method_1507(null);
-			this.minecraft.field_1729.lockCursor();
+			this.minecraft.openScreen(null);
+			this.minecraft.mouse.lockCursor();
 		}));
 		this.addButton(
 			new ButtonWidget(
@@ -41,7 +41,7 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.advancements"),
-				buttonWidgetx -> this.minecraft.method_1507(new AdvancementsScreen(this.minecraft.field_1724.networkHandler.getAdvancementHandler()))
+				buttonWidgetx -> this.minecraft.openScreen(new AdvancementsScreen(this.minecraft.player.networkHandler.getAdvancementHandler()))
 			)
 		);
 		this.addButton(
@@ -51,7 +51,7 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.stats"),
-				buttonWidgetx -> this.minecraft.method_1507(new StatsScreen(this, this.minecraft.field_1724.getStats()))
+				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStats()))
 			)
 		);
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
@@ -62,12 +62,12 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.sendFeedback"),
-				buttonWidgetx -> this.minecraft.method_1507(new ConfirmChatLinkScreen(bl -> {
+				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							SystemUtil.getOperatingSystem().open(string);
 						}
 
-						this.minecraft.method_1507(this);
+						this.minecraft.openScreen(this);
 					}, string, true))
 			)
 		);
@@ -78,12 +78,12 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.reportBugs"),
-				buttonWidgetx -> this.minecraft.method_1507(new ConfirmChatLinkScreen(bl -> {
+				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							SystemUtil.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 						}
 
-						this.minecraft.method_1507(this);
+						this.minecraft.openScreen(this);
 					}, "https://aka.ms/snapshotbugs?ref=game", true))
 			)
 		);
@@ -94,7 +94,7 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.options"),
-				buttonWidgetx -> this.minecraft.method_1507(new SettingsScreen(this, this.minecraft.field_1690))
+				buttonWidgetx -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))
 			)
 		);
 		ButtonWidget buttonWidget = this.addButton(
@@ -104,29 +104,29 @@ public class PauseScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.shareToLan"),
-				buttonWidgetx -> this.minecraft.method_1507(new OpenToLanScreen(this))
+				buttonWidgetx -> this.minecraft.openScreen(new OpenToLanScreen(this))
 			)
 		);
-		buttonWidget.active = this.minecraft.isIntegratedServerRunning() && !this.minecraft.method_1576().isRemote();
+		buttonWidget.active = this.minecraft.isIntegratedServerRunning() && !this.minecraft.getServer().isRemote();
 		ButtonWidget buttonWidget2 = this.addButton(
 			new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu"), buttonWidgetx -> {
 				boolean bl = this.minecraft.isInSingleplayer();
 				boolean bl2 = this.minecraft.isConnectedToRealms();
 				buttonWidgetx.active = false;
-				this.minecraft.field_1687.disconnect();
+				this.minecraft.world.disconnect();
 				if (bl) {
-					this.minecraft.method_18096(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+					this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 				} else {
 					this.minecraft.disconnect();
 				}
 
 				if (bl) {
-					this.minecraft.method_1507(new TitleScreen());
+					this.minecraft.openScreen(new TitleScreen());
 				} else if (bl2) {
 					RealmsBridge realmsBridge = new RealmsBridge();
 					realmsBridge.switchToRealms(new TitleScreen());
 				} else {
-					this.minecraft.method_1507(new MultiplayerScreen(new TitleScreen()));
+					this.minecraft.openScreen(new MultiplayerScreen(new TitleScreen()));
 				}
 			})
 		);

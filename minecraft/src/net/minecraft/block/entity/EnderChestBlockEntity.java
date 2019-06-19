@@ -29,7 +29,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	@Override
 	public void tick() {
 		if (++this.ticks % 20 * 4 == 0) {
-			this.world.method_8427(this.pos, Blocks.field_10443, 1, this.viewerCount);
+			this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 		}
 
 		this.lastAnimationProgress = this.animationProgress;
@@ -86,16 +86,16 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen() {
 		this.viewerCount++;
-		this.world.method_8427(this.pos, Blocks.field_10443, 1, this.viewerCount);
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public void onClose() {
 		this.viewerCount--;
-		this.world.method_8427(this.pos, Blocks.field_10443, 1, this.viewerCount);
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public boolean canPlayerUse(PlayerEntity playerEntity) {
-		return this.world.method_8321(this.pos) != this
+		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}

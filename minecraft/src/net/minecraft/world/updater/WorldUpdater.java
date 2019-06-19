@@ -39,7 +39,7 @@ public class WorldUpdater {
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
 	private final boolean eraseCache;
-	private final WorldSaveHandler field_5761;
+	private final WorldSaveHandler worldSaveHandler;
 	private final Thread updateThread;
 	private final File worldDirectory;
 	private volatile boolean keepUpgradingChunks = true;
@@ -53,17 +53,17 @@ public class WorldUpdater {
 	);
 	private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-	private final PersistentStateManager field_5755;
+	private final PersistentStateManager persistentStateManager;
 
 	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean bl) {
 		this.levelName = levelProperties.getLevelName();
 		this.eraseCache = bl;
-		this.field_5761 = levelStorage.createSaveHandler(string, null);
-		this.field_5761.saveWorld(levelProperties);
-		this.field_5755 = new PersistentStateManager(
-			new File(DimensionType.field_13072.getFile(this.field_5761.getWorldDir()), "data"), this.field_5761.getDataFixer()
+		this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
+		this.worldSaveHandler.saveWorld(levelProperties);
+		this.persistentStateManager = new PersistentStateManager(
+			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
 		);
-		this.worldDirectory = this.field_5761.getWorldDir();
+		this.worldDirectory = this.worldSaveHandler.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -82,12 +82,12 @@ public class WorldUpdater {
 	}
 
 	private void updateWorld() {
-		File file = this.field_5761.getWorldDir();
+		File file = this.worldSaveHandler.getWorldDir();
 		this.totalChunkCount = 0;
 		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			List<ChunkPos> list = this.method_17830(dimensionType);
+			List<ChunkPos> list = this.getChunkPositions(dimensionType);
 			builder.put(dimensionType, list.listIterator());
 			this.totalChunkCount = this.totalChunkCount + list.size();
 		}
@@ -101,7 +101,7 @@ public class WorldUpdater {
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
 				File file2 = dimensionType2.getFile(file);
-				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.field_5761.getDataFixer()));
+				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer()));
 			}
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -123,7 +123,7 @@ public class WorldUpdater {
 							CompoundTag compoundTag = versionedChunkStorage.getTagAt(chunkPos);
 							if (compoundTag != null) {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
-								CompoundTag compoundTag2 = versionedChunkStorage.method_17907(dimensionType3, () -> this.field_5755, compoundTag);
+								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
 								boolean bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
 								if (this.eraseCache) {
 									CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
@@ -179,14 +179,14 @@ public class WorldUpdater {
 				}
 			}
 
-			this.field_5755.save();
+			this.persistentStateManager.save();
 			l = SystemUtil.getMeasuringTimeMs() - l;
 			LOGGER.info("World optimizaton finished after {} ms", l);
 			this.isDone = true;
 		}
 	}
 
-	private List<ChunkPos> method_17830(DimensionType dimensionType) {
+	private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
 		File file = dimensionType.getFile(this.worldDirectory);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
@@ -224,7 +224,7 @@ public class WorldUpdater {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_5393(DimensionType dimensionType) {
+	public float getProgress(DimensionType dimensionType) {
 		return this.dimensionProgress.getFloat(dimensionType);
 	}
 

@@ -91,7 +91,7 @@ public class PufferfishEntity extends FishEntity {
 
 	@Override
 	public void tick() {
-		if (!this.field_6002.isClient && this.isAlive() && this.canMoveVoluntarily()) {
+		if (!this.world.isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			if (this.field_6833 > 0) {
 				if (this.getPuffState() == 0) {
 					this.playSound(SoundEvents.field_15235, this.getSoundVolume(), this.getSoundPitch());
@@ -122,7 +122,7 @@ public class PufferfishEntity extends FishEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.isAlive() && this.getPuffState() > 0) {
-			for (MobEntity mobEntity : this.field_6002.method_8390(MobEntity.class, this.method_5829().expand(0.3), field_6834)) {
+			for (MobEntity mobEntity : this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834)) {
 				if (mobEntity.isAlive()) {
 					this.sting(mobEntity);
 				}
@@ -168,8 +168,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public EntityDimensions method_18377(EntityPose entityPose) {
-		return super.method_18377(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
+	public EntityDimensions getDimensions(EntityPose entityPose) {
+		return super.getDimensions(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
 	}
 
 	private static float getScaleForPuffState(int i) {
@@ -192,7 +192,7 @@ public class PufferfishEntity extends FishEntity {
 
 		@Override
 		public boolean canStart() {
-			List<LivingEntity> list = this.pufferfish.field_6002.method_8390(LivingEntity.class, this.pufferfish.method_5829().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 
@@ -209,7 +209,7 @@ public class PufferfishEntity extends FishEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			List<LivingEntity> list = this.pufferfish.field_6002.method_8390(LivingEntity.class, this.pufferfish.method_5829().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 	}

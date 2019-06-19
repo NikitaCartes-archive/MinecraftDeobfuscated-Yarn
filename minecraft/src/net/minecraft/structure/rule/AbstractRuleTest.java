@@ -15,12 +15,12 @@ public abstract class AbstractRuleTest {
 			dynamicOps.mergeInto(
 				this.serialize(dynamicOps).getValue(),
 				dynamicOps.createString("predicate_type"),
-				dynamicOps.createString(Registry.RULE_TEST.getId(this.method_16766()).toString())
+				dynamicOps.createString(Registry.RULE_TEST.getId(this.getRuleTest()).toString())
 			)
 		);
 	}
 
-	protected abstract RuleTest method_16766();
+	protected abstract RuleTest getRuleTest();
 
 	protected abstract <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps);
 }

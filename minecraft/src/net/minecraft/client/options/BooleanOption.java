@@ -19,32 +19,32 @@ public class BooleanOption extends Option {
 		this.setter = biConsumer;
 	}
 
-	public void method_18492(GameOptions gameOptions, String string) {
-		this.method_18493(gameOptions, "true".equals(string));
+	public void set(GameOptions gameOptions, String string) {
+		this.set(gameOptions, "true".equals(string));
 	}
 
-	public void method_18491(GameOptions gameOptions) {
-		this.method_18493(gameOptions, !this.method_18494(gameOptions));
+	public void set(GameOptions gameOptions) {
+		this.set(gameOptions, !this.get(gameOptions));
 		gameOptions.write();
 	}
 
-	private void method_18493(GameOptions gameOptions, boolean bl) {
+	private void set(GameOptions gameOptions, boolean bl) {
 		this.setter.accept(gameOptions, bl);
 	}
 
-	public boolean method_18494(GameOptions gameOptions) {
+	public boolean get(GameOptions gameOptions) {
 		return this.getter.test(gameOptions);
 	}
 
 	@Override
-	public AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.method_18495(gameOptions), buttonWidget -> {
-			this.method_18491(gameOptions);
-			buttonWidget.setMessage(this.method_18495(gameOptions));
+	public AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k) {
+		return new OptionButtonWidget(i, j, k, 20, this, this.getDisplayString(gameOptions), buttonWidget -> {
+			this.set(gameOptions);
+			buttonWidget.setMessage(this.getDisplayString(gameOptions));
 		});
 	}
 
-	public String method_18495(GameOptions gameOptions) {
-		return this.getDisplayPrefix() + I18n.translate(this.method_18494(gameOptions) ? "options.on" : "options.off");
+	public String getDisplayString(GameOptions gameOptions) {
+		return this.getDisplayPrefix() + I18n.translate(this.get(gameOptions) ? "options.on" : "options.off");
 	}
 }

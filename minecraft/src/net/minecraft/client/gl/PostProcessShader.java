@@ -72,7 +72,7 @@ public class PostProcessShader implements AutoCloseable {
 				.set((float)((Integer)this.samplerWidths.get(i)).intValue(), (float)((Integer)this.samplerHeights.get(i)).intValue());
 		}
 
-		this.program.getUniformByNameOrDummy("ProjMat").method_1250(this.projectionMatrix);
+		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
 		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.texWidth, (float)this.input.texHeight);
 		this.program.getUniformByNameOrDummy("OutSize").set(g, h);
 		this.program.getUniformByNameOrDummy("Time").set(f);
@@ -87,7 +87,7 @@ public class PostProcessShader implements AutoCloseable {
 		GlStateManager.colorMask(true, true, true, true);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1576);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)g, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)g, (double)h, 500.0).color(255, 255, 255, 255).next();

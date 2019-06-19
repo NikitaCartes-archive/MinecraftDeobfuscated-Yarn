@@ -57,10 +57,10 @@ public class EnderCrystalEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		this.field_7034++;
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			BlockPos blockPos = new BlockPos(this);
-			if (this.field_6002.field_9247 instanceof TheEndDimension && this.field_6002.method_8320(blockPos).isAir()) {
-				this.field_6002.method_8501(blockPos, Blocks.field_10036.method_9564());
+			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
+				this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 			}
 		}
 	}
@@ -97,10 +97,10 @@ public class EnderCrystalEntity extends Entity {
 		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.removed && !this.field_6002.isClient) {
+			if (!this.removed && !this.world.isClient) {
 				this.remove();
 				if (!damageSource.isExplosive()) {
-					this.field_6002.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
+					this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
 				}
 
 				this.crystalDestroyed(damageSource);
@@ -117,8 +117,8 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	private void crystalDestroyed(DamageSource damageSource) {
-		if (this.field_6002.field_9247 instanceof TheEndDimension) {
-			TheEndDimension theEndDimension = (TheEndDimension)this.field_6002.field_9247;
+		if (this.world.dimension instanceof TheEndDimension) {
+			TheEndDimension theEndDimension = (TheEndDimension)this.world.dimension;
 			EnderDragonFight enderDragonFight = theEndDimension.method_12513();
 			if (enderDragonFight != null) {
 				enderDragonFight.crystalDestroyed(this, damageSource);

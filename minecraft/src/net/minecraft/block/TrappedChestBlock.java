@@ -17,7 +17,7 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new TrappedChestBlockEntity();
 	}
 
@@ -27,17 +27,17 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	@Override
-	public boolean method_9506(BlockState blockState) {
+	public boolean emitsRedstonePower(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return MathHelper.clamp(ChestBlockEntity.getPlayersLookingInChestCount(blockView, blockPos), 0, 15);
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return direction == Direction.field_11036 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 }

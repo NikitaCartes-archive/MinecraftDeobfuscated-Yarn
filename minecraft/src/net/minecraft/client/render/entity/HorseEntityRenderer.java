@@ -17,7 +17,7 @@ public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 
 	public HorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new HorseEntityModel<>(0.0F), 1.1F);
-		this.method_4046(new HorseArmorFeatureRenderer(this));
+		this.addFeature(new HorseArmorFeatureRenderer(this));
 	}
 
 	protected Identifier method_3983(HorseEntity horseEntity) {
@@ -25,7 +25,7 @@ public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 		Identifier identifier = (Identifier)SKINS.get(string);
 		if (identifier == null) {
 			identifier = new Identifier(string);
-			MinecraftClient.getInstance().method_1531().method_4616(identifier, new LayeredTexture(horseEntity.getTextureLayers()));
+			MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new LayeredTexture(horseEntity.getTextureLayers()));
 			SKINS.put(string, identifier);
 		}
 

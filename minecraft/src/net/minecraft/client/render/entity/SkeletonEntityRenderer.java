@@ -14,8 +14,8 @@ public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeleton
 
 	public SkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new StrayEntityModel<>(), 0.5F);
-		this.method_4046(new HeldItemFeatureRenderer<>(this));
-		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new StrayEntityModel(0.5F, true), new StrayEntityModel(1.0F, true)));
+		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new StrayEntityModel(0.5F, true), new StrayEntityModel(1.0F, true)));
 	}
 
 	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {

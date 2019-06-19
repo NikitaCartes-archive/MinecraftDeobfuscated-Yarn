@@ -66,7 +66,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.method_5829().averageDimension() * 4.0;
+		double e = this.getBoundingBox().averageDimension() * 4.0;
 		if (Double.isNaN(e)) {
 			e = 4.0;
 		}
@@ -115,11 +115,11 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
 		super.tick();
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.x = this.x + vec3d.x;
 		this.y = this.y + vec3d.y;
 		this.z = this.z + vec3d.z;
-		float f = MathHelper.sqrt(method_17996(vec3d));
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
@@ -141,7 +141,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			double d = this.velocityX - this.x;
 			double e = this.velocityZ - this.z;
 			float g = (float)Math.sqrt(d * d + e * e);
@@ -155,17 +155,16 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 			int k = this.y < this.velocityY ? 1 : -1;
 			vec3d = new Vec3d(Math.cos((double)h) * i, j + ((double)k - j) * 0.015F, Math.sin((double)h) * i);
-			this.method_18799(vec3d);
+			this.setVelocity(vec3d);
 		}
 
 		float l = 0.25F;
 		if (this.isInsideWater()) {
 			for (int m = 0; m < 4; m++) {
-				this.field_6002
-					.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
-			this.field_6002
+			this.world
 				.addParticle(
 					ParticleTypes.field_11214,
 					this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
@@ -177,16 +176,16 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				);
 		}
 
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.setPosition(this.x, this.y, this.z);
 			this.useCount++;
-			if (this.useCount > 80 && !this.field_6002.isClient) {
+			if (this.useCount > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
 				this.remove();
 				if (this.dropsItem) {
-					this.field_6002.spawnEntity(new ItemEntity(this.field_6002, this.x, this.y, this.z, this.getStack()));
+					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
 				} else {
-					this.field_6002.playLevelEvent(2003, new BlockPos(this), 0);
+					this.world.playLevelEvent(2003, new BlockPos(this), 0);
 				}
 			}
 		}

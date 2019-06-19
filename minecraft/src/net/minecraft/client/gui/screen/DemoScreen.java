@@ -26,8 +26,8 @@ public class DemoScreen extends Screen {
 			SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later"), buttonWidget -> {
-			this.minecraft.method_1507(null);
-			this.minecraft.field_1729.lockCursor();
+			this.minecraft.openScreen(null);
+			this.minecraft.mouse.lockCursor();
 		}));
 	}
 
@@ -35,7 +35,7 @@ public class DemoScreen extends Screen {
 	public void renderBackground() {
 		super.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.method_1531().bindTexture(DEMO_BG);
+		this.minecraft.getTextureManager().bindTexture(DEMO_BG);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
 		this.blit(i, j, 0, 0, 248, 166);
@@ -48,7 +48,7 @@ public class DemoScreen extends Screen {
 		int l = (this.height - 166) / 2 + 8;
 		this.font.draw(this.title.asFormattedString(), (float)k, (float)l, 2039583);
 		l += 12;
-		GameOptions gameOptions = this.minecraft.field_1690;
+		GameOptions gameOptions = this.minecraft.options;
 		this.font
 			.draw(
 				I18n.translate(

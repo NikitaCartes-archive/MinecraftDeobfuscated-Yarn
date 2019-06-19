@@ -32,14 +32,14 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			cuboid.visible = true;
 		} else {
 			l = bannerBlockEntity.getWorld().getTime();
-			BlockState blockState = bannerBlockEntity.method_11010();
+			BlockState blockState = bannerBlockEntity.getCachedState();
 			if (blockState.getBlock() instanceof BannerBlock) {
 				GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-				GlStateManager.rotatef((float)(-(Integer)blockState.method_11654(BannerBlock.field_9924) * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef((float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
 				cuboid.visible = true;
 			} else {
 				GlStateManager.translatef((float)d + 0.5F, (float)e - 0.16666667F, (float)f + 0.5F);
-				GlStateManager.rotatef(-((Direction)blockState.method_11654(WallBannerBlock.field_11722)).asRotation(), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef(-((Direction)blockState.get(WallBannerBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 				GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
 				cuboid.visible = false;
 			}

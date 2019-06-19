@@ -32,16 +32,16 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
 	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
-		BlockState blockState = signBlockEntity.method_11010();
+		BlockState blockState = signBlockEntity.getCachedState();
 		GlStateManager.pushMatrix();
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.method_11654(SignBlock.field_11559) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((Direction)blockState.method_11654(WallSignBlock.field_11726)).asRotation(), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
 			this.model.getSignpostModel().visible = false;
 		}
@@ -135,7 +135,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.method_1328(7, VertexFormats.field_1592);
+		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();

@@ -38,7 +38,7 @@ public class LocateCommand {
 	}
 
 	private static int execute(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(serverCommandSource.method_9222());
+		BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
 		BlockPos blockPos2 = serverCommandSource.getWorld().locateStructure(string, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();

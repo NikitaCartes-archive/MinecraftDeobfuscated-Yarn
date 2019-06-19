@@ -11,34 +11,34 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public class RayTraceContext {
-	private final Vec3d field_17553;
-	private final Vec3d field_17554;
+	private final Vec3d start;
+	private final Vec3d end;
 	private final RayTraceContext.ShapeType shapeType;
 	private final RayTraceContext.FluidHandling fluid;
-	private final EntityContext field_17557;
+	private final EntityContext entityPosition;
 
 	public RayTraceContext(Vec3d vec3d, Vec3d vec3d2, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
-		this.field_17553 = vec3d;
-		this.field_17554 = vec3d2;
+		this.start = vec3d;
+		this.end = vec3d2;
 		this.shapeType = shapeType;
 		this.fluid = fluidHandling;
-		this.field_17557 = EntityContext.of(entity);
+		this.entityPosition = EntityContext.of(entity);
 	}
 
-	public Vec3d method_17747() {
-		return this.field_17554;
+	public Vec3d getEnd() {
+		return this.end;
 	}
 
-	public Vec3d method_17750() {
-		return this.field_17553;
+	public Vec3d getStart() {
+		return this.start;
 	}
 
-	public VoxelShape method_17748(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.shapeType.get(blockState, blockView, blockPos, this.field_17557);
+	public VoxelShape getBlockShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return this.shapeType.get(blockState, blockView, blockPos, this.entityPosition);
 	}
 
-	public VoxelShape method_17749(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return this.fluid.method_17751(fluidState) ? fluidState.method_17776(blockView, blockPos) : VoxelShapes.method_1073();
+	public VoxelShape getFluidShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return this.fluid.handled(fluidState) ? fluidState.getShape(blockView, blockPos) : VoxelShapes.empty();
 	}
 
 	public static enum FluidHandling {
@@ -52,7 +52,7 @@ public class RayTraceContext {
 			this.predicate = predicate;
 		}
 
-		public boolean method_17751(FluidState fluidState) {
+		public boolean handled(FluidState fluidState) {
 			return this.predicate.test(fluidState);
 		}
 	}
@@ -62,8 +62,8 @@ public class RayTraceContext {
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
-		field_17558(BlockState::method_16337),
-		field_17559(BlockState::method_11606);
+		field_17558(BlockState::getCollisionShape),
+		field_17559(BlockState::getOutlineShape);
 
 		private final RayTraceContext.ShapeProvider provider;
 

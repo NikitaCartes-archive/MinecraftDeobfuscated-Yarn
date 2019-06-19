@@ -23,27 +23,27 @@ import net.minecraft.world.ExtendedBlockView;
 @Environment(EnvType.CLIENT)
 public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final BlockModels models;
-	private final BlockModelRenderer field_4170;
+	private final BlockModelRenderer renderer;
 	private final DynamicBlockRenderer dynamicRenderer = new DynamicBlockRenderer();
-	private final FluidRenderer field_4167;
+	private final FluidRenderer fluidRenderer;
 	private final Random random = new Random();
 
 	public BlockRenderManager(BlockModels blockModels, BlockColors blockColors) {
 		this.models = blockModels;
-		this.field_4170 = new BlockModelRenderer(blockColors);
-		this.field_4167 = new FluidRenderer();
+		this.renderer = new BlockModelRenderer(blockColors);
+		this.fluidRenderer = new FluidRenderer();
 	}
 
 	public BlockModels getModels() {
 		return this.models;
 	}
 
-	public void method_3354(BlockState blockState, BlockPos blockPos, Sprite sprite, ExtendedBlockView extendedBlockView) {
+	public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, ExtendedBlockView extendedBlockView) {
 		if (blockState.getRenderType() == BlockRenderType.field_11458) {
-			BakedModel bakedModel = this.models.method_3335(blockState);
+			BakedModel bakedModel = this.models.getModel(blockState);
 			long l = blockState.getRenderingSeed(blockPos);
 			BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
-			this.field_4170.method_3374(extendedBlockView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
+			this.renderer.tesselate(extendedBlockView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
 		}
 	}
 
@@ -55,8 +55,8 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 			} else {
 				switch (blockRenderType) {
 					case field_11458:
-						return this.field_4170
-							.method_3374(extendedBlockView, this.method_3349(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
+						return this.renderer
+							.tesselate(extendedBlockView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
 					case field_11456:
 						return false;
 					default:
@@ -73,7 +73,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 
 	public boolean tesselateFluid(BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, FluidState fluidState) {
 		try {
-			return this.field_4167.tesselate(extendedBlockView, blockPos, bufferBuilder, fluidState);
+			return this.fluidRenderer.tesselate(extendedBlockView, blockPos, bufferBuilder, fluidState);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -82,12 +82,12 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public BlockModelRenderer method_3350() {
-		return this.field_4170;
+	public BlockModelRenderer getModelRenderer() {
+		return this.renderer;
 	}
 
-	public BakedModel method_3349(BlockState blockState) {
-		return this.models.method_3335(blockState);
+	public BakedModel getModel(BlockState blockState) {
+		return this.models.getModel(blockState);
 	}
 
 	public void renderDynamic(BlockState blockState, float f) {
@@ -95,8 +95,8 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		if (blockRenderType != BlockRenderType.field_11455) {
 			switch (blockRenderType) {
 				case field_11458:
-					BakedModel bakedModel = this.method_3349(blockState);
-					this.field_4170.method_3366(bakedModel, blockState, f, true);
+					BakedModel bakedModel = this.getModel(blockState);
+					this.renderer.render(bakedModel, blockState, f, true);
 					break;
 				case field_11456:
 					this.dynamicRenderer.render(blockState.getBlock(), f);
@@ -106,6 +106,6 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 
 	@Override
 	public void apply(ResourceManager resourceManager) {
-		this.field_4167.onResourceReload();
+		this.fluidRenderer.onResourceReload();
 	}
 }

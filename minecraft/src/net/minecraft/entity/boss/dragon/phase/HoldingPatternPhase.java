@@ -44,14 +44,14 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d method_6851() {
+	public Vec3d getTarget() {
 		return this.field_7045;
 	}
 
 	private void method_6841() {
 		if (this.field_7043 != null && this.field_7043.isFinished()) {
-			BlockPos blockPos = this.dragon.field_6002.getTopPosition(Heightmap.Type.field_13203, new BlockPos(EndPortalFeature.ORIGIN));
-			int i = this.dragon.method_6829() == null ? 0 : this.dragon.method_6829().getAliveEndCrystals();
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, new BlockPos(EndPortalFeature.ORIGIN));
+			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRand().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.field_7071);
 				return;
@@ -59,10 +59,10 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 			double d = 64.0;
 			PlayerEntity playerEntity = this.dragon
-				.field_6002
+				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			if (playerEntity != null) {
-				d = blockPos.getSquaredDistance(playerEntity.method_19538(), true) / 512.0;
+				d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
 			}
 
 			if (playerEntity != null
@@ -87,7 +87,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 				ix--;
 			}
 
-			if (this.dragon.method_6829() != null && this.dragon.method_6829().getAliveEndCrystals() >= 0) {
+			if (this.dragon.getFight() != null && this.dragon.getFight().getAliveEndCrystals() >= 0) {
 				ix %= 12;
 				if (ix < 0) {
 					ix += 12;
@@ -114,7 +114,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void method_6842() {
 		if (this.field_7043 != null && !this.field_7043.isFinished()) {
-			Vec3d vec3d = this.field_7043.method_35();
+			Vec3d vec3d = this.field_7043.getCurrentPosition();
 			this.field_7043.next();
 			double d = vec3d.x;
 			double e = vec3d.z;

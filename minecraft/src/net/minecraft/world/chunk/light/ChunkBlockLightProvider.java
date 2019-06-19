@@ -65,7 +65,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long n = BlockPos.offset(l, direction);
 			long o = ChunkSectionPos.toChunkLong(n);
-			if (m == o || this.field_15793.hasChunk(o)) {
+			if (m == o || this.lightStorage.hasChunk(o)) {
 				this.updateRecursively(l, n, i, bl);
 			}
 		}
@@ -86,7 +86,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 		}
 
 		long n = ChunkSectionPos.toChunkLong(l);
-		ChunkNibbleArray chunkNibbleArray = this.field_15793.getDataForChunk(n, true);
+		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long o = BlockPos.offset(l, direction);
@@ -96,7 +96,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 				if (n == p) {
 					chunkNibbleArray2 = chunkNibbleArray;
 				} else {
-					chunkNibbleArray2 = this.field_15793.getDataForChunk(p, true);
+					chunkNibbleArray2 = this.lightStorage.getDataForChunk(p, true);
 				}
 
 				if (chunkNibbleArray2 != null) {
@@ -117,7 +117,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	public void method_15514(BlockPos blockPos, int i) {
-		this.field_15793.updateAll();
+		this.lightStorage.updateAll();
 		this.update(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
 	}
 }

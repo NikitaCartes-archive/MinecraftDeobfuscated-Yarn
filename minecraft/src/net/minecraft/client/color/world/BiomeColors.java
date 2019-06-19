@@ -18,13 +18,13 @@ public class BiomeColors {
 		int i = 0;
 		int j = 0;
 		int k = 0;
-		int l = MinecraftClient.getInstance().field_1690.biomeBlendRadius;
+		int l = MinecraftClient.getInstance().options.biomeBlendRadius;
 		int m = (l * 2 + 1) * (l * 2 + 1);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(
 			blockPos.getX() - l, blockPos.getY(), blockPos.getZ() - l, blockPos.getX() + l, blockPos.getY(), blockPos.getZ() + l
 		)) {
-			int n = provider.getColor(extendedBlockView.method_8310(blockPos2), blockPos2);
+			int n = provider.getColor(extendedBlockView.getBiome(blockPos2), blockPos2);
 			i += (n & 0xFF0000) >> 16;
 			j += (n & 0xFF00) >> 8;
 			k += n & 0xFF;

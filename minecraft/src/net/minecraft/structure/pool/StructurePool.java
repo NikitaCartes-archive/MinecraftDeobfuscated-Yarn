@@ -50,7 +50,7 @@ public class StructurePool {
 		if (this.field_18707 == Integer.MIN_VALUE) {
 			this.field_18707 = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.method_16628(structureManager, BlockPos.ORIGIN, BlockRotation.field_11467).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.field_11467).getBlockCountY())
 				.max()
 				.orElse(0);
 		}

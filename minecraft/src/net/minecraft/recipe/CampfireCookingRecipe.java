@@ -19,6 +19,6 @@ public class CampfireCookingRecipe extends AbstractCookingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.field_17347;
+		return RecipeSerializer.CAMPFIRE_COOKING;
 	}
 }

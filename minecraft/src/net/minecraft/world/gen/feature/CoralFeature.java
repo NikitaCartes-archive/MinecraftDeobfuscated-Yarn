@@ -22,7 +22,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_12865(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockState blockState = BlockTags.field_15461.getRandom(random).method_9564();
+		BlockState blockState = BlockTags.field_15461.getRandom(random).getDefaultState();
 		return this.spawnCoral(iWorld, random, blockPos, blockState);
 	}
 
@@ -30,22 +30,22 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 
 	protected boolean spawnCoralPiece(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
-		BlockState blockState2 = iWorld.method_8320(blockPos);
+		BlockState blockState2 = iWorld.getBlockState(blockPos);
 		if ((blockState2.getBlock() == Blocks.field_10382 || blockState2.matches(BlockTags.field_15488))
-			&& iWorld.method_8320(blockPos2).getBlock() == Blocks.field_10382) {
-			iWorld.method_8652(blockPos, blockState, 3);
+			&& iWorld.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
+			iWorld.setBlockState(blockPos, blockState, 3);
 			if (random.nextFloat() < 0.25F) {
-				iWorld.method_8652(blockPos2, BlockTags.field_15488.getRandom(random).method_9564(), 2);
+				iWorld.setBlockState(blockPos2, BlockTags.field_15488.getRandom(random).getDefaultState(), 2);
 			} else if (random.nextFloat() < 0.05F) {
-				iWorld.method_8652(blockPos2, Blocks.field_10476.method_9564().method_11657(SeaPickleBlock.field_11472, Integer.valueOf(random.nextInt(4) + 1)), 2);
+				iWorld.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 2);
 			}
 
 			for (Direction direction : Direction.Type.field_11062) {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos3 = blockPos.offset(direction);
-					if (iWorld.method_8320(blockPos3).getBlock() == Blocks.field_10382) {
-						BlockState blockState3 = BlockTags.field_15476.getRandom(random).method_9564().method_11657(DeadCoralWallFanBlock.field_9933, direction);
-						iWorld.method_8652(blockPos3, blockState3, 2);
+					if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {
+						BlockState blockState3 = BlockTags.field_15476.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+						iWorld.setBlockState(blockPos3, blockState3, 2);
 					}
 				}
 			}

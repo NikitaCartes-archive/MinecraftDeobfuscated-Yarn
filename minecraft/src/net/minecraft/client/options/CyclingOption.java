@@ -18,20 +18,20 @@ public class CyclingOption extends Option {
 		this.messageProvider = biFunction;
 	}
 
-	public void method_18500(GameOptions gameOptions, int i) {
+	public void cycle(GameOptions gameOptions, int i) {
 		this.setter.accept(gameOptions, i);
 		gameOptions.write();
 	}
 
 	@Override
-	public AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.method_18501(gameOptions), buttonWidget -> {
-			this.method_18500(gameOptions, 1);
-			buttonWidget.setMessage(this.method_18501(gameOptions));
+	public AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k) {
+		return new OptionButtonWidget(i, j, k, 20, this, this.getMessage(gameOptions), buttonWidget -> {
+			this.cycle(gameOptions, 1);
+			buttonWidget.setMessage(this.getMessage(gameOptions));
 		});
 	}
 
-	public String method_18501(GameOptions gameOptions) {
+	public String getMessage(GameOptions gameOptions) {
 		return (String)this.messageProvider.apply(gameOptions, this);
 	}
 }

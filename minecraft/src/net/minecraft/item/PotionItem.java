@@ -35,7 +35,7 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		PlayerEntity playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
 			itemStack.decrement(1);
@@ -83,7 +83,7 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
 		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 	}
@@ -95,7 +95,7 @@ public class PotionItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 1.0F);
 	}
 

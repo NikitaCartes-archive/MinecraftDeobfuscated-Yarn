@@ -96,7 +96,7 @@ public class ExecuteCommand {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 					for (Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-						list.add(commandContext.getSource().withWorld((ServerWorld)entity.field_6002).method_9208(entity.method_5812()).method_9216(entity.method_5802()));
+						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPosVector()).withRotation(entity.getRotationClient()));
 					}
 
 					return list;
@@ -110,13 +110,13 @@ public class ExecuteCommand {
 					CommandManager.literal("positioned")
 						.then(
 							CommandManager.argument("pos", Vec3ArgumentType.create())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9208(Vec3ArgumentType.getVec3(commandContext, "pos")))
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withPosition(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 							for (Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().method_9208(entity.method_5812()));
+								list.add(commandContext.getSource().withPosition(entity.getPosVector()));
 							}
 
 							return list;
@@ -129,14 +129,14 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.method_9216(RotationArgumentType.getRotation(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
+											.withRotation(RotationArgumentType.getRotation(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
 								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 							for (Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().method_9216(entity.method_5802()));
+								list.add(commandContext.getSource().withRotation(entity.getRotationClient()));
 							}
 
 							return list;
@@ -162,7 +162,7 @@ public class ExecuteCommand {
 						)
 						.then(
 							CommandManager.argument("pos", Vec3ArgumentType.create())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9221(Vec3ArgumentType.getVec3(commandContext, "pos")))
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withLookingAt(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 				)
 				.then(
@@ -172,7 +172,7 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.method_9208(commandContext.getSource().method_9222().floorAlongAxes(SwizzleArgumentType.getSwizzle(commandContext, "axes")))
+											.withPosition(commandContext.getSource().getPosition().floorAlongAxes(SwizzleArgumentType.getSwizzle(commandContext, "axes")))
 								)
 						)
 				)
@@ -672,14 +672,14 @@ public class ExecuteCommand {
 					for (int m = mutableIntBoundingBox.minX; m <= mutableIntBoundingBox.maxX; m++) {
 						BlockPos blockPos5 = new BlockPos(m, l, k);
 						BlockPos blockPos6 = blockPos5.add(blockPos4);
-						BlockState blockState = serverWorld.method_8320(blockPos5);
+						BlockState blockState = serverWorld.getBlockState(blockPos5);
 						if (!bl || blockState.getBlock() != Blocks.field_10124) {
-							if (blockState != serverWorld.method_8320(blockPos6)) {
+							if (blockState != serverWorld.getBlockState(blockPos6)) {
 								return OptionalInt.empty();
 							}
 
-							BlockEntity blockEntity = serverWorld.method_8321(blockPos5);
-							BlockEntity blockEntity2 = serverWorld.method_8321(blockPos6);
+							BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos5);
+							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos6);
 							if (blockEntity != null) {
 								if (blockEntity2 == null) {
 									return OptionalInt.empty();

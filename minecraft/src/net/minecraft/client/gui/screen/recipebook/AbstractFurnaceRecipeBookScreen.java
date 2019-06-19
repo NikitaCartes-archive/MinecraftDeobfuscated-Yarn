@@ -48,7 +48,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected void setOpen(boolean bl) {
 		this.setGuiOpen(bl);
 		if (!bl) {
-			this.field_3086.hideAlternates();
+			this.recipesArea.hideAlternates();
 		}
 
 		this.sendBookDataPacket();
@@ -119,7 +119,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
-			this.client.method_1480().renderGuiItem(this.client.field_1724, this.method_2658().getStackForRender(), k, l);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
 			GlStateManager.depthFunc(516);
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
 			GlStateManager.depthFunc(515);

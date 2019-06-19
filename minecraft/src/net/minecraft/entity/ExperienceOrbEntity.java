@@ -77,24 +77,24 @@ public class ExperienceOrbEntity extends Entity {
 		if (this.isInFluid(FluidTags.field_15517)) {
 			this.applyWaterMovement();
 		} else if (!this.hasNoGravity()) {
-			this.method_18799(this.method_18798().add(0.0, -0.03, 0.0));
+			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.field_6002.method_8316(new BlockPos(this)).matches(FluidTags.field_15518)) {
+		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
 			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
-		if (!this.field_6002.method_18026(this.method_5829())) {
-			this.pushOutOfBlocks(this.x, (this.method_5829().minY + this.method_5829().maxY) / 2.0, this.z);
+		if (!this.world.doesNotCollide(this.getBoundingBox())) {
+			this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 		}
 
 		double d = 8.0;
 		if (this.field_6160 < this.renderTicks - 20 + this.getEntityId() % 100) {
 			if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
-				this.target = this.field_6002.getClosestPlayer(this, 8.0);
+				this.target = this.world.getClosestPlayer(this, 8.0);
 			}
 
 			this.field_6160 = this.renderTicks;
@@ -109,19 +109,19 @@ public class ExperienceOrbEntity extends Entity {
 			double e = vec3d.lengthSquared();
 			if (e < 64.0) {
 				double f = 1.0 - Math.sqrt(e) / 8.0;
-				this.method_18799(this.method_18798().add(vec3d.normalize().multiply(f * f * 0.1)));
+				this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(f * f * 0.1)));
 			}
 		}
 
-		this.method_5784(MovementType.field_6308, this.method_18798());
+		this.move(MovementType.field_6308, this.getVelocity());
 		float g = 0.98F;
 		if (this.onGround) {
-			g = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
+			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
 		}
 
-		this.method_18799(this.method_18798().multiply((double)g, 0.98, (double)g));
+		this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
 		if (this.onGround) {
-			this.method_18799(this.method_18798().multiply(1.0, -0.9, 1.0));
+			this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
 		}
 
 		this.renderTicks++;
@@ -132,7 +132,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	private void applyWaterMovement() {
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, Math.min(vec3d.y + 5.0E-4F, 0.06F), vec3d.z * 0.99F);
 	}
 
@@ -176,7 +176,7 @@ public class ExperienceOrbEntity extends Entity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity playerEntity) {
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			if (this.pickupDelay == 0 && playerEntity.experiencePickUpDelay == 0) {
 				playerEntity.experiencePickUpDelay = 2;
 				playerEntity.sendPickup(this, 1);

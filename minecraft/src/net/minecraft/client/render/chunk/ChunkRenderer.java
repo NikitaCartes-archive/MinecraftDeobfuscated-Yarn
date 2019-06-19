@@ -59,7 +59,7 @@ public class ChunkRenderer {
 		this.renderer = worldRenderer;
 		if (GLX.useVbo()) {
 			for (int i = 0; i < BlockRenderLayer.values().length; i++) {
-				this.buffers[i] = new GlBuffer(VertexFormats.field_1582);
+				this.buffers[i] = new GlBuffer(VertexFormats.POSITION_COLOR_UV_LMAP);
 			}
 		}
 	}
@@ -107,7 +107,7 @@ public class ChunkRenderer {
 	}
 
 	public void resortTransparency(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
-		ChunkRenderData chunkRenderData = chunkRenderTask.method_3609();
+		ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
 		if (chunkRenderData.getBufferState() != null && !chunkRenderData.isEmpty(BlockRenderLayer.field_9179)) {
 			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179), this.origin);
 			chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179).restoreState(chunkRenderData.getBufferState());
@@ -129,23 +129,23 @@ public class ChunkRenderer {
 					return;
 				}
 
-				chunkRenderTask.method_3598(chunkRenderData);
+				chunkRenderTask.setRenderData(chunkRenderData);
 			} finally {
 				chunkRenderTask.getLock().unlock();
 			}
 
 			ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
 			HashSet set = Sets.newHashSet();
-			ChunkRendererRegion chunkRendererRegion = chunkRenderTask.method_3606();
+			ChunkRendererRegion chunkRendererRegion = chunkRenderTask.takeRegion();
 			if (chunkRendererRegion != null) {
 				chunkUpdateCount++;
 				boolean[] bls = new boolean[BlockRenderLayer.values().length];
 				BlockModelRenderer.enableBrightnessCache();
 				Random random = new Random();
-				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 
 				for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
-					BlockState blockState = chunkRendererRegion.method_8320(blockPos3);
+					BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
 					Block block = blockState.getBlock();
 					if (blockState.isFullOpaque(chunkRendererRegion, blockPos3)) {
 						chunkOcclusionGraphBuilder.markClosed(blockPos3);
@@ -154,7 +154,7 @@ public class ChunkRenderer {
 					if (block.hasBlockEntity()) {
 						BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.field_12859);
 						if (blockEntity != null) {
-							BlockEntityRenderer<BlockEntity> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.method_3553(blockEntity);
+							BlockEntityRenderer<BlockEntity> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
 							if (blockEntityRenderer != null) {
 								chunkRenderData.addBlockEntity(blockEntity);
 								if (blockEntityRenderer.method_3563(blockEntity)) {
@@ -164,7 +164,7 @@ public class ChunkRenderer {
 						}
 					}
 
-					FluidState fluidState = chunkRendererRegion.method_8316(blockPos3);
+					FluidState fluidState = chunkRendererRegion.getFluidState(blockPos3);
 					if (!fluidState.isEmpty()) {
 						BlockRenderLayer blockRenderLayer = fluidState.getRenderLayer();
 						int j = blockRenderLayer.ordinal();
@@ -203,7 +203,7 @@ public class ChunkRenderer {
 				BlockModelRenderer.disableBrightnessCache();
 			}
 
-			chunkRenderData.method_3640(chunkOcclusionGraphBuilder.method_3679());
+			chunkRenderData.setOcclusionGraph(chunkOcclusionGraphBuilder.build());
 			this.lock.lock();
 
 			try {
@@ -268,7 +268,7 @@ public class ChunkRenderer {
 				}
 
 				this.task = new ChunkRenderTask(this, ChunkRenderTask.Mode.field_4427, this.getSquaredCameraDistance(), null);
-				this.task.method_3598(this.data);
+				this.task.setRenderData(this.data);
 				return this.task;
 			}
 
@@ -281,7 +281,7 @@ public class ChunkRenderer {
 	}
 
 	protected double getSquaredCameraDistance() {
-		Camera camera = MinecraftClient.getInstance().field_1773.getCamera();
+		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		double d = this.boundingBox.minX + 8.0 - camera.getPos().x;
 		double e = this.boundingBox.minY + 8.0 - camera.getPos().y;
 		double f = this.boundingBox.minZ + 8.0 - camera.getPos().z;
@@ -289,7 +289,7 @@ public class ChunkRenderer {
 	}
 
 	private void beginBufferBuilding(BufferBuilder bufferBuilder, BlockPos blockPos) {
-		bufferBuilder.method_1328(7, VertexFormats.field_1582);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
 		bufferBuilder.setOffset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()));
 	}
 

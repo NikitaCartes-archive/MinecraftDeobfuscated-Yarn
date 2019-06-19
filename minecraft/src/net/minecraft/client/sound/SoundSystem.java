@@ -32,14 +32,14 @@ public class SoundSystem {
 	private static final Marker MARKER = MarkerManager.getMarker("SOUNDS");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Identifier> unknownSounds = Sets.<Identifier>newHashSet();
-	private final SoundManager field_5552;
+	private final SoundManager loader;
 	private final GameOptions settings;
 	private boolean started;
 	private final SoundEngine soundEngine = new SoundEngine();
-	private final Listener listener = this.soundEngine.method_19665();
+	private final Listener listener = this.soundEngine.getListener();
 	private final SoundLoader soundLoader;
-	private final SoundExecutor field_18948 = new SoundExecutor();
-	private final Channel channel = new Channel(this.soundEngine, this.field_18948);
+	private final SoundExecutor taskQueue = new SoundExecutor();
+	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
 	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
 	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
@@ -50,7 +50,7 @@ public class SoundSystem {
 	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
 	public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
-		this.field_5552 = soundManager;
+		this.loader = soundManager;
 		this.settings = gameOptions;
 		this.soundLoader = new SoundLoader(resourceManager);
 	}
@@ -60,7 +60,7 @@ public class SoundSystem {
 
 		for (SoundEvent soundEvent : Registry.SOUND_EVENT) {
 			Identifier identifier = soundEvent.getId();
-			if (this.field_5552.method_4869(identifier) == null) {
+			if (this.loader.get(identifier) == null) {
 				LOGGER.warn("Missing sound for event: {}", Registry.SOUND_EVENT.getId(soundEvent));
 				unknownSounds.add(identifier);
 			}
@@ -128,7 +128,7 @@ public class SoundSystem {
 
 	public void stopAll() {
 		if (this.started) {
-			this.field_18948.restart();
+			this.taskQueue.restart();
 			this.sources.values().forEach(sourceManager -> sourceManager.run(Source::stop));
 			this.sources.clear();
 			this.channel.close();
@@ -139,11 +139,11 @@ public class SoundSystem {
 		}
 	}
 
-	public void method_4855(ListenerSoundInstance listenerSoundInstance) {
+	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
 		this.listeners.add(listenerSoundInstance);
 	}
 
-	public void method_4847(ListenerSoundInstance listenerSoundInstance) {
+	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
 		this.listeners.remove(listenerSoundInstance);
 	}
 
@@ -237,7 +237,7 @@ public class SoundSystem {
 
 	public void play(SoundInstance soundInstance) {
 		if (this.started) {
-			WeightedSoundSet weightedSoundSet = soundInstance.method_4783(this.field_5552);
+			WeightedSoundSet weightedSoundSet = soundInstance.getSoundSet(this.loader);
 			Identifier identifier = soundInstance.getId();
 			if (weightedSoundSet == null) {
 				if (unknownSounds.add(identifier)) {
@@ -246,7 +246,7 @@ public class SoundSystem {
 			} else {
 				if (!this.listeners.isEmpty()) {
 					for (ListenerSoundInstance listenerSoundInstance : this.listeners) {
-						listenerSoundInstance.method_4884(soundInstance, weightedSoundSet);
+						listenerSoundInstance.onSoundPlayed(soundInstance, weightedSoundSet);
 					}
 				}
 
@@ -291,12 +291,12 @@ public class SoundSystem {
 							});
 							if (!sound.isStreamed()) {
 								this.soundLoader.loadStatic(sound.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
-										source.method_19642(staticSound);
+										source.setBuffer(staticSound);
 										source.play();
 									}));
 							} else {
 								this.soundLoader.loadStreamed(sound.getLocation()).thenAccept(audioStream -> sourceManager.run(source -> {
-										source.method_19643(audioStream);
+										source.setStream(audioStream);
 										source.play();
 									}));
 							}
@@ -344,7 +344,7 @@ public class SoundSystem {
 			Vec3d vec3d = camera.getPos();
 			Vec3d vec3d2 = camera.getHorizontalPlane();
 			Vec3d vec3d3 = camera.getVerticalPlane();
-			this.field_18948.execute(() -> {
+			this.taskQueue.execute(() -> {
 				this.listener.setPosition(vec3d);
 				this.listener.setOrientation(vec3d2, vec3d3);
 			});

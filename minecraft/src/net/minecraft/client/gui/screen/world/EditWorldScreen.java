@@ -80,12 +80,12 @@ public class EditWorldScreen extends Screen {
 				200,
 				20,
 				I18n.translate("selectWorld.edit.optimize"),
-				buttonWidgetx -> this.minecraft.method_1507(new BackupPromptScreen(this, (bl, bl2) -> {
+				buttonWidgetx -> this.minecraft.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
 						if (bl) {
 							backupLevel(this.minecraft.getLevelStorage(), this.levelName);
 						}
 
-						this.minecraft.method_1507(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
+						this.minecraft.openScreen(new OptimizeWorldScreen(this.callback, this.levelName, this.minecraft.getLevelStorage(), bl2));
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
@@ -103,7 +103,7 @@ public class EditWorldScreen extends Screen {
 		this.levelNameTextField.setText(string);
 		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
 		this.children.add(this.levelNameTextField);
-		this.method_20085(this.levelNameTextField);
+		this.setInitialFocus(this.levelNameTextField);
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class EditWorldScreen extends Screen {
 	}
 
 	public static void backupLevel(LevelStorage levelStorage, String string) {
-		ToastManager toastManager = MinecraftClient.getInstance().method_1566();
+		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		long l = 0L;
 		IOException iOException = null;
 

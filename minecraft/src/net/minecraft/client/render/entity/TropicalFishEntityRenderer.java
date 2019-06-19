@@ -19,7 +19,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 
 	public TropicalFishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new TropicalFishEntityModelA<>(), 0.15F);
-		this.method_4046(new TropicalFishSomethingFeatureRenderer(this));
+		this.addFeature(new TropicalFishSomethingFeatureRenderer(this));
 	}
 
 	@Nullable

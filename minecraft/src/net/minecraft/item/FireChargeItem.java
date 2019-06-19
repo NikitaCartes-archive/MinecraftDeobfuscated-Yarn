@@ -17,22 +17,22 @@ public class FireChargeItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
 			BlockPos blockPos = itemUsageContext.getBlockPos();
-			BlockState blockState = world.method_8320(blockPos);
+			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.getBlock() == Blocks.field_17350) {
-				if (!(Boolean)blockState.method_11654(CampfireBlock.field_17352) && !(Boolean)blockState.method_11654(CampfireBlock.field_17354)) {
-					this.method_18453(world, blockPos);
-					world.method_8501(blockPos, blockState.method_11657(CampfireBlock.field_17352, Boolean.valueOf(true)));
+				if (!(Boolean)blockState.get(CampfireBlock.LIT) && !(Boolean)blockState.get(CampfireBlock.WATERLOGGED)) {
+					this.playUseSound(world, blockPos);
+					world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
 				}
 			} else {
 				blockPos = blockPos.offset(itemUsageContext.getSide());
-				if (world.method_8320(blockPos).isAir()) {
-					this.method_18453(world, blockPos);
-					world.method_8501(blockPos, ((FireBlock)Blocks.field_10036).method_10198(world, blockPos));
+				if (world.getBlockState(blockPos).isAir()) {
+					this.playUseSound(world, blockPos);
+					world.setBlockState(blockPos, ((FireBlock)Blocks.field_10036).getStateForPosition(world, blockPos));
 				}
 			}
 
@@ -41,7 +41,7 @@ public class FireChargeItem extends Item {
 		}
 	}
 
-	private void method_18453(World world, BlockPos blockPos) {
+	private void playUseSound(World world, BlockPos blockPos) {
 		world.playSound(null, blockPos, SoundEvents.field_15013, SoundCategory.field_15245, 1.0F, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2F + 1.0F);
 	}
 }

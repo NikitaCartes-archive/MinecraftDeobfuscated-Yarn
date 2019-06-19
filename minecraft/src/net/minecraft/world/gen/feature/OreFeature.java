@@ -126,8 +126,8 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 										if (!bitSet.get(an)) {
 											bitSet.set(an);
 											mutable.set(ah, aj, al);
-											if (oreFeatureConfig.target.getCondition().test(iWorld.method_8320(mutable))) {
-												iWorld.method_8652(mutable, oreFeatureConfig.state, 2);
+											if (oreFeatureConfig.target.getCondition().test(iWorld.getBlockState(mutable))) {
+												iWorld.setBlockState(mutable, oreFeatureConfig.state, 2);
 												o++;
 											}
 										}

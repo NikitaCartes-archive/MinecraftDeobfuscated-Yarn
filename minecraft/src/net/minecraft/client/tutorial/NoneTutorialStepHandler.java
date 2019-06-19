@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class NoneTutorialStepHandler implements TutorialStepHandler {
-	private final TutorialManager field_5613;
+	private final TutorialManager manager;
 
 	public NoneTutorialStepHandler(TutorialManager tutorialManager) {
-		this.field_5613 = tutorialManager;
+		this.manager = tutorialManager;
 	}
 }

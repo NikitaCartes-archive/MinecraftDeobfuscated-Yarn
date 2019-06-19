@@ -101,7 +101,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public void onClose() {
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	protected <T extends AbstractButtonWidget> T addButton(T abstractButtonWidget) {
@@ -116,7 +116,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public List<String> getTooltipFromItem(ItemStack itemStack) {
 		List<Text> list = itemStack.getTooltip(
-			this.minecraft.field_1724, this.minecraft.field_1690.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
+			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
@@ -215,7 +215,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					this.renderTooltip(itemStack, i, j);
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11761) {
-				if (this.minecraft.field_1690.advancedItemTooltips) {
+				if (this.minecraft.options.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
@@ -236,7 +236,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11762) {
-				this.renderTooltip(this.minecraft.field_1772.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
+				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
 			}
 
 			GlStateManager.disableLighting();
@@ -257,7 +257,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {
-					if (!this.minecraft.field_1690.chatLinks) {
+					if (!this.minecraft.options.chatLinks) {
 						return false;
 					}
 
@@ -272,9 +272,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
 						}
 
-						if (this.minecraft.field_1690.chatLinksPrompt) {
+						if (this.minecraft.options.chatLinksPrompt) {
 							this.clickedLink = uRI;
-							this.minecraft.method_1507(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+							this.minecraft.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {
 							this.openLink(uRI);
 						}
@@ -305,16 +305,16 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public void sendMessage(String string, boolean bl) {
 		if (bl) {
-			this.minecraft.field_1705.method_1743().addToMessageHistory(string);
+			this.minecraft.inGameHud.getChatHud().addToMessageHistory(string);
 		}
 
-		this.minecraft.field_1724.sendChatMessage(string);
+		this.minecraft.player.sendChatMessage(string);
 	}
 
 	public void init(MinecraftClient minecraftClient, int i, int j) {
 		this.minecraft = minecraftClient;
-		this.itemRenderer = minecraftClient.method_1480();
-		this.font = minecraftClient.field_1772;
+		this.itemRenderer = minecraftClient.getItemRenderer();
+		this.font = minecraftClient.textRenderer;
 		this.width = i;
 		this.height = j;
 		this.buttons.clear();
@@ -347,7 +347,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public void renderBackground(int i) {
-		if (this.minecraft.field_1687 != null) {
+		if (this.minecraft.world != null) {
 			this.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 		} else {
 			this.renderDirtBackground(i);
@@ -359,10 +359,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.method_1531().bindTexture(BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)i))
@@ -383,7 +383,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 
 		this.clickedLink = null;
-		this.minecraft.method_1507(this);
+		this.minecraft.openScreen(this);
 	}
 
 	private void openLink(URI uRI) {

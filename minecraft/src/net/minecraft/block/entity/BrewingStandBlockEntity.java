@@ -124,16 +124,16 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			boolean[] bls = this.getSlotsEmpty();
 			if (!Arrays.equals(bls, this.slotsEmptyLastTick)) {
 				this.slotsEmptyLastTick = bls;
-				BlockState blockState = this.world.method_8320(this.getPos());
+				BlockState blockState = this.world.getBlockState(this.getPos());
 				if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
 					return;
 				}
 
-				for (int i = 0; i < BrewingStandBlock.field_10700.length; i++) {
-					blockState = blockState.method_11657(BrewingStandBlock.field_10700[i], Boolean.valueOf(bls[i]));
+				for (int i = 0; i < BrewingStandBlock.BOTTLE_PROPERTIES.length; i++) {
+					blockState = blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
 				}
 
-				this.world.method_8652(this.pos, blockState, 2);
+				this.world.setBlockState(this.pos, blockState, 2);
 			}
 		}
 	}
@@ -182,7 +182,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
 			} else if (!this.world.isClient) {
-				ItemScatterer.method_5449(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
+				ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
 			}
 		}
 
@@ -232,7 +232,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.world.method_8321(this.pos) != this
+		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}

@@ -62,8 +62,8 @@ public class RevengeGoal extends TrackTargetGoal {
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
 		List<MobEntity> list = this.mob
-			.field_6002
-			.method_18467(this.mob.getClass(), new Box(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d));
+			.world
+			.getEntities(this.mob.getClass(), new Box(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d));
 		Iterator var4 = list.iterator();
 
 		while (true) {

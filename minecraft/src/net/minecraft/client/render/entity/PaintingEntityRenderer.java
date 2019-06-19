@@ -38,7 +38,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(paintingEntity));
 		}
 
-		PaintingManager paintingManager = MinecraftClient.getInstance().method_18321();
+		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
 			paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite()
 		);
@@ -90,7 +90,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float ah = sprite.getV(e * (double)(x - (z + 1)));
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				bufferBuilder.method_1328(7, VertexFormats.field_1589);
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
 				bufferBuilder.vertex((double)aa, (double)ad, -0.5).texture((double)af, (double)ag).normal(0.0F, 0.0F, -1.0F).next();
 				bufferBuilder.vertex((double)ab, (double)ad, -0.5).texture((double)ae, (double)ag).normal(0.0F, 0.0F, -1.0F).next();
 				bufferBuilder.vertex((double)ab, (double)ac, -0.5).texture((double)ae, (double)ah).normal(0.0F, 0.0F, -1.0F).next();

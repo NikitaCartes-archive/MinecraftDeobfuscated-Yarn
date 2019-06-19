@@ -77,24 +77,24 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float method_7865(ItemStack itemStack, BlockState blockState) {
-		Material material = blockState.method_11620();
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+		Material material = blockState.getMaterial();
 		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.method_7865(itemStack, blockState)
+			? super.getMiningSpeed(itemStack, blockState)
 			: this.miningSpeed;
 	}
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		BlockState blockState = world.method_8320(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
 			if (!world.isClient) {
-				world.method_8652(blockPos, block.method_9564().method_11657(PillarBlock.field_11459, blockState.method_11654(PillarBlock.field_11459)), 11);
+				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
 					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}

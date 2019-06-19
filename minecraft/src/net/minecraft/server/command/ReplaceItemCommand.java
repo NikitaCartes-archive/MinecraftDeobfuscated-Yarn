@@ -102,7 +102,7 @@ public class ReplaceItemCommand {
 	}
 
 	private static int executeBlock(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, ItemStack itemStack) throws CommandSyntaxException {
-		BlockEntity blockEntity = serverCommandSource.getWorld().method_8321(blockPos);
+		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
 		if (!(blockEntity instanceof Inventory)) {
 			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {

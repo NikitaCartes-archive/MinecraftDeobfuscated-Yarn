@@ -29,7 +29,7 @@ public class ParticleCommand {
 							commandContext -> execute(
 									commandContext.getSource(),
 									ParticleArgumentType.getParticle(commandContext, "name"),
-									commandContext.getSource().method_9222(),
+									commandContext.getSource().getPosition(),
 									Vec3d.ZERO,
 									0.0F,
 									0,

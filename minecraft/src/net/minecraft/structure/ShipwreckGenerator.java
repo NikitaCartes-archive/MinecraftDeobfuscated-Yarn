@@ -54,7 +54,7 @@ public class ShipwreckGenerator {
 		new Identifier("shipwreck/rightsideup_backhalf_degraded")
 	};
 
-	public static void method_14834(
+	public static void addParts(
 		StructureManager structureManager,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
@@ -79,7 +79,7 @@ public class ShipwreckGenerator {
 			this.rotation = blockRotation;
 			this.template = identifier;
 			this.grounded = bl;
-			this.method_14837(structureManager);
+			this.initializeStructureData(structureManager);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
@@ -87,7 +87,7 @@ public class ShipwreckGenerator {
 			this.template = new Identifier(compoundTag.getString("Template"));
 			this.grounded = compoundTag.getBoolean("isBeached");
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
-			this.method_14837(structureManager);
+			this.initializeStructureData(structureManager);
 		}
 
 		@Override
@@ -98,14 +98,14 @@ public class ShipwreckGenerator {
 			compoundTag.putString("Rot", this.rotation.name());
 		}
 
-		private void method_14837(StructureManager structureManager) {
-			Structure structure = structureManager.method_15091(this.template);
+		private void initializeStructureData(StructureManager structureManager) {
+			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.field_11302)
 				.setPosition(ShipwreckGenerator.field_14536)
-				.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			this.method_15027(structure, this.pos, structurePlacementData);
+				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
 
 		@Override
@@ -123,7 +123,7 @@ public class ShipwreckGenerator {
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			int i = 256;
 			int j = 0;
-			BlockPos blockPos = this.pos.add(this.field_15433.getSize().getX() - 1, 0, this.field_15433.getSize().getZ() - 1);
+			BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
 
 			for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
 				int k = iWorld.getTop(this.grounded ? Heightmap.Type.field_13194 : Heightmap.Type.field_13195, blockPos2.getX(), blockPos2.getZ());
@@ -131,8 +131,8 @@ public class ShipwreckGenerator {
 				i = Math.min(i, k);
 			}
 
-			j /= this.field_15433.getSize().getX() * this.field_15433.getSize().getZ();
-			int l = this.grounded ? i - this.field_15433.getSize().getY() / 2 - random.nextInt(3) : j;
+			j /= this.structure.getSize().getX() * this.structure.getSize().getZ();
+			int l = this.grounded ? i - this.structure.getSize().getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), l, this.pos.getZ());
 			return super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
 		}

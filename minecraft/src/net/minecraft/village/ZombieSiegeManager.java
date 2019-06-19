@@ -71,7 +71,7 @@ public class ZombieSiegeManager {
 						this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);
 						this.startY = blockPos.getY();
 						this.startZ = blockPos.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F);
-						if (this.method_6448(new BlockPos(this.startX, this.startY, this.startZ)) != null) {
+						if (this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ)) != null) {
 							this.countdown = 0;
 							this.remaining = 20;
 							break;
@@ -87,12 +87,12 @@ public class ZombieSiegeManager {
 	}
 
 	private void trySpawnZombie() {
-		Vec3d vec3d = this.method_6448(new BlockPos(this.startX, this.startY, this.startZ));
+		Vec3d vec3d = this.getSpawnVector(new BlockPos(this.startX, this.startY, this.startZ));
 		if (vec3d != null) {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.world);
-				zombieEntity.method_5943(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
+				zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
 				return;
@@ -104,7 +104,7 @@ public class ZombieSiegeManager {
 	}
 
 	@Nullable
-	private Vec3d method_6448(BlockPos blockPos) {
+	private Vec3d getSpawnVector(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
 			int j = blockPos.getX() + this.world.random.nextInt(16) - 8;
 			int k = blockPos.getZ() + this.world.random.nextInt(16) - 8;

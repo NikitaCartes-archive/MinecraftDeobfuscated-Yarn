@@ -37,28 +37,30 @@ public class MagmaBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_9546(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+	public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
 		return 15728880;
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.update(world, blockPos.up(), true);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10382) {
-			iWorld.method_8397().schedule(blockPos, this, this.getTickRate(iWorld));
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void method_9514(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.up();
-		if (world.method_8316(blockPos).matches(FluidTags.field_15517)) {
+		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 			world.playSound(
 				null, blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);
@@ -77,17 +79,17 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		world.method_8397().schedule(blockPos, this, this.getTickRate(world));
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean method_9523(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return entityType.isFireImmune();
 	}
 
 	@Override
-	public boolean method_9552(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

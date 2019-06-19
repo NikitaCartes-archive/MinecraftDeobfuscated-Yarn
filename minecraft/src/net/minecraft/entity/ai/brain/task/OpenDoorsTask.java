@@ -38,7 +38,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 
 	private Set<BlockPos> getDoorsOnPath(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
 		return (Set<BlockPos>)list.stream()
-			.filter(globalPos -> globalPos.getDimension() == serverWorld.method_8597().method_12460())
+			.filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType())
 			.map(GlobalPos::getPos)
 			.filter(list2::contains)
 			.collect(Collectors.toSet());
@@ -47,7 +47,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 	private void openDoors(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i) {
 		set.forEach(blockPos -> {
 			int j = list.indexOf(blockPos);
-			BlockState blockState = serverWorld.method_8320(blockPos);
+			BlockState blockState = serverWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (BlockTags.field_15494.contains(block) && block instanceof DoorBlock) {
 				((DoorBlock)block).setOpen(serverWorld, blockPos, j >= i);

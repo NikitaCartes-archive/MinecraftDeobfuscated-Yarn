@@ -44,7 +44,7 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	protected void drawBackground(float f, int i, int j) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.method_1531().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -83,7 +83,7 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 			int n = i + m % 4 * 16;
 			int o = m / 4;
 			int p = j + o * 18 + 2;
-			this.minecraft.method_1480().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
+			this.minecraft.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
 		}
 
 		GuiLighting.disable();
@@ -101,9 +101,9 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 				int n = m - this.scrollOffset;
 				double f = d - (double)(j + n % 4 * 16);
 				double g = e - (double)(k + n / 4 * 18);
-				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.minecraft.field_1724, m)) {
-					MinecraftClient.getInstance().method_1483().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
-					this.minecraft.field_1761.clickButton(this.container.syncId, m);
+				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.minecraft.player, m)) {
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
+					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}
 			}

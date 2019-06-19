@@ -69,7 +69,7 @@ public class PandaEntity extends AnimalEntity {
 	private boolean shouldGetRevenge;
 	private boolean shouldAttack;
 	public int playingTicks;
-	private Vec3d field_18277;
+	private Vec3d playingJump;
 	private float scaredAnimationProgress;
 	private float lastScaredAnimationProgress;
 	private float lieOnBackAnimationProgress;
@@ -227,7 +227,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		PandaEntity pandaEntity = EntityType.field_6146.method_5883(this.field_6002);
+		PandaEntity pandaEntity = EntityType.field_6146.create(this.world);
 		if (passiveEntity instanceof PandaEntity) {
 			pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
 		}
@@ -242,7 +242,7 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(2, new PandaEntity.ExtinguishFireGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.AttackGoal(this, 1.2F, true));
-		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.method_8091(Blocks.field_10211.asItem()), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.asItem()), false));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, PlayerEntity.class, 8.0F, 2.0, 2.0));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, HostileEntity.class, 4.0F, 2.0, 2.0));
 		this.goalSelector.add(7, new PandaEntity.PickUpFoodGoal());
@@ -307,7 +307,7 @@ public class PandaEntity extends AnimalEntity {
 	public void tick() {
 		super.tick();
 		if (this.isWorried()) {
-			if (this.field_6002.isThundering() && !this.isInsideWater()) {
+			if (this.world.isThundering() && !this.isInsideWater()) {
 				this.setScared(true);
 				this.setEating(false);
 			} else if (!this.isEating()) {
@@ -359,7 +359,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean method_6524() {
-		return this.isWorried() && this.field_6002.isThundering();
+		return this.isWorried() && this.world.isThundering();
 	}
 
 	private void updateEatingAnimation() {
@@ -371,9 +371,9 @@ public class PandaEntity extends AnimalEntity {
 
 		if (this.isEating()) {
 			this.playEatingAnimation();
-			if (!this.field_6002.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
+			if (!this.world.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
 				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.field_6173))) {
-					if (!this.field_6002.isClient) {
+					if (!this.world.isClient) {
 						this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 					}
 
@@ -400,7 +400,7 @@ public class PandaEntity extends AnimalEntity {
 				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
 				vec3d2 = vec3d2.rotateY(-this.field_6283 * (float) (Math.PI / 180.0));
 				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight() + 1.0, this.z);
-				this.field_6002
+				this.world
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.field_6173)),
 						vec3d2.x,
@@ -461,15 +461,15 @@ public class PandaEntity extends AnimalEntity {
 		if (this.playingTicks > 32) {
 			this.setPlaying(false);
 		} else {
-			if (!this.field_6002.isClient) {
-				Vec3d vec3d = this.method_18798();
+			if (!this.world.isClient) {
+				Vec3d vec3d = this.getVelocity();
 				if (this.playingTicks == 1) {
 					float f = this.yaw * (float) (Math.PI / 180.0);
 					float g = this.isBaby() ? 0.1F : 0.2F;
-					this.field_18277 = new Vec3d(vec3d.x + (double)(-MathHelper.sin(f) * g), 0.0, vec3d.z + (double)(MathHelper.cos(f) * g));
-					this.method_18799(this.field_18277.add(0.0, 0.27, 0.0));
+					this.playingJump = new Vec3d(vec3d.x + (double)(-MathHelper.sin(f) * g), 0.0, vec3d.z + (double)(MathHelper.cos(f) * g));
+					this.setVelocity(this.playingJump.add(0.0, 0.27, 0.0));
 				} else if ((float)this.playingTicks != 7.0F && (float)this.playingTicks != 15.0F && (float)this.playingTicks != 23.0F) {
-					this.setVelocity(this.field_18277.x, vec3d.y, this.field_18277.z);
+					this.setVelocity(this.playingJump.x, vec3d.y, this.playingJump.z);
 				} else {
 					this.setVelocity(0.0, this.onGround ? 0.27 : vec3d.y, 0.0);
 				}
@@ -478,8 +478,8 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	private void sneeze() {
-		Vec3d vec3d = this.method_18798();
-		this.field_6002
+		Vec3d vec3d = this.getVelocity();
+		this.world
 			.addParticle(
 				ParticleTypes.field_11234,
 				this.x - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0)),
@@ -491,14 +491,14 @@ public class PandaEntity extends AnimalEntity {
 			);
 		this.playSound(SoundEvents.field_15076, 1.0F, 1.0F);
 
-		for (PandaEntity pandaEntity : this.field_6002.method_18467(PandaEntity.class, this.method_5829().expand(10.0))) {
+		for (PandaEntity pandaEntity : this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
 			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
 				pandaEntity.jump();
 			}
 		}
 
-		if (!this.field_6002.isClient() && this.random.nextInt(700) == 0 && this.field_6002.getGameRules().getBoolean(GameRules.field_19391)) {
-			this.method_5706(Items.field_8777);
+		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+			this.dropItem(Items.field_8777);
 		}
 	}
 
@@ -521,10 +521,10 @@ public class PandaEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
@@ -605,11 +605,11 @@ public class PandaEntity extends AnimalEntity {
 			if (this.isBaby()) {
 				this.eat(playerEntity, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-			} else if (!this.field_6002.isClient && this.getBreedingAge() == 0 && this.canEat()) {
+			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
 				this.eat(playerEntity, itemStack);
 				this.lovePlayer(playerEntity);
 			} else {
-				if (this.field_6002.isClient || this.isScared() || this.isInsideWater()) {
+				if (this.world.isClient || this.isScared() || this.isInsideWater()) {
 					return false;
 				}
 
@@ -641,7 +641,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_15035, 0.15F, 1.0F);
 	}
 
@@ -697,7 +697,7 @@ public class PandaEntity extends AnimalEntity {
 			if (!this.panda.isOnFire()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.method_6300(this.mob.field_6002, this.mob, 5, 4);
+				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -876,7 +876,7 @@ public class PandaEntity extends AnimalEntity {
 					this.panda.setAskForBambooTicks(32);
 					this.nextAskPlayerForBambooAge = this.panda.age + 600;
 					if (this.panda.canMoveVoluntarily()) {
-						PlayerEntity playerEntity = this.field_6405.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this.panda);
+						PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this.panda);
 						this.panda.setTarget(playerEntity);
 					}
 				}
@@ -896,7 +896,7 @@ public class PandaEntity extends AnimalEntity {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
 							mutable.set(blockPos).setOffset(k, i, l);
-							if (this.field_6405.method_8320(mutable).getBlock() == Blocks.field_10211) {
+							if (this.world.getBlockState(mutable).getBlock() == Blocks.field_10211) {
 								return true;
 							}
 						}
@@ -964,8 +964,7 @@ public class PandaEntity extends AnimalEntity {
 				&& !PandaEntity.this.isInsideWater()
 				&& PandaEntity.this.method_18442()
 				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
-				List<ItemEntity> list = PandaEntity.this.field_6002
-					.method_8390(ItemEntity.class, PandaEntity.this.method_5829().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
+				List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
 				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty();
 			} else {
 				return false;
@@ -988,7 +987,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void start() {
-			List<ItemEntity> list = PandaEntity.this.field_6002.method_8390(ItemEntity.class, PandaEntity.this.method_5829().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
+			List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
 			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
 				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
@@ -1039,7 +1038,7 @@ public class PandaEntity extends AnimalEntity {
 						j = (int)((float)j + h / Math.abs(h));
 					}
 
-					if (this.panda.field_6002.method_8320(new BlockPos(this.panda).add(i, -1, j)).isAir()) {
+					if (this.panda.world.getBlockState(new BlockPos(this.panda).add(i, -1, j)).isAir()) {
 						return true;
 					} else {
 						return this.panda.isPlayful() && this.panda.random.nextInt(60) == 1 ? true : this.panda.random.nextInt(500) == 1;

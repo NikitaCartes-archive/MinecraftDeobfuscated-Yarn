@@ -37,10 +37,10 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
 		Text text = new LiteralText("").append(this.title).formatted(Formatting.field_1073, Formatting.field_1067);
 		this.client
-			.field_1772
+			.textRenderer
 			.draw(
 				text.asFormattedString(),
-				(float)(i + this.width / 2 - this.client.field_1772.getStringWidth(text.asFormattedString()) / 2),
+				(float)(i + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2),
 				(float)Math.min(this.top + 3, j),
 				16777215
 			);
@@ -66,42 +66,42 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		private ResourcePackListWidget widget;
 		protected final MinecraftClient client;
 		protected final ResourcePackOptionsScreen screen;
-		private final ClientResourcePackContainer field_19131;
+		private final ClientResourcePackContainer packContainer;
 
 		public ResourcePackEntry(
 			ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackContainer clientResourcePackContainer
 		) {
 			this.screen = resourcePackOptionsScreen;
 			this.client = MinecraftClient.getInstance();
-			this.field_19131 = clientResourcePackContainer;
+			this.packContainer = clientResourcePackContainer;
 			this.widget = resourcePackListWidget;
 		}
 
 		public void method_20145(SelectedResourcePackListWidget selectedResourcePackListWidget) {
-			this.method_20150()
+			this.getPackContainer()
 				.getInitialPosition()
-				.insert(selectedResourcePackListWidget.children(), this, ResourcePackListWidget.ResourcePackEntry::method_20150, true);
+				.insert(selectedResourcePackListWidget.children(), this, ResourcePackListWidget.ResourcePackEntry::getPackContainer, true);
 			this.widget = selectedResourcePackListWidget;
 		}
 
 		protected void drawIcon() {
-			this.field_19131.drawIcon(this.client.method_1531());
+			this.packContainer.drawIcon(this.client.getTextureManager());
 		}
 
 		protected ResourcePackCompatibility getCompatibility() {
-			return this.field_19131.getCompatibility();
+			return this.packContainer.getCompatibility();
 		}
 
 		protected String getDescription() {
-			return this.field_19131.getDescription().asFormattedString();
+			return this.packContainer.getDescription().asFormattedString();
 		}
 
 		protected String getDisplayName() {
-			return this.field_19131.getDisplayName().asFormattedString();
+			return this.packContainer.getDisplayName().asFormattedString();
 		}
 
-		public ClientResourcePackContainer method_20150() {
-			return this.field_19131;
+		public ClientResourcePackContainer getPackContainer() {
+			return this.packContainer;
 		}
 
 		@Override
@@ -117,8 +117,8 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 			DrawableHelper.blit(k, j, 0.0F, 0.0F, 32, 32, 32, 32);
 			String string = this.getDisplayName();
 			String string2 = this.getDescription();
-			if (this.method_20151() && (this.client.field_1690.touchscreen || bl)) {
-				this.client.method_1531().bindTexture(ResourcePackListWidget.RESOURCE_PACKS_LOCATION);
+			if (this.method_20151() && (this.client.options.touchscreen || bl)) {
+				this.client.getTextureManager().bindTexture(ResourcePackListWidget.RESOURCE_PACKS_LOCATION);
 				DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				int p = n - k;
@@ -161,21 +161,21 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				}
 			}
 
-			int px = this.client.field_1772.getStringWidth(string);
+			int px = this.client.textRenderer.getStringWidth(string);
 			if (px > 157) {
-				string = this.client.field_1772.trimToWidth(string, 157 - this.client.field_1772.getStringWidth("...")) + "...";
+				string = this.client.textRenderer.trimToWidth(string, 157 - this.client.textRenderer.getStringWidth("...")) + "...";
 			}
 
-			this.client.field_1772.drawWithShadow(string, (float)(k + 32 + 2), (float)(j + 1), 16777215);
-			List<String> list = this.client.field_1772.wrapStringToWidthAsList(string2, 157);
+			this.client.textRenderer.drawWithShadow(string, (float)(k + 32 + 2), (float)(j + 1), 16777215);
+			List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string2, 157);
 
 			for (int r = 0; r < 2 && r < list.size(); r++) {
-				this.client.field_1772.drawWithShadow((String)list.get(r), (float)(k + 32 + 2), (float)(j + 12 + 10 * r), 8421504);
+				this.client.textRenderer.drawWithShadow((String)list.get(r), (float)(k + 32 + 2), (float)(j + 12 + 10 * r), 8421504);
 			}
 		}
 
 		protected boolean method_20151() {
-			return !this.field_19131.isPositionFixed() || !this.field_19131.canBeSorted();
+			return !this.packContainer.isPositionFixed() || !this.packContainer.canBeSorted();
 		}
 
 		protected boolean method_20152() {
@@ -183,19 +183,19 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		}
 
 		protected boolean method_20153() {
-			return this.screen.method_2669(this) && !this.field_19131.canBeSorted();
+			return this.screen.method_2669(this) && !this.packContainer.canBeSorted();
 		}
 
 		protected boolean canSortUp() {
 			List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 			int i = list.indexOf(this);
-			return i > 0 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i - 1)).field_19131.isPositionFixed();
+			return i > 0 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i - 1)).packContainer.isPositionFixed();
 		}
 
 		protected boolean canSortDown() {
 			List<ResourcePackListWidget.ResourcePackEntry> list = this.widget.children();
 			int i = list.indexOf(this);
-			return i >= 0 && i < list.size() - 1 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i + 1)).field_19131.isPositionFixed();
+			return i >= 0 && i < list.size() - 1 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i + 1)).packContainer.isPositionFixed();
 		}
 
 		@Override
@@ -210,8 +210,8 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 						this.getScreen().select(this);
 					} else {
 						Text text = resourcePackCompatibility.getConfirmMessage();
-						this.client.method_1507(new ConfirmScreen(bl -> {
-							this.client.method_1507(this.getScreen());
+						this.client.openScreen(new ConfirmScreen(bl -> {
+							this.client.openScreen(this.getScreen());
 							if (bl) {
 								this.getScreen().select(this);
 							}

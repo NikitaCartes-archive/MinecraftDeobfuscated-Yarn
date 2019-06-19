@@ -11,9 +11,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
-	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.method_9564();
-	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.method_9564();
-	private static final BlockState TERACOTTA = Blocks.field_10415.method_9564();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERACOTTA = Blocks.field_10415.getDefaultState();
 
 	public ErodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
@@ -51,7 +51,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		int o = i & 15;
 		int p = j & 15;
 		BlockState blockState3 = WHITE_TERRACOTTA;
-		BlockState blockState4 = biome.method_8722().getUnderMaterial();
+		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int r = -1;
@@ -60,22 +60,22 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 		for (int s = Math.max(k, (int)e + 1); s >= 0; s--) {
 			mutable.set(o, s, p);
-			if (chunk.method_8320(mutable).isAir() && s < (int)e) {
+			if (chunk.getBlockState(mutable).isAir() && s < (int)e) {
 				chunk.setBlockState(mutable, blockState, false);
 			}
 
-			BlockState blockState5 = chunk.method_8320(mutable);
+			BlockState blockState5 = chunk.getBlockState(mutable);
 			if (blockState5.isAir()) {
 				r = -1;
 			} else if (blockState5.getBlock() == blockState.getBlock()) {
 				if (r == -1) {
 					bl2 = false;
 					if (q <= 0) {
-						blockState3 = Blocks.field_10124.method_9564();
+						blockState3 = Blocks.field_10124.getDefaultState();
 						blockState4 = blockState;
 					} else if (s >= l - 4 && s <= l + 1) {
 						blockState3 = WHITE_TERRACOTTA;
-						blockState4 = biome.method_8722().getUnderMaterial();
+						blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 					}
 
 					if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -96,7 +96,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 							chunk.setBlockState(mutable, blockState6, false);
 						} else {
-							chunk.setBlockState(mutable, biome.method_8722().getTopMaterial(), false);
+							chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
 							bl2 = true;
 						}
 					} else {

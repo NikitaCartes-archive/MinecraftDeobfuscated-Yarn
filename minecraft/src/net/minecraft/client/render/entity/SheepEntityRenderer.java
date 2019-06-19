@@ -13,7 +13,7 @@ public class SheepEntityRenderer extends MobEntityRenderer<SheepEntity, SheepEnt
 
 	public SheepEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SheepEntityModel<>(), 0.7F);
-		this.method_4046(new SheepWoolFeatureRenderer(this));
+		this.addFeature(new SheepWoolFeatureRenderer(this));
 	}
 
 	protected Identifier method_4106(SheepEntity sheepEntity) {

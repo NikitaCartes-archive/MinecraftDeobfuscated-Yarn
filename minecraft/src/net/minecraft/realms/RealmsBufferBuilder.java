@@ -60,7 +60,7 @@ public class RealmsBufferBuilder {
 	}
 
 	public void begin(int i, VertexFormat vertexFormat) {
-		this.b.method_1328(i, vertexFormat);
+		this.b.begin(i, vertexFormat);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
@@ -84,7 +84,7 @@ public class RealmsBufferBuilder {
 	}
 
 	public RealmsVertexFormat getVertexFormat() {
-		return new RealmsVertexFormat(this.b.method_1311());
+		return new RealmsVertexFormat(this.b.getVertexFormat());
 	}
 
 	public void faceTint(float f, float g, float h, int i) {

@@ -112,7 +112,7 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected EntityNavigation method_5965(World world) {
+	protected EntityNavigation createNavigation(World world) {
 		return new RavagerEntity.class_1586(this, world);
 	}
 
@@ -149,9 +149,9 @@ public class RavagerEntity extends RaiderEntity {
 				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
-			if (this.horizontalCollision && this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
+			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				boolean bl = false;
-				Box box = this.method_5829().expand(0.2);
+				Box box = this.getBoundingBox().expand(0.2);
 
 				for (BlockPos blockPos : BlockPos.iterate(
 					MathHelper.floor(box.minX),
@@ -161,10 +161,10 @@ public class RavagerEntity extends RaiderEntity {
 					MathHelper.floor(box.maxY),
 					MathHelper.floor(box.maxZ)
 				)) {
-					BlockState blockState = this.field_6002.method_8320(blockPos);
+					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					if (block instanceof LeavesBlock) {
-						bl = this.field_6002.breakBlock(blockPos, true) || bl;
+						bl = this.world.breakBlock(blockPos, true) || bl;
 					}
 				}
 
@@ -200,7 +200,7 @@ public class RavagerEntity extends RaiderEntity {
 			double d = this.x - (double)this.getWidth() * Math.sin((double)(this.field_6283 * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
 			double e = this.y + (double)this.getHeight() - 0.3;
 			double f = this.z + (double)this.getWidth() * Math.cos((double)(this.field_6283 * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
-			this.field_6002.addParticle(ParticleTypes.field_11226, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
+			this.world.addParticle(ParticleTypes.field_11226, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
 		}
 	}
 
@@ -220,7 +220,7 @@ public class RavagerEntity extends RaiderEntity {
 			if (this.random.nextDouble() < 0.5) {
 				this.stunTick = 40;
 				this.playSound(SoundEvents.field_14822, 1.0F, 1.0F);
-				this.field_6002.sendEntityStatus(this, (byte)39);
+				this.world.sendEntityStatus(this, (byte)39);
 				livingEntity.pushAwayFrom(this);
 			} else {
 				this.knockBack(livingEntity);
@@ -232,7 +232,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void roar() {
 		if (this.isAlive()) {
-			for (Entity entity : this.field_6002.method_8390(LivingEntity.class, this.method_5829().expand(4.0), IS_NOT_RAVAGER)) {
+			for (Entity entity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER)) {
 				if (!(entity instanceof IllagerEntity)) {
 					entity.damage(DamageSource.mob(this), 6.0F);
 				}
@@ -240,13 +240,13 @@ public class RavagerEntity extends RaiderEntity {
 				this.knockBack(entity);
 			}
 
-			Vec3d vec3d = this.method_5829().method_1005();
+			Vec3d vec3d = this.getBoundingBox().getCenter();
 
 			for (int i = 0; i < 40; i++) {
 				double d = this.random.nextGaussian() * 0.2;
 				double e = this.random.nextGaussian() * 0.2;
 				double f = this.random.nextGaussian() * 0.2;
-				this.field_6002.addParticle(ParticleTypes.field_11203, vec3d.x, vec3d.y, vec3d.z, d, e, f);
+				this.world.addParticle(ParticleTypes.field_11203, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
 		}
 	}
@@ -289,7 +289,7 @@ public class RavagerEntity extends RaiderEntity {
 	@Override
 	public boolean tryAttack(Entity entity) {
 		this.attackTick = 10;
-		this.field_6002.sendEntityStatus(this, (byte)4);
+		this.world.sendEntityStatus(this, (byte)4);
 		this.playSound(SoundEvents.field_15240, 1.0F, 1.0F);
 		return super.tryAttack(entity);
 	}
@@ -311,13 +311,13 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14929, 0.15F, 1.0F);
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return !viewableWorld.method_8599(this.method_5829());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
@@ -347,9 +347,9 @@ public class RavagerEntity extends RaiderEntity {
 		}
 
 		@Override
-		protected PathNodeNavigator method_6336(int i) {
-			this.field_6678 = new RavagerEntity.class_1587();
-			return new PathNodeNavigator(this.field_6678, i);
+		protected PathNodeNavigator createPathNodeNavigator(int i) {
+			this.nodeMaker = new RavagerEntity.class_1587();
+			return new PathNodeNavigator(this.nodeMaker, i);
 		}
 	}
 

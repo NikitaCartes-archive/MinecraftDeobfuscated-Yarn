@@ -14,50 +14,50 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FrostedIceBlock extends IceBlock {
-	public static final IntProperty field_11097 = Properties.field_12497;
+	public static final IntProperty AGE = Properties.AGE_3;
 
 	public FrostedIceBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_11097, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4))
-			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.method_11654(field_11097) - blockState.getLightSubtracted(world, blockPos)
-			&& this.method_10201(blockState, world, blockPos)) {
+			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
+			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
 					pooledMutable.method_10114(blockPos).method_10118(direction);
-					BlockState blockState2 = world.method_8320(pooledMutable);
-					if (blockState2.getBlock() == this && !this.method_10201(blockState2, world, pooledMutable)) {
-						world.method_8397().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
+					BlockState blockState2 = world.getBlockState(pooledMutable);
+					if (blockState2.getBlock() == this && !this.increaseAge(blockState2, world, pooledMutable)) {
+						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
 					}
 				}
 			}
 		} else {
-			world.method_8397().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
+			world.getBlockTickScheduler().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
 		}
 	}
 
-	private boolean method_10201(BlockState blockState, World world, BlockPos blockPos) {
-		int i = (Integer)blockState.method_11654(field_11097);
+	private boolean increaseAge(BlockState blockState, World world, BlockPos blockPos) {
+		int i = (Integer)blockState.get(AGE);
 		if (i < 3) {
-			world.method_8652(blockPos, blockState.method_11657(field_11097, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 			return false;
 		} else {
-			this.method_10275(blockState, world, blockPos);
+			this.melt(blockState, world, blockPos);
 			return true;
 		}
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (block == this && this.canMelt(world, blockPos, 2)) {
-			this.method_10275(blockState, world, blockPos);
+			this.melt(blockState, world, blockPos);
 		}
 
-		super.method_9612(blockState, world, blockPos, block, blockPos2, bl);
+		super.neighborUpdate(blockState, world, blockPos, block, blockPos2, bl);
 	}
 
 	private boolean canMelt(BlockView blockView, BlockPos blockPos, int i) {
@@ -66,7 +66,7 @@ public class FrostedIceBlock extends IceBlock {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
 				pooledMutable.method_10114(blockPos).method_10118(direction);
-				if (blockView.method_8320(pooledMutable).getBlock() == this) {
+				if (blockView.getBlockState(pooledMutable).getBlock() == this) {
 					if (++j >= i) {
 						return false;
 					}
@@ -79,12 +79,12 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11097);
+		builder.add(AGE);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 }

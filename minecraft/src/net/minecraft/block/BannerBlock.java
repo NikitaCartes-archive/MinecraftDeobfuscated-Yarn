@@ -21,56 +21,58 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class BannerBlock extends AbstractBannerBlock {
-	public static final IntProperty field_9924 = Properties.field_12532;
+	public static final IntProperty ROTATION = Properties.ROTATION;
 	private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.<DyeColor, Block>newHashMap();
-	private static final VoxelShape field_9923 = Block.method_9541(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+	private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	public BannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_9924, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 		COLORED_BANNERS.put(dyeColor, this);
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.method_8320(blockPos.down()).method_11620().isSolid();
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.down()).getMaterial().isSolid();
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_9923;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return SHAPE;
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564()
-			.method_11657(field_9924, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState()
+			.with(ROTATION, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.method_9564()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_9924, Integer.valueOf(blockRotation.rotate((Integer)blockState.method_11654(field_9924), 16)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(ROTATION, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.method_11657(field_9924, Integer.valueOf(blockMirror.mirror((Integer)blockState.method_11654(field_9924), 16)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.with(ROTATION, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_9924);
+		builder.add(ROTATION);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Block method_9398(DyeColor dyeColor) {
+	public static Block getForColor(DyeColor dyeColor) {
 		return (Block)COLORED_BANNERS.getOrDefault(dyeColor, Blocks.field_10154);
 	}
 }

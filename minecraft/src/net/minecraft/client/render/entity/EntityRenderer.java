@@ -50,7 +50,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		} else if (entity.ignoreCameraFrustum) {
 			return true;
 		} else {
-			Box box = entity.method_5830().expand(0.5);
+			Box box = entity.getVisibilityBoundingBox().expand(0.5);
 			if (box.isValid() || box.averageDimension() == 0.0) {
 				box = new Box(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
 			}
@@ -66,7 +66,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected int getOutlineColor(T entity) {
-		Team team = (Team)entity.method_5781();
+		Team team = (Team)entity.getScoreboardTeam();
 		return team != null && team.getColor().getColorValue() != null ? team.getColor().getColorValue() : 16777215;
 	}
 
@@ -98,14 +98,14 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public void bindTexture(Identifier identifier) {
-		this.renderManager.field_4685.bindTexture(identifier);
+		this.renderManager.textureManager.bindTexture(identifier);
 	}
 
 	private void renderEntityOnFire(Entity entity, double d, double e, double f, float g) {
 		GlStateManager.disableLighting();
-		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().method_1549();
-		Sprite sprite = spriteAtlasTexture.method_4608(ModelLoader.FIRE_0);
-		Sprite sprite2 = spriteAtlasTexture.method_4608(ModelLoader.FIRE_1);
+		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
+		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
+		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		float h = entity.getWidth() * 1.4F;
@@ -115,13 +115,13 @@ public abstract class EntityRenderer<T extends Entity> {
 		float i = 0.5F;
 		float j = 0.0F;
 		float k = entity.getHeight() / h;
-		float l = (float)(entity.y - entity.method_5829().minY);
+		float l = (float)(entity.y - entity.getBoundingBox().minY);
 		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, 0.0F, -0.3F + (float)((int)k) * 0.02F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float m = 0.0F;
 		int n = 0;
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 
 		while (k > 0.0F) {
 			Sprite sprite3 = n % 2 == 0 ? sprite : sprite2;
@@ -155,7 +155,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		this.renderManager.field_4685.bindTexture(SHADOW_TEX);
+		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
 		ViewableWorld viewableWorld = this.getWorld();
 		GlStateManager.depthMask(false);
 		float i = this.field_4673;
@@ -180,11 +180,11 @@ public abstract class EntityRenderer<T extends Entity> {
 		double u = f - l;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState = viewableWorld.method_8320(blockPos2);
+			BlockState blockState = viewableWorld.getBlockState(blockPos2);
 			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.getLightLevel(blockPos) > 3) {
 				this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
@@ -214,8 +214,8 @@ public abstract class EntityRenderer<T extends Entity> {
 		double j,
 		double k
 	) {
-		if (Block.method_9614(blockState.method_11628(viewableWorld, blockPos))) {
-			VoxelShape voxelShape = blockState.method_17770(this.getWorld(), blockPos2.down());
+		if (Block.isShapeFullCube(blockState.getCollisionShape(viewableWorld, blockPos))) {
+			VoxelShape voxelShape = blockState.getOutlineShape(this.getWorld(), blockPos2.down());
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -250,7 +250,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		bufferBuilder.setOffset(d, e, f);
-		bufferBuilder.method_1328(7, VertexFormats.field_1588);
+		bufferBuilder.begin(7, VertexFormats.POSITION_NORMAL);
 		bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(0.0F, 0.0F, -1.0F).next();
 		bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(0.0F, 0.0F, -1.0F).next();
 		bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(0.0F, 0.0F, -1.0F).next();
@@ -301,7 +301,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected void renderLabel(T entity, String string, double d, double e, double f, int i) {
-		double g = entity.method_5707(this.renderManager.camera.getPos());
+		double g = entity.squaredDistanceTo(this.renderManager.camera.getPos());
 		if (!(g > (double)(i * i))) {
 			boolean bl = entity.isInSneakingPose();
 			float h = this.renderManager.cameraYaw;

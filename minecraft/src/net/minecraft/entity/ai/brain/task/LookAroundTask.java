@@ -20,8 +20,6 @@ public class LookAroundTask extends Task<MobEntity> {
 	}
 
 	protected void method_18969(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain()
-			.getOptionalMemory(MemoryModuleType.field_18446)
-			.ifPresent(lookTarget -> mobEntity.getLookControl().method_19615(lookTarget.method_18991()));
+		mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18446).ifPresent(lookTarget -> mobEntity.getLookControl().method_19615(lookTarget.getPos()));
 	}
 }

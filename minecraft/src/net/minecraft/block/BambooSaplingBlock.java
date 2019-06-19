@@ -20,7 +20,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BambooSaplingBlock extends Block implements Fertilizable {
-	protected static final VoxelShape field_9897 = Block.method_9541(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
 	public BambooSaplingBlock(Block.Settings settings) {
 		super(settings);
@@ -32,60 +32,62 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		Vec3d vec3d = blockState.method_11599(blockView, blockPos);
-		return field_9897.offset(vec3d.x, vec3d.y, vec3d.z);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
+		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 			this.grow(world, blockPos);
 		}
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.method_8320(blockPos.down()).matches(BlockTags.field_15497);
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.down()).matches(BlockTags.field_15497);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.method_9564();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10211) {
-				iWorld.method_8652(blockPos, Blocks.field_10211.method_9564(), 2);
+				iWorld.setBlockState(blockPos, Blocks.field_10211.getDefaultState(), 2);
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return new ItemStack(Items.BAMBOO);
 	}
 
 	@Override
-	public boolean method_9651(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return blockView.method_8320(blockPos.up()).isAir();
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+		return blockView.getBlockState(blockPos.up()).isAir();
 	}
 
 	@Override
-	public boolean method_9650(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void method_9652(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		this.grow(world, blockPos);
 	}
 
 	@Override
-	public float method_9594(BlockState blockState, PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
-		return playerEntity.getMainHandStack().getItem() instanceof SwordItem ? 1.0F : super.method_9594(blockState, playerEntity, blockView, blockPos);
+	public float calcBlockBreakingDelta(BlockState blockState, PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
+		return playerEntity.getMainHandStack().getItem() instanceof SwordItem ? 1.0F : super.calcBlockBreakingDelta(blockState, playerEntity, blockView, blockPos);
 	}
 
 	@Override
@@ -94,6 +96,6 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	protected void grow(World world, BlockPos blockPos) {
-		world.method_8652(blockPos.up(), Blocks.field_10211.method_9564().method_11657(BambooBlock.field_9917, BambooLeaves.field_12466), 3);
+		world.setBlockState(blockPos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.field_12466), 3);
 	}
 }

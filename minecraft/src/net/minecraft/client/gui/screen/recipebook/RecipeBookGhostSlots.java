@@ -68,13 +68,13 @@ public class RecipeBookGhostSlots {
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-			ItemRenderer itemRenderer = minecraftClient.method_1480();
-			itemRenderer.renderGuiItem(minecraftClient.field_1724, itemStack, l, m);
+			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
+			itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
 			GlStateManager.depthFunc(516);
 			DrawableHelper.fill(l, m, l + 16, m + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			if (k == 0) {
-				itemRenderer.renderGuiItemOverlay(minecraftClient.field_1772, itemStack, l, m);
+				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
 			}
 
 			GlStateManager.enableLighting();

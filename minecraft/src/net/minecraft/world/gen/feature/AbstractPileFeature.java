@@ -42,13 +42,13 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 
 	private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = iWorld.method_8320(blockPos2);
-		return blockState.getBlock() == Blocks.field_10194 ? random.nextBoolean() : Block.method_20045(blockState, iWorld, blockPos2, Direction.field_11036);
+		BlockState blockState = iWorld.getBlockState(blockPos2);
+		return blockState.getBlock() == Blocks.field_10194 ? random.nextBoolean() : Block.isSolidFullSquare(blockState, iWorld, blockPos2, Direction.field_11036);
 	}
 
 	private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
 		if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos, random)) {
-			iWorld.method_8652(blockPos, this.getPileBlockState(iWorld), 4);
+			iWorld.setBlockState(blockPos, this.getPileBlockState(iWorld), 4);
 		}
 	}
 

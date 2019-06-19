@@ -69,7 +69,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	public ItemStack getStack() {
 		ItemStack itemStack = this.getDataTracker().get(ITEM_STACK);
 		if (itemStack.getItem() != Items.field_8436 && itemStack.getItem() != Items.field_8150) {
-			if (this.field_6002 != null) {
+			if (this.world != null) {
 				LOGGER.error("ThrownPotion entity {} has no item?!", this.getEntityId());
 			}
 
@@ -89,8 +89,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
-		if (!this.field_6002.isClient) {
+	protected void onCollision(HitResult hitResult) {
+		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
@@ -118,14 +118,14 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			}
 
 			int i = potion.hasInstantEffect() ? 2007 : 2002;
-			this.field_6002.playLevelEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
+			this.world.playLevelEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
 			this.remove();
 		}
 	}
 
 	private void damageEntitiesHurtByWater() {
-		Box box = this.method_5829().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.field_6002.method_8390(LivingEntity.class, box, WATER_HURTS);
+		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, box, WATER_HURTS);
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
@@ -137,8 +137,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void method_7498(List<StatusEffectInstance> list, @Nullable Entity entity) {
-		Box box = this.method_5829().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.field_6002.method_18467(LivingEntity.class, box);
+		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.method_6086()) {
@@ -171,7 +171,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void method_7497(ItemStack itemStack, Potion potion) {
-		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.field_6002, this.x, this.y, this.z);
+		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 		areaEffectCloudEntity.setOwner(this.getOwner());
 		areaEffectCloudEntity.setRadius(3.0F);
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
@@ -188,7 +188,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
 
-		this.field_6002.spawnEntity(areaEffectCloudEntity);
+		this.world.spawnEntity(areaEffectCloudEntity);
 	}
 
 	private boolean isLingering() {
@@ -196,13 +196,13 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void extinguishFire(BlockPos blockPos, Direction direction) {
-		BlockState blockState = this.field_6002.method_8320(blockPos);
+		BlockState blockState = this.world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10036) {
-			this.field_6002.method_8506(null, blockPos.offset(direction), direction.getOpposite());
-		} else if (block == Blocks.field_17350 && (Boolean)blockState.method_11654(CampfireBlock.field_17352)) {
-			this.field_6002.playLevelEvent(null, 1009, blockPos, 0);
-			this.field_6002.method_8501(blockPos, blockState.method_11657(CampfireBlock.field_17352, Boolean.valueOf(false)));
+			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
+		} else if (block == Blocks.field_17350 && (Boolean)blockState.get(CampfireBlock.LIT)) {
+			this.world.playLevelEvent(null, 1009, blockPos, 0);
+			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 

@@ -12,58 +12,58 @@ import net.minecraft.util.math.Vec3d;
 
 public class PathfindingUtil {
 	@Nullable
-	public static Vec3d method_6375(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return method_6376(mobEntityWithAi, i, j, null);
+	public static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j) {
+		return findTarget(mobEntityWithAi, i, j, null);
 	}
 
 	@Nullable
-	public static Vec3d method_6378(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return method_19108(mobEntityWithAi, i, j, mobEntityWithAi::getPathfindingFavor);
+	public static Vec3d findTargetStraight(MobEntityWithAi mobEntityWithAi, int i, int j) {
+		return findTargetStraight(mobEntityWithAi, i, j, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d method_19108(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
-		return method_6371(mobEntityWithAi, i, j, null, false, 0.0, toDoubleFunction);
+	public static Vec3d findTargetStraight(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
+		return findTarget(mobEntityWithAi, i, j, null, false, 0.0, toDoubleFunction);
 	}
 
 	@Nullable
 	public static Vec3d method_6373(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
-		return method_6376(mobEntityWithAi, i, j, vec3d2);
+		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
 
 	@Nullable
 	public static Vec3d method_6377(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
 		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
-		return method_6371(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
+		return findTarget(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
 	public static Vec3d method_20658(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
-		return method_6371(mobEntityWithAi, i, j, vec3d2, false, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
+		return findTarget(mobEntityWithAi, i, j, vec3d2, false, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
 	public static Vec3d method_6379(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
-		return method_6376(mobEntityWithAi, i, j, vec3d2);
+		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
 
 	@Nullable
-	private static Vec3d method_6376(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d) {
-		return method_6371(mobEntityWithAi, i, j, vec3d, true, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
+	private static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d) {
+		return findTarget(mobEntityWithAi, i, j, vec3d, true, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
-	private static Vec3d method_6371(
+	private static Vec3d findTarget(
 		MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl, double d, ToDoubleFunction<BlockPos> toDoubleFunction
 	) {
 		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
 		Random random = mobEntityWithAi.getRand();
 		boolean bl2;
 		if (mobEntityWithAi.hasWalkTargetRange()) {
-			bl2 = mobEntityWithAi.getWalkTarget().isWithinDistance(mobEntityWithAi.method_19538(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0);
+			bl2 = mobEntityWithAi.getWalkTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0);
 		} else {
 			bl2 = false;
 		}
@@ -138,12 +138,12 @@ public class PathfindingUtil {
 	}
 
 	private static BlockPos method_6372(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		if (!mobEntityWithAi.field_6002.method_8320(blockPos).method_11620().isSolid()) {
+		if (!mobEntityWithAi.world.getBlockState(blockPos).getMaterial().isSolid()) {
 			return blockPos;
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
-			while (blockPos2.getY() < mobEntityWithAi.field_6002.getHeight() && mobEntityWithAi.field_6002.method_8320(blockPos2).method_11620().isSolid()) {
+			while (blockPos2.getY() < mobEntityWithAi.world.getHeight() && mobEntityWithAi.world.getBlockState(blockPos2).getMaterial().isSolid()) {
 				blockPos2 = blockPos2.up();
 			}
 
@@ -152,6 +152,6 @@ public class PathfindingUtil {
 	}
 
 	private static boolean isWater(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		return mobEntityWithAi.field_6002.method_8316(blockPos).matches(FluidTags.field_15517);
+		return mobEntityWithAi.world.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 }

@@ -5,13 +5,13 @@ import net.minecraft.util.math.BlockPos;
 
 public class BlockAction {
 	private final BlockPos pos;
-	private final Block field_9172;
+	private final Block block;
 	private final int type;
 	private final int data;
 
 	public BlockAction(BlockPos blockPos, Block block, int i, int j) {
 		this.pos = blockPos;
-		this.field_9172 = block;
+		this.block = block;
 		this.type = i;
 		this.data = j;
 	}
@@ -20,8 +20,8 @@ public class BlockAction {
 		return this.pos;
 	}
 
-	public Block method_8309() {
-		return this.field_9172;
+	public Block getBlock() {
+		return this.block;
 	}
 
 	public int getType() {
@@ -37,11 +37,11 @@ public class BlockAction {
 			return false;
 		} else {
 			BlockAction blockAction = (BlockAction)object;
-			return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.field_9172 == blockAction.field_9172;
+			return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.block == blockAction.block;
 		}
 	}
 
 	public String toString() {
-		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.field_9172;
+		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.block;
 	}
 }

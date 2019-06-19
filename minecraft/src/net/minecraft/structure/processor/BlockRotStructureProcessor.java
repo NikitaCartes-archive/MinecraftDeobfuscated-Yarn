@@ -35,7 +35,7 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType method_16772() {
+	protected StructureProcessorType getType() {
 		return StructureProcessorType.field_16988;
 	}
 

@@ -41,7 +41,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class Keyboard {
-	private final MinecraftClient field_1678;
+	private final MinecraftClient client;
 	private boolean repeatEvents;
 	private final Clipboard clipboard = new Clipboard();
 	private long debugCrashStartTime = -1L;
@@ -50,13 +50,13 @@ public class Keyboard {
 	private boolean switchF3State;
 
 	public Keyboard(MinecraftClient minecraftClient) {
-		this.field_1678 = minecraftClient;
+		this.client = minecraftClient;
 	}
 
 	private void debugWarn(String string, Object... objects) {
-		this.field_1678
-			.field_1705
-			.method_1743()
+		this.client
+			.inGameHud
+			.getChatHud()
 			.addMessage(
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1054, Formatting.field_1067}))
@@ -66,9 +66,9 @@ public class Keyboard {
 	}
 
 	private void debugError(String string, Object... objects) {
-		this.field_1678
-			.field_1705
-			.method_1743()
+		this.client
+			.inGameHud
+			.getChatHud()
 			.addMessage(
 				new LiteralText("")
 					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1067}))
@@ -83,16 +83,16 @@ public class Keyboard {
 		} else {
 			switch (i) {
 				case 65:
-					this.field_1678.field_1769.reload();
+					this.client.worldRenderer.reload();
 					this.debugWarn("debug.reload_chunks.message");
 					return true;
 				case 66:
-					boolean bl = !this.field_1678.method_1561().shouldRenderHitboxes();
-					this.field_1678.method_1561().setRenderHitboxes(bl);
+					boolean bl = !this.client.getEntityRenderManager().shouldRenderHitboxes();
+					this.client.getEntityRenderManager().setRenderHitboxes(bl);
 					this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
 					return true;
 				case 67:
-					if (this.field_1678.field_1724.getReducedDebugInfo()) {
+					if (this.client.player.getReducedDebugInfo()) {
 						return false;
 					}
 
@@ -101,18 +101,18 @@ public class Keyboard {
 						String.format(
 							Locale.ROOT,
 							"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
-							DimensionType.getId(this.field_1678.field_1724.field_6002.field_9247.method_12460()),
-							this.field_1678.field_1724.x,
-							this.field_1678.field_1724.y,
-							this.field_1678.field_1724.z,
-							this.field_1678.field_1724.yaw,
-							this.field_1678.field_1724.pitch
+							DimensionType.getId(this.client.player.world.dimension.getType()),
+							this.client.player.x,
+							this.client.player.y,
+							this.client.player.z,
+							this.client.player.yaw,
+							this.client.player.pitch
 						)
 					);
 					return true;
 				case 68:
-					if (this.field_1678.field_1705 != null) {
-						this.field_1678.field_1705.method_1743().clear(false);
+					if (this.client.inGameHud != null) {
+						this.client.inGameHud.getChatHud().clear(false);
 					}
 
 					return true;
@@ -127,48 +127,48 @@ public class Keyboard {
 				default:
 					return false;
 				case 70:
-					Option.field_1933
+					Option.RENDER_DISTANCE
 						.set(
-							this.field_1678.field_1690,
+							this.client.options,
 							MathHelper.clamp(
-								(double)(this.field_1678.field_1690.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), Option.field_1933.getMin(), Option.field_1933.getMax()
+								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), Option.RENDER_DISTANCE.getMin(), Option.RENDER_DISTANCE.getMax()
 							)
 						);
-					this.debugWarn("debug.cycle_renderdistance.message", this.field_1678.field_1690.viewDistance);
+					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
 					return true;
 				case 71:
-					boolean bl2 = this.field_1678.field_1709.toggleShowChunkBorder();
+					boolean bl2 = this.client.debugRenderer.toggleShowChunkBorder();
 					this.debugWarn(bl2 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
 					return true;
 				case 72:
-					this.field_1678.field_1690.advancedItemTooltips = !this.field_1678.field_1690.advancedItemTooltips;
-					this.debugWarn(this.field_1678.field_1690.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
-					this.field_1678.field_1690.write();
+					this.client.options.advancedItemTooltips = !this.client.options.advancedItemTooltips;
+					this.debugWarn(this.client.options.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
+					this.client.options.write();
 					return true;
 				case 73:
-					if (!this.field_1678.field_1724.getReducedDebugInfo()) {
-						this.copyLookAt(this.field_1678.field_1724.allowsPermissionLevel(2), !Screen.hasShiftDown());
+					if (!this.client.player.getReducedDebugInfo()) {
+						this.copyLookAt(this.client.player.allowsPermissionLevel(2), !Screen.hasShiftDown());
 					}
 
 					return true;
 				case 78:
-					if (!this.field_1678.field_1724.allowsPermissionLevel(2)) {
+					if (!this.client.player.allowsPermissionLevel(2)) {
 						this.debugWarn("debug.creative_spectator.error");
-					} else if (this.field_1678.field_1724.isCreative()) {
-						this.field_1678.field_1724.sendChatMessage("/gamemode spectator");
+					} else if (this.client.player.isCreative()) {
+						this.client.player.sendChatMessage("/gamemode spectator");
 					} else {
-						this.field_1678.field_1724.sendChatMessage("/gamemode creative");
+						this.client.player.sendChatMessage("/gamemode creative");
 					}
 
 					return true;
 				case 80:
-					this.field_1678.field_1690.pauseOnLostFocus = !this.field_1678.field_1690.pauseOnLostFocus;
-					this.field_1678.field_1690.write();
-					this.debugWarn(this.field_1678.field_1690.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
+					this.client.options.pauseOnLostFocus = !this.client.options.pauseOnLostFocus;
+					this.client.options.write();
+					this.debugWarn(this.client.options.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
 					return true;
 				case 81:
 					this.debugWarn("debug.help.message");
-					ChatHud chatHud = this.field_1678.field_1705.method_1743();
+					ChatHud chatHud = this.client.inGameHud.getChatHud();
 					chatHud.addMessage(new TranslatableText("debug.reload_chunks.help"));
 					chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help"));
 					chatHud.addMessage(new TranslatableText("debug.copy_location.help"));
@@ -185,27 +185,27 @@ public class Keyboard {
 					return true;
 				case 84:
 					this.debugWarn("debug.reload_resourcepacks.message");
-					this.field_1678.reloadResources();
+					this.client.reloadResources();
 					return true;
 			}
 		}
 	}
 
 	private void copyLookAt(boolean bl, boolean bl2) {
-		HitResult hitResult = this.field_1678.hitResult;
+		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null) {
 			switch (hitResult.getType()) {
 				case field_1332:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-					BlockState blockState = this.field_1678.field_1724.field_6002.method_8320(blockPos);
+					BlockState blockState = this.client.player.world.getBlockState(blockPos);
 					if (bl) {
 						if (bl2) {
-							this.field_1678.field_1724.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, compoundTagx -> {
+							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, compoundTagx -> {
 								this.copyBlock(blockState, blockPos, compoundTagx);
 								this.debugWarn("debug.inspect.server.block");
 							});
 						} else {
-							BlockEntity blockEntity = this.field_1678.field_1724.field_6002.method_8321(blockPos);
+							BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
 							CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
 							this.copyBlock(blockState, blockPos, compoundTag);
 							this.debugWarn("debug.inspect.client.block");
@@ -221,7 +221,7 @@ public class Keyboard {
 					Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
 					if (bl) {
 						if (bl2) {
-							this.field_1678.field_1724.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
+							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
 								this.copyEntity(identifier, vec3d, compoundTagx);
 								this.debugWarn("debug.inspect.server.entity");
 							});
@@ -272,7 +272,7 @@ public class Keyboard {
 	}
 
 	public void onKey(long l, int i, int j, int k, int m) {
-		if (l == this.field_1678.window.getHandle()) {
+		if (l == this.client.window.getHandle()) {
 			if (this.debugCrashStartTime > 0L) {
 				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 67)
 					|| !InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292)) {
@@ -286,27 +286,25 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			ParentElement parentElement = this.field_1678.field_1755;
+			ParentElement parentElement = this.client.currentScreen;
 			if (k == 1
-				&& (!(this.field_1678.field_1755 instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= SystemUtil.getMeasuringTimeMs() - 20L)
-				)
-			 {
-				if (this.field_1678.field_1690.keyFullscreen.matchesKey(i, j)) {
-					this.field_1678.window.toggleFullscreen();
-					this.field_1678.field_1690.fullscreen = this.field_1678.window.isFullscreen();
+				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= SystemUtil.getMeasuringTimeMs() - 20L)) {
+				if (this.client.options.keyFullscreen.matchesKey(i, j)) {
+					this.client.window.toggleFullscreen();
+					this.client.options.fullscreen = this.client.window.isFullscreen();
 					return;
 				}
 
-				if (this.field_1678.field_1690.keyScreenshot.matchesKey(i, j)) {
+				if (this.client.options.keyScreenshot.matchesKey(i, j)) {
 					if (Screen.hasControlDown()) {
 					}
 
 					ScreenshotUtils.method_1659(
-						this.field_1678.runDirectory,
-						this.field_1678.window.getFramebufferWidth(),
-						this.field_1678.window.getFramebufferHeight(),
-						this.field_1678.getFramebuffer(),
-						text -> this.field_1678.execute(() -> this.field_1678.field_1705.method_1743().addMessage(text))
+						this.client.runDirectory,
+						this.client.window.getFramebufferWidth(),
+						this.client.window.getFramebufferHeight(),
+						this.client.getFramebuffer(),
+						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(text))
 					);
 					return;
 				}
@@ -316,7 +314,7 @@ public class Keyboard {
 				|| !(parentElement.getFocused() instanceof TextFieldWidget)
 				|| !((TextFieldWidget)parentElement.getFocused()).method_20315();
 			if (k != 0 && i == 66 && Screen.hasControlDown() && bl) {
-				Option.NARRATOR.method_18500(this.field_1678.field_1690, 1);
+				Option.NARRATOR.cycle(this.client.options, 1);
 				if (parentElement instanceof ChatOptionsScreen) {
 					((ChatOptionsScreen)parentElement).method_2096();
 				}
@@ -342,7 +340,7 @@ public class Keyboard {
 				}
 			}
 
-			if (this.field_1678.field_1755 == null || this.field_1678.field_1755.passEvents) {
+			if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
 				InputUtil.KeyCode keyCode = InputUtil.getKeyCode(i, j);
 				if (k == 0) {
 					KeyBinding.setKeyPressed(keyCode, false);
@@ -350,27 +348,27 @@ public class Keyboard {
 						if (this.switchF3State) {
 							this.switchF3State = false;
 						} else {
-							this.field_1678.field_1690.debugEnabled = !this.field_1678.field_1690.debugEnabled;
-							this.field_1678.field_1690.debugProfilerEnabled = this.field_1678.field_1690.debugEnabled && Screen.hasShiftDown();
-							this.field_1678.field_1690.debugTpsEnabled = this.field_1678.field_1690.debugEnabled && Screen.hasAltDown();
+							this.client.options.debugEnabled = !this.client.options.debugEnabled;
+							this.client.options.debugProfilerEnabled = this.client.options.debugEnabled && Screen.hasShiftDown();
+							this.client.options.debugTpsEnabled = this.client.options.debugEnabled && Screen.hasAltDown();
 						}
 					}
 				} else {
-					if (i == 293 && this.field_1678.field_1773 != null) {
-						this.field_1678.field_1773.toggleShadersEnabled();
+					if (i == 293 && this.client.gameRenderer != null) {
+						this.client.gameRenderer.toggleShadersEnabled();
 					}
 
 					boolean bl2 = false;
-					if (this.field_1678.field_1755 == null) {
+					if (this.client.currentScreen == null) {
 						if (i == 256) {
 							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292);
-							this.field_1678.openPauseMenu(bl3);
+							this.client.openPauseMenu(bl3);
 						}
 
 						bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292) && this.processF3(i);
 						this.switchF3State |= bl2;
 						if (i == 290) {
-							this.field_1678.field_1690.hudHidden = !this.field_1678.field_1690.hudHidden;
+							this.client.options.hudHidden = !this.client.options.hudHidden;
 						}
 					}
 
@@ -381,14 +379,14 @@ public class Keyboard {
 						KeyBinding.onKeyPressed(keyCode);
 					}
 
-					if (this.field_1678.field_1690.debugProfilerEnabled) {
+					if (this.client.options.debugProfilerEnabled) {
 						if (i == 48) {
-							this.field_1678.handleProfilerKeyPress(0);
+							this.client.handleProfilerKeyPress(0);
 						}
 
 						for (int n = 0; n < 9; n++) {
 							if (i == 49 + n) {
-								this.field_1678.handleProfilerKeyPress(n + 1);
+								this.client.handleProfilerKeyPress(n + 1);
 							}
 						}
 					}
@@ -398,9 +396,9 @@ public class Keyboard {
 	}
 
 	private void onChar(long l, int i, int j) {
-		if (l == this.field_1678.window.getHandle()) {
-			Element element = this.field_1678.field_1755;
-			if (element != null && this.field_1678.method_18506() == null) {
+		if (l == this.client.window.getHandle()) {
+			Element element = this.client.currentScreen;
+			if (element != null && this.client.getOverlay() == null) {
 				if (Character.charCount(i) == 1) {
 					Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
 				} else {
@@ -421,15 +419,15 @@ public class Keyboard {
 	}
 
 	public String getClipboard() {
-		return this.clipboard.getClipboard(this.field_1678.window.getHandle(), (i, l) -> {
+		return this.clipboard.getClipboard(this.client.window.getHandle(), (i, l) -> {
 			if (i != 65545) {
-				this.field_1678.window.logGlError(i, l);
+				this.client.window.logGlError(i, l);
 			}
 		});
 	}
 
 	public void setClipboard(String string) {
-		this.clipboard.setClipboard(this.field_1678.window.getHandle(), string);
+		this.clipboard.setClipboard(this.client.window.getHandle(), string);
 	}
 
 	public void pollDebugCrash() {

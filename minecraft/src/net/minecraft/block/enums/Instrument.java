@@ -69,7 +69,7 @@ public enum Instrument implements StringIdentifiable {
 		} else if (block == Blocks.field_10171) {
 			return field_18289;
 		} else {
-			Material material = blockState.method_11620();
+			Material material = blockState.getMaterial();
 			if (material == Material.STONE) {
 				return field_12653;
 			} else if (material == Material.SAND) {

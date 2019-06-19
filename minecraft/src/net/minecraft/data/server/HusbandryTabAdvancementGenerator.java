@@ -111,11 +111,11 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.criterion("wheat", PlacedBlockCriterion.Conditions.method_9095(Blocks.field_10293))
-			.criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.method_9095(Blocks.field_9984))
-			.criterion("melon_stem", PlacedBlockCriterion.Conditions.method_9095(Blocks.field_10168))
-			.criterion("beetroots", PlacedBlockCriterion.Conditions.method_9095(Blocks.field_10341))
-			.criterion("nether_wart", PlacedBlockCriterion.Conditions.method_9095(Blocks.field_9974))
+			.criterion("wheat", PlacedBlockCriterion.Conditions.block(Blocks.field_10293))
+			.criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.block(Blocks.field_9984))
+			.criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.field_10168))
+			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.field_10341))
+			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.field_9974))
 			.build(consumer, "husbandry/plant_seed");
 		Advancement advancement3 = Advancement.Task.create()
 			.parent(advancement)
@@ -161,7 +161,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion(
 				"broke_hoe",
-				ItemDurabilityChangedCriterion.Conditions.create(ItemPredicate.Builder.create().method_8977(Items.field_8527).build(), NumberRange.IntRange.exactly(0))
+				ItemDurabilityChangedCriterion.Conditions.create(ItemPredicate.Builder.create().item(Items.field_8527).build(), NumberRange.IntRange.exactly(0))
 			)
 			.build(consumer, "husbandry/break_diamond_hoe");
 		Advancement advancement6 = Advancement.Task.create()
@@ -238,7 +238,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private Advancement.Task method_10341(Advancement.Task task) {
 		for (Item item : field_11298) {
-			task.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.method_8828(item));
+			task.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
 		}
 
 		return task;
@@ -254,7 +254,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private Advancement.Task method_10340(Advancement.Task task) {
 		for (Item item : field_11297) {
-			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().method_8977(item).build()));
+			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(item).build()));
 		}
 
 		return task;
@@ -264,7 +264,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		for (Item item : field_11295) {
 			task.criterion(
 				Registry.ITEM.getId(item).getPath(),
-				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().method_8977(item).build())
+				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().item(item).build())
 			);
 		}
 

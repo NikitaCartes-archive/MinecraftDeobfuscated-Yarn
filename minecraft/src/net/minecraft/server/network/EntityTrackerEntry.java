@@ -78,11 +78,11 @@ public class EntityTrackerEntry {
 			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
-				MapState mapState = FilledMapItem.method_8001(itemStack, this.field_18258);
+				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.field_18258);
 
 				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
 					mapState.update(serverPlayerEntity, itemStack);
-					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).method_7757(itemStack, this.field_18258, serverPlayerEntity);
+					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createSyncPacket(itemStack, this.field_18258, serverPlayerEntity);
 					if (packet != null) {
 						serverPlayerEntity.networkHandler.sendPacket(packet);
 					}
@@ -141,7 +141,7 @@ public class EntityTrackerEntry {
 
 				if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
 					&& this.field_14040 > 0) {
-					Vec3d vec3d2 = this.entity.method_18798();
+					Vec3d vec3d2 = this.entity.getVelocity();
 					double d = vec3d2.squaredDistanceTo(this.field_18278);
 					if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
 						this.field_18278 = vec3d2;
@@ -218,7 +218,7 @@ public class EntityTrackerEntry {
 			}
 		}
 
-		this.field_18278 = this.entity.method_18798();
+		this.field_18278 = this.entity.getVelocity();
 		if (bl && !(packet instanceof MobSpawnS2CPacket)) {
 			consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
 		}

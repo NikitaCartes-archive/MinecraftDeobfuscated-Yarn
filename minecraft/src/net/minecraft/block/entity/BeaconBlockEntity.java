@@ -120,7 +120,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		int l = this.world.getTop(Heightmap.Type.field_13202, i, k);
 
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
-			BlockState blockState = this.world.method_8320(blockPos);
+			BlockState blockState = this.world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block instanceof ColoredBlock) {
 				float[] fs = ((ColoredBlock)block).getColor().getColorComponents();
@@ -173,8 +173,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					this.playSound(SoundEvents.field_14703);
 
 					for (ServerPlayerEntity serverPlayerEntity : this.world
-						.method_18467(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
-						Criterions.CONSTRUCT_BEACON.method_8812(serverPlayerEntity, this);
+						.getEntities(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
+						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 					}
 				}
 			}
@@ -194,7 +194,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 			for (int n = i - l; n <= i + l && bl; n++) {
 				for (int o = k - l; o <= k + l; o++) {
-					Block block = this.world.method_8320(new BlockPos(n, m, o)).getBlock();
+					Block block = this.world.getBlockState(new BlockPos(n, m, o)).getBlock();
 					if (block != Blocks.field_10234 && block != Blocks.field_10205 && block != Blocks.field_10201 && block != Blocks.field_10085) {
 						bl = false;
 						break;
@@ -224,7 +224,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 			int j = (9 + this.level * 2) * 20;
 			Box box = new Box(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, box);
+			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
 				playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
@@ -308,7 +308,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.method_17392(this.world, this.getPos()))
+			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 

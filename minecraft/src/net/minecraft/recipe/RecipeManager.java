@@ -65,15 +65,15 @@ public class RecipeManager extends JsonDataLoader {
 		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<T> method_8132(RecipeType<T> recipeType, C inventory, World world) {
-		return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.method_17725(recipe, world, inventory))).findFirst();
+	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
+		return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> List<T> method_17877(RecipeType<T> recipeType, C inventory, World world) {
+	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
 		return (List<T>)this.getAllForType(recipeType)
 			.values()
 			.stream()
-			.flatMap(recipe -> SystemUtil.stream(recipeType.method_17725(recipe, world, inventory)))
+			.flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory)))
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
@@ -82,8 +82,8 @@ public class RecipeManager extends JsonDataLoader {
 		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Collections.emptyMap());
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> method_8128(RecipeType<T> recipeType, C inventory, World world) {
-		Optional<T> optional = this.method_8132(recipeType, inventory, world);
+	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
+		Optional<T> optional = this.getFirstMatch(recipeType, inventory, world);
 		if (optional.isPresent()) {
 			return ((Recipe)optional.get()).getRemainingStacks(inventory);
 		} else {

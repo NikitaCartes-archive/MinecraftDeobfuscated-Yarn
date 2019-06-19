@@ -166,7 +166,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.method_20086(realmsGuiEventListener.getProxy());
+		this.proxy.focusOn(realmsGuiEventListener.getProxy());
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
@@ -190,7 +190,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	public List<String> getLocalizedStringWithLineWidth(String string, int i) {
-		return this.minecraft.field_1772.wrapStringToWidthAsList(I18n.translate(string), i);
+		return this.minecraft.textRenderer.wrapStringToWidthAsList(I18n.translate(string), i);
 	}
 
 	public RealmsAnvilLevelStorageSource getLevelStorageSource() {

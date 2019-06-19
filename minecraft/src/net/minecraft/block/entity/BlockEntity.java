@@ -19,17 +19,17 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class BlockEntity {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final BlockEntityType<?> field_11864;
+	private final BlockEntityType<?> type;
 	@Nullable
 	protected World world;
 	protected BlockPos pos = BlockPos.ORIGIN;
 	protected boolean invalid;
 	@Nullable
-	private BlockState field_11866;
+	private BlockState cachedState;
 	private boolean field_19314;
 
 	public BlockEntity(BlockEntityType<?> blockEntityType) {
-		this.field_11864 = blockEntityType;
+		this.type = blockEntityType;
 	}
 
 	@Nullable
@@ -54,7 +54,7 @@ public abstract class BlockEntity {
 	}
 
 	private CompoundTag writeIdentifyingData(CompoundTag compoundTag) {
-		Identifier identifier = BlockEntityType.getId(this.method_11017());
+		Identifier identifier = BlockEntityType.getId(this.getType());
 		if (identifier == null) {
 			throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
 		} else {
@@ -92,10 +92,10 @@ public abstract class BlockEntity {
 
 	public void markDirty() {
 		if (this.world != null) {
-			this.field_11866 = this.world.method_8320(this.pos);
-			this.world.method_8524(this.pos, this);
-			if (!this.field_11866.isAir()) {
-				this.world.method_8455(this.pos, this.field_11866.getBlock());
+			this.cachedState = this.world.getBlockState(this.pos);
+			this.world.markDirty(this.pos, this);
+			if (!this.cachedState.isAir()) {
+				this.world.updateHorizontalAdjacent(this.pos, this.cachedState.getBlock());
 			}
 		}
 	}
@@ -117,12 +117,12 @@ public abstract class BlockEntity {
 		return this.pos;
 	}
 
-	public BlockState method_11010() {
-		if (this.field_11866 == null) {
-			this.field_11866 = this.world.method_8320(this.pos);
+	public BlockState getCachedState() {
+		if (this.cachedState == null) {
+			this.cachedState = this.world.getBlockState(this.pos);
 		}
 
-		return this.field_11866;
+		return this.cachedState;
 	}
 
 	@Nullable
@@ -151,14 +151,14 @@ public abstract class BlockEntity {
 	}
 
 	public void resetBlock() {
-		this.field_11866 = null;
+		this.cachedState = null;
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.method_11017()) + " // " + this.getClass().getCanonicalName()));
+		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
 		if (this.world != null) {
-			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.method_11010());
-			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.method_8320(this.pos));
+			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
+			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
 		}
 	}
 
@@ -176,14 +176,14 @@ public abstract class BlockEntity {
 	public void applyMirror(BlockMirror blockMirror) {
 	}
 
-	public BlockEntityType<?> method_11017() {
-		return this.field_11864;
+	public BlockEntityType<?> getType() {
+		return this.type;
 	}
 
 	public void method_20525() {
 		if (!this.field_19314) {
 			this.field_19314 = true;
-			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.method_11017()), this::getPos);
+			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
 		}
 	}
 }

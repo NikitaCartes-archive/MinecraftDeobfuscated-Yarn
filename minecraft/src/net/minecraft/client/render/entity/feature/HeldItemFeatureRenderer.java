@@ -47,7 +47,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			boolean bl = absoluteHand == AbsoluteHand.field_6182;
 			GlStateManager.translatef((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
-			MinecraftClient.getInstance().method_1489().renderItemFromSide(livingEntity, itemStack, type, bl);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
 			GlStateManager.popMatrix();
 		}
 	}

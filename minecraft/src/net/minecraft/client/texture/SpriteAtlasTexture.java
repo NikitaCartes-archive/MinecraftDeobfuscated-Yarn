@@ -44,7 +44,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	private final String atlasPath;
 	private final int maxTextureSize;
 	private int mipLevel;
-	private final Sprite field_5282 = MissingSprite.getMissingSprite();
+	private final Sprite missingSprite = MissingSprite.getMissingSprite();
 
 	public SpriteAtlasTexture(String string) {
 		this.atlasPath = string;
@@ -107,7 +107,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 				k = l;
 			}
 
-			textureStitcher.method_4553(sprite);
+			textureStitcher.add(sprite);
 		}
 
 		int m = Math.min(j, k);
@@ -118,9 +118,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 
 		profiler.swap("mipmapping");
-		this.field_5282.generateMipmaps(this.mipLevel);
+		this.missingSprite.generateMipmaps(this.mipLevel);
 		profiler.swap("register");
-		textureStitcher.method_4553(this.field_5282);
+		textureStitcher.add(this.missingSprite);
 		profiler.swap("stitching");
 
 		try {
@@ -140,7 +140,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
 
 		for (Identifier identifier : set) {
-			if (!this.field_5282.getId().equals(identifier)) {
+			if (!this.missingSprite.getId().equals(identifier)) {
 				list.add(CompletableFuture.runAsync(() -> {
 					Identifier identifier2 = this.getTexturePath(identifier);
 
@@ -151,7 +151,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 						try {
 							PngFile pngFile = new PngFile(resource.toString(), resource.getInputStream());
-							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.field_5337);
+							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
 							sprite = new Sprite(identifier, pngFile, animationResourceMetadata);
 						} catch (Throwable var19) {
 							var7 = var19;
@@ -191,11 +191,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		List<CompletableFuture<?>> list = new ArrayList();
 
 		for (Sprite sprite : textureStitcher.getStitchedSprites()) {
-			if (sprite == this.field_5282) {
+			if (sprite == this.missingSprite) {
 				concurrentLinkedQueue.add(sprite);
 			} else {
 				list.add(CompletableFuture.runAsync(() -> {
-					if (this.method_4604(resourceManager, sprite)) {
+					if (this.loadSprite(resourceManager, sprite)) {
 						concurrentLinkedQueue.add(sprite);
 					}
 				}, SystemUtil.getServerWorkerExecutor()));
@@ -206,7 +206,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		return new ArrayList(concurrentLinkedQueue);
 	}
 
-	private boolean method_4604(ResourceManager resourceManager, Sprite sprite) {
+	private boolean loadSprite(ResourceManager resourceManager, Sprite sprite) {
 		Identifier identifier = this.getTexturePath(sprite.getId());
 		Resource resource = null;
 
@@ -247,8 +247,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		return new Identifier(identifier.getNamespace(), String.format("%s/%s%s", this.atlasPath, identifier.getPath(), ".png"));
 	}
 
-	public Sprite method_4607(String string) {
-		return this.method_4608(new Identifier(string));
+	public Sprite getSprite(String string) {
+		return this.getSprite(new Identifier(string));
 	}
 
 	public void tickAnimatedSprites() {
@@ -268,9 +268,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		this.mipLevel = i;
 	}
 
-	public Sprite method_4608(Identifier identifier) {
+	public Sprite getSprite(Identifier identifier) {
 		Sprite sprite = (Sprite)this.sprites.get(identifier);
-		return sprite == null ? this.field_5282 : sprite;
+		return sprite == null ? this.missingSprite : sprite;
 	}
 
 	public void clear() {

@@ -33,17 +33,17 @@ public class BackgroundRenderer {
 	private int waterFogColor = -1;
 	private int nextWaterFogColor = -1;
 	private long lastWaterFogColorUpdateTime = -1L;
-	private final GameRenderer field_4035;
+	private final GameRenderer gameRenderer;
 	private final MinecraftClient client;
 
 	public BackgroundRenderer(GameRenderer gameRenderer) {
-		this.field_4035 = gameRenderer;
+		this.gameRenderer = gameRenderer;
 		this.client = gameRenderer.getClient();
 		this.blackColorBuffer.put(0.0F).put(0.0F).put(0.0F).put(1.0F).flip();
 	}
 
 	public void renderBackground(Camera camera, float f) {
-		World world = this.client.field_1687;
+		World world = this.client.world;
 		FluidState fluidState = camera.getSubmergedFluidState();
 		if (fluidState.matches(FluidTags.field_15517)) {
 			this.updateColorInWater(camera, world);
@@ -57,7 +57,7 @@ public class BackgroundRenderer {
 			this.lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = camera.getPos().y * world.field_9247.getHorizonShadingRatio();
+		double d = camera.getPos().y * world.dimension.getHorizonShadingRatio();
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
 			int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
 			if (i < 20) {
@@ -78,8 +78,8 @@ public class BackgroundRenderer {
 			this.blue = (float)((double)this.blue * d);
 		}
 
-		if (this.field_4035.getSkyDarkness(f) > 0.0F) {
-			float g = this.field_4035.getSkyDarkness(f);
+		if (this.gameRenderer.getSkyDarkness(f) > 0.0F) {
+			float g = this.gameRenderer.getSkyDarkness(f);
 			this.red = this.red * (1.0F - g) + this.red * 0.7F * g;
 			this.green = this.green * (1.0F - g) + this.green * 0.6F * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * 0.6F * g;
@@ -105,7 +105,7 @@ public class BackgroundRenderer {
 			this.green = this.green * (1.0F - g) + this.green * h * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * h * g;
 		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5925)) {
-			float gx = this.field_4035.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), f);
+			float gx = this.gameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), f);
 			float hx = 1.0F / this.red;
 			if (hx > 1.0F / this.green) {
 				hx = 1.0F / this.green;
@@ -124,17 +124,17 @@ public class BackgroundRenderer {
 	}
 
 	private void updateColorNotInWater(Camera camera, World world, float f) {
-		float g = 0.25F + 0.75F * (float)this.client.field_1690.viewDistance / 32.0F;
+		float g = 0.25F + 0.75F * (float)this.client.options.viewDistance / 32.0F;
 		g = 1.0F - (float)Math.pow((double)g, 0.25);
-		net.minecraft.util.math.Vec3d vec3d = world.method_8548(camera.getBlockPos(), f);
+		net.minecraft.util.math.Vec3d vec3d = world.getSkyColor(camera.getBlockPos(), f);
 		float h = (float)vec3d.x;
 		float i = (float)vec3d.y;
 		float j = (float)vec3d.z;
-		net.minecraft.util.math.Vec3d vec3d2 = world.method_8464(f);
+		net.minecraft.util.math.Vec3d vec3d2 = world.getFogColor(f);
 		this.red = (float)vec3d2.x;
 		this.green = (float)vec3d2.y;
 		this.blue = (float)vec3d2.z;
-		if (this.client.field_1690.viewDistance >= 4) {
+		if (this.client.options.viewDistance >= 4) {
 			double d = MathHelper.sin(world.getSkyAngleRadians(f)) > 0.0F ? -1.0 : 1.0;
 			net.minecraft.util.math.Vec3d vec3d3 = new net.minecraft.util.math.Vec3d(d, 0.0, 0.0);
 			float k = (float)camera.getHorizontalPlane().dotProduct(vec3d3);
@@ -143,7 +143,7 @@ public class BackgroundRenderer {
 			}
 
 			if (k > 0.0F) {
-				float[] fs = world.field_9247.getBackgroundColor(world.getSkyAngle(f), f);
+				float[] fs = world.dimension.getBackgroundColor(world.getSkyAngle(f), f);
 				if (fs != null) {
 					k *= fs[3];
 					this.red = this.red * (1.0F - k) + fs[0] * k;
@@ -176,7 +176,7 @@ public class BackgroundRenderer {
 
 	private void updateColorInWater(Camera camera, ViewableWorld viewableWorld) {
 		long l = SystemUtil.getMeasuringTimeMs();
-		int i = viewableWorld.method_8310(new BlockPos(camera.getPos())).getWaterFogColor();
+		int i = viewableWorld.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 		if (this.lastWaterFogColorUpdateTime < 0L) {
 			this.waterFogColor = i;
 			this.nextWaterFogColor = i;
@@ -212,7 +212,7 @@ public class BackgroundRenderer {
 			float f = 5.0F;
 			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
 			if (j < 20) {
-				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.field_4035.getViewDistance());
+				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.gameRenderer.getViewDistance());
 			}
 
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
@@ -231,7 +231,7 @@ public class BackgroundRenderer {
 				if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
 					float g = 0.05F - clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03F;
-					Biome biome = clientPlayerEntity.field_6002.method_8310(new BlockPos(clientPlayerEntity));
+					Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
 					if (biome == Biomes.field_9471 || biome == Biomes.field_9479) {
 						g += 0.005F;
 					}
@@ -247,7 +247,7 @@ public class BackgroundRenderer {
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5096);
 			GlStateManager.fogDensity(2.0F);
 		} else {
-			float fx = this.field_4035.getViewDistance();
+			float fx = this.gameRenderer.getViewDistance();
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
 			if (i == -1) {
 				GlStateManager.fogStart(0.0F);
@@ -258,8 +258,8 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-			if (this.client.field_1687.field_9247.shouldRenderFog(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z))
-				|| this.client.field_1705.method_1740().shouldThickenFog()) {
+			if (this.client.world.dimension.shouldRenderFog(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z))
+				|| this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
 				GlStateManager.fogStart(fx * 0.05F);
 				GlStateManager.fogEnd(Math.min(fx, 192.0F) * 0.5F);
 			}

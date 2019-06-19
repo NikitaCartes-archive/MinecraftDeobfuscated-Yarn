@@ -19,55 +19,55 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StemBlock extends PlantBlock implements Fertilizable {
-	public static final IntProperty field_11584 = Properties.field_12550;
-	protected static final VoxelShape[] field_11583 = new VoxelShape[]{
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 2.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 4.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 6.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 8.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 10.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 12.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 14.0, 9.0),
-		Block.method_9541(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
+	public static final IntProperty AGE = Properties.AGE_7;
+	protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 2.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 6.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 8.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 12.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0),
+		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
 	};
-	private final GourdBlock field_11585;
+	private final GourdBlock gourdBlock;
 
 	protected StemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
-		this.field_11585 = gourdBlock;
-		this.method_9590(this.field_10647.method_11664().method_11657(field_11584, Integer.valueOf(0)));
+		this.gourdBlock = gourdBlock;
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_11583[blockState.method_11654(field_11584)];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return AGE_TO_SHAPE[blockState.get(AGE)];
 	}
 
 	@Override
-	protected boolean method_9695(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return blockState.getBlock() == Blocks.field_10362;
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		super.method_9588(blockState, world, blockPos, random);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		super.onScheduledTick(blockState, world, blockPos, random);
 		if (world.getLightLevel(blockPos, 0) >= 9) {
 			float f = CropBlock.getAvailableMoisture(this, world, blockPos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-				int i = (Integer)blockState.method_11654(field_11584);
+				int i = (Integer)blockState.get(AGE);
 				if (i < 7) {
-					blockState = blockState.method_11657(field_11584, Integer.valueOf(i + 1));
-					world.method_8652(blockPos, blockState, 2);
+					blockState = blockState.with(AGE, Integer.valueOf(i + 1));
+					world.setBlockState(blockPos, blockState, 2);
 				} else {
 					Direction direction = Direction.Type.field_11062.random(random);
 					BlockPos blockPos2 = blockPos.offset(direction);
-					Block block = world.method_8320(blockPos2.down()).getBlock();
-					if (world.method_8320(blockPos2).isAir()
+					Block block = world.getBlockState(blockPos2.down()).getBlock();
+					if (world.getBlockState(blockPos2).isAir()
 						&& (
 							block == Blocks.field_10362 || block == Blocks.field_10566 || block == Blocks.field_10253 || block == Blocks.field_10520 || block == Blocks.field_10219
 						)) {
-						world.method_8501(blockPos2, this.field_11585.method_9564());
-						world.method_8501(blockPos, this.field_11585.getAttachedStem().method_9564().method_11657(HorizontalFacingBlock.field_11177, direction));
+						world.setBlockState(blockPos2, this.gourdBlock.getDefaultState());
+						world.setBlockState(blockPos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
 					}
 				}
 			}
@@ -77,35 +77,35 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	protected Item getPickItem() {
-		if (this.field_11585 == Blocks.field_10261) {
+		if (this.gourdBlock == Blocks.field_10261) {
 			return Items.field_8706;
 		} else {
-			return this.field_11585 == Blocks.field_10545 ? Items.field_8188 : null;
+			return this.gourdBlock == Blocks.field_10545 ? Items.field_8188 : null;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Item item = this.getPickItem();
 		return item == null ? ItemStack.EMPTY : new ItemStack(item);
 	}
 
 	@Override
-	public boolean method_9651(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return (Integer)blockState.method_11654(field_11584) != 7;
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+		return (Integer)blockState.get(AGE) != 7;
 	}
 
 	@Override
-	public boolean method_9650(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void method_9652(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		int i = Math.min(7, (Integer)blockState.method_11654(field_11584) + MathHelper.nextInt(world.random, 2, 5));
-		BlockState blockState2 = blockState.method_11657(field_11584, Integer.valueOf(i));
-		world.method_8652(blockPos, blockState2, 2);
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+		int i = Math.min(7, (Integer)blockState.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
+		BlockState blockState2 = blockState.with(AGE, Integer.valueOf(i));
+		world.setBlockState(blockPos, blockState2, 2);
 		if (i == 7) {
 			blockState2.scheduledTick(world, blockPos, world.random);
 		}
@@ -113,10 +113,10 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11584);
+		builder.add(AGE);
 	}
 
-	public GourdBlock method_10694() {
-		return this.field_11585;
+	public GourdBlock getGourdBlock() {
+		return this.gourdBlock;
 	}
 }

@@ -18,7 +18,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 
 	public void method_4195(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {
-			BlockState blockState = mooshroomEntity.getMooshroomType().method_18437();
+			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GlStateManager.enableCull();
 			GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
@@ -26,7 +26,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			GlStateManager.scalef(1.0F, -1.0F, 1.0F);
 			GlStateManager.translatef(0.2F, 0.35F, 0.5F);
 			GlStateManager.rotatef(42.0F, 0.0F, 1.0F, 0.0F);
-			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
 			blockRenderManager.renderDynamic(blockState, 1.0F);

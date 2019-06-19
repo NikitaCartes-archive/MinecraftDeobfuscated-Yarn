@@ -15,7 +15,7 @@ public final class BadlandsPlateauBiome extends Biome {
 	public BadlandsPlateauBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15698, SurfaceBuilder.field_15672)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15698, SurfaceBuilder.BADLANDS_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.field_9354)
 				.depth(1.5F)
@@ -26,8 +26,8 @@ public final class BadlandsPlateauBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13691));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13691));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

@@ -54,7 +54,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	}
 
 	private void method_20429(MobEntityWithAi mobEntityWithAi) {
-		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.method_6378(mobEntityWithAi, this.field_19352, this.field_19353));
+		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

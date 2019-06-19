@@ -46,8 +46,8 @@ public class EndCreditsScreen extends Screen {
 
 	@Override
 	public void tick() {
-		this.minecraft.method_1538().tick();
-		this.minecraft.method_1483().tick(false);
+		this.minecraft.getMusicTracker().tick();
+		this.minecraft.getSoundManager().tick(false);
 		float f = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
 		if (this.field_2628 > f) {
 			this.respawn();
@@ -61,7 +61,7 @@ public class EndCreditsScreen extends Screen {
 
 	private void respawn() {
 		this.respawn.run();
-		this.minecraft.method_1507(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class EndCreditsScreen extends Screen {
 
 					String string2;
 					while ((string2 = bufferedReader.readLine()) != null) {
-						string2 = string2.replaceAll("PLAYERNAME", this.minecraft.method_1548().getUsername());
+						string2 = string2.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
 
 						while (string2.contains(string)) {
 							int j = string2.indexOf(string);
@@ -90,7 +90,7 @@ public class EndCreditsScreen extends Screen {
 							string2 = string3 + Formatting.field_1068 + Formatting.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
 						}
 
-						this.field_2634.addAll(this.minecraft.field_1772.wrapStringToWidthAsList(string2, 274));
+						this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));
 						this.field_2634.add("");
 					}
 
@@ -106,9 +106,9 @@ public class EndCreditsScreen extends Screen {
 
 				String string5;
 				while ((string5 = bufferedReader.readLine()) != null) {
-					string5 = string5.replaceAll("PLAYERNAME", this.minecraft.method_1548().getUsername());
+					string5 = string5.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
 					string5 = string5.replaceAll("\t", "    ");
-					this.field_2634.addAll(this.minecraft.field_1772.wrapStringToWidthAsList(string5, 274));
+					this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string5, 274));
 					this.field_2634.add("");
 				}
 
@@ -123,7 +123,7 @@ public class EndCreditsScreen extends Screen {
 	}
 
 	private void method_2258(int i, int j, float f) {
-		this.minecraft.method_1531().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		int k = this.width;
 		float g = -this.field_2628 * 0.5F * this.field_2635;
 		float h = (float)this.height - this.field_2628 * 0.5F * this.field_2635;
@@ -143,7 +143,7 @@ public class EndCreditsScreen extends Screen {
 		m = m * 96.0F / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.height, (double)this.blitOffset).texture(0.0, (double)(g * 0.015625F)).color(m, m, m, 1.0F).next();
 		bufferBuilder.vertex((double)k, (double)this.height, (double)this.blitOffset)
 			.texture((double)((float)k * 0.015625F), (double)(g * 0.015625F))
@@ -164,12 +164,12 @@ public class EndCreditsScreen extends Screen {
 		float g = -this.field_2628 * this.field_2635;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0.0F, g, 0.0F);
-		this.minecraft.method_1531().bindTexture(MINECRAFT_TITLE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.blit(l, m, 0, 0, 155, 44);
 		this.blit(l + 155, m, 0, 45, 155, 44);
-		this.minecraft.method_1531().bindTexture(EDITION_TITLE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 		blit(l + 88, m + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		GlStateManager.disableAlphaTest();
 		int n = m + 100;
@@ -196,14 +196,14 @@ public class EndCreditsScreen extends Screen {
 		}
 
 		GlStateManager.popMatrix();
-		this.minecraft.method_1531().bindTexture(VIGNETTE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
 		int o = this.width;
 		int p = this.height;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(0.0, (double)p, (double)this.blitOffset).texture(0.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)o, (double)p, (double)this.blitOffset).texture(1.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)o, 0.0, (double)this.blitOffset).texture(1.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();

@@ -24,42 +24,42 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 	long getSeed();
 
 	default float getMoonSize() {
-		return Dimension.MOON_PHASE_TO_SIZE[this.method_8597().getMoonPhase(this.method_8401().getTimeOfDay())];
+		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
 
 	default float getSkyAngle(float f) {
-		return this.method_8597().getSkyAngle(this.method_8401().getTimeOfDay(), f);
+		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), f);
 	}
 
 	@Environment(EnvType.CLIENT)
 	default int getMoonPhase() {
-		return this.method_8597().getMoonPhase(this.method_8401().getTimeOfDay());
+		return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
 	}
 
-	TickScheduler<Block> method_8397();
+	TickScheduler<Block> getBlockTickScheduler();
 
-	TickScheduler<Fluid> method_8405();
+	TickScheduler<Fluid> getFluidTickScheduler();
 
 	World getWorld();
 
-	LevelProperties method_8401();
+	LevelProperties getLevelProperties();
 
 	LocalDifficulty getLocalDifficulty(BlockPos blockPos);
 
 	default Difficulty getDifficulty() {
-		return this.method_8401().getDifficulty();
+		return this.getLevelProperties().getDifficulty();
 	}
 
-	ChunkManager method_8398();
+	ChunkManager getChunkManager();
 
 	@Override
 	default boolean isChunkLoaded(int i, int j) {
-		return this.method_8398().isChunkLoaded(i, j);
+		return this.getChunkManager().isChunkLoaded(i, j);
 	}
 
 	Random getRandom();
 
-	void method_8408(BlockPos blockPos, Block block);
+	void updateNeighbors(BlockPos blockPos, Block block);
 
 	@Environment(EnvType.CLIENT)
 	BlockPos getSpawnPos();
@@ -80,7 +80,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 	}
 
 	@Override
-	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
-		return EntityView.super.method_8611(entity, voxelShape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+		return EntityView.super.intersectsEntities(entity, voxelShape);
 	}
 }

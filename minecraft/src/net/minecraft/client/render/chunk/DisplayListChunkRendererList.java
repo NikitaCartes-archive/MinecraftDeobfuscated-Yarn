@@ -13,7 +13,7 @@ public class DisplayListChunkRendererList extends ChunkRendererList {
 			for (ChunkRenderer chunkRenderer : this.chunkRenderers) {
 				DisplayListChunkRenderer displayListChunkRenderer = (DisplayListChunkRenderer)chunkRenderer;
 				GlStateManager.pushMatrix();
-				this.method_3157(chunkRenderer);
+				this.translateToOrigin(chunkRenderer);
 				GlStateManager.callList(displayListChunkRenderer.method_3639(blockRenderLayer, displayListChunkRenderer.getData()));
 				GlStateManager.popMatrix();
 			}

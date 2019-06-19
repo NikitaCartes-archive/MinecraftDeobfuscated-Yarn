@@ -25,10 +25,10 @@ public class GlassBottleItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		List<AreaEffectCloudEntity> list = world.method_8390(
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		List<AreaEffectCloudEntity> list = world.getEntities(
 			AreaEffectCloudEntity.class,
-			playerEntity.method_5829().expand(2.0),
+			playerEntity.getBoundingBox().expand(2.0),
 			areaEffectCloudEntity -> areaEffectCloudEntity != null && areaEffectCloudEntity.isAlive() && areaEffectCloudEntity.getOwner() instanceof EnderDragonEntity
 		);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
@@ -38,7 +38,7 @@ public class GlassBottleItem extends Item {
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
 			return new TypedActionResult<>(ActionResult.field_5812, this.fill(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() == HitResult.Type.field_1333) {
 				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
@@ -48,7 +48,7 @@ public class GlassBottleItem extends Item {
 						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					}
 
-					if (world.method_8316(blockPos).matches(FluidTags.field_15517)) {
+					if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 						world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14779, SoundCategory.field_15254, 1.0F, 1.0F);
 						return new TypedActionResult<>(
 							ActionResult.field_5812, this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991))

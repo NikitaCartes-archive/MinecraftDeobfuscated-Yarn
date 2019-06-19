@@ -99,7 +99,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void method_19601(VillagerEntity villagerEntity) {
-		for (TradeOffer tradeOffer : villagerEntity.method_8264()) {
+		for (TradeOffer tradeOffer : villagerEntity.getOffers()) {
 			if (!tradeOffer.isDisabled() && this.method_19028(tradeOffer)) {
 				this.offers.add(tradeOffer.getMutableSellItem());
 			}

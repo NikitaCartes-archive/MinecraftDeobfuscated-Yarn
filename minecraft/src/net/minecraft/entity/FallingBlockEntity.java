@@ -39,7 +39,7 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class FallingBlockEntity extends Entity {
-	private BlockState field_7188 = Blocks.field_10102.method_9564();
+	private BlockState block = Blocks.field_10102.getDefaultState();
 	public int timeFalling;
 	public boolean dropItem = true;
 	private boolean destroyedOnLanding;
@@ -55,10 +55,10 @@ public class FallingBlockEntity extends Entity {
 
 	public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
 		this(EntityType.field_6089, world);
-		this.field_7188 = blockState;
+		this.block = blockState;
 		this.field_6033 = true;
 		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
-		this.method_18799(Vec3d.ZERO);
+		this.setVelocity(Vec3d.ZERO);
 		this.prevX = d;
 		this.prevY = e;
 		this.prevZ = f;
@@ -96,36 +96,36 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (this.field_7188.isAir()) {
+		if (this.block.isAir()) {
 			this.remove();
 		} else {
 			this.prevX = this.x;
 			this.prevY = this.y;
 			this.prevZ = this.z;
-			Block block = this.field_7188.getBlock();
+			Block block = this.block.getBlock();
 			if (this.timeFalling++ == 0) {
 				BlockPos blockPos = new BlockPos(this);
-				if (this.field_6002.method_8320(blockPos).getBlock() == block) {
-					this.field_6002.clearBlockState(blockPos, false);
-				} else if (!this.field_6002.isClient) {
+				if (this.world.getBlockState(blockPos).getBlock() == block) {
+					this.world.clearBlockState(blockPos, false);
+				} else if (!this.world.isClient) {
 					this.remove();
 					return;
 				}
 			}
 
 			if (!this.hasNoGravity()) {
-				this.method_18799(this.method_18798().add(0.0, -0.04, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			if (!this.field_6002.isClient) {
+			this.move(MovementType.field_6308, this.getVelocity());
+			if (!this.world.isClient) {
 				BlockPos blockPos = new BlockPos(this);
-				boolean bl = this.field_7188.getBlock() instanceof ConcretePowderBlock;
-				boolean bl2 = bl && this.field_6002.method_8316(blockPos).matches(FluidTags.field_15517);
-				double d = this.method_18798().lengthSquared();
+				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
+				boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.field_15517);
+				double d = this.getVelocity().lengthSquared();
 				if (bl && d > 1.0) {
-					BlockHitResult blockHitResult = this.field_6002
-						.method_17742(
+					BlockHitResult blockHitResult = this.world
+						.rayTrace(
 							new RayTraceContext(
 								new Vec3d(this.prevX, this.prevY, this.prevZ),
 								new Vec3d(this.x, this.y, this.z),
@@ -134,32 +134,32 @@ public class FallingBlockEntity extends Entity {
 								this
 							)
 						);
-					if (blockHitResult.getType() != HitResult.Type.field_1333 && this.field_6002.method_8316(blockHitResult.getBlockPos()).matches(FluidTags.field_15517)) {
+					if (blockHitResult.getType() != HitResult.Type.field_1333 && this.world.getFluidState(blockHitResult.getBlockPos()).matches(FluidTags.field_15517)) {
 						blockPos = blockHitResult.getBlockPos();
 						bl2 = true;
 					}
 				}
 
 				if (this.onGround || bl2) {
-					BlockState blockState = this.field_6002.method_8320(blockPos);
-					this.method_18799(this.method_18798().multiply(0.7, -0.5, 0.7));
+					BlockState blockState = this.world.getBlockState(blockPos);
+					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (blockState.getBlock() != Blocks.field_10008) {
 						this.remove();
 						if (!this.destroyedOnLanding) {
 							if (bl2
-								|| blockState.canReplace(new AutomaticItemPlacementContext(this.field_6002, blockPos, Direction.field_11033, ItemStack.EMPTY, Direction.field_11036))
-									&& this.field_7188.canPlaceAt(this.field_6002, blockPos)) {
-								if (this.field_7188.method_11570(Properties.field_12508) && this.field_6002.method_8316(blockPos).getFluid() == Fluids.WATER) {
-									this.field_7188 = this.field_7188.method_11657(Properties.field_12508, Boolean.valueOf(true));
+								|| blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.field_11033, ItemStack.EMPTY, Direction.field_11036))
+									&& this.block.canPlaceAt(this.world, blockPos)) {
+								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
+									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
 								}
 
-								if (this.field_6002.method_8652(blockPos, this.field_7188, 3)) {
+								if (this.world.setBlockState(blockPos, this.block, 3)) {
 									if (block instanceof FallingBlock) {
-										((FallingBlock)block).method_10127(this.field_6002, blockPos, this.field_7188, blockState);
+										((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState);
 									}
 
 									if (this.blockEntityData != null && block instanceof BlockEntityProvider) {
-										BlockEntity blockEntity = this.field_6002.method_8321(blockPos);
+										BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 										if (blockEntity != null) {
 											CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 
@@ -174,26 +174,26 @@ public class FallingBlockEntity extends Entity {
 											blockEntity.markDirty();
 										}
 									}
-								} else if (this.dropItem && this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
-									this.method_5706(block);
+								} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+									this.dropItem(block);
 								}
-							} else if (this.dropItem && this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
-								this.method_5706(block);
+							} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+								this.dropItem(block);
 							}
 						} else if (block instanceof FallingBlock) {
-							((FallingBlock)block).onDestroyedOnLanding(this.field_6002, blockPos);
+							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos);
 						}
 					}
-				} else if (!this.field_6002.isClient && (this.timeFalling > 100 && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600)) {
-					if (this.dropItem && this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
-						this.method_5706(block);
+				} else if (!this.world.isClient && (this.timeFalling > 100 && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600)) {
+					if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+						this.dropItem(block);
 					}
 
 					this.remove();
 				}
 			}
 
-			this.method_18799(this.method_18798().multiply(0.98));
+			this.setVelocity(this.getVelocity().multiply(0.98));
 		}
 	}
 
@@ -202,8 +202,8 @@ public class FallingBlockEntity extends Entity {
 		if (this.hurtEntities) {
 			int i = MathHelper.ceil(f - 1.0F);
 			if (i > 0) {
-				List<Entity> list = Lists.<Entity>newArrayList(this.field_6002.method_8335(this, this.method_5829()));
-				boolean bl = this.field_7188.matches(BlockTags.field_15486);
+				List<Entity> list = Lists.<Entity>newArrayList(this.world.getEntities(this, this.getBoundingBox()));
+				boolean bl = this.block.matches(BlockTags.field_15486);
 				DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
 
 				for (Entity entity : list) {
@@ -211,11 +211,11 @@ public class FallingBlockEntity extends Entity {
 				}
 
 				if (bl && (double)this.random.nextFloat() < 0.05F + (double)i * 0.05) {
-					BlockState blockState = AnvilBlock.method_9346(this.field_7188);
+					BlockState blockState = AnvilBlock.getLandingState(this.block);
 					if (blockState == null) {
 						this.destroyedOnLanding = true;
 					} else {
-						this.field_7188 = blockState;
+						this.block = blockState;
 					}
 				}
 			}
@@ -224,7 +224,7 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.put("BlockState", TagHelper.serializeBlockState(this.field_7188));
+		compoundTag.put("BlockState", TagHelper.serializeBlockState(this.block));
 		compoundTag.putInt("Time", this.timeFalling);
 		compoundTag.putBoolean("DropItem", this.dropItem);
 		compoundTag.putBoolean("HurtEntities", this.hurtEntities);
@@ -237,13 +237,13 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.field_7188 = TagHelper.deserializeBlockState(compoundTag.getCompound("BlockState"));
+		this.block = TagHelper.deserializeBlockState(compoundTag.getCompound("BlockState"));
 		this.timeFalling = compoundTag.getInt("Time");
 		if (compoundTag.containsKey("HurtEntities", 99)) {
 			this.hurtEntities = compoundTag.getBoolean("HurtEntities");
 			this.fallHurtAmount = compoundTag.getFloat("FallHurtAmount");
 			this.fallHurtMax = compoundTag.getInt("FallHurtMax");
-		} else if (this.field_7188.matches(BlockTags.field_15486)) {
+		} else if (this.block.matches(BlockTags.field_15486)) {
 			this.hurtEntities = true;
 		}
 
@@ -255,14 +255,14 @@ public class FallingBlockEntity extends Entity {
 			this.blockEntityData = compoundTag.getCompound("TileEntityData");
 		}
 
-		if (this.field_7188.isAir()) {
-			this.field_7188 = Blocks.field_10102.method_9564();
+		if (this.block.isAir()) {
+			this.block = Blocks.field_10102.getDefaultState();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public World method_6966() {
-		return this.field_6002;
+	public World getWorldClient() {
+		return this.world;
 	}
 
 	public void setHurtEntities(boolean bl) {
@@ -278,11 +278,11 @@ public class FallingBlockEntity extends Entity {
 	@Override
 	public void populateCrashReport(CrashReportSection crashReportSection) {
 		super.populateCrashReport(crashReportSection);
-		crashReportSection.add("Immitating BlockState", this.field_7188.toString());
+		crashReportSection.add("Immitating BlockState", this.block.toString());
 	}
 
-	public BlockState method_6962() {
-		return this.field_7188;
+	public BlockState getBlockState() {
+		return this.block;
 	}
 
 	@Override
@@ -292,6 +292,6 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, Block.method_9507(this.method_6962()));
+		return new EntitySpawnS2CPacket(this, Block.getRawIdFromState(this.getBlockState()));
 	}
 }

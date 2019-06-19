@@ -38,7 +38,7 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().field_1690.shouldUseNativeTransport());
+						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().options.shouldUseNativeTransport());
 						if (RealmsConnect.this.aborted) {
 							return;
 						}
@@ -57,7 +57,7 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().method_1548().getProfile()));
+						RealmsConnect.this.connection.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
 					} catch (UnknownHostException var5) {
 						Realms.clearResourcePack();
 						if (RealmsConnect.this.aborted) {

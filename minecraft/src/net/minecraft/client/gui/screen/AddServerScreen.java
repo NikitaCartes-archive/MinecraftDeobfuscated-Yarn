@@ -17,7 +17,7 @@ import net.minecraft.util.ChatUtil;
 public class AddServerScreen extends Screen {
 	private ButtonWidget buttonAdd;
 	private final BooleanConsumer callback;
-	private final ServerEntry field_2469;
+	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
 	private TextFieldWidget serverNameField;
 	private ButtonWidget resourcePackOptionButton;
@@ -42,7 +42,7 @@ public class AddServerScreen extends Screen {
 	public AddServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
 		super(new TranslatableText("addServer.title"));
 		this.callback = booleanConsumer;
-		this.field_2469 = serverEntry;
+		this.serverEntry = serverEntry;
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class AddServerScreen extends Screen {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName"));
 		this.serverNameField.method_1876(true);
-		this.serverNameField.setText(this.field_2469.name);
+		this.serverNameField.setText(this.serverEntry.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
-		this.addressField.setText(this.field_2469.address);
+		this.addressField.setText(this.serverEntry.address);
 		this.addressField.setTextPredicate(this.field_2475);
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
@@ -71,14 +71,14 @@ public class AddServerScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				I18n.translate("addServer.resourcePack") + ": " + this.field_2469.getResourcePack().getName().asFormattedString(),
+				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString(),
 				buttonWidget -> {
-					this.field_2469
+					this.serverEntry
 						.setResourcePackState(
-							ServerEntry.ResourcePackState.values()[(this.field_2469.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
+							ServerEntry.ResourcePackState.values()[(this.serverEntry.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
 						);
 					this.resourcePackOptionButton
-						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.field_2469.getResourcePack().getName().asFormattedString());
+						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString());
 				}
 			)
 		);
@@ -110,8 +110,8 @@ public class AddServerScreen extends Screen {
 	}
 
 	private void addAndClose() {
-		this.field_2469.name = this.serverNameField.getText();
-		this.field_2469.address = this.addressField.getText();
+		this.serverEntry.name = this.serverNameField.getText();
+		this.serverEntry.address = this.addressField.getText();
 		this.callback.accept(true);
 	}
 

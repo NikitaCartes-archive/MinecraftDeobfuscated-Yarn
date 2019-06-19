@@ -56,7 +56,7 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 
 	private void method_19585(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
 		for (int i = 0; i < 10; i++) {
-			Vec3d vec3d = PathfindingUtil.method_6378(mobEntityWithAi, 20, 8);
+			Vec3d vec3d = PathfindingUtil.findTargetStraight(mobEntityWithAi, 20, 8);
 			if (vec3d != null && serverWorld.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) {
 				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(vec3d, 0.6F, 0));
 				return;

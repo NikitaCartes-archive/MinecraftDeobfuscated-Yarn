@@ -86,14 +86,14 @@ public class AnvilContainer extends Container {
 
 					AnvilContainer.this.levelCost.set(0);
 					blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-						BlockState blockState = world.method_8320(blockPos);
+						BlockState blockState = world.getBlockState(blockPos);
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
-							BlockState blockState2 = AnvilBlock.method_9346(blockState);
+							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
 								world.clearBlockState(blockPos, false);
 								world.playLevelEvent(1029, blockPos, 0);
 							} else {
-								world.method_8652(blockPos, blockState2, 2);
+								world.setBlockState(blockPos, blockState2, 2);
 								world.playLevelEvent(1030, blockPos, 0);
 							}
 						} else {
@@ -297,14 +297,14 @@ public class AnvilContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, world, this.inventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
 		return this.context
 			.run(
-				(world, blockPos) -> !world.method_8320(blockPos).matches(BlockTags.field_15486)
+				(world, blockPos) -> !world.getBlockState(blockPos).matches(BlockTags.field_15486)
 						? false
 						: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
 				true

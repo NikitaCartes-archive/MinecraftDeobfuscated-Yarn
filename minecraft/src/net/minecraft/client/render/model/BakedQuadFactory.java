@@ -43,7 +43,7 @@ public class BakedQuadFactory {
 		}
 	};
 
-	public BakedQuad method_3468(
+	public BakedQuad bake(
 		Vector3f vector3f,
 		Vector3f vector3f2,
 		ModelElementFace modelElementFace,
@@ -53,9 +53,9 @@ public class BakedQuadFactory {
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
-		ModelElementTexture modelElementTexture = modelElementFace.field_4227;
+		ModelElementTexture modelElementTexture = modelElementFace.textureData;
 		if (modelBakeSettings.isUvLocked()) {
-			modelElementTexture = this.method_3454(modelElementFace.field_4227, direction, modelBakeSettings.getRotation());
+			modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
@@ -79,7 +79,7 @@ public class BakedQuadFactory {
 		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
 	}
 
-	private ModelElementTexture method_3454(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
+	private ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
 		return field_4264[method_3465(modelRotation, direction)].method_3469(modelElementTexture);
 	}
 

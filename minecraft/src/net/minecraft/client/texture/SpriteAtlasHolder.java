@@ -13,13 +13,13 @@ public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloadL
 
 	public SpriteAtlasHolder(TextureManager textureManager, Identifier identifier, String string) {
 		this.atlas = new SpriteAtlasTexture(string);
-		textureManager.method_4620(identifier, this.atlas);
+		textureManager.registerTextureUpdateable(identifier, this.atlas);
 	}
 
 	protected abstract Iterable<Identifier> getSprites();
 
 	protected Sprite getSprite(Identifier identifier) {
-		return this.atlas.method_4608(identifier);
+		return this.atlas.getSprite(identifier);
 	}
 
 	protected SpriteAtlasTexture.Data method_18668(ResourceManager resourceManager, Profiler profiler) {

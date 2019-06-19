@@ -43,7 +43,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.method_5941(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		}
 
 		if (this.isAngry() && this.angerTarget != null && livingEntity == null) {
-			PlayerEntity playerEntity = this.field_6002.getPlayerByUuid(this.angerTarget);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			this.attackingPlayer = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
@@ -117,8 +117,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.intersectsEntities(this) && !viewableWorld.method_8599(this.method_5829());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
-			PlayerEntity playerEntity = this.field_6002.getPlayerByUuid(this.angerTarget);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
 				this.attackingPlayer = playerEntity;
@@ -154,7 +154,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 			return false;
 		} else {
 			Entity entity = damageSource.getAttacker();
-			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
+			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
 				this.method_20804(entity);
 			}
 
@@ -163,17 +163,13 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	private boolean method_20804(Entity entity) {
-		if (!this.canSee(entity)) {
-			return false;
-		} else {
-			this.anger = this.method_20806();
-			this.angrySoundDelay = this.random.nextInt(40);
-			if (entity instanceof LivingEntity) {
-				this.setAttacker((LivingEntity)entity);
-			}
-
-			return true;
+		this.anger = this.method_20806();
+		this.angrySoundDelay = this.random.nextInt(40);
+		if (entity instanceof LivingEntity) {
+			this.setAttacker((LivingEntity)entity);
 		}
+
+		return true;
 	}
 
 	private int method_20806() {
@@ -227,7 +223,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 		@Override
 		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-			if (mobEntity instanceof ZombiePigmanEntity && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
+			if (mobEntity instanceof ZombiePigmanEntity && this.mob.canSee(livingEntity) && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
 				mobEntity.setTarget(livingEntity);
 			}
 		}

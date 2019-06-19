@@ -36,7 +36,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 
 	public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ShulkerEntityModel<>(), 0.0F);
-		this.method_4046(new ShulkerSomethingFeatureRenderer(this));
+		this.addFeature(new ShulkerSomethingFeatureRenderer(this));
 	}
 
 	public void method_4113(ShulkerEntity shulkerEntity, double d, double e, double f, float g, float h) {

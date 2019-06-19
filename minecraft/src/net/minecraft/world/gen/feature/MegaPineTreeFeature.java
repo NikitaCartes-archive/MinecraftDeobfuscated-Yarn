@@ -12,9 +12,9 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10037.method_9564();
-	private static final BlockState LEAVES = Blocks.field_9988.method_9564();
-	private static final BlockState PODZOL = Blocks.field_10520.method_9564();
+	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
+	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
+	private static final BlockState PODZOL = Blocks.field_10520.getDefaultState();
 	private final boolean field_13677;
 
 	public MegaPineTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, boolean bl2) {
@@ -23,31 +23,31 @@ public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_12775(
+	public boolean generate(
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		int i = this.getHeight(random);
 		if (!this.checkTreeFitsAndReplaceGround(modifiableTestableWorld, blockPos, i)) {
 			return false;
 		} else {
-			this.method_13495(modifiableTestableWorld, blockPos.getX(), blockPos.getZ(), blockPos.getY() + i, 0, random, mutableIntBoundingBox, set);
+			this.makeTopLeaves(modifiableTestableWorld, blockPos.getX(), blockPos.getZ(), blockPos.getY() + i, 0, random, mutableIntBoundingBox, set);
 
 			for (int j = 0; j < i; j++) {
 				if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(j))) {
-					this.method_12773(set, modifiableTestableWorld, blockPos.up(j), this.log, mutableIntBoundingBox);
+					this.setBlockState(set, modifiableTestableWorld, blockPos.up(j), this.log, mutableIntBoundingBox);
 				}
 
 				if (j < i - 1) {
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(1, j, 0))) {
-						this.method_12773(set, modifiableTestableWorld, blockPos.add(1, j, 0), this.log, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(1, j, 0), this.log, mutableIntBoundingBox);
 					}
 
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(1, j, 1))) {
-						this.method_12773(set, modifiableTestableWorld, blockPos.add(1, j, 1), this.log, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(1, j, 1), this.log, mutableIntBoundingBox);
 					}
 
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(0, j, 1))) {
-						this.method_12773(set, modifiableTestableWorld, blockPos.add(0, j, 1), this.log, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(0, j, 1), this.log, mutableIntBoundingBox);
 					}
 				}
 			}
@@ -57,7 +57,7 @@ public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
 		}
 	}
 
-	private void method_13495(
+	private void makeTopLeaves(
 		ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, int l, Random random, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
 	) {
 		int m = random.nextInt(5) + (this.field_13677 ? this.baseHeight : 3);
@@ -66,7 +66,7 @@ public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
 		for (int o = k - m; o <= k; o++) {
 			int p = k - o;
 			int q = l + MathHelper.floor((float)p / (float)m * 3.5F);
-			this.method_13528(modifiableTestableWorld, new BlockPos(i, o, j), q + (p > 0 && q == n && (o & 1) == 0 ? 1 : 0), mutableIntBoundingBox, set);
+			this.makeSquaredLeafLayer(modifiableTestableWorld, new BlockPos(i, o, j), q + (p > 0 && q == n && (o & 1) == 0 ? 1 : 0), mutableIntBoundingBox, set);
 			n = q;
 		}
 	}

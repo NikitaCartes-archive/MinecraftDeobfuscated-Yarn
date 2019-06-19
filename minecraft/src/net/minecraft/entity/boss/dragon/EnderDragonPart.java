@@ -13,7 +13,7 @@ public class EnderDragonPart extends Entity {
 	private final EntityDimensions partDimensions;
 
 	public EnderDragonPart(EnderDragonEntity enderDragonEntity, String string, float f, float g) {
-		super(enderDragonEntity.getType(), enderDragonEntity.field_6002);
+		super(enderDragonEntity.getType(), enderDragonEntity.world);
 		this.partDimensions = EntityDimensions.changing(f, g);
 		this.calculateDimensions();
 		this.owner = enderDragonEntity;
@@ -53,7 +53,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public EntityDimensions method_18377(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		return this.partDimensions;
 	}
 }

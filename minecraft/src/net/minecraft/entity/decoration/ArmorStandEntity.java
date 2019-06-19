@@ -311,7 +311,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void tickPushing() {
-		List<Entity> list = this.field_6002.method_8333(this, this.method_5829(), RIDEABLE_MINECART_PREDICATE);
+		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
 
 		for (int i = 0; i < list.size(); i++) {
 			Entity entity = (Entity)list.get(i);
@@ -322,11 +322,11 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public ActionResult method_5664(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
+	public ActionResult interactAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.isMarker() || itemStack.getItem() == Items.field_8448) {
 			return ActionResult.field_5811;
-		} else if (!this.field_6002.isClient && !playerEntity.isSpectator()) {
+		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
@@ -400,7 +400,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.field_6002.isClient || this.removed) {
+		if (this.world.isClient || this.removed) {
 			return false;
 		} else if (DamageSource.OUT_OF_WORLD.equals(damageSource)) {
 			this.remove();
@@ -436,9 +436,9 @@ public class ArmorStandEntity extends LivingEntity {
 				this.remove();
 				return bl2;
 			} else {
-				long l = this.field_6002.getTime();
+				long l = this.world.getTime();
 				if (l - this.field_7112 > 5L && !bl) {
-					this.field_6002.sendEntityStatus(this, (byte)32);
+					this.world.sendEntityStatus(this, (byte)32);
 					this.field_7112 = l;
 				} else {
 					this.method_6924(damageSource);
@@ -455,9 +455,9 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void handleStatus(byte b) {
 		if (b == 32) {
-			if (this.field_6002.isClient) {
-				this.field_6002.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
-				this.field_7112 = this.field_6002.getTime();
+			if (this.world.isClient) {
+				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
+				this.field_7112 = this.world.getTime();
 			}
 		} else {
 			super.handleStatus(b);
@@ -467,7 +467,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.method_5829().averageDimension() * 4.0;
+		double e = this.getBoundingBox().averageDimension() * 4.0;
 		if (Double.isNaN(e) || e == 0.0) {
 			e = 4.0;
 		}
@@ -477,10 +477,10 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6898() {
-		if (this.field_6002 instanceof ServerWorld) {
-			((ServerWorld)this.field_6002)
+		if (this.world instanceof ServerWorld) {
+			((ServerWorld)this.world)
 				.spawnParticles(
-					new BlockStateParticleEffect(ParticleTypes.field_11217, Blocks.field_10161.method_9564()),
+					new BlockStateParticleEffect(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
 					this.x,
 					this.y + (double)this.getHeight() / 1.5,
 					this.z,
@@ -505,7 +505,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6924(DamageSource damageSource) {
-		Block.dropStack(this.field_6002, new BlockPos(this), new ItemStack(Items.field_8694));
+		Block.dropStack(this.world, new BlockPos(this), new ItemStack(Items.field_8694));
 		this.method_6908(damageSource);
 	}
 
@@ -516,7 +516,7 @@ public class ArmorStandEntity extends LivingEntity {
 		for (int i = 0; i < this.heldItems.size(); i++) {
 			ItemStack itemStack = this.heldItems.get(i);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.field_6002, new BlockPos(this).up(), itemStack);
+				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
 				this.heldItems.set(i, ItemStack.EMPTY);
 			}
 		}
@@ -524,14 +524,14 @@ public class ArmorStandEntity extends LivingEntity {
 		for (int ix = 0; ix < this.armorItems.size(); ix++) {
 			ItemStack itemStack = this.armorItems.get(ix);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.field_6002, new BlockPos(this).up(), itemStack);
+				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
 				this.armorItems.set(ix, ItemStack.EMPTY);
 			}
 		}
 	}
 
 	private void method_6920() {
-		this.field_6002.playSound(null, this.x, this.y, this.z, SoundEvents.field_15118, this.getSoundCategory(), 1.0F, 1.0F);
+		this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15118, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
 	@Override
@@ -552,9 +552,9 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.canClip()) {
-			super.method_6091(vec3d);
+			super.travel(vec3d);
 		}
 	}
 
@@ -631,8 +631,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public PistonBehavior method_5657() {
-		return this.isMarker() ? PistonBehavior.field_15975 : super.method_5657();
+	public PistonBehavior getPistonBehavior() {
+		return this.isMarker() ? PistonBehavior.field_15975 : super.getPistonBehavior();
 	}
 
 	private void setSmall(boolean bl) {
@@ -787,7 +787,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntityDimensions method_18377(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		float f = this.isMarker() ? 0.0F : (this.isBaby() ? 0.5F : 1.0F);
 		return this.getType().getDimensions().scaled(f);
 	}

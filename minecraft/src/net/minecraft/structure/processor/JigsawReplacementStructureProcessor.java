@@ -48,7 +48,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType method_16772() {
+	protected StructureProcessorType getType() {
 		return StructureProcessorType.field_16991;
 	}
 

@@ -51,7 +51,7 @@ public class GameModeCommand {
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
-				serverPlayerEntity.method_7336(gameMode);
+				serverPlayerEntity.setGameMode(gameMode);
 				setGameMode(commandContext.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}

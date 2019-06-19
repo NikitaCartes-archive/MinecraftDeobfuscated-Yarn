@@ -36,13 +36,13 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 		@Override
 		public void markDirty() {
-			BlockState blockState = CommandBlockBlockEntity.this.world.method_8320(CommandBlockBlockEntity.this.pos);
-			this.getWorld().method_8413(CommandBlockBlockEntity.this.pos, blockState, blockState, 3);
+			BlockState blockState = CommandBlockBlockEntity.this.world.getBlockState(CommandBlockBlockEntity.this.pos);
+			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, 3);
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public Vec3d method_8300() {
+		public Vec3d getPos() {
 			return new Vec3d(
 				(double)CommandBlockBlockEntity.this.pos.getX() + 0.5,
 				(double)CommandBlockBlockEntity.this.pos.getY() + 0.5,
@@ -130,10 +130,10 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		boolean bl2 = this.auto;
 		this.auto = bl;
 		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.field_11922) {
-			Block block = this.method_11010().getBlock();
+			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
-				this.world.method_8397().schedule(this.pos, block, block.getTickRate(this.world));
+				this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
 			}
 		}
 	}
@@ -145,9 +145,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public boolean updateConditionMet() {
 		this.conditionMet = true;
 		if (this.isConditionalCommandBlock()) {
-			BlockPos blockPos = this.pos.offset(((Direction)this.world.method_8320(this.pos).method_11654(CommandBlock.field_10791)).getOpposite());
-			if (this.world.method_8320(blockPos).getBlock() instanceof CommandBlock) {
-				BlockEntity blockEntity = this.world.method_8321(blockPos);
+			BlockPos blockPos = this.pos.offset(((Direction)this.world.getBlockState(this.pos).get(CommandBlock.FACING)).getOpposite());
+			if (this.world.getBlockState(blockPos).getBlock() instanceof CommandBlock) {
+				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				this.conditionMet = blockEntity instanceof CommandBlockBlockEntity && ((CommandBlockBlockEntity)blockEntity).getCommandExecutor().getSuccessCount() > 0;
 			} else {
 				this.conditionMet = false;
@@ -166,7 +166,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public CommandBlockBlockEntity.Type getType() {
-		Block block = this.method_11010().getBlock();
+		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.field_10525) {
 			return CommandBlockBlockEntity.Type.field_11924;
 		} else if (block == Blocks.field_10263) {
@@ -177,8 +177,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean isConditionalCommandBlock() {
-		BlockState blockState = this.world.method_8320(this.getPos());
-		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.method_11654(CommandBlock.field_10793) : false;
+		BlockState blockState = this.world.getBlockState(this.getPos());
+		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.get(CommandBlock.CONDITIONAL) : false;
 	}
 
 	@Override

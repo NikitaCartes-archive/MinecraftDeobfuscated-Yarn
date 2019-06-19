@@ -27,7 +27,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 	public void method_17158(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		int m = livingEntity.getStuckArrows();
 		if (m > 0) {
-			Entity entity = new ArrowEntity(livingEntity.field_6002, livingEntity.x, livingEntity.y, livingEntity.z);
+			Entity entity = new ArrowEntity(livingEntity.world, livingEntity.x, livingEntity.y, livingEntity.z);
 			Random random = new Random((long)livingEntity.getEntityId());
 			GuiLighting.disable();
 

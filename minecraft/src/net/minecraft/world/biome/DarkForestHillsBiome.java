@@ -20,7 +20,7 @@ public final class DarkForestHillsBiome extends Biome {
 	public DarkForestHillsBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.field_9370)
 				.depth(0.2F)
@@ -31,26 +31,26 @@ public final class DarkForestHillsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("dark_forest")
 		);
-		this.method_8710(Feature.field_13528, FeatureConfig.field_13603);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.field_13178,
-			method_8699(
+			configureFeature(
 				Feature.field_13593,
 				new RandomFeatureConfig(
 					new Feature[]{Feature.field_13571, Feature.field_13531, Feature.field_13532, Feature.field_13529},
-					new FeatureConfig[]{new PlantedFeatureConfig(false), new PlantedFeatureConfig(false), FeatureConfig.field_13603, FeatureConfig.field_13603},
+					new FeatureConfig[]{new PlantedFeatureConfig(false), new PlantedFeatureConfig(false), FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
 					new float[]{0.025F, 0.05F, 0.6666667F, 0.1F},
 					Feature.field_13510,
-					FeatureConfig.field_13603
+					FeatureConfig.DEFAULT
 				),
 				Decorator.field_14239,
-				DecoratorConfig.field_13436
+				DecoratorConfig.DEFAULT
 			)
 		);
 		DefaultBiomeFeatures.addForestFlowers(this);

@@ -95,7 +95,7 @@ public abstract class TameableEntity extends AnimalEntity {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.field_6002
+			this.world
 				.addParticle(
 					particleEffect,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -172,7 +172,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	public LivingEntity getOwner() {
 		try {
 			UUID uUID = this.getOwnerUuid();
-			return uUID == null ? null : this.field_6002.getPlayerByUuid(uUID);
+			return uUID == null ? null : this.world.getPlayerByUuid(uUID);
 		} catch (IllegalArgumentException var2) {
 			return null;
 		}
@@ -196,15 +196,15 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public AbstractTeam method_5781() {
+	public AbstractTeam getScoreboardTeam() {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (livingEntity != null) {
-				return livingEntity.method_5781();
+				return livingEntity.getScoreboardTeam();
 			}
 		}
 
-		return super.method_5781();
+		return super.getScoreboardTeam();
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.field_6002.isClient && this.field_6002.getGameRules().getBoolean(GameRules.field_19398) && this.getOwner() instanceof ServerPlayerEntity) {
+		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19398) && this.getOwner() instanceof ServerPlayerEntity) {
 			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
 		}
 

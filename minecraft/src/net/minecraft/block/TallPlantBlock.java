@@ -20,83 +20,85 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TallPlantBlock extends PlantBlock {
-	public static final EnumProperty<DoubleBlockHalf> field_10929 = Properties.field_12533;
+	public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
 
 	public TallPlantBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10929, DoubleBlockHalf.field_12607));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(HALF, DoubleBlockHalf.field_12607));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		DoubleBlockHalf doubleBlockHalf = blockState.method_11654(field_10929);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y
 			|| doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.field_11036)
-			|| blockState2.getBlock() == this && blockState2.method_11654(field_10929) != doubleBlockHalf) {
+			|| blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
 			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-				? Blocks.field_10124.method_9564()
-				: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+				? Blocks.field_10124.getDefaultState()
+				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			return Blocks.field_10124.method_9564();
+			return Blocks.field_10124.getDefaultState();
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		return blockPos.getY() < 255 && itemPlacementContext.method_8045().method_8320(blockPos.up()).canReplace(itemPlacementContext)
-			? super.method_9605(itemPlacementContext)
+		return blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).canReplace(itemPlacementContext)
+			? super.getPlacementState(itemPlacementContext)
 			: null;
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		world.method_8652(blockPos.up(), this.method_9564().method_11657(field_10929, DoubleBlockHalf.field_12609), 3);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+		world.setBlockState(blockPos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.field_12609), 3);
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (blockState.method_11654(field_10929) != DoubleBlockHalf.field_12609) {
-			return super.method_9558(blockState, viewableWorld, blockPos);
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		if (blockState.get(HALF) != DoubleBlockHalf.field_12609) {
+			return super.canPlaceAt(blockState, viewableWorld, blockPos);
 		} else {
-			BlockState blockState2 = viewableWorld.method_8320(blockPos.down());
-			return blockState2.getBlock() == this && blockState2.method_11654(field_10929) == DoubleBlockHalf.field_12607;
+			BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.field_12607;
 		}
 	}
 
 	public void placeAt(IWorld iWorld, BlockPos blockPos, int i) {
-		iWorld.method_8652(blockPos, this.method_9564().method_11657(field_10929, DoubleBlockHalf.field_12607), i);
-		iWorld.method_8652(blockPos.up(), this.method_9564().method_11657(field_10929, DoubleBlockHalf.field_12609), i);
+		iWorld.setBlockState(blockPos, this.getDefaultState().with(HALF, DoubleBlockHalf.field_12607), i);
+		iWorld.setBlockState(blockPos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.field_12609), i);
 	}
 
 	@Override
-	public void method_9556(
+	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.method_9556(world, playerEntity, blockPos, Blocks.field_10124.method_9564(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
-	public void method_9576(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		DoubleBlockHalf doubleBlockHalf = blockState.method_11654(field_10929);
+	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.field_12607 ? blockPos.up() : blockPos.down();
-		BlockState blockState2 = world.method_8320(blockPos2);
-		if (blockState2.getBlock() == this && blockState2.method_11654(field_10929) != doubleBlockHalf) {
-			world.method_8652(blockPos2, Blocks.field_10124.method_9564(), 35);
-			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.method_9507(blockState2));
+		BlockState blockState2 = world.getBlockState(blockPos2);
+		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
+			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
+			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
-				method_9511(blockState, world, blockPos, null, playerEntity, playerEntity.getMainHandStack());
-				method_9511(blockState2, world, blockPos2, null, playerEntity, playerEntity.getMainHandStack());
+				dropStacks(blockState, world, blockPos, null, playerEntity, playerEntity.getMainHandStack());
+				dropStacks(blockState2, world, blockPos2, null, playerEntity, playerEntity.getMainHandStack());
 			}
 		}
 
-		super.method_9576(world, blockPos, blockState, playerEntity);
+		super.onBreak(world, blockPos, blockState, playerEntity);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10929);
+		builder.add(HALF);
 	}
 
 	@Override
@@ -106,9 +108,7 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public long method_9535(BlockState blockState, BlockPos blockPos) {
-		return MathHelper.hashCode(
-			blockPos.getX(), blockPos.down(blockState.method_11654(field_10929) == DoubleBlockHalf.field_12607 ? 0 : 1).getY(), blockPos.getZ()
-		);
+	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
+		return MathHelper.hashCode(blockPos.getX(), blockPos.down(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? 0 : 1).getY(), blockPos.getZ());
 	}
 }

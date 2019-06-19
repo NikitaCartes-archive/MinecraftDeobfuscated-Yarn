@@ -40,7 +40,7 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, i * 16, j * 16);
 			this.children.add(jungleTempleGenerator);
 			this.setBoundingBoxFromChildren();

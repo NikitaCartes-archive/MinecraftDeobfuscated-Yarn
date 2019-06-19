@@ -13,7 +13,7 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.field_6002.isDaylight() && this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
+		return this.mob.world.isDaylight() && this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
 	}
 
 	@Override

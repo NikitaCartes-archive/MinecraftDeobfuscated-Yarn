@@ -269,7 +269,7 @@ public class LootCommand {
 	}
 
 	private static Inventory getBlockInventory(ServerCommandSource serverCommandSource, BlockPos blockPos) throws CommandSyntaxException {
-		BlockEntity blockEntity = serverCommandSource.getWorld().method_8321(blockPos);
+		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
 		if (!(blockEntity instanceof Inventory)) {
 			throw ReplaceItemCommand.BLOCK_FAILED_EXCEPTION.create();
 		} else {
@@ -433,15 +433,15 @@ public class LootCommand {
 	private static int executeMine(CommandContext<ServerCommandSource> commandContext, BlockPos blockPos, ItemStack itemStack, LootCommand.Target target) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		ServerWorld serverWorld = serverCommandSource.getWorld();
-		BlockState blockState = serverWorld.method_8320(blockPos);
-		BlockEntity blockEntity = serverWorld.method_8321(blockPos);
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.method_312(LootContextParameters.field_1232, blockPos)
-			.method_312(LootContextParameters.field_1224, blockState)
-			.method_306(LootContextParameters.field_1228, blockEntity)
-			.method_306(LootContextParameters.field_1226, serverCommandSource.getEntity())
-			.method_312(LootContextParameters.field_1229, itemStack);
-		List<ItemStack> list = blockState.method_11612(builder);
+			.put(LootContextParameters.field_1232, blockPos)
+			.put(LootContextParameters.field_1224, blockState)
+			.putNullable(LootContextParameters.field_1228, blockEntity)
+			.putNullable(LootContextParameters.field_1226, serverCommandSource.getEntity())
+			.put(LootContextParameters.field_1229, itemStack);
+		List<ItemStack> list = blockState.getDroppedStacks(builder);
 		return target.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getDropTableId()));
 	}
 
@@ -454,16 +454,16 @@ public class LootCommand {
 			LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld());
 			Entity entity2 = serverCommandSource.getEntity();
 			if (entity2 instanceof PlayerEntity) {
-				builder.method_312(LootContextParameters.field_1233, (PlayerEntity)entity2);
+				builder.put(LootContextParameters.field_1233, (PlayerEntity)entity2);
 			}
 
-			builder.method_312(LootContextParameters.field_1231, DamageSource.MAGIC);
-			builder.method_306(LootContextParameters.field_1227, entity2);
-			builder.method_306(LootContextParameters.field_1230, entity2);
-			builder.method_312(LootContextParameters.field_1226, entity);
-			builder.method_312(LootContextParameters.field_1232, new BlockPos(serverCommandSource.method_9222()));
+			builder.put(LootContextParameters.field_1231, DamageSource.MAGIC);
+			builder.putNullable(LootContextParameters.field_1227, entity2);
+			builder.putNullable(LootContextParameters.field_1230, entity2);
+			builder.put(LootContextParameters.field_1226, entity);
+			builder.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
 			LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
-			List<ItemStack> list = lootSupplier.getDrops(builder.method_309(LootContextTypes.field_1173));
+			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.field_1173));
 			return target.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
 	}
@@ -471,9 +471,9 @@ public class LootCommand {
 	private static int executeLoot(CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootCommand.Target target) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
-			.method_306(LootContextParameters.field_1226, serverCommandSource.getEntity())
-			.method_312(LootContextParameters.field_1232, new BlockPos(serverCommandSource.method_9222()));
-		return getFeedbackMessageSingle(commandContext, identifier, builder.method_309(LootContextTypes.field_1179), target);
+			.putNullable(LootContextParameters.field_1226, serverCommandSource.getEntity())
+			.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
+		return getFeedbackMessageSingle(commandContext, identifier, builder.build(LootContextTypes.field_1179), target);
 	}
 
 	private static int executeFish(
@@ -481,9 +481,9 @@ public class LootCommand {
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
-			.method_312(LootContextParameters.field_1232, blockPos)
-			.method_312(LootContextParameters.field_1229, itemStack)
-			.method_309(LootContextTypes.field_1176);
+			.put(LootContextParameters.field_1232, blockPos)
+			.put(LootContextParameters.field_1229, itemStack)
+			.build(LootContextTypes.field_1176);
 		return getFeedbackMessageSingle(commandContext, identifier, lootContext, target);
 	}
 

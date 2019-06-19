@@ -38,7 +38,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.lastUpdateTime > 3.0E9) {
 			this.lastUpdateTime = d;
-			IntegratedServer integratedServer = this.client.method_1576();
+			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
 				this.serverData = new ChunkLoadingDebugRenderer.ServerData(integratedServer);
 			} else {
@@ -56,7 +56,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			GlStateManager.disableTexture();
 			GlStateManager.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.serverData.field_4514.getNow(null);
-			double e = this.client.field_1773.getCamera().getPos().y * 0.85;
+			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
 			for (Entry<ChunkPos, String> entry : this.serverData.field_4515.entrySet()) {
 				ChunkPos chunkPos = (ChunkPos)entry.getKey();
@@ -87,8 +87,8 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		private final CompletableFuture<Map<ChunkPos, String>> field_4514;
 
 		private ServerData(IntegratedServer integratedServer) {
-			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.field_1687;
-			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.field_1687.field_9247.method_12460();
+			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
+			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.dimension.getType();
 			ServerWorld serverWorld;
 			if (integratedServer.getWorld(dimensionType) != null) {
 				serverWorld = integratedServer.getWorld(dimensionType);
@@ -96,7 +96,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				serverWorld = null;
 			}
 
-			Camera camera = ChunkLoadingDebugRenderer.this.client.field_1773.getCamera();
+			Camera camera = ChunkLoadingDebugRenderer.this.client.gameRenderer.getCamera();
 			int i = (int)camera.getPos().x >> 4;
 			int j = (int)camera.getPos().z >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
@@ -106,7 +106,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				for (int l = j - 12; l <= j + 12; l++) {
 					ChunkPos chunkPos = new ChunkPos(k, l);
 					String string = "";
-					WorldChunk worldChunk = clientChunkManager.method_12126(k, l, false);
+					WorldChunk worldChunk = clientChunkManager.getWorldChunk(k, l, false);
 					string = string + "Client: ";
 					if (worldChunk == null) {
 						string = string + "0n/a\n";

@@ -19,9 +19,9 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class StructureStart {
-	public static final StructureStart DEFAULT = new StructureStart(Feature.field_13547, 0, 0, Biomes.field_9451, MutableIntBoundingBox.empty(), 0, 0L) {
+	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, Biomes.field_9451, MutableIntBoundingBox.empty(), 0, 0L) {
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 		}
 	};
 	private final StructureFeature<?> feature;
@@ -44,7 +44,7 @@ public abstract class StructureStart {
 		this.boundingBox = mutableIntBoundingBox;
 	}
 
-	public abstract void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome);
+	public abstract void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome);
 
 	public MutableIntBoundingBox getBoundingBox() {
 		return this.boundingBox;

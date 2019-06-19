@@ -24,13 +24,13 @@ public class VoxelDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4540.field_1773.getCamera();
+		Camera camera = this.field_4540.gameRenderer.getCamera();
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4541 > 1.0E8) {
 			this.field_4541 = d;
 			this.field_4542 = (List<VoxelShape>)camera.getFocusedEntity()
-				.field_6002
-				.method_8600(camera.getFocusedEntity(), camera.getFocusedEntity().method_5829().expand(6.0), Collections.emptySet())
+				.world
+				.getCollisionShapes(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet())
 				.collect(Collectors.toList());
 		}
 

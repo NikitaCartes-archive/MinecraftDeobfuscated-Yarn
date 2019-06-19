@@ -31,9 +31,9 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4624.field_1773.getCamera();
-		IWorld iWorld = this.field_4624.field_1687;
-		DimensionType dimensionType = iWorld.method_8597().method_12460();
+		Camera camera = this.field_4624.gameRenderer.getCamera();
+		IWorld iWorld = this.field_4624.world;
+		DimensionType dimensionType = iWorld.getDimension().getType();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
@@ -47,7 +47,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		GlStateManager.lineWidth(1.0F);
 		if (this.field_4626.containsKey(dimensionType)) {
 			for (MutableIntBoundingBox mutableIntBoundingBox : ((Map)this.field_4626.get(dimensionType)).values()) {

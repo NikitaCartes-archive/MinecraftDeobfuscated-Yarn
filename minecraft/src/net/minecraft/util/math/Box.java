@@ -125,7 +125,7 @@ public class Box {
 		return new Box(g, h, i, j, k, l);
 	}
 
-	public Box method_18804(Vec3d vec3d) {
+	public Box stretch(Vec3d vec3d) {
 		return this.stretch(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -206,7 +206,7 @@ public class Box {
 		);
 	}
 
-	public Box method_997(Vec3d vec3d) {
+	public Box offset(Vec3d vec3d) {
 		return this.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -219,7 +219,7 @@ public class Box {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_993(Vec3d vec3d, Vec3d vec3d2) {
+	public boolean intersects(Vec3d vec3d, Vec3d vec3d2) {
 		return this.intersects(
 			Math.min(vec3d.x, vec3d2.x),
 			Math.min(vec3d.y, vec3d2.y),
@@ -230,7 +230,7 @@ public class Box {
 		);
 	}
 
-	public boolean method_1006(Vec3d vec3d) {
+	public boolean contains(Vec3d vec3d) {
 		return this.contains(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -261,7 +261,7 @@ public class Box {
 		return this.expand(-d);
 	}
 
-	public Optional<Vec3d> method_992(Vec3d vec3d, Vec3d vec3d2) {
+	public Optional<Vec3d> rayTrace(Vec3d vec3d, Vec3d vec3d2) {
 		double[] ds = new double[]{1.0};
 		double d = vec3d2.x - vec3d.x;
 		double e = vec3d2.y - vec3d.y;
@@ -276,7 +276,7 @@ public class Box {
 	}
 
 	@Nullable
-	public static BlockHitResult method_1010(Iterable<Box> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
+	public static BlockHitResult rayTrace(Iterable<Box> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
 		double[] ds = new double[]{1.0};
 		Direction direction = null;
 		double d = vec3d2.x - vec3d.x;
@@ -360,7 +360,7 @@ public class Box {
 			|| Double.isNaN(this.maxZ);
 	}
 
-	public Vec3d method_1005() {
+	public Vec3d getCenter() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 }

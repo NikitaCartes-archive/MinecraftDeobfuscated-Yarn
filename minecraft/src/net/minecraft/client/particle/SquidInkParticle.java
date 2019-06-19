@@ -30,13 +30,13 @@ public class SquidInkParticle extends AnimatedParticle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.setSpriteForAge(this.field_17866);
+			this.setSpriteForAge(this.spriteProvider);
 			if (this.age > this.maxAge / 2) {
 				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.world.method_8320(new BlockPos(this.x, this.y, this.z)).isAir()) {
+			if (this.world.getBlockState(new BlockPos(this.x, this.y, this.z)).isAir()) {
 				this.velocityY -= 0.008F;
 			}
 

@@ -83,7 +83,7 @@ public class UnicodeTextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph method_2040(char c) {
+	public RenderableGlyph getGlyph(char c) {
 		byte b = this.sizes[c];
 		if (b != 0) {
 			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getGlyphId(c), this::getGlyphImage);

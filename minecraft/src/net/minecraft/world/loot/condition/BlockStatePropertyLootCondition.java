@@ -42,14 +42,14 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 			Entry<Property<?>, Object> entry = (Entry<Property<?>, Object>)map.entrySet().iterator().next();
 			Property<?> property = (Property<?>)entry.getKey();
 			Object object = entry.getValue();
-			return blockState -> blockState.getBlock() == block && object.equals(blockState.method_11654(property));
+			return blockState -> blockState.getBlock() == block && object.equals(blockState.get(property));
 		} else {
 			Predicate<BlockState> predicate = blockState -> blockState.getBlock() == block;
 
 			for (Entry<Property<?>, Object> entry2 : map.entrySet()) {
 				Property<?> property2 = (Property<?>)entry2.getKey();
 				Object object2 = entry2.getValue();
-				predicate = predicate.and(blockState -> object2.equals(blockState.method_11654(property2)));
+				predicate = predicate.and(blockState -> object2.equals(blockState.get(property2)));
 			}
 
 			return predicate;
@@ -62,7 +62,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	}
 
 	public boolean method_899(LootContext lootContext) {
-		BlockState blockState = lootContext.method_296(LootContextParameters.field_1224);
+		BlockState blockState = lootContext.get(LootContextParameters.field_1224);
 		return blockState != null && this.predicate.test(blockState);
 	}
 
@@ -78,7 +78,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		public Builder(Block block) {
 			this.block = block;
 			this.availableProperties = Sets.newIdentityHashSet();
-			this.availableProperties.addAll(block.method_9595().getProperties());
+			this.availableProperties.addAll(block.getStateFactory().getProperties());
 		}
 
 		public <T extends Comparable<T>> BlockStatePropertyLootCondition.Builder withBlockStateProperty(Property<T> property, T comparable) {
@@ -120,7 +120,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		public BlockStatePropertyLootCondition method_910(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
-			StateFactory<Block, BlockState> stateFactory = block.method_9595();
+			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 			Map<Property<?>, Object> map = Maps.<Property<?>, Object>newHashMap();
 			if (jsonObject.has("properties")) {
 				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "properties");
@@ -128,7 +128,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 					.forEach(
 						entry -> {
 							String string = (String)entry.getKey();
-							Property<?> property = stateFactory.method_11663(string);
+							Property<?> property = stateFactory.getProperty(string);
 							if (property == null) {
 								throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(block) + " does not have property '" + string + "'");
 							} else {

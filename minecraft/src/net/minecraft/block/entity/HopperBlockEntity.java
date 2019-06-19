@@ -102,7 +102,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	private boolean insertAndExtract(Supplier<Boolean> supplier) {
 		if (this.world != null && !this.world.isClient) {
-			if (!this.needsCooldown() && (Boolean)this.method_11010().method_11654(HopperBlock.field_11126)) {
+			if (!this.needsCooldown() && (Boolean)this.getCachedState().get(HopperBlock.ENABLED)) {
 				boolean bl = false;
 				if (!this.isEmpty()) {
 					bl = this.insert();
@@ -155,7 +155,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		if (inventory == null) {
 			return false;
 		} else {
-			Direction direction = ((Direction)this.method_11010().method_11654(HopperBlock.field_11129)).getOpposite();
+			Direction direction = ((Direction)this.getCachedState().get(HopperBlock.FACING)).getOpposite();
 			if (this.isInventoryFull(inventory, direction)) {
 				return false;
 			} else {
@@ -311,7 +311,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Nullable
 	private Inventory getOutputInventory() {
-		Direction direction = this.method_11010().method_11654(HopperBlock.field_11129);
+		Direction direction = this.getCachedState().get(HopperBlock.FACING);
 		return getInventoryAt(this.getWorld(), this.pos.offset(direction));
 	}
 
@@ -321,12 +321,12 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	public static List<ItemEntity> getInputItemEntities(Hopper hopper) {
-		return (List<ItemEntity>)hopper.method_11262()
+		return (List<ItemEntity>)hopper.getInputAreaShape()
 			.getBoundingBoxes()
 			.stream()
 			.flatMap(
 				box -> hopper.getWorld()
-						.method_8390(ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY)
+						.getEntities(ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY)
 						.stream()
 			)
 			.collect(Collectors.toList());
@@ -341,22 +341,22 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public static Inventory getInventoryAt(World world, double d, double e, double f) {
 		Inventory inventory = null;
 		BlockPos blockPos = new BlockPos(d, e, f);
-		BlockState blockState = world.method_8320(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block instanceof InventoryProvider) {
-			inventory = ((InventoryProvider)block).method_17680(blockState, world, blockPos);
+			inventory = ((InventoryProvider)block).getInventory(blockState, world, blockPos);
 		} else if (block.hasBlockEntity()) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof Inventory) {
 				inventory = (Inventory)blockEntity;
 				if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock) {
-					inventory = ChestBlock.method_17458(blockState, world, blockPos, true);
+					inventory = ChestBlock.getInventory(blockState, world, blockPos, true);
 				}
 			}
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.method_8333((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES);
+			List<Entity> list = world.getEntities((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES);
 			if (!list.isEmpty()) {
 				inventory = (Inventory)list.get(world.random.nextInt(list.size()));
 			}
@@ -415,9 +415,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public void onEntityCollided(Entity entity) {
 		if (entity instanceof ItemEntity) {
 			BlockPos blockPos = this.getPos();
-			if (VoxelShapes.method_1074(
-				VoxelShapes.method_1078(entity.method_5829().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
-				this.method_11262(),
+			if (VoxelShapes.matchesAnywhere(
+				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
+				this.getInputAreaShape(),
 				BooleanBiFunction.AND
 			)) {
 				this.insertAndExtract(() -> extract(this, (ItemEntity)entity));

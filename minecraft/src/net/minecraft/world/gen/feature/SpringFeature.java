@@ -18,30 +18,30 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	public boolean method_13979(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
-		if (!Block.isNaturalStone(iWorld.method_8320(blockPos.up()).getBlock())) {
+		if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
 			return false;
-		} else if (!Block.isNaturalStone(iWorld.method_8320(blockPos.down()).getBlock())) {
+		} else if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.down()).getBlock())) {
 			return false;
 		} else {
-			BlockState blockState = iWorld.method_8320(blockPos);
+			BlockState blockState = iWorld.getBlockState(blockPos);
 			if (!blockState.isAir() && !Block.isNaturalStone(blockState.getBlock())) {
 				return false;
 			} else {
 				int i = 0;
 				int j = 0;
-				if (Block.isNaturalStone(iWorld.method_8320(blockPos.west()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.west()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.method_8320(blockPos.east()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.east()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.method_8320(blockPos.north()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.north()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.method_8320(blockPos.south()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.south()).getBlock())) {
 					j++;
 				}
 
@@ -63,8 +63,8 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 				}
 
 				if (j == 3 && k == 1) {
-					iWorld.method_8652(blockPos, springFeatureConfig.field_13850.getBlockState(), 2);
-					iWorld.method_8405().schedule(blockPos, springFeatureConfig.field_13850.getFluid(), 0);
+					iWorld.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), 2);
+					iWorld.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
 					i++;
 				}
 

@@ -51,7 +51,7 @@ public class SoundEngine {
 	};
 	private SoundEngine.SourceSet streamingSources = EMPTY_SOURCE_SET;
 	private SoundEngine.SourceSet staticSources = EMPTY_SOURCE_SET;
-	private final Listener field_18902 = new Listener();
+	private final Listener listener = new Listener();
 
 	public void init() {
 		this.devicePointer = openDevice();
@@ -141,8 +141,8 @@ public class SoundEngine {
 		}
 	}
 
-	public Listener method_19665() {
-		return this.field_18902;
+	public Listener getListener() {
+		return this.listener;
 	}
 
 	@Nullable

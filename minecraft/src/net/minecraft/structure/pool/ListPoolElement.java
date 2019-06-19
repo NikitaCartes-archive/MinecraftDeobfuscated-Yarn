@@ -45,16 +45,18 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random) {
-		return ((StructurePoolElement)this.elements.get(0)).method_16627(structureManager, blockPos, blockRotation, random);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+	) {
+		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, blockPos, blockRotation, random);
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.method_16628(structureManager, blockPos, blockRotation);
+			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
 			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
 		}
 
@@ -62,11 +64,11 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.method_16626(structureManager, iWorld, blockPos, blockRotation, mutableIntBoundingBox, random)) {
+			if (!structurePoolElement.generate(structureManager, iWorld, blockPos, blockRotation, mutableIntBoundingBox, random)) {
 				return false;
 			}
 		}
@@ -75,7 +77,7 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.field_16974;
 	}
 

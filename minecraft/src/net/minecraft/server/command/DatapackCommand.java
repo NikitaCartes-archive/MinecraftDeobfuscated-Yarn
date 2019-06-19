@@ -127,7 +127,7 @@ public class DatapackCommand {
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
 		packAdder.apply(list, resourcePackContainer);
 		resourcePackContainerManager.setEnabled(list);
-		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).method_8401();
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
@@ -142,7 +142,7 @@ public class DatapackCommand {
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
 		list.remove(resourcePackContainer);
 		resourcePackContainerManager.setEnabled(list);
-		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).method_8401();
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));

@@ -33,7 +33,7 @@ public class SitOnOwnerShoulder extends Goal {
 	@Override
 	public void tick() {
 		if (!this.mounted && !this.tameable.isSitting() && !this.tameable.isLeashed()) {
-			if (this.tameable.method_5829().intersects(this.owner.method_5829())) {
+			if (this.tameable.getBoundingBox().intersects(this.owner.getBoundingBox())) {
 				this.mounted = this.tameable.mountOnto(this.owner);
 			}
 		}

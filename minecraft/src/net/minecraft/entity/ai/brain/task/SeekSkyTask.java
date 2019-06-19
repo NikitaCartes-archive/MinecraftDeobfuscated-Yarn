@@ -23,7 +23,7 @@ public class SeekSkyTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Optional<Vec3d> optional = Optional.ofNullable(this.method_19987(serverWorld, livingEntity));
+		Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(serverWorld, livingEntity));
 		if (optional.isPresent()) {
 			livingEntity.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 		}
@@ -31,13 +31,13 @@ public class SeekSkyTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z));
+		return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z));
 	}
 
 	@Nullable
-	private Vec3d method_19987(ServerWorld serverWorld, LivingEntity livingEntity) {
+	private Vec3d findNearbySky(ServerWorld serverWorld, LivingEntity livingEntity) {
 		Random random = livingEntity.getRand();
-		BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
+		BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);

@@ -48,10 +48,10 @@ public class ShaderEffect implements AutoCloseable {
 		this.height = glFramebuffer.viewHeight;
 		this.name = identifier.toString();
 		this.setupProjectionMatrix();
-		this.method_1256(textureManager, identifier);
+		this.parseEffect(textureManager, identifier);
 	}
 
-	private void method_1256(TextureManager textureManager, Identifier identifier) throws IOException, JsonSyntaxException {
+	private void parseEffect(TextureManager textureManager, Identifier identifier) throws IOException, JsonSyntaxException {
 		Resource resource = null;
 
 		try {
@@ -80,7 +80,7 @@ public class ShaderEffect implements AutoCloseable {
 
 				for (JsonElement jsonElement : jsonArray) {
 					try {
-						this.method_1257(textureManager, jsonElement);
+						this.parsePass(textureManager, jsonElement);
 					} catch (Exception var16) {
 						ShaderParseException shaderParseException = ShaderParseException.wrap(var16);
 						shaderParseException.addFaultyElement("passes[" + i + "]");
@@ -115,7 +115,7 @@ public class ShaderEffect implements AutoCloseable {
 		}
 	}
 
-	private void method_1257(TextureManager textureManager, JsonElement jsonElement) throws IOException {
+	private void parsePass(TextureManager textureManager, JsonElement jsonElement) throws IOException {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "pass");
 		String string = JsonHelper.getString(jsonObject, "name");
 		String string2 = JsonHelper.getString(jsonObject, "intarget");
@@ -127,7 +127,7 @@ public class ShaderEffect implements AutoCloseable {
 		} else if (glFramebuffer2 == null) {
 			throw new ShaderParseException("Output target '" + string3 + "' does not exist");
 		} else {
-			PostProcessShader postProcessShader = this.method_1262(string, glFramebuffer, glFramebuffer2);
+			PostProcessShader postProcessShader = this.addPass(string, glFramebuffer, glFramebuffer2);
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
 			if (jsonArray != null) {
 				int i = 0;
@@ -151,7 +151,7 @@ public class ShaderEffect implements AutoCloseable {
 							}
 
 							textureManager.bindTexture(identifier);
-							Texture texture = textureManager.method_4619(identifier);
+							Texture texture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");
 							boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
@@ -262,7 +262,7 @@ public class ShaderEffect implements AutoCloseable {
 		this.passes.clear();
 	}
 
-	public PostProcessShader method_1262(String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
+	public PostProcessShader addPass(String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
 		PostProcessShader postProcessShader = new PostProcessShader(this.resourceManager, string, glFramebuffer, glFramebuffer2);
 		this.passes.add(this.passes.size(), postProcessShader);
 		return postProcessShader;

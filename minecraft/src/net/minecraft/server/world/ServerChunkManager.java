@@ -77,7 +77,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(serverWorld);
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
-		File file2 = serverWorld.method_8597().method_12460().getFile(file);
+		File file2 = serverWorld.getDimension().getType().getFile(file);
 		File file3 = new File(file2, "data");
 		file3.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file3, dataFixer);
@@ -114,9 +114,9 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Nullable
 	@Override
-	public Chunk method_12121(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
 		if (Thread.currentThread() != this.serverThread) {
-			return (Chunk)CompletableFuture.supplyAsync(() -> this.method_12121(i, j, chunkStatus, bl), this.mainThreadExecutor).join();
+			return (Chunk)CompletableFuture.supplyAsync(() -> this.getChunk(i, j, chunkStatus, bl), this.mainThreadExecutor).join();
 		} else {
 			long l = ChunkPos.toLong(i, j);
 
@@ -312,7 +312,7 @@ public class ServerChunkManager extends ChunkManager {
 		long l = this.world.getTime();
 		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
-		LevelProperties levelProperties = this.world.method_8401();
+		LevelProperties levelProperties = this.world.getLevelProperties();
 		boolean bl = levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
 		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.field_19390);
 		if (!bl) {
@@ -338,7 +338,7 @@ public class ServerChunkManager extends ChunkManager {
 							ChunkPos chunkPos = chunkHolder.getPos();
 							if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
 								worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-								if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.method_8621().contains(worldChunk.getPos())) {
+								if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
 									this.world.getProfiler().push("spawner");
 
 									for (EntityCategory entityCategory : entityCategorys) {
@@ -348,7 +348,7 @@ public class ServerChunkManager extends ChunkManager {
 											&& (!entityCategory.isAnimal() || bl3)) {
 											int k = entityCategory.getSpawnCap() * j / CHUNKS_ELIGIBLE_FOR_SPAWNING;
 											if (object2IntMap.getInt(entityCategory) <= k) {
-												SpawnHelper.method_8663(entityCategory, this.world, worldChunk, blockPos);
+												SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk, blockPos);
 											}
 										}
 									}
@@ -464,7 +464,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + Registry.DIMENSION.getId(world.method_8597().method_12460()));
+			super("Chunk source main thread executor for " + Registry.DIMENSION.getId(world.getDimension().getType()));
 		}
 
 		@Override

@@ -29,24 +29,24 @@ public class ConnectScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ClientConnection connection;
 	private boolean field_2409;
-	private final Screen field_2412;
+	private final Screen parent;
 	private Text status = new TranslatableText("connect.connecting");
 	private long field_19097 = -1L;
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
 		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
-		this.field_2412 = screen;
+		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
 		minecraftClient.disconnect();
-		minecraftClient.method_1584(serverEntry);
+		minecraftClient.setCurrentServerEntry(serverEntry);
 		this.method_2130(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
 	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
 		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
-		this.field_2412 = screen;
+		this.parent = screen;
 		minecraftClient.disconnect();
 		this.method_2130(string, i);
 	}
@@ -63,15 +63,15 @@ public class ConnectScreen extends Screen {
 					}
 
 					inetAddress = InetAddress.getByName(string);
-					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, i, ConnectScreen.this.minecraft.field_1690.shouldUseNativeTransport());
+					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, i, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.field_2412, text -> ConnectScreen.this.setStatus(text)
+								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
 							)
 						);
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.method_1548().getProfile()));
+					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ConnectScreen.this.field_2409) {
 						return;
@@ -81,7 +81,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.method_1507(new DisconnectedScreen(ConnectScreen.this.field_2412, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host")))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host")))
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.field_2409) {
@@ -93,7 +93,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
-									.method_1507(new DisconnectedScreen(ConnectScreen.this.field_2412, "connect.failed", new TranslatableText("disconnect.genericReason", string)))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string)))
 						);
 				}
 			}
@@ -130,7 +130,7 @@ public class ConnectScreen extends Screen {
 				this.connection.disconnect(new TranslatableText("connect.aborted"));
 			}
 
-			this.minecraft.method_1507(this.field_2412);
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 

@@ -75,7 +75,7 @@ public class EnchantCommand {
 					ItemStack itemStack = livingEntity.getMainHandStack();
 					if (!itemStack.isEmpty()) {
 						if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.contains(EnchantmentHelper.getEnchantments(itemStack).keySet(), enchantment)) {
-							itemStack.method_7978(enchantment, i);
+							itemStack.addEnchantment(enchantment, i);
 							j++;
 						} else if (collection.size() == 1) {
 							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());

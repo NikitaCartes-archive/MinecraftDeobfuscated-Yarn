@@ -37,14 +37,14 @@ public class FixedBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean method_8754(StructureFeature<?> structureFeature) {
-		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, this.biome::method_8684);
+	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
+		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, this.biome::hasStructureFeature);
 	}
 
 	@Override
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
-			this.topMaterials.add(this.biome.method_8722().getTopMaterial());
+			this.topMaterials.add(this.biome.getSurfaceConfig().getTopMaterial());
 		}
 
 		return this.topMaterials;

@@ -80,7 +80,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
 		}
 
-		BlockState blockState = abstractMinecartEntity.method_7519();
+		BlockState blockState = abstractMinecartEntity.getContainedBlock();
 		if (blockState.getRenderType() != BlockRenderType.field_11455) {
 			GlStateManager.pushMatrix();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -110,7 +110,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
-		MinecraftClient.getInstance().method_1541().renderDynamic(blockState, abstractMinecartEntity.getBrightnessAtEyes());
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.getBrightnessAtEyes());
 		GlStateManager.popMatrix();
 	}
 }

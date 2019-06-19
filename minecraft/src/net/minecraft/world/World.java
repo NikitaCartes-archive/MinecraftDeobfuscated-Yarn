@@ -83,34 +83,34 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	protected float thunderGradient;
 	private int ticksSinceLightning;
 	public final Random random = new Random();
-	public final Dimension field_9247;
-	protected final ChunkManager field_9248;
-	protected final LevelProperties field_9232;
+	public final Dimension dimension;
+	protected final ChunkManager chunkManager;
+	protected final LevelProperties properties;
 	private final Profiler profiler;
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
-	private final WorldBorder field_9223;
+	private final WorldBorder border;
 
 	protected World(
 		LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> biFunction, Profiler profiler, boolean bl
 	) {
 		this.profiler = profiler;
-		this.field_9232 = levelProperties;
-		this.field_9247 = dimensionType.create(this);
-		this.field_9248 = (ChunkManager)biFunction.apply(this, this.field_9247);
+		this.properties = levelProperties;
+		this.dimension = dimensionType.create(this);
+		this.chunkManager = (ChunkManager)biFunction.apply(this, this.dimension);
 		this.isClient = bl;
-		this.field_9223 = this.field_9247.createWorldBorder();
+		this.border = this.dimension.createWorldBorder();
 		this.thread = Thread.currentThread();
 	}
 
 	@Override
-	public Biome method_8310(BlockPos blockPos) {
-		ChunkManager chunkManager = this.method_8398();
-		WorldChunk worldChunk = chunkManager.method_12126(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
+	public Biome getBiome(BlockPos blockPos) {
+		ChunkManager chunkManager = this.getChunkManager();
+		WorldChunk worldChunk = chunkManager.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
 		if (worldChunk != null) {
 			return worldChunk.getBiome(blockPos);
 		} else {
-			ChunkGenerator<?> chunkGenerator = this.method_8398().getChunkGenerator();
+			ChunkGenerator<?> chunkGenerator = this.getChunkManager().getChunkGenerator();
 			return chunkGenerator == null ? Biomes.field_9451 : chunkGenerator.getBiomeSource().getBiome(blockPos);
 		}
 	}
@@ -130,14 +130,14 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 	}
 
-	public BlockState method_8495(BlockPos blockPos) {
+	public BlockState getTopNonAirState(BlockPos blockPos) {
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
 
 		while (!this.isAir(blockPos2.up())) {
 			blockPos2 = blockPos2.up();
 		}
 
-		return this.method_8320(blockPos2);
+		return this.getBlockState(blockPos2);
 	}
 
 	public static boolean isValid(BlockPos blockPos) {
@@ -152,17 +152,17 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return i < 0 || i >= 256;
 	}
 
-	public WorldChunk method_8500(BlockPos blockPos) {
+	public WorldChunk getWorldChunk(BlockPos blockPos) {
 		return this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
 	public WorldChunk method_8497(int i, int j) {
-		return (WorldChunk)this.method_16956(i, j, ChunkStatus.field_12803);
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803);
 	}
 
 	@Override
-	public Chunk method_8402(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-		Chunk chunk = this.field_9248.method_12121(i, j, chunkStatus, bl);
+	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+		Chunk chunk = this.chunkManager.getChunk(i, j, chunkStatus, bl);
 		if (chunk == null && bl) {
 			throw new IllegalStateException("Should always be able to create a chunk!");
 		} else {
@@ -171,19 +171,19 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public boolean method_8652(BlockPos blockPos, BlockState blockState, int i) {
+	public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
 		if (isHeightInvalid(blockPos)) {
 			return false;
-		} else if (!this.isClient && this.field_9232.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		} else if (!this.isClient && this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			return false;
 		} else {
-			WorldChunk worldChunk = this.method_8500(blockPos);
+			WorldChunk worldChunk = this.getWorldChunk(blockPos);
 			Block block = blockState.getBlock();
 			BlockState blockState2 = worldChunk.setBlockState(blockPos, blockState, (i & 64) != 0);
 			if (blockState2 == null) {
 				return false;
 			} else {
-				BlockState blockState3 = this.method_8320(blockPos);
+				BlockState blockState3 = this.getBlockState(blockPos);
 				if (blockState3 != blockState2
 					&& (
 						blockState3.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
@@ -192,7 +192,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 							|| blockState2.hasSidedTransparency()
 					)) {
 					this.profiler.push("queueCheckLight");
-					this.method_8398().method_12130().enqueueLightUpdate(blockPos);
+					this.getChunkManager().getLightingProvider().enqueueLightUpdate(blockPos);
 					this.profiler.pop();
 				}
 
@@ -204,13 +204,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 					if ((i & 2) != 0
 						&& (!this.isClient || (i & 4) == 0)
 						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.field_13875))) {
-						this.method_8413(blockPos, blockState2, blockState, i);
+						this.updateListeners(blockPos, blockState2, blockState, i);
 					}
 
 					if (!this.isClient && (i & 1) != 0) {
-						this.method_8408(blockPos, blockState2.getBlock());
+						this.updateNeighbors(blockPos, blockState2.getBlock());
 						if (blockState.hasComparatorOutput()) {
-							this.method_8455(blockPos, block);
+							this.updateHorizontalAdjacent(blockPos, block);
 						}
 					}
 
@@ -221,7 +221,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 						blockState.method_11637(this, blockPos, j);
 					}
 
-					this.method_19282(blockPos, blockState2, blockState3);
+					this.onBlockChanged(blockPos, blockState2, blockState3);
 				}
 
 				return true;
@@ -229,86 +229,86 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public void method_19282(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void onBlockChanged(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 	}
 
 	@Override
 	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
-		FluidState fluidState = this.method_8316(blockPos);
-		return this.method_8652(blockPos, fluidState.getBlockState(), 3 | (bl ? 64 : 0));
+		FluidState fluidState = this.getFluidState(blockPos);
+		return this.setBlockState(blockPos, fluidState.getBlockState(), 3 | (bl ? 64 : 0));
 	}
 
 	@Override
 	public boolean breakBlock(BlockPos blockPos, boolean bl) {
-		BlockState blockState = this.method_8320(blockPos);
+		BlockState blockState = this.getBlockState(blockPos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
-			FluidState fluidState = this.method_8316(blockPos);
-			this.playLevelEvent(2001, blockPos, Block.method_9507(blockState));
+			FluidState fluidState = this.getFluidState(blockPos);
+			this.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			if (bl) {
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.method_8321(blockPos) : null;
-				Block.method_9610(blockState, this, blockPos, blockEntity);
+				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
+				Block.dropStacks(blockState, this, blockPos, blockEntity);
 			}
 
-			return this.method_8652(blockPos, fluidState.getBlockState(), 3);
+			return this.setBlockState(blockPos, fluidState.getBlockState(), 3);
 		}
 	}
 
-	public boolean method_8501(BlockPos blockPos, BlockState blockState) {
-		return this.method_8652(blockPos, blockState, 3);
+	public boolean setBlockState(BlockPos blockPos, BlockState blockState) {
+		return this.setBlockState(blockPos, blockState, 3);
 	}
 
-	public abstract void method_8413(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i);
+	public abstract void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i);
 
 	@Override
-	public void method_8408(BlockPos blockPos, Block block) {
-		if (this.field_9232.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			this.method_8452(blockPos, block);
+	public void updateNeighbors(BlockPos blockPos, Block block) {
+		if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+			this.updateNeighborsAlways(blockPos, block);
 		}
 	}
 
 	public void scheduleBlockRender(BlockPos blockPos) {
 	}
 
-	public void method_8452(BlockPos blockPos, Block block) {
-		this.method_8492(blockPos.west(), block, blockPos);
-		this.method_8492(blockPos.east(), block, blockPos);
-		this.method_8492(blockPos.down(), block, blockPos);
-		this.method_8492(blockPos.up(), block, blockPos);
-		this.method_8492(blockPos.north(), block, blockPos);
-		this.method_8492(blockPos.south(), block, blockPos);
+	public void updateNeighborsAlways(BlockPos blockPos, Block block) {
+		this.updateNeighbor(blockPos.west(), block, blockPos);
+		this.updateNeighbor(blockPos.east(), block, blockPos);
+		this.updateNeighbor(blockPos.down(), block, blockPos);
+		this.updateNeighbor(blockPos.up(), block, blockPos);
+		this.updateNeighbor(blockPos.north(), block, blockPos);
+		this.updateNeighbor(blockPos.south(), block, blockPos);
 	}
 
-	public void method_8508(BlockPos blockPos, Block block, Direction direction) {
+	public void updateNeighborsExcept(BlockPos blockPos, Block block, Direction direction) {
 		if (direction != Direction.field_11039) {
-			this.method_8492(blockPos.west(), block, blockPos);
+			this.updateNeighbor(blockPos.west(), block, blockPos);
 		}
 
 		if (direction != Direction.field_11034) {
-			this.method_8492(blockPos.east(), block, blockPos);
+			this.updateNeighbor(blockPos.east(), block, blockPos);
 		}
 
 		if (direction != Direction.field_11033) {
-			this.method_8492(blockPos.down(), block, blockPos);
+			this.updateNeighbor(blockPos.down(), block, blockPos);
 		}
 
 		if (direction != Direction.field_11036) {
-			this.method_8492(blockPos.up(), block, blockPos);
+			this.updateNeighbor(blockPos.up(), block, blockPos);
 		}
 
 		if (direction != Direction.field_11043) {
-			this.method_8492(blockPos.north(), block, blockPos);
+			this.updateNeighbor(blockPos.north(), block, blockPos);
 		}
 
 		if (direction != Direction.field_11035) {
-			this.method_8492(blockPos.south(), block, blockPos);
+			this.updateNeighbor(blockPos.south(), block, blockPos);
 		}
 	}
 
-	public void method_8492(BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void updateNeighbor(BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (!this.isClient) {
-			BlockState blockState = this.method_8320(blockPos);
+			BlockState blockState = this.getBlockState(blockPos);
 
 			try {
 				blockState.neighborUpdate(this, blockPos, block, blockPos2, false);
@@ -339,7 +339,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				blockPos = new BlockPos(blockPos.getX(), 255, blockPos.getZ());
 			}
 
-			return this.method_8500(blockPos).getLightLevel(blockPos, i);
+			return this.getWorldChunk(blockPos).getLightLevel(blockPos, i);
 		}
 	}
 
@@ -360,27 +360,27 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public int method_8314(LightType lightType, BlockPos blockPos) {
-		return this.method_8398().method_12130().get(lightType).getLightLevel(blockPos);
+	public int getLightLevel(LightType lightType, BlockPos blockPos) {
+		return this.getChunkManager().getLightingProvider().get(lightType).getLightLevel(blockPos);
 	}
 
 	@Override
-	public BlockState method_8320(BlockPos blockPos) {
+	public BlockState getBlockState(BlockPos blockPos) {
 		if (isHeightInvalid(blockPos)) {
-			return Blocks.field_10243.method_9564();
+			return Blocks.field_10243.getDefaultState();
 		} else {
 			WorldChunk worldChunk = this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-			return worldChunk.method_8320(blockPos);
+			return worldChunk.getBlockState(blockPos);
 		}
 	}
 
 	@Override
-	public FluidState method_8316(BlockPos blockPos) {
+	public FluidState getFluidState(BlockPos blockPos) {
 		if (isHeightInvalid(blockPos)) {
-			return Fluids.field_15906.method_15785();
+			return Fluids.field_15906.getDefaultState();
 		} else {
-			WorldChunk worldChunk = this.method_8500(blockPos);
-			return worldChunk.method_8316(blockPos);
+			WorldChunk worldChunk = this.getWorldChunk(blockPos);
+			return worldChunk.getFluidState(blockPos);
 		}
 	}
 
@@ -430,11 +430,11 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_8548(BlockPos blockPos, float f) {
+	public Vec3d getSkyColor(BlockPos blockPos, float f) {
 		float g = this.getSkyAngle(f);
 		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		Biome biome = this.method_8310(blockPos);
+		Biome biome = this.getBiome(blockPos);
 		float i = biome.getTemperature(blockPos);
 		int j = biome.getSkyColor(i);
 		float k = (float)(j >> 16 & 0xFF) / 255.0F;
@@ -482,7 +482,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_8423(float f) {
+	public Vec3d getCloudColor(float f) {
 		float g = this.getSkyAngle(f);
 		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
@@ -514,9 +514,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_8464(float f) {
+	public Vec3d getFogColor(float f) {
 		float g = this.getSkyAngle(f);
-		return this.field_9247.method_12445(g, f);
+		return this.dimension.getFogColor(g, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -527,9 +527,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return h * h * 0.5F;
 	}
 
-	public boolean method_8438(BlockEntity blockEntity) {
+	public boolean addBlockEntity(BlockEntity blockEntity) {
 		if (this.iteratingTickingBlockEntities) {
-			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(blockEntity.method_11017()), blockEntity::getPos);
+			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(blockEntity.getType()), blockEntity::getPos);
 		}
 
 		boolean bl = this.blockEntities.add(blockEntity);
@@ -539,8 +539,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 		if (this.isClient) {
 			BlockPos blockPos = blockEntity.getPos();
-			BlockState blockState = this.method_8320(blockPos);
-			this.method_8413(blockPos, blockState, blockState, 2);
+			BlockState blockState = this.getBlockState(blockPos);
+			this.updateListeners(blockPos, blockState, blockState, 2);
 		}
 
 		return bl;
@@ -551,7 +551,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			this.pendingBlockEntities.addAll(collection);
 		} else {
 			for (BlockEntity blockEntity : collection) {
-				this.method_8438(blockEntity);
+				this.addBlockEntity(blockEntity);
 			}
 		}
 	}
@@ -572,10 +572,10 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
 			if (!blockEntity.isInvalid() && blockEntity.hasWorld()) {
 				BlockPos blockPos = blockEntity.getPos();
-				if (this.field_9248.shouldTickBlock(blockPos) && this.method_8621().contains(blockPos)) {
+				if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
 					try {
-						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.method_11017()))));
-						if (blockEntity.method_11017().supports(this.method_8320(blockPos).getBlock())) {
+						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
+						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
 							((Tickable)blockEntity).tick();
 						} else {
 							blockEntity.method_20525();
@@ -595,7 +595,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				iterator.remove();
 				this.blockEntities.remove(blockEntity);
 				if (this.isBlockLoaded(blockEntity.getPos())) {
-					this.method_8500(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
+					this.getWorldChunk(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
 				}
 			}
 		}
@@ -607,14 +607,14 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				BlockEntity blockEntity2 = (BlockEntity)this.pendingBlockEntities.get(i);
 				if (!blockEntity2.isInvalid()) {
 					if (!this.blockEntities.contains(blockEntity2)) {
-						this.method_8438(blockEntity2);
+						this.addBlockEntity(blockEntity2);
 					}
 
 					if (this.isBlockLoaded(blockEntity2.getPos())) {
-						WorldChunk worldChunk = this.method_8500(blockEntity2.getPos());
-						BlockState blockState = worldChunk.method_8320(blockEntity2.getPos());
+						WorldChunk worldChunk = this.getWorldChunk(blockEntity2.getPos());
+						BlockState blockState = worldChunk.getBlockState(blockEntity2.getPos());
 						worldChunk.setBlockEntity(blockEntity2.getPos(), blockEntity2);
-						this.method_8413(blockEntity2.getPos(), blockState, blockState, 3);
+						this.updateListeners(blockEntity2.getPos(), blockState, blockState, 3);
 					}
 				}
 			}
@@ -636,7 +636,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean method_8534(Box box) {
+	public boolean isAreaNotEmpty(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -648,7 +648,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.method_8320(pooledMutable.method_10113(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
 						if (!blockState.isAir()) {
 							return true;
 						}
@@ -660,7 +660,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean method_8425(Box box) {
+	public boolean doesAreaContainFireSource(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -672,7 +672,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							Block block = this.method_8320(pooledMutable.method_10113(o, p, q)).getBlock();
+							Block block = this.getBlockState(pooledMutable.method_10113(o, p, q)).getBlock();
 							if (block == Blocks.field_10036 || block == Blocks.field_10164) {
 								return true;
 							}
@@ -687,7 +687,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public BlockState method_8475(Box box, Block block) {
+	public BlockState getBlockState(Box box, Block block) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -699,7 +699,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							BlockState blockState = this.method_8320(pooledMutable.method_10113(o, p, q));
+							BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
 							if (blockState.getBlock() == block) {
 								return blockState;
 							}
@@ -714,15 +714,15 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public boolean method_8422(Box box, Material material) {
+	public boolean containsBlockWithMaterial(Box box, Material material) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
 		int l = MathHelper.ceil(box.maxY);
 		int m = MathHelper.floor(box.minZ);
 		int n = MathHelper.ceil(box.maxZ);
-		MaterialPredicate materialPredicate = MaterialPredicate.method_11746(material);
-		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.method_8320(blockPos)));
+		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
+		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState(blockPos)));
 	}
 
 	public Explosion createExplosion(@Nullable Entity entity, double d, double e, double f, float g, Explosion.DestructionType destructionType) {
@@ -748,7 +748,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 	public boolean method_8506(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
 		blockPos = blockPos.offset(direction);
-		if (this.method_8320(blockPos).getBlock() == Blocks.field_10036) {
+		if (this.getBlockState(blockPos).getBlock() == Blocks.field_10036) {
 			this.playLevelEvent(playerEntity, 1009, blockPos, 0);
 			this.clearBlockState(blockPos, false);
 			return true;
@@ -759,12 +759,12 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 	@Environment(EnvType.CLIENT)
 	public String getChunkProviderStatus() {
-		return this.field_9248.getStatus();
+		return this.chunkManager.getStatus();
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity method_8321(BlockPos blockPos) {
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
 		if (isHeightInvalid(blockPos)) {
 			return null;
 		} else if (!this.isClient && Thread.currentThread() != this.thread) {
@@ -772,15 +772,15 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		} else {
 			BlockEntity blockEntity = null;
 			if (this.iteratingTickingBlockEntities) {
-				blockEntity = this.method_8426(blockPos);
+				blockEntity = this.getPendingBlockEntity(blockPos);
 			}
 
 			if (blockEntity == null) {
-				blockEntity = this.method_8500(blockPos).getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
+				blockEntity = this.getWorldChunk(blockPos).getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
 			}
 
 			if (blockEntity == null) {
-				blockEntity = this.method_8426(blockPos);
+				blockEntity = this.getPendingBlockEntity(blockPos);
 			}
 
 			return blockEntity;
@@ -788,7 +788,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Nullable
-	private BlockEntity method_8426(BlockPos blockPos) {
+	private BlockEntity getPendingBlockEntity(BlockPos blockPos) {
 		for (int i = 0; i < this.pendingBlockEntities.size(); i++) {
 			BlockEntity blockEntity = (BlockEntity)this.pendingBlockEntities.get(i);
 			if (!blockEntity.isInvalid() && blockEntity.getPos().equals(blockPos)) {
@@ -799,7 +799,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return null;
 	}
 
-	public void method_8526(BlockPos blockPos, @Nullable BlockEntity blockEntity) {
+	public void setBlockEntity(BlockPos blockPos, @Nullable BlockEntity blockEntity) {
 		if (!isHeightInvalid(blockPos)) {
 			if (blockEntity != null && !blockEntity.isInvalid()) {
 				if (this.iteratingTickingBlockEntities) {
@@ -816,15 +816,15 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 					this.pendingBlockEntities.add(blockEntity);
 				} else {
-					this.method_8500(blockPos).setBlockEntity(blockPos, blockEntity);
-					this.method_8438(blockEntity);
+					this.getWorldChunk(blockPos).setBlockEntity(blockPos, blockEntity);
+					this.addBlockEntity(blockEntity);
 				}
 			}
 		}
 	}
 
 	public void removeBlockEntity(BlockPos blockPos) {
-		BlockEntity blockEntity = this.method_8321(blockPos);
+		BlockEntity blockEntity = this.getBlockEntity(blockPos);
 		if (blockEntity != null && this.iteratingTickingBlockEntities) {
 			blockEntity.invalidate();
 			this.pendingBlockEntities.remove(blockEntity);
@@ -835,20 +835,20 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 				this.tickingBlockEntities.remove(blockEntity);
 			}
 
-			this.method_8500(blockPos).removeBlockEntity(blockPos);
+			this.getWorldChunk(blockPos).removeBlockEntity(blockPos);
 		}
 	}
 
 	public boolean isHeightValidAndBlockLoaded(BlockPos blockPos) {
-		return isHeightInvalid(blockPos) ? false : this.field_9248.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+		return isHeightInvalid(blockPos) ? false : this.chunkManager.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
 	public boolean doesBlockHaveSolidTopSurface(BlockPos blockPos, Entity entity) {
 		if (isHeightInvalid(blockPos)) {
 			return false;
 		} else {
-			Chunk chunk = this.method_8402(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.field_12803, false);
-			return chunk == null ? false : chunk.method_8320(blockPos).hasSolidTopSurface(this, blockPos, entity);
+			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.field_12803, false);
+			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidTopSurface(this, blockPos, entity);
 		}
 	}
 
@@ -860,29 +860,29 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public void setMobSpawnOptions(boolean bl, boolean bl2) {
-		this.method_8398().setMobSpawnOptions(bl, bl2);
+		this.getChunkManager().setMobSpawnOptions(bl, bl2);
 	}
 
 	protected void initWeatherGradients() {
-		if (this.field_9232.isRaining()) {
+		if (this.properties.isRaining()) {
 			this.rainGradient = 1.0F;
-			if (this.field_9232.isThundering()) {
+			if (this.properties.isThundering()) {
 				this.thunderGradient = 1.0F;
 			}
 		}
 	}
 
 	public void close() throws IOException {
-		this.field_9248.close();
+		this.chunkManager.close();
 	}
 
 	@Override
-	public ChunkStatus method_20311() {
+	public ChunkStatus getLeastChunkStatusForCollisionCalculation() {
 		return ChunkStatus.field_12803;
 	}
 
 	@Override
-	public List<Entity> method_8333(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
 		List<Entity> list = Lists.<Entity>newArrayList();
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
@@ -891,9 +891,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
-				WorldChunk worldChunk = this.method_8398().method_12126(m, n, false);
+				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.method_12205(entity, box, list, predicate);
+					worldChunk.appendEntities(entity, box, list, predicate);
 				}
 			}
 		}
@@ -901,7 +901,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return list;
 	}
 
-	public List<Entity> method_18023(@Nullable EntityType<?> entityType, Box box, Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable EntityType<?> entityType, Box box, Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
 		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
@@ -910,9 +910,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
-				WorldChunk worldChunk = this.method_8398().method_12126(m, n, false);
+				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.method_18029(entityType, box, list, predicate);
+					worldChunk.appendEntities(entityType, box, list, predicate);
 				}
 			}
 		}
@@ -921,7 +921,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public <T extends Entity> List<T> method_8390(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
 		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
@@ -930,9 +930,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
-				WorldChunk worldChunk = this.method_8398().method_12126(m, n, false);
+				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.method_12210(class_, box, list, predicate);
+					worldChunk.appendEntities(class_, box, list, predicate);
 				}
 			}
 		}
@@ -943,9 +943,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	@Nullable
 	public abstract Entity getEntityById(int i);
 
-	public void method_8524(BlockPos blockPos, BlockEntity blockEntity) {
+	public void markDirty(BlockPos blockPos, BlockEntity blockEntity) {
 		if (this.isBlockLoaded(blockPos)) {
-			this.method_8500(blockPos).markDirty();
+			this.getWorldChunk(blockPos).markDirty();
 		}
 	}
 
@@ -959,8 +959,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return this;
 	}
 
-	public LevelGeneratorType method_8527() {
-		return this.field_9232.getGeneratorType();
+	public LevelGeneratorType getGeneratorType() {
+		return this.properties.getGeneratorType();
 	}
 
 	public int getReceivedStrongRedstonePower(BlockPos blockPos) {
@@ -999,7 +999,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public int getEmittedRedstonePower(BlockPos blockPos, Direction direction) {
-		BlockState blockState = this.method_8320(blockPos);
+		BlockState blockState = this.getBlockState(blockPos);
 		return blockState.isSimpleFullBlock(this, blockPos)
 			? this.getReceivedStrongRedstonePower(blockPos)
 			: blockState.getWeakRedstonePower(this, blockPos, direction);
@@ -1043,45 +1043,45 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public void setTime(long l) {
-		this.field_9232.setTime(l);
+		this.properties.setTime(l);
 	}
 
 	@Override
 	public long getSeed() {
-		return this.field_9232.getSeed();
+		return this.properties.getSeed();
 	}
 
 	public long getTime() {
-		return this.field_9232.getTime();
+		return this.properties.getTime();
 	}
 
 	public long getTimeOfDay() {
-		return this.field_9232.getTimeOfDay();
+		return this.properties.getTimeOfDay();
 	}
 
 	public void setTimeOfDay(long l) {
-		this.field_9232.setTimeOfDay(l);
+		this.properties.setTimeOfDay(l);
 	}
 
 	protected void tickTime() {
-		this.setTime(this.field_9232.getTime() + 1L);
-		if (this.field_9232.getGameRules().getBoolean(GameRules.field_19396)) {
-			this.setTimeOfDay(this.field_9232.getTimeOfDay() + 1L);
+		this.setTime(this.properties.getTime() + 1L);
+		if (this.properties.getGameRules().getBoolean(GameRules.field_19396)) {
+			this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
 		}
 	}
 
 	@Override
 	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.field_9232.getSpawnX(), this.field_9232.getSpawnY(), this.field_9232.getSpawnZ());
-		if (!this.method_8621().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.field_13197, new BlockPos(this.method_8621().getCenterX(), 0.0, this.method_8621().getCenterZ()));
+		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
+		if (!this.getWorldBorder().contains(blockPos)) {
+			blockPos = this.getTopPosition(Heightmap.Type.field_13197, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
 		}
 
 		return blockPos;
 	}
 
 	public void setSpawnPos(BlockPos blockPos) {
-		this.field_9232.setSpawnPos(blockPos);
+		this.properties.setSpawnPos(blockPos);
 	}
 
 	public boolean canPlayerModifyAt(PlayerEntity playerEntity, BlockPos blockPos) {
@@ -1092,21 +1092,21 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public ChunkManager method_8398() {
-		return this.field_9248;
+	public ChunkManager getChunkManager() {
+		return this.chunkManager;
 	}
 
-	public void method_8427(BlockPos blockPos, Block block, int i, int j) {
-		this.method_8320(blockPos).onBlockAction(this, blockPos, i, j);
+	public void addBlockAction(BlockPos blockPos, Block block, int i, int j) {
+		this.getBlockState(blockPos).onBlockAction(this, blockPos, i, j);
 	}
 
 	@Override
-	public LevelProperties method_8401() {
-		return this.field_9232;
+	public LevelProperties getLevelProperties() {
+		return this.properties;
 	}
 
 	public GameRules getGameRules() {
-		return this.field_9232.getGameRules();
+		return this.properties.getGameRules();
 	}
 
 	public float getThunderGradient(float f) {
@@ -1130,7 +1130,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public boolean isThundering() {
-		return this.field_9247.hasSkyLight() && !this.field_9247.isNether() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
+		return this.dimension.hasSkyLight() && !this.dimension.isNether() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
 	}
 
 	public boolean isRaining() {
@@ -1145,19 +1145,19 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		} else {
 			return this.getTopPosition(Heightmap.Type.field_13197, blockPos).getY() > blockPos.getY()
 				? false
-				: this.method_8310(blockPos).getPrecipitation() == Biome.Precipitation.RAIN;
+				: this.getBiome(blockPos).getPrecipitation() == Biome.Precipitation.RAIN;
 		}
 	}
 
 	public boolean hasHighHumidity(BlockPos blockPos) {
-		Biome biome = this.method_8310(blockPos);
+		Biome biome = this.getBiome(blockPos);
 		return biome.hasHighHumidity();
 	}
 
 	@Nullable
-	public abstract MapState method_17891(String string);
+	public abstract MapState getMapState(String string);
 
-	public abstract void method_17890(MapState mapState);
+	public abstract void putMapState(MapState mapState);
 
 	public abstract int getNextMapId();
 
@@ -1165,22 +1165,22 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public int getEffectiveHeight() {
-		return this.field_9247.isNether() ? 128 : 256;
+		return this.dimension.isNether() ? 128 : 256;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public double getHorizonHeight() {
-		return this.field_9232.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
+		return this.properties.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
 	}
 
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
 		crashReportSection.add("All players", (CrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
-		crashReportSection.add("Chunk stats", this.field_9248::getStatus);
-		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.field_9247.method_12460().toString()));
+		crashReportSection.add("Chunk stats", this.chunkManager::getStatus);
+		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.dimension.getType().toString()));
 
 		try {
-			this.field_9232.populateCrashReport(crashReportSection);
+			this.properties.populateCrashReport(crashReportSection);
 		} catch (Throwable var4) {
 			crashReportSection.add("Level Data Unobtainable", var4);
 		}
@@ -1194,18 +1194,18 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
 	}
 
-	public abstract Scoreboard method_8428();
+	public abstract Scoreboard getScoreboard();
 
-	public void method_8455(BlockPos blockPos, Block block) {
+	public void updateHorizontalAdjacent(BlockPos blockPos, Block block) {
 		for (Direction direction : Direction.Type.field_11062) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (this.isBlockLoaded(blockPos2)) {
-				BlockState blockState = this.method_8320(blockPos2);
+				BlockState blockState = this.getBlockState(blockPos2);
 				if (blockState.getBlock() == Blocks.field_10377) {
 					blockState.neighborUpdate(this, blockPos2, block, blockPos, false);
 				} else if (blockState.isSimpleFullBlock(this, blockPos2)) {
 					blockPos2 = blockPos2.offset(direction);
-					blockState = this.method_8320(blockPos2);
+					blockState = this.getBlockState(blockPos2);
 					if (blockState.getBlock() == Blocks.field_10377) {
 						blockState.neighborUpdate(this, blockPos2, block, blockPos, false);
 					}
@@ -1220,7 +1220,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		float f = 0.0F;
 		if (this.isBlockLoaded(blockPos)) {
 			f = this.getMoonSize();
-			l = this.method_8500(blockPos).getInhabitedTime();
+			l = this.getWorldChunk(blockPos).getInhabitedTime();
 		}
 
 		return new LocalDifficulty(this.getDifficulty(), this.getTimeOfDay(), l, f);
@@ -1241,8 +1241,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public WorldBorder method_8621() {
-		return this.field_9223;
+	public WorldBorder getWorldBorder() {
+		return this.border;
 	}
 
 	public void sendPacket(Packet<?> packet) {
@@ -1255,8 +1255,8 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	@Override
-	public Dimension method_8597() {
-		return this.field_9247;
+	public Dimension getDimension() {
+		return this.dimension;
 	}
 
 	@Override
@@ -1266,7 +1266,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 	@Override
 	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
-		return predicate.test(this.method_8320(blockPos));
+		return predicate.test(this.getBlockState(blockPos));
 	}
 
 	public abstract RecipeManager getRecipeManager();

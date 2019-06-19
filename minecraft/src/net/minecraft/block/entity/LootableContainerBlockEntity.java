@@ -28,7 +28,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	public static void setLootTable(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
-		BlockEntity blockEntity = blockView.method_8321(blockPos);
+		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		if (blockEntity instanceof LootableContainerBlockEntity) {
 			((LootableContainerBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
 		}
@@ -62,13 +62,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.method_312(LootContextParameters.field_1232, new BlockPos(this.pos))
+				.put(LootContextParameters.field_1232, new BlockPos(this.pos))
 				.setRandom(this.lootTableSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.method_309(LootContextTypes.field_1179));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
 		}
 	}
 
@@ -113,7 +113,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.world.method_8321(this.pos) != this
+		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}

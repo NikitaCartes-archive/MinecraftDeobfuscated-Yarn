@@ -37,7 +37,7 @@ public interface Inventory extends Clearable {
 		return true;
 	}
 
-	default int getInvAmountOf(Item item) {
+	default int countInInv(Item item) {
 		int i = 0;
 
 		for (int j = 0; j < this.getInvSize(); j++) {

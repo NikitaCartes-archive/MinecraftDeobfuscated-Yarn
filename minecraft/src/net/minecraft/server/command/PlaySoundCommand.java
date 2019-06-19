@@ -45,7 +45,7 @@ public class PlaySoundCommand {
 								EntityArgumentType.getPlayers(commandContext, "targets"),
 								IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 								soundCategory,
-								commandContext.getSource().method_9222(),
+								commandContext.getSource().getPosition(),
 								1.0F,
 								1.0F,
 								0.0F

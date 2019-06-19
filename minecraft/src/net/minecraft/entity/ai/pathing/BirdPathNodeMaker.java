@@ -16,12 +16,12 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
 		super.init(viewableWorld, mobEntity);
-		this.waterPathNodeTypeWeight = mobEntity.method_5944(PathNodeType.field_18);
+		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.field_18);
 	}
 
 	@Override
 	public void clear() {
-		this.entity.method_5941(PathNodeType.field_18, this.waterPathNodeTypeWeight);
+		this.entity.setPathNodeTypeWeight(PathNodeType.field_18, this.waterPathNodeTypeWeight);
 		super.clear();
 	}
 
@@ -29,28 +29,28 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	public PathNode getStart() {
 		int i;
 		if (this.canSwim() && this.entity.isInsideWater()) {
-			i = MathHelper.floor(this.entity.method_5829().minY);
+			i = MathHelper.floor(this.entity.getBoundingBox().minY);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
 
-			for (Block block = this.blockView.method_8320(mutable).getBlock(); block == Blocks.field_10382; block = this.blockView.method_8320(mutable).getBlock()) {
+			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.field_10382; block = this.blockView.getBlockState(mutable).getBlock()) {
 				mutable.set(this.entity.x, (double)(++i), this.entity.z);
 			}
 		} else {
-			i = MathHelper.floor(this.entity.method_5829().minY + 0.5);
+			i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
 		}
 
 		BlockPos blockPos = new BlockPos(this.entity);
 		PathNodeType pathNodeType = this.method_9(this.entity, blockPos.getX(), i, blockPos.getZ());
-		if (this.entity.method_5944(pathNodeType) < 0.0F) {
+		if (this.entity.getPathNodeTypeWeight(pathNodeType) < 0.0F) {
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
-			set.add(new BlockPos(this.entity.method_5829().minX, (double)i, this.entity.method_5829().minZ));
-			set.add(new BlockPos(this.entity.method_5829().minX, (double)i, this.entity.method_5829().maxZ));
-			set.add(new BlockPos(this.entity.method_5829().maxX, (double)i, this.entity.method_5829().minZ));
-			set.add(new BlockPos(this.entity.method_5829().maxX, (double)i, this.entity.method_5829().maxZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().maxZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().minZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ));
 
 			for (BlockPos blockPos2 : set) {
 				PathNodeType pathNodeType2 = this.method_10(this.entity, blockPos2);
-				if (this.entity.method_5944(pathNodeType2) >= 0.0F) {
+				if (this.entity.getPathNodeTypeWeight(pathNodeType2) >= 0.0F) {
 					return super.getPathNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 				}
 			}
@@ -195,7 +195,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	protected PathNode getPathNode(int i, int j, int k) {
 		PathNode pathNode = null;
 		PathNodeType pathNodeType = this.method_9(this.entity, i, j, k);
-		float f = this.entity.method_5944(pathNodeType);
+		float f = this.entity.getPathNodeTypeWeight(pathNodeType);
 		if (f >= 0.0F) {
 			pathNode = super.getPathNode(i, j, k);
 			pathNode.type = pathNodeType;
@@ -220,16 +220,16 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			PathNodeType pathNodeType2 = PathNodeType.field_22;
 
 			for (PathNodeType pathNodeType3 : enumSet) {
-				if (mobEntity.method_5944(pathNodeType3) < 0.0F) {
+				if (mobEntity.getPathNodeTypeWeight(pathNodeType3) < 0.0F) {
 					return pathNodeType3;
 				}
 
-				if (mobEntity.method_5944(pathNodeType3) >= mobEntity.method_5944(pathNodeType2)) {
+				if (mobEntity.getPathNodeTypeWeight(pathNodeType3) >= mobEntity.getPathNodeTypeWeight(pathNodeType2)) {
 					pathNodeType2 = pathNodeType3;
 				}
 			}
 
-			return pathNodeType == PathNodeType.field_7 && mobEntity.method_5944(pathNodeType2) == 0.0F ? PathNodeType.field_7 : pathNodeType2;
+			return pathNodeType == PathNodeType.field_7 && mobEntity.getPathNodeTypeWeight(pathNodeType2) == 0.0F ? PathNodeType.field_7 : pathNodeType2;
 		}
 	}
 
@@ -237,7 +237,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
 		PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
 		if (pathNodeType == PathNodeType.field_7 && j >= 1) {
-			Block block = blockView.method_8320(new BlockPos(i, j - 1, k)).getBlock();
+			Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
 			PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i, j - 1, k);
 			if (pathNodeType2 == PathNodeType.field_3 || block == Blocks.field_10092 || pathNodeType2 == PathNodeType.field_14 || block == Blocks.field_17350) {
 				pathNodeType = PathNodeType.field_3;

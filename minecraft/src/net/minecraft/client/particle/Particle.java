@@ -121,7 +121,7 @@ public abstract class Particle {
 
 	public abstract void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k);
 
-	public abstract ParticleTextureSheet method_18122();
+	public abstract ParticleTextureSheet getType();
 
 	public String toString() {
 		return this.getClass().getSimpleName()

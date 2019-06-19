@@ -20,7 +20,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -33,7 +33,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.markDead();
 		} else {
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.method_8316(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
 				this.markDead();
 			}
 		}

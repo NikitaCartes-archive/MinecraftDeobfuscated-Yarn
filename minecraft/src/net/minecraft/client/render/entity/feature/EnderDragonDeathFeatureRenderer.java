@@ -48,7 +48,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 				GlStateManager.rotatef(random.nextFloat() * 360.0F + m * 90.0F, 0.0F, 0.0F, 1.0F);
 				float p = random.nextFloat() * 20.0F + 5.0F + n * 10.0F;
 				float q = random.nextFloat() * 2.0F + 1.0F + n * 2.0F;
-				bufferBuilder.method_1328(6, VertexFormats.field_1576);
+				bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
 				bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 255, 255, (int)(255.0F * (1.0F - n))).next();
 				bufferBuilder.vertex(-0.866 * (double)q, (double)p, (double)(-0.5F * q)).color(255, 0, 255, 0).next();
 				bufferBuilder.vertex(0.866 * (double)q, (double)p, (double)(-0.5F * q)).color(255, 0, 255, 0).next();

@@ -14,20 +14,20 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class SaplingGenerator {
 	@Nullable
-	protected abstract AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random);
+	protected abstract AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random);
 
-	public boolean method_11431(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.method_11430(random);
+	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.createTreeFeature(random);
 		if (abstractTreeFeature == null) {
 			return false;
 		} else {
-			iWorld.method_8652(blockPos, Blocks.field_10124.method_9564(), 4);
-			if (abstractTreeFeature.method_13151(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.method_8398().getChunkGenerator(), random, blockPos, FeatureConfig.field_13603
+			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 4);
+			if (abstractTreeFeature.generate(
+				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT
 			)) {
 				return true;
 			} else {
-				iWorld.method_8652(blockPos, blockState, 4);
+				iWorld.setBlockState(blockPos, blockState, 4);
 				return false;
 			}
 		}

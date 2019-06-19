@@ -33,17 +33,17 @@ public class ClientChunkManager extends ChunkManager {
 	private final WorldChunk emptyChunk;
 	private final LightingProvider lightingProvider;
 	private volatile ClientChunkManager.ClientChunkMap chunks;
-	private final ClientWorld field_16525;
+	private final ClientWorld world;
 
 	public ClientChunkManager(ClientWorld clientWorld, int i) {
-		this.field_16525 = clientWorld;
+		this.world = clientWorld;
 		this.emptyChunk = new EmptyChunk(clientWorld, new ChunkPos(0, 0));
-		this.lightingProvider = new LightingProvider(this, true, clientWorld.method_8597().hasSkyLight());
+		this.lightingProvider = new LightingProvider(this, true, clientWorld.getDimension().hasSkyLight());
 		this.chunks = new ClientChunkManager.ClientChunkMap(method_20230(i));
 	}
 
 	@Override
-	public LightingProvider method_12130() {
+	public LightingProvider getLightingProvider() {
 		return this.lightingProvider;
 	}
 
@@ -80,7 +80,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public BlockView getWorld() {
-		return this.field_16525;
+		return this.world;
 	}
 
 	@Nullable
@@ -104,8 +104,8 @@ public class ClientChunkManager extends ChunkManager {
 				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 			}
 
-			ChunkSection[] chunkSections = worldChunk.method_12006();
-			LightingProvider lightingProvider = this.method_12130();
+			ChunkSection[] chunkSections = worldChunk.getSectionArray();
+			LightingProvider lightingProvider = this.getLightingProvider();
 			lightingProvider.suppressLight(new ChunkPos(i, j), true);
 
 			for (int m = 0; m < chunkSections.length; m++) {
@@ -168,7 +168,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
-		MinecraftClient.getInstance().field_1769.scheduleBlockRender(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
+		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class ClientChunkManager extends ChunkManager {
 			WorldChunk worldChunk2 = (WorldChunk)this.chunks.getAndSet(i, worldChunk);
 			if (worldChunk2 != null) {
 				this.field_19143--;
-				ClientChunkManager.this.field_16525.unloadBlockEntities(worldChunk2);
+				ClientChunkManager.this.world.unloadBlockEntities(worldChunk2);
 			}
 
 			if (worldChunk != null) {
@@ -222,7 +222,7 @@ public class ClientChunkManager extends ChunkManager {
 				this.field_19143--;
 			}
 
-			ClientChunkManager.this.field_16525.unloadBlockEntities(worldChunk);
+			ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
 			return worldChunk;
 		}
 

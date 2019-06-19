@@ -26,14 +26,14 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new BannerBlockEntity(this.color);
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
 		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BannerBlockEntity) {
 				((BannerBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
@@ -42,11 +42,11 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		BlockEntity blockEntity = blockView.method_8321(blockPos);
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		return blockEntity instanceof BannerBlockEntity
-			? ((BannerBlockEntity)blockEntity).method_10907(blockState)
-			: super.method_9574(blockView, blockPos, blockState);
+			? ((BannerBlockEntity)blockEntity).getPickStack(blockState)
+			: super.getPickStack(blockView, blockPos, blockState);
 	}
 
 	public DyeColor getColor() {

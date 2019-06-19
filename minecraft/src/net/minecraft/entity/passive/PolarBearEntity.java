@@ -53,7 +53,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6042.method_5883(this.field_6002);
+		return EntityType.field_6042.create(this.world);
 	}
 
 	@Override
@@ -87,10 +87,10 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		Biome biome = iWorld.method_8310(blockPos);
+		Biome biome = iWorld.getBiome(blockPos);
 		return biome != Biomes.field_9435 && biome != Biomes.field_9418
 			? method_20663(entityType, iWorld, spawnType, blockPos, random)
-			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.method_8320(blockPos.down()).getBlock() == Blocks.field_10295;
+			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
 	}
 
@@ -129,7 +129,7 @@ public class PolarBearEntity extends AnimalEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			if (this.warningAnimationProgress != this.lastWarningAnimationProgress) {
 				this.calculateDimensions();
 			}
@@ -148,13 +148,13 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_18377(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		if (this.warningAnimationProgress > 0.0F) {
 			float f = this.warningAnimationProgress / 6.0F;
 			float g = 1.0F + f;
-			return super.method_18377(entityPose).scaled(1.0F, g);
+			return super.getDimensions(entityPose).scaled(1.0F, g);
 		} else {
-			return super.method_18377(entityPose);
+			return super.getDimensions(entityPose);
 		}
 	}
 
@@ -187,7 +187,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityData method_5943(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData instanceof PolarBearEntity.PolarBearEntityData) {
@@ -250,8 +250,8 @@ public class PolarBearEntity extends AnimalEntity {
 				return false;
 			} else {
 				if (super.canStart()) {
-					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.field_6002
-						.method_18467(PolarBearEntity.class, PolarBearEntity.this.method_5829().expand(8.0, 4.0, 8.0))) {
+					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
+						.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isBaby()) {
 							return true;
 						}

@@ -60,10 +60,10 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 		return new ConstructBeaconCriterion.Conditions(intRange);
 	}
 
-	public void method_8812(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
 		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_8814(beaconBlockEntity);
+			handler.handle(beaconBlockEntity);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 			return new ConstructBeaconCriterion.Conditions(intRange);
 		}
 
-		public boolean method_8817(BeaconBlockEntity beaconBlockEntity) {
+		public boolean matches(BeaconBlockEntity beaconBlockEntity) {
 			return this.level.test(beaconBlockEntity.getLevel());
 		}
 
@@ -111,11 +111,11 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8814(BeaconBlockEntity beaconBlockEntity) {
+		public void handle(BeaconBlockEntity beaconBlockEntity) {
 			List<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().method_8817(beaconBlockEntity)) {
+				if (conditionsContainer.getConditions().matches(beaconBlockEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>>newArrayList();
 					}

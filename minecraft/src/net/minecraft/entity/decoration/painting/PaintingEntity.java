@@ -93,7 +93,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.field_6002.getGameRules().getBoolean(GameRules.field_19393)) {
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -102,7 +102,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.method_5706(Items.field_8892);
+			this.dropItem(Items.field_8892);
 		}
 	}
 

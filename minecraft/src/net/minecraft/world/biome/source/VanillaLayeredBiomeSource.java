@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.level.LevelProperties;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
-	private final BiomeLayerSampler field_9680;
-	private final BiomeLayerSampler field_9679;
+	private final BiomeLayerSampler noiseLayer;
+	private final BiomeLayerSampler biomeLayer;
 	private final Biome[] biomes = new Biome[]{
 		Biomes.field_9423,
 		Biomes.field_9451,
@@ -89,26 +89,26 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	};
 
 	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig) {
-		LevelProperties levelProperties = vanillaLayeredBiomeSourceConfig.method_9003();
-		OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = vanillaLayeredBiomeSourceConfig.method_9005();
+		LevelProperties levelProperties = vanillaLayeredBiomeSourceConfig.getLevelProperties();
+		OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = vanillaLayeredBiomeSourceConfig.getGeneratorSettings();
 		BiomeLayerSampler[] biomeLayerSamplers = BiomeLayers.build(levelProperties.getSeed(), levelProperties.getGeneratorType(), overworldChunkGeneratorConfig);
-		this.field_9680 = biomeLayerSamplers[0];
-		this.field_9679 = biomeLayerSamplers[1];
+		this.noiseLayer = biomeLayerSamplers[0];
+		this.biomeLayer = biomeLayerSamplers[1];
 	}
 
 	@Override
 	public Biome getBiome(int i, int j) {
-		return this.field_9679.sample(i, j);
+		return this.biomeLayer.sample(i, j);
 	}
 
 	@Override
 	public Biome getBiomeForNoiseGen(int i, int j) {
-		return this.field_9680.sample(i, j);
+		return this.noiseLayer.sample(i, j);
 	}
 
 	@Override
 	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
-		return this.field_9679.sample(i, j, k, l);
+		return this.biomeLayer.sample(i, j, k, l);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		int p = n - l + 1;
 		int q = o - m + 1;
 		Set<Biome> set = Sets.<Biome>newHashSet();
-		Collections.addAll(set, this.field_9680.sample(l, m, p, q));
+		Collections.addAll(set, this.noiseLayer.sample(l, m, p, q));
 		return set;
 	}
 
@@ -133,7 +133,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		int o = j + k >> 2;
 		int p = n - l + 1;
 		int q = o - m + 1;
-		Biome[] biomes = this.field_9680.sample(l, m, p, q);
+		Biome[] biomes = this.noiseLayer.sample(l, m, p, q);
 		BlockPos blockPos = null;
 		int r = 0;
 
@@ -153,10 +153,10 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean method_8754(StructureFeature<?> structureFeature) {
+	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
 		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.biomes) {
-				if (biome.method_8684(structureFeaturex)) {
+				if (biome.hasStructureFeature(structureFeaturex)) {
 					return true;
 				}
 			}
@@ -169,7 +169,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.biomes) {
-				this.topMaterials.add(biome.method_8722().getTopMaterial());
+				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
 			}
 		}
 

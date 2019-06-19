@@ -33,7 +33,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 
 	@Override
 	public void tick() {
-		boolean bl = (Boolean)this.method_11010().method_11654(CampfireBlock.field_17352);
+		boolean bl = (Boolean)this.getCachedState().get(CampfireBlock.LIT);
 		boolean bl2 = this.world.isClient;
 		if (bl2) {
 			if (bl) {
@@ -61,11 +61,11 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 					Inventory inventory = new BasicInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)this.world
 						.getRecipeManager()
-						.method_8132(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
+						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
 						.map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory))
 						.orElse(itemStack);
 					BlockPos blockPos = this.getPos();
-					ItemScatterer.method_5449(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
+					ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
 					this.itemsBeingCooked.set(i, ItemStack.EMPTY);
 					this.updateListeners();
 				}
@@ -80,11 +80,11 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 			Random random = world.random;
 			if (random.nextFloat() < 0.11F) {
 				for (int i = 0; i < random.nextInt(2) + 2; i++) {
-					CampfireBlock.spawnSmokeParticle(world, blockPos, (Boolean)this.method_11010().method_11654(CampfireBlock.field_17353), false);
+					CampfireBlock.spawnSmokeParticle(world, blockPos, (Boolean)this.getCachedState().get(CampfireBlock.SIGNAL_FIRE), false);
 				}
 			}
 
-			int i = ((Direction)this.method_11010().method_11654(CampfireBlock.field_17564)).getHorizontal();
+			int i = ((Direction)this.getCachedState().get(CampfireBlock.FACING)).getHorizontal();
 
 			for (int j = 0; j < this.itemsBeingCooked.size(); j++) {
 				if (!this.itemsBeingCooked.get(j).isEmpty() && random.nextFloat() < 0.2F) {
@@ -156,7 +156,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack itemStack) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().method_8132(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
 	}
 
 	public boolean addItem(ItemStack itemStack, int i) {
@@ -176,7 +176,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 
 	private void updateListeners() {
 		this.markDirty();
-		this.getWorld().method_8413(this.getPos(), this.method_11010(), this.method_11010(), 3);
+		this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 
 	public void spawnItemsBeingCooked() {
 		if (!this.getWorld().isClient) {
-			ItemScatterer.method_17349(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
+			ItemScatterer.spawn(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
 		}
 
 		this.updateListeners();

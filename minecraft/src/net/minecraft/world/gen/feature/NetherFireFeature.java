@@ -19,8 +19,8 @@ public class NetherFireFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		for (int i = 0; i < 64; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && iWorld.method_8320(blockPos2.down()).getBlock() == Blocks.field_10515) {
-				iWorld.method_8652(blockPos2, Blocks.field_10036.method_9564(), 2);
+			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.field_10515) {
+				iWorld.setBlockState(blockPos2, Blocks.field_10036.getDefaultState(), 2);
 			}
 		}
 

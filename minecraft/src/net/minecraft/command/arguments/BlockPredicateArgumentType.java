@@ -104,7 +104,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				return false;
 			} else {
 				for (Property<?> property : this.properties) {
-					if (blockState.method_11654(property) != this.state.method_11654(property)) {
+					if (blockState.get(property) != this.state.get(property)) {
 						return false;
 					}
 				}
@@ -137,7 +137,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				return false;
 			} else {
 				for (Entry<String, String> entry : this.properties.entrySet()) {
-					Property<?> property = blockState.getBlock().method_9595().method_11663((String)entry.getKey());
+					Property<?> property = blockState.getBlock().getStateFactory().getProperty((String)entry.getKey());
 					if (property == null) {
 						return false;
 					}
@@ -147,7 +147,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 						return false;
 					}
 
-					if (blockState.method_11654(property) != comparable) {
+					if (blockState.get(property) != comparable) {
 						return false;
 					}
 				}

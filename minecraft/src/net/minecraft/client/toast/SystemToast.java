@@ -21,20 +21,20 @@ public class SystemToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility method_1986(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		if (this.justUpdated) {
 			this.startTime = l;
 			this.justUpdated = false;
 		}
 
-		toastManager.getGame().method_1531().bindTexture(TOASTS_TEX);
+		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		toastManager.blit(0, 0, 0, 64, 160, 32);
 		if (this.field_2217 == null) {
-			toastManager.getGame().field_1772.draw(this.field_2215, 18.0F, 12.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 12.0F, -256);
 		} else {
-			toastManager.getGame().field_1772.draw(this.field_2215, 18.0F, 7.0F, -256);
-			toastManager.getGame().field_1772.draw(this.field_2217, 18.0F, 18.0F, -1);
+			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 7.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
 		}
 
 		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
@@ -50,7 +50,7 @@ public class SystemToast implements Toast {
 		return this.field_2213;
 	}
 
-	public static void method_1990(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
+	public static void show(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
 			toastManager.add(new SystemToast(type, text, text2));

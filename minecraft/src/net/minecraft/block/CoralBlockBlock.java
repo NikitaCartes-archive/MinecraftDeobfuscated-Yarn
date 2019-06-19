@@ -20,24 +20,26 @@ public class CoralBlockBlock extends Block {
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!this.isInWater(world, blockPos)) {
-			world.method_8652(blockPos, this.deadCoralBlock.method_9564(), 2);
+			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState(), 2);
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!this.isInWater(iWorld, blockPos)) {
-			iWorld.method_8397().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	protected boolean isInWater(BlockView blockView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			FluidState fluidState = blockView.method_8316(blockPos.offset(direction));
+			FluidState fluidState = blockView.getFluidState(blockPos.offset(direction));
 			if (fluidState.matches(FluidTags.field_15517)) {
 				return true;
 			}
@@ -48,13 +50,13 @@ public class CoralBlockBlock extends Block {
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		if (!this.isInWater(itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos())) {
-			itemPlacementContext.method_8045()
-				.method_8397()
-				.schedule(itemPlacementContext.getBlockPos(), this, 60 + itemPlacementContext.method_8045().getRandom().nextInt(40));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		if (!this.isInWater(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
+			itemPlacementContext.getWorld()
+				.getBlockTickScheduler()
+				.schedule(itemPlacementContext.getBlockPos(), this, 60 + itemPlacementContext.getWorld().getRandom().nextInt(40));
 		}
 
-		return this.method_9564();
+		return this.getDefaultState();
 	}
 }

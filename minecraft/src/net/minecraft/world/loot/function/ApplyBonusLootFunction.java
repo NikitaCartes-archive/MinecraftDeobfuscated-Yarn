@@ -38,7 +38,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ItemStack itemStack2 = lootContext.method_296(LootContextParameters.field_1229);
+		ItemStack itemStack2 = lootContext.get(LootContextParameters.field_1229);
 		if (itemStack2 != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack2);
 			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getCount(), i);
@@ -48,24 +48,24 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_463(Enchantment enchantment, float f, int i) {
+	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(Enchantment enchantment, float f, int i) {
 		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.BinomialWithBonusCount(i, f)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_455(Enchantment enchantment) {
+	public static ConditionalLootFunction.Builder<?> oreDrops(Enchantment enchantment) {
 		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.OreDrops()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_456(Enchantment enchantment) {
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment) {
 		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(1)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_461(Enchantment enchantment, int i) {
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment, int i) {
 		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(i)));
 	}
 
 	static {
-		FACTORIES.put(ApplyBonusLootFunction.BinomialWithBonusCount.ID, ApplyBonusLootFunction.BinomialWithBonusCount::method_464);
+		FACTORIES.put(ApplyBonusLootFunction.BinomialWithBonusCount.ID, ApplyBonusLootFunction.BinomialWithBonusCount::fromJson);
 		FACTORIES.put(ApplyBonusLootFunction.OreDrops.ID, ApplyBonusLootFunction.OreDrops::fromJson);
 		FACTORIES.put(ApplyBonusLootFunction.UniformBonusCount.ID, ApplyBonusLootFunction.UniformBonusCount::fromJson);
 	}
@@ -97,7 +97,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			jsonObject.addProperty("probability", this.probability);
 		}
 
-		public static ApplyBonusLootFunction.Formula method_464(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public static ApplyBonusLootFunction.Formula fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			int i = JsonHelper.getInt(jsonObject, "extra");
 			float f = JsonHelper.getFloat(jsonObject, "probability");
 			return new ApplyBonusLootFunction.BinomialWithBonusCount(i, f);

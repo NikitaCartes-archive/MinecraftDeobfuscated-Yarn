@@ -50,8 +50,8 @@ public class ChunkRegion implements IWorld {
 	private final Random random;
 	private final Dimension dimension;
 	private final ChunkGeneratorConfig generatorSettings;
-	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.method_16955(blockPos).getBlockTickScheduler());
-	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.method_16955(blockPos).getFluidTickScheduler());
+	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getBlockTickScheduler());
+	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
 
 	public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
 		int i = MathHelper.floor(Math.sqrt((double)list.size()));
@@ -65,11 +65,11 @@ public class ChunkRegion implements IWorld {
 			this.width = i;
 			this.world = serverWorld;
 			this.seed = serverWorld.getSeed();
-			this.generatorSettings = serverWorld.method_14178().getChunkGenerator().method_12109();
+			this.generatorSettings = serverWorld.method_14178().getChunkGenerator().getConfig();
 			this.seaLevel = serverWorld.getSeaLevel();
-			this.levelProperties = serverWorld.method_8401();
+			this.levelProperties = serverWorld.getLevelProperties();
 			this.random = serverWorld.getRandom();
-			this.dimension = serverWorld.method_8597();
+			this.dimension = serverWorld.getDimension();
 		}
 	}
 
@@ -82,20 +82,20 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public Chunk method_8392(int i, int j) {
-		return this.method_16956(i, j, ChunkStatus.field_12798);
+	public Chunk getChunk(int i, int j) {
+		return this.getChunk(i, j, ChunkStatus.field_12798);
 	}
 
 	@Nullable
 	@Override
-	public Chunk method_8402(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
 		Chunk chunk;
 		if (this.isChunkLoaded(i, j)) {
 			ChunkPos chunkPos = ((Chunk)this.chunks.get(0)).getPos();
 			int k = i - chunkPos.x;
 			int l = j - chunkPos.z;
 			chunk = (Chunk)this.chunks.get(k + l * this.width);
-			if (chunk.method_12009().isAtLeast(chunkStatus)) {
+			if (chunk.getStatus().isAtLeast(chunkStatus)) {
 				return chunk;
 			}
 		} else {
@@ -110,7 +110,7 @@ public class ChunkRegion implements IWorld {
 			LOGGER.error("Requested chunk : {} {}", i, j);
 			LOGGER.error("Region bounds : {} {} | {} {}", chunk2.getPos().x, chunk2.getPos().z, chunk3.getPos().x, chunk3.getPos().z);
 			if (chunk != null) {
-				throw new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.method_12009(), i, j));
+				throw new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j));
 			} else {
 				throw new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j));
 			}
@@ -125,13 +125,13 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public BlockState method_8320(BlockPos blockPos) {
-		return this.method_8392(blockPos.getX() >> 4, blockPos.getZ() >> 4).method_8320(blockPos);
+	public BlockState getBlockState(BlockPos blockPos) {
+		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).getBlockState(blockPos);
 	}
 
 	@Override
-	public FluidState method_8316(BlockPos blockPos) {
-		return this.method_16955(blockPos).method_8316(blockPos);
+	public FluidState getFluidState(BlockPos blockPos) {
+		return this.getChunk(blockPos).getFluidState(blockPos);
 	}
 
 	@Nullable
@@ -146,8 +146,8 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public Biome method_8310(BlockPos blockPos) {
-		Biome biome = this.method_16955(blockPos).getBiomeArray()[blockPos.getX() & 15 | (blockPos.getZ() & 15) << 4];
+	public Biome getBiome(BlockPos blockPos) {
+		Biome biome = this.getChunk(blockPos).getBiomeArray()[blockPos.getX() & 15 | (blockPos.getZ() & 15) << 4];
 		if (biome == null) {
 			throw new RuntimeException(String.format("Biome is null @ %s", blockPos));
 		} else {
@@ -156,47 +156,47 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public int method_8314(LightType lightType, BlockPos blockPos) {
-		return this.method_8398().method_12130().get(lightType).getLightLevel(blockPos);
+	public int getLightLevel(LightType lightType, BlockPos blockPos) {
+		return this.getChunkManager().getLightingProvider().get(lightType).getLightLevel(blockPos);
 	}
 
 	@Override
 	public int getLightLevel(BlockPos blockPos, int i) {
-		return this.method_16955(blockPos).getLightLevel(blockPos, i, this.method_8597().hasSkyLight());
+		return this.getChunk(blockPos).getLightLevel(blockPos, i, this.getDimension().hasSkyLight());
 	}
 
 	@Override
 	public boolean breakBlock(BlockPos blockPos, boolean bl) {
-		BlockState blockState = this.method_8320(blockPos);
+		BlockState blockState = this.getBlockState(blockPos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
 			if (bl) {
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.method_8321(blockPos) : null;
-				Block.method_9610(blockState, this.world, blockPos, blockEntity);
+				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
+				Block.dropStacks(blockState, this.world, blockPos, blockEntity);
 			}
 
-			return this.method_8652(blockPos, Blocks.field_10124.method_9564(), 3);
+			return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity method_8321(BlockPos blockPos) {
-		Chunk chunk = this.method_16955(blockPos);
-		BlockEntity blockEntity = chunk.method_8321(blockPos);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		Chunk chunk = this.getChunk(blockPos);
+		BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
 			CompoundTag compoundTag = chunk.getBlockEntityTagAt(blockPos);
 			if (compoundTag != null) {
 				if ("DUMMY".equals(compoundTag.getString("id"))) {
-					Block block = this.method_8320(blockPos).getBlock();
+					Block block = this.getBlockState(blockPos).getBlock();
 					if (!(block instanceof BlockEntityProvider)) {
 						return null;
 					}
 
-					blockEntity = ((BlockEntityProvider)block).method_10123(this.world);
+					blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 				} else {
 					blockEntity = BlockEntity.createFromTag(compoundTag);
 				}
@@ -207,7 +207,7 @@ public class ChunkRegion implements IWorld {
 				}
 			}
 
-			if (chunk.method_8320(blockPos).getBlock() instanceof BlockEntityProvider) {
+			if (chunk.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
 				LOGGER.warn("Tried to access a block entity before it was created. {}", blockPos);
 			}
 
@@ -216,17 +216,17 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean method_8652(BlockPos blockPos, BlockState blockState, int i) {
-		Chunk chunk = this.method_16955(blockPos);
+	public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
+		Chunk chunk = this.getChunk(blockPos);
 		BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
 		if (blockState2 != null) {
-			this.world.method_19282(blockPos, blockState2, blockState);
+			this.world.onBlockChanged(blockPos, blockState2, blockState);
 		}
 
 		Block block = blockState.getBlock();
 		if (block.hasBlockEntity()) {
-			if (chunk.method_12009().getChunkType() == ChunkStatus.ChunkType.field_12807) {
-				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).method_10123(this));
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
+				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putInt("x", blockPos.getX());
@@ -247,29 +247,29 @@ public class ChunkRegion implements IWorld {
 	}
 
 	private void markBlockForPostProcessing(BlockPos blockPos) {
-		this.method_16955(blockPos).markBlockForPostProcessing(blockPos);
+		this.getChunk(blockPos).markBlockForPostProcessing(blockPos);
 	}
 
 	@Override
 	public boolean spawnEntity(Entity entity) {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.z / 16.0);
-		this.method_8392(i, j).addEntity(entity);
+		this.getChunk(i, j).addEntity(entity);
 		return true;
 	}
 
 	@Override
 	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
-		return this.method_8652(blockPos, Blocks.field_10124.method_9564(), 3);
+		return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 	}
 
 	@Override
-	public WorldBorder method_8621() {
-		return this.world.method_8621();
+	public WorldBorder getWorldBorder() {
+		return this.world.getWorldBorder();
 	}
 
 	@Override
-	public boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
+	public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
 		return true;
 	}
 
@@ -284,7 +284,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public LevelProperties method_8401() {
+	public LevelProperties getLevelProperties() {
 		return this.levelProperties;
 	}
 
@@ -298,7 +298,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public ChunkManager method_8398() {
+	public ChunkManager getChunkManager() {
 		return this.world.method_14178();
 	}
 
@@ -308,12 +308,12 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public TickScheduler<Block> method_8397() {
+	public TickScheduler<Block> getBlockTickScheduler() {
 		return this.blockTickScheduler;
 	}
 
 	@Override
-	public TickScheduler<Fluid> method_8405() {
+	public TickScheduler<Fluid> getFluidTickScheduler() {
 		return this.fluidTickScheduler;
 	}
 
@@ -328,12 +328,12 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void method_8408(BlockPos blockPos, Block block) {
+	public void updateNeighbors(BlockPos blockPos, Block block) {
 	}
 
 	@Override
 	public int getTop(Heightmap.Type type, int i, int j) {
-		return this.method_8392(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
+		return this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
 	}
 
 	@Override
@@ -355,22 +355,22 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public Dimension method_8597() {
+	public Dimension getDimension() {
 		return this.dimension;
 	}
 
 	@Override
 	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
-		return predicate.test(this.method_8320(blockPos));
+		return predicate.test(this.getBlockState(blockPos));
 	}
 
 	@Override
-	public <T extends Entity> List<T> method_8390(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<Entity> method_8333(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
 		return Collections.emptyList();
 	}
 

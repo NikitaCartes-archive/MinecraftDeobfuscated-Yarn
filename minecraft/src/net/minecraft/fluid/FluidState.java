@@ -31,7 +31,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	Fluid getFluid();
 
 	default boolean isStill() {
-		return this.getFluid().method_15793(this);
+		return this.getFluid().isStill(this);
 	}
 
 	default boolean isEmpty() {
@@ -39,7 +39,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	}
 
 	default float getHeight(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().method_15788(this, blockView, blockPos);
+		return this.getFluid().getHeight(this, blockView, blockPos);
 	}
 
 	default float method_20785() {
@@ -47,7 +47,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	}
 
 	default int getLevel() {
-		return this.getFluid().method_15779(this);
+		return this.getFluid().getLevel(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -55,8 +55,8 @@ public interface FluidState extends PropertyContainer<FluidState> {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos2 = blockPos.add(i, 0, j);
-				FluidState fluidState = blockView.method_8316(blockPos2);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !blockView.method_8320(blockPos2).isFullOpaque(blockView, blockPos2)) {
+				FluidState fluidState = blockView.getFluidState(blockPos2);
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !blockView.getBlockState(blockPos2).isFullOpaque(blockView, blockPos2)) {
 					return true;
 				}
 			}
@@ -66,12 +66,12 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	}
 
 	default void onScheduledTick(World world, BlockPos blockPos) {
-		this.getFluid().method_15778(world, blockPos, this);
+		this.getFluid().onScheduledTick(world, blockPos, this);
 	}
 
 	@Environment(EnvType.CLIENT)
 	default void randomDisplayTick(World world, BlockPos blockPos, Random random) {
-		this.getFluid().method_15776(world, blockPos, this, random);
+		this.getFluid().randomDisplayTick(world, blockPos, this, random);
 	}
 
 	default boolean hasRandomTicks() {
@@ -79,15 +79,15 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	}
 
 	default void onRandomTick(World world, BlockPos blockPos, Random random) {
-		this.getFluid().method_15792(world, blockPos, this, random);
+		this.getFluid().onRandomTick(world, blockPos, this, random);
 	}
 
-	default Vec3d method_15758(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().method_15782(blockView, blockPos, this);
+	default Vec3d getVelocity(BlockView blockView, BlockPos blockPos) {
+		return this.getFluid().getVelocity(blockView, blockPos, this);
 	}
 
 	default BlockState getBlockState() {
-		return this.getFluid().method_15790(this);
+		return this.getFluid().toBlockState(this);
 	}
 
 	@Nullable
@@ -132,7 +132,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 							.map(
 								entry -> Pair.of(
 										dynamicOps.createString(((Property)entry.getKey()).getName()),
-										dynamicOps.createString(PropertyContainer.method_16551((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
+										dynamicOps.createString(PropertyContainer.getValueAsString((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
 									)
 							)
 							.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
@@ -147,21 +147,21 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	static <T> FluidState deserialize(Dynamic<T> dynamic) {
 		Fluid fluid = Registry.FLUID.get(new Identifier((String)dynamic.getElement("Name").flatMap(dynamic.getOps()::getStringValue).orElse("minecraft:empty")));
 		Map<String, String> map = dynamic.get("Properties").asMap(dynamicx -> dynamicx.asString(""), dynamicx -> dynamicx.asString(""));
-		FluidState fluidState = fluid.method_15785();
+		FluidState fluidState = fluid.getDefaultState();
 		StateFactory<Fluid, FluidState> stateFactory = fluid.getStateFactory();
 
 		for (Entry<String, String> entry : map.entrySet()) {
 			String string = (String)entry.getKey();
-			Property<?> property = stateFactory.method_11663(string);
+			Property<?> property = stateFactory.getProperty(string);
 			if (property != null) {
-				fluidState = PropertyContainer.method_11655(fluidState, property, string, dynamic.toString(), (String)entry.getValue());
+				fluidState = PropertyContainer.deserialize(fluidState, property, string, dynamic.toString(), (String)entry.getValue());
 			}
 		}
 
 		return fluidState;
 	}
 
-	default VoxelShape method_17776(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().method_17775(this, blockView, blockPos);
+	default VoxelShape getShape(BlockView blockView, BlockPos blockPos) {
+		return this.getFluid().getShape(this, blockView, blockPos);
 	}
 }

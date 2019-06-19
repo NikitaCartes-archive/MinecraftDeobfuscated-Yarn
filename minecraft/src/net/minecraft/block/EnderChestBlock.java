@@ -32,53 +32,53 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
-	public static final DirectionProperty field_10966 = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_10968 = Properties.field_12508;
-	protected static final VoxelShape field_10967 = Block.method_9541(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest");
 
 	protected EnderChestBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10966, Direction.field_11043).method_11657(field_10968, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_10967;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_9589(BlockState blockState) {
+	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public BlockRenderType method_9604(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11456;
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.getBlockPos());
-		return this.method_9564()
-			.method_11657(field_10966, itemPlacementContext.getPlayerFacing().getOpposite())
-			.method_11657(field_10968, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return this.getDefaultState()
+			.with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())
+			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
-		BlockEntity blockEntity = world.method_8321(blockPos);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos2 = blockPos.up();
-			if (world.method_8320(blockPos2).isSimpleFullBlock(world, blockPos2)) {
+			if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
 				return true;
 			} else if (world.isClient) {
 				return true;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
-				enderChestInventory.method_7661(enderChestBlockEntity);
+				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
 				playerEntity.openContainer(
 					new ClientDummyContainerProvider(
 						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
@@ -93,13 +93,13 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new EnderChestBlockEntity();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		for (int i = 0; i < 3; i++) {
 			int j = random.nextInt(2) * 2 - 1;
 			int k = random.nextInt(2) * 2 - 1;
@@ -114,36 +114,38 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_10966, blockRotation.rotate(blockState.method_11654(field_10966)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_10966)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10966, field_10968);
+		builder.add(FACING, WATERLOGGED);
 	}
 
 	@Override
-	public FluidState method_9545(BlockState blockState) {
-		return blockState.method_11654(field_10968) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if ((Boolean)blockState.method_11654(field_10968)) {
-			iWorld.method_8405().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

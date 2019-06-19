@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class PortalForcer {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final PortalBlock field_9288 = (PortalBlock)Blocks.field_10316;
+	private static final PortalBlock PORTAL_BLOCK = (PortalBlock)Blocks.field_10316;
 	private final ServerWorld world;
 	private final Random random;
 	private final Map<ColumnPos, PortalForcer.TicketInfo> ticketInfos = Maps.<ColumnPos, PortalForcer.TicketInfo>newHashMapWithExpectedSize(4096);
@@ -43,15 +43,15 @@ public class PortalForcer {
 	public boolean usePortal(Entity entity, float f) {
 		Vec3d vec3d = entity.method_5656();
 		Direction direction = entity.method_5843();
-		BlockPattern.TeleportTarget teleportTarget = this.method_18475(
-			new BlockPos(entity), entity.method_18798(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
+		BlockPattern.TeleportTarget teleportTarget = this.getPortal(
+			new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
 		);
 		if (teleportTarget == null) {
 			return false;
 		} else {
-			Vec3d vec3d2 = teleportTarget.field_19281;
-			Vec3d vec3d3 = teleportTarget.field_19282;
-			entity.method_18799(vec3d3);
+			Vec3d vec3d2 = teleportTarget.pos;
+			Vec3d vec3d3 = teleportTarget.velocity;
+			entity.setVelocity(vec3d3);
 			entity.yaw = f + (float)teleportTarget.yaw;
 			if (entity instanceof ServerPlayerEntity) {
 				((ServerPlayerEntity)entity).networkHandler.requestTeleport(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
@@ -65,7 +65,7 @@ public class PortalForcer {
 	}
 
 	@Nullable
-	public BlockPattern.TeleportTarget method_18475(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
+	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
 		int i = 128;
 		boolean bl2 = true;
 		BlockPos blockPos2 = null;
@@ -87,8 +87,8 @@ public class PortalForcer {
 
 						while (blockPos3.getY() >= 0) {
 							BlockPos blockPos4 = blockPos3.down();
-							if (this.world.method_8320(blockPos3).getBlock() == field_9288) {
-								for (blockPos4 = blockPos3.down(); this.world.method_8320(blockPos4).getBlock() == field_9288; blockPos4 = blockPos4.down()) {
+							if (this.world.getBlockState(blockPos3).getBlock() == PORTAL_BLOCK) {
+								for (blockPos4 = blockPos3.down(); this.world.getBlockState(blockPos4).getBlock() == PORTAL_BLOCK; blockPos4 = blockPos4.down()) {
 									blockPos3 = blockPos4;
 								}
 
@@ -112,11 +112,11 @@ public class PortalForcer {
 			} else {
 				if (bl2) {
 					this.ticketInfos.put(columnPos, new PortalForcer.TicketInfo(blockPos2, this.world.getTime()));
-					LOGGER.debug("Adding nether portal ticket for {}:{}", this.world.method_8597()::method_12460, () -> columnPos);
+					LOGGER.debug("Adding nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
 					this.world.method_14178().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPos2), 3, columnPos);
 				}
 
-				BlockPattern.Result result = field_9288.findPortal(this.world, blockPos2);
+				BlockPattern.Result result = PORTAL_BLOCK.findPortal(this.world, blockPos2);
 				return result.method_18478(direction, blockPos2, e, vec3d, d);
 			}
 		}
@@ -163,7 +163,7 @@ public class PortalForcer {
 										int ab = t + z;
 										int ac = s + (y - 1) * w - x * v;
 										mutable.set(aa, ab, ac);
-										if (z < 0 && !this.world.method_8320(mutable).method_11620().isSolid() || z >= 0 && !this.world.isAir(mutable)) {
+										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.isAir(mutable)) {
 											continue label279;
 										}
 									}
@@ -209,7 +209,7 @@ public class PortalForcer {
 										int aa = tx + y;
 										int ab = s + (x - 1) * wx;
 										mutable.set(zx, aa, ab);
-										if (y < 0 && !this.world.method_8320(mutable).method_11620().isSolid() || y >= 0 && !this.world.isAir(mutable)) {
+										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.isAir(mutable)) {
 											continue label216;
 										}
 									}
@@ -253,7 +253,7 @@ public class PortalForcer {
 						int yx = s + (u - 1) * ag - txx * af;
 						boolean bl = vx < 0;
 						mutable.set(wx, x, yx);
-						this.world.method_8501(mutable, bl ? Blocks.field_10540.method_9564() : Blocks.field_10124.method_9564());
+						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
 					}
 				}
 			}
@@ -263,17 +263,17 @@ public class PortalForcer {
 			for (int u = -1; u < 4; u++) {
 				if (txx == -1 || txx == 2 || u == -1 || u == 3) {
 					mutable.set(ad + txx * af, ae + u, s + txx * ag);
-					this.world.method_8652(mutable, Blocks.field_10540.method_9564(), 3);
+					this.world.setBlockState(mutable, Blocks.field_10540.getDefaultState(), 3);
 				}
 			}
 		}
 
-		BlockState blockState = field_9288.method_9564().method_11657(PortalBlock.field_11310, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
+		BlockState blockState = PORTAL_BLOCK.getDefaultState().with(PortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
 
 		for (int ux = 0; ux < 2; ux++) {
 			for (int vx = 0; vx < 3; vx++) {
 				mutable.set(ad + ux * af, ae + vx, s + ux * ag);
-				this.world.method_8652(mutable, blockState, 18);
+				this.world.setBlockState(mutable, blockState, 18);
 			}
 		}
 
@@ -307,7 +307,7 @@ public class PortalForcer {
 			PortalForcer.TicketInfo ticketInfo = (PortalForcer.TicketInfo)entry.getValue();
 			if (ticketInfo.lastUsedTime < m) {
 				ColumnPos columnPos = (ColumnPos)entry.getKey();
-				LOGGER.debug("Removing nether portal ticket for {}:{}", this.world.method_8597()::method_12460, () -> columnPos);
+				LOGGER.debug("Removing nether portal ticket for {}:{}", this.world.getDimension()::getType, () -> columnPos);
 				this.world.method_14178().removeTicket(ChunkTicketType.field_19280, new ChunkPos(ticketInfo.pos), 3, columnPos);
 				iterator.remove();
 			}

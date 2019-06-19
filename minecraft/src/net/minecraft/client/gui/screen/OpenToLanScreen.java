@@ -25,19 +25,19 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
-			this.minecraft.method_1507(null);
+			this.minecraft.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
-			if (this.minecraft.method_1576().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
+			if (this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
 				text = new TranslatableText("commands.publish.started", i);
 			} else {
 				text = new TranslatableText("commands.publish.failed");
 			}
 
-			this.minecraft.field_1705.method_1743().addMessage(text);
+			this.minecraft.inGameHud.getChatHud().addMessage(text);
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.method_1507(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
 			if ("spectator".equals(this.gameMode)) {

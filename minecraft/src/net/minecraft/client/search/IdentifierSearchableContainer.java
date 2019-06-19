@@ -17,8 +17,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class IdentifierSearchableContainer<T> implements SearchableContainer<T> {
-	protected SuffixArray<T> field_5489 = new SuffixArray<>();
-	protected SuffixArray<T> field_5485 = new SuffixArray<>();
+	protected SuffixArray<T> byNamespace = new SuffixArray<>();
+	protected SuffixArray<T> byPath = new SuffixArray<>();
 	private final Function<T, Stream<Identifier>> identifierFinder;
 	private final List<T> entries = Lists.<T>newArrayList();
 	private final Object2IntMap<T> entryIds = new Object2IntOpenHashMap<>();
@@ -29,15 +29,15 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 
 	@Override
 	public void reload() {
-		this.field_5489 = new SuffixArray<>();
-		this.field_5485 = new SuffixArray<>();
+		this.byNamespace = new SuffixArray<>();
+		this.byPath = new SuffixArray<>();
 
 		for (T object : this.entries) {
 			this.index(object);
 		}
 
-		this.field_5489.reload();
-		this.field_5485.reload();
+		this.byNamespace.reload();
+		this.byPath.reload();
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 
 	protected void index(T object) {
 		((Stream)this.identifierFinder.apply(object)).forEach(identifier -> {
-			this.field_5489.add(object, identifier.getNamespace().toLowerCase(Locale.ROOT));
-			this.field_5485.add(object, identifier.getPath().toLowerCase(Locale.ROOT));
+			this.byNamespace.add(object, identifier.getNamespace().toLowerCase(Locale.ROOT));
+			this.byPath.add(object, identifier.getPath().toLowerCase(Locale.ROOT));
 		});
 	}
 
@@ -68,11 +68,11 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 	public List<T> findAll(String string) {
 		int i = string.indexOf(58);
 		if (i == -1) {
-			return this.field_5485.findAll(string);
+			return this.byPath.findAll(string);
 		} else {
-			List<T> list = this.field_5489.findAll(string.substring(0, i).trim());
+			List<T> list = this.byNamespace.findAll(string.substring(0, i).trim());
 			String string2 = string.substring(i + 1).trim();
-			List<T> list2 = this.field_5485.findAll(string2);
+			List<T> list2 = this.byPath.findAll(string2);
 			return Lists.<T>newArrayList(new IdentifierSearchableContainer.Iterator<>(list.iterator(), list2.iterator(), this::compare));
 		}
 	}

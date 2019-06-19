@@ -30,7 +30,7 @@ public class Sprite {
 	@Nullable
 	protected int[] frameYs;
 	protected NativeImage[] interpolatedImages;
-	private AnimationResourceMetadata field_5271;
+	private AnimationResourceMetadata animationMetadata;
 	protected int x;
 	protected int y;
 	private float uMin;
@@ -68,7 +68,7 @@ public class Sprite {
 			this.height = pngFile.height;
 		}
 
-		this.field_5271 = animationResourceMetadata;
+		this.animationMetadata = animationResourceMetadata;
 	}
 
 	private static Pair<Integer, Integer> getDimensions(int i, int j, int k, int l) {
@@ -272,25 +272,25 @@ public class Sprite {
 
 	public void tickAnimation() {
 		this.frameTicks++;
-		if (this.frameTicks >= this.field_5271.getFrameTime(this.frameIndex)) {
-			int i = this.field_5271.getFrameIndex(this.frameIndex);
-			int j = this.field_5271.getFrameCount() == 0 ? this.getFrameCount() : this.field_5271.getFrameCount();
+		if (this.frameTicks >= this.animationMetadata.getFrameTime(this.frameIndex)) {
+			int i = this.animationMetadata.getFrameIndex(this.frameIndex);
+			int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
 			this.frameIndex = (this.frameIndex + 1) % j;
 			this.frameTicks = 0;
-			int k = this.field_5271.getFrameIndex(this.frameIndex);
+			int k = this.animationMetadata.getFrameIndex(this.frameIndex);
 			if (i != k && k >= 0 && k < this.getFrameCount()) {
 				this.upload(k);
 			}
-		} else if (this.field_5271.shouldInterpolate()) {
+		} else if (this.animationMetadata.shouldInterpolate()) {
 			this.interpolateFrames();
 		}
 	}
 
 	private void interpolateFrames() {
-		double d = 1.0 - (double)this.frameTicks / (double)this.field_5271.getFrameTime(this.frameIndex);
-		int i = this.field_5271.getFrameIndex(this.frameIndex);
-		int j = this.field_5271.getFrameCount() == 0 ? this.getFrameCount() : this.field_5271.getFrameCount();
-		int k = this.field_5271.getFrameIndex((this.frameIndex + 1) % j);
+		double d = 1.0 - (double)this.frameTicks / (double)this.animationMetadata.getFrameTime(this.frameIndex);
+		int i = this.animationMetadata.getFrameIndex(this.frameIndex);
+		int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
+		int k = this.animationMetadata.getFrameIndex((this.frameIndex + 1) % j);
 		if (i != k && k >= 0 && k < this.getFrameCount()) {
 			if (this.interpolatedImages == null || this.interpolatedImages.length != this.images.length) {
 				if (this.interpolatedImages != null) {
@@ -340,27 +340,27 @@ public class Sprite {
 		this.images = new NativeImage[i];
 		this.images[0] = nativeImage;
 		int j;
-		if (this.field_5271 != null && this.field_5271.getWidth() != -1) {
-			j = nativeImage.getWidth() / this.field_5271.getWidth();
+		if (this.animationMetadata != null && this.animationMetadata.getWidth() != -1) {
+			j = nativeImage.getWidth() / this.animationMetadata.getWidth();
 		} else {
 			j = nativeImage.getWidth() / this.width;
 		}
 
 		int k;
-		if (this.field_5271 != null && this.field_5271.getHeight() != -1) {
-			k = nativeImage.getHeight() / this.field_5271.getHeight();
+		if (this.animationMetadata != null && this.animationMetadata.getHeight() != -1) {
+			k = nativeImage.getHeight() / this.animationMetadata.getHeight();
 		} else {
 			k = nativeImage.getHeight() / this.height;
 		}
 
-		if (this.field_5271 != null && this.field_5271.getFrameCount() > 0) {
-			int l = (Integer)this.field_5271.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
+		if (this.animationMetadata != null && this.animationMetadata.getFrameCount() > 0) {
+			int l = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
 			this.frameXs = new int[l];
 			this.frameYs = new int[l];
 			Arrays.fill(this.frameXs, -1);
 			Arrays.fill(this.frameYs, -1);
 
-			for (int m : this.field_5271.getFrameIndexSet()) {
+			for (int m : this.animationMetadata.getFrameIndexSet()) {
 				if (m >= j * k) {
 					throw new RuntimeException("invalid frameindex " + m);
 				}
@@ -387,12 +387,12 @@ public class Sprite {
 
 			int m = 1;
 			boolean bl = false;
-			if (this.field_5271 != null) {
-				m = this.field_5271.getDefaultFrameTime();
-				bl = this.field_5271.shouldInterpolate();
+			if (this.animationMetadata != null) {
+				m = this.animationMetadata.getDefaultFrameTime();
+				bl = this.animationMetadata.shouldInterpolate();
 			}
 
-			this.field_5271 = new AnimationResourceMetadata(list, this.width, this.height, m, bl);
+			this.animationMetadata = new AnimationResourceMetadata(list, this.width, this.height, m, bl);
 		}
 	}
 
@@ -441,7 +441,7 @@ public class Sprite {
 	}
 
 	public boolean isAnimated() {
-		return this.field_5271 != null && this.field_5271.getFrameCount() > 1;
+		return this.animationMetadata != null && this.animationMetadata.getFrameCount() > 1;
 	}
 
 	public String toString() {

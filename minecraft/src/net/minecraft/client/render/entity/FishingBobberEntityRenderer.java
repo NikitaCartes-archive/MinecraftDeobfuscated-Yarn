@@ -44,7 +44,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishingBobberEntity));
 			}
 
-			bufferBuilder.method_1328(7, VertexFormats.field_1589);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
 			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
@@ -74,7 +74,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double u;
 			double v;
 			double w;
-			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().field_1724) {
+			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
 				double x = this.renderManager.gameOptions.fov;
 				x /= 100.0;
 				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);
@@ -101,7 +101,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double ac = (double)((float)(v - z));
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
-			bufferBuilder.method_1328(3, VertexFormats.field_1576);
+			bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 			int ad = 16;
 
 			for (int ae = 0; ae <= 16; ae++) {

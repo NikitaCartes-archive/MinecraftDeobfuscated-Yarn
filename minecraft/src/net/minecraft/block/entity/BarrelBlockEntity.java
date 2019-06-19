@@ -122,11 +122,11 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			}
 
 			this.viewerCount++;
-			BlockState blockState = this.method_11010();
-			boolean bl = (Boolean)blockState.method_11654(BarrelBlock.field_18006);
+			BlockState blockState = this.getCachedState();
+			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (!bl) {
-				this.method_17764(blockState, SoundEvents.field_17604);
-				this.method_18318(blockState, true);
+				this.playSound(blockState, SoundEvents.field_17604);
+				this.setOpen(blockState, true);
 			}
 
 			this.scheduleUpdate();
@@ -134,7 +134,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	private void scheduleUpdate() {
-		this.world.method_8397().schedule(this.getPos(), this.method_11010().getBlock(), 5);
+		this.world.getBlockTickScheduler().schedule(this.getPos(), this.getCachedState().getBlock(), 5);
 	}
 
 	public void tick() {
@@ -145,16 +145,16 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		if (this.viewerCount > 0) {
 			this.scheduleUpdate();
 		} else {
-			BlockState blockState = this.method_11010();
+			BlockState blockState = this.getCachedState();
 			if (blockState.getBlock() != Blocks.field_16328) {
 				this.invalidate();
 				return;
 			}
 
-			boolean bl = (Boolean)blockState.method_11654(BarrelBlock.field_18006);
+			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (bl) {
-				this.method_17764(blockState, SoundEvents.field_17603);
-				this.method_18318(blockState, false);
+				this.playSound(blockState, SoundEvents.field_17603);
+				this.setOpen(blockState, false);
 			}
 		}
 	}
@@ -166,12 +166,12 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		}
 	}
 
-	private void method_18318(BlockState blockState, boolean bl) {
-		this.world.method_8652(this.getPos(), blockState.method_11657(BarrelBlock.field_18006, Boolean.valueOf(bl)), 3);
+	private void setOpen(BlockState blockState, boolean bl) {
+		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.OPEN, Boolean.valueOf(bl)), 3);
 	}
 
-	private void method_17764(BlockState blockState, SoundEvent soundEvent) {
-		Vec3i vec3i = ((Direction)blockState.method_11654(BarrelBlock.field_16320)).getVector();
+	private void playSound(BlockState blockState, SoundEvent soundEvent) {
+		Vec3i vec3i = ((Direction)blockState.get(BarrelBlock.FACING)).getVector();
 		double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
 		double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;
 		double f = (double)this.pos.getZ() + 0.5 + (double)vec3i.getZ() / 2.0;

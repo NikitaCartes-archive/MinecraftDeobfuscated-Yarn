@@ -110,7 +110,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			return this.isTeammate(((VexEntity)entity).getOwner());
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.method_5781() == null && entity.method_5781() == null
+				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
 	}
@@ -194,11 +194,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 			do {
 				BlockPos blockPos2 = blockPos.down();
-				BlockState blockState = EvokerEntity.this.field_6002.method_8320(blockPos2);
-				if (Block.method_20045(blockState, EvokerEntity.this.field_6002, blockPos2, Direction.field_11036)) {
-					if (!EvokerEntity.this.field_6002.isAir(blockPos)) {
-						BlockState blockState2 = EvokerEntity.this.field_6002.method_8320(blockPos);
-						VoxelShape voxelShape = blockState2.method_11628(EvokerEntity.this.field_6002, blockPos);
+				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
+				if (Block.isSolidFullSquare(blockState, EvokerEntity.this.world, blockPos2, Direction.field_11036)) {
+					if (!EvokerEntity.this.world.isAir(blockPos)) {
+						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
+						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
 							j = voxelShape.getMaximum(Direction.Axis.Y);
 						}
@@ -212,7 +212,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			} while (blockPos.getY() >= MathHelper.floor(f) - 1);
 
 			if (bl) {
-				EvokerEntity.this.field_6002.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.field_6002, d, (double)blockPos.getY() + j, e, h, i, EvokerEntity.this));
+				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, d, (double)blockPos.getY() + j, e, h, i, EvokerEntity.this));
 			}
 		}
 
@@ -259,8 +259,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (!super.canStart()) {
 				return false;
 			} else {
-				int i = EvokerEntity.this.field_6002
-					.method_18466(VexEntity.class, this.closeVexPredicate, EvokerEntity.this, EvokerEntity.this.method_5829().expand(16.0))
+				int i = EvokerEntity.this.world
+					.getTargets(VexEntity.class, this.closeVexPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0))
 					.size();
 				return EvokerEntity.this.random.nextInt(8) + 1 > i;
 			}
@@ -280,13 +280,13 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.field_6059.method_5883(EvokerEntity.this.field_6002);
+				VexEntity vexEntity = EntityType.field_6059.create(EvokerEntity.this.world);
 				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.method_5943(EvokerEntity.this.field_6002, EvokerEntity.this.field_6002.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
+				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);
 				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
-				EvokerEntity.this.field_6002.spawnEntity(vexEntity);
+				EvokerEntity.this.world.spawnEntity(vexEntity);
 			}
 		}
 
@@ -315,11 +315,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
+			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				return false;
 			} else {
-				List<SheepEntity> list = EvokerEntity.this.field_6002
-					.method_18466(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.method_5829().expand(16.0, 4.0, 16.0));
+				List<SheepEntity> list = EvokerEntity.this.world
+					.getTargets(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
 				if (list.isEmpty()) {
 					return false;
 				} else {

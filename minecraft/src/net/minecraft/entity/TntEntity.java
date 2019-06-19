@@ -55,30 +55,30 @@ public class TntEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		if (!this.hasNoGravity()) {
-			this.method_18799(this.method_18798().add(0.0, -0.04, 0.0));
+			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 		}
 
-		this.method_5784(MovementType.field_6308, this.method_18798());
-		this.method_18799(this.method_18798().multiply(0.98));
+		this.move(MovementType.field_6308, this.getVelocity());
+		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.onGround) {
-			this.method_18799(this.method_18798().multiply(0.7, -0.5, 0.7));
+			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 		}
 
 		this.fuseTimer--;
 		if (this.fuseTimer <= 0) {
 			this.remove();
-			if (!this.field_6002.isClient) {
+			if (!this.world.isClient) {
 				this.explode();
 			}
 		} else {
 			this.method_5713();
-			this.field_6002.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
 	private void explode() {
 		float f = 4.0F;
-		this.field_6002.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, Explosion.DestructionType.field_18686);
+		this.world.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, Explosion.DestructionType.field_18686);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected float method_18378(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.0F;
 	}
 

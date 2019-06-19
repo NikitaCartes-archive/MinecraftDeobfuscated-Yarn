@@ -27,10 +27,10 @@ public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<ProbabilityConfig> field_13295 = register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> field_13303 = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> field_13300 = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));
-	protected static final BlockState AIR = Blocks.field_10124.method_9564();
-	protected static final BlockState CAVE_AIR = Blocks.field_10543.method_9564();
-	protected static final FluidState field_13305 = Fluids.WATER.method_15785();
-	protected static final FluidState field_13296 = Fluids.LAVA.method_15785();
+	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	protected static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
+	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
 	protected Set<Block> alwaysCarvableBlocks = ImmutableSet.of(
 		Blocks.field_10340,
 		Blocks.field_10474,
@@ -149,8 +149,8 @@ public abstract class Carver<C extends CarverConfig> {
 		} else {
 			bitSet.set(q);
 			mutable.set(l, o, m);
-			BlockState blockState = chunk.method_8320(mutable);
-			BlockState blockState2 = chunk.method_8320(mutable2.set(mutable).setOffset(Direction.field_11036));
+			BlockState blockState = chunk.getBlockState(mutable);
+			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable).setOffset(Direction.field_11036));
 			if (blockState.getBlock() == Blocks.field_10219 || blockState.getBlock() == Blocks.field_10402) {
 				atomicBoolean.set(true);
 			}
@@ -159,13 +159,13 @@ public abstract class Carver<C extends CarverConfig> {
 				return false;
 			} else {
 				if (o < 11) {
-					chunk.setBlockState(mutable, field_13296.getBlockState(), false);
+					chunk.setBlockState(mutable, LAVA.getBlockState(), false);
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (atomicBoolean.get()) {
 						mutable3.set(mutable).setOffset(Direction.field_11033);
-						if (chunk.method_8320(mutable3).getBlock() == Blocks.field_10566) {
-							chunk.setBlockState(mutable3, chunk.getBiome(mutable).method_8722().getTopMaterial(), false);
+						if (chunk.getBlockState(mutable3).getBlock() == Blocks.field_10566) {
+							chunk.setBlockState(mutable3, chunk.getBiome(mutable).getSurfaceConfig().getTopMaterial(), false);
 						}
 					}
 				}
@@ -186,7 +186,7 @@ public abstract class Carver<C extends CarverConfig> {
 	protected boolean canCarveBlock(BlockState blockState, BlockState blockState2) {
 		Block block = blockState.getBlock();
 		return this.canAlwaysCarveBlock(blockState)
-			|| (block == Blocks.field_10102 || block == Blocks.field_10255) && !blockState2.method_11618().matches(FluidTags.field_15517);
+			|| (block == Blocks.field_10102 || block == Blocks.field_10255) && !blockState2.getFluidState().matches(FluidTags.field_15517);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
@@ -195,7 +195,7 @@ public abstract class Carver<C extends CarverConfig> {
 		for (int q = k; q < l; q++) {
 			for (int r = o; r < p; r++) {
 				for (int s = m - 1; s <= n + 1; s++) {
-					if (this.carvableFluids.contains(chunk.method_8316(mutable.set(q + i * 16, s, r + j * 16)).getFluid())) {
+					if (this.carvableFluids.contains(chunk.getFluidState(mutable.set(q + i * 16, s, r + j * 16)).getFluid())) {
 						return true;
 					}
 

@@ -99,7 +99,7 @@ public class ScoreboardState extends PersistentState {
 			if (compoundTag.containsKey("CollisionRule", 8)) {
 				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(compoundTag.getString("CollisionRule"));
 				if (collisionRule != null) {
-					team.method_1145(collisionRule);
+					team.setCollisionRule(collisionRule);
 				}
 			}
 
@@ -134,7 +134,7 @@ public class ScoreboardState extends PersistentState {
 
 				Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
 				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
-				this.scoreboard.method_1168(string, scoreboardCriterion, text, renderType);
+				this.scoreboard.addObjective(string, scoreboardCriterion, text, renderType);
 			});
 		}
 	}
@@ -205,10 +205,10 @@ public class ScoreboardState extends PersistentState {
 		ListTag listTag = new ListTag();
 
 		for (ScoreboardObjective scoreboardObjective : this.scoreboard.getObjectives()) {
-			if (scoreboardObjective.method_1116() != null) {
+			if (scoreboardObjective.getCriterion() != null) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putString("Name", scoreboardObjective.getName());
-				compoundTag.putString("CriteriaName", scoreboardObjective.method_1116().getName());
+				compoundTag.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
 				compoundTag.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
 				compoundTag.putString("RenderType", scoreboardObjective.getRenderType().getName());
 				listTag.add(compoundTag);

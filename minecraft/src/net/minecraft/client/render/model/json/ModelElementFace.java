@@ -17,13 +17,13 @@ public class ModelElementFace {
 	public final Direction cullFace;
 	public final int tintIndex;
 	public final String textureId;
-	public final ModelElementTexture field_4227;
+	public final ModelElementTexture textureData;
 
 	public ModelElementFace(@Nullable Direction direction, int i, String string, ModelElementTexture modelElementTexture) {
 		this.cullFace = direction;
 		this.tintIndex = i;
 		this.textureId = string;
-		this.field_4227 = modelElementTexture;
+		this.textureData = modelElementTexture;
 	}
 
 	@Environment(EnvType.CLIENT)

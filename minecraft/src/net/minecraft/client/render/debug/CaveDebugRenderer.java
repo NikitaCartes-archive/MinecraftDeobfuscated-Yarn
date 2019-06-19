@@ -38,7 +38,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4505.field_1773.getCamera();
+		Camera camera = this.field_4505.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
@@ -51,7 +51,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(5, VertexFormats.field_1576);
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();

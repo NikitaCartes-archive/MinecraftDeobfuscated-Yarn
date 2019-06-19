@@ -84,7 +84,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			this.isRinging = true;
 		}
 
-		this.world.method_8427(blockPos, this.method_11010().getBlock(), 1, direction.getId());
+		this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
 	}
 
 	private void method_20219() {
@@ -92,12 +92,12 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
 			this.field_19155 = this.world.getTime();
 			Box box = new Box(blockPos).expand(48.0);
-			this.field_19156 = this.world.method_18467(LivingEntity.class, box);
+			this.field_19156 = this.world.getEntities(LivingEntity.class, box);
 		}
 
 		if (!this.world.isClient) {
 			for (LivingEntity livingEntity : this.field_19156) {
-				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.method_19538(), 32.0)) {
+				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
 					livingEntity.getBrain().putMemory(MemoryModuleType.field_19009, this.world.getTime());
 				}
 			}
@@ -110,7 +110,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		for (LivingEntity livingEntity : this.field_19156) {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
-				&& blockPos.isWithinDistance(livingEntity.method_19538(), 32.0)
+				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
 				&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168)) {
 				return true;
 			}
@@ -129,7 +129,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		if (world.isClient) {
 			BlockPos blockPos = this.getPos();
 			AtomicInteger atomicInteger = new AtomicInteger(16700985);
-			int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.method_19538(), 48.0)).count();
+			int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
 			this.field_19156
 				.stream()
 				.filter(this::method_20518)
@@ -159,7 +159,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private boolean method_20518(LivingEntity livingEntity) {
 		return livingEntity.isAlive()
 			&& !livingEntity.removed
-			&& this.getPos().isWithinDistance(livingEntity.method_19538(), 48.0)
+			&& this.getPos().isWithinDistance(livingEntity.getPos(), 48.0)
 			&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168);
 	}
 

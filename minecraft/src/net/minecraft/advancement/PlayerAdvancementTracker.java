@@ -260,7 +260,7 @@ public class PlayerAdvancementTracker {
 				advancement.getRewards().apply(this.owner);
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
-					&& this.owner.field_6002.getGameRules().getBoolean(GameRules.field_19409)) {
+					&& this.owner.world.getGameRules().getBoolean(GameRules.field_19409)) {
 					this.server
 						.getPlayerManager()
 						.sendToAll(

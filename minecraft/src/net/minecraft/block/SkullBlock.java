@@ -14,43 +14,42 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class SkullBlock extends AbstractSkullBlock {
-	public static final IntProperty field_11505 = Properties.field_12532;
-	protected static final VoxelShape field_11506 = Block.method_9541(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
+	public static final IntProperty ROTATION = Properties.ROTATION;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
 
 	protected SkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
 		super(skullType, settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_11505, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_11506;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return SHAPE;
 	}
 
 	@Override
 	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return VoxelShapes.method_1073();
+		return VoxelShapes.empty();
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564()
-			.method_11657(field_11505, Integer.valueOf(MathHelper.floor((double)(itemPlacementContext.getPlayerYaw() * 16.0F / 360.0F) + 0.5) & 15));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(ROTATION, Integer.valueOf(MathHelper.floor((double)(itemPlacementContext.getPlayerYaw() * 16.0F / 360.0F) + 0.5) & 15));
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_11505, Integer.valueOf(blockRotation.rotate((Integer)blockState.method_11654(field_11505), 16)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(ROTATION, Integer.valueOf(blockRotation.rotate((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.method_11657(field_11505, Integer.valueOf(blockMirror.mirror((Integer)blockState.method_11654(field_11505), 16)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.with(ROTATION, Integer.valueOf(blockMirror.mirror((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11505);
+		builder.add(ROTATION);
 	}
 
 	public interface SkullType {

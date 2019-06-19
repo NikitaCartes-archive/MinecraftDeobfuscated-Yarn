@@ -11,12 +11,12 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TagHelper;
 
 public class ChunkSection {
-	private static final Palette<BlockState> field_12879 = new IdListPalette<>(Block.STATE_IDS, Blocks.field_10124.method_9564());
+	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.field_10124.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
 	private short nonEmptyFluidCount;
-	private final PalettedContainer<BlockState> field_12878;
+	private final PalettedContainer<BlockState> container;
 
 	public ChunkSection(int i) {
 		this(i, (short)0, (short)0, (short)0);
@@ -27,25 +27,25 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = s;
 		this.randomTickableBlockCount = t;
 		this.nonEmptyFluidCount = u;
-		this.field_12878 = new PalettedContainer<>(
-			field_12879, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.field_10124.method_9564()
+		this.container = new PalettedContainer<>(
+			palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.field_10124.getDefaultState()
 		);
 	}
 
 	public BlockState getBlockState(int i, int j, int k) {
-		return this.field_12878.get(i, j, k);
+		return this.container.get(i, j, k);
 	}
 
-	public FluidState method_12255(int i, int j, int k) {
-		return this.field_12878.get(i, j, k).method_11618();
+	public FluidState getFluidState(int i, int j, int k) {
+		return this.container.get(i, j, k).getFluidState();
 	}
 
 	public void lock() {
-		this.field_12878.lock();
+		this.container.lock();
 	}
 
 	public void unlock() {
-		this.field_12878.unlock();
+		this.container.unlock();
 	}
 
 	public BlockState setBlockState(int i, int j, int k, BlockState blockState) {
@@ -55,13 +55,13 @@ public class ChunkSection {
 	public BlockState setBlockState(int i, int j, int k, BlockState blockState, boolean bl) {
 		BlockState blockState2;
 		if (bl) {
-			blockState2 = this.field_12878.setSync(i, j, k, blockState);
+			blockState2 = this.container.setSync(i, j, k, blockState);
 		} else {
-			blockState2 = this.field_12878.set(i, j, k, blockState);
+			blockState2 = this.container.set(i, j, k, blockState);
 		}
 
-		FluidState fluidState = blockState2.method_11618();
-		FluidState fluidState2 = blockState.method_11618();
+		FluidState fluidState = blockState2.getFluidState();
+		FluidState fluidState2 = blockState.getFluidState();
 		if (!blockState2.isAir()) {
 			this.nonEmptyBlockCount--;
 			if (blockState2.hasRandomTicks()) {
@@ -92,7 +92,7 @@ public class ChunkSection {
 	}
 
 	public static boolean isEmpty(@Nullable ChunkSection chunkSection) {
-		return chunkSection == WorldChunk.field_12852 || chunkSection.isEmpty();
+		return chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
 	}
 
 	public boolean hasRandomTicks() {
@@ -120,7 +120,7 @@ public class ChunkSection {
 			for (int j = 0; j < 16; j++) {
 				for (int k = 0; k < 16; k++) {
 					BlockState blockState = this.getBlockState(i, j, k);
-					FluidState fluidState = this.method_12255(i, j, k);
+					FluidState fluidState = this.getFluidState(i, j, k);
 					if (!blockState.isAir()) {
 						this.nonEmptyBlockCount++;
 						if (blockState.hasRandomTicks()) {
@@ -139,26 +139,26 @@ public class ChunkSection {
 		}
 	}
 
-	public PalettedContainer<BlockState> method_12265() {
-		return this.field_12878;
+	public PalettedContainer<BlockState> getContainer() {
+		return this.container;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void fromPacket(PacketByteBuf packetByteBuf) {
 		this.nonEmptyBlockCount = packetByteBuf.readShort();
-		this.field_12878.fromPacket(packetByteBuf);
+		this.container.fromPacket(packetByteBuf);
 	}
 
 	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeShort(this.nonEmptyBlockCount);
-		this.field_12878.toPacket(packetByteBuf);
+		this.container.toPacket(packetByteBuf);
 	}
 
 	public int getPacketSize() {
-		return 2 + this.field_12878.getPacketSize();
+		return 2 + this.container.getPacketSize();
 	}
 
 	public boolean method_19523(BlockState blockState) {
-		return this.field_12878.method_19526(blockState);
+		return this.container.method_19526(blockState);
 	}
 }

@@ -14,6 +14,6 @@ public class SwampFlowerFeature extends FlowerFeature {
 
 	@Override
 	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
-		return Blocks.field_10086.method_9564();
+		return Blocks.field_10086.getDefaultState();
 	}
 }

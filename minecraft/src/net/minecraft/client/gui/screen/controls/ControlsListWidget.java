@@ -17,13 +17,13 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
-	private final ControlsOptionsScreen field_2735;
+	private final ControlsOptionsScreen gui;
 	private int field_2733;
 
 	public ControlsListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
 		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
-		this.field_2735 = controlsOptionsScreen;
-		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.field_1690.keysAll);
+		this.gui = controlsOptionsScreen;
+		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
 
@@ -34,7 +34,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				this.addEntry(new ControlsListWidget.CategoryEntry(string2));
 			}
 
-			int i = minecraftClient.field_1772.getStringWidth(I18n.translate(keyBinding.getId()));
+			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
 			if (i > this.field_2733) {
 				this.field_2733 = i;
 			}
@@ -60,14 +60,14 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		public CategoryEntry(String string) {
 			this.name = I18n.translate(string);
-			this.nameWidth = ControlsListWidget.this.minecraft.field_1772.getStringWidth(this.name);
+			this.nameWidth = ControlsListWidget.this.minecraft.textRenderer.getStringWidth(this.name);
 		}
 
 		@Override
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 			ControlsListWidget.this.minecraft
-				.field_1772
-				.draw(this.name, (float)(ControlsListWidget.this.minecraft.field_1755.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
+				.textRenderer
+				.draw(this.name, (float)(ControlsListWidget.this.minecraft.currentScreen.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
 		}
 
 		@Override
@@ -95,7 +95,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private KeyBindingEntry(KeyBinding keyBinding) {
 			this.binding = keyBinding;
 			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.field_2735.focusedBinding = keyBinding) {
+			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.gui.focusedBinding = keyBinding) {
 				@Override
 				protected String getNarrationMessage() {
 					return keyBinding.isNotBound()
@@ -104,7 +104,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset"), buttonWidget -> {
-				ControlsListWidget.this.minecraft.field_1690.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				ControlsListWidget.this.minecraft.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
@@ -116,9 +116,9 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-			boolean bl2 = ControlsListWidget.this.field_2735.focusedBinding == this.binding;
+			boolean bl2 = ControlsListWidget.this.gui.focusedBinding == this.binding;
 			ControlsListWidget.this.minecraft
-				.field_1772
+				.textRenderer
 				.draw(this.bindingName, (float)(k + 90 - ControlsListWidget.this.field_2733), (float)(j + m / 2 - 9 / 2), 16777215);
 			this.resetButton.x = k + 190;
 			this.resetButton.y = j;
@@ -129,7 +129,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			this.editButton.setMessage(this.binding.getLocalizedName());
 			boolean bl3 = false;
 			if (!this.binding.isNotBound()) {
-				for (KeyBinding keyBinding : ControlsListWidget.this.minecraft.field_1690.keysAll) {
+				for (KeyBinding keyBinding : ControlsListWidget.this.minecraft.options.keysAll) {
 					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
 						bl3 = true;
 						break;

@@ -33,7 +33,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				false,
 				false
 			)
-			.criterion("crafting_table", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_9980))
+			.criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.field_9980))
 			.build(consumer, "story/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -47,7 +47,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("get_stone", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10445))
+			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(Blocks.field_10445))
 			.build(consumer, "story/mine_stone");
 		Advancement advancement3 = Advancement.Task.create()
 			.parent(advancement2)
@@ -61,7 +61,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.method_8959(Items.field_8387))
+			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8387))
 			.build(consumer, "story/upgrade_tools");
 		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement3)
@@ -75,7 +75,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("iron", InventoryChangedCriterion.Conditions.method_8959(Items.field_8620))
+			.criterion("iron", InventoryChangedCriterion.Conditions.items(Items.field_8620))
 			.build(consumer, "story/smelt_iron");
 		Advancement advancement5 = Advancement.Task.create()
 			.parent(advancement4)
@@ -89,7 +89,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.method_8959(Items.field_8403))
+			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8403))
 			.build(consumer, "story/iron_tools");
 		Advancement advancement6 = Advancement.Task.create()
 			.parent(advancement5)
@@ -103,7 +103,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("diamond", InventoryChangedCriterion.Conditions.method_8959(Items.field_8477))
+			.criterion("diamond", InventoryChangedCriterion.Conditions.items(Items.field_8477))
 			.build(consumer, "story/mine_diamond");
 		Advancement advancement7 = Advancement.Task.create()
 			.parent(advancement4)
@@ -117,7 +117,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.method_8959(Items.field_8187))
+			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.items(Items.field_8187))
 			.build(consumer, "story/lava_bucket");
 		Advancement advancement8 = Advancement.Task.create()
 			.parent(advancement4)
@@ -132,10 +132,10 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.criterion("iron_helmet", InventoryChangedCriterion.Conditions.method_8959(Items.field_8743))
-			.criterion("iron_chestplate", InventoryChangedCriterion.Conditions.method_8959(Items.field_8523))
-			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.method_8959(Items.field_8396))
-			.criterion("iron_boots", InventoryChangedCriterion.Conditions.method_8959(Items.field_8660))
+			.criterion("iron_helmet", InventoryChangedCriterion.Conditions.items(Items.field_8743))
+			.criterion("iron_chestplate", InventoryChangedCriterion.Conditions.items(Items.field_8523))
+			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8396))
+			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.field_8660))
 			.build(consumer, "story/obtain_armor");
 		Advancement advancement9 = Advancement.Task.create()
 			.parent(advancement6)
@@ -163,7 +163,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("obsidian", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10540))
+			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.field_10540))
 			.build(consumer, "story/form_obsidian");
 		Advancement advancement11 = Advancement.Task.create()
 			.parent(advancement8)
@@ -195,10 +195,10 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.criterion("diamond_helmet", InventoryChangedCriterion.Conditions.method_8959(Items.field_8805))
-			.criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.method_8959(Items.field_8058))
-			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.method_8959(Items.field_8348))
-			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.method_8959(Items.field_8285))
+			.criterion("diamond_helmet", InventoryChangedCriterion.Conditions.items(Items.field_8805))
+			.criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.items(Items.field_8058))
+			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8348))
+			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.field_8285))
 			.build(consumer, "story/shiny_gear");
 		Advancement advancement13 = Advancement.Task.create()
 			.parent(advancement10)
@@ -212,7 +212,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13076))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13076))
 			.build(consumer, "story/enter_the_nether");
 		Advancement advancement14 = Advancement.Task.create()
 			.parent(advancement13)
@@ -240,7 +240,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.method_9017(Feature.field_13565)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		Advancement advancement16 = Advancement.Task.create()
 			.parent(advancement15)
@@ -254,7 +254,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13078))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13078))
 			.build(consumer, "story/enter_the_end");
 	}
 }

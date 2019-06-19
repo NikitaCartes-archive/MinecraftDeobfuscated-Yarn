@@ -58,7 +58,7 @@ public class GrindstoneContainer extends Container {
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-					int i = this.method_17416(world);
+					int i = this.getExperience(world);
 
 					while (i > 0) {
 						int j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -73,7 +73,7 @@ public class GrindstoneContainer extends Container {
 				return itemStack;
 			}
 
-			private int method_17416(World world) {
+			private int getExperience(World world) {
 				int i = 0;
 				i += this.getExperience(GrindstoneContainer.this.craftingInventory.getInvStack(0));
 				i += this.getExperience(GrindstoneContainer.this.craftingInventory.getInvStack(1));
@@ -180,7 +180,7 @@ public class GrindstoneContainer extends Container {
 		for (Entry<Enchantment, Integer> entry : map.entrySet()) {
 			Enchantment enchantment = (Enchantment)entry.getKey();
 			if (!enchantment.isCursed() || EnchantmentHelper.getLevel(enchantment, itemStack3) == 0) {
-				itemStack3.method_7978(enchantment, (Integer)entry.getValue());
+				itemStack3.addEnchantment(enchantment, (Integer)entry.getValue());
 			}
 		}
 
@@ -222,12 +222,12 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_16337);
+		return canUse(this.context, playerEntity, Blocks.field_16337);
 	}
 
 	@Override

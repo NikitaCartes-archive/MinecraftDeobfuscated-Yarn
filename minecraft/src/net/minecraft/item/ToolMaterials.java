@@ -8,10 +8,10 @@ import net.minecraft.util.Lazy;
 
 public enum ToolMaterials implements ToolMaterial {
 	field_8922(0, 59, 2.0F, 0.0F, 15, () -> Ingredient.fromTag(ItemTags.field_15537)),
-	field_8927(1, 131, 4.0F, 1.0F, 5, () -> Ingredient.method_8091(Blocks.field_10445)),
-	field_8923(2, 250, 6.0F, 2.0F, 14, () -> Ingredient.method_8091(Items.field_8620)),
-	field_8930(3, 1561, 8.0F, 3.0F, 10, () -> Ingredient.method_8091(Items.field_8477)),
-	field_8929(0, 32, 12.0F, 0.0F, 22, () -> Ingredient.method_8091(Items.field_8695));
+	field_8927(1, 131, 4.0F, 1.0F, 5, () -> Ingredient.ofItems(Blocks.field_10445)),
+	field_8923(2, 250, 6.0F, 2.0F, 14, () -> Ingredient.ofItems(Items.field_8620)),
+	field_8930(3, 1561, 8.0F, 3.0F, 10, () -> Ingredient.ofItems(Items.field_8477)),
+	field_8929(0, 32, 12.0F, 0.0F, 22, () -> Ingredient.ofItems(Items.field_8695));
 
 	private final int miningLevel;
 	private final int itemDurability;

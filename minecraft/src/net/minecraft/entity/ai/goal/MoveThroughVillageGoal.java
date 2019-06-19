@@ -20,7 +20,7 @@ import net.minecraft.village.PointOfInterestType;
 public class MoveThroughVillageGoal extends Goal {
 	protected final MobEntityWithAi mob;
 	private final double speed;
-	private Path field_6523;
+	private Path targetPath;
 	private BlockPos target;
 	private final boolean requiresNighttime;
 	private final List<BlockPos> field_18413 = Lists.<BlockPos>newArrayList();
@@ -42,15 +42,15 @@ public class MoveThroughVillageGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		this.method_6297();
-		if (this.requiresNighttime && this.mob.field_6002.isDaylight()) {
+		if (this.requiresNighttime && this.mob.world.isDaylight()) {
 			return false;
 		} else {
-			ServerWorld serverWorld = (ServerWorld)this.mob.field_6002;
+			ServerWorld serverWorld = (ServerWorld)this.mob.world;
 			BlockPos blockPos = new BlockPos(this.mob);
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = PathfindingUtil.method_19108(
+				Vec3d vec3d = PathfindingUtil.findTargetStraight(
 					this.mob,
 					15,
 					7,
@@ -76,9 +76,9 @@ public class MoveThroughVillageGoal extends Goal {
 						MobNavigation mobNavigation = (MobNavigation)this.mob.getNavigation();
 						boolean bl = mobNavigation.canEnterOpenDoors();
 						mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-						this.field_6523 = mobNavigation.method_6348(this.target);
+						this.targetPath = mobNavigation.findPathTo(this.target);
 						mobNavigation.setCanPathThroughDoors(bl);
-						if (this.field_6523 == null) {
+						if (this.targetPath == null) {
 							Vec3d vec3d2 = PathfindingUtil.method_6373(
 								this.mob, 10, 7, new Vec3d((double)this.target.getX(), (double)this.target.getY(), (double)this.target.getZ())
 							);
@@ -87,23 +87,23 @@ public class MoveThroughVillageGoal extends Goal {
 							}
 
 							mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-							this.field_6523 = this.mob.getNavigation().method_6352(vec3d2.x, vec3d2.y, vec3d2.z);
+							this.targetPath = this.mob.getNavigation().findPathTo(vec3d2.x, vec3d2.y, vec3d2.z);
 							mobNavigation.setCanPathThroughDoors(bl);
-							if (this.field_6523 == null) {
+							if (this.targetPath == null) {
 								return false;
 							}
 						}
 
-						for (int i = 0; i < this.field_6523.getLength(); i++) {
-							PathNode pathNode = this.field_6523.getNode(i);
+						for (int i = 0; i < this.targetPath.getLength(); i++) {
+							PathNode pathNode = this.targetPath.getNode(i);
 							BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-							if (DoorInteractGoal.method_6254(this.mob.field_6002, blockPos2)) {
-								this.field_6523 = this.mob.getNavigation().method_6352((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
+							if (DoorInteractGoal.getDoor(this.mob.world, blockPos2)) {
+								this.targetPath = this.mob.getNavigation().findPathTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
 								break;
 							}
 						}
 
-						return this.field_6523 != null;
+						return this.targetPath != null;
 					}
 				}
 			}
@@ -112,19 +112,17 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.mob.getNavigation().isIdle()
-			? false
-			: !this.target.isWithinDistance(this.mob.method_19538(), (double)(this.mob.getWidth() + (float)this.field_18414));
+		return this.mob.getNavigation().isIdle() ? false : !this.target.isWithinDistance(this.mob.getPos(), (double)(this.mob.getWidth() + (float)this.field_18414));
 	}
 
 	@Override
 	public void start() {
-		this.mob.getNavigation().method_6334(this.field_6523, this.speed);
+		this.mob.getNavigation().startMovingAlong(this.targetPath, this.speed);
 	}
 
 	@Override
 	public void stop() {
-		if (this.mob.getNavigation().isIdle() || this.target.isWithinDistance(this.mob.method_19538(), (double)this.field_18414)) {
+		if (this.mob.getNavigation().isIdle() || this.target.isWithinDistance(this.mob.getPos(), (double)this.field_18414)) {
 			this.field_18413.add(this.target);
 		}
 	}

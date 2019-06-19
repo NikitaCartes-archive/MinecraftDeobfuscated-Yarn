@@ -32,7 +32,7 @@ public class TeammsgCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, Text text) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
-		Team team = (Team)entity.method_5781();
+		Team team = (Team)entity.getScoreboardTeam();
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
@@ -49,7 +49,7 @@ public class TeammsgCommand {
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
 					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.sent", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
-				} else if (serverPlayerEntity.method_5781() == team) {
+				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
 					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.text", text2, serverCommandSource.getDisplayName(), text.deepCopy()));
 				}
 			}

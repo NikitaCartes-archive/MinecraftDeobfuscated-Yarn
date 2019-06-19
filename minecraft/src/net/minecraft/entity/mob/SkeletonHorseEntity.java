@@ -156,7 +156,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6075.method_5883(this.field_6002);
+		return EntityType.field_6075.create(this.world);
 	}
 
 	@Override

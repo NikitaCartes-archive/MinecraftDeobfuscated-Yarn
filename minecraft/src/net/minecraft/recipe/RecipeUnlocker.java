@@ -21,7 +21,7 @@ public interface RecipeUnlocker {
 		}
 	}
 
-	default boolean method_7665(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
+	default boolean shouldCraftRecipe(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
 		if (!recipe.isIgnoredInRecipeBook() && world.getGameRules().getBoolean(GameRules.field_19407) && !serverPlayerEntity.getRecipeBook().contains(recipe)) {
 			return false;
 		} else {

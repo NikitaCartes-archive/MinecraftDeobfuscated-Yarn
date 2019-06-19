@@ -43,8 +43,8 @@ public class FurnaceOutputSlot extends Slot {
 
 	@Override
 	protected void onCrafted(ItemStack itemStack) {
-		itemStack.method_7982(this.player.field_6002, this.player, this.amount);
-		if (!this.player.field_6002.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
+		itemStack.onCraft(this.player.world, this.player, this.amount);
+		if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
 			((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
 		}
 

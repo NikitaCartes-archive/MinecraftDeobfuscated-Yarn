@@ -75,7 +75,7 @@ public class EnchantmentHelper {
 				compoundTag.putShort("lvl", (short)i);
 				listTag.add(compoundTag);
 				if (itemStack.getItem() == Items.field_8598) {
-					EnchantedBookItem.method_7807(itemStack, new InfoEnchantment(enchantment, i));
+					EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment, i));
 				}
 			}
 		}
@@ -269,9 +269,9 @@ public class EnchantmentHelper {
 
 		for (InfoEnchantment infoEnchantment : list) {
 			if (bl2) {
-				EnchantedBookItem.method_7807(itemStack, infoEnchantment);
+				EnchantedBookItem.addEnchantment(itemStack, infoEnchantment);
 			} else {
-				itemStack.method_7978(infoEnchantment.enchantment, infoEnchantment.level);
+				itemStack.addEnchantment(infoEnchantment.enchantment, infoEnchantment.level);
 			}
 		}
 
@@ -293,7 +293,7 @@ public class EnchantmentHelper {
 				list.add(WeightedPicker.getRandom(random, list2));
 
 				while (random.nextInt(50) <= i) {
-					method_8231(list2, SystemUtil.method_20793(list));
+					remove(list2, SystemUtil.method_20793(list));
 					if (list2.isEmpty()) {
 						break;
 					}
@@ -307,7 +307,7 @@ public class EnchantmentHelper {
 		}
 	}
 
-	public static void method_8231(List<InfoEnchantment> list, InfoEnchantment infoEnchantment) {
+	public static void remove(List<InfoEnchantment> list, InfoEnchantment infoEnchantment) {
 		Iterator<InfoEnchantment> iterator = list.iterator();
 
 		while (iterator.hasNext()) {
@@ -333,7 +333,7 @@ public class EnchantmentHelper {
 		boolean bl2 = itemStack.getItem() == Items.field_8529;
 
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
-			if ((!enchantment.isTreasure() || bl) && (enchantment.field_9083.isAcceptableItem(item) || bl2)) {
+			if ((!enchantment.isTreasure() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {
 				for (int j = enchantment.getMaximumLevel(); j > enchantment.getMinimumLevel() - 1; j--) {
 					if (i >= enchantment.getMinimumPower(j) && i <= enchantment.method_20742(j)) {
 						list.add(new InfoEnchantment(enchantment, j));

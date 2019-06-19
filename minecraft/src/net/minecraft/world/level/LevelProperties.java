@@ -85,7 +85,7 @@ public class LevelProperties {
 	private int wanderingTraderSpawnChance;
 	private UUID wanderingTraderId;
 	private final GameRules gameRules = new GameRules();
-	private final Timer<MinecraftServer> field_191 = new Timer<>(TimerCallbackSerializer.INSTANCE);
+	private final Timer<MinecraftServer> scheduledEvents = new Timer<>(TimerCallbackSerializer.INSTANCE);
 
 	protected LevelProperties() {
 		this.dataFixer = null;
@@ -246,7 +246,7 @@ public class LevelProperties {
 		}
 
 		if (compoundTag.containsKey("ScheduledEvents", 9)) {
-			this.field_191.fromTag(compoundTag.getList("ScheduledEvents", 10));
+			this.scheduledEvents.fromTag(compoundTag.getList("ScheduledEvents", 10));
 		}
 
 		if (compoundTag.containsKey("WanderingTraderSpawnDelay", 99)) {
@@ -276,7 +276,7 @@ public class LevelProperties {
 		this.gameMode = levelInfo.getGameMode();
 		this.structures = levelInfo.hasStructures();
 		this.hardcore = levelInfo.isHardcore();
-		this.generatorType = levelInfo.method_8576();
+		this.generatorType = levelInfo.getGeneratorType();
 		this.setGeneratorOptions((CompoundTag)Dynamic.convert(JsonOps.INSTANCE, NbtOps.INSTANCE, levelInfo.getGeneratorOptions()));
 		this.commandsAllowed = levelInfo.allowCommands();
 	}
@@ -375,7 +375,7 @@ public class LevelProperties {
 			compoundTag.put("CustomBossEvents", this.customBossEvents);
 		}
 
-		compoundTag.put("ScheduledEvents", this.field_191.toTag());
+		compoundTag.put("ScheduledEvents", this.scheduledEvents.toTag());
 		compoundTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
 		compoundTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
 		if (this.wanderingTraderId != null) {
@@ -664,8 +664,8 @@ public class LevelProperties {
 		this.difficultyLocked = bl;
 	}
 
-	public Timer<MinecraftServer> method_143() {
-		return this.field_191;
+	public Timer<MinecraftServer> getScheduledEvents() {
+		return this.scheduledEvents;
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {

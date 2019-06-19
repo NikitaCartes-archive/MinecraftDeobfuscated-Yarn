@@ -53,7 +53,7 @@ public class ShapedRecipeJsonFactory {
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, ItemConvertible itemConvertible) {
-		return this.input(character, Ingredient.method_8091(itemConvertible));
+		return this.input(character, Ingredient.ofItems(itemConvertible));
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, Ingredient ingredient) {

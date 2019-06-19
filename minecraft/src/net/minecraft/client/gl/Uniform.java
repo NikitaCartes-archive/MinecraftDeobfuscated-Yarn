@@ -27,6 +27,6 @@ public class Uniform {
 	public void set(float[] fs) {
 	}
 
-	public void method_1250(Matrix4f matrix4f) {
+	public void set(Matrix4f matrix4f) {
 	}
 }

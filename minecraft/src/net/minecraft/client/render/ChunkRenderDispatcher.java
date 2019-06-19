@@ -16,32 +16,32 @@ public class ChunkRenderDispatcher {
 	protected int sizeY;
 	protected int sizeX;
 	protected int sizeZ;
-	public ChunkRenderer[] field_4150;
+	public ChunkRenderer[] renderers;
 
 	public ChunkRenderDispatcher(World world, int i, WorldRenderer worldRenderer, ChunkRendererFactory chunkRendererFactory) {
 		this.renderer = worldRenderer;
 		this.world = world;
 		this.method_3325(i);
-		this.method_3324(chunkRendererFactory);
+		this.createChunks(chunkRendererFactory);
 	}
 
-	protected void method_3324(ChunkRendererFactory chunkRendererFactory) {
+	protected void createChunks(ChunkRendererFactory chunkRendererFactory) {
 		int i = this.sizeX * this.sizeY * this.sizeZ;
-		this.field_4150 = new ChunkRenderer[i];
+		this.renderers = new ChunkRenderer[i];
 
 		for (int j = 0; j < this.sizeX; j++) {
 			for (int k = 0; k < this.sizeY; k++) {
 				for (int l = 0; l < this.sizeZ; l++) {
 					int m = this.getChunkIndex(j, k, l);
-					this.field_4150[m] = chunkRendererFactory.create(this.world, this.renderer);
-					this.field_4150[m].setOrigin(j * 16, k * 16, l * 16);
+					this.renderers[m] = chunkRendererFactory.create(this.world, this.renderer);
+					this.renderers[m].setOrigin(j * 16, k * 16, l * 16);
 				}
 			}
 		}
 	}
 
 	public void delete() {
-		for (ChunkRenderer chunkRenderer : this.field_4150) {
+		for (ChunkRenderer chunkRenderer : this.renderers) {
 			chunkRenderer.delete();
 		}
 	}
@@ -70,7 +70,7 @@ public class ChunkRenderDispatcher {
 
 				for (int p = 0; p < this.sizeY; p++) {
 					int q = p * 16;
-					ChunkRenderer chunkRenderer = this.field_4150[this.getChunkIndex(l, p, n)];
+					ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
 					chunkRenderer.setOrigin(m, q, o);
 				}
 			}
@@ -91,19 +91,19 @@ public class ChunkRenderDispatcher {
 		int l = Math.floorMod(i, this.sizeX);
 		int m = Math.floorMod(j, this.sizeY);
 		int n = Math.floorMod(k, this.sizeZ);
-		ChunkRenderer chunkRenderer = this.field_4150[this.getChunkIndex(l, m, n)];
+		ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
 		chunkRenderer.scheduleRebuild(bl);
 	}
 
 	@Nullable
-	protected ChunkRenderer method_3323(BlockPos blockPos) {
+	protected ChunkRenderer getChunkRenderer(BlockPos blockPos) {
 		int i = MathHelper.floorDiv(blockPos.getX(), 16);
 		int j = MathHelper.floorDiv(blockPos.getY(), 16);
 		int k = MathHelper.floorDiv(blockPos.getZ(), 16);
 		if (j >= 0 && j < this.sizeY) {
 			i = MathHelper.floorMod(i, this.sizeX);
 			k = MathHelper.floorMod(k, this.sizeZ);
-			return this.field_4150[this.getChunkIndex(i, j, k)];
+			return this.renderers[this.getChunkIndex(i, j, k)];
 		} else {
 			return null;
 		}

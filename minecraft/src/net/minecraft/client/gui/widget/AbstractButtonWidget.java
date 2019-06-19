@@ -100,8 +100,8 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 
 	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		TextRenderer textRenderer = minecraftClient.field_1772;
-		minecraftClient.method_1531().bindTexture(WIDGETS_LOCATION);
+		TextRenderer textRenderer = minecraftClient.textRenderer;
+		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 		int k = this.getYImage(this.isHovered());
 		GlStateManager.enableBlend();
@@ -140,7 +140,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			if (this.isValidClickButton(i)) {
 				boolean bl = this.clicked(d, e);
 				if (bl) {
-					this.playDownSound(MinecraftClient.getInstance().method_1483());
+					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 					this.onClick(d, e);
 					return true;
 				}

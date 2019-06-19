@@ -10,7 +10,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class CarpetBlock extends Block {
-	protected static final VoxelShape field_11783 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 	private final DyeColor color;
 
 	protected CarpetBlock(DyeColor dyeColor, Block.Settings settings) {
@@ -23,19 +23,21 @@ public class CarpetBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return field_11783;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return SHAPE;
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.method_9564()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		return !viewableWorld.isAir(blockPos.down());
 	}
 }

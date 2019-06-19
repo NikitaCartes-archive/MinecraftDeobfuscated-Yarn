@@ -90,7 +90,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 
 				VillagerResourceMetadata.HatType var8;
 				try {
-					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.field_17158);
+					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
 					if (villagerResourceMetadata == null) {
 						return VillagerResourceMetadata.HatType.field_17160;
 					}

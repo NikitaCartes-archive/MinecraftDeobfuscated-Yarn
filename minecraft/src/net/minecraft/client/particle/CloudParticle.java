@@ -34,7 +34,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 
@@ -58,10 +58,10 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.velocityZ *= 0.96F;
 			PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
 			if (playerEntity != null) {
-				Box box = playerEntity.method_5829();
+				Box box = playerEntity.getBoundingBox();
 				if (this.y > box.minY) {
 					this.y = this.y + (box.minY - this.y) * 0.2;
-					this.velocityY = this.velocityY + (playerEntity.method_18798().y - this.velocityY) * 0.2;
+					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
 					this.setPos(this.x, this.y, this.z);
 				}
 			}

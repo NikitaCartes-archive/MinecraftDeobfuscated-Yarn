@@ -25,46 +25,46 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void method_9556(
+	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.method_9556(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
-			if (world.field_9247.doesWaterVaporize()) {
+			if (world.dimension.doesWaterVaporize()) {
 				world.clearBlockState(blockPos, false);
 				return;
 			}
 
-			Material material = world.method_8320(blockPos.down()).method_11620();
+			Material material = world.getBlockState(blockPos.down()).getMaterial();
 			if (material.blocksMovement() || material.isLiquid()) {
-				world.method_8501(blockPos, Blocks.field_10382.method_9564());
+				world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
 			}
 		}
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.method_8314(LightType.field_9282, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
-			this.method_10275(blockState, world, blockPos);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (world.getLightLevel(LightType.field_9282, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+			this.melt(blockState, world, blockPos);
 		}
 	}
 
-	protected void method_10275(BlockState blockState, World world, BlockPos blockPos) {
-		if (world.field_9247.doesWaterVaporize()) {
+	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
+		if (world.dimension.doesWaterVaporize()) {
 			world.clearBlockState(blockPos, false);
 		} else {
-			world.method_8501(blockPos, Blocks.field_10382.method_9564());
-			world.method_8492(blockPos, Blocks.field_10382, blockPos);
+			world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
+			world.updateNeighbor(blockPos, Blocks.field_10382, blockPos);
 		}
 	}
 
 	@Override
-	public PistonBehavior method_9527(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState blockState) {
 		return PistonBehavior.field_15974;
 	}
 
 	@Override
-	public boolean method_9523(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return entityType == EntityType.field_6042;
 	}
 }

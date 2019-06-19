@@ -13,13 +13,13 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class DirectConnectScreen extends Screen {
 	private ButtonWidget selectServerButton;
-	private final ServerEntry field_2460;
+	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
 	private final BooleanConsumer callback;
 
 	public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
 		super(new TranslatableText("selectServer.direct"));
-		this.field_2460 = serverEntry;
+		this.serverEntry = serverEntry;
 		this.callback = booleanConsumer;
 	}
 
@@ -40,10 +40,10 @@ public class DirectConnectScreen extends Screen {
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.method_1876(true);
-		this.addressField.setText(this.minecraft.field_1690.lastServer);
+		this.addressField.setText(this.minecraft.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);
-		this.method_20085(this.addressField);
+		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
@@ -55,15 +55,15 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	private void saveAndClose() {
-		this.field_2460.address = this.addressField.getText();
+		this.serverEntry.address = this.addressField.getText();
 		this.callback.accept(true);
 	}
 
 	@Override
 	public void removed() {
 		this.minecraft.keyboard.enableRepeatEvents(false);
-		this.minecraft.field_1690.lastServer = this.addressField.getText();
-		this.minecraft.field_1690.write();
+		this.minecraft.options.lastServer = this.addressField.getText();
+		this.minecraft.options.write();
 	}
 
 	private void onAddressFieldChanged() {

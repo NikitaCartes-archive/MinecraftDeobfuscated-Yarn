@@ -21,7 +21,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	public BlockCrackParticle(World world, double d, double e, double f, double g, double h, double i, BlockState blockState) {
 		super(world, d, e, f, g, h, i);
 		this.block = blockState;
-		this.method_18141(MinecraftClient.getInstance().method_1541().getModels().method_3339(blockState));
+		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
@@ -32,7 +32,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 
@@ -58,7 +58,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	protected void updateColor(@Nullable BlockPos blockPos) {
-		int i = MinecraftClient.getInstance().method_1505().getColorMultiplier(this.block, this.world, blockPos, 0);
+		int i = MinecraftClient.getInstance().getBlockColorMap().getColorMultiplier(this.block, this.world, blockPos, 0);
 		this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0F;
 		this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0F;
 		this.colorBlue *= (float)(i & 0xFF) / 255.0F;
@@ -66,22 +66,22 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 
 	@Override
 	protected float getMinU() {
-		return this.field_17886.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxU() {
-		return this.field_17886.getU((double)(this.field_17884 / 4.0F * 16.0F));
+		return this.sprite.getU((double)(this.field_17884 / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMinV() {
-		return this.field_17886.getV((double)(this.field_17885 / 4.0F * 16.0F));
+		return this.sprite.getV((double)(this.field_17885 / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxV() {
-		return this.field_17886.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.enableTexture();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
-		if (!this.field_18786.field_1724.isSpectator()) {
+		if (!this.field_18786.player.isSpectator()) {
 			this.method_19710();
 		}
 	}
@@ -245,7 +245,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private Camera getCamera() {
-		return this.field_18786.field_1773.getCamera();
+		return this.field_18786.gameRenderer.getCamera();
 	}
 
 	private Set<String> method_19712(PointOfInterestDebugRenderer.class_4233 arg) {
@@ -257,7 +257,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private boolean method_19715(PointOfInterestDebugRenderer.class_4232 arg) {
-		PlayerEntity playerEntity = this.field_18786.field_1724;
+		PlayerEntity playerEntity = this.field_18786.player;
 		BlockPos blockPos = new BlockPos(playerEntity.x, arg.field_18926.getY(), playerEntity.z);
 		BlockPos blockPos2 = new BlockPos(arg.field_18926);
 		return blockPos.isWithinDistance(blockPos2, 30.0);

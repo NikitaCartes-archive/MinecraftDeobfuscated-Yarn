@@ -18,10 +18,10 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected PathNodeNavigator method_6336(int i) {
-		this.field_6678 = new LandPathNodeMaker();
-		this.field_6678.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.field_6678, i);
+	protected PathNodeNavigator createPathNodeNavigator(int i) {
+		this.nodeMaker = new LandPathNodeMaker();
+		this.nodeMaker.setCanEnterOpenDoors(true);
+		return new PathNodeNavigator(this.nodeMaker, i);
 	}
 
 	@Override
@@ -30,64 +30,64 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected Vec3d method_6347() {
+	protected Vec3d getPos() {
 		return new Vec3d(this.entity.x, (double)this.method_6362(), this.entity.z);
 	}
 
 	@Override
-	public Path method_6348(BlockPos blockPos) {
-		if (this.field_6677.method_8320(blockPos).isAir()) {
+	public Path findPathTo(BlockPos blockPos) {
+		if (this.world.getBlockState(blockPos).isAir()) {
 			BlockPos blockPos2 = blockPos.down();
 
-			while (blockPos2.getY() > 0 && this.field_6677.method_8320(blockPos2).isAir()) {
+			while (blockPos2.getY() > 0 && this.world.getBlockState(blockPos2).isAir()) {
 				blockPos2 = blockPos2.down();
 			}
 
 			if (blockPos2.getY() > 0) {
-				return super.method_6348(blockPos2.up());
+				return super.findPathTo(blockPos2.up());
 			}
 
-			while (blockPos2.getY() < this.field_6677.getHeight() && this.field_6677.method_8320(blockPos2).isAir()) {
+			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).isAir()) {
 				blockPos2 = blockPos2.up();
 			}
 
 			blockPos = blockPos2;
 		}
 
-		if (!this.field_6677.method_8320(blockPos).method_11620().isSolid()) {
-			return super.method_6348(blockPos);
+		if (!this.world.getBlockState(blockPos).getMaterial().isSolid()) {
+			return super.findPathTo(blockPos);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
-			while (blockPos2.getY() < this.field_6677.getHeight() && this.field_6677.method_8320(blockPos2).method_11620().isSolid()) {
+			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).getMaterial().isSolid()) {
 				blockPos2 = blockPos2.up();
 			}
 
-			return super.method_6348(blockPos2);
+			return super.findPathTo(blockPos2);
 		}
 	}
 
 	@Override
-	public Path method_6349(Entity entity) {
-		return this.method_6348(new BlockPos(entity));
+	public Path findPathTo(Entity entity) {
+		return this.findPathTo(new BlockPos(entity));
 	}
 
 	private int method_6362() {
 		if (this.entity.isInsideWater() && this.canSwim()) {
-			int i = MathHelper.floor(this.entity.method_5829().minY);
-			Block block = this.field_6677.method_8320(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
+			int i = MathHelper.floor(this.entity.getBoundingBox().minY);
+			Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
 			int j = 0;
 
 			while (block == Blocks.field_10382) {
-				block = this.field_6677.method_8320(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
+				block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
 				if (++j > 16) {
-					return MathHelper.floor(this.entity.method_5829().minY);
+					return MathHelper.floor(this.entity.getBoundingBox().minY);
 				}
 			}
 
 			return i;
 		} else {
-			return MathHelper.floor(this.entity.method_5829().minY + 0.5);
+			return MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
 		}
 	}
 
@@ -95,14 +95,14 @@ public class MobNavigation extends EntityNavigation {
 	protected void method_6359() {
 		super.method_6359();
 		if (this.avoidSunlight) {
-			if (this.field_6677.isSkyVisible(new BlockPos(this.entity.x, this.entity.method_5829().minY + 0.5, this.entity.z))) {
+			if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY + 0.5, this.entity.z))) {
 				return;
 			}
 
-			for (int i = 0; i < this.field_6681.getLength(); i++) {
-				PathNode pathNode = this.field_6681.getNode(i);
-				if (this.field_6677.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
-					this.field_6681.setLength(i);
+			for (int i = 0; i < this.currentPath.getLength(); i++) {
+				PathNode pathNode = this.currentPath.getNode(i);
+				if (this.world.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
+					this.currentPath.setLength(i);
 					return;
 				}
 			}
@@ -110,7 +110,7 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
+	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
 		int l = MathHelper.floor(vec3d.x);
 		int m = MathHelper.floor(vec3d.z);
 		double d = vec3d2.x - vec3d.x;
@@ -182,7 +182,7 @@ public class MobNavigation extends EntityNavigation {
 					double f = (double)q + 0.5 - vec3d.x;
 					double g = (double)r + 0.5 - vec3d.z;
 					if (!(f * d + g * e < 0.0)) {
-						PathNodeType pathNodeType = this.field_6678.getPathNodeType(this.field_6677, q, j - 1, r, this.entity, l, m, n, true, true);
+						PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
 						if (pathNodeType == PathNodeType.field_18) {
 							return false;
 						}
@@ -195,8 +195,8 @@ public class MobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						pathNodeType = this.field_6678.getPathNodeType(this.field_6677, q, j, r, this.entity, l, m, n, true, true);
-						float h = this.entity.method_5944(pathNodeType);
+						pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
+						float h = this.entity.getPathNodeTypeWeight(pathNodeType);
 						if (h < 0.0F || h >= 8.0F) {
 							return false;
 						}
@@ -216,7 +216,7 @@ public class MobNavigation extends EntityNavigation {
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, j, k), new BlockPos(i + l - 1, j + m - 1, k + n - 1))) {
 			double f = (double)blockPos.getX() + 0.5 - vec3d.x;
 			double g = (double)blockPos.getZ() + 0.5 - vec3d.z;
-			if (!(f * d + g * e < 0.0) && !this.field_6677.method_8320(blockPos).method_11609(this.field_6677, blockPos, BlockPlacementEnvironment.field_50)) {
+			if (!(f * d + g * e < 0.0) && !this.world.getBlockState(blockPos).canPlaceAtSide(this.world, blockPos, BlockPlacementEnvironment.field_50)) {
 				return false;
 			}
 		}
@@ -225,11 +225,11 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	public void setCanPathThroughDoors(boolean bl) {
-		this.field_6678.setCanPathThroughDoors(bl);
+		this.nodeMaker.setCanPathThroughDoors(bl);
 	}
 
 	public boolean canEnterOpenDoors() {
-		return this.field_6678.canEnterOpenDoors();
+		return this.nodeMaker.canEnterOpenDoors();
 	}
 
 	public void setAvoidSunlight(boolean bl) {

@@ -26,14 +26,14 @@ import net.minecraft.util.JsonHelper;
 @Environment(EnvType.CLIENT)
 public class ModelVariantMap {
 	private final Map<String, WeightedUnbakedModel> variantMap = Maps.<String, WeightedUnbakedModel>newLinkedHashMap();
-	private MultipartUnbakedModel field_4240;
+	private MultipartUnbakedModel multipartModel;
 
 	public static ModelVariantMap deserialize(ModelVariantMap.DeserializationContext deserializationContext, Reader reader) {
 		return JsonHelper.deserialize(deserializationContext.gson, reader, ModelVariantMap.class);
 	}
 
 	public ModelVariantMap(Map<String, WeightedUnbakedModel> map, MultipartUnbakedModel multipartUnbakedModel) {
-		this.field_4240 = multipartUnbakedModel;
+		this.multipartModel = multipartUnbakedModel;
 		this.variantMap.putAll(map);
 	}
 
@@ -50,7 +50,7 @@ public class ModelVariantMap {
 		}
 
 		if (modelVariantMap != null) {
-			this.field_4240 = modelVariantMap.field_4240;
+			this.multipartModel = modelVariantMap.multipartModel;
 		}
 	}
 
@@ -61,7 +61,7 @@ public class ModelVariantMap {
 			if (object instanceof ModelVariantMap) {
 				ModelVariantMap modelVariantMap = (ModelVariantMap)object;
 				if (this.variantMap.equals(modelVariantMap.variantMap)) {
-					return this.hasMultipartModel() ? this.field_4240.equals(modelVariantMap.field_4240) : !modelVariantMap.hasMultipartModel();
+					return this.hasMultipartModel() ? this.multipartModel.equals(modelVariantMap.multipartModel) : !modelVariantMap.hasMultipartModel();
 				}
 			}
 
@@ -70,7 +70,7 @@ public class ModelVariantMap {
 	}
 
 	public int hashCode() {
-		return 31 * this.variantMap.hashCode() + (this.hasMultipartModel() ? this.field_4240.hashCode() : 0);
+		return 31 * this.variantMap.hashCode() + (this.hasMultipartModel() ? this.multipartModel.hashCode() : 0);
 	}
 
 	public Map<String, WeightedUnbakedModel> getVariantMap() {
@@ -78,11 +78,11 @@ public class ModelVariantMap {
 	}
 
 	public boolean hasMultipartModel() {
-		return this.field_4240 != null;
+		return this.multipartModel != null;
 	}
 
-	public MultipartUnbakedModel method_3421() {
-		return this.field_4240;
+	public MultipartUnbakedModel getMultipartModel() {
+		return this.multipartModel;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -110,7 +110,7 @@ public class ModelVariantMap {
 		public ModelVariantMap method_3428(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Map<String, WeightedUnbakedModel> map = this.deserializeVariants(jsonDeserializationContext, jsonObject);
-			MultipartUnbakedModel multipartUnbakedModel = this.method_3427(jsonDeserializationContext, jsonObject);
+			MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(jsonDeserializationContext, jsonObject);
 			if (!map.isEmpty() || multipartUnbakedModel != null && !multipartUnbakedModel.getModels().isEmpty()) {
 				return new ModelVariantMap(map, multipartUnbakedModel);
 			} else {
@@ -132,7 +132,7 @@ public class ModelVariantMap {
 		}
 
 		@Nullable
-		protected MultipartUnbakedModel method_3427(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
+		protected MultipartUnbakedModel deserializeMultipart(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
 			if (!jsonObject.has("multipart")) {
 				return null;
 			} else {

@@ -18,13 +18,12 @@ import net.minecraft.world.BlockView;
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
 	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
-		if (MinecraftClient.getInstance().field_1724.isCreativeLevelTwoOp() || MinecraftClient.getInstance().field_1724.isSpectator()) {
+		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
-				if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695
-					|| structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12697) {
+				if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.getMode() == StructureBlockMode.field_12697) {
 					double h = 0.01;
 					double j = (double)blockPos.getX();
 					double k = (double)blockPos.getZ();
@@ -89,11 +88,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					this.disableLightmap(true);
-					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
 
-					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, true);
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}
@@ -121,13 +120,13 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		boolean bl
 	) {
 		GlStateManager.lineWidth(bl ? 3.0F : 1.0F);
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		BlockView blockView = structureBlockBlockEntity.getWorld();
 		BlockPos blockPos2 = structureBlockBlockEntity.getPos();
 		BlockPos blockPos3 = blockPos2.add(blockPos);
 
 		for (BlockPos blockPos4 : BlockPos.iterate(blockPos3, blockPos3.add(structureBlockBlockEntity.getSize()).add(-1, -1, -1))) {
-			BlockState blockState = blockView.method_8320(blockPos4);
+			BlockState blockState = blockView.getBlockState(blockPos4);
 			boolean bl2 = blockState.isAir();
 			boolean bl3 = blockState.getBlock() == Blocks.field_10369;
 			if (bl2 || bl3) {
@@ -153,7 +152,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 
 	private void method_3586(Tessellator tessellator, BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, int j, int k, int l) {
 		GlStateManager.lineWidth(2.0F);
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(d, e, f).color((float)k, (float)k, (float)k, 0.0F).next();
 		bufferBuilder.vertex(d, e, f).color(k, k, k, j).next();
 		bufferBuilder.vertex(g, e, f).color(k, l, l, j).next();

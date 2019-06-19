@@ -34,7 +34,7 @@ public class CowEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.method_8091(Items.field_8861), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.field_8861), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -64,7 +64,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_15110, 0.15F, 1.0F);
 	}
 
@@ -92,7 +92,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	public CowEntity method_6483(PassiveEntity passiveEntity) {
-		return EntityType.field_6085.method_5883(this.field_6002);
+		return EntityType.field_6085.create(this.world);
 	}
 
 	@Override

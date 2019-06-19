@@ -30,19 +30,19 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 	private int buttonX;
 	private int buttonY;
 	private MinecraftClient client;
-	private RecipeResultCollection field_3111;
+	private RecipeResultCollection resultCollection;
 	private Recipe<?> lastClickedRecipe;
 	private float time;
 	private boolean furnace;
 
-	public void method_2617(MinecraftClient minecraftClient, RecipeResultCollection recipeResultCollection, int i, int j, int k, int l, float f) {
+	public void showAlternatesForResult(MinecraftClient minecraftClient, RecipeResultCollection recipeResultCollection, int i, int j, int k, int l, float f) {
 		this.client = minecraftClient;
-		this.field_3111 = recipeResultCollection;
-		if (minecraftClient.field_1724.container instanceof AbstractFurnaceContainer) {
+		this.resultCollection = recipeResultCollection;
+		if (minecraftClient.player.container instanceof AbstractFurnaceContainer) {
 			this.furnace = true;
 		}
 
-		boolean bl = minecraftClient.field_1724.getRecipeBook().isFilteringCraftable((CraftingContainer<?>)minecraftClient.field_1724.container);
+		boolean bl = minecraftClient.player.getRecipeBook().isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container);
 		List<Recipe<?>> list = recipeResultCollection.getResultsExclusive(true);
 		List<Recipe<?>> list2 = bl ? Collections.emptyList() : recipeResultCollection.getResultsExclusive(false);
 		int m = list.size();
@@ -93,8 +93,8 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		return false;
 	}
 
-	public RecipeResultCollection method_2614() {
-		return this.field_3111;
+	public RecipeResultCollection getResults() {
+		return this.resultCollection;
 	}
 
 	public Recipe<?> getLastClickedRecipe() {
@@ -129,7 +129,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 			GuiLighting.enableForItems();
 			GlStateManager.enableBlend();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.method_1531().bindTexture(BG_TEX);
+			this.client.getTextureManager().bindTexture(BG_TEX);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.0F, 170.0F);
 			int k = this.alternateButtons.size() <= 16 ? 4 : 5;
@@ -221,7 +221,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		public void renderButton(int i, int j, float f) {
 			GuiLighting.enableForItems();
 			GlStateManager.enableAlphaTest();
-			RecipeAlternatesWidget.this.client.method_1531().bindTexture(RecipeAlternatesWidget.BG_TEX);
+			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);
 			int k = 152;
 			if (!this.isCraftable) {
 				k += 26;
@@ -242,7 +242,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 				GlStateManager.scalef(0.42F, 0.42F, 1.0F);
 				GlStateManager.enableLighting();
 				RecipeAlternatesWidget.this.client
-					.method_1480()
+					.getItemRenderer()
 					.renderGuiItem(inputSlot.field_3120[MathHelper.floor(RecipeAlternatesWidget.this.time / 30.0F) % inputSlot.field_3120.length], m, n);
 				GlStateManager.disableLighting();
 				GlStateManager.popMatrix();

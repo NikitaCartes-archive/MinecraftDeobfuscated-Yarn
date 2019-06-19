@@ -33,7 +33,7 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public void method_7840(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+	public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
 			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.field_9125, itemStack) > 0;
@@ -49,7 +49,7 @@ public class BowItem extends RangedWeaponItem {
 					boolean bl2 = bl && itemStack2.getItem() == Items.field_8107;
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
-						ProjectileEntity projectileEntity = arrowItem.method_7702(world, itemStack2, playerEntity);
+						ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack2, playerEntity);
 						projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
@@ -121,7 +121,7 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {

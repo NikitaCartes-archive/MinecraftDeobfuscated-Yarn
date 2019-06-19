@@ -76,9 +76,9 @@ public final class ItemStack {
 	private CompoundTag tag;
 	private boolean empty;
 	private ItemFrameEntity frame;
-	private CachedBlockPosition field_8039;
+	private CachedBlockPosition lastDestroyPos;
 	private boolean lastDestroyResult;
-	private CachedBlockPosition field_8032;
+	private CachedBlockPosition lastPlaceOnPos;
 	private boolean lastPlaceOnResult;
 
 	private static DecimalFormat createModifierFormat() {
@@ -149,10 +149,8 @@ public final class ItemStack {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(itemUsageContext.method_8045(), blockPos, false);
-		if (playerEntity != null
-			&& !playerEntity.abilities.allowModifyWorld
-			&& !this.method_7944(itemUsageContext.method_8045().getTagManager(), cachedBlockPosition)) {
+		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(itemUsageContext.getWorld(), blockPos, false);
+		if (playerEntity != null && !playerEntity.abilities.allowModifyWorld && !this.canPlaceOn(itemUsageContext.getWorld().getTagManager(), cachedBlockPosition)) {
 			return ActionResult.field_5811;
 		} else {
 			Item item = this.getItem();
@@ -165,16 +163,16 @@ public final class ItemStack {
 		}
 	}
 
-	public float method_7924(BlockState blockState) {
-		return this.getItem().method_7865(this, blockState);
+	public float getMiningSpeed(BlockState blockState) {
+		return this.getItem().getMiningSpeed(this, blockState);
 	}
 
-	public TypedActionResult<ItemStack> method_7913(World world, PlayerEntity playerEntity, Hand hand) {
-		return this.getItem().method_7836(world, playerEntity, hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		return this.getItem().use(world, playerEntity, hand);
 	}
 
-	public ItemStack method_7910(World world, LivingEntity livingEntity) {
-		return this.getItem().method_7861(this, world, livingEntity);
+	public ItemStack finishUsing(World world, LivingEntity livingEntity) {
+		return this.getItem().finishUsing(this, world, livingEntity);
 	}
 
 	public CompoundTag toTag(CompoundTag compoundTag) {
@@ -252,7 +250,7 @@ public final class ItemStack {
 	}
 
 	public <T extends LivingEntity> void damage(int i, T livingEntity, Consumer<T> consumer) {
-		if (!livingEntity.field_6002.isClient && (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).abilities.creativeMode)) {
+		if (!livingEntity.world.isClient && (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).abilities.creativeMode)) {
 			if (this.isDamageable()) {
 				if (this.damage(i, livingEntity.getRand(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
 					consumer.accept(livingEntity);
@@ -275,15 +273,15 @@ public final class ItemStack {
 		}
 	}
 
-	public void method_7952(World world, BlockState blockState, BlockPos blockPos, PlayerEntity playerEntity) {
+	public void postMine(World world, BlockState blockState, BlockPos blockPos, PlayerEntity playerEntity) {
 		Item item = this.getItem();
-		if (item.method_7879(this, world, blockState, blockPos, playerEntity)) {
+		if (item.postMine(this, world, blockState, blockPos, playerEntity)) {
 			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 		}
 	}
 
-	public boolean method_7951(BlockState blockState) {
-		return this.getItem().method_7856(blockState);
+	public boolean isEffectiveOn(BlockState blockState) {
+		return this.getItem().isEffectiveOn(blockState);
 	}
 
 	public boolean useOnEntity(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
@@ -360,19 +358,19 @@ public final class ItemStack {
 		return this.count + " " + this.getItem();
 	}
 
-	public void method_7917(World world, Entity entity, int i, boolean bl) {
+	public void inventoryTick(World world, Entity entity, int i, boolean bl) {
 		if (this.cooldown > 0) {
 			this.cooldown--;
 		}
 
 		if (this.getItem() != null) {
-			this.getItem().method_7888(this, world, entity, i, bl);
+			this.getItem().inventoryTick(this, world, entity, i, bl);
 		}
 	}
 
-	public void method_7982(World world, PlayerEntity playerEntity, int i) {
+	public void onCraft(World world, PlayerEntity playerEntity, int i) {
 		playerEntity.increaseStat(Stats.field_15370.getOrCreateStat(this.getItem()), i);
-		this.getItem().method_7843(this, world, playerEntity);
+		this.getItem().onCraft(this, world, playerEntity);
 	}
 
 	public int getMaxUseTime() {
@@ -383,8 +381,8 @@ public final class ItemStack {
 		return this.getItem().getUseAction(this);
 	}
 
-	public void method_7930(World world, LivingEntity livingEntity, int i) {
-		this.getItem().method_7840(this, world, livingEntity, i);
+	public void onStoppedUsing(World world, LivingEntity livingEntity, int i) {
+		this.getItem().onStoppedUsing(this, world, livingEntity, i);
 	}
 
 	public boolean isUsedOnRelease() {
@@ -507,7 +505,7 @@ public final class ItemStack {
 		}
 
 		if ((i & 32) == 0) {
-			this.getItem().method_7851(this, playerEntity == null ? null : playerEntity.field_6002, list, tooltipContext);
+			this.getItem().appendTooltip(this, playerEntity == null ? null : playerEntity.world, list, tooltipContext);
 		}
 
 		if (this.hasTag()) {
@@ -701,7 +699,7 @@ public final class ItemStack {
 		return !this.getItem().isEnchantable(this) ? false : !this.hasEnchantments();
 	}
 
-	public void method_7978(Enchantment enchantment, int i) {
+	public void addEnchantment(Enchantment enchantment, int i) {
 		this.getOrCreateTag();
 		if (!this.tag.containsKey("Enchantments", 9)) {
 			this.tag.put("Enchantments", new ListTag());
@@ -798,7 +796,7 @@ public final class ItemStack {
 		return text2;
 	}
 
-	private static boolean method_7918(CachedBlockPosition cachedBlockPosition, @Nullable CachedBlockPosition cachedBlockPosition2) {
+	private static boolean areBlocksEqual(CachedBlockPosition cachedBlockPosition, @Nullable CachedBlockPosition cachedBlockPosition2) {
 		if (cachedBlockPosition2 == null || cachedBlockPosition.getBlockState() != cachedBlockPosition2.getBlockState()) {
 			return false;
 		} else if (cachedBlockPosition.getBlockEntity() == null && cachedBlockPosition2.getBlockEntity() == null) {
@@ -810,11 +808,11 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean method_7940(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
-		if (method_7918(cachedBlockPosition, this.field_8039)) {
+	public boolean canDestroy(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
+		if (areBlocksEqual(cachedBlockPosition, this.lastDestroyPos)) {
 			return this.lastDestroyResult;
 		} else {
-			this.field_8039 = cachedBlockPosition;
+			this.lastDestroyPos = cachedBlockPosition;
 			if (this.hasTag() && this.tag.containsKey("CanDestroy", 9)) {
 				ListTag listTag = this.tag.getList("CanDestroy", 8);
 
@@ -837,11 +835,11 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean method_7944(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
-		if (method_7918(cachedBlockPosition, this.field_8032)) {
+	public boolean canPlaceOn(RegistryTagManager registryTagManager, CachedBlockPosition cachedBlockPosition) {
+		if (areBlocksEqual(cachedBlockPosition, this.lastPlaceOnPos)) {
 			return this.lastPlaceOnResult;
 		} else {
-			this.field_8032 = cachedBlockPosition;
+			this.lastPlaceOnPos = cachedBlockPosition;
 			if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9)) {
 				ListTag listTag = this.tag.getList("CanPlaceOn", 8);
 
@@ -889,8 +887,8 @@ public final class ItemStack {
 		this.increment(-i);
 	}
 
-	public void method_7949(World world, LivingEntity livingEntity, int i) {
-		this.getItem().method_7852(world, livingEntity, this, i);
+	public void usageTick(World world, LivingEntity livingEntity, int i) {
+		this.getItem().usageTick(world, livingEntity, this, i);
 	}
 
 	public boolean isFood() {

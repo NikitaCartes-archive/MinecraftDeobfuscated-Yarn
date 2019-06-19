@@ -30,7 +30,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.field_1773.getCamera();
+		Camera camera = this.client.gameRenderer.getCamera();
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
