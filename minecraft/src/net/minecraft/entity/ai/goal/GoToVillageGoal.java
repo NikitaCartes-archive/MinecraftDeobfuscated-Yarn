@@ -28,17 +28,17 @@ public class GoToVillageGoal extends Goal {
 	public boolean canStart() {
 		if (this.mob.hasPassengers()) {
 			return false;
-		} else if (this.mob.field_6002.isDaylight()) {
+		} else if (this.mob.world.isDaylight()) {
 			return false;
 		} else if (this.mob.getRand().nextInt(this.searchRange) != 0) {
 			return false;
 		} else {
-			ServerWorld serverWorld = (ServerWorld)this.mob.field_6002;
+			ServerWorld serverWorld = (ServerWorld)this.mob.world;
 			BlockPos blockPos = new BlockPos(this.mob);
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = PathfindingUtil.method_19108(
+				Vec3d vec3d = PathfindingUtil.findTargetStraight(
 					this.mob, 15, 7, blockPosx -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPosx)))
 				);
 				this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
@@ -56,14 +56,14 @@ public class GoToVillageGoal extends Goal {
 	public void tick() {
 		if (this.targetPosition != null) {
 			EntityNavigation entityNavigation = this.mob.getNavigation();
-			if (entityNavigation.isIdle() && !this.targetPosition.isWithinDistance(this.mob.method_19538(), 10.0)) {
+			if (entityNavigation.isIdle() && !this.targetPosition.isWithinDistance(this.mob.getPos(), 10.0)) {
 				Vec3d vec3d = new Vec3d(this.targetPosition);
 				Vec3d vec3d2 = new Vec3d(this.mob.x, this.mob.y, this.mob.z);
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.mob.field_6002.getTopPosition(Heightmap.Type.field_13203, blockPos);
+				blockPos = this.mob.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
 				if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.findOtherWaypoint();
 				}
@@ -74,7 +74,7 @@ public class GoToVillageGoal extends Goal {
 	private void findOtherWaypoint() {
 		Random random = this.mob.getRand();
 		BlockPos blockPos = this.mob
-			.field_6002
+			.world
 			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}

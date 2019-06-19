@@ -43,17 +43,17 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
 		if (set.contains(this.id)) {
 			lootTableReporter.report("Table " + this.id + " is recursively called");
 		} else {
-			super.method_292(lootTableReporter, function, set, lootContextType);
+			super.check(lootTableReporter, function, set, lootContextType);
 			LootSupplier lootSupplier = (LootSupplier)function.apply(this.id);
 			if (lootSupplier == null) {
 				lootTableReporter.report("Unknown loot table called " + this.id);
 			} else {
 				Set<Identifier> set2 = ImmutableSet.<Identifier>builder().addAll(set).add(this.id).build();
-				lootSupplier.method_330(lootTableReporter.makeChild("->{" + this.id + "}"), function, set2, lootContextType);
+				lootSupplier.check(lootTableReporter.makeChild("->{" + this.id + "}"), function, set2, lootContextType);
 			}
 		}
 	}

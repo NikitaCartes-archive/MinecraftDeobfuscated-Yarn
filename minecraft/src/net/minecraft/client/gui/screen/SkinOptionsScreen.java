@@ -26,7 +26,7 @@ public class SkinOptionsScreen extends Screen {
 			this.addButton(
 				new ButtonWidget(
 					this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.getPlayerModelPartDisplayString(playerModelPart), buttonWidget -> {
-						this.minecraft.field_1690.togglePlayerModelPart(playerModelPart);
+						this.minecraft.options.togglePlayerModelPart(playerModelPart);
 						buttonWidget.setMessage(this.getPlayerModelPartDisplayString(playerModelPart));
 					}
 				)
@@ -41,12 +41,12 @@ public class SkinOptionsScreen extends Screen {
 				150,
 				20,
 				Option.MAIN_HAND,
-				Option.MAIN_HAND.method_18501(this.minecraft.field_1690),
+				Option.MAIN_HAND.getMessage(this.minecraft.options),
 				buttonWidget -> {
-					Option.MAIN_HAND.method_18500(this.minecraft.field_1690, 1);
-					this.minecraft.field_1690.write();
-					buttonWidget.setMessage(Option.MAIN_HAND.method_18501(this.minecraft.field_1690));
-					this.minecraft.field_1690.onPlayerModelPartChange();
+					Option.MAIN_HAND.cycle(this.minecraft.options, 1);
+					this.minecraft.options.write();
+					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.minecraft.options));
+					this.minecraft.options.onPlayerModelPartChange();
 				}
 			)
 		);
@@ -56,14 +56,14 @@ public class SkinOptionsScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.method_1507(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
 			)
 		);
 	}
 
 	@Override
 	public void removed() {
-		this.minecraft.field_1690.write();
+		this.minecraft.options.write();
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class SkinOptionsScreen extends Screen {
 
 	private String getPlayerModelPartDisplayString(PlayerModelPart playerModelPart) {
 		String string;
-		if (this.minecraft.field_1690.getEnabledPlayerModelParts().contains(playerModelPart)) {
+		if (this.minecraft.options.getEnabledPlayerModelParts().contains(playerModelPart)) {
 			string = I18n.translate("options.on");
 		} else {
 			string = I18n.translate("options.off");

@@ -164,10 +164,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.method_1531().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float g = 32.0F;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
 			.texture((double)((float)this.left / 32.0F), (double)((float)(this.bottom + (int)this.getScrollAmount()) / 32.0F))
 			.color(32, 32, 32, 255)
@@ -203,13 +203,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		GlStateManager.shadeModel(7425);
 		GlStateManager.disableTexture();
 		int o = 4;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
 		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 		tessellator.draw();
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 		bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
@@ -224,19 +224,19 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				r = this.top;
 			}
 
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)k, (double)this.bottom, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)l, (double)this.bottom, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)l, (double)this.top, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)k, (double)this.top, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 			tessellator.draw();
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
 			bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
 			bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
 			bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 			tessellator.draw();
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
 			bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
 			bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
@@ -406,14 +406,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 					GlStateManager.disableTexture();
 					float g = this.isFocused() ? 1.0F : 0.5F;
 					GlStateManager.color4f(g, g, g, 1.0F);
-					bufferBuilder.method_1328(7, VertexFormats.field_1592);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
 					bufferBuilder.vertex((double)t, (double)(q + r + 2), 0.0).next();
 					bufferBuilder.vertex((double)u, (double)(q + r + 2), 0.0).next();
 					bufferBuilder.vertex((double)u, (double)(q - 2), 0.0).next();
 					bufferBuilder.vertex((double)t, (double)(q - 2), 0.0).next();
 					tessellator.draw();
 					GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
-					bufferBuilder.method_1328(7, VertexFormats.field_1592);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
 					bufferBuilder.vertex((double)(t + 1), (double)(q + r + 1), 0.0).next();
 					bufferBuilder.vertex((double)(u - 1), (double)(q + r + 1), 0.0).next();
 					bufferBuilder.vertex((double)(u - 1), (double)(q - 1), 0.0).next();
@@ -447,10 +447,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.method_1531().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.left + this.width), (double)j, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))

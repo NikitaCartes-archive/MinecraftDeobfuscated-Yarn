@@ -20,7 +20,7 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public BlockUpdateS2CPacket(BlockView blockView, BlockPos blockPos) {
 		this.pos = blockPos;
-		this.state = blockView.method_8320(blockPos);
+		this.state = blockView.getBlockState(blockPos);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeVarInt(Block.method_9507(this.state));
+		packetByteBuf.writeVarInt(Block.getRawIdFromState(this.state));
 	}
 
 	public void method_11310(ClientPlayPacketListener clientPlayPacketListener) {

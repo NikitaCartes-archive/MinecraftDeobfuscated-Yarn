@@ -17,9 +17,9 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 
 	public VillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
 		super(entityRenderDispatcher, new VillagerResemblingModel<>(0.0F), 0.5F);
-		this.method_4046(new HeadFeatureRenderer<>(this));
-		this.method_4046(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "villager"));
-		this.method_4046(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "villager"));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_4151(VillagerEntity villagerEntity) {

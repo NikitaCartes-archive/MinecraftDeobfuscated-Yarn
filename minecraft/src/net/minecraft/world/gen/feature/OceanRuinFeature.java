@@ -31,12 +31,12 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 
 	@Override
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.method_12109().getOceanRuinSpacing();
+		return chunkGenerator.getConfig().getOceanRuinSpacing();
 	}
 
 	@Override
 	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.method_12109().getOceanRuinSeparation();
+		return chunkGenerator.getConfig().getOceanRuinSeparation();
 	}
 
 	@Override
@@ -76,13 +76,13 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13536);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.OCEAN_RUIN);
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);
 			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
-			OceanRuinGenerator.method_14827(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);
+			OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

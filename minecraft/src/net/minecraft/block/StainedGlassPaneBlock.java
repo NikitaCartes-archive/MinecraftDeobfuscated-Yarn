@@ -9,14 +9,14 @@ public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
 	public StainedGlassPaneBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_10905, Boolean.valueOf(false))
-				.method_11657(field_10907, Boolean.valueOf(false))
-				.method_11657(field_10904, Boolean.valueOf(false))
-				.method_11657(field_10903, Boolean.valueOf(false))
-				.method_11657(field_10900, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory
+				.getDefaultState()
+				.with(NORTH, Boolean.valueOf(false))
+				.with(EAST, Boolean.valueOf(false))
+				.with(SOUTH, Boolean.valueOf(false))
+				.with(WEST, Boolean.valueOf(false))
+				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 

@@ -13,6 +13,6 @@ public class IcePileFeature extends AbstractPileFeature {
 
 	@Override
 	protected BlockState getPileBlockState(IWorld iWorld) {
-		return iWorld.getRandom().nextInt(7) == 0 ? Blocks.field_10384.method_9564() : Blocks.field_10225.method_9564();
+		return iWorld.getRandom().nextInt(7) == 0 ? Blocks.field_10384.getDefaultState() : Blocks.field_10225.getDefaultState();
 	}
 }

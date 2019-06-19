@@ -21,103 +21,95 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndPortalFrameBlock extends Block {
-	public static final DirectionProperty field_10954 = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_10958 = Properties.field_12488;
-	protected static final VoxelShape field_10956 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
-	protected static final VoxelShape field_10953 = Block.method_9541(4.0, 13.0, 4.0, 12.0, 16.0, 12.0);
-	protected static final VoxelShape field_10955 = VoxelShapes.method_1084(field_10956, field_10953);
-	private static BlockPattern field_10957;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty EYE = Properties.EYE;
+	protected static final VoxelShape FRAME_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
+	protected static final VoxelShape EYE_SHAPE = Block.createCuboidShape(4.0, 13.0, 4.0, 12.0, 16.0, 12.0);
+	protected static final VoxelShape FRAME_WITH_EYE_SHAPE = VoxelShapes.union(FRAME_SHAPE, EYE_SHAPE);
+	private static BlockPattern COMPLETED_FRAME;
 
 	public EndPortalFrameBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10954, Direction.field_11043).method_11657(field_10958, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(EYE, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean method_9526(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return blockState.method_11654(field_10958) ? field_10955 : field_10956;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return blockState.get(EYE) ? FRAME_WITH_EYE_SHAPE : FRAME_SHAPE;
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564().method_11657(field_10954, itemPlacementContext.getPlayerFacing().getOpposite()).method_11657(field_10958, Boolean.valueOf(false));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite()).with(EYE, Boolean.valueOf(false));
 	}
 
 	@Override
-	public boolean method_9498(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
-		return blockState.method_11654(field_10958) ? 15 : 0;
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		return blockState.get(EYE) ? 15 : 0;
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.method_11657(field_10954, blockRotation.rotate(blockState.method_11654(field_10954)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.method_10345(blockState.method_11654(field_10954)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10954, field_10958);
+		builder.add(FACING, EYE);
 	}
 
-	public static BlockPattern method_10054() {
-		if (field_10957 == null) {
-			field_10957 = BlockPatternBuilder.start()
+	public static BlockPattern getCompletedFramePattern() {
+		if (COMPLETED_FRAME == null) {
+			COMPLETED_FRAME = BlockPatternBuilder.start()
 				.aisle("?vvv?", ">???<", ">???<", ">???<", "?^^^?")
 				.where('?', CachedBlockPosition.matchesBlockState(BlockStatePredicate.ANY))
 				.where(
 					'^',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398)
-							.method_11762(field_10958, Predicates.equalTo(true))
-							.method_11762(field_10954, Predicates.equalTo(Direction.field_11035))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.field_11035))
 					)
 				)
 				.where(
 					'>',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398)
-							.method_11762(field_10958, Predicates.equalTo(true))
-							.method_11762(field_10954, Predicates.equalTo(Direction.field_11039))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.field_11039))
 					)
 				)
 				.where(
 					'v',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398)
-							.method_11762(field_10958, Predicates.equalTo(true))
-							.method_11762(field_10954, Predicates.equalTo(Direction.field_11043))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.field_11043))
 					)
 				)
 				.where(
 					'<',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398)
-							.method_11762(field_10958, Predicates.equalTo(true))
-							.method_11762(field_10954, Predicates.equalTo(Direction.field_11034))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.field_11034))
 					)
 				)
 				.build();
 		}
 
-		return field_10957;
+		return COMPLETED_FRAME;
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

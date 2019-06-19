@@ -18,8 +18,8 @@ public class MultiTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		((TickScheduler)this.mapper.apply(blockPos)).method_8675(blockPos, object, i, taskPriority);
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+		((TickScheduler)this.mapper.apply(blockPos)).schedule(blockPos, object, i, taskPriority);
 	}
 
 	@Override

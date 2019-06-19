@@ -18,7 +18,7 @@ public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEnt
 
 	public LlamaEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new LlamaEntityModel<>(0.0F), 0.7F);
-		this.method_4046(new LlamaDecorFeatureRenderer(this));
+		this.addFeature(new LlamaDecorFeatureRenderer(this));
 	}
 
 	protected Identifier method_4037(LlamaEntity llamaEntity) {

@@ -77,7 +77,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 		}
 
 		public static UsedTotemCriterion.Conditions create(ItemConvertible itemConvertible) {
-			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().method_8977(itemConvertible).build());
+			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {

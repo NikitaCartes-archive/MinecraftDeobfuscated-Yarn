@@ -10,15 +10,15 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class MouseOptionsScreen extends Screen {
-	private final Screen field_19245;
+	private final Screen parent;
 	private ButtonListWidget buttonList;
 	private static final Option[] OPTIONS = new Option[]{
-		Option.field_1944, Option.INVERT_MOUSE, Option.field_18191, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN
+		Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN
 	};
 
 	public MouseOptionsScreen(Screen screen) {
 		super(new TranslatableText("options.mouse_settings.title"));
-		this.field_19245 = screen;
+		this.parent = screen;
 	}
 
 	@Override
@@ -27,14 +27,14 @@ public class MouseOptionsScreen extends Screen {
 		this.buttonList.addAll(OPTIONS);
 		this.children.add(this.buttonList);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.minecraft.field_1690.write();
-			this.minecraft.method_1507(this.field_19245);
+			this.minecraft.options.write();
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 
 	@Override
 	public void removed() {
-		this.minecraft.field_1690.write();
+		this.minecraft.options.write();
 	}
 
 	@Override

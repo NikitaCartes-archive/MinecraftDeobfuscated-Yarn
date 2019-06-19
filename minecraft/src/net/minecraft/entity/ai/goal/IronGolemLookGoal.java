@@ -18,15 +18,15 @@ public class IronGolemLookGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.golem.field_6002.isDaylight()) {
+		if (!this.golem.world.isDaylight()) {
 			return false;
 		} else if (this.golem.getRand().nextInt(8000) != 0) {
 			return false;
 		} else {
 			this.targetVillager = this.golem
-				.field_6002
-				.method_18465(
-					VillagerEntity.class, CLOSE_VILLAGER_PREDICATE, this.golem, this.golem.x, this.golem.y, this.golem.z, this.golem.method_5829().expand(6.0, 2.0, 6.0)
+				.world
+				.getClosestEntity(
+					VillagerEntity.class, CLOSE_VILLAGER_PREDICATE, this.golem, this.golem.x, this.golem.y, this.golem.z, this.golem.getBoundingBox().expand(6.0, 2.0, 6.0)
 				);
 			return this.targetVillager != null;
 		}

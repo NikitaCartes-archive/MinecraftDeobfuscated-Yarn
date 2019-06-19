@@ -17,12 +17,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
-	private final ItemRenderer field_4726;
+	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 
 	public ItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
 		super(entityRenderDispatcher);
-		this.field_4726 = itemRenderer;
+		this.itemRenderer = itemRenderer;
 		this.field_4673 = 0.15F;
 		this.field_4672 = 0.75F;
 	}
@@ -70,7 +70,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		this.random.setSeed((long)i);
 		boolean bl = false;
 		if (this.bindEntityTexture(itemEntity)) {
-			this.renderManager.field_4685.method_4619(this.method_3999(itemEntity)).pushFilter(false, false);
+			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).pushFilter(false, false);
 			bl = true;
 		}
 
@@ -82,7 +82,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.pushMatrix();
-		BakedModel bakedModel = this.field_4726.method_4028(itemStack, itemEntity.field_6002, null);
+		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.world, null);
 		int j = this.method_3997(itemEntity, d, e, f, h, bakedModel);
 		float k = bakedModel.getTransformation().ground.scale.x();
 		float l = bakedModel.getTransformation().ground.scale.y();
@@ -111,7 +111,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 				}
 
 				bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4318);
-				this.field_4726.method_4006(itemStack, bakedModel);
+				this.itemRenderer.renderItemAndGlow(itemStack, bakedModel);
 				GlStateManager.popMatrix();
 			} else {
 				GlStateManager.pushMatrix();
@@ -122,7 +122,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 				}
 
 				bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4318);
-				this.field_4726.method_4006(itemStack, bakedModel);
+				this.itemRenderer.renderItemAndGlow(itemStack, bakedModel);
 				GlStateManager.popMatrix();
 				GlStateManager.translatef(0.0F * k, 0.0F * l, 0.09375F * m);
 			}
@@ -138,7 +138,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		GlStateManager.disableBlend();
 		this.bindEntityTexture(itemEntity);
 		if (bl) {
-			this.renderManager.field_4685.method_4619(this.method_3999(itemEntity)).popFilter();
+			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).popFilter();
 		}
 
 		super.render(itemEntity, d, e, f, g, h);

@@ -60,6 +60,6 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private Camera getCamera() {
-		return this.client.field_1773.getCamera();
+		return this.client.gameRenderer.getCamera();
 	}
 }

@@ -41,16 +41,16 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d method_6851() {
+	public Vec3d getTarget() {
 		return this.field_7048;
 	}
 
 	private void method_6844() {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
-			BlockPos blockPos = this.dragon.field_6002.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			PlayerEntity playerEntity = this.dragon
-				.field_6002
+				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			int j;
 			if (playerEntity != null) {
@@ -75,7 +75,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	private void method_6845() {
 		if (this.field_7047 != null && !this.field_7047.isFinished()) {
-			Vec3d vec3d = this.field_7047.method_35();
+			Vec3d vec3d = this.field_7047.getCurrentPosition();
 			this.field_7047.next();
 			double d = vec3d.x;
 			double e = vec3d.z;

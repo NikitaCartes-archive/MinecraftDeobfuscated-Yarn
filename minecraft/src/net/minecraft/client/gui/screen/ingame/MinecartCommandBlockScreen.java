@@ -37,7 +37,7 @@ public class MinecartCommandBlockScreen extends AbstractCommandBlockScreen {
 		if (commandBlockExecutor instanceof CommandBlockMinecartEntity.CommandExecutor) {
 			CommandBlockMinecartEntity.CommandExecutor commandExecutor = (CommandBlockMinecartEntity.CommandExecutor)commandBlockExecutor;
 			this.minecraft
-				.method_1562()
+				.getNetworkHandler()
 				.sendPacket(
 					new UpdateCommandBlockMinecartC2SPacket(
 						commandExecutor.getMinecart().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput()

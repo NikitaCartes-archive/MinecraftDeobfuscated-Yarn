@@ -45,7 +45,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.velocityY = (byte)((int)(livingEntity.pitch * 256.0F / 360.0F));
 		this.velocityZ = (byte)((int)(livingEntity.headYaw * 256.0F / 360.0F));
 		double d = 3.9;
-		Vec3d vec3d = livingEntity.method_18798();
+		Vec3d vec3d = livingEntity.getVelocity();
 		double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
 		double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
 		double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);

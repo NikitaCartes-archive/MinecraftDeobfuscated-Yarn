@@ -29,10 +29,10 @@ public class FireworkItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+		World world = itemUsageContext.getWorld();
 		if (!world.isClient) {
 			ItemStack itemStack = itemUsageContext.getStack();
-			Vec3d vec3d = itemUsageContext.method_17698();
+			Vec3d vec3d = itemUsageContext.getHitPos();
 			FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
 			world.spawnEntity(fireworkEntity);
 			itemStack.decrement(1);
@@ -42,7 +42,7 @@ public class FireworkItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		if (playerEntity.isFallFlying()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (!world.isClient) {
@@ -60,7 +60,7 @@ public class FireworkItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		CompoundTag compoundTag = itemStack.getSubTag("Fireworks");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {

@@ -12,7 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
 public class VillageGenerator {
-	public static void method_16753(
+	public static void addPieces(
 		ChunkGenerator<?> chunkGenerator,
 		StructureManager structureManager,
 		BlockPos blockPos,
@@ -25,7 +25,7 @@ public class VillageGenerator {
 		SavannaVillageData.initialize();
 		DesertVillageData.initialize();
 		TaigaVillageData.initialize();
-		StructurePoolBasedGenerator.method_16605(
+		StructurePoolBasedGenerator.addPieces(
 			villageFeatureConfig.startPool, villageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}

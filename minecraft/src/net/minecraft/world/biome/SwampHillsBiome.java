@@ -14,7 +14,7 @@ public final class SwampHillsBiome extends Biome {
 	protected SwampHillsBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15681, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15681, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.field_9364)
 				.depth(-0.1F)
@@ -25,7 +25,7 @@ public final class SwampHillsBiome extends Biome {
 				.waterFogColor(2302743)
 				.parent("swamp")
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -58,7 +58,7 @@ public final class SwampHillsBiome extends Biome {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getGrassColorAt(BlockPos blockPos) {
-		double d = field_9324.sample((double)blockPos.getX() * 0.0225, (double)blockPos.getZ() * 0.0225);
+		double d = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.0225, (double)blockPos.getZ() * 0.0225);
 		return d < -0.1 ? 5011004 : 6975545;
 	}
 

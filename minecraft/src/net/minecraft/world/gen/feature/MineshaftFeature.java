@@ -25,8 +25,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j);
 		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-		if (chunkGenerator.method_12097(biome, Feature.field_13547)) {
-			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13547);
+		if (chunkGenerator.hasStructure(biome, Feature.MINESHAFT)) {
+			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
 			double d = mineshaftFeatureConfig.probability;
 			return random.nextDouble() < d;
 		} else {
@@ -55,8 +55,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13547);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
 			);

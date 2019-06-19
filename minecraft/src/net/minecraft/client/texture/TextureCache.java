@@ -67,7 +67,7 @@ public class TextureCache {
 
 					entry = new TextureCache.Entry();
 					entry.filename = new Identifier(string);
-					MinecraftClient.getInstance().method_1531().method_4616(entry.filename, new BannerTexture(this.filename, list3, list2));
+					MinecraftClient.getInstance().getTextureManager().registerTexture(entry.filename, new BannerTexture(this.filename, list3, list2));
 					this.cacheMap.put(string, entry);
 				}
 
@@ -86,7 +86,7 @@ public class TextureCache {
 				String string = (String)iterator.next();
 				TextureCache.Entry entry = (TextureCache.Entry)this.cacheMap.get(string);
 				if (l - entry.lastRequestTimeMillis > 5000L) {
-					MinecraftClient.getInstance().method_1531().destroyTexture(entry.filename);
+					MinecraftClient.getInstance().getTextureManager().destroyTexture(entry.filename);
 					iterator.remove();
 					return true;
 				}

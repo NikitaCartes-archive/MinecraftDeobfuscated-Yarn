@@ -79,11 +79,11 @@ public interface ParentElement extends Element {
 
 	void setFocused(@Nullable Element element);
 
-	default void method_20085(@Nullable Element element) {
+	default void setInitialFocus(@Nullable Element element) {
 		this.setFocused(element);
 	}
 
-	default void method_20086(@Nullable Element element) {
+	default void focusOn(@Nullable Element element) {
 		this.setFocused(element);
 	}
 

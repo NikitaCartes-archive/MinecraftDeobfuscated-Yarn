@@ -38,7 +38,7 @@ public class PathNodeNavigator {
 		pathNode.heapWeight = pathNode.field_34;
 		this.minHeap.clear();
 		this.field_59.clear();
-		this.minHeap.method_2(pathNode);
+		this.minHeap.push(pathNode);
 		PathNode pathNode3 = pathNode;
 		int i = 0;
 
@@ -47,7 +47,7 @@ public class PathNodeNavigator {
 				break;
 			}
 
-			PathNode pathNode4 = this.minHeap.method_6();
+			PathNode pathNode4 = this.minHeap.pop();
 			pathNode4.field_42 = true;
 			if (pathNode4.equals(pathNode2)) {
 				pathNode3 = pathNode2;
@@ -71,10 +71,10 @@ public class PathNodeNavigator {
 						pathNode5.field_36 = h;
 						pathNode5.field_34 = pathNode5.distance(pathNode2) * 1.5F + pathNode5.field_43;
 						if (pathNode5.isInHeap()) {
-							this.minHeap.method_3(pathNode5, pathNode5.field_36 + pathNode5.field_34);
+							this.minHeap.setNodeWeight(pathNode5, pathNode5.field_36 + pathNode5.field_34);
 						} else {
 							pathNode5.heapWeight = pathNode5.field_36 + pathNode5.field_34;
-							this.minHeap.method_2(pathNode5);
+							this.minHeap.push(pathNode5);
 						}
 					}
 				}

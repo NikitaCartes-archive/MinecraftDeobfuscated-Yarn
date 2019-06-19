@@ -15,18 +15,18 @@ public enum VillageGossipType {
 
 	public final String key;
 	public final int multiplier;
-	public final int maxReputation;
-	public final int field_19354;
-	public final int value;
+	public final int maxValue;
+	public final int decay;
+	public final int shareDecrement;
 	private static final Map<String, VillageGossipType> BY_KEY = (Map<String, VillageGossipType>)Stream.of(values())
 		.collect(ImmutableMap.toImmutableMap(villageGossipType -> villageGossipType.key, Function.identity()));
 
 	private VillageGossipType(String string2, int j, int k, int l, int m) {
 		this.key = string2;
 		this.multiplier = j;
-		this.maxReputation = k;
-		this.field_19354 = l;
-		this.value = m;
+		this.maxValue = k;
+		this.decay = l;
+		this.shareDecrement = m;
 	}
 
 	@Nullable

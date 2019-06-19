@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -7,13 +7,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public class class_4317 extends SpecialCraftingRecipe {
-	public class_4317(Identifier identifier) {
+public class RepairItemRecipe extends SpecialCraftingRecipe {
+	public RepairItemRecipe(Identifier identifier) {
 		super(identifier);
 	}
 
@@ -82,6 +80,6 @@ public class class_4317 extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.field_19421;
+		return RecipeSerializer.REPAIR_ITEM;
 	}
 }

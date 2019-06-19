@@ -8,10 +8,10 @@ public interface TickScheduler<T> {
 	boolean isScheduled(BlockPos blockPos, T object);
 
 	default void schedule(BlockPos blockPos, T object, int i) {
-		this.method_8675(blockPos, object, i, TaskPriority.field_9314);
+		this.schedule(blockPos, object, i, TaskPriority.field_9314);
 	}
 
-	void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority);
+	void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority);
 
 	boolean isTicking(BlockPos blockPos, T object);
 

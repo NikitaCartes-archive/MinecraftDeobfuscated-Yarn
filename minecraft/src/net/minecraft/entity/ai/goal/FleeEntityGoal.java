@@ -17,7 +17,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	private final double fastSpeed;
 	protected T targetEntity;
 	protected final float fleeDistance;
-	protected Path field_6387;
+	protected Path fleePath;
 	protected final EntityNavigation fleeingEntityNavigation;
 	protected final Class<T> classToFleeFrom;
 	protected final Predicate<LivingEntity> field_6393;
@@ -50,15 +50,15 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	@Override
 	public boolean canStart() {
 		this.targetEntity = this.mob
-			.field_6002
-			.method_18465(
+			.world
+			.getClosestEntity(
 				this.classToFleeFrom,
 				this.withinRangePredicate,
 				this.mob,
 				this.mob.x,
 				this.mob.y,
 				this.mob.z,
-				this.mob.method_5829().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
+				this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
 			);
 		if (this.targetEntity == null) {
 			return false;
@@ -69,8 +69,8 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {
 				return false;
 			} else {
-				this.field_6387 = this.fleeingEntityNavigation.method_6352(vec3d.x, vec3d.y, vec3d.z);
-				return this.field_6387 != null;
+				this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z);
+				return this.fleePath != null;
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public void start() {
-		this.fleeingEntityNavigation.method_6334(this.field_6387, this.slowSpeed);
+		this.fleeingEntityNavigation.startMovingAlong(this.fleePath, this.slowSpeed);
 	}
 
 	@Override

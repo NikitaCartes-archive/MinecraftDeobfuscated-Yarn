@@ -22,7 +22,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
+	public boolean canSpawn(ViewableWorld viewableWorld) {
 		return viewableWorld.intersectsEntities(this);
 	}
 
@@ -38,7 +38,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 
 	@Override
 	protected int getCurrentExperience(PlayerEntity playerEntity) {
-		return 1 + this.field_6002.random.nextInt(3);
+		return 1 + this.world.random.nextInt(3);
 	}
 
 	protected void tickBreath(int i) {

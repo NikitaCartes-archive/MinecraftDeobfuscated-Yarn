@@ -15,9 +15,9 @@ public class BipedEntityRenderer<T extends MobEntity, M extends BipedEntityModel
 
 	public BipedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M bipedEntityModel, float f) {
 		super(entityRenderDispatcher, bipedEntityModel, f);
-		this.method_4046(new HeadFeatureRenderer<>(this));
-		this.method_4046(new ElytraFeatureRenderer<>(this));
-		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new ElytraFeatureRenderer<>(this));
+		this.addFeature(new HeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_3982(T mobEntity) {

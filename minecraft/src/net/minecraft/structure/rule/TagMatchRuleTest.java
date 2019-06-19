@@ -27,7 +27,7 @@ public class TagMatchRuleTest extends AbstractRuleTest {
 	}
 
 	@Override
-	protected RuleTest method_16766() {
+	protected RuleTest getRuleTest() {
 		return RuleTest.field_16983;
 	}
 

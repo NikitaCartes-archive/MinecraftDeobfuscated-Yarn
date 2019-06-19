@@ -89,7 +89,7 @@ public class BasicBakedModel implements BakedModel {
 		private final ModelTransformation transformation;
 
 		public Builder(JsonUnbakedModel jsonUnbakedModel, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
-			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.method_3443(), modelItemPropertyOverrideList);
+			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
 		}
 
 		public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {

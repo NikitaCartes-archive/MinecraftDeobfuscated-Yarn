@@ -3,7 +3,6 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.class_4316;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -11,6 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
+import net.minecraft.util.Timestamp;
 
 public class VillagerWorkTask extends Task<VillagerEntity> {
 	private int ticks;
@@ -32,7 +32,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 
 	protected void method_19039(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_19386, class_4316.method_20791(l));
+		brain.putMemory(MemoryModuleType.field_19386, Timestamp.of(l));
 		if (!this.field_18403) {
 			villagerEntity.restock();
 			this.field_18403 = true;
@@ -51,8 +51,8 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			return this.ticks < 100
-				&& Objects.equals(globalPos.getDimension(), serverWorld.method_8597().method_12460())
-				&& globalPos.getPos().isWithinDistance(villagerEntity.method_19538(), 1.73);
+				&& Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType())
+				&& globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 

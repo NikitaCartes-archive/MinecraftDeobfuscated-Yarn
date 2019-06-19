@@ -65,7 +65,7 @@ public class Path {
 		this.currentNodeIndex = i;
 	}
 
-	public Vec3d method_47(Entity entity, int i) {
+	public Vec3d getNodePosition(Entity entity, int i) {
 		PathNode pathNode = (PathNode)this.nodes.get(i);
 		double d = (double)pathNode.x + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
 		double e = (double)pathNode.y;
@@ -73,11 +73,11 @@ public class Path {
 		return new Vec3d(d, e, f);
 	}
 
-	public Vec3d method_49(Entity entity) {
-		return this.method_47(entity, this.currentNodeIndex);
+	public Vec3d getNodePosition(Entity entity) {
+		return this.getNodePosition(entity, this.currentNodeIndex);
 	}
 
-	public Vec3d method_35() {
+	public Vec3d getCurrentPosition() {
 		PathNode pathNode = (PathNode)this.nodes.get(this.currentNodeIndex);
 		return new Vec3d((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
 	}

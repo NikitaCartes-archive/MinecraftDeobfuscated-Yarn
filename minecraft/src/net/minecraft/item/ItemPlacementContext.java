@@ -14,18 +14,18 @@ public class ItemPlacementContext extends ItemUsageContext {
 	protected boolean canReplaceExisting = true;
 
 	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
-		this(itemUsageContext.method_8045(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getStack(), itemUsageContext.field_17543);
+		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getStack(), itemUsageContext.hit);
 	}
 
 	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
 		super(world, playerEntity, hand, itemStack, blockHitResult);
 		this.placementPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-		this.canReplaceExisting = world.method_8320(blockHitResult.getBlockPos()).canReplace(this);
+		this.canReplaceExisting = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
 	}
 
 	public static ItemPlacementContext offset(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
 		return new ItemPlacementContext(
-			itemPlacementContext.method_8045(),
+			itemPlacementContext.getWorld(),
 			itemPlacementContext.getPlayer(),
 			itemPlacementContext.getHand(),
 			itemPlacementContext.getStack(),
@@ -48,7 +48,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	}
 
 	public boolean canPlace() {
-		return this.canReplaceExisting || this.method_8045().method_8320(this.getBlockPos()).canReplace(this);
+		return this.canReplaceExisting || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
 	}
 
 	public boolean canReplaceExisting() {

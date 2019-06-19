@@ -32,14 +32,14 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.85F;
 			this.velocityY *= 0.85F;
 			this.velocityZ *= 0.85F;
-			if (!this.world.method_8316(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
 				this.markDead();
 			}
 		}
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 

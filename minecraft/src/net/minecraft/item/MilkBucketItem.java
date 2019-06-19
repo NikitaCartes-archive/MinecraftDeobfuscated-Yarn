@@ -17,7 +17,7 @@ public class MilkBucketItem extends Item {
 	}
 
 	@Override
-	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
@@ -46,7 +46,7 @@ public class MilkBucketItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
 		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 	}

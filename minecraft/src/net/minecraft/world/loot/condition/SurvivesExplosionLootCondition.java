@@ -23,7 +23,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	public boolean method_869(LootContext lootContext) {
-		Float float_ = lootContext.method_296(LootContextParameters.field_1225);
+		Float float_ = lootContext.get(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;
@@ -33,7 +33,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 		}
 	}
 
-	public static LootCondition.Builder method_871() {
+	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
 	}
 

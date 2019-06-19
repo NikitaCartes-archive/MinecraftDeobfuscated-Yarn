@@ -19,7 +19,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 	}
 
 	public void method_4135(TntEntity tntEntity, double d, double e, double f, float g, float h) {
-		BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+		BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e + 0.5F, (float)f);
 		if ((float)tntEntity.getFuseTimer() - h + 1.0F < 10.0F) {
@@ -35,12 +35,12 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		this.bindEntityTexture(tntEntity);
 		GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-		blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), tntEntity.getBrightnessAtEyes());
+		blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), tntEntity.getBrightnessAtEyes());
 		GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(tntEntity));
-			blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		} else if (tntEntity.getFuseTimer() / 5 % 2 == 0) {
@@ -51,7 +51,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, i);
 			GlStateManager.polygonOffset(-3.0F, -3.0F);
 			GlStateManager.enablePolygonOffset();
-			blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.polygonOffset(0.0F, 0.0F);
 			GlStateManager.disablePolygonOffset();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

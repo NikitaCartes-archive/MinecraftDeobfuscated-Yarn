@@ -82,7 +82,7 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 			return new ConsumeItemCriterion.Conditions(ItemPredicate.ANY);
 		}
 
-		public static ConsumeItemCriterion.Conditions method_8828(ItemConvertible itemConvertible) {
+		public static ConsumeItemCriterion.Conditions item(ItemConvertible itemConvertible) {
 			return new ConsumeItemCriterion.Conditions(
 				new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY)
 			);

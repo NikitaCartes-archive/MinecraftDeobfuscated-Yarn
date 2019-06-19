@@ -71,7 +71,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		double ad = 1.0;
 		double ae = -1.0 + q;
 		double af = (double)j * h * (0.5 / k) + ae;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(0.0, (double)n, k).texture(1.0, af).color(r, s, t, 1.0F).next();
 		bufferBuilder.vertex(0.0, (double)i, k).texture(1.0, ae).color(r, s, t, 1.0F).next();
 		bufferBuilder.vertex(k, (double)i, 0.0).texture(0.0, ae).color(r, s, t, 1.0F).next();
@@ -103,7 +103,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		ad = 1.0;
 		ae = -1.0 + q;
 		af = (double)j * h + ae;
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(u, (double)n, v).texture(1.0, af).color(r, s, t, 0.125F).next();
 		bufferBuilder.vertex(u, (double)i, v).texture(1.0, ae).color(r, s, t, 0.125F).next();
 		bufferBuilder.vertex(m, (double)i, x).texture(0.0, ae).color(r, s, t, 0.125F).next();

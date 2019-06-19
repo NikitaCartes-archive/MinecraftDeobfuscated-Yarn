@@ -14,7 +14,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig> {
-	public final Decorator<DC> field_14115;
+	public final Decorator<DC> decorator;
 	public final DC config;
 
 	public ConfiguredDecorator(Decorator<DC> decorator, Dynamic<?> dynamic) {
@@ -22,14 +22,14 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public ConfiguredDecorator(Decorator<DC> decorator, DC decoratorConfig) {
-		this.field_14115 = decorator;
+		this.decorator = decorator;
 		this.config = decoratorConfig;
 	}
 
 	public <FC extends FeatureConfig> boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC> configuredFeature
 	) {
-		return this.field_14115.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
+		return this.decorator.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -38,7 +38,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("name"),
-					dynamicOps.createString(Registry.DECORATOR.getId(this.field_14115).toString()),
+					dynamicOps.createString(Registry.DECORATOR.getId(this.decorator).toString()),
 					dynamicOps.createString("config"),
 					this.config.serialize(dynamicOps).getValue()
 				)

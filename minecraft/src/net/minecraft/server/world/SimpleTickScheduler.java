@@ -32,7 +32,7 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 		this.scheduledTicks.add(new ScheduledTick(blockPos, object, (long)i, taskPriority));
 	}
 

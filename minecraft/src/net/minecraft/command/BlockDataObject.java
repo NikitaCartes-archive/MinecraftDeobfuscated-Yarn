@@ -25,7 +25,7 @@ public class BlockDataObject implements DataCommandObject {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(commandContext, string + "Pos");
-				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).getWorld().method_8321(blockPos);
+				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).getWorld().getBlockEntity(blockPos);
 				if (blockEntity == null) {
 					throw BlockDataObject.INVALID_BLOCK_EXCEPTION.create();
 				} else {
@@ -59,8 +59,8 @@ public class BlockDataObject implements DataCommandObject {
 		compoundTag.putInt("z", this.pos.getZ());
 		this.blockEntity.fromTag(compoundTag);
 		this.blockEntity.markDirty();
-		BlockState blockState = this.blockEntity.getWorld().method_8320(this.pos);
-		this.blockEntity.getWorld().method_8413(this.pos, blockState, blockState, 3);
+		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
+		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
 	}
 
 	@Override

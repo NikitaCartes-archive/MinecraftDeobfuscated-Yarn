@@ -99,6 +99,8 @@ public class LookControl {
 	}
 
 	private static double getLookingHeightFor(Entity entity) {
-		return entity instanceof LivingEntity ? entity.y + (double)entity.getStandingEyeHeight() : (entity.method_5829().minY + entity.method_5829().maxY) / 2.0;
+		return entity instanceof LivingEntity
+			? entity.y + (double)entity.getStandingEyeHeight()
+			: (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
 	}
 }

@@ -24,7 +24,7 @@ public abstract class AbstractPressableButtonWidget extends AbstractButtonWidget
 		} else if (i != 257 && i != 32 && i != 335) {
 			return false;
 		} else {
-			this.playDownSound(MinecraftClient.getInstance().method_1483());
+			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 			this.onPress();
 			return true;
 		}

@@ -193,7 +193,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.field_6002
+			this.world
 				.addParticle(
 					ParticleTypes.field_11211,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -203,7 +203,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 					0.0,
 					0.0
 				);
-			if (!this.field_6002.isClient) {
+			if (!this.world.isClient) {
 				this.growUp(i);
 			}
 
@@ -212,13 +212,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
 			bl = true;
-			if (!this.field_6002.isClient) {
+			if (!this.world.isClient) {
 				this.addTemper(j);
 			}
 		}
 
 		if (bl && !this.isSilent()) {
-			this.field_6002
+			this.world
 				.playSound(
 					null, this.x, this.y, this.z, SoundEvents.field_14884, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 				);
@@ -234,10 +234,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.initializeStrength();
 		int i;
 		if (entityData instanceof LlamaEntity.class_1503) {
@@ -272,7 +272,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14795, 0.15F, 1.0F);
 	}
 
@@ -322,7 +322,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	protected void updateSaddle() {
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			super.updateSaddle();
 			this.setCarpetColor(getColorFromCarpet(this.items.getInvStack(1)));
 		}
@@ -369,21 +369,21 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	protected LlamaEntity createChild() {
-		return EntityType.field_6074.method_5883(this.field_6002);
+		return EntityType.field_6074.create(this.world);
 	}
 
 	private void spitAt(LivingEntity livingEntity) {
-		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.field_6002, this);
+		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
 		double d = livingEntity.x - this.x;
-		double e = livingEntity.method_5829().minY + (double)(livingEntity.getHeight() / 3.0F) - llamaSpitEntity.y;
+		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - llamaSpitEntity.y;
 		double f = livingEntity.z - this.z;
 		float g = MathHelper.sqrt(d * d + f * f) * 0.2F;
 		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);
-		this.field_6002
+		this.world
 			.playSound(
 				null, this.x, this.y, this.z, SoundEvents.field_14789, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 			);
-		this.field_6002.spawnEntity(llamaSpitEntity);
+		this.world.spawnEntity(llamaSpitEntity);
 		this.field_6999 = true;
 	}
 
@@ -404,10 +404,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 				}
 			}
 
-			BlockState blockState = this.field_6002.method_8320(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z));
+			BlockState blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z));
 			if (!blockState.isAir() && !this.isSilent()) {
 				BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-				this.field_6002
+				this.world
 					.playSound(
 						null,
 						this.x,

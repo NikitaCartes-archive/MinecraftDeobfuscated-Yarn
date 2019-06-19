@@ -15,13 +15,13 @@ import net.minecraft.util.JsonHelper;
 @Environment(EnvType.CLIENT)
 public class ModelVariant implements ModelBakeSettings {
 	private final Identifier location;
-	private final net.minecraft.client.render.model.ModelRotation field_4328;
+	private final net.minecraft.client.render.model.ModelRotation rotation;
 	private final boolean uvLock;
 	private final int weight;
 
 	public ModelVariant(Identifier identifier, net.minecraft.client.render.model.ModelRotation modelRotation, boolean bl, int i) {
 		this.location = identifier;
-		this.field_4328 = modelRotation;
+		this.rotation = modelRotation;
 		this.uvLock = bl;
 		this.weight = i;
 	}
@@ -32,7 +32,7 @@ public class ModelVariant implements ModelBakeSettings {
 
 	@Override
 	public net.minecraft.client.render.model.ModelRotation getRotation() {
-		return this.field_4328;
+		return this.rotation;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ModelVariant implements ModelBakeSettings {
 	}
 
 	public String toString() {
-		return "Variant{modelLocation=" + this.location + ", rotation=" + this.field_4328 + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
+		return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
 	}
 
 	public boolean equals(Object object) {
@@ -56,7 +56,7 @@ public class ModelVariant implements ModelBakeSettings {
 		} else {
 			ModelVariant modelVariant = (ModelVariant)object;
 			return this.location.equals(modelVariant.location)
-				&& this.field_4328 == modelVariant.field_4328
+				&& this.rotation == modelVariant.rotation
 				&& this.uvLock == modelVariant.uvLock
 				&& this.weight == modelVariant.weight;
 		}
@@ -64,7 +64,7 @@ public class ModelVariant implements ModelBakeSettings {
 
 	public int hashCode() {
 		int i = this.location.hashCode();
-		i = 31 * i + this.field_4328.hashCode();
+		i = 31 * i + this.rotation.hashCode();
 		i = 31 * i + Boolean.valueOf(this.uvLock).hashCode();
 		return 31 * i + this.weight;
 	}
@@ -74,7 +74,7 @@ public class ModelVariant implements ModelBakeSettings {
 		public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = this.deserializeModel(jsonObject);
-			net.minecraft.client.render.model.ModelRotation modelRotation = this.method_3515(jsonObject);
+			net.minecraft.client.render.model.ModelRotation modelRotation = this.deserializeRotation(jsonObject);
 			boolean bl = this.deserializeUvLock(jsonObject);
 			int i = this.deserializeWeight(jsonObject);
 			return new ModelVariant(identifier, modelRotation, bl, i);
@@ -84,7 +84,7 @@ public class ModelVariant implements ModelBakeSettings {
 			return JsonHelper.getBoolean(jsonObject, "uvlock", false);
 		}
 
-		protected net.minecraft.client.render.model.ModelRotation method_3515(JsonObject jsonObject) {
+		protected net.minecraft.client.render.model.ModelRotation deserializeRotation(JsonObject jsonObject) {
 			int i = JsonHelper.getInt(jsonObject, "x", 0);
 			int j = JsonHelper.getInt(jsonObject, "y", 0);
 			net.minecraft.client.render.model.ModelRotation modelRotation = net.minecraft.client.render.model.ModelRotation.get(i, j);

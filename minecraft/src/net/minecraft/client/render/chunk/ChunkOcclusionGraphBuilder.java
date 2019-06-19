@@ -48,7 +48,7 @@ public class ChunkOcclusionGraphBuilder {
 		return i << 0 | j << 8 | k << 4;
 	}
 
-	public ChunkOcclusionGraph method_3679() {
+	public ChunkOcclusionGraph build() {
 		ChunkOcclusionGraph chunkOcclusionGraph = new ChunkOcclusionGraph();
 		if (4096 - this.openCount < 256) {
 			chunkOcclusionGraph.fill(true);

@@ -49,7 +49,7 @@ public class TemptGoal extends Goal {
 			--this.cooldown;
 			return false;
 		} else {
-			this.closestPlayer = this.mob.field_6002.getClosestPlayer(TEMPTING_ENTITY_PREDICATE, this.mob);
+			this.closestPlayer = this.mob.world.getClosestPlayer(TEMPTING_ENTITY_PREDICATE, this.mob);
 			if (this.closestPlayer == null) {
 				return false;
 			} else {

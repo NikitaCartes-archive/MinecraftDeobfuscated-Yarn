@@ -16,7 +16,7 @@ public class NetworkSyncedItem extends Item {
 	}
 
 	@Nullable
-	public Packet<?> method_7757(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	public Packet<?> createSyncPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 		return null;
 	}
 }

@@ -29,17 +29,17 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return !playerEntity.isCreative();
 	}
 
 	@Override
-	public float method_7865(ItemStack itemStack, BlockState blockState) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10343) {
 			return 15.0F;
 		} else {
-			Material material = blockState.method_11620();
+			Material material = blockState.getMaterial();
 			return material != Material.PLANT
 					&& material != Material.REPLACEABLE_PLANT
 					&& material != Material.UNUSED_PLANT
@@ -57,7 +57,7 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (blockState.getHardness(world, blockPos) != 0.0F) {
 			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		}
@@ -66,7 +66,7 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7856(BlockState blockState) {
+	public boolean isEffectiveOn(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_10343;
 	}
 

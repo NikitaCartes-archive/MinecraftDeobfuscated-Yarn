@@ -20,9 +20,9 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-		if (chunkGenerator.method_12097(biome, Feature.field_13538)) {
+		if (chunkGenerator.hasStructure(biome, Feature.BURIED_TREASURE)) {
 			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
-			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13538);
+			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BURIED_TREASURE);
 			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
 		} else {
 			return false;
@@ -50,7 +50,7 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k + 9, 90, l + 9);

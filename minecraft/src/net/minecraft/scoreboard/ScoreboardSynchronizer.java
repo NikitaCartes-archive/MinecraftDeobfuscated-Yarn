@@ -3,13 +3,13 @@ package net.minecraft.scoreboard;
 import net.minecraft.world.PersistentState;
 
 public class ScoreboardSynchronizer implements Runnable {
-	private final PersistentState field_66;
+	private final PersistentState compound;
 
 	public ScoreboardSynchronizer(PersistentState persistentState) {
-		this.field_66 = persistentState;
+		this.compound = persistentState;
 	}
 
 	public void run() {
-		this.field_66.markDirty();
+		this.compound.markDirty();
 	}
 }

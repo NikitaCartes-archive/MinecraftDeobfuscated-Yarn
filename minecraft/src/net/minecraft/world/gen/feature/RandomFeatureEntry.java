@@ -23,7 +23,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public RandomFeatureEntry(Feature<FC> feature, Dynamic<?> dynamic, float f) {
-		this(feature, feature.method_13148(dynamic), Float.valueOf(f));
+		this(feature, feature.deserializeConfig(dynamic), Float.valueOf(f));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -43,7 +43,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.method_13151(iWorld, chunkGenerator, random, blockPos, this.config);
+		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

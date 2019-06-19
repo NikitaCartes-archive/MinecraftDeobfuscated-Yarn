@@ -5,5 +5,5 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public interface InventoryProvider {
-	SidedInventory method_17680(BlockState blockState, IWorld iWorld, BlockPos blockPos);
+	SidedInventory getInventory(BlockState blockState, IWorld iWorld, BlockPos blockPos);
 }

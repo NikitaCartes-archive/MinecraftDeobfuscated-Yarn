@@ -26,26 +26,26 @@ public class ClockItem extends Item {
 				boolean bl = livingEntity != null;
 				Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
 				if (world == null && entity != null) {
-					world = entity.field_6002;
+					world = entity.world;
 				}
 
 				if (world == null) {
 					return 0.0F;
 				} else {
 					double d;
-					if (world.field_9247.hasVisibleSky()) {
+					if (world.dimension.hasVisibleSky()) {
 						d = (double)world.getSkyAngle(1.0F);
 					} else {
 						d = Math.random();
 					}
 
-					d = this.method_7736(world, d);
+					d = this.getTime(world, d);
 					return (float)d;
 				}
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double method_7736(World world, double d) {
+			private double getTime(World world, double d) {
 				if (world.getTime() != this.lastTick) {
 					this.lastTick = world.getTime();
 					double e = d - this.time;

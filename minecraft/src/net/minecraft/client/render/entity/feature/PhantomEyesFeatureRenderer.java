@@ -32,7 +32,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 61680.0F, 0.0F);
 		GlStateManager.enableLighting();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);

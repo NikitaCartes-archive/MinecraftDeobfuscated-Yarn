@@ -12,36 +12,36 @@ import net.minecraft.world.World;
 public class ItemUsageContext {
 	protected final PlayerEntity player;
 	protected final Hand hand;
-	protected final BlockHitResult field_17543;
-	protected final World field_8945;
+	protected final BlockHitResult hit;
+	protected final World world;
 	protected final ItemStack stack;
 
 	public ItemUsageContext(PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		this(playerEntity.field_6002, playerEntity, hand, playerEntity.getStackInHand(hand), blockHitResult);
+		this(playerEntity.world, playerEntity, hand, playerEntity.getStackInHand(hand), blockHitResult);
 	}
 
 	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
 		this.player = playerEntity;
 		this.hand = hand;
-		this.field_17543 = blockHitResult;
+		this.hit = blockHitResult;
 		this.stack = itemStack;
-		this.field_8945 = world;
+		this.world = world;
 	}
 
 	public BlockPos getBlockPos() {
-		return this.field_17543.getBlockPos();
+		return this.hit.getBlockPos();
 	}
 
 	public Direction getSide() {
-		return this.field_17543.getSide();
+		return this.hit.getSide();
 	}
 
-	public Vec3d method_17698() {
-		return this.field_17543.method_17784();
+	public Vec3d getHitPos() {
+		return this.hit.getPos();
 	}
 
 	public boolean method_17699() {
-		return this.field_17543.method_17781();
+		return this.hit.method_17781();
 	}
 
 	public ItemStack getStack() {
@@ -57,8 +57,8 @@ public class ItemUsageContext {
 		return this.hand;
 	}
 
-	public World method_8045() {
-		return this.field_8945;
+	public World getWorld() {
+		return this.world;
 	}
 
 	public Direction getPlayerFacing() {

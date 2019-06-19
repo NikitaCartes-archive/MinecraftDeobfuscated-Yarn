@@ -22,8 +22,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Override
 	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.method_12109().getEndCityDistance();
-		int n = chunkGenerator.method_12109().getEndCitySeparation();
+		int m = chunkGenerator.getConfig().getEndCityDistance();
+		int n = chunkGenerator.getConfig().getEndCitySeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -43,7 +43,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			if (!chunkGenerator.method_12097(biome, Feature.field_13553)) {
+			if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
 				return false;
 			} else {
 				int k = getGenerationHeight(i, j, chunkGenerator);
@@ -98,12 +98,12 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
 			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
-				EndCityGenerator.method_14679(structureManager, blockPos, blockRotation, this.children, this.random);
+				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}
 		}

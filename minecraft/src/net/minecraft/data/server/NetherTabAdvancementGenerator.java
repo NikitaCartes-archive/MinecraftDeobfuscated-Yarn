@@ -41,7 +41,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13076))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13076))
 			.build(consumer, "nether/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -76,7 +76,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.method_9017(Feature.field_13569)))
+			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.NETHER_BRIDGE)))
 			.build(consumer, "nether/find_fortress");
 		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement)
@@ -109,7 +109,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.field_6107).location(LocationPredicate.method_9016(DimensionType.field_13072))
+					EntityPredicate.Builder.create().type(EntityType.field_6107).location(LocationPredicate.dimension(DimensionType.field_13072))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
@@ -125,7 +125,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("wither_skull", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10177))
+			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.field_10177))
 			.build(consumer, "nether/get_wither_skull");
 		Advancement advancement7 = Advancement.Task.create()
 			.parent(advancement6)
@@ -153,7 +153,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.method_8959(Items.field_8894))
+			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.field_8894))
 			.build(consumer, "nether/obtain_blaze_rod");
 		Advancement advancement9 = Advancement.Task.create()
 			.parent(advancement7)

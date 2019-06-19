@@ -83,7 +83,7 @@ public class DamageSource {
 		return new EntityDamageSource("thorns", entity).method_5550().setUsesMagic();
 	}
 
-	public static DamageSource method_5531(@Nullable Explosion explosion) {
+	public static DamageSource explosion(@Nullable Explosion explosion) {
 		return explosion != null && explosion.getCausingEntity() != null
 			? new EntityDamageSource("explosion.player", explosion.getCausingEntity()).setScaledWithDifficulty().setExplosive()
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();

@@ -12,7 +12,7 @@ public class ProtectionEnchantment extends Enchantment {
 		super(weight, EnchantmentTarget.ARMOR, equipmentSlots);
 		this.type = type;
 		if (type == ProtectionEnchantment.Type.field_9140) {
-			this.field_9083 = EnchantmentTarget.ARMOR_FEET;
+			this.type = EnchantmentTarget.ARMOR_FEET;
 		}
 	}
 

@@ -18,7 +18,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 		super(SoundEvents.field_14832, SoundCategory.field_15254);
 		this.player = playerEntity;
 		this.minecart = abstractMinecartEntity;
-		this.field_5440 = SoundInstance.AttenuationType.field_5478;
+		this.attenuationType = SoundInstance.AttenuationType.field_5478;
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.0F;
@@ -32,7 +32,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 	@Override
 	public void tick() {
 		if (!this.minecart.removed && this.player.hasVehicle() && this.player.getVehicle() == this.minecart) {
-			float f = MathHelper.sqrt(Entity.method_17996(this.minecart.method_18798()));
+			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
 			if ((double)f >= 0.01) {
 				this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;
 			} else {

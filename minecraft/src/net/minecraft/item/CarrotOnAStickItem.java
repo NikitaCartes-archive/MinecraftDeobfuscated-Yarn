@@ -14,7 +14,7 @@ public class CarrotOnAStickItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.field_5811, itemStack);

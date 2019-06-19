@@ -6,9 +6,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public interface Fertilizable {
-	boolean method_9651(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl);
+	boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl);
 
-	boolean method_9650(World world, Random random, BlockPos blockPos, BlockState blockState);
+	boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState);
 
-	void method_9652(World world, Random random, BlockPos blockPos, BlockState blockState);
+	void grow(World world, Random random, BlockPos blockPos, BlockState blockState);
 }

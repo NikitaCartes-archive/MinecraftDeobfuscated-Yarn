@@ -19,16 +19,16 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostGenerator {
-	public static void method_16650(
+	public static void addPieces(
 		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<StructurePiece> list, ChunkRandom chunkRandom
 	) {
-		StructurePoolBasedGenerator.method_16605(
+		StructurePoolBasedGenerator.addPieces(
 			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}
 
 	static {
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/base_plates"),
@@ -37,7 +37,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/towers"),
@@ -56,7 +56,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.field_16687
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/feature_plates"),
@@ -65,7 +65,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.field_16686
 				)
 			);
-		StructurePoolBasedGenerator.field_16666
+		StructurePoolBasedGenerator.REGISTRY
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/features"),

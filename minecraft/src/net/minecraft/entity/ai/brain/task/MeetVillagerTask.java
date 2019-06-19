@@ -38,8 +38,8 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 		Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.field_18440);
 		return serverWorld.getRandom().nextInt(100) == 0
 			&& optional.isPresent()
-			&& Objects.equals(serverWorld.method_8597().method_12460(), ((GlobalPos)optional.get()).getDimension())
-			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(livingEntity.method_19538(), 4.0)
+			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(livingEntity.getPos(), 4.0)
 			&& ((List)brain.getOptionalMemory(MemoryModuleType.field_18442).get())
 				.stream()
 				.anyMatch(livingEntityx -> EntityType.field_6077.equals(livingEntityx.getType()));

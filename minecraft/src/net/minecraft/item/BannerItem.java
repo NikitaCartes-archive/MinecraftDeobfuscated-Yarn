@@ -42,12 +42,12 @@ public class BannerItem extends WallStandingBlockItem {
 	}
 
 	public DyeColor getColor() {
-		return ((AbstractBannerBlock)this.method_7711()).getColor();
+		return ((AbstractBannerBlock)this.getBlock()).getColor();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		appendBannerTooltip(itemStack, list);
 	}
 }

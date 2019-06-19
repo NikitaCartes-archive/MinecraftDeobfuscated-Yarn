@@ -45,11 +45,11 @@ public class RealmsVertexFormat {
 	}
 
 	public RealmsVertexFormatElement getElement(int i) {
-		return new RealmsVertexFormatElement(this.v.method_1364(i));
+		return new RealmsVertexFormatElement(this.v.getElement(i));
 	}
 
 	public RealmsVertexFormat addElement(RealmsVertexFormatElement realmsVertexFormatElement) {
-		return this.from(this.v.method_1361(realmsVertexFormatElement.getVertexFormatElement()));
+		return this.from(this.v.add(realmsVertexFormatElement.getVertexFormatElement()));
 	}
 
 	public int getColorOffset() {

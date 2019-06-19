@@ -60,7 +60,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	public static boolean method_20662(EntityType<? extends FishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.method_8320(blockPos).getBlock() == Blocks.field_10382 && iWorld.method_8320(blockPos.up()).getBlock() == Blocks.field_10382;
+		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10382;
 	}
 
 	@Override
@@ -108,29 +108,29 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected EntityNavigation method_5965(World world) {
+	protected EntityNavigation createNavigation(World world) {
 		return new SwimNavigation(this, world);
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.canMoveVoluntarily() && this.isInsideWater()) {
-			this.method_5724(0.01F, vec3d);
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			this.method_18799(this.method_18798().multiply(0.9));
+			this.updateVelocity(0.01F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null) {
-				this.method_18799(this.method_18798().add(0.0, -0.005, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.method_6091(vec3d);
+			super.travel(vec3d);
 		}
 	}
 
 	@Override
 	public void tickMovement() {
 		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
-			this.method_18799(
-				this.method_18798().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
+			this.setVelocity(
+				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
 			);
 			this.onGround = false;
 			this.velocityDirty = true;
@@ -148,7 +148,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			itemStack.decrement(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
 			this.copyDataToStack(itemStack2);
-			if (!this.field_6002.isClient) {
+			if (!this.world.isClient) {
 				Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, itemStack2);
 			}
 
@@ -195,7 +195,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		@Override
 		public void tick() {
 			if (this.fish.isInFluid(FluidTags.field_15517)) {
-				this.fish.method_18799(this.fish.method_18798().add(0.0, 0.005, 0.0));
+				this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
 			}
 
 			if (this.state == MoveControl.State.field_6378 && !this.fish.getNavigation().isIdle()) {
@@ -209,7 +209,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				this.fish.field_6283 = this.fish.yaw;
 				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), i));
-				this.fish.method_18799(this.fish.method_18798().add(0.0, (double)this.fish.getMovementSpeed() * e * 0.1, 0.0));
+				this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * e * 0.1, 0.0));
 			} else {
 				this.fish.setMovementSpeed(0.0F);
 			}

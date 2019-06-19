@@ -255,12 +255,12 @@ public class CloneCommand {
 								CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos6, false);
 								BlockState blockState = cachedBlockPosition.getBlockState();
 								if (predicate.test(cachedBlockPosition)) {
-									BlockEntity blockEntity = serverWorld.method_8321(blockPos6);
+									BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos6);
 									if (blockEntity != null) {
 										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 										list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, compoundTag));
 										deque.addLast(blockPos6);
-									} else if (!blockState.isFullOpaque(serverWorld, blockPos6) && !Block.method_9614(blockState.method_11628(serverWorld, blockPos6))) {
+									} else if (!blockState.isFullOpaque(serverWorld, blockPos6) && !Block.isShapeFullCube(blockState.getCollisionShape(serverWorld, blockPos6))) {
 										list3.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
 										deque.addFirst(blockPos6);
 									} else {
@@ -274,13 +274,13 @@ public class CloneCommand {
 
 					if (mode == CloneCommand.Mode.field_13500) {
 						for(BlockPos blockPos8 : deque) {
-							BlockEntity blockEntity2 = serverWorld.method_8321(blockPos8);
+							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos8);
 							Clearable.clear(blockEntity2);
-							serverWorld.method_8652(blockPos8, Blocks.field_10499.method_9564(), 2);
+							serverWorld.setBlockState(blockPos8, Blocks.field_10499.getDefaultState(), 2);
 						}
 
 						for(BlockPos blockPos8 : deque) {
-							serverWorld.method_8652(blockPos8, Blocks.field_10124.method_9564(), 3);
+							serverWorld.setBlockState(blockPos8, Blocks.field_10124.getDefaultState(), 3);
 						}
 					}
 
@@ -291,21 +291,21 @@ public class CloneCommand {
 					List<CloneCommand.BlockInfo> list5 = Lists.reverse(list4);
 
 					for(CloneCommand.BlockInfo blockInfo : list5) {
-						BlockEntity blockEntity3 = serverWorld.method_8321(blockInfo.pos);
+						BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
 						Clearable.clear(blockEntity3);
-						serverWorld.method_8652(blockInfo.pos, Blocks.field_10499.method_9564(), 2);
+						serverWorld.setBlockState(blockInfo.pos, Blocks.field_10499.getDefaultState(), 2);
 					}
 
 					int l = 0;
 
 					for(CloneCommand.BlockInfo blockInfo2 : list4) {
-						if (serverWorld.method_8652(blockInfo2.pos, blockInfo2.state, 2)) {
+						if (serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, 2)) {
 							++l;
 						}
 					}
 
 					for(CloneCommand.BlockInfo blockInfo2 : list2) {
-						BlockEntity blockEntity4 = serverWorld.method_8321(blockInfo2.pos);
+						BlockEntity blockEntity4 = serverWorld.getBlockEntity(blockInfo2.pos);
 						if (blockInfo2.blockEntityTag != null && blockEntity4 != null) {
 							blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
 							blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
@@ -314,14 +314,14 @@ public class CloneCommand {
 							blockEntity4.markDirty();
 						}
 
-						serverWorld.method_8652(blockInfo2.pos, blockInfo2.state, 2);
+						serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, 2);
 					}
 
 					for(CloneCommand.BlockInfo blockInfo2 : list5) {
-						serverWorld.method_8408(blockInfo2.pos, blockInfo2.state.getBlock());
+						serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());
 					}
 
-					serverWorld.method_14196().method_8666(mutableIntBoundingBox, blockPos5);
+					serverWorld.method_14196().copyScheduledTicks(mutableIntBoundingBox, blockPos5);
 					if (l == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {

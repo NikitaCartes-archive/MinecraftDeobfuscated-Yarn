@@ -70,10 +70,10 @@ public class MoveControl {
 			float n = i * l + h * k;
 			EntityNavigation entityNavigation = this.entity.getNavigation();
 			if (entityNavigation != null) {
-				PathNodeMaker pathNodeMaker = entityNavigation.method_6342();
+				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 				if (pathNodeMaker != null
 					&& pathNodeMaker.getPathNodeType(
-							this.entity.field_6002, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
+							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
 						!= PathNodeType.field_12) {
 					this.field_6368 = 1.0F;
@@ -101,8 +101,8 @@ public class MoveControl {
 			this.entity.yaw = this.changeAngle(this.entity.yaw, n, 90.0F);
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			BlockPos blockPos = new BlockPos(this.entity);
-			BlockState blockState = this.entity.field_6002.method_8320(blockPos);
-			VoxelShape voxelShape = blockState.method_11628(this.entity.field_6002, blockPos);
+			BlockState blockState = this.entity.world.getBlockState(blockPos);
+			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty() && this.entity.y < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()) {
 				this.entity.getJumpControl().setActive();

@@ -19,13 +19,13 @@ public class RandomFeatureConfig implements FeatureConfig {
 	public RandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs, float[] fs, Feature<?> feature, FeatureConfig featureConfig) {
 		this(
 			(List<RandomFeatureEntry<?>>)IntStream.range(0, features.length)
-				.mapToObj(i -> method_13710(features[i], featureConfigs[i], fs[i]))
+				.mapToObj(i -> makeEntry(features[i], featureConfigs[i], fs[i]))
 				.collect(Collectors.toList()),
 			configure(feature, featureConfig)
 		);
 	}
 
-	private static <FC extends FeatureConfig> RandomFeatureEntry<FC> method_13710(Feature<FC> feature, FeatureConfig featureConfig, float f) {
+	private static <FC extends FeatureConfig> RandomFeatureEntry<FC> makeEntry(Feature<FC> feature, FeatureConfig featureConfig, float f) {
 		return new RandomFeatureEntry<>(feature, (FC)featureConfig, Float.valueOf(f));
 	}
 

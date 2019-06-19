@@ -74,7 +74,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			float k = (float)guardianEntity.field_6002.getTime() + h;
+			float k = (float)guardianEntity.world.getTime() + h;
 			float l = k * 0.5F % 1.0F;
 			float m = guardianEntity.getStandingEyeHeight();
 			GlStateManager.pushMatrix();
@@ -90,7 +90,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			GlStateManager.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 			int q = 1;
 			double r = (double)k * 0.05 * -1.5;
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			float s = i * i;
 			int t = 64 + (int)(s * 191.0F);
 			int u = 32 + (int)(s * 191.0F);

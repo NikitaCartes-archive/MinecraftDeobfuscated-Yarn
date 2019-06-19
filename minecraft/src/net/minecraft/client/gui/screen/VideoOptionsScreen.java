@@ -17,20 +17,20 @@ public class VideoOptionsScreen extends Screen {
 	private ButtonListWidget list;
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
-		Option.field_1933,
+		Option.RENDER_DISTANCE,
 		Option.AO,
-		Option.field_1935,
+		Option.FRAMERATE_LIMIT,
 		Option.VSYNC,
 		Option.VIEW_BOBBING,
 		Option.GUI_SCALE,
 		Option.ATTACK_INDICATOR,
-		Option.field_1945,
+		Option.GAMMA,
 		Option.CLOUDS,
 		Option.FULLSCREEN,
 		Option.PARTICLES,
-		Option.field_18190,
+		Option.MIPMAP_LEVELS,
 		Option.ENTITY_SHADOWS,
-		Option.field_18189
+		Option.BIOME_BLEND_RADIUS
 	};
 	private int mipmapLevels;
 
@@ -44,26 +44,26 @@ public class VideoOptionsScreen extends Screen {
 	protected void init() {
 		this.mipmapLevels = this.options.mipmapLevels;
 		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-		this.list.addSingleOptionEntry(Option.field_1931);
+		this.list.addSingleOptionEntry(Option.FULLSCREEN_RESOLUTION);
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.minecraft.field_1690.write();
+			this.minecraft.options.write();
 			this.minecraft.window.method_4475();
-			this.minecraft.method_1507(this.parent);
+			this.minecraft.openScreen(this.parent);
 		}));
 	}
 
 	@Override
 	public void removed() {
 		if (this.options.mipmapLevels != this.mipmapLevels) {
-			this.minecraft.method_1549().setMipLevel(this.options.mipmapLevels);
-			this.minecraft.method_1531().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.minecraft.method_1549().setFilter(false, this.options.mipmapLevels > 0);
+			this.minecraft.getSpriteAtlas().setMipLevel(this.options.mipmapLevels);
+			this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.minecraft.getSpriteAtlas().setFilter(false, this.options.mipmapLevels > 0);
 			this.minecraft.reloadResourcesConcurrently();
 		}
 
-		this.minecraft.field_1690.write();
+		this.minecraft.options.write();
 	}
 
 	@Override

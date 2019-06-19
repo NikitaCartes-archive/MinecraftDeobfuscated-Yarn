@@ -27,8 +27,8 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	protected void method_7469(HitResult hitResult) {
-		if (!this.field_6002.isClient) {
+	protected void onCollision(HitResult hitResult) {
+		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (!entity.isFireImmune()) {
@@ -41,11 +41,11 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 						entity.method_20803(i);
 					}
 				}
-			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.field_6002.getGameRules().getBoolean(GameRules.field_19388)) {
+			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.field_6002.isAir(blockPos)) {
-					this.field_6002.method_8501(blockPos, Blocks.field_10036.method_9564());
+				if (this.world.isAir(blockPos)) {
+					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 				}
 			}
 

@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	private final ItemRenderer field_4847 = MinecraftClient.getInstance().method_1480();
+	private final ItemRenderer field_4847 = MinecraftClient.getInstance().getItemRenderer();
 
 	public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext) {
 		super(featureRendererContext);

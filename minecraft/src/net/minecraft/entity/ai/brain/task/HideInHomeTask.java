@@ -45,7 +45,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 				this.preferredDistance + 1,
 				PointOfInterestStorage.OccupationStatus.field_18489
 			);
-		if (optional.isPresent() && ((BlockPos)optional.get()).isWithinDistance(livingEntity.method_19538(), (double)this.preferredDistance)) {
+		if (optional.isPresent() && ((BlockPos)optional.get()).isWithinDistance(livingEntity.getPos(), (double)this.preferredDistance)) {
 			this.homePosition = optional;
 		} else {
 			this.homePosition = Optional.empty();
@@ -81,8 +81,8 @@ public class HideInHomeTask extends Task<LivingEntity> {
 			brain.forget(MemoryModuleType.field_18446);
 			brain.forget(MemoryModuleType.field_18448);
 			brain.forget(MemoryModuleType.field_18447);
-			brain.putMemory(MemoryModuleType.field_19008, GlobalPos.create(serverWorld.method_8597().method_12460(), (BlockPos)optional.get()));
-			if (!((BlockPos)optional.get()).isWithinDistance(livingEntity.method_19538(), (double)this.preferredDistance)) {
+			brain.putMemory(MemoryModuleType.field_19008, GlobalPos.create(serverWorld.getDimension().getType(), (BlockPos)optional.get()));
+			if (!((BlockPos)optional.get()).isWithinDistance(livingEntity.getPos(), (double)this.preferredDistance)) {
 				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget((BlockPos)optional.get(), this.walkSpeed, this.preferredDistance));
 			}
 		}

@@ -94,7 +94,7 @@ public class SetBlockCommand {
 				serverWorld.breakBlock(blockPos, true);
 				bl = !blockStateArgument.getBlockState().isAir();
 			} else {
-				BlockEntity blockEntity = serverWorld.method_8321(blockPos);
+				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				Clearable.clear(blockEntity);
 				bl = true;
 			}
@@ -102,7 +102,7 @@ public class SetBlockCommand {
 			if (bl && !blockStateArgument.setBlockState(serverWorld, blockPos, 2)) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverWorld.method_8408(blockPos, blockStateArgument.getBlockState().getBlock());
+				serverWorld.updateNeighbors(blockPos, blockStateArgument.getBlockState().getBlock());
 				serverCommandSource.sendFeedback(new TranslatableText("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 				return 1;
 			}

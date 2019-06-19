@@ -21,75 +21,75 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class VineBlock extends Block {
-	public static final BooleanProperty field_11703 = ConnectedPlantBlock.field_11327;
-	public static final BooleanProperty field_11706 = ConnectedPlantBlock.field_11332;
-	public static final BooleanProperty field_11702 = ConnectedPlantBlock.field_11335;
-	public static final BooleanProperty field_11699 = ConnectedPlantBlock.field_11331;
-	public static final BooleanProperty field_11696 = ConnectedPlantBlock.field_11328;
+	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
+	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectedPlantBlock.FACING_PROPERTIES
 		.entrySet()
 		.stream()
 		.filter(entry -> entry.getKey() != Direction.field_11033)
 		.collect(SystemUtil.toMap());
-	protected static final VoxelShape field_11698 = Block.method_9541(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_11705 = Block.method_9541(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
-	protected static final VoxelShape field_11704 = Block.method_9541(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_11700 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
-	protected static final VoxelShape field_11701 = Block.method_9541(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 
 	public VineBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_11703, Boolean.valueOf(false))
-				.method_11657(field_11706, Boolean.valueOf(false))
-				.method_11657(field_11702, Boolean.valueOf(false))
-				.method_11657(field_11699, Boolean.valueOf(false))
-				.method_11657(field_11696, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory
+				.getDefaultState()
+				.with(UP, Boolean.valueOf(false))
+				.with(NORTH, Boolean.valueOf(false))
+				.with(EAST, Boolean.valueOf(false))
+				.with(SOUTH, Boolean.valueOf(false))
+				.with(WEST, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		VoxelShape voxelShape = VoxelShapes.method_1073();
-		if (blockState.method_11654(field_11703)) {
-			voxelShape = VoxelShapes.method_1084(voxelShape, field_11698);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		VoxelShape voxelShape = VoxelShapes.empty();
+		if (blockState.get(UP)) {
+			voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);
 		}
 
-		if (blockState.method_11654(field_11706)) {
-			voxelShape = VoxelShapes.method_1084(voxelShape, field_11700);
+		if (blockState.get(NORTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
 		}
 
-		if (blockState.method_11654(field_11702)) {
-			voxelShape = VoxelShapes.method_1084(voxelShape, field_11704);
+		if (blockState.get(EAST)) {
+			voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
 		}
 
-		if (blockState.method_11654(field_11699)) {
-			voxelShape = VoxelShapes.method_1084(voxelShape, field_11701);
+		if (blockState.get(SOUTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
 		}
 
-		if (blockState.method_11654(field_11696)) {
-			voxelShape = VoxelShapes.method_1084(voxelShape, field_11705);
+		if (blockState.get(WEST)) {
+			voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
 		}
 
 		return voxelShape;
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return this.method_10823(this.method_10827(blockState, viewableWorld, blockPos));
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return this.hasAdjacentBlocks(this.getPlacementShape(blockState, viewableWorld, blockPos));
 	}
 
-	private boolean method_10823(BlockState blockState) {
-		return this.method_10822(blockState) > 0;
+	private boolean hasAdjacentBlocks(BlockState blockState) {
+		return this.getAdjacentBlockCount(blockState) > 0;
 	}
 
-	private int method_10822(BlockState blockState) {
+	private int getAdjacentBlockCount(BlockState blockState) {
 		int i = 0;
 
 		for(BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
-			if (blockState.method_11654(booleanProperty)) {
+			if (blockState.get(booleanProperty)) {
 				++i;
 			}
 		}
@@ -108,38 +108,38 @@ public class VineBlock extends Block {
 				return false;
 			} else {
 				BooleanProperty booleanProperty = (BooleanProperty)FACING_PROPERTIES.get(direction);
-				BlockState blockState = blockView.method_8320(blockPos.up());
-				return blockState.getBlock() == this && blockState.method_11654(booleanProperty);
+				BlockState blockState = blockView.getBlockState(blockPos.up());
+				return blockState.getBlock() == this && blockState.get(booleanProperty);
 			}
 		}
 	}
 
 	public static boolean shouldConnectTo(BlockView blockView, BlockPos blockPos, Direction direction) {
-		BlockState blockState = blockView.method_8320(blockPos);
-		return Block.method_9501(blockState.method_11628(blockView, blockPos), direction.getOpposite());
+		BlockState blockState = blockView.getBlockState(blockPos);
+		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite());
 	}
 
-	private BlockState method_10827(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	private BlockState getPlacementShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
-		if (blockState.method_11654(field_11703)) {
-			blockState = blockState.method_11657(field_11703, Boolean.valueOf(shouldConnectTo(blockView, blockPos2, Direction.field_11033)));
+		if (blockState.get(UP)) {
+			blockState = blockState.with(UP, Boolean.valueOf(shouldConnectTo(blockView, blockPos2, Direction.field_11033)));
 		}
 
 		BlockState blockState2 = null;
 
 		for(Direction direction : Direction.Type.field_11062) {
-			BooleanProperty booleanProperty = method_10828(direction);
-			if (blockState.method_11654(booleanProperty)) {
+			BooleanProperty booleanProperty = getFacingProperty(direction);
+			if (blockState.get(booleanProperty)) {
 				boolean bl = this.shouldHaveSide(blockView, blockPos, direction);
 				if (!bl) {
 					if (blockState2 == null) {
-						blockState2 = blockView.method_8320(blockPos2);
+						blockState2 = blockView.getBlockState(blockPos2);
 					}
 
-					bl = blockState2.getBlock() == this && blockState2.method_11654(booleanProperty);
+					bl = blockState2.getBlock() == this && blockState2.get(booleanProperty);
 				}
 
-				blockState = blockState.method_11657(booleanProperty, Boolean.valueOf(bl));
+				blockState = blockState.with(booleanProperty, Boolean.valueOf(bl));
 			}
 		}
 
@@ -147,62 +147,64 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction == Direction.field_11033) {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			BlockState blockState3 = this.method_10827(blockState, iWorld, blockPos);
-			return !this.method_10823(blockState3) ? Blocks.field_10124.method_9564() : blockState3;
+			BlockState blockState3 = this.getPlacementShape(blockState, iWorld, blockPos);
+			return !this.hasAdjacentBlocks(blockState3) ? Blocks.field_10124.getDefaultState() : blockState3;
 		}
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
-			BlockState blockState2 = this.method_10827(blockState, world, blockPos);
+			BlockState blockState2 = this.getPlacementShape(blockState, world, blockPos);
 			if (blockState2 != blockState) {
-				if (this.method_10823(blockState2)) {
-					world.method_8652(blockPos, blockState2, 2);
+				if (this.hasAdjacentBlocks(blockState2)) {
+					world.setBlockState(blockPos, blockState2, 2);
 				} else {
-					method_9497(blockState, world, blockPos);
+					dropStacks(blockState, world, blockPos);
 					world.clearBlockState(blockPos, false);
 				}
 			} else if (world.random.nextInt(4) == 0) {
 				Direction direction = Direction.random(random);
 				BlockPos blockPos2 = blockPos.up();
-				if (direction.getAxis().isHorizontal() && !blockState.method_11654(method_10828(direction))) {
+				if (direction.getAxis().isHorizontal() && !blockState.get(getFacingProperty(direction))) {
 					if (this.canGrowAt(world, blockPos)) {
 						BlockPos blockPos3 = blockPos.offset(direction);
-						BlockState blockState3 = world.method_8320(blockPos3);
+						BlockState blockState3 = world.getBlockState(blockPos3);
 						if (blockState3.isAir()) {
 							Direction direction2 = direction.rotateYClockwise();
 							Direction direction3 = direction.rotateYCounterclockwise();
-							boolean bl = blockState.method_11654(method_10828(direction2));
-							boolean bl2 = blockState.method_11654(method_10828(direction3));
+							boolean bl = blockState.get(getFacingProperty(direction2));
+							boolean bl2 = blockState.get(getFacingProperty(direction3));
 							BlockPos blockPos4 = blockPos3.offset(direction2);
 							BlockPos blockPos5 = blockPos3.offset(direction3);
 							if (bl && shouldConnectTo(world, blockPos4, direction2)) {
-								world.method_8652(blockPos3, this.method_9564().method_11657(method_10828(direction2), Boolean.valueOf(true)), 2);
+								world.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction2), Boolean.valueOf(true)), 2);
 							} else if (bl2 && shouldConnectTo(world, blockPos5, direction3)) {
-								world.method_8652(blockPos3, this.method_9564().method_11657(method_10828(direction3), Boolean.valueOf(true)), 2);
+								world.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction3), Boolean.valueOf(true)), 2);
 							} else {
 								Direction direction4 = direction.getOpposite();
 								if (bl && world.isAir(blockPos4) && shouldConnectTo(world, blockPos.offset(direction2), direction4)) {
-									world.method_8652(blockPos4, this.method_9564().method_11657(method_10828(direction4), Boolean.valueOf(true)), 2);
+									world.setBlockState(blockPos4, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
 								} else if (bl2 && world.isAir(blockPos5) && shouldConnectTo(world, blockPos.offset(direction3), direction4)) {
-									world.method_8652(blockPos5, this.method_9564().method_11657(method_10828(direction4), Boolean.valueOf(true)), 2);
+									world.setBlockState(blockPos5, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
 								} else if ((double)world.random.nextFloat() < 0.05 && shouldConnectTo(world, blockPos3.up(), Direction.field_11036)) {
-									world.method_8652(blockPos3, this.method_9564().method_11657(field_11703, Boolean.valueOf(true)), 2);
+									world.setBlockState(blockPos3, this.getDefaultState().with(UP, Boolean.valueOf(true)), 2);
 								}
 							}
 						} else if (shouldConnectTo(world, blockPos3, direction)) {
-							world.method_8652(blockPos, blockState.method_11657(method_10828(direction), Boolean.valueOf(true)), 2);
+							world.setBlockState(blockPos, blockState.with(getFacingProperty(direction), Boolean.valueOf(true)), 2);
 						}
 					}
 				} else {
 					if (direction == Direction.field_11036 && blockPos.getY() < 255) {
 						if (this.shouldHaveSide(world, blockPos, direction)) {
-							world.method_8652(blockPos, blockState.method_11657(field_11703, Boolean.valueOf(true)), 2);
+							world.setBlockState(blockPos, blockState.with(UP, Boolean.valueOf(true)), 2);
 							return;
 						}
 
@@ -215,12 +217,12 @@ public class VineBlock extends Block {
 
 							for(Direction direction2 : Direction.Type.field_11062) {
 								if (random.nextBoolean() || !shouldConnectTo(world, blockPos2.offset(direction2), Direction.field_11036)) {
-									blockState4 = blockState4.method_11657(method_10828(direction2), Boolean.valueOf(false));
+									blockState4 = blockState4.with(getFacingProperty(direction2), Boolean.valueOf(false));
 								}
 							}
 
-							if (this.method_10830(blockState4)) {
-								world.method_8652(blockPos2, blockState4, 2);
+							if (this.hasHorizontalSide(blockState4)) {
+								world.setBlockState(blockPos2, blockState4, 2);
 							}
 
 							return;
@@ -229,12 +231,12 @@ public class VineBlock extends Block {
 
 					if (blockPos.getY() > 0) {
 						BlockPos blockPos3 = blockPos.down();
-						BlockState blockState3 = world.method_8320(blockPos3);
+						BlockState blockState3 = world.getBlockState(blockPos3);
 						if (blockState3.isAir() || blockState3.getBlock() == this) {
-							BlockState blockState5 = blockState3.isAir() ? this.method_9564() : blockState3;
-							BlockState blockState6 = this.method_10820(blockState, blockState5, random);
-							if (blockState5 != blockState6 && this.method_10830(blockState6)) {
-								world.method_8652(blockPos3, blockState6, 2);
+							BlockState blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3;
+							BlockState blockState6 = this.getGrownState(blockState, blockState5, random);
+							if (blockState5 != blockState6 && this.hasHorizontalSide(blockState6)) {
+								world.setBlockState(blockPos3, blockState6, 2);
 							}
 						}
 					}
@@ -243,12 +245,12 @@ public class VineBlock extends Block {
 		}
 	}
 
-	private BlockState method_10820(BlockState blockState, BlockState blockState2, Random random) {
+	private BlockState getGrownState(BlockState blockState, BlockState blockState2, Random random) {
 		for(Direction direction : Direction.Type.field_11062) {
 			if (random.nextBoolean()) {
-				BooleanProperty booleanProperty = method_10828(direction);
-				if (blockState.method_11654(booleanProperty)) {
-					blockState2 = blockState2.method_11657(booleanProperty, Boolean.valueOf(true));
+				BooleanProperty booleanProperty = getFacingProperty(direction);
+				if (blockState.get(booleanProperty)) {
+					blockState2 = blockState2.with(booleanProperty, Boolean.valueOf(true));
 				}
 			}
 		}
@@ -256,11 +258,8 @@ public class VineBlock extends Block {
 		return blockState2;
 	}
 
-	private boolean method_10830(BlockState blockState) {
-		return blockState.method_11654(field_11706)
-			|| blockState.method_11654(field_11702)
-			|| blockState.method_11654(field_11699)
-			|| blockState.method_11654(field_11696);
+	private boolean hasHorizontalSide(BlockState blockState) {
+		return blockState.get(NORTH) || blockState.get(EAST) || blockState.get(SOUTH) || blockState.get(WEST);
 	}
 
 	private boolean canGrowAt(BlockView blockView, BlockPos blockPos) {
@@ -271,7 +270,7 @@ public class VineBlock extends Block {
 		int j = 5;
 
 		for(BlockPos blockPos2 : iterable) {
-			if (blockView.method_8320(blockPos2).getBlock() == this) {
+			if (blockView.getBlockState(blockPos2).getBlock() == this) {
 				if (--j <= 0) {
 					return false;
 				}
@@ -282,28 +281,28 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		BlockState blockState2 = itemPlacementContext.method_8045().method_8320(itemPlacementContext.getBlockPos());
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+		BlockState blockState2 = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		if (blockState2.getBlock() == this) {
-			return this.method_10822(blockState2) < FACING_PROPERTIES.size();
+			return this.getAdjacentBlockCount(blockState2) < FACING_PROPERTIES.size();
 		} else {
-			return super.method_9616(blockState, itemPlacementContext);
+			return super.canReplace(blockState, itemPlacementContext);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = itemPlacementContext.method_8045().method_8320(itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		boolean bl = blockState.getBlock() == this;
-		BlockState blockState2 = bl ? blockState : this.method_9564();
+		BlockState blockState2 = bl ? blockState : this.getDefaultState();
 
 		for(Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction != Direction.field_11033) {
-				BooleanProperty booleanProperty = method_10828(direction);
-				boolean bl2 = bl && blockState.method_11654(booleanProperty);
-				if (!bl2 && this.shouldHaveSide(itemPlacementContext.method_8045(), itemPlacementContext.getBlockPos(), direction)) {
-					return blockState2.method_11657(booleanProperty, Boolean.valueOf(true));
+				BooleanProperty booleanProperty = getFacingProperty(direction);
+				boolean bl2 = bl && blockState.get(booleanProperty);
+				if (!bl2 && this.shouldHaveSide(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), direction)) {
+					return blockState2.with(booleanProperty, Boolean.valueOf(true));
 				}
 			}
 		}
@@ -318,45 +317,36 @@ public class VineBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11703, field_11706, field_11702, field_11699, field_11696);
+		builder.add(UP, NORTH, EAST, SOUTH, WEST);
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, BlockRotation blockRotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch(blockRotation) {
 			case field_11464:
-				return blockState.method_11657(field_11706, blockState.method_11654(field_11699))
-					.method_11657(field_11702, blockState.method_11654(field_11696))
-					.method_11657(field_11699, blockState.method_11654(field_11706))
-					.method_11657(field_11696, blockState.method_11654(field_11702));
+				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
 			case field_11465:
-				return blockState.method_11657(field_11706, blockState.method_11654(field_11702))
-					.method_11657(field_11702, blockState.method_11654(field_11699))
-					.method_11657(field_11699, blockState.method_11654(field_11696))
-					.method_11657(field_11696, blockState.method_11654(field_11706));
+				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
 			case field_11463:
-				return blockState.method_11657(field_11706, blockState.method_11654(field_11696))
-					.method_11657(field_11702, blockState.method_11654(field_11706))
-					.method_11657(field_11699, blockState.method_11654(field_11702))
-					.method_11657(field_11696, blockState.method_11654(field_11699));
+				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
 			default:
 				return blockState;
 		}
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, BlockMirror blockMirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		switch(blockMirror) {
 			case field_11300:
-				return blockState.method_11657(field_11706, blockState.method_11654(field_11699)).method_11657(field_11699, blockState.method_11654(field_11706));
+				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
 			case field_11301:
-				return blockState.method_11657(field_11702, blockState.method_11654(field_11696)).method_11657(field_11696, blockState.method_11654(field_11702));
+				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
-				return super.method_9569(blockState, blockMirror);
+				return super.mirror(blockState, blockMirror);
 		}
 	}
 
-	public static BooleanProperty method_10828(Direction direction) {
+	public static BooleanProperty getFacingProperty(Direction direction) {
 		return (BooleanProperty)FACING_PROPERTIES.get(direction);
 	}
 }

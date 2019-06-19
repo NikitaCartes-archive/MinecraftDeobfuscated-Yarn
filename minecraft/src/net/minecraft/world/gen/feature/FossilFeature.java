@@ -54,8 +54,8 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		BlockRotation blockRotation = blockRotations[random2.nextInt(blockRotations.length)];
 		int i = random2.nextInt(FOSSILS.length);
 		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getSaveHandler().getStructureManager();
-		Structure structure = structureManager.method_15091(FOSSILS[i]);
-		Structure structure2 = structureManager.method_15091(COAL_FOSSILS[i]);
+		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
+		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(
 			chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ()
@@ -64,7 +64,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			.setRotation(blockRotation)
 			.setBoundingBox(mutableIntBoundingBox)
 			.setRandom(random2)
-			.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		BlockPos blockPos2 = structure.method_15166(blockRotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());
@@ -79,11 +79,11 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
 		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.field_11302, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
-		structurePlacementData.clearProcessors().method_16184(blockRotStructureProcessor);
+		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);
-		structurePlacementData.method_16664(blockRotStructureProcessor);
+		structurePlacementData.removeProcessor(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
-		structurePlacementData.clearProcessors().method_16184(blockRotStructureProcessor2);
+		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
 		structure2.method_15172(iWorld, blockPos3, structurePlacementData, 4);
 		return true;
 	}

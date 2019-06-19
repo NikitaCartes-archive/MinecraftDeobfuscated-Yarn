@@ -73,7 +73,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this.z = k;
 		this.repeat = bl;
 		this.repeatDelay = i;
-		this.field_5440 = attenuationType;
+		this.attenuationType = attenuationType;
 		this.looping = bl2;
 	}
 }

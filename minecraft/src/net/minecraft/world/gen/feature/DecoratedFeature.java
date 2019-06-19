@@ -21,7 +21,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		BlockPos blockPos,
 		DecoratedFeatureConfig decoratedFeatureConfig
 	) {
-		return decoratedFeatureConfig.field_13398.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
+		return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
 	}
 
 	public String toString() {

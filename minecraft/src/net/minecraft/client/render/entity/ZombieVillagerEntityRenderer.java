@@ -15,8 +15,8 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 
 	public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
 		super(entityRenderDispatcher, new ZombieVillagerEntityModel<>(), 0.5F);
-		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
-		this.method_4046(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
+		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
 	protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {

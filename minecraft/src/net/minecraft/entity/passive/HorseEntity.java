@@ -144,7 +144,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 	private void setArmorTypeFromStack(ItemStack itemStack) {
 		this.equipArmor(itemStack);
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
 			if (this.canEquip(itemStack)) {
 				int i = ((HorseArmorItem)itemStack.getItem()).getBonus();
@@ -169,8 +169,8 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void method_6761(BlockSoundGroup blockSoundGroup) {
-		super.method_6761(blockSoundGroup);
+	protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
+		super.playWalkSound(blockSoundGroup);
 		if (this.random.nextInt(10) == 0) {
 			this.playSound(SoundEvents.field_14556, blockSoundGroup.getVolume() * 0.6F, blockSoundGroup.getPitch());
 		}
@@ -187,7 +187,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.field_6002.isClient && this.dataTracker.isDirty()) {
+		if (this.world.isClient && this.dataTracker.isDirty()) {
 			this.dataTracker.clearDirty();
 			this.clearTextureInfo();
 		}
@@ -284,10 +284,10 @@ public class HorseEntity extends HorseBaseEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		HorseBaseEntity horseBaseEntity;
 		if (passiveEntity instanceof DonkeyEntity) {
-			horseBaseEntity = EntityType.field_6057.method_5883(this.field_6002);
+			horseBaseEntity = EntityType.field_6057.create(this.world);
 		} else {
 			HorseEntity horseEntity = (HorseEntity)passiveEntity;
-			horseBaseEntity = EntityType.field_6139.method_5883(this.field_6002);
+			horseBaseEntity = EntityType.field_6139.create(this.world);
 			int i = this.random.nextInt(9);
 			int j;
 			if (i < 4) {
@@ -326,10 +326,10 @@ public class HorseEntity extends HorseBaseEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		int i;
 		if (entityData instanceof HorseEntity.class_1499) {
 			i = ((HorseEntity.class_1499)entityData).field_6994;

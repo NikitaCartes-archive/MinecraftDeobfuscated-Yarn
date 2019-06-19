@@ -29,7 +29,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	}
 
 	public boolean method_950(LootContext lootContext) {
-		Entity entity = lootContext.method_296(LootContextParameters.field_1230);
+		Entity entity = lootContext.get(LootContextParameters.field_1230);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
 			i = EnchantmentHelper.getLooting((LivingEntity)entity);

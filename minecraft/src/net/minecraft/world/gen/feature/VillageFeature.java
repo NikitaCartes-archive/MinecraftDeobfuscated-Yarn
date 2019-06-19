@@ -20,8 +20,8 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 
 	@Override
 	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.method_12109().getVillageDistance();
-		int n = chunkGenerator.method_12109().getVillageSeparation();
+		int m = chunkGenerator.getConfig().getVillageDistance();
+		int n = chunkGenerator.getConfig().getVillageSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -41,7 +41,7 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			return chunkGenerator.method_12097(biome, Feature.field_13587);
+			return chunkGenerator.hasStructure(biome, Feature.VILLAGE);
 		} else {
 			return false;
 		}
@@ -68,10 +68,10 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			VillageFeatureConfig villageFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13587);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			VillageFeatureConfig villageFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.VILLAGE);
 			BlockPos blockPos = new BlockPos(i * 16, 0, j * 16);
-			VillageGenerator.method_16753(chunkGenerator, structureManager, blockPos, this.children, this.random, villageFeatureConfig);
+			VillageGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, villageFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

@@ -45,7 +45,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 
 	public static ScoreboardObjective getWritableObjective(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		ScoreboardObjective scoreboardObjective = getObjective(commandContext, string);
-		if (scoreboardObjective.method_1116().isReadOnly()) {
+		if (scoreboardObjective.getCriterion().isReadOnly()) {
 			throw READONLY_OBJECTIVE_EXCEPTION.create(scoreboardObjective.getName());
 		} else {
 			return scoreboardObjective;

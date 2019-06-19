@@ -26,13 +26,13 @@ public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 	protected boolean method_18993(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
 		return optional.isPresent()
-			&& Objects.equals(serverWorld.method_8597().method_12460(), ((GlobalPos)optional.get()).getDimension())
-			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.method_19538(), (double)this.maxDistance);
+			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
 	}
 
 	protected void method_18994(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		if (l > this.nextUpdateTime) {
-			Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.method_6378(mobEntityWithAi, 8, 6));
+			Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, 8, 6));
 			mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, 0.4F, 1)));
 			this.nextUpdateTime = l + 180L;
 		}

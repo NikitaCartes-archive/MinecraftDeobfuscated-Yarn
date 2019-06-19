@@ -33,7 +33,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	private void syncRecipeIndex() {
 		this.container.setRecipeIndex(this.field_19161);
 		this.container.switchTo(this.field_19161);
-		this.minecraft.method_1562().sendPacket(new SelectVillagerTradeC2SPacket(this.field_19161));
+		this.minecraft.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.field_19161));
 	}
 
 	@Override
@@ -82,11 +82,11 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.method_1531().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		blit(k, l, this.blitOffset, 0.0F, 0.0F, this.containerWidth, this.containerHeight, 256, 512);
-		TraderOfferList traderOfferList = this.container.method_17438();
+		TraderOfferList traderOfferList = this.container.getRecipes();
 		if (!traderOfferList.isEmpty()) {
 			int m = this.field_19161;
 			if (m < 0 || m >= traderOfferList.size()) {
@@ -95,7 +95,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 
 			TradeOffer tradeOffer = (TradeOffer)traderOfferList.get(m);
 			if (tradeOffer.isDisabled()) {
-				this.minecraft.method_1531().bindTexture(TEXTURE);
+				this.minecraft.getTextureManager().bindTexture(TEXTURE);
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.disableLighting();
 				blit(this.left + 83 + 99, this.top + 35, this.blitOffset, 311.0F, 0.0F, 28, 21, 256, 512);
@@ -104,7 +104,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	}
 
 	private void method_19413(int i, int j, TradeOffer tradeOffer) {
-		this.minecraft.method_1531().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = this.container.getLevelProgress();
 		int l = this.container.getExperience();
 		if (k < 5) {
@@ -148,7 +148,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		super.render(i, j, f);
-		TraderOfferList traderOfferList = this.container.method_17438();
+		TraderOfferList traderOfferList = this.container.getRecipes();
 		if (!traderOfferList.isEmpty()) {
 			int k = (this.width - this.containerWidth) / 2;
 			int l = (this.height - this.containerHeight) / 2;
@@ -159,7 +159,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.enableColorMaterial();
 			GlStateManager.enableLighting();
-			this.minecraft.method_1531().bindTexture(TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TEXTURE);
 			this.method_20221(k, l, traderOfferList);
 			int o = 0;
 
@@ -204,7 +204,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 					widgetButtonPage.renderToolTip(i, j);
 				}
 
-				widgetButtonPage.visible = widgetButtonPage.field_19165 < this.container.method_17438().size();
+				widgetButtonPage.visible = widgetButtonPage.field_19165 < this.container.getRecipes().size();
 			}
 
 			GlStateManager.popMatrix();
@@ -219,7 +219,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	private void method_20223(TradeOffer tradeOffer, int i, int j) {
 		GuiLighting.disable();
 		GlStateManager.enableBlend();
-		this.minecraft.method_1531().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		if (tradeOffer.isDisabled()) {
 			blit(i + 5 + 35 + 20, j + 3, this.blitOffset, 25.0F, 171.0F, 10, 9, 256, 512);
 		} else {
@@ -236,7 +236,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 		} else {
 			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack2, i, j, itemStack2.getCount() == 1 ? "1" : null);
 			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
-			this.minecraft.method_1531().bindTexture(TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TEXTURE);
 			this.blitOffset += 300;
 			GuiLighting.disable();
 			blit(i + 7, j + 12, this.blitOffset, 0.0F, 176.0F, 9, 2, 256, 512);
@@ -251,7 +251,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		int i = this.container.method_17438().size();
+		int i = this.container.getRecipes().size();
 		if (this.method_20220(i)) {
 			int j = i - 7;
 			this.field_19163 = (int)((double)this.field_19163 - f);
@@ -263,7 +263,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		int j = this.container.method_17438().size();
+		int j = this.container.getRecipes().size();
 		if (this.field_19164) {
 			int k = this.top + 18;
 			int l = k + 139;
@@ -282,7 +282,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 		this.field_19164 = false;
 		int j = (this.width - this.containerWidth) / 2;
 		int k = (this.height - this.containerHeight) / 2;
-		if (this.method_20220(this.container.method_17438().size())
+		if (this.method_20220(this.container.getRecipes().size())
 			&& d > (double)(j + 94)
 			&& d < (double)(j + 94 + 6)
 			&& e > (double)(k + 18)
@@ -309,19 +309,18 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 
 		@Override
 		public void renderToolTip(int i, int j) {
-			if (this.isHovered && MerchantScreen.this.container.method_17438().size() > this.field_19165 + MerchantScreen.this.field_19163) {
+			if (this.isHovered && MerchantScreen.this.container.getRecipes().size() > this.field_19165 + MerchantScreen.this.field_19163) {
 				if (i < this.x + 20) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.method_17438().get(this.field_19165 + MerchantScreen.this.field_19163))
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.field_19165 + MerchantScreen.this.field_19163))
 						.getAdjustedFirstBuyItem();
 					MerchantScreen.this.renderTooltip(itemStack, i, j);
 				} else if (i < this.x + 50 && i > this.x + 30) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.method_17438().get(this.field_19165 + MerchantScreen.this.field_19163))
-						.getSecondBuyItem();
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.field_19165 + MerchantScreen.this.field_19163)).getSecondBuyItem();
 					if (!itemStack.isEmpty()) {
 						MerchantScreen.this.renderTooltip(itemStack, i, j);
 					}
 				} else if (i > this.x + 65) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.method_17438().get(this.field_19165 + MerchantScreen.this.field_19163))
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.field_19165 + MerchantScreen.this.field_19163))
 						.getMutableSellItem();
 					MerchantScreen.this.renderTooltip(itemStack, i, j);
 				}

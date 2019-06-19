@@ -12,7 +12,7 @@ public final class GiantTreeTaigaBiome extends Biome {
 	public GiantTreeTaigaBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15688, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15688, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.field_9361)
 				.depth(0.2F)
@@ -23,8 +23,8 @@ public final class GiantTreeTaigaBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

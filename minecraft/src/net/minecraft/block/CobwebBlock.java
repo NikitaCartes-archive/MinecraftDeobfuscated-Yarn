@@ -11,8 +11,8 @@ public class CobwebBlock extends Block {
 	}
 
 	@Override
-	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		entity.method_5844(blockState, new Vec3d(0.25, 0.05F, 0.25));
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		entity.slowMovement(blockState, new Vec3d(0.25, 0.05F, 0.25));
 	}
 
 	@Override

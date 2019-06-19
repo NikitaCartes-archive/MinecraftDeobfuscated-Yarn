@@ -36,7 +36,7 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.method_8091(Items.field_8179, Items.field_8567, Items.field_8186);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8179, Items.field_8567, Items.field_8186);
 	private boolean field_6814;
 	private int field_6812;
 	private int field_6813;
@@ -50,7 +50,7 @@ public class PigEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.method_8091(Items.field_8184), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
@@ -84,7 +84,7 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (field_6815.equals(trackedData) && this.field_6002.isClient) {
+		if (field_6815.equals(trackedData) && this.world.isClient) {
 			this.field_6814 = true;
 			this.field_6812 = 0;
 			this.field_6813 = this.dataTracker.get(field_6815);
@@ -128,7 +128,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.field_14894, 0.15F, 1.0F);
 	}
 
@@ -140,7 +140,7 @@ public class PigEntity extends AnimalEntity {
 				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
-				if (!this.field_6002.isClient) {
+				if (!this.world.isClient) {
 					playerEntity.startRiding(this);
 				}
 
@@ -160,7 +160,7 @@ public class PigEntity extends AnimalEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.isSaddled()) {
-			this.method_5706(Items.field_8175);
+			this.dropItem(Items.field_8175);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		ZombiePigmanEntity zombiePigmanEntity = EntityType.field_6050.method_5883(this.field_6002);
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.field_6050.create(this.world);
 		zombiePigmanEntity.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
 		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
@@ -187,12 +187,12 @@ public class PigEntity extends AnimalEntity {
 			zombiePigmanEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
-		this.field_6002.spawnEntity(zombiePigmanEntity);
+		this.world.spawnEntity(zombiePigmanEntity);
 		this.remove();
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.isAlive()) {
 			Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 			if (this.hasPassengers() && this.canBeControlledByRider()) {
@@ -215,9 +215,9 @@ public class PigEntity extends AnimalEntity {
 					}
 
 					this.setMovementSpeed(f);
-					super.method_6091(new Vec3d(0.0, 0.0, 1.0));
+					super.travel(new Vec3d(0.0, 0.0, 1.0));
 				} else {
-					this.method_18799(Vec3d.ZERO);
+					this.setVelocity(Vec3d.ZERO);
 				}
 
 				this.lastLimbDistance = this.limbDistance;
@@ -233,7 +233,7 @@ public class PigEntity extends AnimalEntity {
 			} else {
 				this.stepHeight = 0.5F;
 				this.field_6281 = 0.02F;
-				super.method_6091(vec3d);
+				super.travel(vec3d);
 			}
 		}
 	}
@@ -251,7 +251,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	public PigEntity method_6574(PassiveEntity passiveEntity) {
-		return EntityType.field_6093.method_5883(this.field_6002);
+		return EntityType.field_6093.create(this.world);
 	}
 
 	@Override

@@ -20,8 +20,8 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 
 	@Override
 	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-		List<LivingEntity> list = serverWorld.method_8390(
-			LivingEntity.class, livingEntity.method_5829().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != livingEntity && livingEntity2.isAlive()
+		List<LivingEntity> list = serverWorld.getEntities(
+			LivingEntity.class, livingEntity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != livingEntity && livingEntity2.isAlive()
 		);
 		list.sort(Comparator.comparingDouble(livingEntity::squaredDistanceTo));
 		Brain<?> brain = livingEntity.getBrain();

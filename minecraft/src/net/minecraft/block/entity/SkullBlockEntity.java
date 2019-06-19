@@ -62,7 +62,7 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		Block block = this.method_11010().getBlock();
+		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.field_10337 || block == Blocks.field_10472) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
 				this.isPowered = true;

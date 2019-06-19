@@ -121,7 +121,7 @@ public class EntitySelector {
 
 			return Collections.emptyList();
 		} else {
-			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.method_9222());
+			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
 			if (this.senderOnly) {
 				return (List<? extends Entity>)(serverCommandSource.getEntity() != null && predicate.test(serverCommandSource.getEntity())
@@ -144,7 +144,7 @@ public class EntitySelector {
 
 	private void appendEntitiesFromWorld(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
 		if (this.box != null) {
-			list.addAll(serverWorld.method_18023(this.type, this.box.method_997(vec3d), predicate));
+			list.addAll(serverWorld.getEntities(this.type, this.box.offset(vec3d), predicate));
 		} else {
 			list.addAll(serverWorld.getEntities(this.type, predicate));
 		}
@@ -169,7 +169,7 @@ public class EntitySelector {
 			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else {
-			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.method_9222());
+			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
 			if (this.senderOnly) {
 				if (serverCommandSource.getEntity() instanceof ServerPlayerEntity) {
@@ -202,12 +202,12 @@ public class EntitySelector {
 	private Predicate<Entity> getPositionPredicate(Vec3d vec3d) {
 		Predicate<Entity> predicate = this.basePredicate;
 		if (this.box != null) {
-			Box box = this.box.method_997(vec3d);
-			predicate = predicate.and(entity -> box.intersects(entity.method_5829()));
+			Box box = this.box.offset(vec3d);
+			predicate = predicate.and(entity -> box.intersects(entity.getBoundingBox()));
 		}
 
 		if (!this.distance.isDummy()) {
-			predicate = predicate.and(entity -> this.distance.matchesSquared(entity.method_5707(vec3d)));
+			predicate = predicate.and(entity -> this.distance.matchesSquared(entity.squaredDistanceTo(vec3d)));
 		}
 
 		return predicate;

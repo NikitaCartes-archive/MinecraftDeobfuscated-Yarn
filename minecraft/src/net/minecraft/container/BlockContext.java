@@ -14,7 +14,7 @@ public interface BlockContext {
 		}
 	};
 
-	static BlockContext method_17392(World world, BlockPos blockPos) {
+	static BlockContext create(World world, BlockPos blockPos) {
 		return new BlockContext() {
 			@Override
 			public <T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction) {

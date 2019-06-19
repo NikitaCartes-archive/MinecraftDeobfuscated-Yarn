@@ -27,7 +27,7 @@ public class DropperBlock extends DispenserBlock {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new DropperBlockEntity();
 	}
 
@@ -41,7 +41,7 @@ public class DropperBlock extends DispenserBlock {
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				Direction direction = world.method_8320(blockPos).method_11654(field_10918);
+				Direction direction = world.getBlockState(blockPos).get(FACING);
 				Inventory inventory = HopperBlockEntity.getInventoryAt(world, blockPos.offset(direction));
 				ItemStack itemStack2;
 				if (inventory == null) {

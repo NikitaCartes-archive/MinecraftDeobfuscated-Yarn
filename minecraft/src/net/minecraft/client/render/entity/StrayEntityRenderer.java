@@ -12,7 +12,7 @@ public class StrayEntityRenderer extends SkeletonEntityRenderer {
 
 	public StrayEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.method_4046(new StrayOverlayFeatureRenderer<>(this));
+		this.addFeature(new StrayOverlayFeatureRenderer<>(this));
 	}
 
 	@Override

@@ -384,12 +384,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	}
 
 	@Override
-	public GlShader method_1274() {
+	public GlShader getVertexShader() {
 		return this.vertexShader;
 	}
 
 	@Override
-	public GlShader method_1278() {
+	public GlShader getFragmentShader() {
 		return this.fragmentShader;
 	}
 

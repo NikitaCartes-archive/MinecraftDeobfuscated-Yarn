@@ -24,9 +24,9 @@ public class MobVisibilityCache {
 		} else if (this.invisibleEntities.contains(entity)) {
 			return false;
 		} else {
-			this.owner.field_6002.getProfiler().push("canSee");
+			this.owner.world.getProfiler().push("canSee");
 			boolean bl = this.owner.canSee(entity);
-			this.owner.field_6002.getProfiler().pop();
+			this.owner.world.getProfiler().pop();
 			if (bl) {
 				this.visibleEntities.add(entity);
 			} else {

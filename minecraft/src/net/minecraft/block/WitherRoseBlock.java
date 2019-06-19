@@ -24,16 +24,16 @@ public class WitherRoseBlock extends FlowerBlock {
 	}
 
 	@Override
-	protected boolean method_9695(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Block block = blockState.getBlock();
-		return super.method_9695(blockState, blockView, blockPos) || block == Blocks.field_10515 || block == Blocks.field_10114;
+		return super.canPlantOnTop(blockState, blockView, blockPos) || block == Blocks.field_10515 || block == Blocks.field_10114;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		VoxelShape voxelShape = this.method_9530(blockState, world, blockPos, EntityContext.absent());
-		Vec3d vec3d = voxelShape.getBoundingBox().method_1005();
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		VoxelShape voxelShape = this.getOutlineShape(blockState, world, blockPos, EntityContext.absent());
+		Vec3d vec3d = voxelShape.getBoundingBox().getCenter();
 		double d = (double)blockPos.getX() + vec3d.x;
 		double e = (double)blockPos.getZ() + vec3d.z;
 
@@ -53,7 +53,7 @@ public class WitherRoseBlock extends FlowerBlock {
 	}
 
 	@Override
-	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient && world.getDifficulty() != Difficulty.field_5801) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;

@@ -54,14 +54,16 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+	) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.method_9564().method_11657(JigsawBlock.field_10927, Direction.field_11033), this.tag));
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.field_11033), this.tag));
 		return list;
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
 		BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
 		return new MutableIntBoundingBox(
 			blockPos.getX(),
@@ -74,10 +76,10 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
-		ChunkGenerator<?> chunkGenerator = iWorld.method_8398().getChunkGenerator();
+		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
 		return this.feature.generate(iWorld, chunkGenerator, random, blockPos);
 	}
 
@@ -87,11 +89,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.field_16971;
 	}
 
 	public String toString() {
-		return "Feature[" + Registry.FEATURE.getId(this.feature.field_13376) + "]";
+		return "Feature[" + Registry.FEATURE.getId(this.feature.feature) + "]";
 	}
 }

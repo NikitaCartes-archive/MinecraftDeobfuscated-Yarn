@@ -22,7 +22,7 @@ public class OceanWarmBiome extends Biome {
 	public OceanWarmBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.field_15701, SurfaceBuilder.field_15687)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.SAND_SAND_UNDERWATER_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.field_9367)
 				.depth(-1.0F)
@@ -33,9 +33,9 @@ public class OceanWarmBiome extends Biome {
 				.waterFogColor(270131)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13536, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.field_14532, 0.3F, 0.9F));
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
-		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(false));
+		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.field_14532, 0.3F, 0.9F));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -49,21 +49,22 @@ public class OceanWarmBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.field_13178,
-			method_8699(
+			configureFeature(
 				Feature.field_13555,
 				new SimpleRandomFeatureConfig(
 					new Feature[]{Feature.field_13525, Feature.field_13546, Feature.field_13585},
-					new FeatureConfig[]{FeatureConfig.field_13603, FeatureConfig.field_13603, FeatureConfig.field_13603}
+					new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT}
 				),
 				Decorator.field_14247,
 				new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.field_13195)
 			)
 		);
 		DefaultBiomeFeatures.addSeagrass(this);
-		this.method_8719(
-			GenerationStep.Feature.field_13178, method_8699(Feature.field_13575, new SeaPickleFeatureConfig(20), Decorator.field_14258, new ChanceDecoratorConfig(16))
+		this.addFeature(
+			GenerationStep.Feature.field_13178,
+			configureFeature(Feature.field_13575, new SeaPickleFeatureConfig(20), Decorator.field_14258, new ChanceDecoratorConfig(16))
 		);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
 		this.addSpawn(EntityCategory.field_6300, new Biome.SpawnEntry(EntityType.field_6114, 10, 4, 4));

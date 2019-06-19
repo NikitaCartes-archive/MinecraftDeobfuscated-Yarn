@@ -21,8 +21,8 @@ public class ChunkGeneratorConfig {
 	protected final int oceanRuinSeparation = 8;
 	protected int mansionDistance = 80;
 	protected final int mansionSeparation = 20;
-	protected BlockState defaultBlock = Blocks.field_10340.method_9564();
-	protected BlockState defaultFluid = Blocks.field_10382.method_9564();
+	protected BlockState defaultBlock = Blocks.field_10340.getDefaultState();
+	protected BlockState defaultFluid = Blocks.field_10382.getDefaultState();
 
 	public int getVillageDistance() {
 		return this.villageDistance;

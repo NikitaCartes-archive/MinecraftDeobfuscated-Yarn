@@ -96,7 +96,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.field_9029;
+		return RecipeSerializer.BOOK_CLONING;
 	}
 
 	@Environment(EnvType.CLIENT)
