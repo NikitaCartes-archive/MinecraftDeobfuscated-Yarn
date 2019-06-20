@@ -1,0 +1,33 @@
+package net.minecraft;
+
+public class class_4048 {
+	public final float field_18067;
+	public final float field_18068;
+	public final boolean field_18069;
+
+	public class_4048(float f, float g, boolean bl) {
+		this.field_18067 = f;
+		this.field_18068 = g;
+		this.field_18069 = bl;
+	}
+
+	public class_4048 method_18383(float f) {
+		return this.method_19539(f, f);
+	}
+
+	public class_4048 method_19539(float f, float g) {
+		return !this.field_18069 && (f != 1.0F || g != 1.0F) ? method_18384(this.field_18067 * f, this.field_18068 * g) : this;
+	}
+
+	public static class_4048 method_18384(float f, float g) {
+		return new class_4048(f, g, false);
+	}
+
+	public static class_4048 method_18385(float f, float g) {
+		return new class_4048(f, g, true);
+	}
+
+	public String toString() {
+		return "EntityDimensions w=" + this.field_18067 + ", h=" + this.field_18068 + ", fixed=" + this.field_18069;
+	}
+}

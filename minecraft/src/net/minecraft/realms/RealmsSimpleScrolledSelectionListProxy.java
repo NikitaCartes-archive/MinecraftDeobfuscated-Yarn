@@ -3,19 +3,19 @@ package net.minecraft.realms;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ListWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.class_287;
+import net.minecraft.class_289;
+import net.minecraft.class_290;
+import net.minecraft.class_310;
+import net.minecraft.class_3532;
+import net.minecraft.class_358;
 
 @Environment(EnvType.CLIENT)
-public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
+public class RealmsSimpleScrolledSelectionListProxy extends class_358 {
 	private final RealmsSimpleScrolledSelectionList realmsSimpleScrolledSelectionList;
 
 	public RealmsSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList realmsSimpleScrolledSelectionList, int i, int j, int k, int l, int m) {
-		super(MinecraftClient.getInstance(), i, j, k, l, m);
+		super(class_310.method_1551(), i, j, k, l, m);
 		this.realmsSimpleScrolledSelectionList = realmsSimpleScrolledSelectionList;
 	}
 
@@ -67,12 +67,12 @@ public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
 			this.capYPosition();
 			GlStateManager.disableLighting();
 			GlStateManager.disableFog();
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			class_289 lv = class_289.method_1348();
+			class_287 lv2 = lv.method_1349();
 			int m = this.field_2180 + this.width / 2 - this.getRowWidth() / 2 + 2;
 			int n = this.field_2166 + 4 - (int)this.field_2175;
 			if (this.renderHeader) {
-				this.renderHeader(m, n, tessellator);
+				this.renderHeader(m, n, lv);
 			}
 
 			this.renderList(m, n, i, j, f);
@@ -81,7 +81,7 @@ public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
 			this.renderHoleBackground(this.field_2165, this.height, 255, 255);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
+				GlStateManager.class_5119.SRC_ALPHA, GlStateManager.class_5118.ONE_MINUS_SRC_ALPHA, GlStateManager.class_5119.ZERO, GlStateManager.class_5118.ONE
 			);
 			GlStateManager.disableAlphaTest();
 			GlStateManager.shadeModel(7425);
@@ -89,30 +89,30 @@ public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
 			int o = this.getMaxScroll();
 			if (o > 0) {
 				int p = (this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166) / this.getMaxPosition();
-				p = MathHelper.clamp(p, 32, this.field_2165 - this.field_2166 - 8);
+				p = class_3532.method_15340(p, 32, this.field_2165 - this.field_2166 - 8);
 				int q = (int)this.field_2175 * (this.field_2165 - this.field_2166 - p) / o + this.field_2166;
 				if (q < this.field_2166) {
 					q = this.field_2166;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
-				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(q + p), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)(q + p), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)q, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
-				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(q + p - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)(q + p - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)q, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
-				tessellator.draw();
+				lv2.method_1328(7, class_290.field_1575);
+				lv2.method_1315((double)k, (double)this.field_2165, 0.0).method_1312(0.0, 1.0).method_1323(0, 0, 0, 255).method_1344();
+				lv2.method_1315((double)l, (double)this.field_2165, 0.0).method_1312(1.0, 1.0).method_1323(0, 0, 0, 255).method_1344();
+				lv2.method_1315((double)l, (double)this.field_2166, 0.0).method_1312(1.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+				lv2.method_1315((double)k, (double)this.field_2166, 0.0).method_1312(0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+				lv.method_1350();
+				lv2.method_1328(7, class_290.field_1575);
+				lv2.method_1315((double)k, (double)(q + p), 0.0).method_1312(0.0, 1.0).method_1323(128, 128, 128, 255).method_1344();
+				lv2.method_1315((double)l, (double)(q + p), 0.0).method_1312(1.0, 1.0).method_1323(128, 128, 128, 255).method_1344();
+				lv2.method_1315((double)l, (double)q, 0.0).method_1312(1.0, 0.0).method_1323(128, 128, 128, 255).method_1344();
+				lv2.method_1315((double)k, (double)q, 0.0).method_1312(0.0, 0.0).method_1323(128, 128, 128, 255).method_1344();
+				lv.method_1350();
+				lv2.method_1328(7, class_290.field_1575);
+				lv2.method_1315((double)k, (double)(q + p - 1), 0.0).method_1312(0.0, 1.0).method_1323(192, 192, 192, 255).method_1344();
+				lv2.method_1315((double)(l - 1), (double)(q + p - 1), 0.0).method_1312(1.0, 1.0).method_1323(192, 192, 192, 255).method_1344();
+				lv2.method_1315((double)(l - 1), (double)q, 0.0).method_1312(1.0, 0.0).method_1323(192, 192, 192, 255).method_1344();
+				lv2.method_1315((double)k, (double)q, 0.0).method_1312(0.0, 0.0).method_1323(192, 192, 192, 255).method_1344();
+				lv.method_1350();
 			}
 
 			this.renderDecorations(i, j);

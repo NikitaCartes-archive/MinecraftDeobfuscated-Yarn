@@ -6,24 +6,24 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.NoticeScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.class_155;
+import net.minecraft.class_2585;
+import net.minecraft.class_2588;
+import net.minecraft.class_310;
+import net.minecraft.class_403;
+import net.minecraft.class_437;
 import net.minecraft.realms.pluginapi.LoadedRealmsPlugin;
 import net.minecraft.realms.pluginapi.RealmsPlugin;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBridge extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Screen previousScreen;
+	private class_437 previousScreen;
 
-	public void switchToRealms(Screen screen) {
-		this.previousScreen = screen;
+	public void switchToRealms(class_437 arg) {
+		this.previousScreen = arg;
 		Optional<LoadedRealmsPlugin> optional = this.tryLoadRealms();
 		if (optional.isPresent()) {
 			Realms.setScreen(((LoadedRealmsPlugin)optional.get()).getMainScreen(this));
@@ -33,8 +33,8 @@ public class RealmsBridge extends RealmsScreen {
 	}
 
 	@Nullable
-	public RealmsScreenProxy getNotificationScreen(Screen screen) {
-		this.previousScreen = screen;
+	public RealmsScreenProxy getNotificationScreen(class_437 arg) {
+		this.previousScreen = arg;
 		return (RealmsScreenProxy)this.tryLoadRealms().map(loadedRealmsPlugin -> loadedRealmsPlugin.getNotificationsScreen(this).getProxy()).orElse(null);
 	}
 
@@ -64,16 +64,16 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openScreen(this.previousScreen);
+		class_310.method_1551().method_1507(this.previousScreen);
 	}
 
 	private void showMissingRealmsErrorScreen() {
-		MinecraftClient.getInstance()
-			.openScreen(
-				new NoticeScreen(
-					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
-					new LiteralText(""),
-					new TranslatableText(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
+		class_310.method_1551()
+			.method_1507(
+				new class_403(
+					() -> class_310.method_1551().method_1507(this.previousScreen),
+					new class_2585(""),
+					new class_2588(class_155.method_16673().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)
 			);
 	}

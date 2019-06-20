@@ -2,15 +2,15 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ListWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_358;
 
 @Environment(EnvType.CLIENT)
-public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
+public class RealmsClickableScrolledSelectionListProxy extends class_358 {
 	private final RealmsClickableScrolledSelectionList realmsClickableScrolledSelectionList;
 
 	public RealmsClickableScrolledSelectionListProxy(RealmsClickableScrolledSelectionList realmsClickableScrolledSelectionList, int i, int j, int k, int l, int m) {
-		super(MinecraftClient.getInstance(), i, j, k, l, m);
+		super(class_310.method_1551(), i, j, k, l, m);
 		this.realmsClickableScrolledSelectionList = realmsClickableScrolledSelectionList;
 	}
 
@@ -100,11 +100,11 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 		}
 	}
 
-	public int y0() {
+	public int method_26759() {
 		return this.field_2166;
 	}
 
-	public int y1() {
+	public int method_26760() {
 		return this.field_2165;
 	}
 
@@ -112,7 +112,7 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 		return this.headerHeight;
 	}
 
-	public double yo() {
+	public double method_26761() {
 		return this.field_2175;
 	}
 

@@ -2,15 +2,15 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ListWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_358;
 
 @Environment(EnvType.CLIENT)
-public class RealmsScrolledSelectionListProxy extends ListWidget {
+public class RealmsScrolledSelectionListProxy extends class_358 {
 	private final RealmsScrolledSelectionList realmsScrolledSelectionList;
 
 	public RealmsScrolledSelectionListProxy(RealmsScrolledSelectionList realmsScrolledSelectionList, int i, int j, int k, int l, int m) {
-		super(MinecraftClient.getInstance(), i, j, k, l, m);
+		super(class_310.method_1551(), i, j, k, l, m);
 		this.realmsScrolledSelectionList = realmsScrolledSelectionList;
 	}
 

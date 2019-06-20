@@ -5,9 +5,9 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.MessageType;
-import net.minecraft.text.LiteralText;
+import net.minecraft.class_2556;
+import net.minecraft.class_2585;
+import net.minecraft.class_333;
 
 @Environment(EnvType.CLIENT)
 class RepeatedNarrator {
@@ -28,8 +28,8 @@ class RepeatedNarrator {
 				arg -> arg != null && string.equals(arg.field_19210) ? arg : new RepeatedNarrator.class_4283(string, RateLimiter.create((double)this.permitsPerSecond))
 			);
 		if (lv.field_19211.tryAcquire(1)) {
-			NarratorManager narratorManager = NarratorManager.INSTANCE;
-			narratorManager.onChatMessage(MessageType.field_11735, new LiteralText(string));
+			class_333 lv2 = class_333.field_2054;
+			lv2.method_1794(class_2556.field_11735, new class_2585(string));
 		}
 	}
 

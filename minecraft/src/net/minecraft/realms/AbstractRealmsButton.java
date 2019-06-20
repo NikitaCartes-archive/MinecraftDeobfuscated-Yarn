@@ -2,10 +2,10 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.class_339;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractRealmsButton<P extends AbstractButtonWidget & RealmsAbstractButtonProxy<?>> {
+public abstract class AbstractRealmsButton<P extends class_339 & RealmsAbstractButtonProxy<?>> {
 	public abstract P getProxy();
 
 	public boolean active() {
