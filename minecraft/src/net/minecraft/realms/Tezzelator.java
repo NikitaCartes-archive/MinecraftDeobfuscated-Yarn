@@ -2,52 +2,52 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.class_289;
 
 @Environment(EnvType.CLIENT)
 public class Tezzelator {
-	public static final Tessellator t = Tessellator.getInstance();
+	public static final class_289 field_23668 = class_289.method_1348();
 	public static final Tezzelator instance = new Tezzelator();
 
 	public void end() {
-		t.draw();
+		field_23668.method_1350();
 	}
 
 	public Tezzelator vertex(double d, double e, double f) {
-		t.getBufferBuilder().vertex(d, e, f);
+		field_23668.method_1349().method_1315(d, e, f);
 		return this;
 	}
 
 	public void color(float f, float g, float h, float i) {
-		t.getBufferBuilder().color(f, g, h, i);
+		field_23668.method_1349().method_1336(f, g, h, i);
 	}
 
 	public void tex2(short s, short t) {
-		Tezzelator.t.getBufferBuilder().texture(s, t);
+		field_23668.method_1349().method_1313(s, t);
 	}
 
 	public void normal(float f, float g, float h) {
-		t.getBufferBuilder().normal(f, g, h);
+		field_23668.method_1349().method_1318(f, g, h);
 	}
 
 	public void begin(int i, RealmsVertexFormat realmsVertexFormat) {
-		t.getBufferBuilder().begin(i, realmsVertexFormat.getVertexFormat());
+		field_23668.method_1349().method_1328(i, realmsVertexFormat.getVertexFormat());
 	}
 
 	public void endVertex() {
-		t.getBufferBuilder().next();
+		field_23668.method_1349().method_1344();
 	}
 
 	public void offset(double d, double e, double f) {
-		t.getBufferBuilder().setOffset(d, e, f);
+		field_23668.method_1349().method_1331(d, e, f);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return new RealmsBufferBuilder(t.getBufferBuilder().color(i, j, k, l));
+		return new RealmsBufferBuilder(field_23668.method_1349().method_1323(i, j, k, l));
 	}
 
 	public Tezzelator tex(double d, double e) {
-		t.getBufferBuilder().texture(d, e);
+		field_23668.method_1349().method_1312(d, e);
 		return this;
 	}
 }

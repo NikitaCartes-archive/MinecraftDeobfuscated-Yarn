@@ -15,11 +15,11 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.Snooper;
-import net.minecraft.client.util.Window;
+import net.minecraft.class_1041;
+import net.minecraft.class_287;
+import net.minecraft.class_289;
+import net.minecraft.class_290;
+import net.minecraft.class_3677;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.Version;
@@ -60,7 +60,7 @@ public class GLX {
 	public static int GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
 	public static int GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER;
 	public static int GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER;
-	private static GLX.FBOMode fboMode;
+	private static GLX.class_1010 fboMode;
 	public static final boolean useFbo = true;
 	private static boolean hasShaders;
 	private static boolean useShaderArb;
@@ -115,106 +115,106 @@ public class GLX {
 		hashMap.put(1286, "Operation on incomplete framebuffer");
 	});
 
-	public static void populateSnooperWithOpenGL(Snooper snooper) {
-		snooper.setFixedData("opengl_version", GlStateManager.getString(7938));
-		snooper.setFixedData("opengl_vendor", GlStateManager.getString(7936));
+	public static void populateSnooperWithOpenGL(class_3677 arg) {
+		arg.setFixedData("opengl_version", GlStateManager.getString(7938));
+		arg.setFixedData("opengl_vendor", GlStateManager.getString(7936));
 		GLCapabilities gLCapabilities = GL.getCapabilities();
-		snooper.setFixedData("gl_caps[ARB_arrays_of_arrays]", gLCapabilities.GL_ARB_arrays_of_arrays);
-		snooper.setFixedData("gl_caps[ARB_base_instance]", gLCapabilities.GL_ARB_base_instance);
-		snooper.setFixedData("gl_caps[ARB_blend_func_extended]", gLCapabilities.GL_ARB_blend_func_extended);
-		snooper.setFixedData("gl_caps[ARB_clear_buffer_object]", gLCapabilities.GL_ARB_clear_buffer_object);
-		snooper.setFixedData("gl_caps[ARB_color_buffer_float]", gLCapabilities.GL_ARB_color_buffer_float);
-		snooper.setFixedData("gl_caps[ARB_compatibility]", gLCapabilities.GL_ARB_compatibility);
-		snooper.setFixedData("gl_caps[ARB_compressed_texture_pixel_storage]", gLCapabilities.GL_ARB_compressed_texture_pixel_storage);
-		snooper.setFixedData("gl_caps[ARB_compute_shader]", gLCapabilities.GL_ARB_compute_shader);
-		snooper.setFixedData("gl_caps[ARB_copy_buffer]", gLCapabilities.GL_ARB_copy_buffer);
-		snooper.setFixedData("gl_caps[ARB_copy_image]", gLCapabilities.GL_ARB_copy_image);
-		snooper.setFixedData("gl_caps[ARB_depth_buffer_float]", gLCapabilities.GL_ARB_depth_buffer_float);
-		snooper.setFixedData("gl_caps[ARB_compute_shader]", gLCapabilities.GL_ARB_compute_shader);
-		snooper.setFixedData("gl_caps[ARB_copy_buffer]", gLCapabilities.GL_ARB_copy_buffer);
-		snooper.setFixedData("gl_caps[ARB_copy_image]", gLCapabilities.GL_ARB_copy_image);
-		snooper.setFixedData("gl_caps[ARB_depth_buffer_float]", gLCapabilities.GL_ARB_depth_buffer_float);
-		snooper.setFixedData("gl_caps[ARB_depth_clamp]", gLCapabilities.GL_ARB_depth_clamp);
-		snooper.setFixedData("gl_caps[ARB_depth_texture]", gLCapabilities.GL_ARB_depth_texture);
-		snooper.setFixedData("gl_caps[ARB_draw_buffers]", gLCapabilities.GL_ARB_draw_buffers);
-		snooper.setFixedData("gl_caps[ARB_draw_buffers_blend]", gLCapabilities.GL_ARB_draw_buffers_blend);
-		snooper.setFixedData("gl_caps[ARB_draw_elements_base_vertex]", gLCapabilities.GL_ARB_draw_elements_base_vertex);
-		snooper.setFixedData("gl_caps[ARB_draw_indirect]", gLCapabilities.GL_ARB_draw_indirect);
-		snooper.setFixedData("gl_caps[ARB_draw_instanced]", gLCapabilities.GL_ARB_draw_instanced);
-		snooper.setFixedData("gl_caps[ARB_explicit_attrib_location]", gLCapabilities.GL_ARB_explicit_attrib_location);
-		snooper.setFixedData("gl_caps[ARB_explicit_uniform_location]", gLCapabilities.GL_ARB_explicit_uniform_location);
-		snooper.setFixedData("gl_caps[ARB_fragment_layer_viewport]", gLCapabilities.GL_ARB_fragment_layer_viewport);
-		snooper.setFixedData("gl_caps[ARB_fragment_program]", gLCapabilities.GL_ARB_fragment_program);
-		snooper.setFixedData("gl_caps[ARB_fragment_shader]", gLCapabilities.GL_ARB_fragment_shader);
-		snooper.setFixedData("gl_caps[ARB_fragment_program_shadow]", gLCapabilities.GL_ARB_fragment_program_shadow);
-		snooper.setFixedData("gl_caps[ARB_framebuffer_object]", gLCapabilities.GL_ARB_framebuffer_object);
-		snooper.setFixedData("gl_caps[ARB_framebuffer_sRGB]", gLCapabilities.GL_ARB_framebuffer_sRGB);
-		snooper.setFixedData("gl_caps[ARB_geometry_shader4]", gLCapabilities.GL_ARB_geometry_shader4);
-		snooper.setFixedData("gl_caps[ARB_gpu_shader5]", gLCapabilities.GL_ARB_gpu_shader5);
-		snooper.setFixedData("gl_caps[ARB_half_float_pixel]", gLCapabilities.GL_ARB_half_float_pixel);
-		snooper.setFixedData("gl_caps[ARB_half_float_vertex]", gLCapabilities.GL_ARB_half_float_vertex);
-		snooper.setFixedData("gl_caps[ARB_instanced_arrays]", gLCapabilities.GL_ARB_instanced_arrays);
-		snooper.setFixedData("gl_caps[ARB_map_buffer_alignment]", gLCapabilities.GL_ARB_map_buffer_alignment);
-		snooper.setFixedData("gl_caps[ARB_map_buffer_range]", gLCapabilities.GL_ARB_map_buffer_range);
-		snooper.setFixedData("gl_caps[ARB_multisample]", gLCapabilities.GL_ARB_multisample);
-		snooper.setFixedData("gl_caps[ARB_multitexture]", gLCapabilities.GL_ARB_multitexture);
-		snooper.setFixedData("gl_caps[ARB_occlusion_query2]", gLCapabilities.GL_ARB_occlusion_query2);
-		snooper.setFixedData("gl_caps[ARB_pixel_buffer_object]", gLCapabilities.GL_ARB_pixel_buffer_object);
-		snooper.setFixedData("gl_caps[ARB_seamless_cube_map]", gLCapabilities.GL_ARB_seamless_cube_map);
-		snooper.setFixedData("gl_caps[ARB_shader_objects]", gLCapabilities.GL_ARB_shader_objects);
-		snooper.setFixedData("gl_caps[ARB_shader_stencil_export]", gLCapabilities.GL_ARB_shader_stencil_export);
-		snooper.setFixedData("gl_caps[ARB_shader_texture_lod]", gLCapabilities.GL_ARB_shader_texture_lod);
-		snooper.setFixedData("gl_caps[ARB_shadow]", gLCapabilities.GL_ARB_shadow);
-		snooper.setFixedData("gl_caps[ARB_shadow_ambient]", gLCapabilities.GL_ARB_shadow_ambient);
-		snooper.setFixedData("gl_caps[ARB_stencil_texturing]", gLCapabilities.GL_ARB_stencil_texturing);
-		snooper.setFixedData("gl_caps[ARB_sync]", gLCapabilities.GL_ARB_sync);
-		snooper.setFixedData("gl_caps[ARB_tessellation_shader]", gLCapabilities.GL_ARB_tessellation_shader);
-		snooper.setFixedData("gl_caps[ARB_texture_border_clamp]", gLCapabilities.GL_ARB_texture_border_clamp);
-		snooper.setFixedData("gl_caps[ARB_texture_buffer_object]", gLCapabilities.GL_ARB_texture_buffer_object);
-		snooper.setFixedData("gl_caps[ARB_texture_cube_map]", gLCapabilities.GL_ARB_texture_cube_map);
-		snooper.setFixedData("gl_caps[ARB_texture_cube_map_array]", gLCapabilities.GL_ARB_texture_cube_map_array);
-		snooper.setFixedData("gl_caps[ARB_texture_non_power_of_two]", gLCapabilities.GL_ARB_texture_non_power_of_two);
-		snooper.setFixedData("gl_caps[ARB_uniform_buffer_object]", gLCapabilities.GL_ARB_uniform_buffer_object);
-		snooper.setFixedData("gl_caps[ARB_vertex_blend]", gLCapabilities.GL_ARB_vertex_blend);
-		snooper.setFixedData("gl_caps[ARB_vertex_buffer_object]", gLCapabilities.GL_ARB_vertex_buffer_object);
-		snooper.setFixedData("gl_caps[ARB_vertex_program]", gLCapabilities.GL_ARB_vertex_program);
-		snooper.setFixedData("gl_caps[ARB_vertex_shader]", gLCapabilities.GL_ARB_vertex_shader);
-		snooper.setFixedData("gl_caps[EXT_bindable_uniform]", gLCapabilities.GL_EXT_bindable_uniform);
-		snooper.setFixedData("gl_caps[EXT_blend_equation_separate]", gLCapabilities.GL_EXT_blend_equation_separate);
-		snooper.setFixedData("gl_caps[EXT_blend_func_separate]", gLCapabilities.GL_EXT_blend_func_separate);
-		snooper.setFixedData("gl_caps[EXT_blend_minmax]", gLCapabilities.GL_EXT_blend_minmax);
-		snooper.setFixedData("gl_caps[EXT_blend_subtract]", gLCapabilities.GL_EXT_blend_subtract);
-		snooper.setFixedData("gl_caps[EXT_draw_instanced]", gLCapabilities.GL_EXT_draw_instanced);
-		snooper.setFixedData("gl_caps[EXT_framebuffer_multisample]", gLCapabilities.GL_EXT_framebuffer_multisample);
-		snooper.setFixedData("gl_caps[EXT_framebuffer_object]", gLCapabilities.GL_EXT_framebuffer_object);
-		snooper.setFixedData("gl_caps[EXT_framebuffer_sRGB]", gLCapabilities.GL_EXT_framebuffer_sRGB);
-		snooper.setFixedData("gl_caps[EXT_geometry_shader4]", gLCapabilities.GL_EXT_geometry_shader4);
-		snooper.setFixedData("gl_caps[EXT_gpu_program_parameters]", gLCapabilities.GL_EXT_gpu_program_parameters);
-		snooper.setFixedData("gl_caps[EXT_gpu_shader4]", gLCapabilities.GL_EXT_gpu_shader4);
-		snooper.setFixedData("gl_caps[EXT_packed_depth_stencil]", gLCapabilities.GL_EXT_packed_depth_stencil);
-		snooper.setFixedData("gl_caps[EXT_separate_shader_objects]", gLCapabilities.GL_EXT_separate_shader_objects);
-		snooper.setFixedData("gl_caps[EXT_shader_image_load_store]", gLCapabilities.GL_EXT_shader_image_load_store);
-		snooper.setFixedData("gl_caps[EXT_shadow_funcs]", gLCapabilities.GL_EXT_shadow_funcs);
-		snooper.setFixedData("gl_caps[EXT_shared_texture_palette]", gLCapabilities.GL_EXT_shared_texture_palette);
-		snooper.setFixedData("gl_caps[EXT_stencil_clear_tag]", gLCapabilities.GL_EXT_stencil_clear_tag);
-		snooper.setFixedData("gl_caps[EXT_stencil_two_side]", gLCapabilities.GL_EXT_stencil_two_side);
-		snooper.setFixedData("gl_caps[EXT_stencil_wrap]", gLCapabilities.GL_EXT_stencil_wrap);
-		snooper.setFixedData("gl_caps[EXT_texture_array]", gLCapabilities.GL_EXT_texture_array);
-		snooper.setFixedData("gl_caps[EXT_texture_buffer_object]", gLCapabilities.GL_EXT_texture_buffer_object);
-		snooper.setFixedData("gl_caps[EXT_texture_integer]", gLCapabilities.GL_EXT_texture_integer);
-		snooper.setFixedData("gl_caps[EXT_texture_sRGB]", gLCapabilities.GL_EXT_texture_sRGB);
-		snooper.setFixedData("gl_caps[ARB_vertex_shader]", gLCapabilities.GL_ARB_vertex_shader);
-		snooper.setFixedData("gl_caps[gl_max_vertex_uniforms]", GlStateManager.getInteger(35658));
+		arg.setFixedData("gl_caps[ARB_arrays_of_arrays]", gLCapabilities.GL_ARB_arrays_of_arrays);
+		arg.setFixedData("gl_caps[ARB_base_instance]", gLCapabilities.GL_ARB_base_instance);
+		arg.setFixedData("gl_caps[ARB_blend_func_extended]", gLCapabilities.GL_ARB_blend_func_extended);
+		arg.setFixedData("gl_caps[ARB_clear_buffer_object]", gLCapabilities.GL_ARB_clear_buffer_object);
+		arg.setFixedData("gl_caps[ARB_color_buffer_float]", gLCapabilities.GL_ARB_color_buffer_float);
+		arg.setFixedData("gl_caps[ARB_compatibility]", gLCapabilities.GL_ARB_compatibility);
+		arg.setFixedData("gl_caps[ARB_compressed_texture_pixel_storage]", gLCapabilities.GL_ARB_compressed_texture_pixel_storage);
+		arg.setFixedData("gl_caps[ARB_compute_shader]", gLCapabilities.GL_ARB_compute_shader);
+		arg.setFixedData("gl_caps[ARB_copy_buffer]", gLCapabilities.GL_ARB_copy_buffer);
+		arg.setFixedData("gl_caps[ARB_copy_image]", gLCapabilities.GL_ARB_copy_image);
+		arg.setFixedData("gl_caps[ARB_depth_buffer_float]", gLCapabilities.GL_ARB_depth_buffer_float);
+		arg.setFixedData("gl_caps[ARB_compute_shader]", gLCapabilities.GL_ARB_compute_shader);
+		arg.setFixedData("gl_caps[ARB_copy_buffer]", gLCapabilities.GL_ARB_copy_buffer);
+		arg.setFixedData("gl_caps[ARB_copy_image]", gLCapabilities.GL_ARB_copy_image);
+		arg.setFixedData("gl_caps[ARB_depth_buffer_float]", gLCapabilities.GL_ARB_depth_buffer_float);
+		arg.setFixedData("gl_caps[ARB_depth_clamp]", gLCapabilities.GL_ARB_depth_clamp);
+		arg.setFixedData("gl_caps[ARB_depth_texture]", gLCapabilities.GL_ARB_depth_texture);
+		arg.setFixedData("gl_caps[ARB_draw_buffers]", gLCapabilities.GL_ARB_draw_buffers);
+		arg.setFixedData("gl_caps[ARB_draw_buffers_blend]", gLCapabilities.GL_ARB_draw_buffers_blend);
+		arg.setFixedData("gl_caps[ARB_draw_elements_base_vertex]", gLCapabilities.GL_ARB_draw_elements_base_vertex);
+		arg.setFixedData("gl_caps[ARB_draw_indirect]", gLCapabilities.GL_ARB_draw_indirect);
+		arg.setFixedData("gl_caps[ARB_draw_instanced]", gLCapabilities.GL_ARB_draw_instanced);
+		arg.setFixedData("gl_caps[ARB_explicit_attrib_location]", gLCapabilities.GL_ARB_explicit_attrib_location);
+		arg.setFixedData("gl_caps[ARB_explicit_uniform_location]", gLCapabilities.GL_ARB_explicit_uniform_location);
+		arg.setFixedData("gl_caps[ARB_fragment_layer_viewport]", gLCapabilities.GL_ARB_fragment_layer_viewport);
+		arg.setFixedData("gl_caps[ARB_fragment_program]", gLCapabilities.GL_ARB_fragment_program);
+		arg.setFixedData("gl_caps[ARB_fragment_shader]", gLCapabilities.GL_ARB_fragment_shader);
+		arg.setFixedData("gl_caps[ARB_fragment_program_shadow]", gLCapabilities.GL_ARB_fragment_program_shadow);
+		arg.setFixedData("gl_caps[ARB_framebuffer_object]", gLCapabilities.GL_ARB_framebuffer_object);
+		arg.setFixedData("gl_caps[ARB_framebuffer_sRGB]", gLCapabilities.GL_ARB_framebuffer_sRGB);
+		arg.setFixedData("gl_caps[ARB_geometry_shader4]", gLCapabilities.GL_ARB_geometry_shader4);
+		arg.setFixedData("gl_caps[ARB_gpu_shader5]", gLCapabilities.GL_ARB_gpu_shader5);
+		arg.setFixedData("gl_caps[ARB_half_float_pixel]", gLCapabilities.GL_ARB_half_float_pixel);
+		arg.setFixedData("gl_caps[ARB_half_float_vertex]", gLCapabilities.GL_ARB_half_float_vertex);
+		arg.setFixedData("gl_caps[ARB_instanced_arrays]", gLCapabilities.GL_ARB_instanced_arrays);
+		arg.setFixedData("gl_caps[ARB_map_buffer_alignment]", gLCapabilities.GL_ARB_map_buffer_alignment);
+		arg.setFixedData("gl_caps[ARB_map_buffer_range]", gLCapabilities.GL_ARB_map_buffer_range);
+		arg.setFixedData("gl_caps[ARB_multisample]", gLCapabilities.GL_ARB_multisample);
+		arg.setFixedData("gl_caps[ARB_multitexture]", gLCapabilities.GL_ARB_multitexture);
+		arg.setFixedData("gl_caps[ARB_occlusion_query2]", gLCapabilities.GL_ARB_occlusion_query2);
+		arg.setFixedData("gl_caps[ARB_pixel_buffer_object]", gLCapabilities.GL_ARB_pixel_buffer_object);
+		arg.setFixedData("gl_caps[ARB_seamless_cube_map]", gLCapabilities.GL_ARB_seamless_cube_map);
+		arg.setFixedData("gl_caps[ARB_shader_objects]", gLCapabilities.GL_ARB_shader_objects);
+		arg.setFixedData("gl_caps[ARB_shader_stencil_export]", gLCapabilities.GL_ARB_shader_stencil_export);
+		arg.setFixedData("gl_caps[ARB_shader_texture_lod]", gLCapabilities.GL_ARB_shader_texture_lod);
+		arg.setFixedData("gl_caps[ARB_shadow]", gLCapabilities.GL_ARB_shadow);
+		arg.setFixedData("gl_caps[ARB_shadow_ambient]", gLCapabilities.GL_ARB_shadow_ambient);
+		arg.setFixedData("gl_caps[ARB_stencil_texturing]", gLCapabilities.GL_ARB_stencil_texturing);
+		arg.setFixedData("gl_caps[ARB_sync]", gLCapabilities.GL_ARB_sync);
+		arg.setFixedData("gl_caps[ARB_tessellation_shader]", gLCapabilities.GL_ARB_tessellation_shader);
+		arg.setFixedData("gl_caps[ARB_texture_border_clamp]", gLCapabilities.GL_ARB_texture_border_clamp);
+		arg.setFixedData("gl_caps[ARB_texture_buffer_object]", gLCapabilities.GL_ARB_texture_buffer_object);
+		arg.setFixedData("gl_caps[ARB_texture_cube_map]", gLCapabilities.GL_ARB_texture_cube_map);
+		arg.setFixedData("gl_caps[ARB_texture_cube_map_array]", gLCapabilities.GL_ARB_texture_cube_map_array);
+		arg.setFixedData("gl_caps[ARB_texture_non_power_of_two]", gLCapabilities.GL_ARB_texture_non_power_of_two);
+		arg.setFixedData("gl_caps[ARB_uniform_buffer_object]", gLCapabilities.GL_ARB_uniform_buffer_object);
+		arg.setFixedData("gl_caps[ARB_vertex_blend]", gLCapabilities.GL_ARB_vertex_blend);
+		arg.setFixedData("gl_caps[ARB_vertex_buffer_object]", gLCapabilities.GL_ARB_vertex_buffer_object);
+		arg.setFixedData("gl_caps[ARB_vertex_program]", gLCapabilities.GL_ARB_vertex_program);
+		arg.setFixedData("gl_caps[ARB_vertex_shader]", gLCapabilities.GL_ARB_vertex_shader);
+		arg.setFixedData("gl_caps[EXT_bindable_uniform]", gLCapabilities.GL_EXT_bindable_uniform);
+		arg.setFixedData("gl_caps[EXT_blend_equation_separate]", gLCapabilities.GL_EXT_blend_equation_separate);
+		arg.setFixedData("gl_caps[EXT_blend_func_separate]", gLCapabilities.GL_EXT_blend_func_separate);
+		arg.setFixedData("gl_caps[EXT_blend_minmax]", gLCapabilities.GL_EXT_blend_minmax);
+		arg.setFixedData("gl_caps[EXT_blend_subtract]", gLCapabilities.GL_EXT_blend_subtract);
+		arg.setFixedData("gl_caps[EXT_draw_instanced]", gLCapabilities.GL_EXT_draw_instanced);
+		arg.setFixedData("gl_caps[EXT_framebuffer_multisample]", gLCapabilities.GL_EXT_framebuffer_multisample);
+		arg.setFixedData("gl_caps[EXT_framebuffer_object]", gLCapabilities.GL_EXT_framebuffer_object);
+		arg.setFixedData("gl_caps[EXT_framebuffer_sRGB]", gLCapabilities.GL_EXT_framebuffer_sRGB);
+		arg.setFixedData("gl_caps[EXT_geometry_shader4]", gLCapabilities.GL_EXT_geometry_shader4);
+		arg.setFixedData("gl_caps[EXT_gpu_program_parameters]", gLCapabilities.GL_EXT_gpu_program_parameters);
+		arg.setFixedData("gl_caps[EXT_gpu_shader4]", gLCapabilities.GL_EXT_gpu_shader4);
+		arg.setFixedData("gl_caps[EXT_packed_depth_stencil]", gLCapabilities.GL_EXT_packed_depth_stencil);
+		arg.setFixedData("gl_caps[EXT_separate_shader_objects]", gLCapabilities.GL_EXT_separate_shader_objects);
+		arg.setFixedData("gl_caps[EXT_shader_image_load_store]", gLCapabilities.GL_EXT_shader_image_load_store);
+		arg.setFixedData("gl_caps[EXT_shadow_funcs]", gLCapabilities.GL_EXT_shadow_funcs);
+		arg.setFixedData("gl_caps[EXT_shared_texture_palette]", gLCapabilities.GL_EXT_shared_texture_palette);
+		arg.setFixedData("gl_caps[EXT_stencil_clear_tag]", gLCapabilities.GL_EXT_stencil_clear_tag);
+		arg.setFixedData("gl_caps[EXT_stencil_two_side]", gLCapabilities.GL_EXT_stencil_two_side);
+		arg.setFixedData("gl_caps[EXT_stencil_wrap]", gLCapabilities.GL_EXT_stencil_wrap);
+		arg.setFixedData("gl_caps[EXT_texture_array]", gLCapabilities.GL_EXT_texture_array);
+		arg.setFixedData("gl_caps[EXT_texture_buffer_object]", gLCapabilities.GL_EXT_texture_buffer_object);
+		arg.setFixedData("gl_caps[EXT_texture_integer]", gLCapabilities.GL_EXT_texture_integer);
+		arg.setFixedData("gl_caps[EXT_texture_sRGB]", gLCapabilities.GL_EXT_texture_sRGB);
+		arg.setFixedData("gl_caps[ARB_vertex_shader]", gLCapabilities.GL_ARB_vertex_shader);
+		arg.setFixedData("gl_caps[gl_max_vertex_uniforms]", GlStateManager.getInteger(35658));
 		GlStateManager.getError();
-		snooper.setFixedData("gl_caps[gl_max_fragment_uniforms]", GlStateManager.getInteger(35657));
+		arg.setFixedData("gl_caps[gl_max_fragment_uniforms]", GlStateManager.getInteger(35657));
 		GlStateManager.getError();
-		snooper.setFixedData("gl_caps[gl_max_vertex_attribs]", GlStateManager.getInteger(34921));
+		arg.setFixedData("gl_caps[gl_max_vertex_attribs]", GlStateManager.getInteger(34921));
 		GlStateManager.getError();
-		snooper.setFixedData("gl_caps[gl_max_vertex_texture_image_units]", GlStateManager.getInteger(35660));
+		arg.setFixedData("gl_caps[gl_max_vertex_texture_image_units]", GlStateManager.getInteger(35660));
 		GlStateManager.getError();
-		snooper.setFixedData("gl_caps[gl_max_texture_image_units]", GlStateManager.getInteger(34930));
+		arg.setFixedData("gl_caps[gl_max_texture_image_units]", GlStateManager.getInteger(34930));
 		GlStateManager.getError();
-		snooper.setFixedData("gl_caps[gl_max_array_texture_layers]", GlStateManager.getInteger(35071));
+		arg.setFixedData("gl_caps[gl_max_array_texture_layers]", GlStateManager.getInteger(35071));
 		GlStateManager.getError();
 	}
 
@@ -224,8 +224,8 @@ public class GLX {
 			: GlStateManager.getString(7937) + " GL version " + GlStateManager.getString(7938) + ", " + GlStateManager.getString(7936);
 	}
 
-	public static int getRefreshRate(Window window) {
-		long l = GLFW.glfwGetWindowMonitor(window.getHandle());
+	public static int getRefreshRate(class_1041 arg) {
+		long l = GLFW.glfwGetWindowMonitor(arg.method_4490());
 		if (l == 0L) {
 			l = GLFW.glfwGetPrimaryMonitor();
 		}
@@ -239,7 +239,7 @@ public class GLX {
 	}
 
 	public static LongSupplier initGlfw() {
-		Window.method_4492((integer, stringx) -> {
+		class_1041.method_4492((integer, stringx) -> {
 			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, stringx));
 		});
 		List<String> list = Lists.<String>newArrayList();
@@ -262,8 +262,8 @@ public class GLX {
 		GLFW.glfwSetErrorCallback(gLFWErrorCallbackI).free();
 	}
 
-	public static boolean shouldClose(Window window) {
-		return GLFW.glfwWindowShouldClose(window.getHandle());
+	public static boolean shouldClose(class_1041 arg) {
+		return GLFW.glfwWindowShouldClose(arg.method_4490());
 	}
 
 	public static void pollEvents() {
@@ -375,7 +375,7 @@ public class GLX {
 		capsString = capsString + "Using framebuffer objects because ";
 		if (gLCapabilities.OpenGL30) {
 			capsString = capsString + "OpenGL 3.0 is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.field_4981;
+			fboMode = GLX.class_1010.field_4981;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -387,7 +387,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_ARB_framebuffer_object) {
 			capsString = capsString + "ARB_framebuffer_object is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.field_4983;
+			fboMode = GLX.class_1010.field_4983;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -403,7 +403,7 @@ public class GLX {
 			}
 
 			capsString = capsString + "EXT_framebuffer_object is supported.\n";
-			fboMode = GLX.FBOMode.field_4984;
+			fboMode = GLX.class_1010.field_4984;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -902,44 +902,44 @@ public class GLX {
 	public static void renderCrosshair(int i, boolean bl, boolean bl2, boolean bl3) {
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		class_289 lv = class_289.method_1348();
+		class_287 lv2 = lv.method_1349();
 		GL11.glLineWidth(4.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		lv2.method_1328(1, class_290.field_1576);
 		if (bl) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, 0.0, 0.0).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315((double)i, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
 		}
 
 		if (bl2) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315(0.0, (double)i, 0.0).method_1323(0, 0, 0, 255).method_1344();
 		}
 
 		if (bl3) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)i).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315(0.0, 0.0, (double)i).method_1323(0, 0, 0, 255).method_1344();
 		}
 
-		tessellator.draw();
+		lv.method_1350();
 		GL11.glLineWidth(2.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		lv2.method_1328(1, class_290.field_1576);
 		if (bl) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, 0.0, 0.0).color(255, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(255, 0, 0, 255).method_1344();
+			lv2.method_1315((double)i, 0.0, 0.0).method_1323(255, 0, 0, 255).method_1344();
 		}
 
 		if (bl2) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).next();
-			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 255, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 255, 0, 255).method_1344();
+			lv2.method_1315(0.0, (double)i, 0.0).method_1323(0, 255, 0, 255).method_1344();
 		}
 
 		if (bl3) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)i).color(127, 127, 255, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(127, 127, 255, 255).method_1344();
+			lv2.method_1315(0.0, 0.0, (double)i).method_1323(127, 127, 255, 255).method_1344();
 		}
 
-		tessellator.draw();
+		lv.method_1350();
 		GL11.glLineWidth(1.0F);
 		GlStateManager.depthMask(true);
 		GlStateManager.enableTexture();
@@ -959,7 +959,7 @@ public class GLX {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum FBOMode {
+	static enum class_1010 {
 		field_4981,
 		field_4983,
 		field_4984;

@@ -2,15 +2,15 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_4185;
 
 @Environment(EnvType.CLIENT)
-public class RealmsButtonProxy extends ButtonWidget implements RealmsAbstractButtonProxy<RealmsButton> {
+public class RealmsButtonProxy extends class_4185 implements RealmsAbstractButtonProxy<RealmsButton> {
 	private final RealmsButton button;
 
-	public RealmsButtonProxy(RealmsButton realmsButton, int i, int j, String string, int k, int l, ButtonWidget.PressAction pressAction) {
-		super(i, j, k, l, string, pressAction);
+	public RealmsButtonProxy(RealmsButton realmsButton, int i, int j, String string, int k, int l, class_4185.class_4241 arg) {
+		super(i, j, k, l, string, arg);
 		this.button = realmsButton;
 	}
 
@@ -44,8 +44,8 @@ public class RealmsButtonProxy extends ButtonWidget implements RealmsAbstractBut
 		return super.getWidth();
 	}
 
-	public int y() {
-		return this.y;
+	public int method_26755() {
+		return this.field_23659;
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class RealmsButtonProxy extends ButtonWidget implements RealmsAbstractBut
 	}
 
 	@Override
-	public void renderBg(MinecraftClient minecraftClient, int i, int j) {
+	public void renderBg(class_310 arg, int i, int j) {
 		this.button.renderBg(i, j);
 	}
 

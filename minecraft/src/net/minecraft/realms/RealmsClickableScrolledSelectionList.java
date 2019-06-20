@@ -2,7 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Element;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEventListener {
@@ -51,7 +51,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	@Override
-	public Element getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 
@@ -76,20 +76,20 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 		this.proxy.setLeftPos(i);
 	}
 
-	public int y0() {
-		return this.proxy.y0();
+	public int method_26756() {
+		return this.proxy.method_26759();
 	}
 
-	public int y1() {
-		return this.proxy.y1();
+	public int method_26757() {
+		return this.proxy.method_26760();
 	}
 
 	public int headerHeight() {
 		return this.proxy.headerHeight();
 	}
 
-	public double yo() {
-		return this.proxy.yo();
+	public double method_26758() {
+		return this.proxy.method_26761();
 	}
 
 	public int itemHeight() {

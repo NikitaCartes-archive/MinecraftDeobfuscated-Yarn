@@ -2,29 +2,29 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Element;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public class RealmsLabel extends RealmsGuiEventListener {
 	private final RealmsLabelProxy proxy = new RealmsLabelProxy(this);
 	private final String text;
-	private final int x;
-	private final int y;
+	private final int field_23663;
+	private final int field_23664;
 	private final int color;
 
 	public RealmsLabel(String string, int i, int j, int k) {
 		this.text = string;
-		this.x = i;
-		this.y = j;
+		this.field_23663 = i;
+		this.field_23664 = j;
 		this.color = k;
 	}
 
 	public void render(RealmsScreen realmsScreen) {
-		realmsScreen.drawCenteredString(this.text, this.x, this.y, this.color);
+		realmsScreen.drawCenteredString(this.text, this.field_23663, this.field_23664, this.color);
 	}
 
 	@Override
-	public Element getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 

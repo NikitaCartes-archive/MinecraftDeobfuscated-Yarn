@@ -18,21 +18,21 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.RunArgs;
-import net.minecraft.client.WindowSettings;
-import net.minecraft.client.util.Session;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.class_1132;
+import net.minecraft.class_140;
+import net.minecraft.class_156;
+import net.minecraft.class_1657;
+import net.minecraft.class_310;
+import net.minecraft.class_320;
+import net.minecraft.class_3518;
+import net.minecraft.class_542;
+import net.minecraft.class_543;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Main {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger field_12138 = LogManager.getLogger();
 
 	public static void main(String[] strings) {
 		OptionParser optionParser = new OptionParser();
@@ -49,7 +49,7 @@ public class Main {
 		OptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
 		OptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
 		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L);
+		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + class_156.method_658() % 1000L);
 		OptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
 		OptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
 		OptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -69,18 +69,18 @@ public class Main {
 			System.out.println("Completely ignored arguments: " + list);
 		}
 
-		String string = getOption(optionSet, optionSpec6);
+		String string = method_11428(optionSet, optionSpec6);
 		Proxy proxy = Proxy.NO_PROXY;
 		if (string != null) {
 			try {
-				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec7)));
+				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, method_11428(optionSet, optionSpec7)));
 			} catch (Exception var52) {
 			}
 		}
 
-		final String string2 = getOption(optionSet, optionSpec8);
-		final String string3 = getOption(optionSet, optionSpec9);
-		if (!proxy.equals(Proxy.NO_PROXY) && isNotNullOrEmpty(string2) && isNotNullOrEmpty(string3)) {
+		final String string2 = method_11428(optionSet, optionSpec8);
+		final String string3 = method_11428(optionSet, optionSpec9);
+		if (!proxy.equals(Proxy.NO_PROXY) && method_11429(string2) && method_11429(string3)) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(string2, string3.toCharArray());
@@ -88,50 +88,50 @@ public class Main {
 			});
 		}
 
-		int i = getOption(optionSet, optionSpec14);
-		int j = getOption(optionSet, optionSpec15);
-		Optional<Integer> optional = Optional.ofNullable(getOption(optionSet, optionSpec16));
-		Optional<Integer> optional2 = Optional.ofNullable(getOption(optionSet, optionSpec17));
+		int i = method_11428(optionSet, optionSpec14);
+		int j = method_11428(optionSet, optionSpec15);
+		Optional<Integer> optional = Optional.ofNullable(method_11428(optionSet, optionSpec16));
+		Optional<Integer> optional2 = Optional.ofNullable(method_11428(optionSet, optionSpec17));
 		boolean bl = optionSet.has("fullscreen");
 		boolean bl2 = optionSet.has("demo");
-		String string4 = getOption(optionSet, optionSpec13);
+		String string4 = method_11428(optionSet, optionSpec13);
 		Gson gson = new GsonBuilder().registerTypeAdapter(PropertyMap.class, new Serializer()).create();
-		PropertyMap propertyMap = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec18), PropertyMap.class);
-		PropertyMap propertyMap2 = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec19), PropertyMap.class);
-		String string5 = getOption(optionSet, optionSpec22);
-		File file = getOption(optionSet, optionSpec3);
-		File file2 = optionSet.has(optionSpec4) ? getOption(optionSet, optionSpec4) : new File(file, "assets/");
-		File file3 = optionSet.has(optionSpec5) ? getOption(optionSet, optionSpec5) : new File(file, "resourcepacks/");
-		String string6 = optionSet.has(optionSpec11) ? optionSpec11.value(optionSet) : PlayerEntity.getOfflinePlayerUuid(optionSpec10.value(optionSet)).toString();
+		PropertyMap propertyMap = class_3518.method_15284(gson, method_11428(optionSet, optionSpec18), PropertyMap.class);
+		PropertyMap propertyMap2 = class_3518.method_15284(gson, method_11428(optionSet, optionSpec19), PropertyMap.class);
+		String string5 = method_11428(optionSet, optionSpec22);
+		File file = method_11428(optionSet, optionSpec3);
+		File file2 = optionSet.has(optionSpec4) ? method_11428(optionSet, optionSpec4) : new File(file, "assets/");
+		File file3 = optionSet.has(optionSpec5) ? method_11428(optionSet, optionSpec5) : new File(file, "resourcepacks/");
+		String string6 = optionSet.has(optionSpec11) ? optionSpec11.value(optionSet) : class_1657.method_7310(optionSpec10.value(optionSet)).toString();
 		String string7 = optionSet.has(optionSpec20) ? optionSpec20.value(optionSet) : null;
-		String string8 = getOption(optionSet, optionSpec);
-		Integer integer = getOption(optionSet, optionSpec2);
-		Session session = new Session(optionSpec10.value(optionSet), string6, optionSpec12.value(optionSet), optionSpec21.value(optionSet));
-		RunArgs runArgs = new RunArgs(
-			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),
-			new WindowSettings(i, j, optional, optional2, bl),
-			new RunArgs.Directories(file, file3, file2, string7),
-			new RunArgs.Game(bl2, string4, string5),
-			new RunArgs.AutoConnect(string8, integer)
+		String string8 = method_11428(optionSet, optionSpec);
+		Integer integer = method_11428(optionSet, optionSpec2);
+		class_320 lv = new class_320(optionSpec10.value(optionSet), string6, optionSpec12.value(optionSet), optionSpec21.value(optionSet));
+		class_542 lv2 = new class_542(
+			new class_542.class_547(lv, propertyMap, propertyMap2, proxy),
+			new class_543(i, j, optional, optional2, bl),
+			new class_542.class_544(file, file3, file2, string7),
+			new class_542.class_545(bl2, string4, string5),
+			new class_542.class_546(string8, integer)
 		);
 		Thread thread = new Thread("Client Shutdown Thread") {
 			public void run() {
-				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				if (minecraftClient != null) {
-					IntegratedServer integratedServer = minecraftClient.getServer();
-					if (integratedServer != null) {
-						integratedServer.stop(true);
+				class_310 lv = class_310.method_1551();
+				if (lv != null) {
+					class_1132 lv2 = lv.method_1576();
+					if (lv2 != null) {
+						lv2.method_3747(true);
 					}
 				}
 			}
 		};
-		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+		thread.setUncaughtExceptionHandler(new class_140(field_12138));
 		Runtime.getRuntime().addShutdownHook(thread);
 		Thread.currentThread().setName("Client thread");
-		new MinecraftClient(runArgs).start();
+		new class_310(lv2).method_1514();
 	}
 
-	private static <T> T getOption(OptionSet optionSet, OptionSpec<T> optionSpec) {
+	private static <T> T method_11428(OptionSet optionSet, OptionSpec<T> optionSpec) {
 		try {
 			return optionSet.valueOf(optionSpec);
 		} catch (Throwable var5) {
@@ -147,7 +147,7 @@ public class Main {
 		}
 	}
 
-	private static boolean isNotNullOrEmpty(String string) {
+	private static boolean method_11429(String string) {
 		return string != null && !string.isEmpty();
 	}
 

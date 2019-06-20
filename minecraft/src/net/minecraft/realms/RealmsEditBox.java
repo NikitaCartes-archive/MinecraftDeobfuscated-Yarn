@@ -2,28 +2,28 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_342;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public class RealmsEditBox extends RealmsGuiEventListener {
-	private final TextFieldWidget editBox;
+	private final class_342 editBox;
 
 	public RealmsEditBox(int i, int j, int k, int l, int m, String string) {
-		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m, null, string);
+		this.editBox = new class_342(class_310.method_1551().field_1772, j, k, l, m, null, string);
 	}
 
 	public String getValue() {
-		return this.editBox.getText();
+		return this.editBox.method_1882();
 	}
 
 	public void tick() {
-		this.editBox.tick();
+		this.editBox.method_1865();
 	}
 
 	public void setValue(String string) {
-		this.editBox.setText(string);
+		this.editBox.method_1852(string);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	@Override
-	public Element getProxy() {
+	public class_364 getProxy() {
 		return this.editBox;
 	}
 
@@ -70,10 +70,10 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	public void setMaxLength(int i) {
-		this.editBox.setMaxLength(i);
+		this.editBox.method_1880(i);
 	}
 
 	public void setIsEditable(boolean bl) {
-		this.editBox.setIsEditable(bl);
+		this.editBox.method_1888(bl);
 	}
 }

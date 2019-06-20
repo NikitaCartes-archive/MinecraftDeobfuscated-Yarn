@@ -2,45 +2,45 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexFormatElement;
+import net.minecraft.class_296;
 
 @Environment(EnvType.CLIENT)
 public class RealmsVertexFormatElement {
-	private final VertexFormatElement v;
+	private final class_296 field_23667;
 
-	public RealmsVertexFormatElement(VertexFormatElement vertexFormatElement) {
-		this.v = vertexFormatElement;
+	public RealmsVertexFormatElement(class_296 arg) {
+		this.field_23667 = arg;
 	}
 
-	public VertexFormatElement getVertexFormatElement() {
-		return this.v;
+	public class_296 getVertexFormatElement() {
+		return this.field_23667;
 	}
 
 	public boolean isPosition() {
-		return this.v.isPosition();
+		return this.field_23667.method_1388();
 	}
 
 	public int getIndex() {
-		return this.v.getIndex();
+		return this.field_23667.method_1385();
 	}
 
 	public int getByteSize() {
-		return this.v.getSize();
+		return this.field_23667.method_1387();
 	}
 
 	public int getCount() {
-		return this.v.getCount();
+		return this.field_23667.method_1384();
 	}
 
 	public int hashCode() {
-		return this.v.hashCode();
+		return this.field_23667.hashCode();
 	}
 
 	public boolean equals(Object object) {
-		return this.v.equals(object);
+		return this.field_23667.equals(object);
 	}
 
 	public String toString() {
-		return this.v.toString();
+		return this.field_23667.toString();
 	}
 }

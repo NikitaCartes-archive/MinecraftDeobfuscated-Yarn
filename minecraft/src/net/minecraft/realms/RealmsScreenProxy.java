@@ -7,24 +7,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.util.NarratorManager;
-import net.minecraft.item.ItemStack;
+import net.minecraft.class_1799;
+import net.minecraft.class_310;
+import net.minecraft.class_327;
+import net.minecraft.class_332;
+import net.minecraft.class_333;
+import net.minecraft.class_339;
+import net.minecraft.class_364;
+import net.minecraft.class_437;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class RealmsScreenProxy extends Screen {
+public class RealmsScreenProxy extends class_437 {
 	private final RealmsScreen screen;
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public RealmsScreenProxy(RealmsScreen realmsScreen) {
-		super(NarratorManager.EMPTY);
+		super(class_333.field_18967);
 		this.screen = realmsScreen;
 	}
 
@@ -33,9 +33,9 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	@Override
-	public void init(MinecraftClient minecraftClient, int i, int j) {
-		this.screen.init(minecraftClient, i, j);
-		super.init(minecraftClient, i, j);
+	public void init(class_310 arg, int i, int j) {
+		this.screen.init(arg, i, j);
+		super.init(arg, i, j);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class RealmsScreenProxy extends Screen {
 		if (bl) {
 			super.drawString(this.font, string, i, j, k);
 		} else {
-			this.font.draw(string, (float)i, (float)j, k);
+			this.font.method_1729(string, (float)i, (float)j, k);
 		}
 	}
 
@@ -63,11 +63,11 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, int o, int p) {
-		DrawableHelper.blit(i, j, m, n, f, g, k, l, o, p);
+		class_332.blit(i, j, m, n, f, g, k, l, o, p);
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n) {
-		DrawableHelper.blit(i, j, f, g, k, l, m, n);
+		class_332.blit(i, j, f, g, k, l, m, n);
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	@Override
-	public void renderTooltip(ItemStack itemStack, int i, int j) {
-		super.renderTooltip(itemStack, i, j);
+	public void renderTooltip(class_1799 arg, int i, int j) {
+		super.renderTooltip(arg, i, j);
 	}
 
 	@Override
@@ -129,15 +129,15 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	public int fontWidth(String string) {
-		return this.font.getStringWidth(string);
+		return this.font.method_1727(string);
 	}
 
 	public void fontDrawShadow(String string, int i, int j, int k) {
-		this.font.drawWithShadow(string, (float)i, (float)j, k);
+		this.font.method_1720(string, (float)i, (float)j, k);
 	}
 
 	public List<String> fontSplit(String string, int i) {
-		return this.font.wrapStringToWidthAsList(string, i);
+		return this.font.method_1728(string, i);
 	}
 
 	public void childrenClear() {
@@ -153,8 +153,8 @@ public class RealmsScreenProxy extends Screen {
 	public void narrateLabels() {
 		List<String> list = (List<String>)this.children
 			.stream()
-			.filter(element -> element instanceof RealmsLabelProxy)
-			.map(element -> ((RealmsLabelProxy)element).getLabel().getText())
+			.filter(arg -> arg instanceof RealmsLabelProxy)
+			.map(arg -> ((RealmsLabelProxy)arg).getLabel().getText())
 			.collect(Collectors.toList());
 		Realms.narrateNow(list);
 	}
@@ -176,15 +176,15 @@ public class RealmsScreenProxy extends Screen {
 	public List<AbstractRealmsButton<?>> buttons() {
 		List<AbstractRealmsButton<?>> list = Lists.<AbstractRealmsButton<?>>newArrayListWithExpectedSize(this.buttons.size());
 
-		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-			list.add(((RealmsAbstractButtonProxy)abstractButtonWidget).getButton());
+		for (class_339 lv : this.buttons) {
+			list.add(((RealmsAbstractButtonProxy)lv).getButton());
 		}
 
 		return list;
 	}
 
 	public void buttonsClear() {
-		Set<Element> set = Sets.<Element>newHashSet(this.buttons);
+		Set<class_364> set = Sets.<class_364>newHashSet(this.buttons);
 		this.children.removeIf(set::contains);
 		this.buttons.clear();
 	}
@@ -226,10 +226,10 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	public int draw(String string, int i, int j, int k, boolean bl) {
-		return bl ? this.font.drawWithShadow(string, (float)i, (float)j, k) : this.font.draw(string, (float)i, (float)j, k);
+		return bl ? this.font.method_1720(string, (float)i, (float)j, k) : this.font.method_1729(string, (float)i, (float)j, k);
 	}
 
-	public TextRenderer getFont() {
+	public class_327 getFont() {
 		return this.font;
 	}
 }

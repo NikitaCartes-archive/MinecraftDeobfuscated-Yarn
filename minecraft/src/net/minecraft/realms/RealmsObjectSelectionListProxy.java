@@ -4,15 +4,15 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_4280;
 
 @Environment(EnvType.CLIENT)
-public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends AlwaysSelectedEntryListWidget<E> {
+public class RealmsObjectSelectionListProxy<E extends class_4280.class_4281<E>> extends class_4280<E> {
 	private final RealmsObjectSelectionList realmsObjectSelectionList;
 
 	public RealmsObjectSelectionListProxy(RealmsObjectSelectionList realmsObjectSelectionList, int i, int j, int k, int l, int m) {
-		super(MinecraftClient.getInstance(), i, j, k, l, m);
+		super(class_310.method_1551(), i, j, k, l, m);
 		this.realmsObjectSelectionList = realmsObjectSelectionList;
 	}
 
@@ -34,14 +34,14 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 		if (i == -1) {
 			super.setSelected(null);
 		} else if (super.getItemCount() != 0) {
-			E entry = super.getEntry(i);
-			super.setSelected(entry);
+			E lv = super.getEntry(i);
+			super.setSelected(lv);
 		}
 	}
 
-	public void setSelected(@Nullable E entry) {
-		super.setSelected(entry);
-		this.realmsObjectSelectionList.selectItem(super.children().indexOf(entry));
+	public void setSelected(@Nullable E arg) {
+		super.setSelected(arg);
+		this.realmsObjectSelectionList.selectItem(super.children().indexOf(arg));
 	}
 
 	@Override
@@ -88,16 +88,16 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 		return this.realmsObjectSelectionList.mouseDragged(d, e, i, f, g) ? true : super.mouseDragged(d, e, i, f, g);
 	}
 
-	protected final int addEntry(E entry) {
-		return super.addEntry(entry);
+	protected final int addEntry(E arg) {
+		return super.addEntry(arg);
 	}
 
 	public E remove(int i) {
 		return super.remove(i);
 	}
 
-	public boolean removeEntry(E entry) {
-		return super.removeEntry(entry);
+	public boolean removeEntry(E arg) {
+		return super.removeEntry(arg);
 	}
 
 	@Override
@@ -105,12 +105,12 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 		super.setScrollAmount(d);
 	}
 
-	public int y0() {
-		return this.top;
+	public int method_26764() {
+		return this.field_19085;
 	}
 
-	public int y1() {
-		return this.bottom;
+	public int method_26765() {
+		return this.field_19086;
 	}
 
 	public int headerHeight() {

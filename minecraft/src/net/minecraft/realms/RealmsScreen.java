@@ -3,11 +3,11 @@ package net.minecraft.realms;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.ItemStack;
+import net.minecraft.class_1074;
+import net.minecraft.class_1799;
+import net.minecraft.class_310;
+import net.minecraft.class_332;
+import net.minecraft.class_3675;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsScreen extends RealmsGuiEventListener implements RealmsConfirmResultListener {
@@ -21,7 +21,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	public static final int SKIN_HAT_HEIGHT = 8;
 	public static final int SKIN_TEX_WIDTH = 64;
 	public static final int SKIN_TEX_HEIGHT = 64;
-	private MinecraftClient minecraft;
+	private class_310 minecraft;
 	public int width;
 	public int height;
 	private final RealmsScreenProxy proxy = new RealmsScreenProxy(this);
@@ -33,8 +33,8 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	public void init() {
 	}
 
-	public void init(MinecraftClient minecraftClient, int i, int j) {
-		this.minecraft = minecraftClient;
+	public void init(class_310 arg, int i, int j) {
+		this.minecraft = arg;
 	}
 
 	public void drawCenteredString(String string, int i, int j, int k) {
@@ -58,11 +58,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, int o, int p) {
-		DrawableHelper.blit(i, j, m, n, f, g, k, l, o, p);
+		class_332.blit(i, j, m, n, f, g, k, l, o, p);
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n) {
-		DrawableHelper.blit(i, j, f, g, k, l, m, n);
+		class_332.blit(i, j, f, g, k, l, m, n);
 	}
 
 	public void fillGradient(int i, int j, int k, int l, int m, int n) {
@@ -87,8 +87,8 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 		}
 	}
 
-	public void renderTooltip(ItemStack itemStack, int i, int j) {
-		this.proxy.renderTooltip(itemStack, i, j);
+	public void renderTooltip(class_1799 arg, int i, int j) {
+		this.proxy.renderTooltip(arg, i, j);
 	}
 
 	public void renderTooltip(String string, int i, int j) {
@@ -166,7 +166,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.focusOn(realmsGuiEventListener.getProxy());
+		this.proxy.method_20086(realmsGuiEventListener.getProxy());
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
@@ -190,11 +190,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	public List<String> getLocalizedStringWithLineWidth(String string, int i) {
-		return this.minecraft.textRenderer.wrapStringToWidthAsList(I18n.translate(string), i);
+		return this.minecraft.field_1772.method_1728(class_1074.method_4662(string), i);
 	}
 
 	public RealmsAnvilLevelStorageSource getLevelStorageSource() {
-		return new RealmsAnvilLevelStorageSource(MinecraftClient.getInstance().getLevelStorage());
+		return new RealmsAnvilLevelStorageSource(class_310.method_1551().method_1586());
 	}
 
 	public void removed() {
@@ -205,11 +205,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	protected void setKeyboardHandlerSendRepeatsToGui(boolean bl) {
-		this.minecraft.keyboard.enableRepeatEvents(bl);
+		this.minecraft.field_1774.method_1462(bl);
 	}
 
 	protected boolean isKeyDown(int i) {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), i);
+		return class_3675.method_15987(class_310.method_1551().field_1704.method_4490(), i);
 	}
 
 	protected void narrateLabels() {

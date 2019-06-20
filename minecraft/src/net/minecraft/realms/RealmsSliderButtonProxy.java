@@ -2,11 +2,11 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_357;
 
 @Environment(EnvType.CLIENT)
-public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstractButtonProxy<RealmsSliderButton> {
+public class RealmsSliderButtonProxy extends class_357 implements RealmsAbstractButtonProxy<RealmsSliderButton> {
 	private final RealmsSliderButton button;
 
 	public RealmsSliderButtonProxy(RealmsSliderButton realmsSliderButton, int i, int j, int k, int l, double d) {
@@ -44,8 +44,8 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 		return super.getWidth();
 	}
 
-	public int y() {
-		return this.y;
+	public int method_26768() {
+		return this.field_23659;
 	}
 
 	@Override
@@ -78,8 +78,8 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public void renderBg(MinecraftClient minecraftClient, int i, int j) {
-		super.renderBg(minecraftClient, i, j);
+	public void renderBg(class_310 arg, int i, int j) {
+		super.renderBg(arg, i, j);
 	}
 
 	public RealmsSliderButton getButton() {

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Element;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extends RealmsGuiEventListener {
@@ -72,12 +72,12 @@ public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extend
 		return this.proxy.getRowLeft() + this.proxy.getRowWidth();
 	}
 
-	public int y0() {
-		return this.proxy.y0();
+	public int method_26762() {
+		return this.proxy.method_26764();
 	}
 
-	public int y1() {
-		return this.proxy.y1();
+	public int method_26763() {
+		return this.proxy.method_26765();
 	}
 
 	public int headerHeight() {
@@ -97,7 +97,7 @@ public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extend
 	}
 
 	@Override
-	public Element getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 

@@ -2,19 +2,19 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.class_2960;
+import net.minecraft.class_3532;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSliderButtonProxy> {
-	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
-	private final int id;
+	protected static final class_2960 WIDGETS_LOCATION = new class_2960("textures/gui/widgets.png");
+	private final int field_23665;
 	private final RealmsSliderButtonProxy proxy;
 	private final double minValue;
 	private final double maxValue;
 
 	public RealmsSliderButton(int i, int j, int k, int l, int m, double d, double e) {
-		this.id = i;
+		this.field_23665 = i;
 		this.minValue = d;
 		this.maxValue = e;
 		this.proxy = new RealmsSliderButtonProxy(this, j, k, l, 20, this.toPct((double)m));
@@ -26,15 +26,15 @@ public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSlid
 	}
 
 	public double toPct(double d) {
-		return MathHelper.clamp((this.clamp(d) - this.minValue) / (this.maxValue - this.minValue), 0.0, 1.0);
+		return class_3532.method_15350((this.clamp(d) - this.minValue) / (this.maxValue - this.minValue), 0.0, 1.0);
 	}
 
 	public double toValue(double d) {
-		return this.clamp(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.minValue, this.maxValue));
+		return this.clamp(class_3532.method_16436(class_3532.method_15350(d, 0.0, 1.0), this.minValue, this.maxValue));
 	}
 
 	public double clamp(double d) {
-		return MathHelper.clamp(d, this.minValue, this.maxValue);
+		return class_3532.method_15350(d, this.minValue, this.maxValue);
 	}
 
 	public int getYImage(boolean bl) {
@@ -59,8 +59,8 @@ public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSlid
 		this.proxy.setValue(d);
 	}
 
-	public int id() {
-		return this.id;
+	public int method_26766() {
+		return this.field_23665;
 	}
 
 	public void setMessage(String string) {
@@ -75,8 +75,8 @@ public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSlid
 		return this.proxy.getHeight();
 	}
 
-	public int y() {
-		return this.proxy.y();
+	public int method_26767() {
+		return this.proxy.method_26768();
 	}
 
 	public abstract void applyValue();
