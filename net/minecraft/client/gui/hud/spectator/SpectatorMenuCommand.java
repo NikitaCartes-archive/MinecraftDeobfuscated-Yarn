@@ -16,6 +16,6 @@ public interface SpectatorMenuCommand {
 
     public void renderIcon(float var1, int var2);
 
-    public boolean enabled();
+    public boolean isEnabled();
 }
 

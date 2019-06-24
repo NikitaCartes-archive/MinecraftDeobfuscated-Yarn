@@ -52,7 +52,7 @@ extends Goal {
         SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
         skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.TRIGGERED, null, null);
         skeletonHorseEntity.setPosition(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z);
-        skeletonHorseEntity.field_6008 = 60;
+        skeletonHorseEntity.timeUntilRegen = 60;
         skeletonHorseEntity.setPersistent();
         skeletonHorseEntity.setTame(true);
         skeletonHorseEntity.setBreedingAge(0);
@@ -64,7 +64,7 @@ extends Goal {
         SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
         skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.TRIGGERED, null, null);
         skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
-        skeletonEntity.field_6008 = 60;
+        skeletonEntity.timeUntilRegen = 60;
         skeletonEntity.setPersistent();
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             skeletonEntity.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));

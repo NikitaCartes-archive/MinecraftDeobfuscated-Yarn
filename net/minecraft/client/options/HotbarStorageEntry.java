@@ -17,7 +17,7 @@ import net.minecraft.util.DefaultedList;
 @Environment(value=EnvType.CLIENT)
 public class HotbarStorageEntry
 extends ForwardingList<ItemStack> {
-    private final DefaultedList<ItemStack> delegate = DefaultedList.create(PlayerInventory.getHotbarSize(), ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> delegate = DefaultedList.ofSize(PlayerInventory.getHotbarSize(), ItemStack.EMPTY);
 
     @Override
     protected List<ItemStack> delegate() {

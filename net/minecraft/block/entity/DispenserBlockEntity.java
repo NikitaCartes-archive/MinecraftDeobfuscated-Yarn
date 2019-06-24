@@ -19,7 +19,7 @@ import net.minecraft.util.DefaultedList;
 public class DispenserBlockEntity
 extends LootableContainerBlockEntity {
     private static final Random RANDOM = new Random();
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(9, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
     protected DispenserBlockEntity(BlockEntityType<?> blockEntityType) {
         super(blockEntityType);
@@ -71,7 +71,7 @@ extends LootableContainerBlockEntity {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(compoundTag)) {
             Inventories.fromTag(compoundTag, this.inventory);
         }

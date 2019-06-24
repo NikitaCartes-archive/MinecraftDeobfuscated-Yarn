@@ -69,13 +69,13 @@ public enum EnderDragonSpawnState {
                         Feature.END_SPIKE.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()), endSpikeFeatureConfig);
                     }
                 } else if (bl) {
-                    enderDragonFight.setSpawnState(SUMMONING_DRAGOM);
+                    enderDragonFight.setSpawnState(SUMMONING_DRAGON);
                 }
             }
         }
     }
     ,
-    SUMMONING_DRAGOM{
+    SUMMONING_DRAGON{
 
         @Override
         public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {

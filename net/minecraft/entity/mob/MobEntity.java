@@ -60,7 +60,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -89,9 +89,9 @@ extends LivingEntity {
     protected final GoalSelector targetSelector;
     private LivingEntity target;
     private final MobVisibilityCache visibilityCache;
-    private final DefaultedList<ItemStack> handItems = DefaultedList.create(2, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> handItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
     protected final float[] handDropChances = new float[2];
-    private final DefaultedList<ItemStack> armorItems = DefaultedList.create(4, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
     protected final float[] armorDropChances = new float[4];
     private boolean pickUpLoot;
     private boolean persistent;
@@ -1116,8 +1116,8 @@ extends LivingEntity {
     }
 
     @Override
-    public AbsoluteHand getMainHand() {
-        return this.isLeftHanded() ? AbsoluteHand.LEFT : AbsoluteHand.RIGHT;
+    public Arm getMainArm() {
+        return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
     }
 
     @Override

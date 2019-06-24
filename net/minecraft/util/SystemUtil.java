@@ -136,7 +136,7 @@ public class SystemUtil {
             return OperatingSystem.WINDOWS;
         }
         if (string.contains("mac")) {
-            return OperatingSystem.MAC;
+            return OperatingSystem.OSX;
         }
         if (string.contains("solaris")) {
             return OperatingSystem.SOLARIS;
@@ -278,7 +278,7 @@ public class SystemUtil {
             }
         }
         ,
-        MAC{
+        OSX{
 
             @Override
             @Environment(value=EnvType.CLIENT)

@@ -44,7 +44,7 @@ extends Item {
         if (!list.isEmpty()) {
             Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0f);
             for (Entity entity : list) {
-                Box box = entity.getBoundingBox().expand(entity.getBoundingBoxMarginForTargeting());
+                Box box = entity.getBoundingBox().expand(entity.getTargetingMargin());
                 if (!box.contains(vec3d2)) continue;
                 return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
             }

@@ -23,7 +23,7 @@ implements Packet<ClientPlayPacketListener> {
 
     public InventoryS2CPacket(int i, DefaultedList<ItemStack> defaultedList) {
         this.guiId = i;
-        this.slotStackList = DefaultedList.create(defaultedList.size(), ItemStack.EMPTY);
+        this.slotStackList = DefaultedList.ofSize(defaultedList.size(), ItemStack.EMPTY);
         for (int j = 0; j < this.slotStackList.size(); ++j) {
             this.slotStackList.set(j, defaultedList.get(j).copy());
         }
@@ -33,7 +33,7 @@ implements Packet<ClientPlayPacketListener> {
     public void read(PacketByteBuf packetByteBuf) throws IOException {
         this.guiId = packetByteBuf.readUnsignedByte();
         int i = packetByteBuf.readShort();
-        this.slotStackList = DefaultedList.create(i, ItemStack.EMPTY);
+        this.slotStackList = DefaultedList.ofSize(i, ItemStack.EMPTY);
         for (int j = 0; j < i; ++j) {
             this.slotStackList.set(j, packetByteBuf.readItemStack());
         }

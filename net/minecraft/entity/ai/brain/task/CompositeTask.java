@@ -65,7 +65,7 @@ extends Task<E> {
     }
 
     static enum RunMode {
-        RUN_ALL{
+        RUN_ONE{
 
             @Override
             public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {

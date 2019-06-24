@@ -185,8 +185,8 @@ public abstract class Option {
         gameOptions.guiScale = Integer.remainderUnsigned(gameOptions.guiScale + integer, MinecraftClient.getInstance().window.calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1);
     }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + (gameOptions.guiScale == 0 ? I18n.translate("options.guiScale.auto", new Object[0]) : Integer.valueOf(gameOptions.guiScale)));
     public static final CyclingOption MAIN_HAND = new CyclingOption("options.mainHand", (gameOptions, integer) -> {
-        gameOptions.mainHand = gameOptions.mainHand.getOpposite();
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + (Object)((Object)gameOptions.mainHand));
+        gameOptions.mainArm = gameOptions.mainArm.getOpposite();
+    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + (Object)((Object)gameOptions.mainArm));
     public static final CyclingOption NARRATOR = new CyclingOption("options.narrator", (gameOptions, integer) -> {
         gameOptions.narrator = NarratorManager.INSTANCE.isActive() ? NarratorOption.byId(gameOptions.narrator.getId() + integer) : NarratorOption.OFF;
         NarratorManager.INSTANCE.addToast(gameOptions.narrator);

@@ -61,10 +61,10 @@ import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.ContainerScreenRegistry;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.EndCreditsScreen;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.LevelLoadingScreen;
 import net.minecraft.client.gui.screen.OutOfMemoryScreen;
 import net.minecraft.client.gui.screen.Overlay;
-import net.minecraft.client.gui.screen.PauseScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -216,7 +216,7 @@ implements SnooperListener,
 WindowEventHandler,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.MAC;
+    public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.OSX;
     public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
     public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
     public static CompletableFuture<Unit> voidFuture = CompletableFuture.completedFuture(Unit.INSTANCE);
@@ -528,7 +528,7 @@ AutoCloseable {
     private void initializeSearchableContainers() {
         TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
         IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getContainer().getTagsFor(itemStack.getItem()).stream());
-        DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         for (Item item : Registry.ITEM) {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
         }
@@ -653,7 +653,7 @@ AutoCloseable {
                 bl = true;
             }
         }
-        DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         for (Item item : Registry.ITEM) {
             defaultedList.clear();
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
@@ -1033,10 +1033,10 @@ AutoCloseable {
         }
         boolean bl3 = bl2 = this.isIntegratedServerRunning() && !this.server.isRemote();
         if (bl2) {
-            this.openScreen(new PauseScreen(!bl));
+            this.openScreen(new GameMenuScreen(!bl));
             this.soundManager.pauseAll();
         } else {
-            this.openScreen(new PauseScreen(true));
+            this.openScreen(new GameMenuScreen(true));
         }
     }
 
@@ -1430,7 +1430,7 @@ AutoCloseable {
         this.reset(screen);
         if (this.world != null) {
             if (integratedServer != null) {
-                while (!integratedServer.isServerThreadAlive()) {
+                while (!integratedServer.isStopping()) {
                     this.render(false);
                 }
             }

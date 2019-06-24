@@ -192,7 +192,7 @@ extends BlockWithEntity {
                 list.add(new LiteralText("???????"));
             }
             if (compoundTag.containsKey("Items", 9)) {
-                DefaultedList<ItemStack> defaultedList = DefaultedList.create(27, ItemStack.EMPTY);
+                DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.fromTag(compoundTag, defaultedList);
                 int i = 0;
                 int j = 0;

@@ -31,10 +31,10 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class ConnectScreen
 extends Screen {
-    private static final AtomicInteger field_2408 = new AtomicInteger(0);
+    private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
     private static final Logger LOGGER = LogManager.getLogger();
     private ClientConnection connection;
-    private boolean field_2409;
+    private boolean connectingCancelled;
     private final Screen parent;
     private Text status = new TranslatableText("connect.connecting", new Object[0]);
     private long field_19097 = -1L;
@@ -46,7 +46,7 @@ extends Screen {
         ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
         minecraftClient.disconnect();
         minecraftClient.setCurrentServerEntry(serverEntry);
-        this.method_2130(serverAddress.getAddress(), serverAddress.getPort());
+        this.connect(serverAddress.getAddress(), serverAddress.getPort());
     }
 
     public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
@@ -54,18 +54,18 @@ extends Screen {
         this.minecraft = minecraftClient;
         this.parent = screen;
         minecraftClient.disconnect();
-        this.method_2130(string, i);
+        this.connect(string, i);
     }
 
-    private void method_2130(final String string, final int i) {
+    private void connect(final String string, final int i) {
         LOGGER.info("Connecting to {}, {}", (Object)string, (Object)i);
-        Thread thread = new Thread("Server Connector #" + field_2408.incrementAndGet()){
+        Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()){
 
             @Override
             public void run() {
                 InetAddress inetAddress = null;
                 try {
-                    if (ConnectScreen.this.field_2409) {
+                    if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     inetAddress = InetAddress.getByName(string);
@@ -74,13 +74,13 @@ extends Screen {
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
                     ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
                 } catch (UnknownHostException unknownHostException) {
-                    if (ConnectScreen.this.field_2409) {
+                    if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)unknownHostException);
                     ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host"))));
                 } catch (Exception exception) {
-                    if (ConnectScreen.this.field_2409) {
+                    if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
@@ -116,7 +116,7 @@ extends Screen {
     @Override
     protected void init() {
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> {
-            this.field_2409 = true;
+            this.connectingCancelled = true;
             if (this.connection != null) {
                 this.connection.disconnect(new TranslatableText("connect.aborted", new Object[0]));
             }

@@ -30,7 +30,7 @@ public class CampfireBlockEntity
 extends BlockEntity
 implements Clearable,
 Tickable {
-    private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.create(4, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
     private final int[] cookingTimes = new int[4];
     private final int[] cookingTotalTimes = new int[4];
 

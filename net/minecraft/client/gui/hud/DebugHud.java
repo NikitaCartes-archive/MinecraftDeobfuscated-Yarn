@@ -84,14 +84,14 @@ extends DrawableHelper {
         this.chunk = null;
     }
 
-    public void draw() {
+    public void render() {
         this.client.getProfiler().push("debug");
         GlStateManager.pushMatrix();
         Entity entity = this.client.getCameraEntity();
         this.blockHit = entity.rayTrace(20.0, 0.0f, false);
         this.fluidHit = entity.rayTrace(20.0, 0.0f, true);
-        this.drawLeftText();
-        this.drawRightText();
+        this.renderLeftText();
+        this.renderRightText();
         GlStateManager.popMatrix();
         if (this.client.options.debugTpsEnabled) {
             int i = this.client.window.getScaledWidth();
@@ -104,7 +104,7 @@ extends DrawableHelper {
         this.client.getProfiler().pop();
     }
 
-    protected void drawLeftText() {
+    protected void renderLeftText() {
         List<String> list = this.getLeftText();
         list.add("");
         boolean bl = this.client.getServer() != null;
@@ -122,7 +122,7 @@ extends DrawableHelper {
         }
     }
 
-    protected void drawRightText() {
+    protected void renderRightText() {
         List<String> list = this.getRightText();
         for (int i = 0; i < list.size(); ++i) {
             String string = list.get(i);

@@ -42,8 +42,8 @@ extends Screen {
     private final CustomizeFlatLevelScreen parent;
     private String shareText;
     private String listText;
-    private SuperflatPresetsListWidget field_2521;
-    private ButtonWidget field_2525;
+    private SuperflatPresetsListWidget listWidget;
+    private ButtonWidget selectPresetButton;
     private TextFieldWidget customPresetField;
 
     public PresetsScreen(CustomizeFlatLevelScreen customizeFlatLevelScreen) {
@@ -60,19 +60,19 @@ extends Screen {
         this.customPresetField.setMaxLength(1230);
         this.customPresetField.setText(this.parent.getConfigString());
         this.children.add(this.customPresetField);
-        this.field_2521 = new SuperflatPresetsListWidget();
-        this.children.add(this.field_2521);
-        this.field_2525 = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select", new Object[0]), buttonWidget -> {
+        this.listWidget = new SuperflatPresetsListWidget();
+        this.children.add(this.listWidget);
+        this.selectPresetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select", new Object[0]), buttonWidget -> {
             this.parent.method_2139(this.customPresetField.getText());
             this.minecraft.openScreen(this.parent);
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
-        this.method_20102(this.field_2521.getSelected() != null);
+        this.updateSelectButton(this.listWidget.getSelected() != null);
     }
 
     @Override
     public boolean mouseScrolled(double d, double e, double f) {
-        return this.field_2521.mouseScrolled(d, e, f);
+        return this.listWidget.mouseScrolled(d, e, f);
     }
 
     @Override
@@ -90,7 +90,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.field_2521.render(i, j, f);
+        this.listWidget.render(i, j, f);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         this.drawString(this.font, this.shareText, 50, 30, 0xA0A0A0);
         this.drawString(this.font, this.listText, 50, 70, 0xA0A0A0);
@@ -104,8 +104,8 @@ extends Screen {
         super.tick();
     }
 
-    public void method_20102(boolean bl) {
-        this.field_2525.active = bl || this.customPresetField.getText().length() > 1;
+    public void updateSelectButton(boolean bl) {
+        this.selectPresetButton.active = bl || this.customPresetField.getText().length() > 1;
     }
 
     private static void addPreset(String string, ItemConvertible itemConvertible, Biome biome, List<String> list, FlatChunkGeneratorLayer ... flatChunkGeneratorLayers) {
@@ -135,38 +135,38 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     static class SuperflatPreset {
-        public final Item field_2527;
-        public final String field_2528;
-        public final String field_2526;
+        public final Item icon;
+        public final String name;
+        public final String config;
 
         public SuperflatPreset(Item item, String string, String string2) {
-            this.field_2527 = item;
-            this.field_2528 = string;
-            this.field_2526 = string2;
+            this.icon = item;
+            this.name = string;
+            this.config = string2;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     class SuperflatPresetsListWidget
-    extends AlwaysSelectedEntryListWidget<SuperflatPresetItem> {
+    extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget() {
             super(PresetsScreen.this.minecraft, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
             for (int i = 0; i < presets.size(); ++i) {
-                this.addEntry(new SuperflatPresetItem());
+                this.addEntry(new SuperflatPresetEntry());
             }
         }
 
-        public void method_20103(@Nullable SuperflatPresetItem superflatPresetItem) {
-            super.setSelected(superflatPresetItem);
-            if (superflatPresetItem != null) {
-                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetItem))).field_2528).getString());
+        public void method_20103(@Nullable SuperflatPresetEntry superflatPresetEntry) {
+            super.setSelected(superflatPresetEntry);
+            if (superflatPresetEntry != null) {
+                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetEntry))).name).getString());
             }
         }
 
         @Override
         protected void moveSelection(int i) {
             super.moveSelection(i);
-            PresetsScreen.this.method_20102(true);
+            PresetsScreen.this.updateSelectButton(true);
         }
 
         @Override
@@ -180,38 +180,38 @@ extends Screen {
                 return true;
             }
             if ((i == 257 || i == 335) && this.getSelected() != null) {
-                ((SuperflatPresetItem)this.getSelected()).method_19389();
+                ((SuperflatPresetEntry)this.getSelected()).setPreset();
             }
             return false;
         }
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.method_20103((SuperflatPresetItem)entry);
+            this.method_20103((SuperflatPresetEntry)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
-        public class SuperflatPresetItem
-        extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetItem> {
+        public class SuperflatPresetEntry
+        extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
             @Override
             public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
                 SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(i);
-                this.method_2200(k, j, superflatPreset.field_2527);
-                PresetsScreen.this.font.draw(superflatPreset.field_2528, k + 18 + 5, j + 6, 0xFFFFFF);
+                this.method_2200(k, j, superflatPreset.icon);
+                PresetsScreen.this.font.draw(superflatPreset.name, k + 18 + 5, j + 6, 0xFFFFFF);
             }
 
             @Override
             public boolean mouseClicked(double d, double e, int i) {
                 if (i == 0) {
-                    this.method_19389();
+                    this.setPreset();
                 }
                 return false;
             }
 
-            private void method_19389() {
+            private void setPreset() {
                 SuperflatPresetsListWidget.this.method_20103(this);
-                PresetsScreen.this.method_20102(true);
-                PresetsScreen.this.customPresetField.setText(((SuperflatPreset)presets.get((int)SuperflatPresetsListWidget.this.children().indexOf((Object)this))).field_2526);
+                PresetsScreen.this.updateSelectButton(true);
+                PresetsScreen.this.customPresetField.setText(((SuperflatPreset)presets.get((int)SuperflatPresetsListWidget.this.children().indexOf((Object)this))).config);
                 PresetsScreen.this.customPresetField.method_1870();
             }
 

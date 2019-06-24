@@ -25,12 +25,12 @@ RecipeInputProvider {
 
     public BasicInventory(int i) {
         this.size = i;
-        this.stackList = DefaultedList.create(i, ItemStack.EMPTY);
+        this.stackList = DefaultedList.ofSize(i, ItemStack.EMPTY);
     }
 
     public BasicInventory(ItemStack ... itemStacks) {
         this.size = itemStacks.length;
-        this.stackList = DefaultedList.create(ItemStack.EMPTY, itemStacks);
+        this.stackList = DefaultedList.copyOf(ItemStack.EMPTY, itemStacks);
     }
 
     public void addListener(InventoryListener inventoryListener) {

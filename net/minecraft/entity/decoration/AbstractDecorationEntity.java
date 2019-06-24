@@ -127,7 +127,7 @@ extends Entity {
     }
 
     @Override
-    public boolean handlePlayerAttack(Entity entity) {
+    public boolean handleAttack(Entity entity) {
         if (entity instanceof PlayerEntity) {
             return this.damage(DamageSource.player((PlayerEntity)entity), 0.0f);
         }

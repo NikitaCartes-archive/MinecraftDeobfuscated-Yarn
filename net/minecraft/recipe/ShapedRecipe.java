@@ -122,7 +122,7 @@ implements CraftingRecipe {
     }
 
     private static DefaultedList<Ingredient> getIngredients(String[] strings, Map<String, Ingredient> map, int i, int j) {
-        DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
+        DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
         HashSet<String> set = Sets.newHashSet(map.keySet());
         set.remove(" ");
         for (int k = 0; k < strings.length; ++k) {
@@ -249,7 +249,7 @@ implements CraftingRecipe {
             int i = packetByteBuf.readVarInt();
             int j = packetByteBuf.readVarInt();
             String string = packetByteBuf.readString(Short.MAX_VALUE);
-            DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
+            DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
             for (int k = 0; k < defaultedList.size(); ++k) {
                 defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));
             }

@@ -61,7 +61,7 @@ extends MinecraftServer {
         this.setWorldHeight(256);
         this.setPlayerManager(new IntegratedPlayerManager(this));
         this.client = minecraftClient;
-        this.levelInfo = this.isDemo() ? MinecraftServer.WORLD_INFO : levelInfo;
+        this.levelInfo = this.isDemo() ? MinecraftServer.DEMO_LEVEL_INFO : levelInfo;
     }
 
     @Override

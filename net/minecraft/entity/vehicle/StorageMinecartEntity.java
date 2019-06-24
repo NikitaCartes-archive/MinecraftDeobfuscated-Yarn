@@ -34,7 +34,7 @@ public abstract class StorageMinecartEntity
 extends AbstractMinecartEntity
 implements Inventory,
 NameableContainerProvider {
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(36, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
     private boolean field_7733 = true;
     @Nullable
     private Identifier lootTableId;
@@ -149,7 +149,7 @@ NameableContainerProvider {
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         if (compoundTag.containsKey("LootTable", 8)) {
             this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
             this.lootSeed = compoundTag.getLong("LootTableSeed");

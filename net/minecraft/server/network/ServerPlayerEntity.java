@@ -102,7 +102,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -163,7 +163,7 @@ implements ContainerListener {
     private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
     private int containerSyncId;
     public boolean field_13991;
-    public int field_13967;
+    public int pingMilliseconds;
     public boolean notInAnyWorld;
 
     public ServerPlayerEntity(MinecraftServer minecraftServer, ServerWorld serverWorld, GameProfile gameProfile, ServerPlayerInteractionManager serverPlayerInteractionManager) {
@@ -253,9 +253,9 @@ implements ContainerListener {
             compoundTag2.putDouble("z", this.enteredNetherPos.z);
             compoundTag.put("enteredNetherPosition", compoundTag2);
         }
-        Entity entity = this.getTopmostVehicle();
+        Entity entity = this.getRootVehicle();
         Entity entity2 = this.getVehicle();
-        if (entity2 != null && entity != this && entity.method_5817()) {
+        if (entity2 != null && entity != this && entity.hasPlayerRider()) {
             CompoundTag compoundTag3 = new CompoundTag();
             CompoundTag compoundTag4 = new CompoundTag();
             entity.saveToTag(compoundTag4);
@@ -320,8 +320,8 @@ implements ContainerListener {
     public void tick() {
         this.interactionManager.update();
         --this.field_13998;
-        if (this.field_6008 > 0) {
-            --this.field_6008;
+        if (this.timeUntilRegen > 0) {
+            --this.timeUntilRegen;
         }
         this.container.sendContentUpdates();
         if (!this.world.isClient && !this.container.canUse(this)) {
@@ -967,8 +967,8 @@ implements ContainerListener {
             this.experienceProgress = serverPlayerEntity.experienceProgress;
             this.setScore(serverPlayerEntity.getScore());
             this.lastPortalPosition = serverPlayerEntity.lastPortalPosition;
-            this.field_6020 = serverPlayerEntity.field_6020;
-            this.field_6028 = serverPlayerEntity.field_6028;
+            this.lastPortalDirectionVector = serverPlayerEntity.lastPortalDirectionVector;
+            this.lastPortalDirection = serverPlayerEntity.lastPortalDirection;
         } else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || serverPlayerEntity.isSpectator()) {
             this.inventory.clone(serverPlayerEntity.inventory);
             this.experienceLevel = serverPlayerEntity.experienceLevel;
@@ -1098,7 +1098,7 @@ implements ContainerListener {
         this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
         this.field_13971 = clientSettingsC2SPacket.method_12135();
         this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-        this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() != AbsoluteHand.LEFT ? 1 : 0));
+        this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() != Arm.LEFT ? 1 : 0));
     }
 
     public ChatVisibility getClientChatVisibility() {

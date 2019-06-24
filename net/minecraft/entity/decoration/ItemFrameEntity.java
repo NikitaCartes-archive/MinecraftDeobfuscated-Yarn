@@ -123,7 +123,7 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public float getBoundingBoxMarginForTargeting() {
+    public float getTargetingMargin() {
         return 0.0f;
     }
 

@@ -26,7 +26,7 @@ implements ArgumentType<Formatting> {
     private ColorArgumentType() {
     }
 
-    public static ColorArgumentType create() {
+    public static ColorArgumentType color() {
         return new ColorArgumentType();
     }
 

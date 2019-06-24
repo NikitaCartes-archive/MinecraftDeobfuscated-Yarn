@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3i;
 
 public class BarrelBlockEntity
 extends LootableContainerBlockEntity {
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
     private int viewerCount;
 
     private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -49,7 +49,7 @@ extends LootableContainerBlockEntity {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(compoundTag)) {
             Inventories.fromTag(compoundTag, this.inventory);
         }

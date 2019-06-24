@@ -27,7 +27,7 @@ public class TeammsgCommand {
     private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.teammsg.failed.noteam", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.create()).executes(commandContext -> TeammsgCommand.execute((ServerCommandSource)commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(commandContext -> TeammsgCommand.execute((ServerCommandSource)commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))));
         commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tm").redirect(literalCommandNode));
     }
 

@@ -42,7 +42,7 @@ extends LootableContainerBlockEntity
 implements SidedInventory,
 Tickable {
     private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
     private int viewerCount;
     private AnimationStage animationStage = AnimationStage.CLOSED;
     private float animationProgress;
@@ -223,7 +223,7 @@ Tickable {
     }
 
     public void deserializeInventory(CompoundTag compoundTag) {
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
             Inventories.fromTag(compoundTag, this.inventory);
         }

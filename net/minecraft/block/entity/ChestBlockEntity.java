@@ -45,7 +45,7 @@ public class ChestBlockEntity
 extends LootableContainerBlockEntity
 implements ChestAnimationProgress,
 Tickable {
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
     protected float animationAngle;
     protected float lastAnimationAngle;
     protected int viewerCount;
@@ -81,7 +81,7 @@ Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(compoundTag)) {
             Inventories.fromTag(compoundTag, this.inventory);
         }

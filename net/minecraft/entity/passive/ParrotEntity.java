@@ -340,7 +340,7 @@ implements Bird {
     }
 
     @Override
-    protected float method_5801(float f) {
+    protected float calculateAerialStepDelta(float f) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
         return f + this.field_6819 / 2.0f;
     }

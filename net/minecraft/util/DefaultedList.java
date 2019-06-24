@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class DefaultedList<E>
 extends AbstractList<E> {
-    private final List<E> underlying;
-    private final E defaultValue;
+    private final List<E> delegate;
+    private final E initialElement;
 
-    public static <E> DefaultedList<E> create() {
+    public static <E> DefaultedList<E> of() {
         return new DefaultedList<E>();
     }
 
-    public static <E> DefaultedList<E> create(int i, E object) {
+    public static <E> DefaultedList<E> ofSize(int i, E object) {
         Validate.notNull(object);
         Object[] objects = new Object[i];
         Arrays.fill(objects, object);
@@ -28,7 +28,7 @@ extends AbstractList<E> {
     }
 
     @SafeVarargs
-    public static <E> DefaultedList<E> create(E object, E ... objects) {
+    public static <E> DefaultedList<E> copyOf(E object, E ... objects) {
         return new DefaultedList<E>(Arrays.asList(objects), object);
     }
 
@@ -37,45 +37,45 @@ extends AbstractList<E> {
     }
 
     protected DefaultedList(List<E> list, @Nullable E object) {
-        this.underlying = list;
-        this.defaultValue = object;
+        this.delegate = list;
+        this.initialElement = object;
     }
 
     @Override
     @NotNull
     public E get(int i) {
-        return this.underlying.get(i);
+        return this.delegate.get(i);
     }
 
     @Override
     public E set(int i, E object) {
         Validate.notNull(object);
-        return this.underlying.set(i, object);
+        return this.delegate.set(i, object);
     }
 
     @Override
     public void add(int i, E object) {
         Validate.notNull(object);
-        this.underlying.add(i, object);
+        this.delegate.add(i, object);
     }
 
     @Override
     public E remove(int i) {
-        return this.underlying.remove(i);
+        return this.delegate.remove(i);
     }
 
     @Override
     public int size() {
-        return this.underlying.size();
+        return this.delegate.size();
     }
 
     @Override
     public void clear() {
-        if (this.defaultValue == null) {
+        if (this.initialElement == null) {
             super.clear();
         } else {
             for (int i = 0; i < this.size(); ++i) {
-                this.set(i, this.defaultValue);
+                this.set(i, this.initialElement);
             }
         }
     }

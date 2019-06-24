@@ -70,7 +70,7 @@ extends Entity {
 
     protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
         super(entityType, world);
-        this.field_6033 = true;
+        this.inanimate = true;
     }
 
     protected AbstractMinecartEntity(EntityType<?> entityType, World world, double d, double e, double f) {
@@ -121,7 +121,7 @@ extends Entity {
 
     @Override
     @Nullable
-    public Box method_5708(Entity entity) {
+    public Box getHardCollisionBox(Entity entity) {
         if (entity.isPushable()) {
             return entity.getBoundingBox();
         }
@@ -277,7 +277,7 @@ extends Entity {
                 entity2.pushAwayFrom(this);
             }
         }
-        this.method_5713();
+        this.checkWaterState();
     }
 
     protected double method_7504() {
@@ -626,7 +626,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.field_7665 = d;
         this.field_7666 = e;
         this.field_7662 = f;

@@ -199,7 +199,7 @@ implements ServerPlayPacketListener {
             this.floating = false;
             this.floatingTicks = 0;
         }
-        this.topmostRiddenEntity = this.player.getTopmostVehicle();
+        this.topmostRiddenEntity = this.player.getRootVehicle();
         if (this.topmostRiddenEntity == this.player || this.topmostRiddenEntity.getPrimaryPassenger() != this.player) {
             this.topmostRiddenEntity = null;
             this.ridingEntity = false;
@@ -211,7 +211,7 @@ implements ServerPlayPacketListener {
             this.updatedRiddenX = this.topmostRiddenEntity.x;
             this.updatedRiddenY = this.topmostRiddenEntity.y;
             this.updatedRiddenZ = this.topmostRiddenEntity.z;
-            if (this.ridingEntity && this.player.getTopmostVehicle().getPrimaryPassenger() == this.player) {
+            if (this.ridingEntity && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
                 if (++this.vehicleFloatingTicks > 80) {
                     LOGGER.warn("{} was kicked for floating a vehicle too long!", (Object)this.player.getName().getString());
                     this.disconnect(new TranslatableText("multiplayer.disconnect.flying", new Object[0]));
@@ -293,7 +293,7 @@ implements ServerPlayPacketListener {
             this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement", new Object[0]));
             return;
         }
-        Entity entity = this.player.getTopmostVehicle();
+        Entity entity = this.player.getRootVehicle();
         if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
             ServerWorld serverWorld = this.player.getServerWorld();
             double d = entity.x;
@@ -1124,7 +1124,7 @@ implements ServerPlayPacketListener {
         this.player.updateLastActionTime();
         if (this.player.container.syncId == clickWindowC2SPacket.getSyncId() && this.player.container.isRestricted(this.player)) {
             if (this.player.isSpectator()) {
-                DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+                DefaultedList<ItemStack> defaultedList = DefaultedList.of();
                 for (int i = 0; i < this.player.container.slotList.size(); ++i) {
                     defaultedList.add(this.player.container.slotList.get(i).getStack());
                 }
@@ -1141,7 +1141,7 @@ implements ServerPlayPacketListener {
                     this.transactions.put(this.player.container.syncId, clickWindowC2SPacket.getTransactionId());
                     this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket.getSyncId(), clickWindowC2SPacket.getTransactionId(), false));
                     this.player.container.setPlayerRestriction(this.player, false);
-                    DefaultedList<ItemStack> defaultedList2 = DefaultedList.create();
+                    DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
                     for (int j = 0; j < this.player.container.slotList.size(); ++j) {
                         ItemStack itemStack2 = this.player.container.slotList.get(j).getStack();
                         defaultedList2.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
@@ -1248,7 +1248,7 @@ implements ServerPlayPacketListener {
     public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
         if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
             int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
-            this.player.field_13967 = (this.player.field_13967 * 3 + i) / 4;
+            this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
             this.waitingForKeepAlive = false;
         } else if (!this.isServerOwner()) {
             this.disconnect(new TranslatableText("disconnect.timeout", new Object[0]));

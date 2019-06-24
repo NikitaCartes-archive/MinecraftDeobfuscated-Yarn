@@ -27,7 +27,7 @@ implements ArgumentType<Text> {
         return commandContext.getArgument(string, Text.class);
     }
 
-    public static TextArgumentType create() {
+    public static TextArgumentType text() {
         return new TextArgumentType();
     }
 

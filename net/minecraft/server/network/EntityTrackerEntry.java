@@ -114,16 +114,16 @@ public class EntityTrackerEntry {
                 ++this.field_14043;
                 i = MathHelper.floor(this.entity.yaw * 256.0f / 360.0f);
                 int j = MathHelper.floor(this.entity.pitch * 256.0f / 360.0f);
-                Vec3d vec3d = new Vec3d(this.entity.x, this.entity.y, this.entity.z).subtract(EntityS2CPacket.method_18695(this.lastX, this.lastY, this.lastZ));
+                Vec3d vec3d = new Vec3d(this.entity.x, this.entity.y, this.entity.z).subtract(EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ));
                 boolean bl2 = vec3d.lengthSquared() >= 7.62939453125E-6;
                 Packet<ClientPlayPacketListener> packet2 = null;
                 boolean bl3 = bl2 || this.field_14040 % 60 == 0;
                 boolean bl = bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
                 if (this.field_14040 > 0 || this.entity instanceof ProjectileEntity) {
                     boolean bl5;
-                    long l = EntityS2CPacket.method_18047(vec3d.x);
-                    long m = EntityS2CPacket.method_18047(vec3d.y);
-                    long n = EntityS2CPacket.method_18047(vec3d.z);
+                    long l = EntityS2CPacket.encodePacketCoordinate(vec3d.x);
+                    long m = EntityS2CPacket.encodePacketCoordinate(vec3d.y);
+                    long n = EntityS2CPacket.encodePacketCoordinate(vec3d.z);
                     boolean bl6 = bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
                     if (bl5 || this.field_14043 > 400 || this.field_14051 || this.lastOnGround != this.entity.onGround) {
                         this.lastOnGround = this.entity.onGround;
@@ -241,13 +241,13 @@ public class EntityTrackerEntry {
     }
 
     private void method_18761() {
-        this.lastX = EntityS2CPacket.method_18047(this.entity.x);
-        this.lastY = EntityS2CPacket.method_18047(this.entity.y);
-        this.lastZ = EntityS2CPacket.method_18047(this.entity.z);
+        this.lastX = EntityS2CPacket.encodePacketCoordinate(this.entity.x);
+        this.lastY = EntityS2CPacket.encodePacketCoordinate(this.entity.y);
+        this.lastZ = EntityS2CPacket.encodePacketCoordinate(this.entity.z);
     }
 
     public Vec3d method_18759() {
-        return EntityS2CPacket.method_18695(this.lastX, this.lastY, this.lastZ);
+        return EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ);
     }
 
     private void method_18758(Packet<?> packet) {

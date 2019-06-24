@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Container {
-    private final DefaultedList<ItemStack> stackList = DefaultedList.create();
+    private final DefaultedList<ItemStack> stackList = DefaultedList.of();
     public final List<Slot> slotList = Lists.newArrayList();
     private final List<Property> properties = Lists.newArrayList();
     @Nullable
@@ -112,7 +112,7 @@ public abstract class Container {
     }
 
     public DefaultedList<ItemStack> getStacks() {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         for (int i = 0; i < this.slotList.size(); ++i) {
             defaultedList.add(this.slotList.get(i).getStack());
         }

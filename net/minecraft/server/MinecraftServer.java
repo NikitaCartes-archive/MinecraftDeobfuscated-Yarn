@@ -143,7 +143,7 @@ AutoCloseable,
 Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
-    public static final LevelInfo WORLD_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
+    public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
     private final LevelStorage levelStorage;
     private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
     private final File gameDir;
@@ -330,7 +330,7 @@ Runnable {
         LevelProperties levelProperties = worldSaveHandler.readProperties();
         if (levelProperties == null) {
             if (this.isDemo()) {
-                levelInfo = WORLD_INFO;
+                levelInfo = DEMO_LEVEL_INFO;
             } else {
                 levelInfo = new LevelInfo(l, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), levelGeneratorType);
                 levelInfo.setGeneratorOptions(jsonElement);
@@ -352,7 +352,7 @@ Runnable {
 
     protected void createWorlds(WorldSaveHandler worldSaveHandler, LevelProperties levelProperties, LevelInfo levelInfo, WorldGenerationProgressListener worldGenerationProgressListener) {
         if (this.isDemo()) {
-            levelProperties.loadLevelInfo(WORLD_INFO);
+            levelProperties.loadLevelInfo(DEMO_LEVEL_INFO);
         }
         ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, worldSaveHandler, levelProperties, DimensionType.OVERWORLD, this.profiler, worldGenerationProgressListener);
         this.worlds.put(DimensionType.OVERWORLD, serverWorld);
@@ -866,7 +866,7 @@ Runnable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isServerThreadAlive() {
+    public boolean isStopping() {
         return !this.serverThread.isAlive();
     }
 

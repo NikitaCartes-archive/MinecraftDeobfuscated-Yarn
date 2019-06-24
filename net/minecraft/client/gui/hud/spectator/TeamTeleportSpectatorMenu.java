@@ -65,9 +65,9 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public boolean enabled() {
+    public boolean isEnabled() {
         for (SpectatorMenuCommand spectatorMenuCommand : this.commands) {
-            if (!spectatorMenuCommand.enabled()) continue;
+            if (!spectatorMenuCommand.isEnabled()) continue;
             return true;
         }
         return false;
@@ -123,7 +123,7 @@ SpectatorMenuCommand {
         }
 
         @Override
-        public boolean enabled() {
+        public boolean isEnabled() {
             return !this.scoreboardEntries.isEmpty();
         }
     }

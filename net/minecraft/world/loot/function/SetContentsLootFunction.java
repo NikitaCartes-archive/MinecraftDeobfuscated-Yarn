@@ -41,7 +41,7 @@ extends ConditionalLootFunction {
         if (itemStack.isEmpty()) {
             return itemStack;
         }
-        DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         this.entries.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootSupplier.limitedConsumer(defaultedList::add), lootContext)));
         CompoundTag compoundTag = new CompoundTag();
         Inventories.toTag(compoundTag, defaultedList);

@@ -36,7 +36,7 @@ Tickable {
     private static final int[] TOP_SLOTS = new int[]{3};
     private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
     private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
-    private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
     private int brewTime;
     private boolean[] slotsEmptyLastTick;
     private Item itemBrewing;
@@ -190,7 +190,7 @@ Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
         Inventories.fromTag(compoundTag, this.inventory);
         this.brewTime = compoundTag.getShort("BrewTime");
         this.fuel = compoundTag.getByte("Fuel");

@@ -34,9 +34,9 @@ import net.minecraft.world.World;
 public class PlayerInventory
 implements Inventory,
 Nameable {
-    public final DefaultedList<ItemStack> main = DefaultedList.create(36, ItemStack.EMPTY);
-    public final DefaultedList<ItemStack> armor = DefaultedList.create(4, ItemStack.EMPTY);
-    public final DefaultedList<ItemStack> offHand = DefaultedList.create(1, ItemStack.EMPTY);
+    public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
+    public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
+    public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offHand);
     public int selectedSlot;
     public final PlayerEntity player;

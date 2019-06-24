@@ -141,7 +141,7 @@ extends Screen {
     }
 
     private void initWidgetsDemo(int i, int j) {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, i, 200, 20, I18n.translate("menu.playdemo", new Object[0]), buttonWidget -> this.minecraft.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.WORLD_INFO)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, i, 200, 20, I18n.translate("menu.playdemo", new Object[0]), buttonWidget -> this.minecraft.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.DEMO_LEVEL_INFO)));
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, i + j * 1, 200, 20, I18n.translate("menu.resetdemo", new Object[0]), buttonWidget -> {
             LevelStorage levelStorage = this.minecraft.getLevelStorage();
             LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");

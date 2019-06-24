@@ -364,7 +364,7 @@ implements Monster {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
         this.field_6210 = 0;
     }
 
@@ -458,7 +458,7 @@ implements Monster {
     }
 
     @Override
-    public float getBoundingBoxMarginForTargeting() {
+    public float getTargetingMargin() {
         return 0.0f;
     }
 

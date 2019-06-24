@@ -27,7 +27,7 @@ extends DrawableHelper {
         this.client = minecraftClient;
     }
 
-    public void draw() {
+    public void render() {
         if (this.bossBars.isEmpty()) {
             return;
         }
@@ -38,7 +38,7 @@ extends DrawableHelper {
             int l = j;
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(BAR_TEX);
-            this.drawBossBar(k, l, clientBossBar);
+            this.renderBossBar(k, l, clientBossBar);
             String string = clientBossBar.getName().asFormattedString();
             int m = this.client.textRenderer.getStringWidth(string);
             int n = i / 2 - m / 2;
@@ -49,7 +49,7 @@ extends DrawableHelper {
         }
     }
 
-    private void drawBossBar(int i, int j, BossBar bossBar) {
+    private void renderBossBar(int i, int j, BossBar bossBar) {
         int k;
         this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
         if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {

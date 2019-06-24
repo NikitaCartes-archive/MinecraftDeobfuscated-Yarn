@@ -27,7 +27,7 @@ public interface Recipe<C extends Inventory> {
     public ItemStack getOutput();
 
     default public DefaultedList<ItemStack> getRemainingStacks(C inventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.create(inventory.getInvSize(), ItemStack.EMPTY);
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getInvSize(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             Item item = inventory.getInvStack(i).getItem();
             if (!item.hasRecipeRemainder()) continue;
@@ -37,7 +37,7 @@ public interface Recipe<C extends Inventory> {
     }
 
     default public DefaultedList<Ingredient> getPreviewInputs() {
-        return DefaultedList.create();
+        return DefaultedList.of();
     }
 
     default public boolean isIgnoredInRecipeBook() {

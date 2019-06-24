@@ -25,7 +25,7 @@ implements ArgumentType<Enchantment> {
     private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
     public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("enchantment.unknown", object));
 
-    public static ItemEnchantmentArgumentType create() {
+    public static ItemEnchantmentArgumentType itemEnchantment() {
         return new ItemEnchantmentArgumentType();
     }
 

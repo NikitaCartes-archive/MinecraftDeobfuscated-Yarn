@@ -186,7 +186,7 @@ extends AbstractClientPlayerEntity {
         if (this.hasVehicle()) {
             this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
             this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
-            Entity entity = this.getTopmostVehicle();
+            Entity entity = this.getRootVehicle();
             if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
                 this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
             }
@@ -300,12 +300,12 @@ extends AbstractClientPlayerEntity {
             if (g <= 0.0f) {
                 this.setHealth(f);
                 if (g < 0.0f) {
-                    this.field_6008 = 10;
+                    this.timeUntilRegen = 10;
                 }
             } else {
                 this.field_6253 = g;
                 this.setHealth(this.getHealth());
-                this.field_6008 = 20;
+                this.timeUntilRegen = 20;
                 this.applyDamage(DamageSource.GENERIC, g);
                 this.hurtTime = this.field_6254 = 10;
             }

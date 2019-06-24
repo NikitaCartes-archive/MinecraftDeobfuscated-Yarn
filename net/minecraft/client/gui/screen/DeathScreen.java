@@ -116,7 +116,7 @@ extends Screen {
             return null;
         }
         for (Text text : this.message) {
-            if ((m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(text.asString(), false))) <= i) continue;
+            if ((m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(text.asString(), false))) <= i) continue;
             return text;
         }
         return null;

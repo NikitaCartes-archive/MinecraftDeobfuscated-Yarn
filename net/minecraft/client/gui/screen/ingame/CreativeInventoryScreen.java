@@ -807,7 +807,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Environment(value=EnvType.CLIENT)
     public static class CreativeContainer
     extends Container {
-        public final DefaultedList<ItemStack> itemList = DefaultedList.create();
+        public final DefaultedList<ItemStack> itemList = DefaultedList.of();
 
         public CreativeContainer(PlayerEntity playerEntity) {
             super(null, 0);

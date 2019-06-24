@@ -45,7 +45,7 @@ implements SpectatorMenuCloseCallback {
         return MathHelper.clamp((float)l / 2000.0f, 0.0f, 1.0f);
     }
 
-    public void draw(float f) {
+    public void render(float f) {
         if (this.spectatorMenu == null) {
             return;
         }
@@ -59,11 +59,11 @@ implements SpectatorMenuCloseCallback {
         this.blitOffset = -90;
         int k = MathHelper.floor((float)this.client.window.getScaledHeight() - 22.0f * g);
         SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
-        this.drawSpectatorMenu(g, i, k, spectatorMenuState);
+        this.renderSpectatorMenu(g, i, k, spectatorMenuState);
         this.blitOffset = j;
     }
 
-    protected void drawSpectatorMenu(float f, int i, int j, SpectatorMenuState spectatorMenuState) {
+    protected void renderSpectatorMenu(float f, int i, int j, SpectatorMenuState spectatorMenuState) {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -75,31 +75,31 @@ implements SpectatorMenuCloseCallback {
         }
         GuiLighting.enableForItems();
         for (int k = 0; k < 9; ++k) {
-            this.drawSpectatorCommand(k, this.client.window.getScaledWidth() / 2 - 90 + k * 20 + 2, j + 3, f, spectatorMenuState.getCommand(k));
+            this.renderSpectatorCommand(k, this.client.window.getScaledWidth() / 2 - 90 + k * 20 + 2, j + 3, f, spectatorMenuState.getCommand(k));
         }
         GuiLighting.disable();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
     }
 
-    private void drawSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
+    private void renderSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
         this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
         if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
             int k = (int)(g * 255.0f);
             GlStateManager.pushMatrix();
             GlStateManager.translatef(j, f, 0.0f);
-            float h = spectatorMenuCommand.enabled() ? 1.0f : 0.25f;
+            float h = spectatorMenuCommand.isEnabled() ? 1.0f : 0.25f;
             GlStateManager.color4f(h, h, h, g);
             spectatorMenuCommand.renderIcon(h, k);
             GlStateManager.popMatrix();
             String string = String.valueOf(this.client.options.keysHotbar[i].getLocalizedName());
-            if (k > 3 && spectatorMenuCommand.enabled()) {
+            if (k > 3 && spectatorMenuCommand.isEnabled()) {
                 this.client.textRenderer.drawWithShadow(string, j + 19 - 2 - this.client.textRenderer.getStringWidth(string), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
             }
         }
     }
 
-    public void draw() {
+    public void render() {
         int i = (int)(this.getSpectatorMenuHeight() * 255.0f);
         if (i > 3 && this.spectatorMenu != null) {
             String string;
@@ -130,7 +130,7 @@ implements SpectatorMenuCloseCallback {
 
     public void method_1976(double d) {
         int i = this.spectatorMenu.getSelectedSlot() + (int)d;
-        while (!(i < 0 || i > 8 || this.spectatorMenu.getCommand(i) != SpectatorMenu.BLANK_COMMAND && this.spectatorMenu.getCommand(i).enabled())) {
+        while (!(i < 0 || i > 8 || this.spectatorMenu.getCommand(i) != SpectatorMenu.BLANK_COMMAND && this.spectatorMenu.getCommand(i).isEnabled())) {
             i = (int)((double)i + d);
         }
         if (i >= 0 && i <= 8) {

@@ -67,7 +67,7 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public boolean enabled() {
+    public boolean isEnabled() {
         return !this.elements.isEmpty();
     }
 }

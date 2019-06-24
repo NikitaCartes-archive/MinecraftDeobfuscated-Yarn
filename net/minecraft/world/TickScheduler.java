@@ -19,6 +19,6 @@ public interface TickScheduler<T> {
 
     public boolean isTicking(BlockPos var1, T var2);
 
-    public void method_20470(Stream<ScheduledTick<T>> var1);
+    public void scheduleAll(Stream<ScheduledTick<T>> var1);
 }
 

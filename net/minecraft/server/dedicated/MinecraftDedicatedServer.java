@@ -232,7 +232,7 @@ implements DedicatedServer {
             thread2.setDaemon(true);
             thread2.start();
         }
-        Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.create());
+        Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
         return true;
     }
 
@@ -335,8 +335,8 @@ implements DedicatedServer {
 
     @Override
     public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("whitelist_enabled", this.method_13949().isWhitelistEnabled());
-        snooper.addInfo("whitelist_count", this.method_13949().getWhitelistedNames().length);
+        snooper.addInfo("whitelist_enabled", this.getDedicatedPlayerManager().isWhitelistEnabled());
+        snooper.addInfo("whitelist_count", this.getDedicatedPlayerManager().getWhitelistedNames().length);
         super.addSnooperInfo(snooper);
     }
 
@@ -361,7 +361,7 @@ implements DedicatedServer {
         return this.getProperties().useNativeTransport;
     }
 
-    public DedicatedPlayerManager method_13949() {
+    public DedicatedPlayerManager getDedicatedPlayerManager() {
         return (DedicatedPlayerManager)super.getPlayerManager();
     }
 
@@ -417,10 +417,10 @@ implements DedicatedServer {
         if (world.dimension.getType() != DimensionType.OVERWORLD) {
             return false;
         }
-        if (this.method_13949().getOpList().isEmpty()) {
+        if (this.getDedicatedPlayerManager().getOpList().isEmpty()) {
             return false;
         }
-        if (this.method_13949().isOperator(playerEntity.getGameProfile())) {
+        if (this.getDedicatedPlayerManager().isOperator(playerEntity.getGameProfile())) {
             return false;
         }
         if (this.getSpawnProtectionRadius() <= 0) {
@@ -549,7 +549,7 @@ implements DedicatedServer {
 
     @Override
     public /* synthetic */ PlayerManager getPlayerManager() {
-        return this.method_13949();
+        return this.getDedicatedPlayerManager();
     }
 }
 

@@ -46,7 +46,7 @@ extends DrawableHelper {
         this.inGameHud = inGameHud;
     }
 
-    public Text method_1918(PlayerListEntry playerListEntry) {
+    public Text getPlayerName(PlayerListEntry playerListEntry) {
         if (playerListEntry.getDisplayName() != null) {
             return playerListEntry.getDisplayName();
         }
@@ -60,7 +60,7 @@ extends DrawableHelper {
         this.visible = bl;
     }
 
-    public void draw(int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
+    public void render(int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
         int w;
         int t;
         boolean bl;
@@ -71,7 +71,7 @@ extends DrawableHelper {
         int j = 0;
         int k = 0;
         for (PlayerListEntry playerListEntry : list) {
-            l = this.client.textRenderer.getStringWidth(this.method_1918(playerListEntry).asFormattedString());
+            l = this.client.textRenderer.getStringWidth(this.getPlayerName(playerListEntry).asFormattedString());
             j = Math.max(j, l);
             if (scoreboardObjective == null || scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) continue;
             l = this.client.textRenderer.getStringWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
@@ -143,16 +143,16 @@ extends DrawableHelper {
                 }
                 x += 9;
             }
-            String string3 = this.method_1918(playerListEntry2).asFormattedString();
+            String string3 = this.getPlayerName(playerListEntry2).asFormattedString();
             if (playerListEntry2.getGameMode() == GameMode.SPECTATOR) {
                 this.client.textRenderer.drawWithShadow((Object)((Object)Formatting.ITALIC) + string3, x, y, -1862270977);
             } else {
                 this.client.textRenderer.drawWithShadow(string3, x, y, -1);
             }
             if (scoreboardObjective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR && (z = (ad = x + j + 1) + o) - ad > 5) {
-                this.method_1922(scoreboardObjective, y, gameProfile.getName(), ad, z, playerListEntry2);
+                this.renderScoreboardObjective(scoreboardObjective, y, gameProfile.getName(), ad, z, playerListEntry2);
             }
-            this.method_1923(p, x - (bl ? 9 : 0), y, playerListEntry2);
+            this.renderLatencyIcon(p, x - (bl ? 9 : 0), y, playerListEntry2);
         }
         if (list3 != null) {
             PlayerListHud.fill(i / 2 - s / 2 - 1, (r += n * 9 + 1) - 1, i / 2 + s / 2 + 1, r + list3.size() * this.client.textRenderer.fontHeight, Integer.MIN_VALUE);
@@ -164,7 +164,7 @@ extends DrawableHelper {
         }
     }
 
-    protected void method_1923(int i, int j, int k, PlayerListEntry playerListEntry) {
+    protected void renderLatencyIcon(int i, int j, int k, PlayerListEntry playerListEntry) {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
         boolean l = false;
@@ -174,7 +174,7 @@ extends DrawableHelper {
         this.blitOffset -= 100;
     }
 
-    private void method_1922(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
+    private void renderScoreboardObjective(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
         int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;

@@ -24,7 +24,7 @@ implements ArgumentType<Identifier> {
     public static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("advancement.advancementNotFound", object));
     public static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("recipe.notFound", object));
 
-    public static IdentifierArgumentType create() {
+    public static IdentifierArgumentType identifier() {
         return new IdentifierArgumentType();
     }
 

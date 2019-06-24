@@ -19,7 +19,7 @@ import net.minecraft.util.Int2ObjectBiMap;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.EulerRotation;
+import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 import org.jetbrains.annotations.Nullable;
@@ -234,20 +234,20 @@ public class TrackedDataHandlerRegistry {
             return this.method_12743(packetByteBuf);
         }
     };
-    public static final TrackedDataHandler<EulerRotation> ROTATION = new TrackedDataHandler<EulerRotation>(){
+    public static final TrackedDataHandler<EulerAngle> ROTATION = new TrackedDataHandler<EulerAngle>(){
 
-        public void method_12747(PacketByteBuf packetByteBuf, EulerRotation eulerRotation) {
-            packetByteBuf.writeFloat(eulerRotation.getX());
-            packetByteBuf.writeFloat(eulerRotation.getY());
-            packetByteBuf.writeFloat(eulerRotation.getZ());
+        public void method_12747(PacketByteBuf packetByteBuf, EulerAngle eulerAngle) {
+            packetByteBuf.writeFloat(eulerAngle.getPitch());
+            packetByteBuf.writeFloat(eulerAngle.getYaw());
+            packetByteBuf.writeFloat(eulerAngle.getRoll());
         }
 
-        public EulerRotation method_12748(PacketByteBuf packetByteBuf) {
-            return new EulerRotation(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
+        public EulerAngle method_12748(PacketByteBuf packetByteBuf) {
+            return new EulerAngle(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
         }
 
-        public EulerRotation method_12749(EulerRotation eulerRotation) {
-            return eulerRotation;
+        public EulerAngle method_12749(EulerAngle eulerAngle) {
+            return eulerAngle;
         }
 
         @Override
